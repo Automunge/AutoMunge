@@ -876,10 +876,10 @@ class AutoMunge:
     df_train_cat = pd.DataFrame(cat_train_1hot.toarray(), columns=labels_train)
     df_test_cat = pd.DataFrame(cat_test_1hot.toarray(), columns=labels_test)
 
-    #add a missing column to train if it's not present
-    if column + '_NArw' not in df_train_cat.columns:
-      missingcolumn = pd.DataFrame(0, index=np.arange(df_train_cat.shape[0]), columns=[column+'_NArw'])
-      df_train_cat = pd.concat([missingcolumn, df_train_cat], axis=1)
+#     #add a missing column to train if it's not present
+#     if column + '_NArw' not in df_train_cat.columns:
+#       missingcolumn = pd.DataFrame(0, index=np.arange(df_train_cat.shape[0]), columns=[column+'_NArw'])
+#       df_train_cat = pd.concat([missingcolumn, df_train_cat], axis=1)
 
 
     #Get missing columns in test set that are present in training set
