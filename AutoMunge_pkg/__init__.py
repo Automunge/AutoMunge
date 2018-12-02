@@ -1,3 +1,3 @@
 name = "AutoMunge_pkg"
 
-from AutoMunge import AutoMunge
+#from AutoMunge import AutoMunge
