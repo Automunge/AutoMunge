@@ -1737,7 +1737,7 @@ class AutoMunge:
     elif df[column].isna().sum() >= df.shape[0] / 2:
 
       #if 2nd most common in column is string and > two values, set category to text
-      if isinstance(checkstring, mc2[1][0]) and df[column].nunique() > 2:
+      if isinstance(checkstring, mc2[0][0]) and df[column].nunique() > 2:
         category = 'text'
 
       #if 2nd most common is date, set category to date   
@@ -1745,7 +1745,7 @@ class AutoMunge:
         category = 'date'
 
       #if 2nd most common in column is integer and > two values, set category to number
-      if isinstance(checkint, mc2[1][0]) and df[column].nunique() > 2:
+      if isinstance(checkint, mc2[0][0]) and df[column].nunique() > 2:
 
 
         #take account for numbercategoryheuristic
@@ -1758,7 +1758,7 @@ class AutoMunge:
           category = 'nmbr'
 
       #if 2nd most common in column is float, set category to number
-      if isinstance(checkfloat, mc2[1][0]):
+      if isinstance(checkfloat, mc2[0][0]):
 
         #take account for numbercategoryheuristic
         if df[column].nunique() / df[column].shape[0] < numbercategoryheuristic:
@@ -1770,11 +1770,11 @@ class AutoMunge:
           category = 'nmbr'
 
       #if 2nd most common in column is integer and <= two values, set category to binary
-      if isinstance(checkint, mc2[1][0]) and df[column].nunique() <= 2:
+      if isinstance(checkint, mc2[0][0]) and df[column].nunique() <= 2:
         category = 'bnry'
 
       #if 2nd most common in column is string and <= two values, set category to binary
-      if isinstance(checkstring, mc2[1][0]) and df[column].nunique() <= 2:
+      if isinstance(checkstring, mc2[0][0]) and df[column].nunique() <= 2:
         category = 'bnry'
 
 
