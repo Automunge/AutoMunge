@@ -45,7 +45,7 @@ column labels. The functions return Numpy arrays numerically encoded and normali
 as to make them suitable for direct application to a machine learning model in the 
 framework of a user's choice, including sets for the various activities of a generic 
 machine learning project such as training, hyperparameter tuning validation (validation1), 
-or final  validation (validation2). The funcations also return a few other sets such as 
+or final  validation (validation2). The functions also return a few other sets such as 
 labels, column headers, ID sets, and etc if elected - a full list of returned arrays is 
 below.
 
@@ -71,7 +71,7 @@ for normal business hours, holidays, weekends, etc - potential future extension)
 binary categorical data the functions return a single column with 1/0 designation. For 
 multimodal categorical data the functions return one-hot encoded sets using the naming 
 convention 'origname' + '_category'. (I believe this automation of the one-hot encoding 
-method to be a particularily useful feature of the tool. For all cases the functions 
+method to be a particularily useful feature of the tool.) For all cases the functions 
 generate a supplemental column (NArw) with a boolean identifier for cells that were 
 subject to infill due to missing or improperly formatted data.
 
@@ -104,9 +104,9 @@ postprocess_dict \
 The full set of arguments available to be passed are given here, with explanations 
 provided below:
 am.automunge(df_train, df_test = False, labels_column = False, trainID_column = False, \
-        	testID_column = False, valpercent1=0.20, valpercent2 = 0.10, \
-        	shuffletrain = True, TrainLabelFreqLevel = True, powertransform = True, \
-        	binstransform = True, MLinfill = True, infilliterate=1, randomseed = 42, \
+            testID_column = False, valpercent1=0.20, valpercent2 = 0.10, \
+            shuffletrain = True, TrainLabelFreqLevel = True, powertransform = True, \
+            binstransform = True, MLinfill = True, infilliterate=1, randomseed = 42, \
             forcetocategoricalcolumns = [], numbercategoryheuristic = 0.000, \
             excludetransformscolumns = []):
 
@@ -116,7 +116,8 @@ Or for the postmunge function:
 test, testID, labelsencoding_dict, finalcolumns_test \
 = am.postmunge(postprocess_dict, df_test, ...)
 
-With the full set of arguments available to be passed as 
+With the full set of arguments available to be passed as:
+
 am.postmunge(postprocess_dict, df_test, testID_column = False)
 
 Note that the only required argument to the automunge function is the train set dataframe,
@@ -169,7 +170,7 @@ take place in the postmunge(.) function.
 np_testID: the set of ID values coresponding to the np_test set.
 
 labelsencoding_dict: a dictionary that can be used to reverse encode predictions that 
-were generate from a downstream model (such as to convert a one-hot encoded set back to
+were generated from a downstream model (such as to convert a one-hot encoded set back to
 a single categorical set).
 
 finalcolumns_train: a list of the column headers corresponding to the training data. Note 
@@ -191,9 +192,9 @@ dictionary be saved on each application used to train a downstream model.
 automunge(.) passed arguments
 
 am.automunge(df_train, df_test = False, labels_column = False, trainID_column = False, \
-        	testID_column = False, valpercent1=0.20, valpercent2 = 0.10, \
-        	shuffletrain = True, TrainLabelFreqLevel = True, powertransform = True, \
-        	binstransform = True, MLinfill = True, infilliterate=1, randomseed = 42, \
+            testID_column = False, valpercent1=0.20, valpercent2 = 0.10, \
+            shuffletrain = True, TrainLabelFreqLevel = True, powertransform = True, \
+            binstransform = True, MLinfill = True, infilliterate=1, randomseed = 42, \
             forcetocategoricalcolumns = [], numbercategoryheuristic = 0.000, \
             excludetransformscolumns = []):
             
@@ -318,9 +319,9 @@ am.postmunge(postprocess_dict, df_test, testID_column = False)
 postprocess_dict: this is the dictionary returned from the initial application of 
 automunge which included normalization parameters to facilitate consistent processing of 
 test data to the original processing of the train set. This requires a user to remember to
-download the dictionary at the original application of auto0munge, otherwise if this 
+download the dictionary at the original application of automunge, otherwise if this 
 dictionary is not available a user can feed this subsequent test data to the automunge 
-along with the original tran data exactly as was used to train the downstream model.
+along with the original train data exactly as was used in the original automunge call.
 
 df_test: a pandas dataframe containing a structured dataset intended for use to generate 
 predictions from a machine learning model trained from the automunge returned sets. The 
