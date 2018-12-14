@@ -19,7 +19,9 @@ AutoMunge is now available for free pip install for your open source python data
 pip install AutoMunge-pkg
 
 Once installed:
+
 from AutoMunge_pkg import AutoMunge
+
 am = AutoMunge.AutoMunge()
 
 Where eg for train/test set processing run:
