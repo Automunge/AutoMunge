@@ -6,7 +6,7 @@ data and if available consistently formatted test data that can then be used to 
 predictions from a trained downstream model. When fed pandas dataframes for these sets the
 function returns transformed numpy arrays numerically encoded, with feature 
 transformations such as z score normalization, standard deviation bins for numerical sets,
-box-cox power law transform for all postitive numerical sets, one-hot encoding for 
+box-cox power law transform for all positive numerical sets, one-hot encoding for 
 categorical sets, and more (full documentation below). Missing data points in the set are 
 also addressed by the "ML infill" method which predict infill using machine learning 
 models trained on the rest of the set in a fully generalized and automated fashion. 
@@ -203,12 +203,13 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
 df_train: a pandas dataframe containing a structured dataset intended for use to train a 
 downstream machine learning model. The set at a minimum should be 'tidy' meaning a single 
 column per feature and a single row per observation. If desired the set may include a row 
-ID number and a column intended to be used as labels for a downstream training operation. 
+ID column and a column intended to be used as labels for a downstream training operation. 
 
 df_test: a pandas dataframe containing a structured dataset intended for use to generate 
 predictions from a downstream machine learning model trained from the automunge returned 
 sets. The set must be consistantly formated as the train set with consistent column 
-labels. If desired the set may include a row ID number.
+labels (save for any designated labels column from the train set). If desired the set may 
+include a row ID column.
 
 labels_column: a string of the column title for the column from the df_train set intended 
 for use as labels in training a downstream machine learning model. The function defaults 
