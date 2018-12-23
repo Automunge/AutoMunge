@@ -298,11 +298,11 @@ the other columns.
 
 postmunge returned sets:
 
-test: the set of features, consistently encoded and normalized as the training data, 
+np_test: the set of features, consistently encoded and normalized as the training data, 
 that can be used to generate predictions from a model trained with the np_train set from 
 automunge.
 
-testID: the set of ID values coresponding to the test set.
+np_testID: the set of ID values coresponding to the test set.
 
 labelsencoding_dict: this is the same labelsencoding_dict returned from automunge, it's 
 just returned here again in case you need it. Kind of redundant.
