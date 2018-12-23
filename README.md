@@ -35,7 +35,7 @@ postprocess_dict \
 or for subsequent consistant processing of test data, using the dictionary returned from
 automunge(.), run:
 
-test, testID, labelsencoding_dict, finalcolumns_test \
+np_test, np_testID, labelsencoding_dict, finalcolumns_test \
 = am.postmunge(postprocess_dict, df_test)
 
 One can save the dictionary "postprocess_dict" returned from automunge(.) with pickle for 
