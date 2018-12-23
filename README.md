@@ -115,7 +115,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
 
 Or for the postmunge function:
 
-test, testID, labelsencoding_dict, finalcolumns_test \
+np_test, np_testID, labelsencoding_dict, finalcolumns_test \
 = am.postmunge(postprocess_dict, df_test, ...)
 
 With the full set of arguments available to be passed as:
