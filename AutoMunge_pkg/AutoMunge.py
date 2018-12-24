@@ -109,7 +109,7 @@ class AutoMunge:
 
     #note process_text creates NArw column in different method
     transform_dict.update({'text' : {'greatgrandparents' : [], \
-                                     'grandparents' : ['NArw'], \
+                                     'grandparents' : [], \
                                      'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['text'], \
@@ -164,7 +164,7 @@ class AutoMunge:
                                        'children' : ['nmbr'], \
                                        'niecesnephews' : [], \
                                        'coworkers' : [], \
-                                       'friends' : [bins]}})
+                                       'friends' : []}})
 
     else:
 
@@ -876,10 +876,10 @@ class AutoMunge:
     df_train_cat = pd.DataFrame(cat_train_1hot.toarray(), columns=labels_train)
     df_test_cat = pd.DataFrame(cat_test_1hot.toarray(), columns=labels_test)
 
-#     #add a missing column to train if it's not present
-#     if column + '_NArw' not in df_train_cat.columns:
-#       missingcolumn = pd.DataFrame(0, index=np.arange(df_train_cat.shape[0]), columns=[column+'_NArw'])
-#       df_train_cat = pd.concat([missingcolumn, df_train_cat], axis=1)
+    #add a missing column to train if it's not present
+    if column + '_NArw' not in df_train_cat.columns:
+      missingcolumn = pd.DataFrame(0, index=np.arange(df_train_cat.shape[0]), columns=[column+'_NArw'])
+      df_train_cat = pd.concat([missingcolumn, df_train_cat], axis=1)
 
 
     #Get missing columns in test set that are present in training set
@@ -910,6 +910,7 @@ class AutoMunge:
     
     #delete _NArw column, this will be. processed seperately in the processfamily function
     #delete support NArw2 column
+    columnNArw = column + '_NArw'
     columnNAr2 = column + '_NAr2'
     if columnNAr2 in list(mdf_train):
       del mdf_train[columnNAr2]
@@ -951,23 +952,41 @@ class AutoMunge:
     column_dict_list = []
 
     categorylist = textcolumns.copy()
+    categorylist.remove(columnNArw)
 
 
-    for tc in categorylist:
+    for tc in textcolumns:
 
       textnormalization_dict = {tc : {'textlabelsdict' : textlabelsdict}}
+      
+      if tc[-5:] != '_NArw':
+      
+        column_dict = {tc : {'category' : 'text', \
+                             'origcategory' : category, \
+                             'normalization_dict' : textnormalization_dict, \
+                             'origcolumn' : column, \
+                             'columnslist' : textcolumns, \
+                             'categorylist' : categorylist, \
+                             'infillmodel' : False, \
+                             'infillcomplete' : False, \
+                             'deletecolumn' : False}}
 
-      column_dict = {tc : {'category' : 'text', \
-                           'origcategory' : category, \
-                           'normalization_dict' : textnormalization_dict, \
-                           'origcolumn' : column, \
-                           'columnslist' : textcolumns, \
-                           'categorylist' : categorylist, \
-                           'infillmodel' : False, \
-                           'infillcomplete' : False, \
-                           'deletecolumn' : False}}
+        column_dict_list.append(column_dict.copy())
+      
+      else:
+        
+              
+        column_dict = {tc : {'category' : 'text', \
+                             'origcategory' : category, \
+                             'normalization_dict' : textnormalization_dict, \
+                             'origcolumn' : column, \
+                             'columnslist' : textcolumns, \
+                             'categorylist' : [tc], \
+                             'infillmodel' : False, \
+                             'infillcomplete' : False, \
+                             'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+        column_dict_list.append(column_dict.copy())
 
 
     #return mdf_train, mdf_test, textcolumns, categorylist
@@ -2867,7 +2886,7 @@ class AutoMunge:
           masterNArows_test = pd.concat([masterNArows_test, testNArows], axis=1)
 
           #troubleshoot
-          print("processing column ", column)
+          #print("processing column ", column)
           
           #now process ancestors
           df_train, df_test, postprocess_dict = \
@@ -3065,10 +3084,7 @@ class AutoMunge:
 
         finalcolumns_labels = list(df_labels)
     
-#         #troubleshoot
-#         print("finalcolumns_labels = ", finalcolumns_labels)
-#         print("postprocess_dict['column_dict']")
-#         print(postprocess_dict['column_dict'])
+
 
         #here we'll populate the dictionery pairing values from the encoded labels \
         #column with the original value for transformation post prediciton
@@ -3393,7 +3409,7 @@ class AutoMunge:
                              'numbercategoryheuristic' : numbercategoryheuristic, \
                              'excludetransformscolumns' : excludetransformscolumns,\
                              'labelsencoding_dict' : labelsencoding_dict, \
-                             'automungeversion' : '1.1' })
+                             'automungeversion' : '1.73' })
 
 
 
@@ -3469,10 +3485,6 @@ class AutoMunge:
     #populated in the transform_dict by assembletransformdict, only applied to
     #first generation of transforms (others are recursive through the processfamily function)
     
-#     #troubleshoot
-#     print("postprocessancestors")
-#     print("column = ", column)
-#     print("category = ", category)
     
     
     #process the grandparents (no downstream, supplemental, only applied ot first generation)
@@ -3725,10 +3737,6 @@ class AutoMunge:
     #expect this approach works better when the numerical distribution is thin tailed
     #if only have training but not test data handy, use same training data for both dataframe inputs
     
-#     #troubleshoot
-#     print("troubleshoot postprocess_numerical_class")
-#     print("column = ", column)
-#     print("columnkey =. ", columnkey)
     
     
     #retrieve normalizastion parameters from postprocess_dict
@@ -3843,8 +3851,8 @@ class AutoMunge:
     #this might create error due to different order of columns, address of this \
     #potential issue will be a future extension
 
-  #   #add _NArw to textcolumns to ensure a column gets populated even if no missing
-  #   textcolumns = [column + '_NArw'] + textcolumns
+#     #add _NArw to textcolumns to ensure a column gets populated even if no missing
+#     textcolumns = [column + '_NArw'] + textcolumns
 
     
 
@@ -3853,16 +3861,11 @@ class AutoMunge:
     #by pulling the categorylist instead of columnslist (noting that will require
     #a more exact evaluation for columnkey somehow)
     
-#     #troubleshoot
-#     print("troubleshoot postprocess_text_class")
-# #     print("postprocess_dict['column_dict'][columnkey]['categorylist']")
-# #     print(postprocess_dict['column_dict'][columnkey]['categorylist'])
-#     print("postprocess_dict['column_dict'][columnkey]['columnslist']")
-#     print(postprocess_dict['column_dict'][columnkey]['columnslist'])
-#     print("postprocess_dict['column_dict'][columnkey]")
-#     print(postprocess_dict['column_dict'][columnkey])
-    
     textcolumns = postprocess_dict['column_dict'][columnkey]['columnslist']
+    #textcolumns = postprocess_dict['column_dict'][columnkey]['categorylist']
+    
+    
+    
 
     #create copy of original column for later retrieval
     mdf_test[column + '_temp'] = mdf_test[column].copy()
@@ -3871,10 +3874,10 @@ class AutoMunge:
     mdf_test[column] = mdf_test[column].astype('category')
 
     #if set is categorical we'll need the plug value for missing values included
-    mdf_test[column] = mdf_test[column].cat.add_categories(['NAr2'])
+    mdf_test[column] = mdf_test[column].cat.add_categories(['NArw'])
 
     #replace NA with a dummy variable
-    mdf_test[column] = mdf_test[column].fillna('NAr2')
+    mdf_test[column] = mdf_test[column].fillna('NArw')
 
     #replace numerical with string equivalent
     #mdf_train[column] = mdf_train[column].astype(str)
@@ -3935,10 +3938,10 @@ class AutoMunge:
     mdf_test[column] = mdf_test[column + '_temp'].copy()
     del mdf_test[column + '_temp']
     
-    #delete support NArw2 column
-    columnNAr2 = column + '_NAr2'
-    if columnNAr2 in list(mdf_test):
-      del mdf_test[columnNAr2]
+#     #delete support NArw2 column
+#     columnNAr2 = column + '_NAr2'
+#     if columnNAr2 in list(mdf_test):
+#       del mdf_test[columnNAr2]
 
     #change data types to 8-bit (1 byte) integers for memory savings
     for textcolumn in textcolumns:
@@ -4417,7 +4420,9 @@ class AutoMunge:
   def createpostMLinfillsets(self, df_test, column, testNArows, category, \
                              columnslist = [], categorylist = []):
 
-
+    
+    
+    
     #createpostMLinfillsets(df_test, column, testNArows, category, \
     #columnslist = []) function that when fed dataframe of
     #test set, column id, df of True/False corresponding to rows from original \
@@ -4538,10 +4543,15 @@ class AutoMunge:
         #delete column and column+'_NArows'
         df_test_fillfeatures = df_test_fillfeatures.drop(columnslist, axis=1)
         df_test_fillfeatures = df_test_fillfeatures.drop([testNArows.columns.get_values()[0]], axis=1)
+        
 
         #delete NArows from df_train, df_test
   #       df_train = df_train.drop([trainNArows.columns.get_values()[0]], axis=1)
+        
         df_test = df_test.drop([testNArows.columns.get_values()[0]], axis=1)
+        
+        
+        
 
     #if category == 'date':
     else:
@@ -5085,8 +5095,8 @@ class AutoMunge:
 
         for column in columns_test_ML:
           
-          #troubleshoot
-          print("for column in columns_test_ML:, column = ", column)
+#           #troubleshoot
+#           print("for column in columns_test_ML:, column = ", column)
 
 
 
