@@ -39,7 +39,7 @@ class AutoMunge:
   
 
   def assembletransformdict(self, powertransform, binstransform):
-
+    '''
     #assembles the range of transformations to be applied based on the evaluated \
     #category of data
 
@@ -71,7 +71,7 @@ class AutoMunge:
     
     #note a future extension will allow automubnge class to run experiements
     #on different configurations of trasnform_dict to improve the feature selection
-
+    '''
 
     transform_dict = {}
 
@@ -107,9 +107,8 @@ class AutoMunge:
                                      'coworkers' : [], \
                                      'friends' : []}})
 
-    #note process_text creates NArw column in different method
     transform_dict.update({'text' : {'greatgrandparents' : [], \
-                                     'grandparents' : [], \
+                                     'grandparents' : ['NArw'], \
                                      'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['text'], \
@@ -199,7 +198,7 @@ class AutoMunge:
   
   
   def assembleprocessdict(self):
-    
+    '''
     #creates a dictionary storing all of the processing functions for each
     #category. Note that the convention is that every dualprocess entry 
     #(to process both train and text set in automunge) is meant
@@ -207,7 +206,8 @@ class AutoMunge:
     #postmunge). If the dualprocess/postprocess pair aren't included a 
     #singleprocess funciton will be instead which processes a single column
     #at a time and is neutral to whether that set is from train or test data.
-
+    '''
+    
     process_dict = {}
     
     #categories are nmbr, bnry, text, date, bxcx, bins, bint, NArw, null
@@ -252,11 +252,12 @@ class AutoMunge:
   
   def processancestors(self, df_train, df_test, column, category, origcategory, process_dict, \
                       transform_dict, postprocess_dict):
-    
+    '''
     #as automunge runs a for loop through each column in automunge, this is the  
     #processing function applied which runs through the grandparents family primitives
     #populated in the transform_dict by assembletransformdict, only applied to
     #first generation of transforms (others are recursive through the processfamily function)
+    '''
     
     #process the grandparents (no downstream, supplemental, only applied ot first generation)
     for grandparent in transform_dict[category]['grandparents']:
@@ -285,11 +286,12 @@ class AutoMunge:
 
   def processfamily(self, df_train, df_test, column, category, origcategory, process_dict, \
                     transform_dict, postprocess_dict):
-    
+    '''
     #as automunge runs a for loop through each column in automunge, this is the master 
     #processing function applied which runs through the different family primitives
     #populated in the transform_dict by assembletransformdict
-
+    '''
+    
     #process the cousins (no downstream, supplemental)
     for cousin in transform_dict[category]['cousins']:
       
@@ -344,6 +346,10 @@ class AutoMunge:
   
   def circleoflife(self, df_train, df_test, column, category, origcategory, process_dict, \
                     transform_dict, postprocess_dict):
+    '''
+    #This function deletes source column for cases where family primitives 
+    #included replacement.
+    '''
     
     #if we had replacement transformations performed on first generation \
     #then delete the original column
@@ -375,7 +381,7 @@ class AutoMunge:
   
 
   def dictupdate(self, column, column_dict, postprocess_dict):
-    
+    '''
     #dictupdate function takes as input column_dict, postprocess_dict, then for cases
     #where origcolmn is the same fo rhte two combines the columnslist and the 
     #normalization_dict, then appends the column_dict onto the postprocess_dict
@@ -383,7 +389,7 @@ class AutoMunge:
     #"column" is the column name prior to the applicaiton of processing, and the
     #name of the column after the. last processing funciton is saved as a key
     #in the column_dict
-
+    '''
     
     
     #(reason for "key2" instead of key1 is some shuffling during editing)
@@ -452,7 +458,7 @@ class AutoMunge:
   
   def processcousin(self, df_train, df_test, column, cousin, origcategory, \
                      process_dict, transform_dict, postprocess_dict):
-    
+    '''
     #cousin is one of the primitives for processfamily function, and it involves
     #transformations without downstream derivations without replacement of source column
     #although this same funciton can be used with the auntsuncles primitive
@@ -460,7 +466,7 @@ class AutoMunge:
     #used on the niecesnephews primitive downstream of parents or siblings since 
     #they don't have children (they're way to young for that)
     #note the processing funcitons are accessed through the process_dict
-    
+    '''
     
     
     #if this is a dual process function
@@ -491,7 +497,7 @@ class AutoMunge:
   
   def processparent(self, df_train, df_test, column, parent, origcategory, \
                     process_dict, transform_dict, postprocess_dict):
-    
+    '''
     #parent is one of the primitives for processfamily function, and it involves
     #transformations with downstream derivations with replacement of source column
     #although this same funciton can be used with the siblinga primitive
@@ -499,7 +505,7 @@ class AutoMunge:
     #used on the children primitive downstream of parents or siblings, allowing
     #the children to have children of their own, you know, grandchildren and stuff.
     #note the processing functions are accessed through the process_dict
-
+    '''
     
     #if this is a dual process function
     if process_dict[parent]['dualprocess'] != None:
@@ -606,13 +612,14 @@ class AutoMunge:
   
   
   def process_NArw_class(self, df, column, category):
-    
+    '''
     #processing funciton that creates a boolean column indicating 1 for rows
     #corresponding to missing or improperly formated data in source column
     #note this uses the NArows function which has a category specific approach
     #returns same dataframe with new column of name column + '_NArw'
     #note this is a "singleprocess" function since is applied to single dataframe
-
+    '''
+    
     #add a second column with boolean expression indicating a missing cell
     #(using NArows(.) function defined below, column name will be column+'_NArows')
     NArows_nmbr = self.NArows(df, column, category)
@@ -653,7 +660,7 @@ class AutoMunge:
   
   
   def process_numerical_class(self, mdf_train, mdf_test, column, category):
-
+    '''
     #process_numerical_class(mdf_train, mdf_test, column, category)
     #function to normalize data to mean of 0 and standard deviation of 1 \
     #z score normalization) 
@@ -665,6 +672,7 @@ class AutoMunge:
 
     #expect this approach works better when the numerical distribution is thin tailed
     #if only have training but not test data handy, use same training data for both dataframe inputs
+    '''
     
     #copy source column into new column
     mdf_train[column + '_nmbr'] = mdf_train[column].copy()
@@ -724,7 +732,7 @@ class AutoMunge:
   
   
   def process_binary_class(self, mdf_train, mdf_test, column, category):
-
+    '''
     #process_binary_class(mdf, column, missing)
     #converts binary classification values to 0 or 1
     #takes as arguement a pandas dataframe (mdf_train, mdf_test), \
@@ -733,7 +741,8 @@ class AutoMunge:
     #fills missing valules with most common value
     #returns same dataframes with new column of name column + '_bnry'
     #note this is a "dualprocess" function since is applied to both dataframes
-
+    '''
+    
     #copy column to column + '_bnry'
     mdf_train[column + '_bnry'] = mdf_train[column].copy()
     mdf_test[column + '_bnry'] = mdf_test[column].copy()
@@ -803,7 +812,7 @@ class AutoMunge:
   
   
   def process_text_class(self, mdf_train, mdf_test, column, category):
-
+    '''
     #process_text_class(mdf_train, mdf_test, column, category)
     #preprocess column with text categories
     #takes as arguement two pandas dataframe containing training and test data respectively 
@@ -821,9 +830,10 @@ class AutoMunge:
     #ensures order of all new columns consistent between both sets
     #returns two transformed dataframe (mdf_train, mdf_test) \
     #and a list of the new column names (textcolumns)
-
+    
     #if only have training but not test data handy, use same training data for both dataframe inputs
-
+    '''
+    
     #store original column for later retrieval
     mdf_train[column + '_temp'] = mdf_train[column].copy()
     mdf_test[column + '_temp'] = mdf_test[column].copy()
@@ -862,7 +872,7 @@ class AutoMunge:
 
 
     #apply onehotencoding
-    onehotencoder = OneHotEncoder()
+    onehotencoder = OneHotEncoder(categories='auto')
     cat_train_1hot = onehotencoder.fit_transform(cat_train_encoded.reshape(-1,1))
     cat_test_1hot = onehotencoder.fit_transform(cat_test_encoded.reshape(-1,1))
 
@@ -876,10 +886,10 @@ class AutoMunge:
     df_train_cat = pd.DataFrame(cat_train_1hot.toarray(), columns=labels_train)
     df_test_cat = pd.DataFrame(cat_test_1hot.toarray(), columns=labels_test)
 
-    #add a missing column to train if it's not present
-    if column + '_NArw' not in df_train_cat.columns:
-      missingcolumn = pd.DataFrame(0, index=np.arange(df_train_cat.shape[0]), columns=[column+'_NArw'])
-      df_train_cat = pd.concat([missingcolumn, df_train_cat], axis=1)
+#     #add a missing column to train if it's not present
+#     if column + '_NArw' not in df_train_cat.columns:
+#       missingcolumn = pd.DataFrame(0, index=np.arange(df_train_cat.shape[0]), columns=[column+'_NArw'])
+#       df_train_cat = pd.concat([missingcolumn, df_train_cat], axis=1)
 
 
     #Get missing columns in test set that are present in training set
@@ -908,7 +918,7 @@ class AutoMunge:
     del mdf_train[column + '_temp']    
     del mdf_test[column + '_temp']
     
-    #delete _NArw column, this will be. processed seperately in the processfamily function
+    #delete _NArw column, this will be processed seperately in the processfamily function
     #delete support NArw2 column
     columnNArw = column + '_NArw'
     columnNAr2 = column + '_NAr2'
@@ -952,7 +962,7 @@ class AutoMunge:
     column_dict_list = []
 
     categorylist = textcolumns.copy()
-    categorylist.remove(columnNArw)
+#     categorylist.remove(columnNArw)
 
 
     for tc in textcolumns:
@@ -981,10 +991,13 @@ class AutoMunge:
                              'normalization_dict' : textnormalization_dict, \
                              'origcolumn' : column, \
                              'columnslist' : textcolumns, \
-                             'categorylist' : [tc], \
+                             'categorylist' : categorylist, \
                              'infillmodel' : False, \
                              'infillcomplete' : False, \
                              'deletecolumn' : False}}
+        
+#         fixed what I think is an error, replaced 'categorylist' : [tc] w/ 'categorylist' : categorylist
+
 
         column_dict_list.append(column_dict.copy())
 
@@ -996,7 +1009,7 @@ class AutoMunge:
   
   
   def process_time_class(self, mdf_train, mdf_test, column, category):
-
+    '''
     #process_time_class(mdf_train, mdf_test, column, category)
     #preprocess column with time classifications
     #takes as arguement two pandas dataframe containing training and test data respectively 
@@ -1012,7 +1025,8 @@ class AutoMunge:
     #returns two transformed dataframe (mdf_train, mdf_test) and column_dict_list
 
     #if only have training but not test data handy, use same training data for both dataframe inputs
-
+    '''
+    
     #store original column for later retrieval
     mdf_train[column + '_temp'] = mdf_train[column].copy()
     mdf_test[column + '_temp'] = mdf_test[column].copy()
@@ -1202,7 +1216,10 @@ class AutoMunge:
   
   
   def process_bxcx_class(self, mdf_train, mdf_test, column, category):
-
+    '''
+    Applies Box-Cox transform to an all-positive numerical set.
+    '''
+    
     #df_train, nmbrcolumns, nmbrnormalization_dict, categorylist = \
     mdf_train, column_dict_list = \
     self.process_bxcx_support(mdf_train, column, category, 1, bxcx_lmbda = None, \
@@ -1227,9 +1244,7 @@ class AutoMunge:
   
   def process_bxcx_support(self, df, column, category, bxcxerrorcorrect, \
                           bxcx_lmbda = None, trnsfrm_mean = None):
-                          
-                           #bxcx_lmbda = None, trnsfrm_mean = None, trnsfrm_std = None):
-
+    '''                      
     #process_bxcx_class(df, column, bxcx_lmbda = None, trnsfrm_mean = None, trnsfrm_std = None)
     #function that takes as input a dataframe with numnerical column for purposes
     #of applying a box-cox transformation. If lmbda = None it will infer a suitable
@@ -1242,7 +1257,8 @@ class AutoMunge:
 
     #expect this approach works better than our prior numerical address when the 
     #distribution is less thin tailed
-
+    '''
+    
     #store original column for later reversion
     df[column + '_temp'] = df[column].copy()
 
@@ -1338,13 +1354,13 @@ class AutoMunge:
   
   
   def process_bins_class(self, mdf_train, mdf_test, column, category):
-    
+    '''
     #processes a numerical set by creating bins coresponding to post z score
     #normalization of <-2, -2-1, -10, 01, 12, >2 in one hot encoded columns
     
     #bins will be intended for a raw set that is not normalized
     #bint will be intended for a previously normalized set
-
+    '''
 
     #store original column for later reversion
     mdf_train[column + '_temp'] = mdf_train[column].copy()
@@ -1402,7 +1418,8 @@ class AutoMunge:
 #     textcolumns = postprocess_dict['column_dict'][columnkey]['columnslist']
     
     tempkey = 'tempkey'
-    temppostprocess_dict = {'column_dict' : {tempkey : {'columnslist' : textcolumns}}}
+    temppostprocess_dict = {'column_dict' : {tempkey : {'columnslist' : textcolumns,\
+                                                        'categorylist' : textcolumns}}}
     
     #process bins as a categorical set
     mdf_train = \
@@ -1462,14 +1479,14 @@ class AutoMunge:
   
   
   def process_bint_class(self, mdf_train, mdf_test, column, category):
-    
+    '''
     #processes a numerical set by creating bins coresponding to post z score
     #normalization of <-2, -2-1, -10, 01, 12, >2 in one hot encoded columns
     
     #bins will be intended for a raw set that is not normalized
     #bint will be intended for a previously z-score normalized set
     #with mean 0 and std 1
-
+    '''
 
     #store original column for later reversion
     mdf_train[column + '_temp'] = mdf_train[column].copy()
@@ -1528,7 +1545,8 @@ class AutoMunge:
 #     textcolumns = postprocess_dict['column_dict'][columnkey]['columnslist']
     
     tempkey = 'tempkey'
-    temppostprocess_dict = {'column_dict' : {tempkey : {'columnslist' : textcolumns}}}
+    temppostprocess_dict = {'column_dict' : {tempkey : {'columnslist' : textcolumns, \
+                                                        'categorylist' : textcolumns}}}
     
     #process bins as a categorical set
     mdf_train = \
@@ -1588,9 +1606,10 @@ class AutoMunge:
   
   
   def process_null_class(self, df, column, category):
-
+    '''
     #here we'll delete any columns that returned a 'null' category
     #note this is a. singleprocess transform
+    '''
     
     df = df.drop([column], axis=1)
 
@@ -1620,7 +1639,7 @@ class AutoMunge:
 
 
   def evalcategory(self, df, column, numbercategoryheuristic):
-
+    '''
     #evalcategory(df, column)
     #Function that dakes as input a dataframe and associated column id \
     #evaluates the contents of cells and classifies the column into one of four categories
@@ -1631,7 +1650,7 @@ class AutoMunge:
     #category 5, 'date', is for columns with Timestamp data
     #category 6, 'null', is for columns with >85% null values (arbitrary figure)
     #returns category id as a string
-
+    '''
 
     #I couldn't find a good pandas tool for evaluating data class, \
     #So will produce an array containing data types of each cell and \
@@ -1804,14 +1823,15 @@ class AutoMunge:
 
 
   def NArows(self, df, column, category):
-
+    '''
     #NArows(df, column), function that when fed a dataframe, \
     #column id, and category label outputs a single column dataframe composed of \
     #True and False with the same number of rows as the input and the True's \
     #coresponding to those rows of the input that had missing or NaN data. This \
     #output can later be used to identify which rows for a column to infill with ML\
     # derived plug data
-
+    '''
+    
     if category == 'text':
 
       #returns dataframe of True and False, where True coresponds to the NaN's
@@ -1855,7 +1875,7 @@ class AutoMunge:
 
 
   def labelbinarizercorrect(self, npinput, columnslist):
-
+    '''
     #labelbinarizercorrect(npinput, columnslist), function that takes as input the output\
     #array from scikit learn's LabelBinarizer() and ensures that the re-encoding is\
     #consistent with the original array prior to performing the argmax. This is \
@@ -1864,7 +1884,7 @@ class AutoMunge:
     #my understanding. For a large enough dataset this probably won't be an issue \
     #but just trying to be thorough. Outputs a one-hot encoded array comparable to \
     #the format of our input to argmax.
-
+    '''
 
     #if our array post application of LabelBinarizer has few coloumns than our \
     #column list then run through these loops
@@ -1901,7 +1921,7 @@ class AutoMunge:
   def predictinfill(self, category, df_train_filltrain, df_train_filllabel, \
                     df_train_fillfeatures, df_test_fillfeatures, randomseed, \
                     columnslist = []):
-
+    '''
     #predictinfill(category, df_train_filltrain, df_train_filllabel, \
     #df_train_fillfeatures, df_test_fillfeatures, randomseed, columnslist), \
     #function that takes as input \
@@ -1914,7 +1934,8 @@ class AutoMunge:
 
     #a reasonable extension of this funciton would be to allow ML inference with \
     #other ML architectures such a SVM or something SGD based for instance
-
+    '''
+    
     #convert dataframes to numpy arrays
     np_train_filltrain = df_train_filltrain.values
     np_train_filllabel = df_train_filllabel.values
@@ -1937,7 +1958,7 @@ class AutoMunge:
         #model = RidgeCV()
         #note that SVR doesn't have an argument for random_state
         #model = SVR()
-        model = RandomForestRegressor(random_state = randomseed, verbose=0)
+        model = RandomForestRegressor(n_estimators=100, random_state = randomseed, verbose=0)
 
         model.fit(np_train_filltrain, np_train_filllabel)    
 
@@ -1992,7 +2013,7 @@ class AutoMunge:
         #model = LogisticRegression(random_state = randomseed)
         #model = SGDClassifier(random_state = randomseed)
         #model = SVC(random_state = randomseed)
-        model = RandomForestClassifier(random_state = randomseed, verbose=0)
+        model = RandomForestClassifier(n_estimators=100, random_state = randomseed, verbose=0)
 
         model.fit(np_train_filltrain, np_train_filllabel)
 
@@ -2022,7 +2043,7 @@ class AutoMunge:
         #model = LogisticRegression()
         #model = SGDClassifier(random_state = randomseed)
         #model = SVC(random_state = randomseed)
-        model = RandomForestClassifier(random_state = randomseed, verbose=0)
+        model = RandomForestClassifier(n_estimators=100, random_state = randomseed, verbose=0)
 
         model.fit(np_train_filltrain, np_train_filllabel_argmax)
 
@@ -2105,7 +2126,7 @@ class AutoMunge:
 
   def createMLinfillsets(self, df_train, df_test, column, trainNArows, testNArows, \
                          category, columnslist = [], categorylist = []):
-
+    '''
     #update createMLinfillsets as follows:
     #instead of diferientiation by category, do a test for whether categorylist = []
     #if so do a single column transform excluding those other columns from columnslist
@@ -2121,7 +2142,7 @@ class AutoMunge:
     #that had missing values from the original sets, indlucing returns of \
     #df_train_filltrain, df_train_filllabel, df_train_fillfeatures, \
     #and df_test_fillfeatures
-
+    '''
 
 
     #create 3 new dataframes for each train column - the train and labels \
@@ -2130,7 +2151,7 @@ class AutoMunge:
     
     #categories are nmbr, bnry, text, date, bxcx, bins, bint, NArw, null
     #if category in ['nmbr', 'bxcx', 'bnry', 'text', 'bins', 'bint']:
-
+    
     if category in ['nmbr', 'bxcx', 'bnry', 'text', 'bins', 'bint']:
 
       #if this is a single column set (not categorical)
@@ -2271,7 +2292,7 @@ class AutoMunge:
 
   def insertinfill(self, df, column, infill, category, NArows, columnslist = [], \
                    categorylist = []):
-
+    '''
     #insertinfill(df, column, infill, category, NArows, columnslist = [])
     #function that takes as input a dataframe, column id, category string of either\
     #'nmbr'/'text'/'bnry'/'date', a df column of True/False identifiying row id of\
@@ -2279,7 +2300,8 @@ class AutoMunge:
     #class preprocessor when applicable. Replaces the column cells in rows \
     #coresponding to the NArows True values with the values from infill, returns\
     #the associated transformed dataframe.
-
+    '''
+    
     #NArows column name uses original column name + _NArows as key
     #by convention, current column has original column name + '_ctgy' at end
     #so we'll drop final 5 characters from column string
@@ -2373,12 +2395,14 @@ class AutoMunge:
 
 
           #now we'll delete temporary support columns associated with textcolumnname
-          infill = infill.drop([textcolumnname + '_bool'], axis=1)
-          infill = infill.drop(['tempindex1'], axis=1)
+          
+          #for some reason these infill drops are returning performance warnings
+          #but since this function doesn't even return infill I'm just going to leave out
+#           infill = infill.drop([textcolumnname + '_bool'], axis=1)
+#           infill = infill.drop(['tempindex1'], axis=1)
+          
           df = df.drop(['textNArows'], axis=1)
           df = df.drop(['tempindex1'], axis=1)
-
-
 
 
     if category == 'date':
@@ -2394,7 +2418,7 @@ class AutoMunge:
 
   def MLinfillfunction (self, df_train, df_test, column, postprocess_dict, \
                         masterNArows_train, masterNArows_test, randomseed):
-
+    '''
     #new function ML infill, generalizes the MLinfill application between categories
 
     #def MLinfill (df_train, df_test, column, postprocess_dict, \
@@ -2408,7 +2432,7 @@ class AutoMunge:
     #the functions so we're going to maintain that approach for now
     #the revision of these functions to accept pandas series is a
     #possible future extension
-
+    '''
 
     if postprocess_dict['column_dict'][column]['infillcomplete'] == False \
     and postprocess_dict['column_dict'][column]['category'] not in ['date']:
@@ -2482,11 +2506,11 @@ class AutoMunge:
 
 
   def LabelSetGenerator(self, df, column, label):
-
+    '''
     #LabelSetGenerator
     #takes as input dataframe for test set, label column name, and label
     #returns a dataframe set of all rows which included that label in the column
-
+    '''
 
     df = df[df[column] == label]
 
@@ -2495,7 +2519,7 @@ class AutoMunge:
 
 
   def LabelFrequencyLevelizer(self, train_df, labels_df, labelsencoding_dict):
-
+    '''
     #LabelFrequencyLevelizer(.)
     #takes as input dataframes for train set, labels, and label category
     #combines them to single df, then creates sets for each label category
@@ -2503,7 +2527,7 @@ class AutoMunge:
     #frequency of label occurence in training set (increases the size
     #of the training set by redundant inclusion of rows with lower frequency
     #labels.) Returns train_df, labels_df, trainID_df.
-
+    '''
 
     columns_labels = list(labels_df)
 
@@ -2662,7 +2686,7 @@ class AutoMunge:
                 forcetocategoricalcolumns = [], numbercategoryheuristic = 0.000, \
                 excludetransformscolumns = []):
 
-
+    '''
     #automunge(df_train, df_test, labels_column, valpercent=0.20, powertransform = True, \
     #MLinfill = True, infilliterate=1, randomseed = 42, excludetransformscolumns = []) \
     #Function that when fed a train and test data set automates the process \
@@ -2702,7 +2726,7 @@ class AutoMunge:
 
     #An extension could be to test the input data here for non-dataframe format \
     #(such as csv) to convert it to pandas within the function. 
-    
+    '''
     
     #initialize processing dicitonaries
     transform_dict = \
@@ -3372,9 +3396,9 @@ class AutoMunge:
         trainID_df = pd.DataFrame(train_df[trainID_column])
         del train_df[trainID_column]
       
-      #troubleshoot
-      print("final train columns")
-      print(list(train_df))
+#       #troubleshoot
+#       print("final train columns")
+#       print(list(train_df))
       
       
       #convert levelized train sets to Numpy arrays
@@ -3409,7 +3433,7 @@ class AutoMunge:
                              'numbercategoryheuristic' : numbercategoryheuristic, \
                              'excludetransformscolumns' : excludetransformscolumns,\
                              'labelsencoding_dict' : labelsencoding_dict, \
-                             'automungeversion' : '1.73' })
+                             'automungeversion' : '1.74' })
 
 
 
@@ -3479,12 +3503,12 @@ class AutoMunge:
 
   def postprocessancestors(self, df_test, column, category, origcategory, process_dict, \
                           transform_dict, postprocess_dict, columnkey):
-    
+    '''
     #as automunge runs a for loop through each column in automunge, this is the  
     #processing function applied which runs through the grandparents family primitives
     #populated in the transform_dict by assembletransformdict, only applied to
     #first generation of transforms (others are recursive through the processfamily function)
-    
+    '''
     
     
     #process the grandparents (no downstream, supplemental, only applied ot first generation)
@@ -3517,7 +3541,11 @@ class AutoMunge:
 
   def postprocessfamily(self, df_test, column, category, origcategory, process_dict, \
                         transform_dict, postprocess_dict, columnkey):
-  
+    '''
+    #as automunge runs a for loop through each column in automunge, this is the  
+    #processing function applied which runs through the family primitives
+    #populated in the transform_dict by assembletransformdict.
+    '''
   
 #     print("postprocessfamily")
 #     print("column = ", column)
@@ -3580,6 +3608,9 @@ class AutoMunge:
   
   def postcircleoflife(self, df_test, column, category, origcategory, process_dict, \
                         transform_dict, postprocess_dict, columnkey):
+    '''
+    This functino deletes source columns for family primitives that included replacement.
+    '''
     
     #if we had replacement transformations performed on first generation \
     #then delete the original column
@@ -3613,7 +3644,7 @@ class AutoMunge:
   
   def postprocesscousin(self, df_test, column, cousin, origcategory, process_dict, \
                        transform_dict, postprocess_dict, columnkey):
-  
+    
     #if this is a dual process function
     if process_dict[cousin]['postprocess'] != None:
       df_test = \
@@ -3724,7 +3755,7 @@ class AutoMunge:
   
   
   def postprocess_numerical_class(self, mdf_test, column, postprocess_dict, columnkey):
-
+    '''
     #postprocess_numerical_class(mdf_test, column, postprocess_dict, columnkey)
     #function to normalize data to mean of 0 and standard deviation of 1 from training distribution
     #takes as arguement pandas dataframe of training and test data (mdf_train), (mdf_test)\
@@ -3736,7 +3767,7 @@ class AutoMunge:
 
     #expect this approach works better when the numerical distribution is thin tailed
     #if only have training but not test data handy, use same training data for both dataframe inputs
-    
+    '''
     
     
     #retrieve normalizastion parameters from postprocess_dict
@@ -3775,7 +3806,7 @@ class AutoMunge:
   
   
   def postprocess_binary_class(self, mdf_test, column, postprocess_dict, columnkey):
-
+    '''
     #postprocess_binary_class(mdf, column, postprocess_dict, columnkey)
     #converts binary classification values to 0 or 1
     #takes as arguement a pandas dataframe (mdf_test), \
@@ -3787,7 +3818,8 @@ class AutoMunge:
 
     #missing category must be identical to one of the two existing categories
     #returns error message if more than two categories remain
-
+    '''
+    
     #retrieve normalization parameters
     normkey = column + '_bnry'
     binary_missing_plug = \
@@ -3823,7 +3855,7 @@ class AutoMunge:
   
   def postprocess_text_class(self, mdf_test, column, postprocess_dict, columnkey):
 
-
+    '''
     #postprocess_text_class(mdf_test, column, postprocess_dict, columnkey)
     #process column with text classifications
     #takes as arguement pandas dataframe containing test data  
@@ -3843,7 +3875,8 @@ class AutoMunge:
     #ensures order of all new columns consistent between both sets
     #returns two transformed dataframe (mdf_train, mdf_test) \
     #and a list of the new column names (textcolumns)
-
+    '''
+    
     #note it is kind of a hack here to create a column for missing values with \
     #two underscores (__) in the column name to ensure appropriate order for cases\
     #where NaN present in test data but not train data, if a category starts with|
@@ -3861,8 +3894,9 @@ class AutoMunge:
     #by pulling the categorylist instead of columnslist (noting that will require
     #a more exact evaluation for columnkey somehow)
     
-    textcolumns = postprocess_dict['column_dict'][columnkey]['columnslist']
-    #textcolumns = postprocess_dict['column_dict'][columnkey]['categorylist']
+    
+    #textcolumns = postprocess_dict['column_dict'][columnkey]['columnslist']
+    textcolumns = postprocess_dict['column_dict'][columnkey]['categorylist']
     
     
     
@@ -3873,11 +3907,17 @@ class AutoMunge:
     #convert column to category
     mdf_test[column] = mdf_test[column].astype('category')
 
+#     #if set is categorical we'll need the plug value for missing values included
+#     mdf_test[column] = mdf_test[column].cat.add_categories(['NArw'])
+
+#     #replace NA with a dummy variable
+#     mdf_test[column] = mdf_test[column].fillna('NArw')
+    
     #if set is categorical we'll need the plug value for missing values included
-    mdf_test[column] = mdf_test[column].cat.add_categories(['NArw'])
+    mdf_test[column] = mdf_test[column].cat.add_categories(['NAr2'])
 
     #replace NA with a dummy variable
-    mdf_test[column] = mdf_test[column].fillna('NArw')
+    mdf_test[column] = mdf_test[column].fillna('NAr2')
 
     #replace numerical with string equivalent
     #mdf_train[column] = mdf_train[column].astype(str)
@@ -3906,7 +3946,7 @@ class AutoMunge:
 
 
     #apply onehotencoding
-    onehotencoder = OneHotEncoder()
+    onehotencoder = OneHotEncoder(categories='auto')
     cat_test_1hot = onehotencoder.fit_transform(cat_test_encoded.reshape(-1,1))
 
     #append column header name to each category listing
@@ -3938,10 +3978,10 @@ class AutoMunge:
     mdf_test[column] = mdf_test[column + '_temp'].copy()
     del mdf_test[column + '_temp']
     
-#     #delete support NArw2 column
-#     columnNAr2 = column + '_NAr2'
-#     if columnNAr2 in list(mdf_test):
-#       del mdf_test[columnNAr2]
+    #delete support NArw2 column
+    columnNAr2 = column + '_NAr2'
+    if columnNAr2 in list(mdf_test):
+      del mdf_test[columnNAr2]
 
     #change data types to 8-bit (1 byte) integers for memory savings
     for textcolumn in textcolumns:
@@ -3956,7 +3996,7 @@ class AutoMunge:
   
   def postprocess_time_class(self, mdf_test, column, postprocess_dict, columnkey):
 
-
+    '''
     #postprocess_time_class(mdf_test, column, postprocess_dict, columnkey)
     #postprocess test column with of date category
     #takes as arguement pandas dataframe containing test data 
@@ -3970,7 +4010,8 @@ class AutoMunge:
     #with missing values plugged with the mean
     #with columns named after column_ + time category
     #returns two transformed dataframe (mdf_train, mdf_test)
-
+    '''
+    
     #retrieve normalization parameters from postprocess_dict
     normkey1 = column+'_year'
     normkey2 = column+'_month'
@@ -4183,7 +4224,9 @@ class AutoMunge:
   
   
   def postprocess_bxcx_class(self, mdf_test, column, postprocess_dict, columnkey):
-
+    '''
+    Applies box-cox method within postmunge function.
+    '''
   #   #df_train, nmbrcolumns, nmbrnormalization_dict, categorylist = \
   #   mdf_train, column_dict_list = \
   #   self.process_bxcx_support(mdf_train, column, category, 1, bxcx_lmbda = None, \
@@ -4218,7 +4261,7 @@ class AutoMunge:
   
   
   def postprocess_bins_class(self, mdf_test, column, postprocess_dict, columnkey):
-
+    '''
     #note that bins is intended for raw data that has not yet been nromalized
     #bint is intended for values that have already recieved z-score normalization
     
@@ -4235,7 +4278,8 @@ class AutoMunge:
 
     #expect this approach works better when the numerical distribution is thin tailed
     #if only have training but not test data handy, use same training data for both dataframe inputs
-
+    '''
+    
     #retrieve normalization parameters from postprocess_dict
     normkey = column +'_bins_s<-2'
     mean = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binsmean']
@@ -4284,7 +4328,8 @@ class AutoMunge:
 #     textcolumns = postprocess_dict['column_dict'][columnkey]['columnslist']
     
     tempkey = 'tempkey'
-    temppostprocess_dict = {'column_dict' : {tempkey : {'columnslist' : textcolumns}}}
+    temppostprocess_dict = {'column_dict' : {tempkey : {'columnslist' : textcolumns, \
+                                                       'categorylist' : textcolumns}}}
     
     #process bins as a categorical set
     mdf_test = \
@@ -4316,7 +4361,7 @@ class AutoMunge:
   
   
   def postprocess_bint_class(self, mdf_test, column, postprocess_dict, columnkey):
-
+    '''
     #note that bins is intended for raw data that has not yet been nromalized
     #bint is intended for values that have already recieved z-score normalization
     
@@ -4333,7 +4378,8 @@ class AutoMunge:
 
     #expect this approach works better when the numerical distribution is thin tailed
     #if only have training but not test data handy, use same training data for both dataframe inputs
-
+    '''
+    
     #retrieve normalization parameters from postprocess_dict
     normkey = column + '_bint_t<-2'
     mean = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bintmean']
@@ -4382,7 +4428,8 @@ class AutoMunge:
 #     textcolumns = postprocess_dict['column_dict'][columnkey]['columnslist']
     
     tempkey = 'tempkey'
-    temppostprocess_dict = {'column_dict' : {tempkey : {'columnslist' : textcolumns}}}
+    temppostprocess_dict = {'column_dict' : {tempkey : {'columnslist' : textcolumns, \
+                                                        'categorylist' : textcolumns}}}
     
     #process bins as a categorical set
     mdf_test = \
@@ -4419,10 +4466,7 @@ class AutoMunge:
 
   def createpostMLinfillsets(self, df_test, column, testNArows, category, \
                              columnslist = [], categorylist = []):
-
-    
-    
-    
+    '''
     #createpostMLinfillsets(df_test, column, testNArows, category, \
     #columnslist = []) function that when fed dataframe of
     #test set, column id, df of True/False corresponding to rows from original \
@@ -4433,6 +4477,7 @@ class AutoMunge:
     #original automunge application to predict apppropriate infill values for those\
     #points that had missing values from the original sets, returning the dataframe\
     #df_test_fillfeatures
+    '''
 
     if category in ['nmbr', 'bxcx', 'bnry', 'text', 'bins', 'bint']:
 
@@ -4573,7 +4618,7 @@ class AutoMunge:
 
   def predictpostinfill(self, category, model, df_test_fillfeatures, \
                         columnslist = []):
-
+    '''
     #predictpostinfill(category, model, df_test_fillfeatures, \
     #columnslist = []), function that takes as input \
     #a category string, a model trained as part of automunge on the coresponding \
@@ -4586,7 +4631,8 @@ class AutoMunge:
 
     #a reasonable extension of this funciton would be to allow ML inference with \
     #other ML architectures such a SVM or something SGD based for instance
-
+    '''
+    
     #convert dataframes to numpy arrays
   #   np_train_filltrain = df_train_filltrain.values
   #   np_train_filllabel = df_train_filllabel.values
@@ -4764,7 +4810,7 @@ class AutoMunge:
   def postMLinfillfunction(self, df_test, column, postprocess_dict, \
                             masterNArows_test):
 
-
+    '''
     #new function ML infill, generalizes the MLinfill application
 
     #def MLinfill (df_train, df_test, column, postprocess_dict, \
@@ -4778,7 +4824,8 @@ class AutoMunge:
     #the functions so we're going to maintain that approach for now
     #the revision of these functions to accept pandas series is a
     #possible future extension
-
+    '''
+    
     if postprocess_dict['column_dict'][column]['infillcomplete'] == False \
     and postprocess_dict['column_dict'][column]['category'] not in ['date']:
 
@@ -4827,7 +4874,7 @@ class AutoMunge:
 
 
   def postmunge(self, postprocess_dict, df_test, testID_column = False):
-
+    '''
     #postmunge(df_test, testID_column, postprocess_dict) Function that when fed a \
     #test data set coresponding to a previously processed train data set which was \
     #processed using the automunge function automates the process \
@@ -4844,7 +4891,7 @@ class AutoMunge:
     #Currently assumes coinbsistent columns carved out from application of munging \
     #from original automunge, a potential future extension is to allow for additional \
     #columns to be excluded from processing.
-    
+    '''
     
     #initialize processing dicitonaries
     powertransform = postprocess_dict['powertransform']
