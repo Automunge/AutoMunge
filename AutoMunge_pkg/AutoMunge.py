@@ -872,7 +872,7 @@ class AutoMunge:
 
 
     #apply onehotencoding
-    onehotencoder = OneHotEncoder(categories='auto')
+    onehotencoder = OneHotEncoder()
     cat_train_1hot = onehotencoder.fit_transform(cat_train_encoded.reshape(-1,1))
     cat_test_1hot = onehotencoder.fit_transform(cat_test_encoded.reshape(-1,1))
 
@@ -3433,7 +3433,7 @@ class AutoMunge:
                              'numbercategoryheuristic' : numbercategoryheuristic, \
                              'excludetransformscolumns' : excludetransformscolumns,\
                              'labelsencoding_dict' : labelsencoding_dict, \
-                             'automungeversion' : '1.74' })
+                             'automungeversion' : '1.75' })
 
 
 
@@ -3946,7 +3946,7 @@ class AutoMunge:
 
 
     #apply onehotencoding
-    onehotencoder = OneHotEncoder(categories='auto')
+    onehotencoder = OneHotEncoder()
     cat_test_1hot = onehotencoder.fit_transform(cat_test_encoded.reshape(-1,1))
 
     #append column header name to each category listing
