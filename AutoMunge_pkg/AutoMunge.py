@@ -2684,7 +2684,7 @@ class AutoMunge:
                 shuffletrain = True, TrainLabelFreqLevel = True, powertransform = True, \
                 binstransform = True, MLinfill = True, infilliterate=1, randomseed = 42, \
                 forcetocategoricalcolumns = [], numbercategoryheuristic = 0.000, \
-                excludetransformscolumns = []):
+                excludetransformscolumns = [], pandasoutput = False):
 
     '''
     #automunge(df_train, df_test, labels_column, valpercent=0.20, powertransform = True, \
@@ -2809,8 +2809,62 @@ class AutoMunge:
     #extract column lists again but this time as a list
     columns_train = list(df_train)
     columns_test = list(df_test)
+    
+    
+    #carve out the validation rows
+    
+    #set randomness seed number
+    answer = randomseed
+
+    #first shuffle if that was selected
+    
+    if shuffletrain == True:
+      #shuffle training set and labels
+      df_train = shuffle(df_train, random_state = answer)
+      df_labels = shuffle(df_labels, random_state = answer)
+  #     df_train = shuffle(df_train, random_state = answer)
+  #     df_labels = shuffle(df_labels, random_state = answer)
+
+      if trainID_column != False:
+        df_trainID = shuffle(df_trainID, random_state = answer)
+  #       df_trainID = shuffle(df_trainID, random_state = answer)
+
+    
+    #ok now carve out the validation rows. We'll process these later
+    #(we're processing train data from validation data seperately to
+    #ensure no leakage)
+
+    totalvalidationratio = valpercent1 + valpercent2
+    val2ratio = valpercent2 / totalvalidationratio
+
+    if totalvalidationratio > 0.0:
+
+      if labels_column != False:
+        #split validation1 sets from training and labels
+        df_train, df_validation1, df_labels, df_validationlabels1 = \
+        train_test_split(df_train, df_labels, test_size=totalvalidationratio, \
+                         shuffle = False)
+      else:
+        df_train, df_validation1 = \
+        train_test_split(df_train, test_size=totalvalidationratio, shuffle = False)
+        df_validationlabels1 = df_labels
 
 
+
+      if trainID_column != False:
+        df_trainID, df_validationID1 = \
+        train_test_split(df_trainID, test_size=totalvalidationratio, shuffle = False)
+  #       df_trainID, df_validationID1 = \
+  #       train_test_split(df_trainID, test_size=valpercent1, shuffle = False)
+
+
+      else:
+        df_trainID = pd.DataFrame()
+        df_validationID1 = pd.DataFrame()
+
+        
+        
+        
     #create an empty dataframe to serve as a store for each column's NArows
     #the column id's for this df will follow convention from NArows of 
     #column+'_NArows' for each column in columns_train
@@ -2830,7 +2884,11 @@ class AutoMunge:
     #column post processing, and will contain a column specific and category \
     #specific (i.e. nmbr, bnry, text, date) set of variable.
     postprocess_dict = {'column_dict' : {}}
-
+    
+    
+    #troubleshoot
+    print("df_train")
+    print(df_train)
 
     #For each column, determine appropriate processing function
     #processing function will be based on evaluation of train set
@@ -2899,7 +2957,9 @@ class AutoMunge:
 
         #so if we didn't delete the column let's proceed
         else:
-
+          
+          #troubleshoot
+          print('process column = ', column)
 
           #create NArows (column of True/False where True coresponds to missing data)
           trainNArows = self.NArows(df_train, column, category)
@@ -3244,113 +3304,113 @@ class AutoMunge:
     finalcolumns_train = list(df_train)
     finalcolumns_test = list(df_test)
 
+    #asdf
+#     #convert all of our dataframes to numpy arrays (train, test, labels, and ID)
+#     #    df_trainID, df_testID
+#     np_train = df_train.values
+#     np_test = df_test.values
+#     np_labels = df_labels.values
 
-    #convert all of our dataframes to numpy arrays (train, test, labels, and ID)
-    #    df_trainID, df_testID
-    np_train = df_train.values
-    np_test = df_test.values
-    np_labels = df_labels.values
-
-    if trainID_column != False:
-      np_trainID = df_trainID.values
-    if testID_column != False:
-      np_testID = df_testID.values
-
-
-    #set randomness seed number
-    answer = randomseed
-    #a reasonable extension would be to tie this in with randomness seed for \
-    #ML infill methods calls to scikit learn
+#     if trainID_column != False:
+#       np_trainID = df_trainID.values
+#     if testID_column != False:
+#       np_testID = df_testID.values
 
 
-    if shuffletrain == True:
-      #shuffle training set and labels
-      np_train = shuffle(np_train, random_state = answer)
-      np_labels = shuffle(np_labels, random_state = answer)
-  #     df_train = shuffle(df_train, random_state = answer)
-  #     df_labels = shuffle(df_labels, random_state = answer)
-
-      if trainID_column != False:
-        np_trainID = shuffle(np_trainID, random_state = answer)
-  #       df_trainID = shuffle(df_trainID, random_state = answer)
+#     #set randomness seed number
+#     answer = randomseed
+#     #a reasonable extension would be to tie this in with randomness seed for \
+#     #ML infill methods calls to scikit learn
 
 
+#     if shuffletrain == True:
+#       #shuffle training set and labels
+#       np_train = shuffle(np_train, random_state = answer)
+#       np_labels = shuffle(np_labels, random_state = answer)
+#   #     df_train = shuffle(df_train, random_state = answer)
+#   #     df_labels = shuffle(df_labels, random_state = answer)
+
+#       if trainID_column != False:
+#         np_trainID = shuffle(np_trainID, random_state = answer)
+#   #       df_trainID = shuffle(df_trainID, random_state = answer)
 
 
 
 
-    totalvalidationratio = valpercent1 + valpercent2
-    val2ratio = valpercent2 / totalvalidationratio
-
-    if totalvalidationratio > 0.0:
-
-      if labels_column != False:
-        #split validation1 sets from training and labels
-        np_train, np_validation1, np_labels, np_validationlabels1 = \
-        train_test_split(np_train, np_labels, test_size=totalvalidationratio, \
-                         shuffle = False)
-      else:
-        np_train, np_validation1 = \
-        train_test_split(np_train, test_size=totalvalidationratio, shuffle = False)
-        np_validationlabels1 = np_labels
 
 
+#     totalvalidationratio = valpercent1 + valpercent2
+#     val2ratio = valpercent2 / totalvalidationratio
 
-      if trainID_column != False:
-        np_trainID, np_validationID1 = \
-        train_test_split(np_trainID, test_size=totalvalidationratio, shuffle = False)
-  #       df_trainID, df_validationID1 = \
-  #       train_test_split(df_trainID, test_size=valpercent1, shuffle = False)
+#     if totalvalidationratio > 0.0:
 
-
-      else:
-        np_trainID = []
-        np_validationID1 = []
+#       if labels_column != False:
+#         #split validation1 sets from training and labels
+#         np_train, np_validation1, np_labels, np_validationlabels1 = \
+#         train_test_split(np_train, np_labels, test_size=totalvalidationratio, \
+#                          shuffle = False)
+#       else:
+#         np_train, np_validation1 = \
+#         train_test_split(np_train, test_size=totalvalidationratio, shuffle = False)
+#         np_validationlabels1 = np_labels
 
 
 
-      if val2ratio > 0.0:
+#       if trainID_column != False:
+#         np_trainID, np_validationID1 = \
+#         train_test_split(np_trainID, test_size=totalvalidationratio, shuffle = False)
+#   #       df_trainID, df_validationID1 = \
+#   #       train_test_split(df_trainID, test_size=valpercent1, shuffle = False)
 
 
-        if labels_column != False:
-          #split validation2 sets from training and labels
-          np_validation1, np_validation2, np_validationlabels1, np_validationlabels2 = \
-          train_test_split(np_validation1, np_validationlabels1, test_size=val2ratio, \
-                           random_state = answer)
+#       else:
+#         np_trainID = []
+#         np_validationID1 = []
 
-        else:
+#     if totalvalidationratio > 0.0:
 
-          np_validation1, np_validation2 = \
-          train_test_split(np_validation1, test_size=val2ratio, \
-                           random_state = answer)
-
-          np_validationlabels2 = []
-
-        if trainID_column != False:
-          np_validationID1, np_validationID2 = \
-          train_test_split(np_trainID, test_size=val2ratio, random_state = answer)
-        else:
-          np_trainID = []
-          np_validationID2 = []
-
-      else:
-        np_validation2 = []
-        np_validationlabels2 = []
-        np_validationID2 = []
-
-    else:
-      np_validation1 = []
-      np_validationlabels1 = []
-      np_validationID1 = [] 
+#       if val2ratio > 0.0:
 
 
-    if testID_column != False:
-      np_testID = np_testID
-    else:
-      np_testID = []
+#         if labels_column != False:
+#           #split validation2 sets from training and labels
+#           np_validation1, np_validation2, np_validationlabels1, np_validationlabels2 = \
+#           train_test_split(np_validation1, np_validationlabels1, test_size=val2ratio, \
+#                            random_state = answer)
+
+#         else:
+
+#           np_validation1, np_validation2 = \
+#           train_test_split(np_validation1, test_size=val2ratio, \
+#                            random_state = answer)
+
+#           np_validationlabels2 = []
+
+#         if trainID_column != False:
+#           np_validationID1, np_validationID2 = \
+#           train_test_split(np_trainID, test_size=val2ratio, random_state = answer)
+#         else:
+#           np_trainID = []
+#           np_validationID2 = []
+
+#       else:
+#         np_validation2 = []
+#         np_validationlabels2 = []
+#         np_validationID2 = []
+
+#     else:
+#       np_validation1 = []
+#       np_validationlabels1 = []
+#       np_validationID1 = [] 
 
 
-    np_test = np_test
+#     if testID_column != False:
+#       np_testID = np_testID
+#     else:
+#       np_testID = []
+
+
+#     np_test = np_test
 
 
 
@@ -3401,21 +3461,30 @@ class AutoMunge:
 #       print(list(train_df))
       
       
-      #convert levelized train sets to Numpy arrays
-      np_train = train_df.values
-      np_labels = labels_df.values
+#       #convert levelized train sets to Numpy arrays
+#       np_train = train_df.values
+#       np_labels = labels_df.values
 
-      if trainID_column != False:
-        np_trainID = trainID_df.values
+#       if trainID_column != False:
+#         np_trainID = trainID_df.values
 
+#       #shuffle one more time as part of levelized label frequency
+#       if shuffletrain == True:
+#         #shuffle training set and labels
+#         np_train = shuffle(np_train, random_state = answer)
+#         np_labels = shuffle(np_labels, random_state = answer)
+
+#         if trainID_column != False:
+#           np_trainID = shuffle(np_trainID, random_state = answer)
+        
       #shuffle one more time as part of levelized label frequency
       if shuffletrain == True:
         #shuffle training set and labels
-        np_train = shuffle(np_train, random_state = answer)
-        np_labels = shuffle(np_labels, random_state = answer)
+        df_train = shuffle(df_train, random_state = answer)
+        df_labels = shuffle(df_labels, random_state = answer)
 
         if trainID_column != False:
-          np_trainID = shuffle(np_trainID, random_state = answer)
+          df_trainID = shuffle(df_trainID, random_state = answer)
 
 
 
@@ -3432,12 +3501,100 @@ class AutoMunge:
                              'forcetocategoricalcolumns' : forcetocategoricalcolumns, \
                              'numbercategoryheuristic' : numbercategoryheuristic, \
                              'excludetransformscolumns' : excludetransformscolumns,\
+                             'pandasoutput' : pandasoutput, \
                              'labelsencoding_dict' : labelsencoding_dict, \
-                             'automungeversion' : '1.75' })
+                             'automungeversion' : '1.76' })
+
+    
+    #asdf
+    
+    #process validation set consistent to train set with postmunge here
+    df_validation1, _2, _3, _4 = \
+    self.postmunge(postprocess_dict, df_validation1, testID_column = False, \
+                  pandasoutput = True)
+    
+    #process validation labels set consistent to train labels with postmunge
+    df_validationlabels1, _2, _3, _4 = \
+    self.postmunge(postprocess_dict, df_validationlabels1, testID_column = False, \
+                  pandasoutput = True)
+    
+    
+    
+    #ok now that validation is processed, carve out second validation set if one was elected
+    
+    if totalvalidationratio > 0.0:
+
+      if val2ratio > 0.0:
 
 
+        if labels_column != False:
+          #split validation2 sets from training and labels
+          df_validation1, df_validation2, df_validationlabels1, df_validationlabels2 = \
+          train_test_split(df_validationasdf1, df_validationlabels1, test_size=val2ratio, \
+                           random_state = answer)
+
+        else:
+
+          df_validation1, df_validation2 = \
+          train_test_split(df_validation1, test_size=val2ratio, \
+                           random_state = answer)
+
+          df_validationlabels2 = pd.DataFrame()
+
+        if trainID_column != False:
+          df_validationID1, df_validationID2 = \
+          train_test_split(df_validationID1, test_size=val2ratio, random_state = answer)
+        else:
+          df_trainID = pd.DataFrame()
+          df_validationID2 = pd.DataFrame()
+
+      else:
+        df_validation2 = pd.DataFrame()
+        df_validationlabels2 = pd.DataFrame()
+        df_validationID2 = pd.DataFrame()
+
+    else:
+      df_validation1 = pd.DataFrame()
+      df_validationlabels1 = pd.DataFrame()
+      df_validationID1 = pd.DataFrame()
 
 
+    if testID_column != False:
+      df_testID = df_testID
+    else:
+      df_testID = pd.DataFrame()
+
+
+    df_test = df_test
+
+    
+    #for reference
+#     return np_train, np_trainID, np_labels, np_validation1, np_validationID1, \
+#     np_validationlabels1, np_validation2, np_validationID2, np_validationlabels2, \
+#     np_test, np_testID, labelsencoding_dict, finalcolumns_train, finalcolumns_test,  \
+#     postprocess_dict
+
+    
+    #set output format based on pandasoutput argument
+    if pandasoutput == True:
+      np_train, np_trainID, np_labels, np_validation1, np_validationID1, \
+      np_validationlabels1, np_validation2, np_validationID2, np_validationlabels2, \
+      np_test, np_testID = \
+      df_train, df_trainID, df_labels, df_validation1, df_validationID1, \
+      df_validationlabels1, df_validation2, df_validationID2, df_validationlabels2, \
+      df_test, df_testID
+    
+    #else set output to numpy arrays
+    else:
+      np_train, np_trainID, np_labels, np_validation1, np_validationID1, \
+      np_validationlabels1, np_validation2, np_validationID2, np_validationlabels2, \
+      np_test, np_testID = \
+      df_train.values, df_trainID.values, df_labels.values, df_validation1.values, \
+      df_validationID1.values, \
+      df_validationlabels1.values, df_validation2.values, df_validationID2.values, \
+      df_validationlabels2.values, \
+      df_test.values, df_testID.values
+    
 
     #a reasonable extension would be to perform some validation functions on the\
     #sets here (or also prior to transofrm to numpuy arrays) and confirm things \
@@ -4873,7 +5030,8 @@ class AutoMunge:
 
 
 
-  def postmunge(self, postprocess_dict, df_test, testID_column = False):
+  def postmunge(self, postprocess_dict, df_test, testID_column = False, \
+                pandasoutput = False):
     '''
     #postmunge(df_test, testID_column, postprocess_dict) Function that when fed a \
     #test data set coresponding to a previously processed train data set which was \
@@ -5164,17 +5322,26 @@ class AutoMunge:
     #here's a list of final column names saving here since the translation to \
     #numpy arrays scrubs the column names
     finalcolumns_test = list(df_test)
+    
+    #determine output type based on pandasoutput argument
+    if pandasoutput == True:
+      #global processing to test set including conversion to numpy array
+      test = df_test
 
-    #global processing to test set including conversion to numpy array
-    np_test = df_test.values
-
-    if testID_column != False:
-      np_testID = df_testID.values
-      testID = np_testID
+      if testID_column != False:
+        testID = df_testID
+      else:
+        testID = pd.DataFrame()
+    
+    #else output numpy arrays
     else:
-      testID = []
+      #global processing to test set including conversion to numpy array
+      test = df_test.values
 
-    test = np_test
+      if testID_column != False:
+        testID = df_testID.values
+      else:
+        testID = []
 
     labelsencoding_dict = postprocess_dict['labelsencoding_dict']
 
