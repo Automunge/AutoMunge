@@ -4,15 +4,15 @@ AutoMunge is a tool for automating the final steps of data wrangling prior to th
 application of machine learning. The automunge(.) function processes structured training 
 data and if available consistently formatted test data that can then be used to generate 
 predictions from a trained downstream model. When fed pandas dataframes for these sets the
-function returns transformed numpy arrays numerically encoded, with feature 
-transformations such as z score normalization, standard deviation bins for numerical sets,
-box-cox power law transform for all positive numerical sets, one-hot encoding for 
-categorical sets, and more (full documentation below). Missing data points in the set are 
-also addressed by the "ML infill" method which predict infill using machine learning 
-models trained on the rest of the set in a fully generalized and automated fashion. 
-automunge(.) also returns a python dictionary which can be used as an input along
-with a subsequent test data set to the function postmunge(.) for  consistent processing of
-test data which wasn't available for the initial address.
+function returns transformed numpy arrays or pandas dataframes (depending on selection) 
+which are numerically encoded, with feature transformations such as z score normalization, 
+standard deviation bins for numerical sets, box-cox power law transform for all positive 
+numerical sets, one-hot encoding for categorical sets, and more (full documentation below). 
+Missing data points in the set are also addressed by the "ML infill" method which predict 
+infill using machine learning models trained on the rest of the set in a fully generalized 
+and automated fashion. automunge(.) also returns a python dictionary which can be used as 
+an input along with a subsequent test data set to the function postmunge(.) for  consistent 
+processing of test data which wasn't available for the initial address.
 
 AutoMunge is now available for free pip install for your open source python data-wrangling
 
@@ -110,7 +110,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
             shuffletrain = True, TrainLabelFreqLevel = True, powertransform = True, \
             binstransform = True, MLinfill = True, infilliterate=1, randomseed = 42, \
             forcetocategoricalcolumns = [], numbercategoryheuristic = 0.000, \
-            excludetransformscolumns = []):
+            excludetransformscolumns = [], pandasoutput = False):
 
 
 Or for the postmunge function:
@@ -120,7 +120,7 @@ np_test, np_testID, labelsencoding_dict, finalcolumns_test \
 
 With the full set of arguments available to be passed as:
 
-am.postmunge(postprocess_dict, df_test, testID_column = False)
+am.postmunge(postprocess_dict, df_test, testID_column = False, pandasoutput = False)
 
 Note that the only required argument to the automunge function is the train set dataframe,
 the other arguments all have default values if nothing is passed. The postmunge function
@@ -198,7 +198,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
             shuffletrain = True, TrainLabelFreqLevel = True, powertransform = True, \
             binstransform = True, MLinfill = True, infilliterate=1, randomseed = 42, \
             forcetocategoricalcolumns = [], numbercategoryheuristic = 0.000, \
-            excludetransformscolumns = []):
+            excludetransformscolumns = [], pandasoutput = False):
             
 df_train: a pandas dataframe containing a structured dataset intended for use to train a 
 downstream machine learning model. The set at a minimum should be 'tidy' meaning a single 
@@ -294,6 +294,10 @@ subject to other feature engineering methods. Note that these excluded from tran
 columns will need to be numericallly encoded if the ML infill methods are to be applied to
 the other columns.
 
+pandasoutput: a selector for format of returned sets. Defaults to False for returned Numpy
+arrays. If set to True returns pandas dataframes (note that index is not preserved in the 
+train/validation split, an ID column may be passed for index identification).
+
 ...
 
 postmunge returned sets:
@@ -317,7 +321,7 @@ from automunge.
 
 postmunge(.) passed arguments
 
-am.postmunge(postprocess_dict, df_test, testID_column = False)
+am.postmunge(postprocess_dict, df_test, testID_column = False, pandasoutput = False)
 
 postprocess_dict: this is the dictionary returned from the initial application of 
 automunge which included normalization parameters to facilitate consistent processing of 
@@ -334,6 +338,10 @@ desired the set may include a row ID number.
 testID_column: a string of the column title for the column from the df_test set intended
 for use as a row identifier value (such as could be sequential numbers for instance). The 
 function defaults to False for cases where the training set does not include an ID column.
+
+pandasoutput: a selector for format of returned sets. Defaults to False for returned Numpy
+arrays. If set to True returns pandas dataframes (note that index is not preserved, an ID 
+column may be passed for index identification).
 
 ...
 
