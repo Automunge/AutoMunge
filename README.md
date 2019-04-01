@@ -124,8 +124,8 @@ am.postmunge(postprocess_dict, df_test, testID_column = False, pandasoutput = Fa
 
 Note that the only required argument to the automunge function is the train set dataframe,
 the other arguments all have default values if nothing is passed. The postmunge function
-requires as minimum the postprocess_dict, a python dictionary returned from the 
-application of automunge, and a dataframe test set consistently formatted as those sets 
+requires as minimum the postprocess_dict (a python dictionary returned from the 
+application of automunge) and a dataframe test set consistently formatted as those sets 
 that were originally applied to automunge.
 
 ...
