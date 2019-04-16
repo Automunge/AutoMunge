@@ -1,5 +1,7 @@
 # AutoMunge Package
 
+**please note that update of this document for version 1.77 is pending
+
 AutoMunge is a tool for automating the final steps of data wrangling prior to the 
 application of machine learning. The automunge(.) function processes structured training 
 data and if available consistently formatted test data that can then be used to generate 
