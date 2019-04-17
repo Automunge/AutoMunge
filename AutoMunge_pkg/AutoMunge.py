@@ -4237,7 +4237,7 @@ class AutoMunge:
                              'assigninfill' : assigninfill, \
                              'transformdict' : transformdict, \
                              'processdict' : processdict, \
-                             'automungeversion' : '1.77' })
+                             'automungeversion' : '1.78' })
 
     
     
