@@ -1,8 +1,6 @@
-# AutoMunge Package
+# Automunge Package
 
-**please note that update of this document for version 1.77 is pending
-
-AutoMunge is a tool for automating the final steps of data wrangling prior to the 
+Automunge is a tool for automating the final steps of data wrangling prior to the 
 application of machine learning. The automunge(.) function processes structured training 
 data and if available consistently formatted test data that can then be used to generate 
 predictions from a trained downstream model. When fed pandas dataframes for these sets the
@@ -16,6 +14,22 @@ and automated fashion. automunge(.) also returns a python dictionary which can b
 an input along with a subsequent test data set to the function postmunge(.) for  consistent 
 processing of test data which wasn't available for the initial address.
 
+New with version 1.77: 
+- automunge now allows a user to perform a feature importance evaluation using the 
+permutation importance method. User also has the option to trim number of returned sets
+using this same method based on either a defined percent of top most influential columns
+or alternatively a defined feature importance method. The functino also returns dictionary
+containing information about the feature importance evaluation for user inspection.
+- automunge now allows a user to manually define the specific processing approach for
+each column, as well as a specific infill approach for each column.
+- automunge now allows a user to custom program their own processing functions as well as
+their own tree of transfomrations, and pass these methods to automunge to make use in
+context of built in functions for ML infill, feature importance, and downstream address
+with postmunge. Think of this as like a TensorFlow for munging. More documentation on
+this coming soon.
+New with version 1.78:
+- some bug fixes for feature importance on numerical label sets
+
 AutoMunge is now available for free pip install for your open source python data-wrangling
 
 pip install AutoMunge-pkg
@@ -23,15 +37,14 @@ pip install AutoMunge-pkg
 Once installed:
 
 from AutoMunge_pkg import AutoMunge
-
 am = AutoMunge.AutoMunge()
 
 Where eg for train/test set processing run:
 
-np_train, np_trainID, np_labels, np_validation1, np_validationID1, \
-np_validationlabels1, np_validation2, np_validationID2, np_validationlabels2, \
-np_test, np_testID, labelsencoding_dict, finalcolumns_train, finalcolumns_test,  \
-postprocess_dict \
+train, trainID, labels, validation1, validationID1, \
+validationlabels1, validation2, validationID2, validationlabels2, \
+test, testID, labelsencoding_dict, finalcolumns_train, finalcolumns_test, \
+featureimportance, postprocess_dict = \
 = am.automunge(df_train, df_test, etc)
 
 or for subsequent consistant processing of test data, using the dictionary returned from
@@ -99,20 +112,25 @@ The application of the automunge and postmunge functions requires the assignment
 function to a series of named sets. We suggest using consistent naming convention as
 follows:
 
-np_train, np_trainID, np_labels, np_validation1, np_validationID1, \
-np_validationlabels1, np_validation2, np_validationID2, np_validationlabels2, \
-np_test, np_testID, labelsencoding_dict, finalcolumns_train, finalcolumns_test,  \
-postprocess_dict \
+train, trainID, labels, validation1, validationID1, \
+validationlabels1, validation2, validationID2, validationlabels2, \
+test, testID, labelsencoding_dict, finalcolumns_train, finalcolumns_test, \
+featureimportance, postprocess_dict = \
 = am.automunge(df_train, ...)
 
 The full set of arguments available to be passed are given here, with explanations 
 provided below:
 am.automunge(df_train, df_test = False, labels_column = False, trainID_column = False, \
             testID_column = False, valpercent1=0.20, valpercent2 = 0.10, \
-            shuffletrain = True, TrainLabelFreqLevel = True, powertransform = True, \
+            shuffletrain = True, TrainLabelFreqLevel = False, powertransform = True, \
             binstransform = True, MLinfill = True, infilliterate=1, randomseed = 42, \
-            forcetocategoricalcolumns = [], numbercategoryheuristic = 0.000, \
-            excludetransformscolumns = [], pandasoutput = False):
+            numbercategoryheuristic = 0.000, pandasoutput = False, \
+            featureselection = True, featurepct = 1.0, featuremetric = .02, \
+            featuremethod = 'pct', \
+            assigncat = {'nmbr':[], 'nbr2':[], 'bxcx':[], 'bnry':[], 'text':[], \
+                         'date':[], 'excl':[]}, \
+            assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'adjinfill':[]}, \
+            transformdict = {}, processdict = {}):
 
 
 Or for the postmunge function:
@@ -140,38 +158,38 @@ treatment for postmunge returned sets and arguments.
 
 automunge returned sets:
 
-np_train: a numerically encoded set of data intended to be used to train a downstream
+train: a numerically encoded set of data intended to be used to train a downstream
 machine learning model in the framework of a user's choice
 
-np_trainID: the set of ID values corresponding to the np-train set if a ID column was
+trainID: the set of ID values corresponding to the np-train set if a ID column was
 passed to the function. This set may be useful if the shuffle option was applied.
 
-np_labels: a set of numerically encoded labels corresponding to the np_train set if a 
+labels: a set of numerically encoded labels corresponding to the np_train set if a 
 label column was passed. Note that the function assumes the label column is originally 
 included in the train set. The encoding of the labels is consistent to the methods used 
 for the training data, including supplemental feature engineering derived columns.
 
-np_validation1: a set of training data carved out from the np_train set that is intended
+validation1: a set of training data carved out from the np_train set that is intended
 for use in hyperparameter tuning of a downstream model. 
 
-np_validationID1: the set of ID values coresponding to the np_validation1 set
+validationID1: the set of ID values coresponding to the np_validation1 set
 
-np_validationlabels1: the set of labels coresponding to the np_validation1 set
+validationlabels1: the set of labels coresponding to the np_validation1 set
 
-np_validation2: the set of training data carved out from the np_train set that is 
+validation2: the set of training data carved out from the np_train set that is 
 intended for the final validation of a downstream model (this set should not be applied
 extensively for hyperparameter tuning).
 
-np_validationID2: the set of ID values coresponding to the np_validation2 set.
+validationID2: the set of ID values coresponding to the np_validation2 set.
 
-np_validationlabels2: the set of labels coresponding to the np_validation2 set
+validationlabels2: the set of labels coresponding to the np_validation2 set
 
-np_test: the set of features, consistently encoded and normalized as the training data, 
+test: the set of features, consistently encoded and normalized as the training data, 
 that can be used to generate predictions from a downstream model trained with np_train. 
 Note that if no test data is available during initial address this processing will 
 take place in the postmunge(.) function.
 
-np_testID: the set of ID values coresponding to the np_test set.
+testID: the set of ID values coresponding to the np_test set.
 
 labelsencoding_dict: a dictionary that can be used to reverse encode predictions that 
 were generated from a downstream model (such as to convert a one-hot encoded set back to
@@ -185,6 +203,9 @@ finalcolumns_test: a list of the column headers corresponding to the test data. 
 that the inclusion of suffix appenders is used to identify which feature engineering 
 transformations were applied to each column. Note that this list should match the one 
 preceeding.
+
+featureimportance: a dictionary containing summary of feature importance ranking and
+metrics for each of the derived sets
 
 postprocess_dict: a returned python dictionary that includes normalization parameters 
 and trained machine learning models used to generate consistent processing of test data 
@@ -299,6 +320,51 @@ the other columns.
 pandasoutput: a selector for format of returned sets. Defaults to False for returned Numpy
 arrays. If set to True returns pandas dataframes (note that index is not preserved in the 
 train/validation split, an ID column may be passed for index identification).
+
+featureselection: a boolean identifier telling the functino whether to perform a feature
+importance evaluation. If selected automunge will return a summary of feature importance
+findings in the featureimportance returned dictionary. This also activates the trimming
+of derived sets that did not meet the importance threshold if featurepct < 1.0 or if
+fesaturemetric > 0.0.
+
+featurepct: the percentage of derived sets that are kept in the output based on the feature
+importance evaluation. Note that NArw columns are excluded from the trimming for now (the
+inclusion of NArws in trimming will likely be included in a future expansion). This item
+only used if featuremethod passed as 'pct' (the default).
+
+featuremetric: the feature importance metric below which derived sets are trimmed from the 
+output. Note that this item only used if featuremethod passed as 'metric'.
+
+featuremethod: can be passed as either 'pct' or 'metric' to select which feature importance
+method is used for trimming the derived sets.
+
+assigncat = {'nmbr':[], 'nbr2':[], 'bxcx':[], 'bnry':[], 'text':[], 'date':[], 
+             'excl':[]}
+A user may add column identifier strings to each of these lists to designate this specific
+processing approach. Note that this processing category will serve as the "root" of the
+tree of transforms as defined in the transformdict. Note that additional categories may
+be passed if defined in the passed trnasformdict and processdict. An example of usage here
+could be if a user wanted to only process numerical columns 'nmbrcolumn1' and 'nmbrcolumn2'
+with z-score normalization instead of the full range of numerical derivations they could pass
+assigncat = {'nmbr':[], 'nbr2':['nmbrcolumn1', 'nmbrcolumn2], ...}
+
+assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], \
+                'adjinfill':[]}
+A user may add column identifier strings to each of these lists to designate the specific
+infill approach for missing or improperly formated values. Note that this infill category
+defaults to MLinfill if nothing assigned and the MLinfill argument to automunge is set to
+True. zeroinfill means inserting the integer 0 to missing cells. adjinfill means passing the
+value from the preceding row to missing cells.
+
+transformdict: allows a user to pass a custom tree of transformations. Note that a user may
+define their own 4 character string "root" identifiers for a series of processing msteps 
+using the defined functions and assign them to columns in assigncat, or for custom processing
+functions this method should be combvined with processdict which admittedly is a little more 
+complex. More documentaiton on this feature to come.
+
+processdict: allows a user to0 define their own processing functions. More documentaiton on 
+this feature to come.
+
 
 ...
 
