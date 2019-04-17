@@ -28,6 +28,7 @@ from sklearn.ensemble import RandomForestClassifier
 
 #imports for shuffleaccuracy
 from sklearn.metrics import accuracy_score
+from sklearn.metrics import mean_squared_log_error
 
 #imports for automunge
 from sklearn.utils import shuffle
@@ -2903,6 +2904,13 @@ class AutoMunge:
     
     if labelscategory in ['nmbr']:
       
+      #this is specific to the current means of address for numeric label sets
+      #as we build out our label engineering methods this will need to. be updated
+      for labelcolumn in list(am_labels):
+        if labelcolumn[-5:] == '_nmbr':
+          np_labels = am_labels[labelcolumn].values
+          break
+      
       #this is to address a weird error message suggesting I reshape the y with ravel()
       np_labels = np.ravel(np_labels)
 
@@ -2977,14 +2985,27 @@ class AutoMunge:
     
     if labelscategory in ['nmbr']:
       
+      #this is specific to the current means of address for numeric label sets
+      #as we build out our label engineering methods this will need to. be updated
+      for labelcolumn in list(am_labels):
+        if labelcolumn[-5:] == '_nmbr':
+          np_labels = am_labels[labelcolumn].values
+          break
+      
       #this is to address a weird error message suggesting I reshape the y with ravel()
       np_labels = np.ravel(np_labels)
       
       #generate predictions
       np_predictions = FSmodel.predict(np_shuffleset)
       
+      #just in case this returned any negative predictions
+      np_predictions = np.absolute(np_predictions)
+      #and we're trying to generalize here so will go ahead and apply to labels
+      np_labels = np.absolute(np_labels)
+      
       #evaluate accuracy metric
-      columnaccuracy = accuracy_score(np_labels, np_predictions)
+      #columnaccuracy = accuracy_score(np_labels, np_predictions)
+      columnaccuracy = mean_squared_log_error(np_labels, np_predictions)
       
     if labelscategory in ['bnry']:
       
@@ -3379,9 +3400,10 @@ class AutoMunge:
                 shuffletrain = True, TrainLabelFreqLevel = False, powertransform = True, \
                 binstransform = True, MLinfill = True, infilliterate=1, randomseed = 42, \
                 numbercategoryheuristic = 0.000, pandasoutput = False, \
-                featureselection = True, featurepct = 0.90, featuremetric = .02, \
+                featureselection = True, featurepct = 1.0, featuremetric = 0.0, \
                 featuremethod = 'pct', \
-                assigncat = {'nmbr':[], 'bxcx':[], 'bnry':[], 'text':[], 'date':[]}, \
+                assigncat = {'nmbr':[], 'nbr2':[], 'bxcx':[], 'bnry':[], 'text':[], \
+                             'date':[], 'excl':[]}, \
                 assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'adjinfill':[]}, \
                 transformdict = {}, processdict = {}):
 
@@ -4002,15 +4024,20 @@ class AutoMunge:
   #       pass
         
         
-        #made an executive decision not to perform full range of feature engineering
-        #methods on numerical labels, as is not common practice and some frameowrks
-        #onkly allow one or either of classification or regression (eg sklearn)
-        #so we'll just do a copy of original column and a z-score normalizaiton
-        #using new category 'rgrl' (stands for 'regression label')
-        labelscategory = 'rgrl'
+#         #made an executive decision not to perform full range of feature engineering
+#         #methods on numerical labels, as is not common practice and some frameowrks
+#         #onkly allow one or either of classification or regression (eg sklearn)
+#         #so we'll just do a copy of original column and a z-score normalizaiton
+#         #using new category 'rgrl' (stands for 'regression label')
+#         labelscategory = 'rgrl'
         
-        #for numerical we'll want the original column unaltered for predictions
-        df_labels[labels_column+'_orig'] = df_labels[labels_column].copy()
+        #made a further executive decision, I dont' think it's common to apply zscore
+        #normalization to the labels of. a linear regression. So let's just
+        #leave numerical labels untouched. I think there's some room for debate.
+        labelscategory = 'excl'
+        
+#         #for numerical we'll want the original column unaltered for predictions
+#         df_labels[labels_column+'_orig'] = df_labels[labels_column].copy()
 
         #however it may also benefit to parallel train model to predict transformations
         #plus we'll use the std bins for leveling the frequency of labels for oversampling
