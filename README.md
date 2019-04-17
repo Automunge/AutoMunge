@@ -362,8 +362,8 @@ using the defined functions and assign them to columns in assigncat, or for cust
 functions this method should be combvined with processdict which admittedly is a little more 
 complex. More documentaiton on this feature to come.
 
-processdict: allows a user to0 define their own processing functions. More documentaiton on 
-this feature to come.
+processdict: allows a user to define their own processing functions. (For now 
+it's somewhat complicated.) More documentaiton on this feature to come.
 
 
 ...
