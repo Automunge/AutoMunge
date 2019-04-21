@@ -177,6 +177,18 @@ class AutoMunge:
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
+    
+    transform_dict.update({'mnmx' : {'greatgrandparents' : [], \
+                                     'grandparents' : ['NArw'], \
+                                     'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['mnmx'], \
+                                     'cousins' : [], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
     transform_dict.update({'excl' : {'greatgrandparents' : [], \
                                      'grandparents' : [], \
                                      'parents' : [], \
@@ -217,18 +229,18 @@ class AutoMunge:
                                        'coworkers' : [], \
                                        'friends' : []}})
 
-    #currently bins will always be niecesnephews so not used as a key, but putting
-    #this here incase of future incorporation as a child
-    transform_dict.update({'bins' : {'greatgrandparents' : [], \
-                                     'grandparents' : ['NArw'], \
-                                     'parents' : [], \
-                                     'siblings': [], \
-                                     'auntsuncles' : ['bins'], \
-                                     'cousins' : [], \
-                                     'children' : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers' : [], \
-                                     'friends' : []}})
+#     #currently bins will always be niecesnephews so not used as a key, but putting
+#     #this here incase of future incorporation as a child
+#     transform_dict.update({'bins' : {'greatgrandparents' : [], \
+#                                      'grandparents' : ['NArw'], \
+#                                      'parents' : [], \
+#                                      'siblings': [], \
+#                                      'auntsuncles' : ['bins'], \
+#                                      'cousins' : [], \
+#                                      'children' : [], \
+#                                      'niecesnephews' : [], \
+#                                      'coworkers' : [], \
+#                                      'friends' : []}})
 
 
     return transform_dict
@@ -245,6 +257,21 @@ class AutoMunge:
     #postmunge). If the dualprocess/postprocess pair aren't included a 
     #singleprocess funciton will be instead which processes a single column
     #at a time and is neutral to whether that set is from train or test data.
+    
+    #starting in version 1.79, this also stores entries for 'NArowtype' and
+    #'MLinfilltype', which were added to facilitate user definition of 
+    #custom processing functions
+    
+    #NArowtype entries are:
+    # - 'numeric' for source columns with expected numeric entries
+    # - 'justNaN' for source columns that may have expected entries other than numeric
+    # - 'exclude' for source columns that aren't needing NArow columns derived
+    
+    #MLinfilltype entries are:
+    # - 'numeric' for columns with numeric entries
+    # - 'singlct' for single column sets with boolean entries
+    # - 'multict' for multi column sets with boolean entrie
+    # - 'exclude' for columns which will be excluded from ML infill
     '''
     
     process_dict = {}
@@ -256,40 +283,67 @@ class AutoMunge:
     #dual column functions
     process_dict.update({'nmbr' : {'dualprocess' : self.process_numerical_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_numerical_class}})
+                                  'postprocess' : self.postprocess_numerical_class, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric'}})
     process_dict.update({'nbr2' : {'dualprocess' : self.process_numerical_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_numerical_class}})
+                                  'postprocess' : self.postprocess_numerical_class, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric'}})
+    process_dict.update({'mnmx' : {'dualprocess' : self.process_mnmx_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_mnmx_class, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric'}})
     process_dict.update({'bnry' : {'dualprocess' : self.process_binary_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_binary_class}})
+                                  'postprocess' : self.postprocess_binary_class, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'singlct'}})
     process_dict.update({'text' : {'dualprocess' : self.process_text_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_text_class}})
+                                  'postprocess' : self.postprocess_text_class, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'multirt'}})
     process_dict.update({'date' : {'dualprocess' : self.process_time_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_time_class}})
+                                  'postprocess' : self.postprocess_time_class, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'exclude'}})
     process_dict.update({'bxcx' : {'dualprocess' : self.process_bxcx_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_bxcx_class}})
+                                  'postprocess' : self.postprocess_bxcx_class, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric'}})
     process_dict.update({'bins' : {'dualprocess' : self.process_bins_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_bins_class}})
+                                  'postprocess' : self.postprocess_bins_class, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'multisp'}})
     process_dict.update({'bint' : {'dualprocess' : self.process_bint_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_bint_class}})
+                                  'postprocess' : self.postprocess_bint_class, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'multisp'}})
 
     #single column functions
     process_dict.update({'NArw' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_NArw_class, \
-                                  'postprocess' : None}})
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'exclude', \
+                                  'MLinfilltype' : 'exclude'}})
 
     process_dict.update({'null' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_null_class, \
-                                  'postprocess' : None}})
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'exclude', \
+                                  'MLinfilltype' : 'exclude'}})
     process_dict.update({'excl' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_excl_class, \
-                                  'postprocess' : None}})
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'exclude', \
+                                  'MLinfilltype' : 'exclude'}})
 
     return process_dict
 
@@ -515,16 +569,19 @@ class AutoMunge:
     #if this is a dual process function
     if process_dict[cousin]['dualprocess'] != None:
       df_train, df_test, column_dict_list = \
-      process_dict[cousin]['dualprocess'](df_train, df_test, column, origcategory)
+      process_dict[cousin]['dualprocess'](df_train, df_test, column, origcategory, \
+                                          postprocess_dict)
 
     #else if this is a single process function process train and test seperately
     elif process_dict[cousin]['singleprocess'] != None:
 
       df_train, column_dict_list =  \
-      process_dict[cousin]['singleprocess'](df_train, column, origcategory)
+      process_dict[cousin]['singleprocess'](df_train, column, origcategory, \
+                                            postprocess_dict)
 
       df_test, _1 = \
-      process_dict[cousin]['singleprocess'](df_test, column, origcategory)
+      process_dict[cousin]['singleprocess'](df_test, column, origcategory, \
+                                            postprocess_dict)
 
 
     #update the columnslist and normalization_dict for both column_dict and postprocess_dict
@@ -554,16 +611,19 @@ class AutoMunge:
     if process_dict[parent]['dualprocess'] != None:
 
       df_train, df_test, column_dict_list = \
-      process_dict[parent]['dualprocess'](df_train, df_test, column, origcategory)
+      process_dict[parent]['dualprocess'](df_train, df_test, column, origcategory, \
+                                         postprocess_dict)
 
     #else if this is a single process function process train and test seperately
     elif process_dict[parent]['singleprocess'] != None:
 
       df_train, column_dict_list =  \
-      process_dict[parent]['singleprocess'](df_train, column, origcategory)
+      process_dict[parent]['singleprocess'](df_train, column, origcategory, \
+                                         postprocess_dict)
 
       df_test, _1 = \
-      process_dict[parent]['singleprocess'](df_test, column, origcategory)
+      process_dict[parent]['singleprocess'](df_test, column, origcategory, \
+                                         postprocess_dict)
 
     #update the columnslist and normalization_dict for both column_dict and postprocess_dict
     for column_dict in column_dict_list:
@@ -654,7 +714,7 @@ class AutoMunge:
   
   
   
-  def process_NArw_class(self, df, column, category):
+  def process_NArw_class(self, df, column, category, postprocess_dict):
     '''
     #processing funciton that creates a boolean column indicating 1 for rows
     #corresponding to missing or improperly formated data in source column
@@ -665,7 +725,7 @@ class AutoMunge:
     
     #add a second column with boolean expression indicating a missing cell
     #(using NArows(.) function defined below, column name will be column+'_NArows')
-    NArows_nmbr = self.NArows(df, column, category)
+    NArows_nmbr = self.NArows(df, column, category, postprocess_dict)
     df[column + '_NArw'] = NArows_nmbr.copy()
     del NArows_nmbr
 
@@ -702,7 +762,8 @@ class AutoMunge:
   
   
   
-  def process_numerical_class(self, mdf_train, mdf_test, column, category):
+  def process_numerical_class(self, mdf_train, mdf_test, column, category, \
+                              postprocess_dict):
     '''
     #process_numerical_class(mdf_train, mdf_test, column, category)
     #function to normalize data to mean of 0 and standard deviation of 1 \
@@ -772,10 +833,87 @@ class AutoMunge:
 
         
     return mdf_train, mdf_test, column_dict_list
+
+
+  def process_mnmx_class(self, mdf_train, mdf_test, column, category, \
+                         postprocess_dict):
+    '''
+    #process_mnmx_class(mdf_train, mdf_test, column, category)
+    #function to scale data to minimum of 0 and maximum of 1 \
+    #based on min/max values from training set for this column
+    #takes as arguement pandas dataframe of training and test data (mdf_train), (mdf_test)\
+    #and the name of the column string ('column') and parent category (category)
+    #replaces missing or improperly formatted data with mean of remaining values
+    #returns same dataframes with new column of name column + '_mnmx'
+    #note this is a "dualprocess" function since is applied to both dataframes
+
+    #expect this approach works better when the numerical distribution is thin tailed
+    #if only have training but not test data handy, use same training data for both
+    #dataframe inputs
+    '''
+    
+    #copy source column into new column
+    mdf_train[column + '_mnmx'] = mdf_train[column].copy()
+    mdf_test[column + '_mnmx'] = mdf_test[column].copy()
+
+    #convert all values to either numeric or NaN
+    mdf_train[column + '_mnmx'] = pd.to_numeric(mdf_train[column + '_mnmx'], errors='coerce')
+    mdf_test[column + '_mnmx'] = pd.to_numeric(mdf_test[column + '_mnmx'], errors='coerce')
+
+    #get mean of training data
+    mean = mdf_train[column + '_mnmx'].mean()    
+
+    #replace missing data with training set mean
+    mdf_train[column + '_mnmx'] = mdf_train[column + '_mnmx'].fillna(mean)
+    mdf_test[column + '_mnmx'] = mdf_test[column + '_mnmx'].fillna(mean)
+    
+    #get maximum value of training column
+    maximum = mdf_train[column + '_mnmx'].max()
+    
+    #get minimum value of training column
+    minimum = mdf_train[column + '_mnmx'].min()
+    
+    #perform min-max scaling to train and test sets using values from train
+    mdf_train[column + '_mnmx'] = (mdf_train[column + '_mnmx'] - minimum) / \
+                                  (maximum - minimum)
+    
+    mdf_test[column + '_mnmx'] = (mdf_test[column + '_mnmx'] - minimum) / \
+                                 (maximum - minimum)
+
+    #create list of columns
+    nmbrcolumns = [column + '_mnmx']
+
+
+    nmbrnormalization_dict = {column + '_mnmx' : {'minimum' : minimum, \
+                                                  'maximum' : maximum, \
+                                                  'mean' : mean}}
+
+    #store some values in the nmbr_dict{} for use later in ML infill methods
+    column_dict_list = []
+
+    for nc in nmbrcolumns:
+
+      if nc[-5:] == '_mnmx':
+
+        column_dict = { nc : {'category' : 'mnmx', \
+                             'origcategory' : category, \
+                             'normalization_dict' : nmbrnormalization_dict, \
+                             'origcolumn' : column, \
+                             'columnslist' : nmbrcolumns, \
+                             'categorylist' : [nc], \
+                             'infillmodel' : False, \
+                             'infillcomplete' : False, \
+                             'deletecolumn' : False}}
+
+        column_dict_list.append(column_dict.copy())
+    
+
+        
+    return mdf_train, mdf_test, column_dict_list
+
   
-  
-  
-  def process_binary_class(self, mdf_train, mdf_test, column, category):
+  def process_binary_class(self, mdf_train, mdf_test, column, category, \
+                           postprocess_dict):
     '''
     #process_binary_class(mdf, column, missing)
     #converts binary classification values to 0 or 1
@@ -855,7 +993,8 @@ class AutoMunge:
     return mdf_train, mdf_test, column_dict_list
   
   
-  def process_text_class(self, mdf_train, mdf_test, column, category):
+  def process_text_class(self, mdf_train, mdf_test, column, category, \
+                         postprocess_dict):
     '''
     #process_text_class(mdf_train, mdf_test, column, category)
     #preprocess column with text categories
@@ -1052,7 +1191,8 @@ class AutoMunge:
   
   
   
-  def process_time_class(self, mdf_train, mdf_test, column, category):
+  def process_time_class(self, mdf_train, mdf_test, column, category, \
+                         postprocess_dict):
     '''
     #process_time_class(mdf_train, mdf_test, column, category)
     #preprocess column with time classifications
@@ -1259,7 +1399,8 @@ class AutoMunge:
     return mdf_train, mdf_test, column_dict_list
   
   
-  def process_bxcx_class(self, mdf_train, mdf_test, column, category):
+  def process_bxcx_class(self, mdf_train, mdf_test, column, category, \
+                         postprocess_dict):
     '''
     Applies Box-Cox transform to an all-positive numerical set.
     '''
@@ -1398,7 +1539,8 @@ class AutoMunge:
   
   
   
-  def process_bins_class(self, mdf_train, mdf_test, column, category):
+  def process_bins_class(self, mdf_train, mdf_test, column, category, \
+                         postprocess_dict):
     '''
     #processes a numerical set by creating bins coresponding to post z score
     #normalization of <-2, -2-1, -10, 01, 12, >2 in one hot encoded columns
@@ -1526,7 +1668,8 @@ class AutoMunge:
   
   
   
-  def process_bint_class(self, mdf_train, mdf_test, column, category):
+  def process_bint_class(self, mdf_train, mdf_test, column, category, \
+                         postprocess_dict):
     '''
     #processes a numerical set by creating bins coresponding to post z score
     #normalization of <-2, -2-1, -10, 01, 12, >2 in one hot encoded columns
@@ -1653,7 +1796,7 @@ class AutoMunge:
   
   
   
-  def process_null_class(self, df, column, category):
+  def process_null_class(self, df, column, category, postprocess_dict):
     '''
     #here we'll delete any columns that returned a 'null' category
     #note this is a. singleprocess transform
@@ -1681,10 +1824,11 @@ class AutoMunge:
     return df, column_dict_list
 
 
-  def process_excl_class(self, df, column, category):
+  def process_excl_class(self, df, column, category, postprocess_dict):
     '''
-    #here we'll delete any columns that returned a 'null' category
+    #here we'll address any columns that returned a 'excl' category
     #note this is a. singleprocess transform
+    #we'll simply maintain the same column but with a suffix to the header
     '''
     exclcolumn = column + '_excl'
     df[exclcolumn] = df[column].copy()
@@ -1897,7 +2041,7 @@ class AutoMunge:
 
 
 
-  def NArows(self, df, column, category):
+  def NArows(self, df, column, category, postprocess_dict):
     '''
     #NArows(df, column), function that when fed a dataframe, \
     #column id, and category label outputs a single column dataframe composed of \
@@ -1907,7 +2051,10 @@ class AutoMunge:
     # derived plug data
     '''
     
-    if category == 'text':
+    NArowtype = postprocess_dict['process_dict'][category]['NArowtype']
+    
+    #if category == 'text':
+    if NArowtype in ['justNaN']:
 
       #returns dataframe of True and False, where True coresponds to the NaN's
       #renames column name to column + '_NArows'
@@ -1915,16 +2062,17 @@ class AutoMunge:
       NArows = pd.DataFrame(NArows)
       NArows = NArows.rename(columns = {column:column+'_NArows'})
 
-    if category == 'bnry':
+#     if category == 'bnry':
 
-      #returns dataframe of True and False, where True coresponds to the NaN's
-      #renames column name to column + '_NArows'
-      NArows = pd.isna(df[column])
-      NArows = pd.DataFrame(NArows)
-      NArows = NArows.rename(columns = {column:column+'_NArows'})
+#       #returns dataframe of True and False, where True coresponds to the NaN's
+#       #renames column name to column + '_NArows'
+#       NArows = pd.isna(df[column])
+#       NArows = pd.DataFrame(NArows)
+#       NArows = NArows.rename(columns = {column:column+'_NArows'})
 
     #if category == 'nmbr' or category == 'bxcx':
-    if category in ['nmbr', 'bxcx', 'nbr2']:
+    #if category in ['nmbr', 'bxcx', 'nbr2']:
+    if NArowtype in ['numeric']:
 
       #convert all values to either numeric or NaN
       df[column] = pd.to_numeric(df[column], errors='coerce')
@@ -1936,19 +2084,20 @@ class AutoMunge:
       NArows = NArows.rename(columns = {column:column+'_NArows'})
 
 
-    if category == 'date':
+#     if category == 'date':
 
-      #returns dataframe column of all False
-      #renames column name to column + '_NArows'
-      NArows = pd.isna(df[column])
-      NArows = pd.DataFrame(NArows)
-      NArows = NArows.rename(columns = {column:column+'_NArows'})
+#       #returns dataframe column of all False
+#       #renames column name to column + '_NArows'
+#       NArows = pd.isna(df[column])
+#       NArows = pd.DataFrame(NArows)
+#       NArows = NArows.rename(columns = {column:column+'_NArows'})
       
 #       NArows = pd.DataFrame(False, index=np.arange(df.shape[0]), columns=[column+'NA'])
 #       NArows = pd.DataFrame(NArows)
 #       NArows = NArows.rename(columns = {column:column+'_NArows'})
 
-    if category in ['excl']:
+    #if category in ['excl']:
+    if NArowtype in ['exclude']:
       
       NArows = pd.DataFrame(np.zeros((df.shape[0], 1)), columns=[column+'_NArows'])
       #NArows = NArows.rename(columns = {column:column+'_NArows'})
@@ -2005,7 +2154,7 @@ class AutoMunge:
 
   def predictinfill(self, category, df_train_filltrain, df_train_filllabel, \
                     df_train_fillfeatures, df_test_fillfeatures, randomseed, \
-                    columnslist = []):
+                    postprocess_dict, columnslist = []):
     '''
     #predictinfill(category, df_train_filltrain, df_train_filllabel, \
     #df_train_fillfeatures, df_test_fillfeatures, randomseed, columnslist), \
@@ -2021,6 +2170,8 @@ class AutoMunge:
     #other ML architectures such a SVM or something SGD based for instance
     '''
     
+    MLinfilltype = postprocess_dict['process_dict'][category]['MLinfilltype']
+    
     #convert dataframes to numpy arrays
     np_train_filltrain = df_train_filltrain.values
     np_train_filllabel = df_train_filllabel.values
@@ -2031,7 +2182,8 @@ class AutoMunge:
     if df_train_fillfeatures.shape[0] > 0:
       
       #if a numerical set
-      if category in ['nmbr', 'nbr2', 'bxcx']:
+      #if category in ['nmbr', 'nbr2', 'bxcx']:
+      if MLinfilltype in ['numeric']:
 
         #this is to address a weird error message suggesting I reshape the y with ravel()
         np_train_filllabel = np.ravel(np_train_filllabel)
@@ -2088,7 +2240,8 @@ class AutoMunge:
 
 
 
-      if category == 'bnry':
+      #if category == 'bnry':
+      if MLinfilltype in ['singlct']:
 
         #this is to address a weird error message suggesting I reshape the y with ravel()
         np_train_filllabel = np.ravel(np_train_filllabel)
@@ -2118,7 +2271,8 @@ class AutoMunge:
   #       print('category is bnry, df_traininfill is')
   #       print(df_traininfill)
 
-      if category in ['text', 'bins', 'bint']:
+      #if category in ['text', 'bins', 'bint']:
+      if MLinfilltype in ['multirt', 'multisp']:
 
         #first convert the one-hot encoded set via argmax to a 1D array
         np_train_filllabel_argmax = np.argmax(np_train_filllabel, axis=1)
@@ -2170,7 +2324,8 @@ class AutoMunge:
   #       print('category is text, df_traininfill is')
   #       print(df_traininfill)
 
-      if category in ['date', 'NArw', 'null']:
+      #if category in ['date', 'NArw', 'null']:
+      if MLinfilltype in ['exclude']:
 
         #create empty sets for now
         #an extension of this method would be to implement a comparable infill \
@@ -2210,7 +2365,8 @@ class AutoMunge:
 
 
   def createMLinfillsets(self, df_train, df_test, column, trainNArows, testNArows, \
-                         category, randomseed, columnslist = [], categorylist = []):
+                         category, randomseed, postprocess_dict, columnslist = [], \
+                         categorylist = []):
     '''
     #update createMLinfillsets as follows:
     #instead of diferientiation by category, do a test for whether categorylist = []
@@ -2229,6 +2385,8 @@ class AutoMunge:
     #and df_test_fillfeatures
     '''
     
+    MLinfilltype = postprocess_dict['process_dict'][category]['MLinfilltype']
+    
     #create 3 new dataframes for each train column - the train and labels \
     #for rows not needing infill, and the features for rows needing infill \
     #also create a test features column 
@@ -2236,7 +2394,8 @@ class AutoMunge:
     #categories are nmbr, bnry, text, date, bxcx, bins, bint, NArw, null
     #if category in ['nmbr', 'bxcx', 'bnry', 'text', 'bins', 'bint']:
     
-    if category in ['nmbr', 'nbr2', 'bxcx', 'bnry', 'text', 'bins', 'bint']:
+    #if category in ['nmbr', 'nbr2', 'bxcx', 'bnry', 'text', 'bins', 'bint']:
+    if MLinfilltype in ['numeric', 'singlct', 'multirt', 'multisp']:
 
       #if this is a single column set (not categorical)
       if len(categorylist) == 1:
@@ -2358,6 +2517,7 @@ class AutoMunge:
 
 
     #if category == 'date':
+    #if MLinfilltype in ['exclude']:
     else:
 
       #create empty sets for now
@@ -2375,8 +2535,8 @@ class AutoMunge:
 
 
 
-  def insertinfill(self, df, column, infill, category, NArows, columnslist = [], \
-                   categorylist = []):
+  def insertinfill(self, df, column, infill, category, NArows, postprocess_dict, \
+                   columnslist = [], categorylist = []):
     '''
     #insertinfill(df, column, infill, category, NArows, columnslist = [])
     #function that takes as input a dataframe, column id, category string of either\
@@ -2387,13 +2547,16 @@ class AutoMunge:
     #the associated transformed dataframe.
     '''
     
+    MLinfilltype = postprocess_dict['process_dict'][category]['MLinfilltype']
+    
     #NArows column name uses original column name + _NArows as key
     #by convention, current column has original column name + '_ctgy' at end
     #so we'll drop final 5 characters from column string
     #origcolumnname = column[:-5]
     NArowcolumn = NArows.columns[0]
 
-    if category in ['nmbr', 'nbr2', 'bxcx', 'bnry', 'text']:
+    #if category in ['nmbr', 'nbr2', 'bxcx', 'bnry', 'text']:
+    if MLinfilltype in ['numeric', 'singlct', 'multirt']:
 
       #if this is a single column set (not categorical)
       if len(categorylist) == 1:
@@ -2490,7 +2653,8 @@ class AutoMunge:
           df = df.drop(['tempindex1'], axis=1)
 
 
-    if category == 'date':
+    #if category == 'date':
+    if MLinfilltype in ['exclude', 'multisp']:
       #this spot reserved for future update to incorporate address of datetime\
       #category data
       df = df
@@ -2534,7 +2698,7 @@ class AutoMunge:
                          df_test, column, \
                          pd.DataFrame(masterNArows_train[origcolumn+'_NArows']), \
                          pd.DataFrame(masterNArows_test[origcolumn+'_NArows']), \
-                         category, randomseed, \
+                         category, randomseed, postprocess_dict, \
                          columnslist = columnslist, \
                          categorylist = categorylist)
 
@@ -2542,7 +2706,7 @@ class AutoMunge:
       df_traininfill, df_testinfill, model = \
       self.predictinfill(category, df_train_filltrain, df_train_filllabel, \
                     df_train_fillfeatures, df_test_fillfeatures, \
-                    randomseed, columnslist = columnslist)
+                    randomseed, postprocess_dict, columnslist = columnslist)
 
       #now we'll add our trained model to the postprocess_dict
       postprocess_dict['column_dict'][column]['infillmodel'] \
@@ -2560,7 +2724,8 @@ class AutoMunge:
       #to df's associated column
       df_train = self.insertinfill(df_train, column, df_traininfill, category, \
                             pd.DataFrame(masterNArows_train[origcolumn+'_NArows']), \
-                            columnslist = columnslist, categorylist = categorylist)
+                            postprocess_dict, columnslist = columnslist, \
+                            categorylist = categorylist)
 
       #if we don't train the train set model on any features, that we won't be able 
       #to apply the model to predict the test set infill. 
@@ -2569,7 +2734,8 @@ class AutoMunge:
 
         df_test = self.insertinfill(df_test, column, df_testinfill, category, \
                            pd.DataFrame(masterNArows_test[origcolumn+'_NArows']), \
-                           columnslist = columnslist, categorylist = categorylist)
+                           postprocess_dict, columnslist = columnslist, \
+                           categorylist = categorylist)
 
       #now change the infillcomplete marker in the text_dict for each \
       #associated text column
@@ -2602,7 +2768,8 @@ class AutoMunge:
 
 
 
-  def LabelFrequencyLevelizer(self, train_df, labels_df, labelsencoding_dict):
+  def LabelFrequencyLevelizer(self, train_df, labels_df, labelsencoding_dict, \
+                              postprocess_dict):
     '''
     #LabelFrequencyLevelizer(.)
     #takes as input dataframes for train set, labels, and label category
@@ -2616,6 +2783,8 @@ class AutoMunge:
     columns_labels = list(labels_df)
 
     labelscategory = next(iter(labelsencoding_dict))
+    
+    MLinfilltype = postprocess_dict['process_dict'][labelscategory]['MLinfilltype']
 
     labels = list(labelsencoding_dict[labelscategory].keys())
 
@@ -2623,7 +2792,8 @@ class AutoMunge:
     setlengthlist = []
     multiplierlist = []
 
-    if labelscategory == 'bnry':
+    #if labelscategory == 'bnry':
+    if MLinfilltype in ['singlct']:
 
 
       for label in labels:
@@ -2680,14 +2850,16 @@ class AutoMunge:
       del train_df[columns_labels[0]]
 
 
-    if labelscategory in ['nmbr', 'bxcx']:
+    #if labelscategory in ['nmbr', 'bxcx']:
+    if MLinfilltype in ['numeric']:
 
         columns_labels = []
         for label in list(labels_df):
           if label[-5:] in ['_t<-2', '_t-21', '_t-10', '_t+01', '_t+12', '_t>+2']:
             columns_labels.append(label)
 
-    if labelscategory in ['text', 'nmbr', 'bxcx']:
+    #if labelscategory in ['text', 'nmbr', 'bxcx']:
+    if MLinfilltype in ['multirt', 'numeric']:
 
 
       i=0
@@ -2889,11 +3061,13 @@ class AutoMunge:
   
 
   
-  def trainFSmodel(self, am_subset, am_labels, randomseed, labelsencoding_dict):
+  def trainFSmodel(self, am_subset, am_labels, randomseed, labelsencoding_dict, \
+                   process_dict):
     
     '''
     trains model for purpose of evaluating features
     '''
+    
     
     #convert dataframes to numpy arrays
     np_subset = am_subset.values
@@ -2902,7 +3076,10 @@ class AutoMunge:
     #get category of labels from labelsencoding_dict
     labelscategory = next(iter(labelsencoding_dict))
     
-    if labelscategory in ['nmbr']:
+    MLinfilltype = process_dict[labelscategory]['MLinfilltype']
+    
+    #if labelscategory in ['nmbr']:
+    if MLinfilltype in ['numeric']:
       
       #this is specific to the current means of address for numeric label sets
       #as we build out our label engineering methods this will need to. be updated
@@ -2918,9 +3095,11 @@ class AutoMunge:
 
       FSmodel.fit(np_subset, np_labels)
       
-      baseaccuracy = self.shuffleaccuracy(am_subset, am_labels, FSmodel, randomseed, labelsencoding_dict)
+      baseaccuracy = self.shuffleaccuracy(am_subset, am_labels, FSmodel, randomseed, \
+                                          labelsencoding_dict, process_dict)
         
-    if labelscategory in ['bnry']:
+    #if labelscategory in ['bnry']:
+    if MLinfilltype in ['singlct']:
       
       #this is to address a weird error message suggesting I reshape the y with ravel()
       np_labels = np.ravel(np_labels)
@@ -2930,9 +3109,11 @@ class AutoMunge:
 
       FSmodel.fit(np_subset, np_labels)
       
-      baseaccuracy = self.shuffleaccuracy(am_subset, am_labels, FSmodel, randomseed, labelsencoding_dict)
+      baseaccuracy = self.shuffleaccuracy(am_subset, am_labels, FSmodel, randomseed, \
+                                          labelsencoding_dict, process_dict)
       
-    if labelscategory in ['text']:
+    #if labelscategory in ['text']:
+    if MLinfilltype in ['multirt']:
       
       #first convert the one-hot encoded set via argmax to a 1D array
       np_labels_argmax = np.argmax(np_labels, axis=1)
@@ -2943,7 +3124,8 @@ class AutoMunge:
 
       FSmodel.fit(np_train_filltrain, np_train_filllabel_argmax)
       
-      baseaccuracy = self.shuffleaccuracy(am_subset, am_labels, FSmodel, randomseed, labelsencoding_dict)
+      baseaccuracy = self.shuffleaccuracy(am_subset, am_labels, FSmodel, randomseed, \
+                                          labelsencoding_dict, process_dict)
       
       del np_labels_argmax
         
@@ -2970,7 +3152,8 @@ class AutoMunge:
       
     return shuffleset
   
-  def shuffleaccuracy(self, shuffleset, am_labels, FSmodel, randomseed, labelsencoding_dict):
+  def shuffleaccuracy(self, shuffleset, am_labels, FSmodel, randomseed, \
+                      labelsencoding_dict, process_dict):
     '''
     measures accuracy of predictions of shuffleset (which had permutation method)
     against the model trained on the unshuffled set
@@ -2983,7 +3166,10 @@ class AutoMunge:
     #get category of labels from labelsencoding_dict
     labelscategory = next(iter(labelsencoding_dict))
     
-    if labelscategory in ['nmbr']:
+    MLinfilltype = process_dict[labelscategory]['MLinfilltype']
+    
+    #if labelscategory in ['nmbr']:
+    if MLinfilltype in ['numeric']:
       
       #this is specific to the current means of address for numeric label sets
       #as we build out our label engineering methods this will need to. be updated
@@ -3007,7 +3193,8 @@ class AutoMunge:
       #columnaccuracy = accuracy_score(np_labels, np_predictions)
       columnaccuracy = mean_squared_log_error(np_labels, np_predictions)
       
-    if labelscategory in ['bnry']:
+    #if labelscategory in ['bnry']:
+    if MLinfilltype in ['singlct']:
       
       #this is to address a weird error message suggesting I reshape the y with ravel()
       np_labels = np.ravel(np_labels)
@@ -3018,7 +3205,8 @@ class AutoMunge:
       #evaluate accuracy metric
       columnaccuracy = accuracy_score(np_labels, np_predictions)
       
-    if labelscategory in ['text']:
+    #if labelscategory in ['text']:
+    if MLinfilltype in ['multirt']:
       
       #first convert the one-hot encoded set via argmax to a 1D array
       np_labels_argmax = np.argmax(np_labels, axis=1)
@@ -3140,7 +3328,8 @@ class AutoMunge:
       
       #apply function trainFSmodel
       FSmodel, baseaccuracy = \
-      self.trainFSmodel(am_train, am_labels, randomseed, labelsencoding_dict)
+      self.trainFSmodel(am_train, am_labels, randomseed, labelsencoding_dict, \
+                        process_dict)
       
       #get list of columns
       am_train_columns = list(am_train)
@@ -3176,7 +3365,8 @@ class AutoMunge:
           
           #determine resulting accuracy after shuffle
           columnaccuracy = self.shuffleaccuracy(shuffleset, am_labels, FSmodel, \
-                                                randomseed, labelsencoding_dict)
+                                                randomseed, labelsencoding_dict, \
+                                                process_dict)
           
           #I think this will clear some memory
           del shuffleset
@@ -3348,7 +3538,8 @@ class AutoMunge:
     #insert infill
     df = self.insertinfill(df, column, infill, category, \
                            pd.DataFrame(masterNArows[NArw_columnname]), \
-                           columnslist = columnslist, categorylist = categorylist)
+                           postprocess_dict, columnslist = columnslist, \
+                           categorylist = categorylist)
 
     return df
 
@@ -3373,7 +3564,8 @@ class AutoMunge:
     #insert infill
     df = self.insertinfill(df, column, infill, category, \
                            pd.DataFrame(masterNArows[NArw_columnname]), \
-                           columnslist = columnslist, categorylist = categorylist)
+                           postprocess_dict, columnslist = columnslist, \
+                           categorylist = categorylist)
     
     
     #this is hack
@@ -3462,18 +3654,29 @@ class AutoMunge:
     '''
     
     
-    #initialize processing dicitonaries
-    if bool(transformdict) == False:
-      transform_dict = \
-      self.assembletransformdict(powertransform, binstransform)
-    else:
-      transform_dict = transformdict
+#     #initialize processing dicitonaries
+#     if bool(transformdict) == False:
+#       transform_dict = \
+#       self.assembletransformdict(powertransform, binstransform)
+#     else:
+#       transform_dict = transformdict
     
-    if bool(processdict) == False:
-      process_dict = \
-      self.assembleprocessdict()
-    else:
-      process_dict = processdict
+#     if bool(processdict) == False:
+#       process_dict = \
+#       self.assembleprocessdict()
+#     else:
+#       process_dict = processdict
+    
+    #initialize processing dicitonaries
+    transform_dict = self.assembletransformdict(powertransform, binstransform)
+    
+    if bool(transformdict) != False:
+      transform_dict.update(transformdict)
+    
+    process_dict = self.assembleprocessdict()
+    
+    if bool(processdict) != False:
+      process_dict.update(processdict)
     
     
     
@@ -3659,7 +3862,8 @@ class AutoMunge:
     #original train. The dictionary will be populated with an entry for each \
     #column post processing, and will contain a column specific and category \
     #specific (i.e. nmbr, bnry, text, date) set of variable.
-    postprocess_dict = {'column_dict' : {}, 'origcolumn' : {}}
+    postprocess_dict = {'column_dict' : {}, 'origcolumn' : {}, \
+                        'process_dict' : process_dict}
     
     
 
@@ -3749,8 +3953,8 @@ class AutoMunge:
           templist1 = list(df_train)
           
           #create NArows (column of True/False where True coresponds to missing data)
-          trainNArows = self.NArows(df_train, column, category)
-          testNArows = self.NArows(df_test, column, category)
+          trainNArows = self.NArows(df_train, column, category, postprocess_dict)
+          testNArows = self.NArows(df_test, column, category, postprocess_dict)
 
           #now append that NArows onto a master NA rows df
           masterNArows_train = pd.concat([masterNArows_train, trainNArows], axis=1)
@@ -4171,24 +4375,33 @@ class AutoMunge:
         #add trainID set to train set for consistent processing
 #         train_df = pd.concat([train_df, trainID_df], axis=1)                        
         df_train = pd.concat([df_train, df_trainID], axis=1)                        
-
-      if labelscategory in ['bnry', 'text']:
-
-
-
+      
+      
+      if postprocess_dict['process_dict'][labelscategory]['MLinfilltype'] \
+      in ['numeric', 'singlct', 'multirt']:
+        
         #apply LabelFrequencyLevelizer defined function
-#         train_df, labels_df = \
-#         self.LabelFrequencyLevelizer(train_df, labels_df, labelsencoding_dict)
         df_train, df_labels = \
-        self.LabelFrequencyLevelizer(df_train, df_labels, labelsencoding_dict)
+        self.LabelFrequencyLevelizer(df_train, df_labels, labelsencoding_dict, \
+                                     postprocess_dict)
+      
+#       if labelscategory in ['bnry', 'text']:
 
-      elif labelscategory in ['nmbr', 'bxcx']:
+#         #apply LabelFrequencyLevelizer defined function
+# #         train_df, labels_df = \
+# #         self.LabelFrequencyLevelizer(train_df, labels_df, labelsencoding_dict)
+#         df_train, df_labels = \
+#         self.LabelFrequencyLevelizer(df_train, df_labels, labelsencoding_dict, \
+#                                      postprocess_dict)
 
-        #apply LabelFrequencyLevelizer defined function
-#         train_df, labels_df = \
-#         self.LabelFrequencyLevelizer(train_df, labels_df, labelsencoding_dict)
-        df_train, df_labels = \
-        self.LabelFrequencyLevelizer(df_train, df_labels, labelsencoding_dict)
+#       elif labelscategory in ['nmbr', 'bxcx']:
+
+#         #apply LabelFrequencyLevelizer defined function
+# #         train_df, labels_df = \
+# #         self.LabelFrequencyLevelizer(train_df, labels_df, labelsencoding_dict)
+#         df_train, df_labels = \
+#         self.LabelFrequencyLevelizer(df_train, df_labels, labelsencoding_dict, \
+#                                      postprocess_dict)
 
 
 
@@ -4237,7 +4450,7 @@ class AutoMunge:
                              'assigninfill' : assigninfill, \
                              'transformdict' : transformdict, \
                              'processdict' : processdict, \
-                             'automungeversion' : '1.78' })
+                             'automungeversion' : '1.79' })
 
     
     
@@ -4589,7 +4802,8 @@ class AutoMunge:
     elif process_dict[cousin]['singleprocess'] != None:
 
       df_test, _1 = \
-      process_dict[cousin]['singleprocess'](df_test, column, origcategory)
+      process_dict[cousin]['singleprocess'](df_test, column, origcategory, \
+                                            postprocess_dict)
 
     return df_test
   
@@ -4613,7 +4827,8 @@ class AutoMunge:
     elif process_dict[parent]['singleprocess'] != None:
 
       df_test, _1 = \
-      process_dict[parent]['singleprocess'](df_test, column, origcategory)
+      process_dict[parent]['singleprocess'](df_test, column, origcategory, \
+                                            postprocess_dict)
     
     #this is used to derive the new columns from the trasform
     newcolumnsset = set(list(df_test))
@@ -4737,7 +4952,54 @@ class AutoMunge:
 
     return mdf_test
   
-  
+
+  def postprocess_mnmx_class(self, mdf_test, column, postprocess_dict, columnkey):
+    '''
+    #postprocess_mnmx_class(mdf_test, column, postprocess_dict, columnkey)
+    #function to scale data to minimum of 0 and maximum of 1 based on training distribution
+    #takes as arguement pandas dataframe of training and test data (mdf_train), (mdf_test)\
+    #and the name of the column string ('column'), and the normalization parameters \
+    #stored in postprocess_dict
+    #replaces missing or improperly formatted data with mean of training values
+    #leaves original specified column in dataframe
+    #returns transformed dataframe
+
+    #expect this approach works better when the numerical distribution is thin tailed
+    #if only have training but not test data handy, use same training data for both dataframe inputs
+    '''
+    
+    
+    #retrieve normalizastion parameters from postprocess_dict
+    normkey = column + '_mnmx'
+    
+    mean = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
+    
+    minimum = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['minimum']
+    
+    maximum = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['maximum']
+
+    #copy original column for implementation
+    mdf_test[column + '_mnmx'] = mdf_test[column].copy()
+
+
+    #convert all values to either numeric or NaN
+    mdf_test[column + '_mnmx'] = pd.to_numeric(mdf_test[column + '_mnmx'], errors='coerce')
+
+    #get mean of training data
+    mean = mean  
+
+    #replace missing data with training set mean
+    mdf_test[column + '_mnmx'] = mdf_test[column + '_mnmx'].fillna(mean)
+
+    #perform min-max scaling to test set using values from train
+    mdf_test[column + '_mnmx'] = (mdf_test[column + '_mnmx'] - minimum) / \
+                                 (maximum - minimum)
+
+
+    return mdf_test
   
   
   def postprocess_binary_class(self, mdf_test, column, postprocess_dict, columnkey):
@@ -5411,7 +5673,7 @@ class AutoMunge:
 
 
   def createpostMLinfillsets(self, df_test, column, testNArows, category, \
-                             columnslist = [], categorylist = []):
+                             postprocess_dict, columnslist = [], categorylist = []):
     '''
     #createpostMLinfillsets(df_test, column, testNArows, category, \
     #columnslist = []) function that when fed dataframe of
@@ -5424,8 +5686,11 @@ class AutoMunge:
     #points that had missing values from the original sets, returning the dataframe\
     #df_test_fillfeatures
     '''
+    
+    MLinfilltype = postprocess_dict['process_dict'][category]['MLinfilltype']
 
-    if category in ['nmbr', 'nbr2', 'bxcx', 'bnry', 'text', 'bins', 'bint']:
+    #if category in ['nmbr', 'nbr2', 'bxcx', 'bnry', 'text', 'bins', 'bint']:
+    if MLinfilltype in ['numeric', 'singlct', 'multirt', 'multisp']:
 
       #if this is a single column set (not categorical)
       #if categorylist == []:
@@ -5545,6 +5810,7 @@ class AutoMunge:
         
 
     #if category == 'date':
+    #if MLinfilltype in ['exclude']:
     else:
 
       #create empty sets for now
@@ -5562,7 +5828,7 @@ class AutoMunge:
 
 
   def predictpostinfill(self, category, model, df_test_fillfeatures, \
-                        columnslist = []):
+                        postprocess_dict, columnslist = []):
     '''
     #predictpostinfill(category, model, df_test_fillfeatures, \
     #columnslist = []), function that takes as input \
@@ -5578,6 +5844,8 @@ class AutoMunge:
     #other ML architectures such a SVM or something SGD based for instance
     '''
     
+    MLinfilltype = postprocess_dict['process_dict'][category]['MLinfilltype']
+    
     #convert dataframes to numpy arrays
   #   np_train_filltrain = df_train_filltrain.values
   #   np_train_filllabel = df_train_filllabel.values
@@ -5591,7 +5859,8 @@ class AutoMunge:
     #if model[0] != False:
     if model != False:
 
-      if category in ['nmbr', 'bxcx', 'nbr2']:
+      #if category in ['nmbr', 'bxcx', 'nbr2']:
+      if MLinfilltype in ['numeric']:
 
   #       #train linear regression model using scikit-learn for numerical prediction
   #       #model = LinearRegression()
@@ -5643,7 +5912,8 @@ class AutoMunge:
 #         df_testinfill = pd.DataFrame(np_testinfill, columns = ['infill'])     
 
 
-      if category == 'bnry':
+      #if category == 'bnry':
+      if MLinfilltype in ['singlct']:
 
   #       #train logistic regression model using scikit-learn for binary classifier
   #       #model = LogisticRegression()
@@ -5667,7 +5937,8 @@ class AutoMunge:
         df_testinfill = pd.DataFrame(np_testinfill, columns = ['infill'])
 
 
-      if category in ['text', 'bins', 'bint']:
+      #if category in ['text', 'bins', 'bint']:
+      if MLinfilltype in ['multirt', 'multisp']:
 
   #       #first convert the one-hot encoded set via argmax to a 1D array
   #       np_train_filllabel_argmax = np.argmax(np_train_filllabel, axis=1)
@@ -5718,7 +5989,8 @@ class AutoMunge:
   #       print('category is text, df_traininfill is')
   #       print(df_traininfill)
 
-      if category == 'date':
+      #if category == 'date':
+      if MLinfilltype in ['exclude']:
 
         #create empty sets for now
         #an extension of this method would be to implement a comparable infill \
@@ -5784,14 +6056,14 @@ class AutoMunge:
       df_test_fillfeatures = \
       self.createpostMLinfillsets(df_test, column, \
                          pd.DataFrame(masterNArows_test[origcolumn+'_NArows']), \
-                         category, \
+                         category, postprocess_dict, \
                          columnslist = columnslist, \
                          categorylist = categorylist)
 
       #predict infill values using defined function predictinfill(.)
       df_testinfill = \
       self.predictpostinfill(category, model, df_test_fillfeatures, \
-                    columnslist = columnslist)
+                             postprocess_dict, columnslist = columnslist)
 
 
       #if model != False:
@@ -5799,7 +6071,8 @@ class AutoMunge:
 
         df_test = self.insertinfill(df_test, column, df_testinfill, category, \
                                pd.DataFrame(masterNArows_test[origcolumn+'_NArows']), \
-                               columnslist = columnslist, categorylist = categorylist)
+                               postprocess_dict, columnslist = columnslist, \
+                               categorylist = categorylist)
 
       #now change the infillcomplete marker in the text_dict for each \
       #associated text column
@@ -5839,21 +6112,36 @@ class AutoMunge:
     #columns to be excluded from processing.
     '''
     
+#     #initialize processing dicitonaries
+#     powertransform = postprocess_dict['powertransform']
+#     binstransform = postprocess_dict['binstransform']
+    
+#     if bool(postprocess_dict['transformdict']) == False:
+#       transform_dict = \
+#       self.assembletransformdict(powertransform, binstransform)
+#     else:
+#       transform_dict = postprocess_dict['transformdict']
+    
+#     if bool(postprocess_dict['processdict']) == False:
+#       process_dict = \
+#       self.assembleprocessdict()
+#     else:
+#       process_dict = postprocess_dict['processdict']
+    
     #initialize processing dicitonaries
+    
     powertransform = postprocess_dict['powertransform']
     binstransform = postprocess_dict['binstransform']
     
-    if bool(postprocess_dict['transformdict']) == False:
-      transform_dict = \
-      self.assembletransformdict(powertransform, binstransform)
-    else:
-      transform_dict = postprocess_dict['transformdict']
+    transform_dict = self.assembletransformdict(powertransform, binstransform)
     
-    if bool(postprocess_dict['processdict']) == False:
-      process_dict = \
-      self.assembleprocessdict()
-    else:
-      process_dict = postprocess_dict['processdict']
+    if bool(postprocess_dict['transformdict']) != False:
+      transform_dict.update(postprocess_dict['transformdict'])
+    
+    process_dict = self.assembleprocessdict()
+    
+    if bool(postprocess_dict['processdict']) != False:
+      process_dict.update(postprocess_dict['processdict'])
       
     #initialize the preFS postprocess_dict for use here
     preFSpostprocess_dict = deepcopy(postprocess_dict['preFSpostprocess_dict'])
@@ -6050,7 +6338,7 @@ class AutoMunge:
         else:
 
           #create NArows (column of True/False where True coresponds to missing data)
-          testNArows = self.NArows(df_test, column, category)
+          testNArows = self.NArows(df_test, column, category, postprocess_dict)
 
           #now append that NArows onto a master NA rows df
           masterNArows_test = pd.concat([masterNArows_test, testNArows], axis=1)
@@ -6186,7 +6474,7 @@ class AutoMunge:
     if postprocess_dict['featureselection'] == True:
       
       
-      #get list of columns currently included
+      #get list of columns currently includedt
       currentcolumns = list(df_test)
       
       #get list of columns to trim
