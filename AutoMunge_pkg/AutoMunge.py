@@ -189,6 +189,48 @@ class AutoMunge:
                                      'coworkers' : [], \
                                      'friends' : []}})
     
+    transform_dict.update({'mnm2' : {'greatgrandparents' : [], \
+                                     'grandparents' : ['NArw'], \
+                                     'parents' : ['nmbr'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['mnmx'], \
+                                     'cousins' : [], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'mnm3' : {'greatgrandparents' : [], \
+                                     'grandparents' : ['NArw'], \
+                                     'parents' : ['nmbr'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['mnm3'], \
+                                     'cousins' : [], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    transform_dict.update({'mnm4' : {'greatgrandparents' : [], \
+                                     'grandparents' : ['NArw'], \
+                                     'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['mnm3'], \
+                                     'cousins' : [], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    transform_dict.update({'mnm5' : {'greatgrandparents' : [], \
+                                     'grandparents' : ['NArw'], \
+                                     'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['mnmx'], \
+                                     'cousins' : ['nmbr'], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
     transform_dict.update({'excl' : {'greatgrandparents' : [], \
                                      'grandparents' : [], \
                                      'parents' : [], \
@@ -199,6 +241,16 @@ class AutoMunge:
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
+#     transform_dict.update({'exc2' : {'greatgrandparents' : [], \
+#                                      'grandparents' : [], \
+#                                      'parents' : [], \
+#                                      'siblings': [], \
+#                                      'auntsuncles' : [], \
+#                                      'cousins' : ['exc2'], \
+#                                      'children' : [], \
+#                                      'niecesnephews' : [], \
+#                                      'coworkers' : [], \
+#                                      'friends' : []}})
     
     
 
@@ -296,6 +348,26 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_mnmx_class, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric'}})
+    process_dict.update({'mnm2' : {'dualprocess' : self.process_mnmx_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_mnmx_class, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric'}})
+    process_dict.update({'mnm3' : {'dualprocess' : self.process_mnm3_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_mnm3_class, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric'}})
+    process_dict.update({'mnm4' : {'dualprocess' : self.process_mnm3_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_mnm3_class, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric'}})
+    process_dict.update({'mnm5' : {'dualprocess' : self.process_mnmx_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_mnmx_class, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric'}})
     process_dict.update({'bnry' : {'dualprocess' : self.process_binary_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_binary_class, \
@@ -344,6 +416,11 @@ class AutoMunge:
                                   'postprocess' : None, \
                                   'NArowtype' : 'exclude', \
                                   'MLinfilltype' : 'exclude'}})
+#     process_dict.update({'exc2' : {'dualprocess' : None, \
+#                                   'singleprocess' : self.process_exc2_class, \
+#                                   'postprocess' : None, \
+#                                   'NArowtype' : 'exclude', \
+#                                   'MLinfilltype' : 'exclude'}})
 
     return process_dict
 
@@ -911,7 +988,106 @@ class AutoMunge:
         
     return mdf_train, mdf_test, column_dict_list
 
-  
+
+
+  def process_mnm3_class(self, mdf_train, mdf_test, column, category, \
+                         postprocess_dict):
+    '''
+    #process_mnmx_class(mdf_train, mdf_test, column, category)
+    #function to scale data to minimum of 0 and maximum of 1 \
+    #after replacing extreme values above the 0.99 quantile with
+    #the value of 0.99 quantile and extreme values below the 0.01
+    #quantile with the value of 0.01 quantile
+    #takes as arguement pandas dataframe of training and test data (mdf_train), (mdf_test)\
+    #and the name of the column string ('column') and parent category (category)
+    #replaces missing or improperly formatted data with mean of remaining values
+    #returns same dataframes with new column of name column + '_mnmx'
+    #note this is a "dualprocess" function since is applied to both dataframes
+    '''
+
+    #copy source column into new column
+    mdf_train[column + '_mnm3'] = mdf_train[column].copy()
+    mdf_test[column + '_mnm3'] = mdf_test[column].copy()
+
+    #convert all values to either numeric or NaN
+    mdf_train[column + '_mnm3'] = pd.to_numeric(mdf_train[column + '_mnm3'], errors='coerce')
+    mdf_test[column + '_mnm3'] = pd.to_numeric(mdf_test[column + '_mnm3'], errors='coerce')
+
+    #get mean of training data
+    mean = mdf_train[column + '_mnm3'].mean()    
+
+    #replace missing data with training set mean
+    mdf_train[column + '_mnm3'] = mdf_train[column + '_mnm3'].fillna(mean)
+    mdf_test[column + '_mnm3'] = mdf_test[column + '_mnm3'].fillna(mean)
+
+    #get maximum value of training column
+    quantilemax = mdf_train[column + '_mnm3'].quantile(.99)
+
+    #get minimum value of training column
+    quantilemin = mdf_train[column + '_mnm3'].quantile(.01)
+
+    #replace values > quantilemax with quantilemax
+    mdf_train.loc[mdf_train[column + '_mnm3'] > quantilemax, (column + '_mnm3')] \
+    = quantilemax
+    mdf_test.loc[mdf_train[column + '_mnm3'] > quantilemax, (column + '_mnm3')] \
+    = quantilemax
+    #replace values < quantile10 with quantile10
+    mdf_train.loc[mdf_train[column + '_mnm3'] < quantilemin, (column + '_mnm3')] \
+    = quantilemin
+    mdf_test.loc[mdf_train[column + '_mnm3'] < quantilemin, (column + '_mnm3')] \
+    = quantilemin
+
+
+    #note this step is now performed after the quantile evaluation / replacement
+
+    #get mean of training data
+    mean = mdf_train[column + '_mnm3'].mean()    
+
+    #replace missing data with training set mean
+    mdf_train[column + '_mnm3'] = mdf_train[column + '_mnm3'].fillna(mean)
+    mdf_test[column + '_mnm3'] = mdf_test[column + '_mnm3'].fillna(mean)
+
+
+    #perform min-max scaling to train and test sets using values from train
+    mdf_train[column + '_mnm3'] = (mdf_train[column + '_mnm3'] - quantilemin) / \
+                                  (quantilemax - quantilemin)
+
+    mdf_test[column + '_mnm2'] = (mdf_test[column + '_mnm3'] - quantilemin) / \
+                                 (quantilemax - quantilemin)
+
+    #create list of columns
+    nmbrcolumns = [column + '_mnm3']
+
+
+    nmbrnormalization_dict = {column + '_mnm3' : {'quantilemin' : quantilemin, \
+                                                  'quantilemax' : quantilemax, \
+                                                  'mean' : mean}}
+
+    #store some values in the nmbr_dict{} for use later in ML infill methods
+    column_dict_list = []
+
+    for nc in nmbrcolumns:
+
+      if nc[-5:] == '_mnm3':
+
+        column_dict = { nc : {'category' : 'mnm3', \
+                             'origcategory' : category, \
+                             'normalization_dict' : nmbrnormalization_dict, \
+                             'origcolumn' : column, \
+                             'columnslist' : nmbrcolumns, \
+                             'categorylist' : [nc], \
+                             'infillmodel' : False, \
+                             'infillcomplete' : False, \
+                             'deletecolumn' : False}}
+
+        column_dict_list.append(column_dict.copy())
+
+
+
+    return mdf_train, mdf_test, column_dict_list
+
+
+
   def process_binary_class(self, mdf_train, mdf_test, column, category, \
                            postprocess_dict):
     '''
@@ -1853,8 +2029,37 @@ class AutoMunge:
 
     return df, column_dict_list  
 
+    
+#   #this method needs troubleshooting, for now just use excl
+#   def process_exc2_class(self, df, column, category, postprocess_dict):
+#     '''
+#     #here we'll address any columns that returned a 'exc2' category
+#     #note this is a. singleprocess transform
+#     #we'll simply populate the column_dict, no new column
+#     '''
+#     #exclcolumn = column + '_excl'
+#     exclcolumn = column
+#     #df[exclcolumn] = df[column].copy()
+#     #del df[column]
+    
+#     column_dict_list = []
+
+#     column_dict = {exclcolumn : {'category' : 'excl', \
+#                                  'origcategory' : category, \
+#                                  'normalization_dict' : {exclcolumn:{}}, \
+#                                  'origcolumn' : column, \
+#                                  'columnslist' : [exclcolumn], \
+#                                  'categorylist' : [exclcolumn], \
+#                                  'infillmodel' : False, \
+#                                  'infillcomplete' : False, \
+#                                  'deletecolumn' : False}}
+    
+#     #now append column_dict onto postprocess_dict
+#     column_dict_list.append(column_dict.copy())
 
 
+
+#     return df, column_dict_list  
 
 
   def evalcategory(self, df, column, numbercategoryheuristic):
@@ -3135,9 +3340,9 @@ class AutoMunge:
     return FSmodel, baseaccuracy
       
   
-  def createFSsets(self, am_subset, column, categorylist, randomseed):
+  def createFSsets(self, am_subset, column, columnslist, randomseed):
     '''
-    very simply shuffles rows of columns from categorylist with randomseed
+    very simply shuffles rows of columns from columnslist with randomseed
     then returns the resulting dataframe
     
     hat tip for permutation method from "Beware Default Random Forest Importances"
@@ -3146,11 +3351,47 @@ class AutoMunge:
     
     shuffleset = am_subset.copy()
     
-    for column in categorylist:
+    #troubleshoot
+    print("createFSsets column = ", column)
+    print("here is am_subset.head() pre shuffle in createFSsets()")
+    print(am_subset.head())
+    print("Here is columnslist")
+    print(columnslist)
+    
+    for clcolumn in columnslist:
       
-      shuffleset[column] = shuffle(shuffleset[column], random_state = randomseed)
+      #shuffleset[column] = shuffle(shuffleset[column], random_state = randomseed)
+      shuffleset[clcolumn] = shuffle(shuffleset[clcolumn].values, random_state = randomseed)
       
+    print("Here is shuffleset.head() after the shuffle of for column in cateogrylist")
+    print(shuffleset.head())
+    
     return shuffleset
+
+  def createFSsets2(self, am_subset, column, columnslist, randomseed):
+    '''
+    similar to createFSsets except performed such as to only leave one column from
+    the columnslist untouched and shuffle the rest 
+    '''
+    shuffleset2 = am_subset.copy()
+    
+    #troubleshoot
+    print("createFSsets2 column = ", column)
+    print("shuffleset2[column].head() pre shuffle")
+    print(shuffleset2[column].head())
+    
+    for clcolumn in columnslist:
+        
+      if clcolumn != column:
+            
+        shuffleset2[clcolumn] = shuffle(shuffleset2[clcolumn].values, random_state = randomseed)
+        
+    
+    print("shuffleset2[column].head() after the shuffle")
+    print(shuffleset2[column].head())
+              
+    return shuffleset2
+    
   
   def shuffleaccuracy(self, shuffleset, am_labels, FSmodel, randomseed, \
                       labelsencoding_dict, process_dict):
@@ -3191,7 +3432,8 @@ class AutoMunge:
       
       #evaluate accuracy metric
       #columnaccuracy = accuracy_score(np_labels, np_predictions)
-      columnaccuracy = mean_squared_log_error(np_labels, np_predictions)
+      #columnaccuracy = mean_squared_log_error(np_labels, np_predictions)
+      columnaccuracy = 1 - mean_squared_log_error(np_labels, np_predictions)
       
     #if labelscategory in ['bnry']:
     if MLinfilltype in ['singlct']:
@@ -3240,6 +3482,9 @@ class AutoMunge:
     #create empty dataframe for sorting purposes
     FSsupport_df = pd.DataFrame(columns=['FS_column', 'metric', 'category'])
     
+    #Future extension:
+    #FSsupport_df = pd.DataFrame(columns=['FS_column', 'metric', 'metric2', 'category'])
+    
     #add rows to the dataframe for each column
     for key in FScolumn_dict:
       
@@ -3271,6 +3516,9 @@ class AutoMunge:
 #     #calculate the number of features we'll keep using the ratio passed from automunge
 #     numbermakingcut = int(metriccount * featurepct)
     
+    if featuremethod not in ['pct', 'metric']:
+      print("error featuremethod object must be one of ['pct', 'metric']")
+    
     if featuremethod == 'pct':
 
       #calculate the number of features we'll keep using the ratio passed from automunge
@@ -3288,8 +3536,9 @@ class AutoMunge:
     madethecut = madethecut + candidateNArws
     
     return madethecut
-  
-  
+
+
+    
   def featureselect(self, df_train, labels_column, trainID_column, \
                     powertransform, binstransform, randomseed, \
                     numbercategoryheuristic, assigncat, transformdict, \
@@ -3308,12 +3557,12 @@ class AutoMunge:
     #note the passed arguments, these are all intentional (no MLinfill applied,
     #primary goal here is to produce a processed dataframe for df_subset
     #with corresponding labels)
-    am_train, _1, am_labels, _2, _3, \
-    _4, _5, _6, _7, \
+    am_train, _1, am_labels, am_validation1, _3, \
+    am_validationlabels1, _5, _6, _7, \
     _8, _9, labelsencoding_dict, finalcolumns_train, _10,  \
     _11, FSpostprocess_dict = \
     self.automunge(df_train, df_test = False, labels_column = labels_column, trainID_column = trainID_column, \
-                  testID_column = False, valpercent1 = 0.0, valpercent2 = 0.0, \
+                  testID_column = False, valpercent1 = 0.33, valpercent2 = 0.0, \
                   shuffletrain = False, TrainLabelFreqLevel = False, powertransform = powertransform, \
                   binstransform = binstransform, MLinfill = False, infilliterate=1, randomseed = randomseed, \
                   numbercategoryheuristic = numbercategoryheuristic, pandasoutput = True, \
@@ -3351,48 +3600,96 @@ class AutoMunge:
                                         'columnslist' : columnslist, \
                                         'FScomplete' : False, \
                                         'shuffleaccuracy' : None, \
+                                        'shuffleaccuracy2' : None, \
                                         'baseaccuracy' : baseaccuracy, \
-                                        'metric' : None}})
+                                        'metric' : None, \
+                                        'metric2' : None}})
         
       #perform feature evaluation on each column
       for column in am_train_columns:
         
         if column[-5:] != '_NArw' \
         and FScolumn_dict[column]['FScomplete'] == False:
+            
+          #categorylist = FScolumn_dict[column]['categorylist']
+          #update version 1.80, let's perform FS on columnslist instead of categorylist
+          columnslist = FScolumn_dict[column]['columnslist']
           
-          #create set with columns shuffle from categorylist
-          shuffleset = self.createFSsets(am_train, column, categorylist, randomseed)
+          #create set with columns shuffle from columnslist
+          #shuffleset = self.createFSsets(am_train, column, categorylist, randomseed)
+          #shuffleset = self.createFSsets(am_train, column, columnslist, randomseed)
+          shuffleset = self.createFSsets(am_validation1, column, columnslist, randomseed)
           
           #determine resulting accuracy after shuffle
-          columnaccuracy = self.shuffleaccuracy(shuffleset, am_labels, FSmodel, \
-                                                randomseed, labelsencoding_dict, \
+#           columnaccuracy = self.shuffleaccuracy(shuffleset, am_labels, FSmodel, \
+#                                                 randomseed, labelsencoding_dict, \
+#                                                 process_dict)
+          columnaccuracy = self.shuffleaccuracy(shuffleset, am_validationlabels1, \
+                                                FSmodel, randomseed, labelsencoding_dict, \
                                                 process_dict)
+
           
           #I think this will clear some memory
           del shuffleset
           
           #category accuracy penalty metric
           metric = baseaccuracy - columnaccuracy
+          #metric2 = baseaccuracy - columnaccuracy2
+        
+          
           
           #save accuracy to FScolumn_dict and set FScomplete to True
           #(for each column in the categorylist)
-          for categorycolumn in FSpostprocess_dict['column_dict'][column]['categorylist']:
+          #for categorycolumn in FSpostprocess_dict['column_dict'][column]['categorylist']:
+          for categorycolumn in FSpostprocess_dict['column_dict'][column]['columnslist']:
             
             FScolumn_dict[categorycolumn]['FScomplete'] = True
             FScolumn_dict[categorycolumn]['shuffleaccuracy'] = columnaccuracy
             FScolumn_dict[categorycolumn]['metric'] = metric
-            
-        if column[-5:] == '_NArw':
+            #FScolumn_dict[categorycolumn]['shuffleaccuracy2'] = columnaccuracy2
+            #FScolumn_dict[categorycolumn]['metric2'] = metric2
           
-          #we'll simply introduce a convention that NArw columns are not ranked
-          #for feature importance by default
-          #...
-          pass
+                    
+
+        #if column[-5:] != '_NArw':
+        if True == True:
+          
+          columnslist = FScolumn_dict[column]['columnslist']
+            
+          #create second set with all but one columns shuffled from columnslist
+          #this will allow us to compare the relative importance between columns
+          #derived from the same parent
+          #shuffleset2 = self.createFSsets2(am_train, column, columnslist, randomseed)
+          shuffleset2 = self.createFSsets2(am_validation1, column, columnslist, randomseed)
+          
+          #determine resulting accuracy after shuffle
+#           columnaccuracy2 = self.shuffleaccuracy(shuffleset2, am_labels, FSmodel, \
+#                                                 randomseed, labelsencoding_dict, \
+#                                                 process_dict)
+          columnaccuracy2 = self.shuffleaccuracy(shuffleset2, am_validationlabels1, \
+                                                FSmodel, randomseed, labelsencoding_dict, \
+                                                process_dict)
+          
+          metric2 = baseaccuracy - columnaccuracy2
+          
+          FScolumn_dict[column]['shuffleaccuracy2'] = columnaccuracy2
+          FScolumn_dict[column]['metric2'] = metric2
+        
+        
+#         if column[-5:] == '_NArw':
+          
+#           #we'll simply introduce a convention that NArw columns are not ranked
+#           #for feature importance by default
+#           #...
+#           pass
           
           
     #madethecut = self.assemblemadethecut(FScolumn_dict, featurepct, am_subset_columns)
     madethecut = self.assemblemadethecut(FScolumn_dict, featurepct, featuremetric, \
                                          featuremethod, am_train_columns)
+    
+    #troubleshoot
+    print("len(madethecut) = ", len(madethecut))
     
     #if the only column left in madethecut from origin column is a NArw, delete from the set
     #(this is going to lean on the column ID string naming conventions)
@@ -3417,8 +3714,8 @@ class AutoMunge:
     #(might want to make this a passed argument from automunge)
     
     #I think this will clear some memory
-    del am_train, _1, am_labels, _2, _3, \
-    _4, _5, _6, _7, \
+    del am_train, _1, am_labels, am_validation1, _3, \
+    am_validationlabels1, _5, _6, _7, \
     _8, _9, labelsencoding_dict, finalcolumns_train, _10,  \
     FSpostprocess_dict
     
@@ -3671,11 +3968,30 @@ class AutoMunge:
     transform_dict = self.assembletransformdict(powertransform, binstransform)
     
     if bool(transformdict) != False:
+      
+#       #first print a notification if we are overwriting anything
+#       for keytd in list(transformdict.keys()):
+#         #keytd = key
+#         if keytd in list(transform_dict.keys()):
+#           print("Note that a key in the user passed transformdict already exists in library")
+#           print("Overwriting entry for trasnformdict key ", keytd)
+      
+      #now update the trasnformdict
       transform_dict.update(transformdict)
     
+    #initialize process_dict
     process_dict = self.assembleprocessdict()
     
     if bool(processdict) != False:
+      
+#       #first print a notification if we are overwriting anything
+#       for keypd in list(processdict.keys()):
+#         #keypd = key
+#         if keypd in list(processdict.keys()):
+#           print("Note that a key in the user passed processdict already exists in library")
+#           print("Overwriting entry for processdict key ", keypd)
+      
+      #now update the processdict
       process_dict.update(processdict)
     
     
@@ -3985,14 +4301,22 @@ class AutoMunge:
           #as a "columnkey" for pulling datas from the postprocess_dict down the road
           #columnkeylist = list(set(templist2) - set(templist1))[0]
           columnkeylist = list(set(templist2) - set(templist1))
+            
+          #troubleshoot
+          print("columnkeylist = ", columnkeylist)
           
           #so last line I believe returns string if only one entry, so let's run a test
           if isinstance(columnkeylist, str):
             columnkey = columnkeylist
           else:
-            columnkey = columnkeylist[0]
-            if columnkey[-5:] == '_NArw':
-              columnkey = columnkeylist[1]
+            #if list is empty
+            if len(columnkeylist) == 0:
+              columnkey = column
+            else:
+              columnkey = columnkeylist[0]
+              if len(columnkey) >= 5:
+                if columnkey[-5:] == '_NArw':
+                  columnkey = columnkeylist[1]
               
           
           
@@ -4450,7 +4774,7 @@ class AutoMunge:
                              'assigninfill' : assigninfill, \
                              'transformdict' : transformdict, \
                              'processdict' : processdict, \
-                             'automungeversion' : '1.79' })
+                             'automungeversion' : '1.799' })
 
     
     
@@ -5000,7 +5324,58 @@ class AutoMunge:
 
 
     return mdf_test
-  
+
+
+  def postprocess_mnm3_class(self, mdf_test, column, postprocess_dict, columnkey):
+    '''
+    #postprocess_mnmx_class(mdf_test, column, postprocess_dict, columnkey)
+    #function to scale data to minimum of 0 and maximum of 1 based on training distribution
+    #quantiles with values exceeding quantiles capped
+    #takes as arguement pandas dataframe of training and test data (mdf_train), (mdf_test)\
+    #and the name of the column string ('column'), and the normalization parameters \
+    #stored in postprocess_dict
+    #replaces missing or improperly formatted data with mean of training values
+    #leaves original specified column in dataframe
+    #returns transformed dataframe
+
+    #expect this approach works better when the numerical distribution is thin tailed
+    #if only have training but not test data handy, use same training data for both dataframe inputs
+    '''
+
+
+    #retrieve normalizastion parameters from postprocess_dict
+    normkey = column + '_mnm3'
+
+    mean = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
+
+    quantilemin = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['quantilemin']
+
+    quantilemax = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['quantilemax']
+
+    #copy original column for implementation
+    mdf_test[column + '_mnm3'] = mdf_test[column].copy()
+
+
+    #convert all values to either numeric or NaN
+    mdf_test[column + '_mnm3'] = pd.to_numeric(mdf_test[column + '_mnm3'], errors='coerce')
+
+    #get mean of training data
+    mean = mean  
+
+    #replace missing data with training set mean
+    mdf_test[column + '_mnm3'] = mdf_test[column + '_mnm3'].fillna(mean)
+
+    #perform min-max scaling to test set using values from train
+    mdf_test[column + '_mnm3'] = (mdf_test[column + '_mnm3'] - quantilemin) / \
+                                 (quantilemax - quantilemin)
+
+
+    return mdf_test
+
+
   
   def postprocess_binary_class(self, mdf_test, column, postprocess_dict, columnkey):
     '''
