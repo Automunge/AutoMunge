@@ -3351,21 +3351,11 @@ class AutoMunge:
     
     shuffleset = am_subset.copy()
     
-    #troubleshoot
-    print("createFSsets column = ", column)
-    print("here is am_subset.head() pre shuffle in createFSsets()")
-    print(am_subset.head())
-    print("Here is columnslist")
-    print(columnslist)
-    
     for clcolumn in columnslist:
       
       #shuffleset[column] = shuffle(shuffleset[column], random_state = randomseed)
       shuffleset[clcolumn] = shuffle(shuffleset[clcolumn].values, random_state = randomseed)
       
-    print("Here is shuffleset.head() after the shuffle of for column in cateogrylist")
-    print(shuffleset.head())
-    
     return shuffleset
 
   def createFSsets2(self, am_subset, column, columnslist, randomseed):
@@ -3375,11 +3365,6 @@ class AutoMunge:
     '''
     shuffleset2 = am_subset.copy()
     
-    #troubleshoot
-    print("createFSsets2 column = ", column)
-    print("shuffleset2[column].head() pre shuffle")
-    print(shuffleset2[column].head())
-    
     for clcolumn in columnslist:
         
       if clcolumn != column:
@@ -3387,9 +3372,6 @@ class AutoMunge:
         shuffleset2[clcolumn] = shuffle(shuffleset2[clcolumn].values, random_state = randomseed)
         
     
-    print("shuffleset2[column].head() after the shuffle")
-    print(shuffleset2[column].head())
-              
     return shuffleset2
     
   
@@ -3688,8 +3670,6 @@ class AutoMunge:
     madethecut = self.assemblemadethecut(FScolumn_dict, featurepct, featuremetric, \
                                          featuremethod, am_train_columns)
     
-    #troubleshoot
-    print("len(madethecut) = ", len(madethecut))
     
     #if the only column left in madethecut from origin column is a NArw, delete from the set
     #(this is going to lean on the column ID string naming conventions)
@@ -4302,9 +4282,6 @@ class AutoMunge:
           #columnkeylist = list(set(templist2) - set(templist1))[0]
           columnkeylist = list(set(templist2) - set(templist1))
             
-          #troubleshoot
-          print("columnkeylist = ", columnkeylist)
-          
           #so last line I believe returns string if only one entry, so let's run a test
           if isinstance(columnkeylist, str):
             columnkey = columnkeylist
