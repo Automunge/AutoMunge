@@ -17,6 +17,9 @@ import datetime as dt
 #imports for process_bxcx_class
 from scipy import stats
 
+#imports for process_hldy_class
+from pandas.tseries.holiday import USFederalHolidayCalendar
+
 #imports for evalcategory
 import collections
 import datetime as dt
@@ -123,17 +126,6 @@ class AutoMunge:
                                      'coworkers' : [], \
                                      'friends' : []}})
 
-    transform_dict.update({'date' : {'greatgrandparents' : [], \
-                                     'grandparents' : ['NArw'], \
-                                     'parents' : [], \
-                                     'siblings': [], \
-                                     'auntsuncles' : ['date'], \
-                                     'cousins' : [], \
-                                     'children' : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers' : [], \
-                                     'friends' : []}})
-
     transform_dict.update({'null' : {'greatgrandparents' : [], \
                                      'grandparents' : [], \
                                      'parents' : [], \
@@ -230,7 +222,96 @@ class AutoMunge:
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
-    
+    transform_dict.update({'date' : {'greatgrandparents' : [], \
+                                     'grandparents' : ['NArw'], \
+                                     'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['date'], \
+                                     'cousins' : [], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    transform_dict.update({'dat2' : {'greatgrandparents' : [], \
+                                     'grandparents' : ['NArw'], \
+                                     'parents' : [], \
+                                     'siblings': ['bshr', 'wkdy', 'hldy'], \
+                                     'auntsuncles' : ['date'], \
+                                     'cousins' : [], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    transform_dict.update({'bxc2' : {'greatgrandparents' : [], \
+                                     'grandparents' : ['NArw'], \
+                                     'parents' : ['bxcx'], \
+                                     'siblings': ['nmbr'], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [], \
+                                     'children' : ['nmbr'], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    transform_dict.update({'bxc3' : {'greatgrandparents' : [], \
+                                     'grandparents' : ['NArw'], \
+                                     'parents' : ['bxcx'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [], \
+                                     'children' : ['nmbr'], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    transform_dict.update({'bxc4' : {'greatgrandparents' : [], \
+                                     'grandparents' : ['NArw'], \
+                                     'parents' : ['bxcx'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [], \
+                                     'children' : ['nbr2'], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    transform_dict.update({'wkdy' : {'greatgrandparents' : [], \
+                                     'grandparents' : [], \
+                                     'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['wkdy'], \
+                                     'cousins' : [], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    transform_dict.update({'bshr' : {'greatgrandparents' : [], \
+                                     'grandparents' : [], \
+                                     'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['bshr'], \
+                                     'cousins' : [], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    transform_dict.update({'hldy' : {'greatgrandparents' : [], \
+                                     'grandparents' : [], \
+                                     'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['hldy'], \
+                                     'cousins' : [], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    transform_dict.update({'bins' : {'greatgrandparents' : [], \
+                                     'grandparents' : [], \
+                                     'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['bins'], \
+                                     'cousins' : [], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
     transform_dict.update({'excl' : {'greatgrandparents' : [], \
                                      'grandparents' : [], \
                                      'parents' : [], \
@@ -281,18 +362,6 @@ class AutoMunge:
                                        'coworkers' : [], \
                                        'friends' : []}})
 
-#     #currently bins will always be niecesnephews so not used as a key, but putting
-#     #this here incase of future incorporation as a child
-#     transform_dict.update({'bins' : {'greatgrandparents' : [], \
-#                                      'grandparents' : ['NArw'], \
-#                                      'parents' : [], \
-#                                      'siblings': [], \
-#                                      'auntsuncles' : ['bins'], \
-#                                      'cousins' : [], \
-#                                      'children' : [], \
-#                                      'niecesnephews' : [], \
-#                                      'coworkers' : [], \
-#                                      'friends' : []}})
 
 
     return transform_dict
@@ -378,16 +447,51 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_text_class, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'multirt'}})
-    process_dict.update({'date' : {'dualprocess' : self.process_time_class, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_time_class, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'exclude'}})
     process_dict.update({'bxcx' : {'dualprocess' : self.process_bxcx_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_bxcx_class, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric'}})
+    process_dict.update({'date' : {'dualprocess' : self.process_time_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_time_class, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'exclude'}})
+    process_dict.update({'dat2' : {'dualprocess' : self.process_time_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_time_class, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'exclude'}})
+    process_dict.update({'bxc2' : {'dualprocess' : self.process_bxcx_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_bxcx_class, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric'}})
+    process_dict.update({'bxc3' : {'dualprocess' : self.process_bxcx_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_bxcx_class, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric'}})
+    process_dict.update({'bxc4' : {'dualprocess' : self.process_bxcx_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_bxcx_class, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric'}})
+    process_dict.update({'wkdy' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_wkdy_class, \
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'singlct'}})
+    process_dict.update({'bshr' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_bshr_class, \
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'singlct'}})
+    process_dict.update({'hldy' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_hldy_class, \
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'singlct'}})
     process_dict.update({'bins' : {'dualprocess' : self.process_bins_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_bins_class, \
@@ -1574,7 +1678,162 @@ class AutoMunge:
       
     return mdf_train, mdf_test, column_dict_list
   
+
+  def process_bshr_class(self, df, column, category, postprocess_dict):
+    '''
+    #processing funciton depending on input format of datetime data 
+    #that creates a boolean column indicating 1 for rows
+    #corresponding to traditional business hours in source column
+    #note this is a "singleprocess" function since is applied to single dataframe
+    '''
+    
+    #convert improperly formatted values to datetime in new column
+    df[column+'_bshr'] = pd.to_datetime(df[column], errors = 'coerce')
+    
+    #This is kind of hack for whole hour increments, if we were needing
+    #to evlauate hour ranges between seperate days a different metod
+    #would be required
+    #For now we'll defer to Dollly Parton
+    df[column+'_bshr'] = df[column+'_bshr'].dt.hour
+    df[column+'_bshr'] = df[column+'_bshr'].between(9,17)
+    
+    #reduce memory footprint
+    df[column+'_bshr'] = df[column+'_bshr'].astype(np.int8)
+    
+    
+    #create list of columns
+    datecolumns = [column + '_bshr']
+
+    #create normalization dictionary
+    normalization_dict = {column + '_bshr' : {}}
+
+    #store some values in the nmbr_dict{} for use later in ML infill methods
+    column_dict_list = []
+
+    for dc in datecolumns:
+
+      if dc[-5:] != '_NArw':
+
+        column_dict = { dc : {'category' : 'bshr', \
+                             'origcategory' : category, \
+                             'normalization_dict' : normalization_dict, \
+                             'origcolumn' : column, \
+                             'columnslist' : datecolumns, \
+                             'categorylist' : [dc], \
+                             'infillmodel' : False, \
+                             'infillcomplete' : False, \
+                             'deletecolumn' : False, \
+                             'downstream':[]}}
+
+        column_dict_list.append(column_dict.copy())
+
+    return df, column_dict_list
+
+
+
+  def process_wkdy_class(self, df, column, category, postprocess_dict):
+    '''
+    #processing funciton depending on input format of datetime data 
+    #that creates a boolean column indicating 1 for rows
+    #corresponding to weekdays in source column
+    #note this is a "singleprocess" function since is applied to single dataframe
+    '''
+    
+    #convert improperly formatted values to datetime in new column
+    df[column+'_wkdy'] = pd.to_datetime(df[column], errors = 'coerce')
+    
+    #This is kind of hack for whole hour increments, if we were needing
+    #to evlauate hour ranges between seperate days a different metod
+    #would be required
+    #For now we'll defer to Dollly Parton
+    df[column+'_wkdy'] = pd.DatetimeIndex(df[column+'_wkdy']).dayofweek
+    
+    df[column+'_wkdy'] = df[column+'_wkdy'].between(0,4)
+    
+    #reduce memory footprint
+    df[column+'_wkdy'] = df[column+'_wkdy'].astype(np.int8)
+    
+    
+    #create list of columns
+    datecolumns = [column+'_wkdy']
+
+    #create normalization dictionary
+    normalization_dict = {column+'_wkdy' : {}}
+
+    #store some values in the nmbr_dict{} for use later in ML infill methods
+    column_dict_list = []
+
+    for dc in datecolumns:
+
+      if dc[-5:] != '_NArw':
+
+        column_dict = { dc : {'category' : 'wkdy', \
+                             'origcategory' : category, \
+                             'normalization_dict' : normalization_dict, \
+                             'origcolumn' : column, \
+                             'columnslist' : datecolumns, \
+                             'categorylist' : [dc], \
+                             'infillmodel' : False, \
+                             'infillcomplete' : False, \
+                             'deletecolumn' : False, \
+                             'downstream':[]}}
+
+        column_dict_list.append(column_dict.copy())
+
+    return df, column_dict_list
+
+
+
+  def process_hldy_class(self, df, column, category, postprocess_dict):
+    '''
+    #processing funciton depending on input format of datetime data 
+    #that creates a boolean column indicating 1 for rows
+    #corresponding to US Federal Holidays in source column
+    #note this is a "singleprocess" function since is applied to single dataframe
+    '''
+    
+    #convert improperly formatted values to datetime in new column
+    df[column+'_hldy'] = pd.to_datetime(df[column], errors = 'coerce')
+    
+    #grab list of holidays from import
+    holidays = USFederalHolidayCalendar().holidays()
+    
+    #activate boolean identifier for holidays
+    df[column+'_hldy'] = df[column+'_hldy'].isin(holidays)
+
+    #reduce memory footprint
+    df[column+'_hldy'] = df[column+'_hldy'].astype(np.int8)
+    
+    #create list of columns
+    datecolumns = [column + '_hldy']
+
+    #create normalization dictionary
+    normalization_dict = {column + '_hldy' : {}}
+
+    #store some values in the nmbr_dict{} for use later in ML infill methods
+    column_dict_list = []
+
+    for dc in datecolumns:
+
+      if dc[-5:] != '_NArw':
+
+        column_dict = { dc : {'category' : 'hldy', \
+                             'origcategory' : category, \
+                             'normalization_dict' : normalization_dict, \
+                             'origcolumn' : column, \
+                             'columnslist' : datecolumns, \
+                             'categorylist' : [dc], \
+                             'infillmodel' : False, \
+                             'infillcomplete' : False, \
+                             'deletecolumn' : False, \
+                             'downstream':[]}}
+
+        column_dict_list.append(column_dict.copy())
+
+    return df, column_dict_list
+
   
+    
   def process_bxcx_class(self, mdf_train, mdf_test, column, category, \
                          postprocess_dict):
     '''
@@ -2052,7 +2311,8 @@ class AutoMunge:
 #                                  'categorylist' : [exclcolumn], \
 #                                  'infillmodel' : False, \
 #                                  'infillcomplete' : False, \
-#                                  'deletecolumn' : False}}
+#                                  'deletecolumn' : False, \
+#                                  'downstream':[]}}
     
 #     #now append column_dict onto postprocess_dict
 #     column_dict_list.append(column_dict.copy())
@@ -3483,17 +3743,21 @@ class AutoMunge:
     #create list of candidate entries for madethecut
     candidates = list(FSsupport_df['FS_column'])
     
-    #count the number of NaN values originating form NArw cells
-    NaNcount = FSsupport_df['metric'].isna().sum()
+    
+    #count the number of NArw categories
+    NaNcount = len(FSsupport_df[FSsupport_df['category']=='NArw'])
     #count the total number of rows
     totalrowcount =  FSsupport_df.shape[0]
     #count ranked rows
     metriccount = totalrowcount - NaNcount
     
     #create list of NArws
-    candidateNArws = candidates[-NaNcount:]
+    #candidateNArws = candidates[-NaNcount:]
+    candidateNArws = list(FSsupport_df[FSsupport_df['category']=='NArw']['FS_column'])
+    
     #create list of feature rows
-    candidatefeaturerows = candidates[:-NaNcount]
+    #candidatefeaturerows = candidates[:-NaNcount]
+    candidatefeaturerows = list(FSsupport_df[FSsupport_df['category']!='NArw']['FS_column'])
     
 #     #calculate the number of features we'll keep using the ratio passed from automunge
 #     numbermakingcut = int(metriccount * featurepct)
@@ -3511,7 +3775,6 @@ class AutoMunge:
       #calculate the number of features we'll keep using the ratio passed from automunge
       numbermakingcut = len(FSsupport_df[FSsupport_df['metric'] >= featuremetric])
       
-  
     #generate list of rows making the cut
     madethecut = candidatefeaturerows[:numbermakingcut]
     #add on the NArws
@@ -3524,7 +3787,7 @@ class AutoMunge:
   def featureselect(self, df_train, labels_column, trainID_column, \
                     powertransform, binstransform, randomseed, \
                     numbercategoryheuristic, assigncat, transformdict, \
-                    process_dict, featurepct, featuremetric, featuremethod):
+                    processdict, featurepct, featuremetric, featuremethod):
     '''
     featureselect is a function called within automunge() that applies methods
     to evaluate predictive power of derived features towards a downstream model
@@ -3534,7 +3797,7 @@ class AutoMunge:
     automunge() can then remove extraneous branches.
     '''
     
-    
+    #troubleshoot
     #now we'll use automunge() to prepare the subset for feature evaluation
     #note the passed arguments, these are all intentional (no MLinfill applied,
     #primary goal here is to produce a processed dataframe for df_subset
@@ -3551,7 +3814,14 @@ class AutoMunge:
                   featureselection = False, featurepct = 1.00, featuremetric = featuremetric, \
                   featuremethod = 'pct', assigncat = assigncat, \
                   assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'adjinfill':[]}, \
-                  transformdict = transformdict, processdict = process_dict)
+                  transformdict = transformdict, processdict = processdict)
+    
+    
+    #this is the returned process_dict
+    #(remember "processdict" is what we pass to automunge() call, "process_dict" is what is 
+    #assembled inside automunge, there is a difference)
+    FSprocess_dict = FSpostprocess_dict['process_dict']
+    
     
     
     #if am_labels is not an empty set
@@ -3560,7 +3830,7 @@ class AutoMunge:
       #apply function trainFSmodel
       FSmodel, baseaccuracy = \
       self.trainFSmodel(am_train, am_labels, randomseed, labelsencoding_dict, \
-                        process_dict)
+                        FSprocess_dict)
       
       #get list of columns
       am_train_columns = list(am_train)
@@ -3603,12 +3873,9 @@ class AutoMunge:
           shuffleset = self.createFSsets(am_validation1, column, columnslist, randomseed)
           
           #determine resulting accuracy after shuffle
-#           columnaccuracy = self.shuffleaccuracy(shuffleset, am_labels, FSmodel, \
-#                                                 randomseed, labelsencoding_dict, \
-#                                                 process_dict)
           columnaccuracy = self.shuffleaccuracy(shuffleset, am_validationlabels1, \
                                                 FSmodel, randomseed, labelsencoding_dict, \
-                                                process_dict)
+                                                FSprocess_dict)
 
           
           #I think this will clear some memory
@@ -3650,7 +3917,7 @@ class AutoMunge:
 #                                                 process_dict)
           columnaccuracy2 = self.shuffleaccuracy(shuffleset2, am_validationlabels1, \
                                                 FSmodel, randomseed, labelsencoding_dict, \
-                                                process_dict)
+                                                FSprocess_dict)
           
           metric2 = baseaccuracy - columnaccuracy2
           
@@ -3666,7 +3933,6 @@ class AutoMunge:
 #           pass
           
           
-    #madethecut = self.assemblemadethecut(FScolumn_dict, featurepct, am_subset_columns)
     madethecut = self.assemblemadethecut(FScolumn_dict, featurepct, featuremetric, \
                                          featuremethod, am_train_columns)
     
@@ -3698,7 +3964,6 @@ class AutoMunge:
     am_validationlabels1, _5, _6, _7, \
     _8, _9, labelsencoding_dict, finalcolumns_train, _10,  \
     FSpostprocess_dict
-    
     
     return madethecut, FSmodel, FScolumn_dict
 
@@ -3983,7 +4248,7 @@ class AutoMunge:
       self.featureselect(df_train, labels_column, trainID_column, \
                         powertransform, binstransform, randomseed, \
                         numbercategoryheuristic, assigncat, transformdict, \
-                        process_dict, featurepct, featuremetric, featuremethod)
+                        processdict, featurepct, featuremetric, featuremethod)
                                      
     else:
     
@@ -4750,8 +5015,10 @@ class AutoMunge:
                              'assigncat' : assigncat, \
                              'assigninfill' : assigninfill, \
                              'transformdict' : transformdict, \
+                             'transform_dict' : transform_dict, \
                              'processdict' : processdict, \
-                             'automungeversion' : '1.799' })
+                             'process_dict' : process_dict, \
+                             'automungeversion' : '1.8' })
 
     
     
@@ -5531,14 +5798,6 @@ class AutoMunge:
     columnNAr2 = column + '_NAr2'
     if columnNAr2 in list(mdf_test):
       del mdf_test[columnNAr2]
-    
-#     #troubleshooting version 1.77
-#     columnNArw = column + '_NArw'
-#     if columnNArw in list(mdf_test):
-#       del mdf_test[columnNArw]
-    
-    
-
     
     #change data types to 8-bit (1 byte) integers for memory savings
     for textcolumn in textcolumns:
