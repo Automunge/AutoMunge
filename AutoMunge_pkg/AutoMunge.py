@@ -5018,7 +5018,7 @@ class AutoMunge:
                              'transform_dict' : transform_dict, \
                              'processdict' : processdict, \
                              'process_dict' : process_dict, \
-                             'automungeversion' : '1.8' })
+                             'automungeversion' : '1.80' })
 
     
     
