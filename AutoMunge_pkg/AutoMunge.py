@@ -244,7 +244,7 @@ class AutoMunge:
                                      'friends' : []}})
     transform_dict.update({'bxc2' : {'greatgrandparents' : [], \
                                      'grandparents' : ['NArw'], \
-                                     'parents' : ['bxcx'], \
+                                     'parents' : ['bxc2'], \
                                      'siblings': ['nmbr'], \
                                      'auntsuncles' : [], \
                                      'cousins' : [], \
@@ -254,7 +254,7 @@ class AutoMunge:
                                      'friends' : []}})
     transform_dict.update({'bxc3' : {'greatgrandparents' : [], \
                                      'grandparents' : ['NArw'], \
-                                     'parents' : ['bxcx'], \
+                                     'parents' : ['bxc3'], \
                                      'siblings': [], \
                                      'auntsuncles' : [], \
                                      'cousins' : [], \
@@ -5018,7 +5018,7 @@ class AutoMunge:
                              'transform_dict' : transform_dict, \
                              'processdict' : processdict, \
                              'process_dict' : process_dict, \
-                             'automungeversion' : '1.800' })
+                             'automungeversion' : '1.801' })
 
     
     
