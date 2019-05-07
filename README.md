@@ -413,6 +413,20 @@ column may be passed for index identification).
 
 ...
 
+As a citation, please note that the Automunge package makes use of both the Pandas and 
+Sciki-learn libraries.
+
+Wes McKinney. Data Structures for Statistical Computing in Python, Proceedings of the 
+9th Python in Science Conference, 51-56 (2010) [publisher link](http://conference.scipy.org/proceedings/scipy2010/mckinney.html)
+
+Fabian Pedregosa, Gaël Varoquaux, Alexandre Gramfort, Vincent Michel, Bertrand Thirion, 
+Olivier Grisel, Mathieu Blondel, Peter Prettenhofer, Ron Weiss, Vincent Dubourg, Jake 
+Vanderplas, Alexandre Passos, David Cournapeau, Matthieu Brucher, Matthieu Perrot, Édouard 
+Duchesnay. Scikit-learn: Machine Learning in Python, Journal of Machine Learning Research, 
+12, 2825-2830 (2011) [publisher link](http://jmlr.org/papers/v12/pedregosa11a.html)
+
+...
+
 Have fun munging!
 
 ...
