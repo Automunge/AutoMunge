@@ -33,6 +33,9 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import mean_squared_log_error
 
+#imports for PCA dimensionality reduction
+from sklearn.decomposition import PCA
+
 #imports for automunge
 from sklearn.utils import shuffle
 from sklearn.model_selection import train_test_split
@@ -4128,6 +4131,117 @@ class AutoMunge:
     return df
 
 
+#   def createPCAsets(self, df_train, df_test, PCAexcl, postprocess_dict):
+#     '''
+#     Function that takes as input the dataframes df_train and df_test 
+#     Removes those columns associated with the PCAexcl (which are the original 
+#     columns passed to automunge which are to be exlcuded from PCA), and returns 
+#     those sets as PCAset_trian, PCAset_test, and the list of columns extracted as
+#     PCAexcl_posttransform.
+#     '''
+
+#     #initiate list PCAexcl_postransform
+#     PCAexcl_posttransform = []
+
+#     #derive the excluded columns post-transform using postprocess_dict
+#     for exclcolumn in PCAexcl:
+
+#       #get a column key for this column (used to access stuff in postprofcess_dict)
+#       exclcolumnkey = postprocess_dict['origcolumn'][exclcolumn]['columnkey']
+
+#       #get the columnslist from this columnkey
+#       exclcolumnslist = postprocess_dict['column_dict'][exclcolumnkey]['columnslist']
+
+#       #add these items to PCAexcl_posttransform
+#       PCAexcl_posttransform.extend(exclcolumnslist)
+
+#     #assemble the sets by dropping the columns excluded
+#     PCAset_train = df_train.drop(PCAexcl_posttransform, axis=1)
+#     PCAset_test = df_test.drop(PCAexcl_posttransform, axis=1)
+
+#     return PCAset_train, PCAset_test, PCAexcl_posttransform
+
+
+  def createPCAsets(self, df_train, df_test, PCAexcl, postprocess_dict):
+    '''
+    Function that takes as input the dataframes df_train and df_test 
+    Removes those columns associated with the PCAexcl (which are the original 
+    columns passed to automunge which are to be exlcuded from PCA), and returns 
+    those sets as PCAset_trian, PCAset_test, and the list of columns extracted as
+    PCAexcl_posttransform.
+    '''
+
+    #initiate list PCAexcl_postransform
+    PCAexcl_posttransform = []
+
+    #derive the excluded columns post-transform using postprocess_dict
+    for exclcolumn in PCAexcl:
+      
+      #if this is one of the original columns (pre-transform)
+      if exclcolumn in postprocess_dict['origcolumn']:
+      
+        #get a column key for this column (used to access stuff in postprofcess_dict)
+        exclcolumnkey = postprocess_dict['origcolumn'][exclcolumn]['columnkey']
+
+        #get the columnslist from this columnkey
+        exclcolumnslist = postprocess_dict['column_dict'][exclcolumnkey]['columnslist']
+
+        #add these items to PCAexcl_posttransform
+        PCAexcl_posttransform.extend(exclcolumnslist)
+        
+      #if this is a post-transformation column
+      elif exclcolumn in postprocess_dict['column_dict']:
+        
+        #if we hadn't already done another column from the same source
+        if exclcolumn not in PCAexcl_posttransform:
+          
+          #add these items to PCAexcl_posttransform
+          PCAexcl_posttransform.extend([exclcolumn])
+          
+    #assemble the sets by dropping the columns excluded
+    PCAset_train = df_train.drop(PCAexcl_posttransform, axis=1)
+    PCAset_test = df_test.drop(PCAexcl_posttransform, axis=1)
+
+    return PCAset_train, PCAset_test, PCAexcl_posttransform
+
+
+  def PCAfunction(self, PCAset_train, PCAset_test, PCAn_components, postprocess_dict, randomseed):
+    '''
+    Function that takes as input the train and test sets intended for PCA
+    dimensionality reduction. Returns a trained PCA model saved in postprocess_dict
+    and trasnformed sets.
+    '''
+
+    #convert PCAsets to numpy arrays
+    np_PCAset_train = PCAset_train.values
+    np_PCAset_test = PCAset_test.values
+
+    #initialize a PCA model
+    PCAmodel = PCA(n_components = PCAn_components, random_state = randomseed)
+
+    #derive the PCA model (note htis is unsupervised training, no labels)
+    PCAmodel.fit(np_PCAset_train)
+
+    #Save the trained PCA model to the postprocess_dict
+    postprocess_dict.update({'PCAmodel' : PCAmodel})
+
+    #apply the transform
+    np_PCAset_train = PCAmodel.transform(np_PCAset_train)
+    np_PCAset_test = PCAmodel.transform(np_PCAset_test)
+
+    #get new number of columns
+    newcolumncount = np.size(np_PCAset_train,1)
+
+    #generate a list of column names for the conversion to pandas
+    columnnames = ['PCAcol'+str(y) for y in range(newcolumncount)]
+
+    #convert output to pandas
+    PCAset_train = pd.DataFrame(np_PCAset_train, columns = columnnames)
+    PCAset_test = pd.DataFrame(np_PCAset_test, columns = columnnames)
+
+    return PCAset_train, PCAset_test, postprocess_dict
+
+
 
   def automunge(self, df_train, df_test = False, labels_column = False, trainID_column = False, \
                 testID_column = False, valpercent1=0.20, valpercent2 = 0.10, \
@@ -4135,7 +4249,7 @@ class AutoMunge:
                 binstransform = True, MLinfill = True, infilliterate=1, randomseed = 42, \
                 numbercategoryheuristic = 0.000, pandasoutput = False, \
                 featureselection = True, featurepct = 1.0, featuremetric = 0.0, \
-                featuremethod = 'pct', \
+                featuremethod = 'pct', PCAn_components = None, PCAexcl = [], \
                 assigncat = {'nmbr':[], 'nbr2':[], 'bxcx':[], 'bnry':[], 'text':[], \
                              'date':[], 'excl':[]}, \
                 assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'adjinfill':[]}, \
@@ -4691,7 +4805,31 @@ class AutoMunge:
         self.secondcircle(df_train, df_test, trimmee, postprocess_dict)
     
     
+    
+    #PCA stuff added in version 1.900
 
+    prePCAcolumns = list(df_train)
+    
+    #if user passed anything to automunbge argument PCAn_components 
+    #(either the number of columns integer or a float between 0-1)
+    if PCAn_components != None:
+      
+      #this is to carve the excluded columns out from the set
+      PCAset_train, PCAset_test, PCAexcl_posttransform = \
+      self.createPCAsets(df_train, df_test, PCAexcl, postprocess_dict)
+      
+      #this is to train the PCA model and perform transforms on train and test set
+      PCAset_train, PCAset_test, postprocess_dict = \
+      self.PCAfunction(PCAset_train, PCAset_test, PCAn_components, postprocess_dict, \
+                       randomseed)
+
+      #reattach the excluded columns to PCA set
+      df_train = pd.concat([PCAset_train, df_train[PCAexcl_posttransform]], axis=1)
+      df_test = pd.concat([PCAset_test, df_test[PCAexcl_posttransform]], axis=1)
+    
+    else:
+      #else we'll just populate the PCAmodel slot in postprocess_dict with a placeholder
+      postprocess_dict.update({'PCAmodel' : None})
 
 
     if labels_column != False:
@@ -5011,6 +5149,9 @@ class AutoMunge:
                              'featuremethod' : featuremethod, \
                              'FSmodel' : FSmodel, \
                              'FScolumn_dict' : FScolumn_dict, \
+                             'PCAn_components' : PCAn_components, \
+                             'PCAexcl' : PCAexcl, \
+                             'prePCAcolumns' : prePCAcolumns, \
                              'madethecut' : madethecut, \
                              'assigncat' : assigncat, \
                              'assigninfill' : assigninfill, \
@@ -5018,7 +5159,7 @@ class AutoMunge:
                              'transform_dict' : transform_dict, \
                              'processdict' : processdict, \
                              'process_dict' : process_dict, \
-                             'automungeversion' : '1.801' })
+                             'automungeversion' : '1.900' })
 
     
     
@@ -6698,7 +6839,106 @@ class AutoMunge:
     return df_test, postprocess_dict
 
 
+#   def postcreatePCAsets(self, df_test, postprocess_dict):
+#     '''
+#     Function that takes as input the dataframes df_train and df_test 
+#     Removes those columns associated with the PCAexcl (which are the original 
+#     columns passed to automunge which are to be exlcuded from PCA), and returns 
+#     those sets as PCAset_trian, PCAset_test, and the list of columns extracted as
+#     PCAexcl_posttransform.
+#     '''
 
+#     PCAexcl = postprocess_dict['PCAexcl']
+
+#     #initiate list PCAexcl_postransform
+#     PCAexcl_posttransform = []
+
+#     #derive the excluded columns post-transform using postprocess_dict
+#     for exclcolumn in PCAexcl:
+
+#       #get a column key for this column (used to access stuff in postprofcess_dict)
+#       exclcolumnkey = postprocess_dict['origcolumn'][exclcolumn]['columnkey']
+
+#       #get the columnslist from this columnkey
+#       exclcolumnslist = postprocess_dict['column_dict'][exclcolumnkey]['columnslist']
+
+#       #add these items to PCAexcl_posttransform
+#       PCAexcl_posttransform.extend(exclcolumnslist)
+
+#     #assemble the sets by dropping the columns excluded
+#     PCAset_test = df_test.drop(PCAexcl_posttransform, axis=1)
+
+#     return PCAset_test, PCAexcl_posttransform
+
+  def postcreatePCAsets(self, df_test, postprocess_dict):
+    '''
+    Function that takes as input the dataframes df_train and df_test 
+    Removes those columns associated with the PCAexcl (which are the original 
+    columns passed to automunge which are to be exlcuded from PCA), and returns 
+    those sets as PCAset_trian, PCAset_test, and the list of columns extracted as
+    PCAexcl_posttransform.
+    '''
+
+    PCAexcl = postprocess_dict['PCAexcl']
+
+    #initiate list PCAexcl_postransform
+    PCAexcl_posttransform = []
+
+    #derive the excluded columns post-transform using postprocess_dict
+    for exclcolumn in PCAexcl:
+      
+      #if this is one of the original columns (pre-transform)
+      if exclcolumn in postprocess_dict['origcolumn']:
+      
+        #get a column key for this column (used to access stuff in postprofcess_dict)
+        exclcolumnkey = postprocess_dict['origcolumn'][exclcolumn]['columnkey']
+
+        #get the columnslist from this columnkey
+        exclcolumnslist = postprocess_dict['column_dict'][exclcolumnkey]['columnslist']
+
+        #add these items to PCAexcl_posttransform
+        PCAexcl_posttransform.extend(exclcolumnslist)
+        
+      #if this is a post-transformation column
+      elif exclcolumn in postprocess_dict['column_dict']:
+        
+        #if we hadn't already done another column from the same source
+        if exclcolumn not in PCAexcl_posttransform:
+          
+          #add these items to PCAexcl_posttransform
+          PCAexcl_posttransform.extend([exclcolumn])
+
+    #assemble the sets by dropping the columns excluded
+    PCAset_test = df_test.drop(PCAexcl_posttransform, axis=1)
+
+    return PCAset_test, PCAexcl_posttransform
+
+
+  def postPCAfunction(self, PCAset_test, postprocess_dict):
+    '''
+    Function that takes as input the train and test sets intended for PCA
+    dimensionality reduction. Returns a trained PCA model saved in postprocess_dict
+    and trasnformed sets.
+    '''
+
+    PCAmodel = postprocess_dict['PCAmodel']
+
+    #convert PCAsets to numpy arrays
+    np_PCAset_test = PCAset_test.values
+
+    #apply the transform
+    np_PCAset_test = PCAmodel.transform(np_PCAset_test)
+
+    #get new number of columns
+    newcolumncount = np.size(np_PCAset_test,1)
+
+    #generate a list of column names for the conversion to pandas
+    columnnames = ['PCAcol'+str(y) for y in range(newcolumncount)]
+
+    #convert output to pandas
+    PCAset_test = pd.DataFrame(np_PCAset_test, columns = columnnames)
+
+    return PCAset_test, postprocess_dict
 
 
 
@@ -7085,7 +7325,7 @@ class AutoMunge:
     if postprocess_dict['featureselection'] == True:
       
       
-      #get list of columns currently includedt
+      #get list of columns currently included
       currentcolumns = list(df_test)
       
       #get list of columns to trim
@@ -7095,7 +7335,29 @@ class AutoMunge:
       #trim columns manually
       for trimmee in trimcolumns:
         del df_test[trimmee]
+    
+    
+    #postmunge PCA stuff for version 1.900
+    
+    #first this check allows for backward compatibility with published demonstrations
+    if 'PCAn_components' in postprocess_dict:
+      #grab parameters from postprocess_dict
+      PCAn_components = postprocess_dict['PCAn_components']
+      #prePCAcolumns = postprocess_dict['prePCAcolumns']
 
+
+      if PCAn_components != None:
+
+        PCAset_test, PCAexcl_posttransform = \
+        self.postcreatePCAsets(df_test, postprocess_dict)
+
+        PCAset_test, postprocess_dict = \
+        self.postPCAfunction(PCAset_test, postprocess_dict)
+
+        #reattach the excluded columns to PCA set
+        df_test = pd.concat([PCAset_test, df_test[PCAexcl_posttransform]], axis=1)
+    
+    
     #here's a list of final column names saving here since the translation to \
     #numpy arrays scrubs the column names
     finalcolumns_test = list(df_test)
