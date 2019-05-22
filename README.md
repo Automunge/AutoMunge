@@ -14,6 +14,11 @@ and automated fashion. automunge(.) also returns a python dictionary which can b
 an input along with a subsequent test data set to the function postmunge(.) for  consistent 
 processing of test data which wasn't available for the initial address.
 
+Please note that some of the features rolled out in last few weeks have yet to made it 
+into this documentation. For now please rely on the demonstration Colaboratory notebooks
+linked from our medium essays. Updated formal documentation is forthcoming. Cheers.
+
+
 New with version 1.77: 
 - automunge now allows a user to perform a feature importance evaluation using the 
 permutation importance method. User also has the option to trim number of returned sets
@@ -41,9 +46,11 @@ am = AutoMunge.AutoMunge()
 
 Where eg for train/test set processing run:
 
-train, trainID, labels, validation1, validationID1, \
-validationlabels1, validation2, validationID2, validationlabels2, \
-test, testID, labelsencoding_dict, finalcolumns_train, finalcolumns_test, \
+train, trainID, labels, \
+validation1, validationID1, validationlabels1, \
+validation2, validationID2, validationlabels2, \
+test, testID, testlabels, \
+testlabelsencoding_dict, finalcolumns_train, finalcolumns_test, \
 featureimportance, postprocess_dict = \
 = am.automunge(df_train, df_test, etc)
 
