@@ -3760,14 +3760,6 @@ class AutoMunge:
     #labels.) Returns train_df, labels_df, trainID_df.
     '''
     
-#     #troubleshoot
-#     print("LabelFrequencyLevelizer(self, train_df, labels_df, labelsencoding_dict, postprocess_dict):")
-#     print("list(train_df)")
-#     print(list(train_df))
-#     print("list(labels_df)")
-#     print(list(labels_df))
-#     print("labelsencoding_dict")
-#     print(labelsencoding_dict)
     
     columns_labels = list(labels_df)
     
@@ -3866,14 +3858,15 @@ class AutoMunge:
         for label in list(labels_df):
           if label[-5:] in ['_s<-2', '_s-21', '_s-10', '_s+01', '_s+12', '_s>+2']:
             columns_labels.append(label)
-
+            
+            
       #if labelscategory in ['text', 'nmbr', 'bxcx']:
       if MLinfilltype in ['label', 'multirt', 'numeric', 'exclude']:
-            
         if columns_labels != []:
           i=0
-          for label in labels:
-          
+          #for label in labels:
+          for label in columns_labels:
+                
             column = columns_labels[i]
             #derive set of labels dataframe for counting length
             df = self.LabelSetGenerator(labels_df, column, 1)
@@ -3890,7 +3883,8 @@ class AutoMunge:
 
           #set counter to 0
           i = 0
-          for label in labels:
+          #for label in labels:
+          for label in columns_labels:
 
             #derive multiplier to levelize label frequency
             setlength = setlengthlist[i]
@@ -3910,8 +3904,8 @@ class AutoMunge:
           #reset counter
           i=0
           #for loop through labels
-          for label in labels:
-
+          #for label in labels:
+          for label in columns_labels:
 
             #create train subset corresponding to label
             column = columns_labels[i]
