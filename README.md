@@ -294,7 +294,7 @@ and arguments.
 * train: a numerically encoded set of data intended to be used to train a
 downstream machine learning model in the framework of a user's choice
 
-* trainID: the set of ID values corresponding to the np-train set if a ID
+* trainID: the set of ID values corresponding to the train set if a ID
 column was passed to the function. This set may be useful if the shuffle
 option was applied.
 
@@ -305,29 +305,29 @@ assumes the label column is originally included in the train set.
 * validation1: a set of training data carved out from the train set
 that is intended for use in hyperparameter tuning of a downstream model.
 
-* validationID1: the set of ID values coresponding to the np_validation1
+* validationID1: the set of ID values coresponding to the validation1
 set
 
-* validationlabels1: the set of labels coresponding to the np_validation1
+* validationlabels1: the set of labels coresponding to the validation1
 set
 
 * validation2: the set of training data carved out from the train set
 that is intended for the final validation of a downstream model (this
 set should not be applied extensively for hyperparameter tuning).
 
-* validationID2: the set of ID values coresponding to the np_validation2
+* validationID2: the set of ID values coresponding to the validation2
 set.
 
-* validationlabels2: the set of labels coresponding to the np_validation2
+* validationlabels2: the set of labels coresponding to the validation2
 set
 
 * test: the set of features, consistently encoded and normalized as the
 training data, that can be used to generate predictions from a
-downstream model trained with np_train. Note that if no test data is
+downstream model trained with train. Note that if no test data is
 available during initial address this processing will take place in the
-postmunge(.) function.
+postmunge(.) function. 
 
-* testID: the set of ID values coresponding to the np_test set.
+* testID: the set of ID values coresponding to the test set.
 
 * testlabels: a set of numerically encoded labels corresponding to the
 test set if a label column was passed. Note that the function
@@ -348,7 +348,23 @@ identify which feature engineering transformations were applied to each
 column. Note that this list should match the one preceeding.
 
 * featureimportance: a dictionary containing summary of feature importance
-ranking and metrics for each of the derived sets
+ranking and metrics for each of the derived sets. Note that the metric
+value provides an indication of the importance of the original source
+column such that larger value suggests greater importance, and the metric2 
+value provides an indication of the relative importance of columns derived
+from the original source column such that smaller metric2 value suggests 
+greater relative importance. One can print the values here such as with
+this code:
+
+```
+#to inspect values returned in featureimportance object one could run
+for keys,values in featureimportance.items():
+    print(keys)
+    print('metric = ', values['metric'])
+    print('metric2 = ', values['metric2'])
+    print()
+```
+
 
 * postprocess_dict: a returned python dictionary that includes
 normalization parameters and trained machine learning models used to
@@ -395,10 +411,11 @@ training operation. The set must have string column headers.
 * df_test: a pandas dataframe containing a structured dataset intended for
 use to generate predictions from a downstream machine learning model
 trained from the automunge returned sets. The set must be consistantly
-formated as the train set with consistent column labels (save for any
-designated labels column from the train set). If desired the set may
-include a row ID column or a column intended for use as labels. A user
-may pass False if this set not available.
+formated as the train set with consistent column labels (This set may 
+optionally contain a labels column if one was included in the train set 
+although it's inclusion is not required). If desired the set may include 
+a row ID column or a column intended for use as labels. A user may pass 
+False if this set not available.
 
 * labels_column: a string of the column title for the column from the
 df_train set intended for use as labels in training a downstream machine
@@ -504,8 +521,9 @@ column may be passed for index identification).
 perform a feature importance evaluation. If selected automunge will
 return a summary of feature importance findings in the featureimportance
 returned dictionary. This also activates the trimming of derived sets
-that did not meet the importance threshold if featurepct < 1.0 or if
-fesaturemetric > 0.0.
+that did not meet the importance threshold if [featurepct < 1.0 and 
+featuremethod = 'pct'] or if [fesaturemetric > 0.0 and featuremethod = 
+'metric'].
 
 * featurepct: the percentage of derived sets that are kept in the output
 based on the feature importance evaluation. Note that NArw columns are
@@ -526,7 +544,7 @@ be less than the otherwise returned number of sets. Function will default
 to kernel PCA for all non-negative sets or otherwise Sparse PCA. Also if
 this values passed as a float <1.0 then linear PCA will be applied such 
 that the returned number of sets are the minimum number that can reproduce
-that percent fo the variance. Note this can also be passed in conjunction 
+that percent of the variance. Note this can also be passed in conjunction 
 with assigned PCA type or parameters in the ML_cmnd object.
 
 * PCAexcl: a list of column headers for columns that are to be excluded from
@@ -559,9 +577,9 @@ ML_cmnd = {'MLinfill_type':'default', \
 A user can also assign specific methods for PCA transforms. Current PCA_types
 supported include 'PCA', 'SparsePCA', and 'KernelPCA', all via Scikit-Learn.
 Note that the n_components are passed seperately with the PCAn_components 
-argument noted above. A user can also pass parameters the PCA functions
+argument noted above. A user can also pass parameters to the PCA functions
 through the PCA_cmnd, for example one could pass a kernel type for KernelPCA
-as
+as:
 ```
 ML_cmnd = {'MLinfill_type':'default', \
            'MLinfill_cmnd':{'RandomForestClassifier':{}, \
@@ -686,7 +704,7 @@ demonstrate here:
 
 
 * processdict: allows a user to define their own processing functions 
-corresponding to new trasnformdict keys. We'll describe the entries here:
+corresponding to new transformdict keys. We'll describe the entries here:
 ```
 #for example 
 custom_processdict =  {'newt' : {'dualprocess' : None, \
@@ -749,7 +767,7 @@ the built in sets in the library.
 The postmunge(.) function is intended to consistently process subsequently available
 and consistently formatted test data with just a single function call. It requires 
 passing the postprocess_dict object returned from the original application of automunge 
-and that the passed tedt data have consistent column header labeling as the original 
+and that the passed test data have consistent column header labeling as the original 
 train set.
 
 ```
@@ -773,7 +791,9 @@ am.postmunge(postprocess_dict, df_test, testID_column = False, \
 
 
 ## postmunge(.) returned sets:
-asdf
+Here now are descriptions for the returned sets from postmunge, which
+will be followed by descriptions of the arguments which can be passed to
+the function. 
 
 * test: the set of features, consistently encoded and normalized as the
 training data, that can be used to generate predictions from a model
@@ -874,10 +894,15 @@ be applied as parents/siblings/auntsuncles/cousins, respectively. Note that the
 designation for supplements/replaces refers purely to the question of whether the
 column to which the trasnform is being applied is kept in place or removed. Please
 note that it is a quirck of the function that no original column can be left in 
-place without the application of some trasnformation such as to alloy the building
+place without the application of some transformation such as to allow the building
 of the apppripriate data structures, thus at least one replacement primitive must
 always be included. If a user does wish to leave a column in place unaltered, they 
 can simply assign that column to the 'excl' root category.
+
+Now we'll start here by listing again the family tree primitives for those root 
+categories built into the automunge library. After that we'll give a quick 
+narrative for each of the associated transformation functions. First here again
+are the family tree primitives.
 
 ```
 'greatgrandparents' : upstream / first generation / suplements column / with offspring
@@ -891,10 +916,8 @@ can simply assign that column to the 'excl' root category.
 'coworkers' :         downstream auntsuncles / all generations / replaces column / no offspring
 'friends' :           downstream cousins / all generations / supplements column / no offspring
 ```
-Now we'll start here by listing the family tree primitives for those root 
-categories built into the automunge library. After that we'll give a quick 
-narrative for each of the associated transformation functions.
 
+And here arethe series of family trees currently built into the internal library.
 
 ```
     transform_dict.update({'nmbr' : {'greatgrandparents' : [], \
