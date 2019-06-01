@@ -150,12 +150,11 @@ Normalization parameters from the initial automunge application are
 saved to a returned dictionary for subsequent consistent processing of test data
 that wasn't available at initial address with the postmunge(.) function. 
 
-The feature engineering
-transformations are recorded with a series of suffixes appended to the
-column header title in the returned sets, for example the application of z-score
-normalization returns a column with header 'origname' + '_nmbr'. The
-function provides consistent processing between training data and the
-column designated for labels if included with the train set.
+The feature engineering transformations are recorded with a series of suffixes 
+appended to the column header title in the returned sets, for example the 
+application of z-score normalization returns a column with header 'origname' + '_nmbr'. 
+The function allows feature engineering methods for the training data, test data,
+and any column designated for labels if included with the sets.
 
 In automation, for numerical data, the functions generate a series of derived
 transformations resulting in multiple child columns, with
@@ -1293,11 +1292,11 @@ define a new root category trasnformdict and a corresponding processdict.
 #a z-score normalization, and seperately performs a version of the new transform
 #mnm8 which we'll define below.
 
-transformdict = {'mnm3' : {'greatgrandparents' : [], \
+transformdict = {'mnm8' : {'greatgrandparents' : [], \
                            'grandparents' : ['NArw'], \
                            'parents' : [], \
                            'siblings': [], \
-                           'auntsuncles' : ['mnm3', 'nmbr'], \
+                           'auntsuncles' : ['mnm8', 'nmbr'], \
                            'cousins' : [], \
                            'children' : [], \
                            'niecesnephews' : [], \
@@ -1476,20 +1475,20 @@ def postprocess_mnm3_class(mdf_test, column, postprocess_dict, columnkey):
   postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['quantilemax']
 
   #copy original column for implementation
-  mdf_test[column + '_mnm3'] = mdf_test[column].copy()
+  mdf_test[column + '_mnm8'] = mdf_test[column].copy()
 
 
   #convert all values to either numeric or NaN
-  mdf_test[column + '_mnm3'] = pd.to_numeric(mdf_test[column + '_mnm3'], errors='coerce')
+  mdf_test[column + '_mnm8'] = pd.to_numeric(mdf_test[column + '_mnm8'], errors='coerce')
 
   #get mean of training data
   mean = mean  
 
   #replace missing data with training set mean
-  mdf_test[column + '_mnm3'] = mdf_test[column + '_mnm3'].fillna(mean)
+  mdf_test[column + '_mnm8'] = mdf_test[column + '_mnm8'].fillna(mean)
 
   #perform min-max scaling to test set using values from train
-  mdf_test[column + '_mnm3'] = (mdf_test[column + '_mnm3'] - quantilemin) / \
+  mdf_test[column + '_mnm8'] = (mdf_test[column + '_mnm8'] - quantilemin) / \
                                (quantilemax - quantilemin)
 
 
