@@ -1335,7 +1335,7 @@ processdict = {'mnm8' : {'dualprocess' : process_mnm8_class, \
 def process_mnm8_class(mdf_train, mdf_test, column, category, \
                        postprocess_dict):
   #where
-  #mdf_train is the train data set
+  #mdf_train is the train data set (pandas dataframe)
   #mdf_test is the consistently formatted test dataset (if no test data 
   #set is available a dummy set will be passed in it's place)
   #column is the string identifying the column header
