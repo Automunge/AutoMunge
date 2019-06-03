@@ -707,11 +707,11 @@ corresponding to new transformdict keys. We'll describe the entries here:
 ```
 #for example 
 custom_processdict =  {'newt' : {'dualprocess' : None, \
-					            'singleprocess' : None, \
-					            'postprocess' : None, \
-        					    'NArowtype' : 'numeric', \
-      					        'MLinfilltype' : 'numeric', \
-           						'labelctgy' : 'mnmx'}
+				 'singleprocess' : None, \
+				 'postprocess' : None, \
+        			 'NArowtype' : 'numeric', \
+      				 'MLinfilltype' : 'numeric', \
+           			 'labelctgy' : 'mnmx'}
 
 #a user should pass either a pair of processing funcitons to both 
 #dualprocess and postprocess, or alternatively just a single processing
