@@ -646,16 +646,16 @@ For example, a user wishing to define a new set of transformations
 for numerical series 'newt' that combines NArows, min-max, box-cox, z-score, 
 and standard deviation bins could do so by passing a trasnformdict as:
 ```
-custom_transformdict =  {'newt' : {'greatgrandparents' : [], \
-                                    'grandparents' : ['NArw'], \
-                                    'parents' : ['bxc4'], \
-                                    'siblings': [], \
-                                    'auntsuncles' : ['mnmx'], \
-                                    'cousins' : [], \
-                                    'children' : [], \
-                                    'niecesnephews' : [], \
-                                    'coworkers' : [], \
-                                    'friends' : []}}
+transformdict =  {'newt' : {'greatgrandparents' : [], \
+                            'grandparents' : ['NArw'], \
+                            'parents' : ['bxc4'], \
+                            'siblings': [], \
+                            'auntsuncles' : ['mnmx'], \
+                            'cousins' : [], \
+                            'children' : [], \
+                            'niecesnephews' : [], \
+                            'coworkers' : [], \
+                            'friends' : []}}
                                     
 #Where since bxc4 is passed as a parent, this will result in pulling
 #ofspring keys from the bxcx family tree, which has a nbr2 key as children.
