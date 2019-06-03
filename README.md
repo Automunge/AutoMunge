@@ -713,12 +713,13 @@ processdict =  {'newt' : {'dualprocess' : None, \
       			  'MLinfilltype' : 'numeric', \
            		  'labelctgy' : 'mnmx'}}
 
-#a user should pass either a pair of processing functions to both 
+#A user should pass either a pair of processing functions to both 
 #dualprocess and postprocess, or alternatively just a single processing
 #function to singleprocess, and pass None to those not used.
 #For now, if just using the category as a root key and not as a family primitive, 
 #can simply pass None to all the processing slots. We'll demonstrate their 
-#composition for custom profcessing functions later in this documentation.
+#composition and data structures for custom processing functions later in this 
+#document.
 
 #dualprocess: for passing a processing function in which normalization 
 #             parameters are derived from properties of the training set
