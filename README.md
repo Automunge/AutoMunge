@@ -706,19 +706,19 @@ demonstrate here:
 corresponding to new transformdict keys. We'll describe the entries here:
 ```
 #for example 
-custom_processdict =  {'newt' : {'dualprocess' : None, \
-				 'singleprocess' : None, \
-				 'postprocess' : None, \
-        			 'NArowtype' : 'numeric', \
-      				 'MLinfilltype' : 'numeric', \
-           			 'labelctgy' : 'mnmx'}
+processdict =  {'newt' : {'dualprocess' : None, \
+			  'singleprocess' : None, \
+			  'postprocess' : None, \
+        		  'NArowtype' : 'numeric', \
+      			  'MLinfilltype' : 'numeric', \
+           		  'labelctgy' : 'mnmx'}}
 
-#a user should pass either a pair of processing funcitons to both 
+#a user should pass either a pair of processing functions to both 
 #dualprocess and postprocess, or alternatively just a single processing
 #function to singleprocess, and pass None to those not used.
 #For now, if just using the category as a root key and not as a family primitive, 
 #can simply pass None to all the processing slots. We'll demonstrate their 
-#composition later in this documentation.
+#composition for custom profcessing functions later in this documentation.
 
 #dualprocess: for passing a processing function in which normalization 
 #             parameters are derived from properties of the training set
