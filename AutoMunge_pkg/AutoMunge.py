@@ -4166,8 +4166,8 @@ class AutoMunge:
 
       FSmodel.fit(np_subset, np_labels)
       
-      baseaccuracy = self.shuffleaccuracy(am_subset, am_labels, FSmodel, randomseed, \
-                                          labelsencoding_dict, process_dict, labelctgy)
+#       baseaccuracy = self.shuffleaccuracy(am_subset, am_labels, FSmodel, randomseed, \
+#                                           labelsencoding_dict, process_dict, labelctgy)
         
     #if labelscategory in ['bnry']:
     if MLinfilltype in ['singlct']:
@@ -4181,8 +4181,8 @@ class AutoMunge:
 
       FSmodel.fit(np_subset, np_labels)
       
-      baseaccuracy = self.shuffleaccuracy(am_subset, am_labels, FSmodel, randomseed, \
-                                          labelsencoding_dict, process_dict, labelctgy)
+#       baseaccuracy = self.shuffleaccuracy(am_subset, am_labels, FSmodel, randomseed, \
+#                                           labelsencoding_dict, process_dict, labelctgy)
       
     #if labelscategory in ['text']:
     if MLinfilltype in ['multirt']:
@@ -4197,15 +4197,16 @@ class AutoMunge:
 
       FSmodel.fit(np_train_filltrain, np_train_filllabel_argmax)
       
-      baseaccuracy = self.shuffleaccuracy(am_subset, am_labels, FSmodel, randomseed, \
-                                          labelsencoding_dict, process_dict, labelctgy)
+#       baseaccuracy = self.shuffleaccuracy(am_subset, am_labels, FSmodel, randomseed, \
+#                                           labelsencoding_dict, process_dict, labelctgy)
       
       del np_labels_argmax
         
     #I think this will clear some memory
     del np_labels, np_subset
     
-    return FSmodel, baseaccuracy
+    #return FSmodel, baseaccuracy
+    return FSmodel
       
   
   def createFSsets(self, am_subset, column, columnslist, randomseed):
@@ -4484,10 +4485,16 @@ class AutoMunge:
       labelctgy = labelctgy[-4:]
         
       #apply function trainFSmodel
-      FSmodel, baseaccuracy = \
+      #FSmodel, baseaccuracy = \
+      FSmodel = \
       self.trainFSmodel(am_train, am_labels, randomseed, labelsencoding_dict, \
                         FSprocess_dict, FSpostprocess_dict, labelctgy, ML_cmnd)
       
+      #update v2.11 baseaccuracy should be based on validation set
+      baseaccuracy = self.shuffleaccuracy(am_validation1, am_validationlabels1, \
+                                          FSmodel, randomseed, labelsencoding_dict, \
+                                          FSprocess_dict, labelctgy)
+    
       #get list of columns
       am_train_columns = list(am_train)
       
@@ -6481,7 +6488,7 @@ class AutoMunge:
                              'processdict' : processdict, \
                              'process_dict' : process_dict, \
                              'ML_cmnd' : ML_cmnd, \
-                             'automungeversion' : '2.01' })
+                             'automungeversion' : '2.11' })
 
     
     
