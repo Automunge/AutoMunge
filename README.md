@@ -499,7 +499,9 @@ for those columns which are to be treated as categorical to allow
 one-hot encoding. This may be useful e.g. for numerically encoded
 categorical sets such as like zip codes or phone numbers or something
 which would otherwise be evaluated as numerical and subject to
-normalization.
+normalization. *update this aregument no longer supported, a user can
+instead assign distinct methods to each column with assigncat per below, 
+such as assigning a column to category 'text' for categorical.
 
 * numbercategoryheuristic: a float value between 0 and 1 which will be
 used as a heuristic to identify numerically encoded columns which are to
