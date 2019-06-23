@@ -952,11 +952,13 @@ class AutoMunge:
       if niecenephew != None:
 
         #process the niecenephew
-        #note the function applied is processfamily (using recursion)
+        #note the function applied is processparent (using recursion)
         #parent column
         df_train, df_test, postprocess_dict = \
-        self.processfamily(df_train, df_test, parentcolumn, niecenephew, origcategory, \
+        self.processparent(df_train, df_test, parentcolumn, niecenephew, origcategory, \
                            process_dict, transform_dict, postprocess_dict)
+#         self.processfamily(df_train, df_test, parentcolumn, niecenephew, origcategory, \
+#                            process_dict, transform_dict, postprocess_dict)
 
     #process any children
     for child in transform_dict[parent]['children']:
@@ -964,11 +966,13 @@ class AutoMunge:
       if child != None:
 
         #process the child
-        #note the function applied is processfamily (using recursion)
+        #note the function applied is processparent (using recursion)
         #parent column
         df_train, df_test, postprocess_dict = \
-        self.processfamily(df_train, df_test, parentcolumn, child, origcategory, \
+        self.processparent(df_train, df_test, parentcolumn, child, origcategory, \
                            process_dict, transform_dict, postprocess_dict)
+#         self.processfamily(df_train, df_test, parentcolumn, child, origcategory, \
+#                            process_dict, transform_dict, postprocess_dict)
 
 #     #if we had replacement transformations performed then delete the original column 
 #     #(circle of life)
@@ -6488,7 +6492,7 @@ class AutoMunge:
                              'processdict' : processdict, \
                              'process_dict' : process_dict, \
                              'ML_cmnd' : ML_cmnd, \
-                             'automungeversion' : '2.11' })
+                             'automungeversion' : '2.12' })
 
     
     
@@ -6917,9 +6921,12 @@ class AutoMunge:
       if niecenephew != None:
 
         #process the niecenephew
+        #note the function applied is postprocessparent (using recursion)
         df_test = \
-        self.postprocessfamily(df_test, parentcolumn, niecenephew, origcategory, \
+        self.postprocessparent(df_test, parentcolumn, niecenephew, origcategory, \
                                process_dict, transform_dict, postprocess_dict, columnkey)
+#         self.postprocessfamily(df_test, parentcolumn, niecenephew, origcategory, \
+#                                process_dict, transform_dict, postprocess_dict, columnkey)
 
     #process any children
     for child in transform_dict[parent]['children']:
@@ -6927,11 +6934,13 @@ class AutoMunge:
       if child != None:
 
         #process the child
-        #note the function applied is processfamily (using recursion)
+        #note the function applied is postprocessparent (using recursion)
         #parent column
         df_test = \
-        self.postprocessfamily(df_test, parentcolumn, child, origcategory, process_dict, \
-                              transform_dict, postprocess_dict, columnkey)
+        self.postprocessparent(df_test, parentcolumn, child, origcategory, process_dict, \
+                               transform_dict, postprocess_dict, columnkey)
+#         self.postprocessfamily(df_test, parentcolumn, child, origcategory, process_dict, \
+#                               transform_dict, postprocess_dict, columnkey)
 
 
 #     #if we had replacement transformations performed then delete the original column 
