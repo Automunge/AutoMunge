@@ -172,6 +172,7 @@ class AutoMunge:
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
+    
     transform_dict.update({'nbr3' : {'greatgrandparents' : [], \
                                      'grandparents' : ['NArw'], \
                                      'parents' : ['nmbr'], \
@@ -179,6 +180,28 @@ class AutoMunge:
                                      'auntsuncles' : [], \
                                      'cousins' : [], \
                                      'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : ['bint']}})
+    
+    transform_dict.update({'MADn' : {'greatgrandparents' : [], \
+                                     'grandparents' : ['NArw'], \
+                                     'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['MADn'], \
+                                     'cousins' : [], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'MAD2' : {'greatgrandparents' : [], \
+                                     'grandparents' : ['NArw'], \
+                                     'parents' : ['MAD2'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [], \
+                                     'children' : ['nmbr'], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : ['bint']}})
@@ -215,6 +238,7 @@ class AutoMunge:
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
+    
     transform_dict.update({'mnm4' : {'greatgrandparents' : [], \
                                      'grandparents' : ['NArw'], \
                                      'parents' : [], \
@@ -225,6 +249,7 @@ class AutoMunge:
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
+    
     transform_dict.update({'mnm5' : {'greatgrandparents' : [], \
                                      'grandparents' : ['NArw'], \
                                      'parents' : [], \
@@ -235,6 +260,7 @@ class AutoMunge:
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
+    
     transform_dict.update({'mnm6' : {'greatgrandparents' : [], \
                                      'grandparents' : ['NArw'], \
                                      'parents' : [], \
@@ -245,6 +271,7 @@ class AutoMunge:
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
+    
     transform_dict.update({'mnm7' : {'greatgrandparents' : [], \
                                      'grandparents' : [], \
                                      'parents' : [], \
@@ -275,6 +302,7 @@ class AutoMunge:
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
+    
     transform_dict.update({'bxc2' : {'greatgrandparents' : [], \
                                      'grandparents' : ['NArw'], \
                                      'parents' : ['bxc2'], \
@@ -285,6 +313,7 @@ class AutoMunge:
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
+    
     transform_dict.update({'bxc3' : {'greatgrandparents' : [], \
                                      'grandparents' : ['NArw'], \
                                      'parents' : ['bxc3'], \
@@ -295,6 +324,7 @@ class AutoMunge:
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
+    
     transform_dict.update({'bxc4' : {'greatgrandparents' : [], \
                                      'grandparents' : ['NArw'], \
                                      'parents' : ['bxcx'], \
@@ -305,6 +335,7 @@ class AutoMunge:
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
+    
     transform_dict.update({'wkdy' : {'greatgrandparents' : [], \
                                      'grandparents' : [], \
                                      'parents' : [], \
@@ -315,6 +346,7 @@ class AutoMunge:
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
+    
     transform_dict.update({'bshr' : {'greatgrandparents' : [], \
                                      'grandparents' : [], \
                                      'parents' : [], \
@@ -325,6 +357,7 @@ class AutoMunge:
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
+    
     transform_dict.update({'hldy' : {'greatgrandparents' : [], \
                                      'grandparents' : [], \
                                      'parents' : [], \
@@ -335,6 +368,7 @@ class AutoMunge:
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
+    
     transform_dict.update({'bins' : {'greatgrandparents' : [], \
                                      'grandparents' : [], \
                                      'parents' : [], \
@@ -345,6 +379,7 @@ class AutoMunge:
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
+    
     transform_dict.update({'bint' : {'greatgrandparents' : [], \
                                      'grandparents' : [], \
                                      'parents' : [], \
@@ -355,6 +390,7 @@ class AutoMunge:
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
+    
     transform_dict.update({'excl' : {'greatgrandparents' : [], \
                                      'grandparents' : [], \
                                      'parents' : [], \
@@ -365,6 +401,7 @@ class AutoMunge:
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
+    
     transform_dict.update({'exc2' : {'greatgrandparents' : [], \
                                      'grandparents' : [], \
                                      'parents' : ['exc2'], \
@@ -375,6 +412,7 @@ class AutoMunge:
                                      'niecesnephews' : [], \
                                      'coworkers' : ['bins'], \
                                      'friends' : []}})
+    
     transform_dict.update({'exc3' : {'greatgrandparents' : [], \
                                      'grandparents' : [], \
                                      'parents' : [], \
@@ -473,6 +511,18 @@ class AutoMunge:
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmbr'}})
+    process_dict.update({'MADn' : {'dualprocess' : self.process_MADn_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_MADn_class, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'MADn'}})
+    process_dict.update({'MAD2' : {'dualprocess' : self.process_MADn_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_MADn_class, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'MADn'}})
     process_dict.update({'mnmx' : {'dualprocess' : self.process_mnmx_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_mnmx_class, \
@@ -960,6 +1010,7 @@ class AutoMunge:
 #         self.processfamily(df_train, df_test, parentcolumn, niecenephew, origcategory, \
 #                            process_dict, transform_dict, postprocess_dict)
 
+
     #process any children
     for child in transform_dict[parent]['children']:
 
@@ -973,6 +1024,7 @@ class AutoMunge:
                            process_dict, transform_dict, postprocess_dict)
 #         self.processfamily(df_train, df_test, parentcolumn, child, origcategory, \
 #                            process_dict, transform_dict, postprocess_dict)
+
 
 #     #if we had replacement transformations performed then delete the original column 
 #     #(circle of life)
@@ -1104,6 +1156,77 @@ class AutoMunge:
       if nc[-5:] == '_nmbr':
 
         column_dict = { nc : {'category' : 'nmbr', \
+                             'origcategory' : category, \
+                             'normalization_dict' : nmbrnormalization_dict, \
+                             'origcolumn' : column, \
+                             'columnslist' : nmbrcolumns, \
+                             'categorylist' : [nc], \
+                             'infillmodel' : False, \
+                             'infillcomplete' : False, \
+                             'deletecolumn' : False}}
+
+        column_dict_list.append(column_dict.copy())
+    
+
+        
+    return mdf_train, mdf_test, column_dict_list
+
+
+  def process_MADn_class(self, mdf_train, mdf_test, column, category, \
+                              postprocess_dict):
+    '''
+    #process_MADn_class(mdf_train, mdf_test, column, category)
+    #function to normalize data to mean of 0 and mean absolute deviation of 1
+    #takes as arguement pandas dataframe of training and test data (mdf_train), (mdf_test)\
+    #and the name of the column string ('column') and parent category (category)
+    #replaces missing or improperly formatted data with mean of remaining values
+    #returns same dataframes with new column of name column + '_MADn'
+    #note this is a "dualprocess" function since is applied to both train and test dataframes
+    #expect this approach works better than z-score for when the numerical distribution isn't thin tailed
+    #if only have training but not test data handy, use same training data for both dataframe inputs
+    '''
+    
+    #copy source column into new column
+    mdf_train[column + '_MADn'] = mdf_train[column].copy()
+    mdf_test[column + '_MADn'] = mdf_test[column].copy()
+
+    #convert all values to either numeric or NaN
+    mdf_train[column + '_MADn'] = pd.to_numeric(mdf_train[column + '_MADn'], errors='coerce')
+    mdf_test[column + '_MADn'] = pd.to_numeric(mdf_test[column + '_MADn'], errors='coerce')
+
+    #get mean of training data
+    mean = mdf_train[column + '_MADn'].mean()    
+
+    #replace missing data with training set mean
+    mdf_train[column + '_MADn'] = mdf_train[column + '_MADn'].fillna(mean)
+    mdf_test[column + '_MADn'] = mdf_test[column + '_MADn'].fillna(mean)
+
+    #subtract mean from column for both train and test
+    mdf_train[column + '_MADn'] = mdf_train[column + '_MADn'] - mean
+    mdf_test[column + '_MADn'] = mdf_test[column + '_MADn'] - mean
+
+    #get mean absolute deviation of training data
+    MAD = mdf_train[column + '_MADn'].mad()
+
+    #divide column values by mad for both training and test data
+    mdf_train[column + '_MADn'] = mdf_train[column + '_MADn'] / MAD
+    mdf_test[column + '_MADn'] = mdf_test[column + '_MADn'] / MAD
+
+
+    #create list of columns
+    nmbrcolumns = [column + '_MADn']
+
+
+    nmbrnormalization_dict = {column + '_MADn' : {'mean' : mean, 'MAD' : MAD}}
+
+    #store some values in the nmbr_dict{} for use later in ML infill methods
+    column_dict_list = []
+
+    for nc in nmbrcolumns:
+
+      if nc[-5:] == '_MADn':
+
+        column_dict = { nc : {'category' : 'MADn', \
                              'origcategory' : category, \
                              'normalization_dict' : nmbrnormalization_dict, \
                              'origcolumn' : column, \
@@ -5452,18 +5575,34 @@ class AutoMunge:
       if labels_column in list(df_test):
         df_test = df_test.dropna(subset=[labels_column])
 
+    
     #extract the ID columns from train and test set
     if trainID_column != False:
       df_trainID = pd.DataFrame(df_train[trainID_column])
-      del df_train[trainID_column]
+    
+      if isinstance(trainID_column, str):
+        tempIDlist = [trainID_column]
+      elif isinstance(trainID_column, list):
+        tempIDlist = trainID_column
+      else:
+        print("error, trainID_column value must be False, str, or list")
+      for IDcolumn in tempIDlist:
+        del df_train[IDcolumn]
+      #del df_train[trainID_column]
     else:
       df_trainID = pd.DataFrame()
 
+    
     if testID_column != False:
-      #the extra case to deal with case where df_test is a dummy copy of df_train
-      if testID_column in list(df_test):
-        df_testID = pd.DataFrame(df_test[testID_column])
-        del df_test[testID_column]
+      if isinstance(testID_column, str):
+        if testID_column in list(df_test):
+          df_testID = pd.DataFrame(df_test[testID_column])
+          del df_test[testID_column]
+      elif isinstance(testID_column, list):
+        if set(testID_column) < set(list(df_test)):
+          df_testID = pd.DataFrame(df_test[testID_column])
+          for IDcolumn in testID_column:
+            del df_test[IDcolumn]
       else:
         df_testID = pd.DataFrame()
     else:
@@ -6441,14 +6580,27 @@ class AutoMunge:
 
 
 
+#       #extract trainID
+#       if trainID_column != False:
+
+# #         trainID_df = pd.DataFrame(train_df[trainID_column])
+# #         del train_df[trainID_column]
+#         df_trainID = pd.DataFrame(df_train[trainID_column])
+#         del df_train[trainID_column]
+      
       #extract trainID
       if trainID_column != False:
-
-#         trainID_df = pd.DataFrame(train_df[trainID_column])
-#         del train_df[trainID_column]
+            
         df_trainID = pd.DataFrame(df_train[trainID_column])
-        del df_train[trainID_column]
-      
+        
+        if isinstance(trainID_column, str):
+          tempIDlist = [trainID_column]
+        elif isinstance(trainID_column, list):
+          tempIDlist = trainID_column
+        for IDcolumn in tempIDlist:
+          del df_train[IDcolumn]
+        #del df_train[trainID_column]
+    
         
       #shuffle one more time as part of levelized label frequency
       if shuffletrain == True:
@@ -6465,7 +6617,12 @@ class AutoMunge:
     postprocess_dict.update({'origtraincolumns' : columns_train, \
                              'finalcolumns_train' : finalcolumns_train, \
                              'labels_column' : labels_column, \
+                             'trainID_column' : trainID_column, \
                              'testID_column' : testID_column, \
+                             'valpercent1' : valpercent1, \
+                             'valpercent2' : valpercent2, \
+                             'shuffletrain' : shuffletrain, \
+                             'TrainLabelFreqLevel' : TrainLabelFreqLevel, \
                              'MLinfill' : MLinfill, \
                              'infilliterate' : infilliterate, \
                              'randomseed' : randomseed, \
@@ -6492,7 +6649,7 @@ class AutoMunge:
                              'processdict' : processdict, \
                              'process_dict' : process_dict, \
                              'ML_cmnd' : ML_cmnd, \
-                             'automungeversion' : '2.12' })
+                             'automungeversion' : '2.13' })
 
     
     
@@ -7003,6 +7160,59 @@ class AutoMunge:
     return mdf_test
   
 
+    
+  def postprocess_MADn_class(self, mdf_test, column, postprocess_dict, columnkey):
+    '''
+    #postprocess_MADn_class(mdf_test, column, postprocess_dict, columnkey)
+    #function to normalize data to mean of 0 and mean absolute deviation of 1 from training distribution
+    #takes as arguement pandas dataframe of test data (mdf_test)\
+    #and the name of the column string ('column'), and the mean and MAD from the train set \
+    #stored in postprocess_dict
+    #replaces missing or improperly formatted data with mean of remaining values
+    #leaves original specified column in dataframe
+    #returns transformed dataframe
+    #expect this approach works better than z-score for when the numerical distribution isn't thin tailed
+    #if only have training but not test data handy, use same training data for both dataframe inputs
+    '''
+    
+    
+    #retrieve normalizastion parameters from postprocess_dict
+    normkey = column + '_MADn'
+    
+    mean = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
+    MAD = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['MAD']
+
+    #copy original column for implementation
+    mdf_test[column + '_MADn'] = mdf_test[column].copy()
+
+
+    #convert all values to either numeric or NaN
+    mdf_test[column + '_MADn'] = pd.to_numeric(mdf_test[column + '_MADn'], errors='coerce')
+
+    #get mean of training data
+    mean = mean  
+
+    #replace missing data with training set mean
+    mdf_test[column + '_MADn'] = mdf_test[column + '_MADn'].fillna(mean)
+
+    #subtract mean from column
+    mdf_test[column + '_MADn'] = mdf_test[column + '_MADn'] - mean
+
+    #get mean absolute deviation of training data
+    MAD = MAD
+
+    #divide column values by std
+    mdf_test[column + '_MADn'] = mdf_test[column + '_MADn'] / MAD
+
+
+    return mdf_test
+
+    
+    
+    
+    
   def postprocess_mnmx_class(self, mdf_test, column, postprocess_dict, columnkey):
     '''
     #postprocess_mnmx_class(mdf_test, column, postprocess_dict, columnkey)
@@ -8444,19 +8654,36 @@ class AutoMunge:
     #so I'll just get that out of the way
     df_test.fillna(value=float('nan'), inplace=True)
 
+    
     #extract the ID columns from test set
     if testID_column != False:
       testIDcolumn = postprocess_dict['testID_column']
+      if testID_column == True:
+        testID_column = testIDcolumn
       if testID_column != True:
         if testID_column != testIDcolumn:
-          print("error, testID_column in test set passed to postmunge must have same column")
-          print("labeling convention, testID_column from automunge was: ", testIDcolumn)
-        
-      #added this line for version 1.999 to change testID_column argument from string to Boolean
-      #note this approach keeps backwards compatibility I suppose
-      
-      df_testID = pd.DataFrame(df_test[testID_column])
-      del df_test[testID_column]
+          print("please note the ID column(s) passed to postmunge is different than the ID column(s)")
+          print("that was originally passed to automunge. That's ok as long as the test set columns")
+          print("remaining are the same, just wanted to give you a heads up in case wasn't intentional.")
+#           print("error, testID_column in test set passed to postmunge must have same column")
+#           print("labeling convention, testID_column from automunge was: ", testIDcolumn)
+       
+      if isinstance(testID_column, str): 
+        if testID_column in list(df_test):
+          df_testID = pd.DataFrame(df_test[testIDcolumn])
+          del df_test[testID_column]
+      elif isinstance(testID_column, list):
+        if set(testID_column) < set(list(df_test)):
+          df_testID = pd.DataFrame(df_test[testID_column])
+          for IDcolumn in testID_column:
+            del df_test[IDcolumn]
+      else:
+        df_testID = pd.DataFrame()
+    else:
+      df_testID = pd.DataFrame()
+    
+    
+    
     
     if labelscolumn != False:
       labels_column = postprocess_dict['labels_column']
