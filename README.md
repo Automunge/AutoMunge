@@ -100,8 +100,9 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
                        'PCA_type':'default', \
                        'PCA_cmnd':{}}, \
             assigncat = {'mnmx':[], 'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[], \
-                         'nmbr':[], 'nbr2':[], 'nbr3':[], 'bins':[], 'bint':[], \
-                         'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
+                         'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], \
+                         'bins':[], 'bint':[], \
+			 'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
                          'bnry':[], 'text':[], \
                          'date':[], 'dat2':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
                          'excl':[], 'exc2':[], 'exc3':[], 'null':[]}, \
@@ -245,8 +246,9 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
                        'PCA_type':'default', \
                        'PCA_cmnd':{}}, \
             assigncat = {'mnmx':[], 'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[], \
-                         'nmbr':[], 'nbr2':[], 'nbr3':[], 'bins':[], 'bint':[], \
-                         'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
+                         'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], \
+                         'bins':[], 'bint':[], \
+			 'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
                          'bnry':[], 'text':[], \
                          'date':[], 'dat2':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
                          'excl':[], 'exc2':[], 'exc3':[], 'null':[]}, \
@@ -390,8 +392,9 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
                        'PCA_type':'default', \
                        'PCA_cmnd':{}}, \
             assigncat = {'mnmx':[], 'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[], \
-                         'nmbr':[], 'nbr2':[], 'nbr3':[], 'bins':[], 'bint':[], \
-                         'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
+                         'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], \
+                         'bins':[], 'bint':[], \
+			 'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
                          'bnry':[], 'text':[], \
                          'date':[], 'dat2':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
                          'excl':[], 'exc2':[], 'exc3':[], 'null':[]}, \
@@ -604,12 +607,13 @@ user can simply turn off default PCA transforms by passing 'PCA_type':'off'.
 #Here are the current trasnformation options built into our library, which
 #we are continuing to build out. A user may also define their own.
 
-assigncat = {'mnmx':[], 'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[], \
-             'mnm7':[], 'nmbr':[], 'nbr2':[], 'nbr3':[], 'bins':[], 'bint':[], \
-             'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
-             'bnry':[], 'text':[], \
-             'date':[], 'dat2':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
-             'excl':[], 'exc2':[], 'exc3':[], 'null':[]}, \
+        assigncat = {'mnmx':[], 'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[], \
+                     'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], \
+                     'bins':[], 'bint':[], \
+		     'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
+                     'bnry':[], 'text':[], \
+                     'date':[], 'dat2':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
+                     'excl':[], 'exc2':[], 'exc3':[], 'null':[]}, \
 ```         
 
 A user may add column identifier strings to each
@@ -1008,7 +1012,26 @@ And here arethe series of family trees currently built into the internal library
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : ['bint']}})
-    
+    transform_dict.update({'MADn' : {'greatgrandparents' : [], \
+                                     'grandparents' : ['NArw'], \
+                                     'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['MADn'], \
+                                     'cousins' : [], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    transform_dict.update({'MAD2' : {'greatgrandparents' : [], \
+                                     'grandparents' : ['NArw'], \
+                                     'parents' : ['MAD2'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : ['bint']}})
     transform_dict.update({'mnmx' : {'greatgrandparents' : [], \
                                      'grandparents' : ['NArw'], \
                                      'parents' : [], \
