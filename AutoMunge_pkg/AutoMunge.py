@@ -6649,7 +6649,7 @@ class AutoMunge:
                              'processdict' : processdict, \
                              'process_dict' : process_dict, \
                              'ML_cmnd' : ML_cmnd, \
-                             'automungeversion' : '2.13' })
+                             'automungeversion' : '2.14' })
 
     
     
@@ -6774,6 +6774,10 @@ class AutoMunge:
       np_validationlabels2 = df_validationlabels2.values
       np_test = df_test.values
       np_testID = df_testID.values
+    
+      #apply ravel to labels if appropriate - converts from eg [[1,2,3]] to [1,2,3]
+      if np_labels.ndim == 2 and np_labels.shape[1] == 1:
+        np_labels = np.ravel(np_labels)
       
 
     #a reasonable extension would be to perform some validation functions on the\
@@ -9134,6 +9138,11 @@ class AutoMunge:
       
       if labelscolumn != False:
         testlabels = df_testlabels.values
+        
+        #apply ravel to labels if appropriate - converts from eg [[1,2,3]] to [1,2,3]
+        if np_labels.ndim == 2 and np_labels.shape[1] == 1:
+          np_labels = np.ravel(np_labels)
+        
       else:
         testlabels = []
         
