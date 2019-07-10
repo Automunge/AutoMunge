@@ -301,7 +301,9 @@ option was applied.
 
 * labels: a set of numerically encoded labels corresponding to the
 train set if a label column was passed. Note that the function
-assumes the label column is originally included in the train set.
+assumes the label column is originally included in the train set. Note
+that if the labels set is a single column a returned numpy array is 
+flattened (e.g. [[1,2,3]] converted to [1,2,3] )
 
 * validation1: a set of training data carved out from the train set
 that is intended for use in hyperparameter tuning of a downstream model.
@@ -813,7 +815,9 @@ trained with the np_train set from automunge.
 
 * testlabels: a set of numerically encoded labels corresponding to the
 test set if a label column was passed. Note that the function
-assumes the label column is originally included in the train set.
+assumes the label column is originally included in the train set. Note
+that if the labels set is a single column a returned numpy array is 
+flattened (e.g. [[1,2,3]] converted to [1,2,3] )
 
 * labelsencoding_dict: this is the same labelsencoding_dict returned from
 automunge, it's used in case one wants to reverse encode predicted labels
