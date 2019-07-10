@@ -6649,7 +6649,7 @@ class AutoMunge:
                              'processdict' : processdict, \
                              'process_dict' : process_dict, \
                              'ML_cmnd' : ML_cmnd, \
-                             'automungeversion' : '2.14' })
+                             'automungeversion' : '2.15' })
 
     
     
@@ -6778,6 +6778,11 @@ class AutoMunge:
       #apply ravel to labels if appropriate - converts from eg [[1,2,3]] to [1,2,3]
       if np_labels.ndim == 2 and np_labels.shape[1] == 1:
         np_labels = np.ravel(np_labels)
+      if np_validationlabels1.ndim == 2 and np_validationlabels1.shape[1] == 1:
+        np_validationlabels1 = np.ravel(np_validationlabels1)
+      if np_validationlabels2.ndim == 2 and np_validationlabels2.shape[1] == 1:
+        np_validationlabels2 = np.ravel(np_validationlabels2)
+      
       
 
     #a reasonable extension would be to perform some validation functions on the\
