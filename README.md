@@ -410,7 +410,9 @@ for use to subsequently train a machine learning model. The set at a
 minimum should be 'tidy' meaning a single column per feature and a
 single row per observation. If desired the set may include a row ID
 column and a column intended to be used as labels for a downstream
-training operation. The set must have string column headers.
+training operation. The set must have string column headers. The tool
+does not currenlty support the inclusion of a designated index column, 
+a desired index column may be passed as a seperate column in the ID list.
 
 * df_test: a pandas dataframe containing a structured dataset intended for
 use to generate predictions from a downstream machine learning model
@@ -863,7 +865,9 @@ the original automunge call.
 use to generate predictions from a machine learning model trained from
 the automunge returned sets. The set must be consistantly formated as
 the train set with consistent column labels. If desired the set may
-include an ID column.
+include an ID column. The tool does not currenlty support the inclusion 
+of a designated index column, a desired index column may be passed as a 
+seperate column in the ID list.
 
 * testID_column: a string of the column title for the column from the
 df_test set intended for use as a row identifier value (such as could be
