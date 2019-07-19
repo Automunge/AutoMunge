@@ -5309,6 +5309,38 @@ class AutoMunge:
     return PCAmodel
 
 
+  def boolexcl(self, ML_cmnd, df, PCAexcl):
+    """
+    If user passed bool_PCA_excl as True in ML_cmnd['PCA_cmnd']
+    {'PCA_cmnd':{'bool_PCA_excl': True}}
+    Then add boolean columns to the PCAexcl list of columns
+    to be carved out from PCA application
+    Note that PCAexcl may alreadyn be populated with user-passed
+    columns to 4exclude from PCA. The returned bool_PCAexcl list
+    seperately tracks just those columns that were added as part 
+    of this function, in case may be of later use
+    """
+    bool_PCAexcl = []
+    if 'bool_PCA_excl' in ML_cmnd['PCA_cmnd']:
+      #troubleshoot
+      print("'bool_PCA_excl' in ML_cmnd['PCA_cmnd']")
+        
+      #if user passed the bool_PCA_excl as True in ML_cmnd['PCA_cmnd'] 
+      if ML_cmnd['PCA_cmnd']['bool_PCA_excl'] == True:
+        for checkcolumn in df:
+          #if column is boolean then add to lists
+          if set(df[checkcolumn].unique()) == {0,1} \
+          or set(df[checkcolumn].unique()) == {0} \
+          or set(df[checkcolumn].unique()) == {1}:
+            PCAexcl.append(checkcolumn)
+            bool_PCAexcl.append(checkcolumn)
+    #troubleshoot
+    else:
+      print("'bool_PCA_excl' not in ML_cmnd['PCA_cmnd']")
+            
+    return PCAexcl, bool_PCAexcl
+
+
   def createPCAsets(self, df_train, df_test, PCAexcl, postprocess_dict):
     '''
     Function that takes as input the dataframes df_train and df_test 
@@ -6049,18 +6081,42 @@ class AutoMunge:
     #if PCAn_components != None:
     if n_components != None:
       
-      #this is to carve the excluded columns out from the set
-      PCAset_train, PCAset_test, PCAexcl_posttransform = \
-      self.createPCAsets(df_train, df_test, PCAexcl, postprocess_dict)
+      #If user passed bool_PCA_excl as True in ML_cmnd['PCA_cmnd']
+      #Then add boolean columns to the PCAexcl list of columns
+      #and bool_PCAexcl just tracks what columns were added
+        
+      #troubleshoot
+      #troubleshoot
+      print("if n_components != None:")
+      print('n_components = ', n_components)
       
-      #this is to train the PCA model and perform transforms on train and test set
-      PCAset_train, PCAset_test, postprocess_dict = \
-      self.PCAfunction(PCAset_train, PCAset_test, PCAn_components, postprocess_dict, \
+      print("troubleshoot boolexcl")
+      print('ML_cmnd = ', ML_cmnd)
+      print('list(df_train)')
+      print(list(df_train))
+      
+      print("PCAexcl = ", PCAexcl)
+      
+      PCAexcl, bool_PCAexcl = self.boolexcl(ML_cmnd, df_train, PCAexcl)
+      
+      print("PCAexcl after bool_PCAexcl = ", PCAexcl)
+      
+      #only perform PCA if the specified/defrived number of columns < the number of
+      #columns after removing the PCAexcl columns
+      if n_components < len(list(df_train)) - len(PCAexcl) and n_components >= 1.0:
+      
+        #this is to carve the excluded columns out from the set
+        PCAset_train, PCAset_test, PCAexcl_posttransform = \
+        self.createPCAsets(df_train, df_test, PCAexcl, postprocess_dict)
+      
+        #this is to train the PCA model and perform transforms on train and test set
+        PCAset_train, PCAset_test, postprocess_dict = \
+        self.PCAfunction(PCAset_train, PCAset_test, PCAn_components, postprocess_dict, \
                        randomseed, ML_cmnd)
 
-      #reattach the excluded columns to PCA set
-      df_train = pd.concat([PCAset_train, df_train[PCAexcl_posttransform]], axis=1)
-      df_test = pd.concat([PCAset_test, df_test[PCAexcl_posttransform]], axis=1)
+        #reattach the excluded columns to PCA set
+        df_train = pd.concat([PCAset_train, df_train[PCAexcl_posttransform]], axis=1)
+        df_test = pd.concat([PCAset_test, df_test[PCAexcl_posttransform]], axis=1)
     
     else:
       #else we'll just populate the PCAmodel slot in postprocess_dict with a placeholder
@@ -6649,7 +6705,7 @@ class AutoMunge:
                              'processdict' : processdict, \
                              'process_dict' : process_dict, \
                              'ML_cmnd' : ML_cmnd, \
-                             'automungeversion' : '2.15' })
+                             'automungeversion' : '2.16' })
 
     
     
