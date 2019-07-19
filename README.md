@@ -603,10 +603,14 @@ ML_cmnd = {'MLinfill_type':'default', \
 #n_jobs or normalize_components, and similarily KernelPCA 
 #doesn't have available n_jobs.
 ```
-Note that the PCA is currently defaulted to active for cases where the train
-set number of features is >0.50 the number of rows. A user can change this
-ratio by passing 'PCA_cmnd':{'col_row_ratio':0.22}} for instance. Also a 
-user can simply turn off default PCA transforms by passing 'PCA_type':'off'.
+Note that the PCA is currently defaulted to active for cases where the 
+train set number of features is >0.50 the number of rows. A user can 
+change this ratio by passing 'PCA_cmnd':{'col_row_ratio':0.22}} for 
+instance. Also a user can simply turn off default PCA transforms by 
+passing 'PCA_cmnd':{'PCA_type':'off'}. A user can also exclude returned
+boolean (0/1) columns from any PCA application by passing 
+'PCA_cmnd':{'bool_PCA_excl':True}
+such as could potentially result in memory savings.
 
 
 * assigncat:
