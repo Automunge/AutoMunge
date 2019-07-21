@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="AutoMunge_pkg",
-    version="2.17",
+    version="2.18",
     author="Nicholas Teague",
     author_email="automunge@gmail.com",
     description="A tool for automated data wrangling",
