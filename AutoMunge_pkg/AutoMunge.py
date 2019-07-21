@@ -5595,7 +5595,37 @@ class AutoMunge:
     
     #copy input dataframes to internal state so as not to edit exterior objects
     df_train = df_train.copy()
-    df_test = df_test.copy()        
+    df_test = df_test.copy()
+    
+    
+    if type(df_train.index) != pd.RangeIndex:
+      #if df_train.index.names == [None]:
+      if None in df_train.index.names:
+        print("error, non range index passed without column name")
+      else:
+        if trainID_column == False:
+          trainID_column = []
+        elif isinstance(trainID_column, str):
+          trainID_column = [trainID_column]
+        elif not isinstance(trainID_column, list):
+          print("error, trainID_column allowable values are False, string, or list")
+        trainID_column = trainID_column + list(df_train.index.names)
+        df_train = df_train.reset_index(drop=False)
+        
+    if type(df_test.index) != pd.RangeIndex:
+      #if df_train.index.names == [None]:
+      if None in df_test.index.names:
+        print("error, non range index passed without column name")
+      else:
+        if testID_column == False:
+          testID_column = []
+        elif isinstance(testID_column, str):
+          testID_column = [testID_column]
+        elif not isinstance(testID_column, list):
+          print("error, testID_column allowable values are False, string, or list")
+        testID_column = testID_column + list(df_test.index.names)
+        df_test = df_test.reset_index(drop=False)
+    
         
     #my understanding is it is good practice to convert any None values into NaN \
     #so I'll just get that out of the way
@@ -7147,7 +7177,7 @@ class AutoMunge:
                              'processdict' : processdict, \
                              'process_dict' : process_dict, \
                              'ML_cmnd' : ML_cmnd, \
-                             'automungeversion' : '2.16' })
+                             'automungeversion' : '2.17' })
 
     
     
@@ -9156,6 +9186,21 @@ class AutoMunge:
     
     #copy input dataframes to internal state so as not to edit exterior objects
     df_test = df_test.copy()
+    
+    if type(df_test.index) != pd.RangeIndex:
+      #if df_train.index.names == [None]:
+      if None in df_test.index.names:
+        print("error, non range index passed without column name")
+      else:
+        if testID_column == False:
+          testID_column = []
+        elif isinstance(testID_column, str):
+          testID_column = [testID_column]
+        elif not isinstance(testID_column, list):
+          print("error, testID_column allowable values are False, string, or list")
+        testID_column = testID_column + list(df_test.index.names)
+        df_test = df_test.reset_index(drop=False)
+    
 
     #my understanding is it is good practice to convert any None values into NaN \
     #so I'll just get that out of the way
