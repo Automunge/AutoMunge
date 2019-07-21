@@ -655,7 +655,7 @@ A user may add column identifier strings to each of these lists to
 designate the column-specific infill approach for missing or
 improperly formated values. Note that this infill category defaults to
 MLinfill if nothing assigned and the MLinfill argument to automunge is
-set to True. stdrdinfill mean mean for numeric sets, most common for 
+set to True. stdrdinfill means: mean for numeric sets, most common for 
 binary, and new column boolean for categorical. zeroinfill means inserting 
 the integer 0 to missing cells. adjinfill means passing the value from the 
 preceding row to missing cells. meaninfill means inserting the mean 
