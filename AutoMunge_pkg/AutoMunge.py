@@ -2817,8 +2817,8 @@ class AutoMunge:
       category = 'bnry'
 
 
-    #if > 80% (ARBITRARY FIGURE) are NaN we'll just delete the column
-    if df[column].isna().sum() >= df.shape[0] * 0.80:
+    #if > 85% (ARBITRARY FIGURE) are NaN we'll just delete the column
+    if df[column].isna().sum() >= df.shape[0] * 0.85:
       category = 'null'
 
     #else if most common in column is NaN, re-evaluate using the second most common type
@@ -4578,7 +4578,8 @@ class AutoMunge:
                   numbercategoryheuristic = numbercategoryheuristic, pandasoutput = True, \
                   featureselection = False, featurepct = 1.00, featuremetric = featuremetric, \
                   featuremethod = 'pct', ML_cmnd = FSML_cmnd, assigncat = assigncat, \
-                  assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'adjinfill':[]}, \
+                  assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'adjinfill':[], \
+                                 'meaninfill':[], 'medianinfill':[]}, \
                   transformdict = transformdict, processdict = processdict)
     
     
@@ -4811,6 +4812,9 @@ class AutoMunge:
       if infillcolumn not in allspecdinfill_list:
         addthesecolumns = addthesecolumns + [infillcolumn]
     
+    if 'stdrdinfill' not in assigninfill:
+    
+      assigninfill.update({'stdrdinfill':[]})
     
     allstdrdinfill_list = addthesecolumns + assigninfill['stdrdinfill']
     
@@ -4922,6 +4926,135 @@ class AutoMunge:
     
 
     return df
+
+
+  def train_medianinfillfunction(self, df, column, postprocess_dict, \
+                                 masterNArows):
+
+
+    #create infill dataframe of all zeros with number of rows corepsonding to the
+    #number of 1's found in masterNArows
+    NArw_columnname = \
+    postprocess_dict['column_dict'][column]['origcolumn'] + '_NArows'
+
+    NAcount = len(masterNArows[masterNArows[NArw_columnname] == 1])
+    
+    #create df without rows that were subject to infill to dervie median
+    tempdf = pd.concat([df[column], masterNArows[NArw_columnname]], axis=1)
+    #remove rows that were subject to infill
+    tempdf = tempdf[tempdf[NArw_columnname] != 1]
+    #calculate median of remaining rows
+    median = tempdf[column].median()
+    
+    del tempdf
+
+    infill = pd.DataFrame(np.zeros((NAcount, 1)))
+    infill = infill.replace(0, median)
+
+    category = postprocess_dict['column_dict'][column]['category']
+    columnslist = postprocess_dict['column_dict'][column]['columnslist']
+    categorylist = postprocess_dict['column_dict'][column]['categorylist']
+
+    #insert infill
+    df = self.insertinfill(df, column, infill, category, \
+                           pd.DataFrame(masterNArows[NArw_columnname]), \
+                           postprocess_dict, columnslist = columnslist, \
+                           categorylist = categorylist)
+
+    return df, median
+
+  def test_medianinfillfunction(self, df, column, postprocess_dict, \
+                                 masterNArows, median):
+
+
+    #create infill dataframe of all zeros with number of rows corepsonding to the
+    #number of 1's found in masterNArows
+    NArw_columnname = \
+    postprocess_dict['column_dict'][column]['origcolumn'] + '_NArows'
+
+    NAcount = len(masterNArows[masterNArows[NArw_columnname] == 1])
+    
+    median = median
+
+    infill = pd.DataFrame(np.zeros((NAcount, 1)))
+    infill = infill.replace(0, median)
+
+    category = postprocess_dict['column_dict'][column]['category']
+    columnslist = postprocess_dict['column_dict'][column]['columnslist']
+    categorylist = postprocess_dict['column_dict'][column]['categorylist']
+
+    #insert infill
+    df = self.insertinfill(df, column, infill, category, \
+                           pd.DataFrame(masterNArows[NArw_columnname]), \
+                           postprocess_dict, columnslist = columnslist, \
+                           categorylist = categorylist)
+
+    return df
+
+  def train_meaninfillfunction(self, df, column, postprocess_dict, \
+                                 masterNArows):
+
+
+    #create infill dataframe of all zeros with number of rows corepsonding to the
+    #number of 1's found in masterNArows
+    NArw_columnname = \
+    postprocess_dict['column_dict'][column]['origcolumn'] + '_NArows'
+
+    NAcount = len(masterNArows[masterNArows[NArw_columnname] == 1])
+    
+    #create df without rows that were subject to infill to dervie median
+    tempdf = pd.concat([df[column], masterNArows[NArw_columnname]], axis=1)
+    #remove rows that were subject to infill
+    tempdf = tempdf[tempdf[NArw_columnname] != 1]
+    #calculate median of remaining rows
+    mean = tempdf[column].mean()
+    
+    del tempdf
+
+    infill = pd.DataFrame(np.zeros((NAcount, 1)))
+    infill = infill.replace(0, mean)
+
+    category = postprocess_dict['column_dict'][column]['category']
+    columnslist = postprocess_dict['column_dict'][column]['columnslist']
+    categorylist = postprocess_dict['column_dict'][column]['categorylist']
+
+    #insert infill
+    df = self.insertinfill(df, column, infill, category, \
+                           pd.DataFrame(masterNArows[NArw_columnname]), \
+                           postprocess_dict, columnslist = columnslist, \
+                           categorylist = categorylist)
+
+    return df, mean
+
+
+  def test_meaninfillfunction(self, df, column, postprocess_dict, \
+                                 masterNArows, mean):
+
+
+    #create infill dataframe of all zeros with number of rows corepsonding to the
+    #number of 1's found in masterNArows
+    NArw_columnname = \
+    postprocess_dict['column_dict'][column]['origcolumn'] + '_NArows'
+
+    NAcount = len(masterNArows[masterNArows[NArw_columnname] == 1])
+    
+    mean = mean
+
+    infill = pd.DataFrame(np.zeros((NAcount, 1)))
+    infill = infill.replace(0, mean)
+
+    category = postprocess_dict['column_dict'][column]['category']
+    columnslist = postprocess_dict['column_dict'][column]['columnslist']
+    categorylist = postprocess_dict['column_dict'][column]['categorylist']
+
+    #insert infill
+    df = self.insertinfill(df, column, infill, category, \
+                           pd.DataFrame(masterNArows[NArw_columnname]), \
+                           postprocess_dict, columnslist = columnslist, \
+                           categorylist = categorylist)
+
+    return df
+
 
 
   def populatePCAdefaults(self, randomseed):
@@ -5465,7 +5598,8 @@ class AutoMunge:
                            'PCA_cmnd':{}}, \
                 assigncat = {'nmbr':[], 'nbr2':[], 'bxcx':[], 'bnry':[], 'text':[], \
                              'date':[], 'excl':[]}, \
-                assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'adjinfill':[]}, \
+                assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'adjinfill':[], \
+                                'meaninfill':[], 'medianinfill':[]}, \
                 transformdict = {}, processdict = {}):
 
     '''
@@ -5726,7 +5860,13 @@ class AutoMunge:
       print("error, different column labels in the train and test set")
       print("(This assesment excludes labels and ID columns.)")
       return
-
+    
+    column_labels_count = len(list(df_train))
+    unique_column_labels_count = len(set(list(df_train)))
+    if unique_column_labels_count < column_labels_count:
+      print("error, redundant column labels found, each column requires unique label")
+      return
+    
     columns_train = list(df_train)
     columns_test = list(df_test)
     if columns_train != columns_test:
@@ -5994,55 +6134,139 @@ class AutoMunge:
                                           columns_train, postprocess_dict)
     
     
-    columns_train_zero = postprocess_assigninfill_dict['zeroinfill']
+    if 'stdrdinfill' not in postprocess_assigninfill_dict:
     
-    for column in columns_train_zero:
+      postprocess_assigninfill_dict.update({'stdrdinfill':[]})
+
+
+    if 'zeroinfill' in postprocess_assigninfill_dict:
+
+      columns_train_zero = postprocess_assigninfill_dict['zeroinfill']
       
-      categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
+      for column in columns_train_zero:
       
-      #if (column not in excludetransformscolumns) \
-      if (column not in postprocess_assigninfill_dict['stdrdinfill']) \
-      and (column[-5:] != '_NArw') \
-      and (categorylistlength == 1):
-        #noting that currently we're only going to infill 0 for single column categorylists
-        #some comparable address for multi-column categories is a future extension
+        categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
+      
+        #if (column not in excludetransformscolumns) \
+        if (column not in postprocess_assigninfill_dict['stdrdinfill']) \
+        and (column[-5:] != '_NArw') \
+        and (categorylistlength == 1):
+          #noting that currently we're only going to infill 0 for single column categorylists
+          #some comparable address for multi-column categories is a future extension
         
-        df_train = \
-        self.zeroinfillfunction(df_train, column, postprocess_dict, \
-                                masterNArows_train)
+          df_train = \
+          self.zeroinfillfunction(df_train, column, postprocess_dict, \
+                                  masterNArows_train)
         
-        df_test = \
-        self.zeroinfillfunction(df_test, column, postprocess_dict, \
-                                masterNArows_test)
+          df_test = \
+          self.zeroinfillfunction(df_test, column, postprocess_dict, \
+                                  masterNArows_test)
         
 
-    columns_train_adj = postprocess_assigninfill_dict['adjinfill']
-    for column in columns_train_adj:
+    if 'adjinfill' in postprocess_assigninfill_dict: 
+        
+      columns_train_adj = postprocess_assigninfill_dict['adjinfill']
+      for column in columns_train_adj:
 
       
-      #if column not in excludetransformscolumns \
-      if column not in postprocess_assigninfill_dict['stdrdinfill'] \
-      and column[-5:] != '_NArw':
+        #if column not in excludetransformscolumns \
+        if column not in postprocess_assigninfill_dict['stdrdinfill'] \
+        and column[-5:] != '_NArw':
         
-        df_train = \
-        self.adjinfillfunction(df_train, column, postprocess_dict, \
-                               masterNArows_train)
+          df_train = \
+          self.adjinfillfunction(df_train, column, postprocess_dict, \
+                                 masterNArows_train)
         
-        df_test = \
-        self.adjinfillfunction(df_test, column, postprocess_dict, \
-                               masterNArows_test)
+          df_test = \
+          self.adjinfillfunction(df_test, column, postprocess_dict, \
+                                 masterNArows_test)
+    
+
+    if 'medianinfill' in postprocess_assigninfill_dict: 
+    
+      columns_train_median = postprocess_assigninfill_dict['medianinfill']
+
+      for column in columns_train_median:
+      
+        #check if column is boolean
+        boolcolumn = False
+        if set(df_train[column].unique()) == {0,1} \
+        or set(df_train[column].unique()) == {0} \
+        or set(df_train[column].unique()) == {1}:
+          boolcolumn = True
+    
+        categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
+      
+        #if (column not in excludetransformscolumns) \
+        if (column not in postprocess_assigninfill_dict['stdrdinfill']) \
+        and (column[-5:] != '_NArw') \
+        and (categorylistlength == 1) \
+        and boolcolumn == False:
+          #noting that currently we're only going to infill 0 for single column categorylists
+          #some comparable address for multi-column categories is a future extension
+        
+          df_train, infillvalue = \
+          self.train_medianinfillfunction(df_train, column, postprocess_dict, \
+                                          masterNArows_train)
+            
+          postprocess_dict['column_dict'][column]['normalization_dict'].update({'infillvalue':infillvalue})
+        
+          df_test = \
+          self.test_medianinfillfunction(df_test, column, postprocess_dict, \
+                                         masterNArows_test, infillvalue)
+        
+
+    if 'meaninfill' in postprocess_assigninfill_dict: 
+        
+      columns_train_mean = postprocess_assigninfill_dict['meaninfill']
+
+      for column in columns_train_mean:
+      
+        #check if column is boolean
+        boolcolumn = False
+        if set(df_train[column].unique()) == {0,1} \
+        or set(df_train[column].unique()) == {0} \
+        or set(df_train[column].unique()) == {1}:
+          boolcolumn = True
+    
+        categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
+      
+        #if (column not in excludetransformscolumns) \
+        if (column not in postprocess_assigninfill_dict['stdrdinfill']) \
+        and (column[-5:] != '_NArw') \
+        and (categorylistlength == 1) \
+        and boolcolumn == False:
+          #noting that currently we're only going to infill 0 for single column categorylists
+          #some comparable address for multi-column categories is a future extension
+        
+          df_train, infillvalue = \
+          self.train_meaninfillfunction(df_train, column, postprocess_dict, \
+                                        masterNArows_train)
+          
+          postprocess_dict['column_dict'][column]['normalization_dict'].update({'infillvalue':infillvalue})
+        
+          df_test = \
+          self.test_meaninfillfunction(df_test, column, postprocess_dict, \
+                                       masterNArows_test, infillvalue)
     
     
     if MLinfill == True:
       
-      columns_train_ML = list(set().union(postprocess_assigninfill_dict['stdrdinfill'], \
-                                          postprocess_assigninfill_dict['MLinfill']))
+      if 'MLinfill' in postprocess_assigninfill_dict:
+    
+        columns_train_ML = list(set().union(postprocess_assigninfill_dict['stdrdinfill'], \
+                                            postprocess_assigninfill_dict['MLinfill']))
+      else:
+        
+        columns_train_ML = postprocess_assigninfill_dict['stdrdinfill']
       
       #columns_test_ML = list(df_test)
 
     else:
-      
-      columns_train_ML = postprocess_assigninfill_dict['MLinfill']
+      if 'MLinfill' in postprocess_assigninfill_dict:
+        columns_train_ML = postprocess_assigninfill_dict['MLinfill']
+      else:
+        columns_train_ML = []
       
     
     iteration = 0
@@ -6067,7 +6291,9 @@ class AutoMunge:
                   masterNArows_train, masterNArows_test, randomseed, ML_cmnd)
 
 
-      iteration += 1    
+      iteration += 1
+    
+
 
     
     #ok here's where we address labels, a general comment is that I haven't achieved the 
@@ -6422,99 +6648,7 @@ class AutoMunge:
         labelsencoding_dict[labelscategory] = labelsnormalization_dict['textlabelsdict']
   
 
-#       if labelscategory not in ['bnry', 'nmbr', 'bxcx', 'text']:
-        
-#         #if labels category wasn't one of our built in evalcateogry then simply apply
-#         #full generations of potentially multicolumn derivations
-        
-#         #to support the postprocess_dict entry below, let's first create a temp
-#         #list of columns
-#         templist1 = list(df_labels)
-        
-#         #now process ancestors
-#         df_labels, df_testlabels, postprocess_dict = \
-#         self.processancestors(df_labels, df_testlabels, labels_column, labelscategory, labelscategory, \
-#                               labelsprocess_dict, labelstransform_dict, postprocess_dict)
 
-
-#         #now process family
-#         df_labels, df_testlabels, postprocess_dict = \
-#         self.processfamily(df_labels, df_testlabels, labels_column, labelscategory, labelscategory, \
-#                           labelsprocess_dict, labelstransform_dict, postprocess_dict)
-
-#         #now delete columns subject to replacement
-#         df_labels, df_testlabels, postprocess_dict = \
-#         self.circleoflife(df_labels, df_testlabels, labels_column, labelscategory, labelscategory, \
-#                           labelsprocess_dict, labelstransform_dict, postprocess_dict)
-        
-        
-#         #here's another templist to support the postprocess_dict entry below
-#         templist2 = list(df_labels)
-        
-#         #ok now we're going to pick one of the new entries in templist2 to serve 
-#         #as a "columnkey" for pulling datas from the postprocess_dict down the road
-#         #columnkeylist = list(set(templist2) - set(templist1))[0]
-#         columnkeylist = list(set(templist2) - set(templist1))
-        
-#         if isinstance(columnkeylist, str):
-#           columnkey = columnkeylist
-#         else:
-#           #if list is empty
-#           if len(columnkeylist) == 0:
-#             columnkey = labels_column
-#           else:
-#             columnkey = columnkeylist[0]
-#             if len(columnkey) >= 5:
-#               if columnkey[-5:] == '_NArw':
-#                 columnkey = columnkeylist[1]
-        
-        
-#         #ok this is sort of a hack, originating in version 1.77,
-#         #we're going to create an entry to postprocess_dict to
-#         #store a columnkey for each of the original columns
-#         postprocess_dict['origcolumn'].update({labels_column : {'category' : labelscategory, \
-#                                                                 'columnkeylist' : columnkeylist, \
-#                                                                 'columnkey' : columnkey}})
-        
-#         finalcolumns_labels = list(df_labels)
-        
-#         #we'll have convention that labels don't include a NArw, this might be worth some more thought
-#         if labels_column + '_NArw' in list(df_labels):
-#           del df_labels[labels_column + '_NArw']
-#           del df_testlabels[labels_column + '_NArw']
-  
-#         labelsnormalization_dict = postprocess_dict['column_dict'][finalcolumns_labels[0]]['normalization_dict'][finalcolumns_labels[0]]
-
-    
-#         #labelsencoding_dict[labelscategory] = dict(zip([1,0], [labelsnormalization_dict['onevalue'], labelsnormalization_dict['zerovalue']]))
-        
-#         #ok this is specific to the new MLinfilltype fo labels
-#         if process_dict[labelscategory]['MLinfilltype'] == 'label':
-#           labelscategory = process_dict[labelscategory]['labelctgy']
-        
-#         #I think this works for generalized
-#         labelsencoding_dict[labelscategory] = labelsnormalization_dict
-        
-        
-        
-        
-  
-#         i = 0
-
-#         for row in df_labels2.iterrows():
-#           if row[1][0] in labelsencoding_dict[labelscategory].keys():
-#             i += 1
-#           else:
-#             labelsencoding_dict[labelscategory].\
-#             update({row[1][0] : labels_column+'_'+row[1][0]})
-#             i += 1
-
-#     else:
-#       df_labels = pd.DataFrame([])
-#       labelsencoding_dict = {}
-    
-#     if labelspresenttest == False:
-#       df_testlabels = pd.DataFrame([])
     
     
     
@@ -6596,447 +6730,7 @@ class AutoMunge:
 
         
         
-#     #ok here's where we address labels, a general comment is that I haven't achieved the 
-#     #same amount of generaliztion, partly because we are changing our default trasnforms
-#     #for evalcatories as well has this labelsencoding_dict. For now we'll have specific code 
-#     #for bnry, nmbr, text, and for user defined categories from assigncat we';; have default
-    
-#     if labels_column != False:
-        
-#       #for now we'll just assume consistent processing approach for labels as for data
-#       #a future extension may segregate this approach
-      
-#       #initialize processing dicitonaries (we'll use same as for train set)
-#       #a future extension may allow custom address for labels
-#       labelstransform_dict = transform_dict
-      
-#       labelsprocess_dict = process_dict
-      
-#       #we'll allow user to assign category to labels as well via assigncat call
-#       categorycomplete = False
-        
-#       if bool(assigncat) == True:
 
-#         for key in assigncat:
-#           if labels_column in assigncat[key]:
-#             labelscategory = key
-#             categorycomplete = True
-            
-#       if categorycomplete == False:
-        
-#         #determine labels category and apply appropriate function
-#         labelscategory = self.evalcategory(df_labels, labels_column, numbercategoryheuristic)
-
-
-#       #copy dummy labels "test" df for our preprocessing functions
-#       #labelsdummy = pd.DataFrame()
-#       #labelsdummy = df_labels.copy()
-      
-# #       #now that we're allowing labels present in the test set, let's revise our approach here
-# #       #if df_testlabels.empty:
-# #       if labelspresenttest == False:
-# #         #df_testlabels = df_labels.copy()
-# #         df_testlabels = pd.DataFrame([], columns = [labels_column])
-      
-        
-# #       else:
-# #         labelspresenttest = True
-
-#       #initialize a dictionary to serve as the store between labels and their \
-#       #associated encoding
-#       labelsencoding_dict = {labelscategory:{}}
-
-#       #apply appropriate processing function to this column based on the result
-#       if labelscategory == 'bnry':
-        
-        
-# #             bnrynormalization_dict = {column + '_bnry' : {'missing' : binary_missing_plug, \
-# #                                                  'onevalue' : onevalue, \
-# #                                                  'zerovalue' : zerovalue}}
-        
-#         #to support the postprocess_dict entry below, let's first create a temp
-#         #list of columns
-#         templist1 = list(df_labels)
-    
-#         #now process ancestors
-#         df_labels, df_testlabels, postprocess_dict = \
-#         self.processancestors(df_labels, df_testlabels, labels_column, labelscategory, labelscategory, \
-#                               labelsprocess_dict, labelstransform_dict, postprocess_dict)
-
-
-#         #now process family
-#         df_labels, df_testlabels, postprocess_dict = \
-#         self.processfamily(df_labels, df_testlabels, labels_column, labelscategory, labelscategory, \
-#                           labelsprocess_dict, labelstransform_dict, postprocess_dict)
-        
-#         #now delete columns subject to replacement
-#         df_labels, df_testlabels, postprocess_dict = \
-#         self.circleoflife(df_labels, df_testlabels, labels_column, labelscategory, labelscategory, \
-#                           labelsprocess_dict, labelstransform_dict, postprocess_dict)
-        
-# #         labels_binary_missing_plug = df_labels[labels_column].value_counts().index.tolist()[0]
-# #         df_labels, _1 = self.process_binary_class(df_labels, labels_column, labels_binary_missing_plug)
-
-#         del df_labels[labels_column + '_NArw']
-#         del df_testlabels[labels_column + '_NArw']
-
-#         finalcolumns_labels = list(df_labels)
-    
-#         #here's another templist to support the postprocess_dict entry below
-#         templist2 = list(df_labels)
-        
-#         #ok now we're going to pick one of the new entries in templist2 to serve 
-#         #as a "columnkey" for pulling datas from the postprocess_dict down the road
-#         #columnkeylist = list(set(templist2) - set(templist1))[0]
-#         columnkeylist = list(set(templist2) - set(templist1))
-#         if isinstance(columnkeylist, str):
-#           columnkey = columnkeylist
-#         else:
-#           #if list is empty
-#           if len(columnkeylist) == 0:
-#             columnkey = labels_column
-#           else:
-#             columnkey = columnkeylist[0]
-#             if len(columnkey) >= 5:
-#               if columnkey[-5:] == '_NArw':
-#                 columnkey = columnkeylist[1]
-        
-        
-
-#         #here we'll populate the dictionery pairing values from the encoded labels \
-#         #column with the original value for transformation post prediciton
-        
-#         labelsnormalization_dict = postprocess_dict['column_dict'][labels_column + '_' + labelscategory]['normalization_dict'][labels_column + '_' + labelscategory]
-        
-#         labelsencoding_dict[labelscategory] = dict(zip([1,0], [labelsnormalization_dict['onevalue'], labelsnormalization_dict['zerovalue']]))
-        
-#         postprocess_dict['origcolumn'].update({labels_column : {'category' : labelscategory, \
-#                                                                 'columnkeylist' : columnkeylist, \
-#                                                                 'columnkey' : columnkey}})
-        
-# #         i = 0
-
-# #         for row in df_labels.iterrows():
-# #           if row[1][0] in labelsencoding_dict[labelscategory].keys():
-# #             i += 1
-# #           else:
-# #             labelsencoding_dict[labelscategory].update({row[1][0] : df_labels2.iloc[i][0]})
-# #             i += 1
-
-
-#       if labelscategory not in ['bnry', 'nmbr', 'bxcx', 'text']:
-        
-#         #if labels category wasn't one of our built in evalcateogry then simply apply
-#         #full generations of potentially multicolumn derivations
-        
-#         #to support the postprocess_dict entry below, let's first create a temp
-#         #list of columns
-#         templist1 = list(df_labels)
-        
-#         #now process ancestors
-#         df_labels, df_testlabels, postprocess_dict = \
-#         self.processancestors(df_labels, df_testlabels, labels_column, labelscategory, labelscategory, \
-#                               labelsprocess_dict, labelstransform_dict, postprocess_dict)
-
-
-#         #now process family
-#         df_labels, df_testlabels, postprocess_dict = \
-#         self.processfamily(df_labels, df_testlabels, labels_column, labelscategory, labelscategory, \
-#                           labelsprocess_dict, labelstransform_dict, postprocess_dict)
-
-#         #now delete columns subject to replacement
-#         df_labels, df_testlabels, postprocess_dict = \
-#         self.circleoflife(df_labels, df_testlabels, labels_column, labelscategory, labelscategory, \
-#                           labelsprocess_dict, labelstransform_dict, postprocess_dict)
-        
-        
-#         #here's another templist to support the postprocess_dict entry below
-#         templist2 = list(df_labels)
-        
-#         #ok now we're going to pick one of the new entries in templist2 to serve 
-#         #as a "columnkey" for pulling datas from the postprocess_dict down the road
-#         #columnkeylist = list(set(templist2) - set(templist1))[0]
-#         columnkeylist = list(set(templist2) - set(templist1))
-        
-#         if isinstance(columnkeylist, str):
-#           columnkey = columnkeylist
-#         else:
-#           #if list is empty
-#           if len(columnkeylist) == 0:
-#             columnkey = labels_column
-#           else:
-#             columnkey = columnkeylist[0]
-#             if len(columnkey) >= 5:
-#               if columnkey[-5:] == '_NArw':
-#                 columnkey = columnkeylist[1]
-        
-        
-#         #ok this is sort of a hack, originating in version 1.77,
-#         #we're going to create an entry to postprocess_dict to
-#         #store a columnkey for each of the original columns
-#         postprocess_dict['origcolumn'].update({labels_column : {'category' : labelscategory, \
-#                                                                 'columnkeylist' : columnkeylist, \
-#                                                                 'columnkey' : columnkey}})
-        
-#         finalcolumns_labels = list(df_labels)
-        
-#         #we'll have convention that labels don't include a NArw, this might be worth some more thought
-#         if labels_column + '_NArw' in list(df_labels):
-#           del df_labels[labels_column + '_NArw']
-#           del df_testlabels[labels_column + '_NArw']
-  
-#         labelsnormalization_dict = postprocess_dict['column_dict'][finalcolumns_labels[0]]['normalization_dict'][finalcolumns_labels[0]]
-
-    
-#         #labelsencoding_dict[labelscategory] = dict(zip([1,0], [labelsnormalization_dict['onevalue'], labelsnormalization_dict['zerovalue']]))
-        
-#         #ok this is specific to the new MLinfilltype fo labels
-#         if process_dict[labelscategory]['MLinfilltype'] == 'label':
-#           labelscategory = process_dict[labelscategory]['labelctgy']
-        
-#         #I think this works for generalized
-#         labelsencoding_dict[labelscategory] = labelsnormalization_dict
-
-
-
-
-#       if labelscategory == 'nmbr' or labelscategory == 'bxcx':
-#         #(a future extension will address label processing for bxcx category seperately)
-
-#   #       #if labels category is 'nmbr' we won't apply any further processing to the \
-#   #       #column as my experience with linear regression methods is that this is not\
-#   #       #required. Further processing of numerical labels would need to be addressed\
-#   #       #by returning mean and std from the process_numerical_class method so as to\
-#   #       #potentially store in our labelsencoding_dict
-#   #       #a future expansino could be to facilitate supplemental numerical trasnformations\
-#   #       #such as we implemented with the boxcox transform
-#   #       pass
-        
-        
-# #         #made an executive decision not to perform full range of feature engineering
-# #         #methods on numerical labels, as is not common practice and some frameowrks
-# #         #onkly allow one or either of classification or regression (eg sklearn)
-# #         #so we'll just do a copy of original column and a z-score normalizaiton
-# #         #using new category 'rgrl' (stands for 'regression label')
-# #         labelscategory = 'rgrl'
-        
-#         #made a further executive decision, I dont' think it's common to apply zscore
-#         #normalization to the labels of. a linear regression. So let's just
-#         #leave numerical labels untouched. I think there's some room for debate.
-#         labelscategory = 'exc3'
-        
-#         labelsencoding_dict = {labelscategory:{}}
-        
-# #         #for numerical we'll want the original column unaltered for predictions
-# #         df_labels[labels_column+'_orig'] = df_labels[labels_column].copy()
-
-#         #however it may also benefit to parallel train model to predict transformations
-#         #plus we'll use the std bins for leveling the frequency of labels for oversampling
-        
-#         #now process ancestors
-#         df_labels, df_testlabels, postprocess_dict = \
-#         self.processancestors(df_labels, df_testlabels, labels_column, labelscategory, labelscategory, \
-#                               labelsprocess_dict, labelstransform_dict, postprocess_dict)
-
-
-#         #now process family
-#         df_labels, df_testlabels, postprocess_dict = \
-#         self.processfamily(df_labels, df_testlabels, labels_column, labelscategory, labelscategory, \
-#                           labelsprocess_dict, labelstransform_dict, postprocess_dict)
-        
-#         #now delete columns subject to replacement
-#         df_labels, df_testlabels, postprocess_dict = \
-#         self.circleoflife(df_labels, df_testlabels, labels_column, labelscategory, labelscategory, \
-#                           labelsprocess_dict, labelstransform_dict, postprocess_dict)
-        
-        
-        
-# #         df_labels, labelsdummy, labels_column_dict_list = \
-# #         self.process_numerical_class(df_labels, labelsdummy, labels_column)
-
-# #         del df_labels[labels_column + '_NArw']
-
-#         finalcolumns_labels = list(df_labels)
-
-#         #for the labelsencoding_dict we'll save the bin labels and asscoiated columns
-#         labelsencoding_dict = {'nmbr':{}}
-#         columns_labels = []
-#         for label in list(df_labels):
-#           if label[-5:] in ['_t<-2', '_t-21', '_t-10', '_t+01', '_t+12', '_t>+2']:
-#             labelsencoding_dict['nmbr'].update({label[-4:]:label})
-#         for label in list(df_labels):
-#           if label[-5:] in ['_s<-2', '_s-21', '_s-10', '_s+01', '_s+12', '_s>+2']:
-#             labelsencoding_dict['nmbr'].update({label[-4:]:label})
-        
-#         #note this snippet does not generalize, this is specific to the 'excl' category
-#         postprocess_dict['origcolumn'].update({labels_column : {'category' : labelscategory, \
-#                                                                 'columnkeylist' : [labels_column+'_exc2'], \
-#                                                                 'columnkey' : labels_column+'_exc2'}})
-
-
-#       #it occurs to me there might be an argument for preferring a single numerical \
-#       #classifier for labels to keep this to a single column, if so scikitlearn's \
-#       #LabelEcncoder could be used here, will assume that onehot encoding is acceptable
-#       if labelscategory == 'text':
-            
-#         #to support the postprocess_dict entry below, let's first create a temp
-#         #list of columns
-#         templist1 = list(df_labels)
-        
-#         #now process ancestors
-#         df_labels, df_testlabels, postprocess_dict = \
-#         self.processancestors(df_labels, df_testlabels, labels_column, labelscategory, labelscategory, \
-#                               labelsprocess_dict, labelstransform_dict, postprocess_dict)
-
-
-#         #now process family
-#         df_labels, df_testlabels, postprocess_dict = \
-#         self.processfamily(df_labels, df_testlabels, labels_column, labelscategory, labelscategory, \
-#                           labelsprocess_dict, labelstransform_dict, postprocess_dict)
-
-#         #now delete columns subject to replacement
-#         df_labels, df_testlabels, postprocess_dict = \
-#         self.circleoflife(df_labels, df_testlabels, labels_column, labelscategory, labelscategory, \
-#                           labelsprocess_dict, labelstransform_dict, postprocess_dict)
-        
-#         #here's another templist to support the postprocess_dict entry below
-#         templist2 = list(df_labels)
-        
-#         #ok now we're going to pick one of the new entries in templist2 to serve 
-#         #as a "columnkey" for pulling datas from the postprocess_dict down the road
-#         #columnkeylist = list(set(templist2) - set(templist1))[0]
-#         columnkeylist = list(set(templist2) - set(templist1))
-        
-#         if isinstance(columnkeylist, str):
-#           columnkey = columnkeylist
-#         else:
-#           #if list is empty
-#           if len(columnkeylist) == 0:
-#             columnkey = labels_column
-#           else:
-#             columnkey = columnkeylist[0]
-#             if len(columnkey) >= 5:
-#               if columnkey[-5:] == '_NArw':
-#                 columnkey = columnkeylist[1]
-        
-# #         df_labels, labelsdummy, _1 = \
-# #         self.process_text_class(df_labels, labelsdummy, labels_column)
-
-#         del df_labels[labels_column + '_NArw']
-#         del df_testlabels[labels_column + '_NArw']
-
-#         finalcolumns_labels = list(df_labels)
-
-  
-#         labelsnormalization_dict = postprocess_dict['column_dict'][finalcolumns_labels[0]]['normalization_dict'][finalcolumns_labels[0]]
-
-    
-#         #ok this is sort of a hack, originating in version 1.77,
-#         #we're going to create an entry to postprocess_dict to
-#         #store a columnkey for each of the original columns
-#         postprocess_dict['origcolumn'].update({labels_column : {'category' : labelscategory, \
-#                                                         'columnkeylist' : columnkeylist, \
-#                                                         'columnkey' : columnkey}})
-    
-    
-#         #labelsencoding_dict[labelscategory] = dict(zip([1,0], [labelsnormalization_dict['onevalue'], labelsnormalization_dict['zerovalue']]))
-        
-#         labelsencoding_dict[labelscategory] = labelsnormalization_dict['textlabelsdict']
-  
-
-# #       if labelscategory not in ['bnry', 'nmbr', 'bxcx', 'text']:
-        
-# #         #if labels category wasn't one of our built in evalcateogry then simply apply
-# #         #full generations of potentially multicolumn derivations
-        
-# #         #to support the postprocess_dict entry below, let's first create a temp
-# #         #list of columns
-# #         templist1 = list(df_labels)
-        
-# #         #now process ancestors
-# #         df_labels, df_testlabels, postprocess_dict = \
-# #         self.processancestors(df_labels, df_testlabels, labels_column, labelscategory, labelscategory, \
-# #                               labelsprocess_dict, labelstransform_dict, postprocess_dict)
-
-
-# #         #now process family
-# #         df_labels, df_testlabels, postprocess_dict = \
-# #         self.processfamily(df_labels, df_testlabels, labels_column, labelscategory, labelscategory, \
-# #                           labelsprocess_dict, labelstransform_dict, postprocess_dict)
-
-# #         #now delete columns subject to replacement
-# #         df_labels, df_testlabels, postprocess_dict = \
-# #         self.circleoflife(df_labels, df_testlabels, labels_column, labelscategory, labelscategory, \
-# #                           labelsprocess_dict, labelstransform_dict, postprocess_dict)
-        
-        
-# #         #here's another templist to support the postprocess_dict entry below
-# #         templist2 = list(df_labels)
-        
-# #         #ok now we're going to pick one of the new entries in templist2 to serve 
-# #         #as a "columnkey" for pulling datas from the postprocess_dict down the road
-# #         #columnkeylist = list(set(templist2) - set(templist1))[0]
-# #         columnkeylist = list(set(templist2) - set(templist1))
-        
-# #         if isinstance(columnkeylist, str):
-# #           columnkey = columnkeylist
-# #         else:
-# #           #if list is empty
-# #           if len(columnkeylist) == 0:
-# #             columnkey = labels_column
-# #           else:
-# #             columnkey = columnkeylist[0]
-# #             if len(columnkey) >= 5:
-# #               if columnkey[-5:] == '_NArw':
-# #                 columnkey = columnkeylist[1]
-        
-        
-# #         #ok this is sort of a hack, originating in version 1.77,
-# #         #we're going to create an entry to postprocess_dict to
-# #         #store a columnkey for each of the original columns
-# #         postprocess_dict['origcolumn'].update({labels_column : {'category' : labelscategory, \
-# #                                                                 'columnkeylist' : columnkeylist, \
-# #                                                                 'columnkey' : columnkey}})
-        
-# #         finalcolumns_labels = list(df_labels)
-        
-# #         #we'll have convention that labels don't include a NArw, this might be worth some more thought
-# #         if labels_column + '_NArw' in list(df_labels):
-# #           del df_labels[labels_column + '_NArw']
-# #           del df_testlabels[labels_column + '_NArw']
-  
-# #         labelsnormalization_dict = postprocess_dict['column_dict'][finalcolumns_labels[0]]['normalization_dict'][finalcolumns_labels[0]]
-
-    
-# #         #labelsencoding_dict[labelscategory] = dict(zip([1,0], [labelsnormalization_dict['onevalue'], labelsnormalization_dict['zerovalue']]))
-        
-# #         #ok this is specific to the new MLinfilltype fo labels
-# #         if process_dict[labelscategory]['MLinfilltype'] == 'label':
-# #           labelscategory = process_dict[labelscategory]['labelctgy']
-        
-# #         #I think this works for generalized
-# #         labelsencoding_dict[labelscategory] = labelsnormalization_dict
-        
-        
-        
-        
-  
-# #         i = 0
-
-# #         for row in df_labels2.iterrows():
-# #           if row[1][0] in labelsencoding_dict[labelscategory].keys():
-# #             i += 1
-# #           else:
-# #             labelsencoding_dict[labelscategory].\
-# #             update({row[1][0] : labels_column+'_'+row[1][0]})
-# #             i += 1
-
-# #     else:
-# #       df_labels = pd.DataFrame([])
-# #       labelsencoding_dict = {}
-    
-# #     if labelspresenttest == False:
-# #       df_testlabels = pd.DataFrame([])
 
     #great the data is processed now let's do a few moore global training preps
 
@@ -7087,34 +6781,7 @@ class AutoMunge:
         self.LabelFrequencyLevelizer(df_train, df_labels, labelsencoding_dict, \
                                      postprocess_dict, process_dict)
       
-#       if labelscategory in ['bnry', 'text']:
 
-#         #apply LabelFrequencyLevelizer defined function
-# #         train_df, labels_df = \
-# #         self.LabelFrequencyLevelizer(train_df, labels_df, labelsencoding_dict)
-#         df_train, df_labels = \
-#         self.LabelFrequencyLevelizer(df_train, df_labels, labelsencoding_dict, \
-#                                      postprocess_dict)
-
-#       elif labelscategory in ['nmbr', 'bxcx']:
-
-#         #apply LabelFrequencyLevelizer defined function
-# #         train_df, labels_df = \
-# #         self.LabelFrequencyLevelizer(train_df, labels_df, labelsencoding_dict)
-#         df_train, df_labels = \
-#         self.LabelFrequencyLevelizer(df_train, df_labels, labelsencoding_dict, \
-#                                      postprocess_dict)
-
-
-
-
-#       #extract trainID
-#       if trainID_column != False:
-
-# #         trainID_df = pd.DataFrame(train_df[trainID_column])
-# #         del train_df[trainID_column]
-#         df_trainID = pd.DataFrame(df_train[trainID_column])
-#         del df_train[trainID_column]
       
       #extract trainID
       if trainID_column != False:
@@ -7177,7 +6844,7 @@ class AutoMunge:
                              'processdict' : processdict, \
                              'process_dict' : process_dict, \
                              'ML_cmnd' : ML_cmnd, \
-                             'automungeversion' : '2.17' })
+                             'automungeversion' : '2.18' })
 
     
     
@@ -7187,14 +6854,7 @@ class AutoMunge:
       df_validation1, _2, _3, _4, _5 = \
       self.postmunge(postprocess_dict, df_validation1, testID_column = False, \
                     labelscolumn = False, pandasoutput = True)
-    
-    
-    
-#     #process validation labels set consistent to train labels with postmunge
-#     df_validationlabels1, _2, _3, _4 = \
-#     self.postmunge(postprocess_dict, df_validationlabels1, testID_column = False, \
-#                   pandasoutput = True)
-    #(instead of using postmunge we just waited to. split out labels)
+
     
     
     
@@ -7250,21 +6910,10 @@ class AutoMunge:
     df_test = df_test
 
     
-    #for reference
-#     return np_train, np_trainID, np_labels, np_validation1, np_validationID1, \
-#     np_validationlabels1, np_validation2, np_validationID2, np_validationlabels2, \
-#     np_test, np_testID, labelsencoding_dict, finalcolumns_train, finalcolumns_test,  \
-#     postprocess_dict
 
     
     #set output format based on pandasoutput argument
     if pandasoutput == True:
-#       np_train, np_trainID, np_labels, np_validation1, np_validationID1, \
-#       np_validationlabels1, np_validation2, np_validationID2, np_validationlabels2, \
-#       np_test, np_testID = \
-#       df_train, df_trainID, df_labels, df_validation1, df_validationID1, \
-#       df_validationlabels1, df_validation2, df_validationID2, df_validationlabels2, \
-#       df_test, df_testID
       
       np_train = df_train
       np_trainID = df_trainID
@@ -7281,14 +6930,6 @@ class AutoMunge:
     
     #else set output to numpy arrays
     else:
-#       np_train, np_trainID, np_labels, np_validation1, np_validationID1, \
-#       np_validationlabels1, np_validation2, np_validationID2, np_validationlabels2, \
-#       np_test, np_testID = \
-#       df_train.values, df_trainID.values, df_labels.values, df_validation1.values, \
-#       df_validationID1.values, \
-#       df_validationlabels1.values, df_validation2.values, df_validationID2.values, \
-#       df_validationlabels2.values, \
-#       df_test.values, df_testID.values
       
       np_train = df_train.values
       np_trainID = df_trainID.values
@@ -7328,69 +6969,6 @@ class AutoMunge:
 
 
 
-  # #Here is a summary of the postprocess_dict structure from automunge:
-
-
-
-#         postprocess_dict.update({'origtraincolumns' : columns_train, \
-#                              'finalcolumns_train' : finalcolumns_train, \
-#                              'testID_column' : testID_column, \
-#                              'MLinfill' : MLinfill, \
-#                              'infilliterate' : infilliterate, \
-#                              'randomseed' : randomseed, \
-#                              'powertransform' : powertransform, \
-#                              'binstransform' : binstransform, \
-#                              'numbercategoryheuristic' : numbercategoryheuristic, \
-#                              'pandasoutput' : pandasoutput, \
-#                              'labelsencoding_dict' : labelsencoding_dict, \
-#                              'preFSpostprocess_dict' : preFSpostprocess_dict, \
-#                              'featureselection' : featureselection, \
-#                              'featurepct' : featurepct, \
-#                              'featuremetric' : featuremetric, \
-#                              'featuremethod' : featuremethod, \
-#                              'FSmodel' : FSmodel, \
-#                              'FScolumn_dict' : FScolumn_dict, \
-#                              'madethecut' : madethecut, \
-#                              'assigncat' : assigncat, \
-#                              'assigninfill' : assigninfill, \
-#                              'transformdict' : transformdict, \
-#                              'processdict' : processdict, \
-#                              'automungeversion' : '1.77' })
-# #also in postprocess_dict
-# postprocess_dict['column_dict'][one entry per processed column]
-# postprocess_dict['origcolumn']
-# *note that postprocess_dict['preFSpostprocess_dict'] is a copy of the 
-# postprocess_dict['column_dict'] taken before trimming of columns associated with feature evaluation
-
-  # (example of bnry)
-  # column_dict = { bc : {'category' : 'bnry', \
-  #                      'origcategory' : 'bnry', \
-  #                      'normalization_dict' : bnrynormalization_dict, \
-  #                      'origcolumn' : column, \
-  #                      'columnslist' : bnrycolumns, \
-  #                      'categorylist' : categorylist, \
-  #                      'infillmodel' : False, \
-  #                      'infillcomplete' : False}}
-
-  # nmbr
-  # nmbrnormalization_dict = {'mean' : mean, 'std' : std}
-
-  # bxcx
-  # nmbrnormalization_dict = {'trnsfrm_mean' : mean, 'trnsfrm_std' : std, \
-  #                           'bxcx_lmbda' : bxcx_lmbda}
-
-
-
-  # bnrynormalization_dict = {'missing' : binary_missing_plug}
-
-
-
-  # timenormalization_dict = {'meanyear' : meanyear, 'meanmonth' : meanmonth, \
-  #                           'meanday' : meanday, 'meanhour' : meanhour, \
-  #                           'meanminute' : meanminute, 'meansecond' : meansecond,\
-  #                           'stdyear' : stdyear, 'stdmonth' : stdmonth, \
-  #                           'stdday' : stdday, 'stdhour' : stdhour, \
-  #                           'stdminute' : stdminute, 'stdsecond' : stdsecond}
 
 
 
@@ -9148,21 +8726,6 @@ class AutoMunge:
     #columns to be excluded from processing.
     '''
     
-#     #initialize processing dicitonaries
-#     powertransform = postprocess_dict['powertransform']
-#     binstransform = postprocess_dict['binstransform']
-    
-#     if bool(postprocess_dict['transformdict']) == False:
-#       transform_dict = \
-#       self.assembletransformdict(powertransform, binstransform)
-#     else:
-#       transform_dict = postprocess_dict['transformdict']
-    
-#     if bool(postprocess_dict['processdict']) == False:
-#       process_dict = \
-#       self.assembleprocessdict()
-#     else:
-#       process_dict = postprocess_dict['processdict']
     
     #initialize processing dicitonaries
     
@@ -9476,35 +9039,106 @@ class AutoMunge:
                                           columns_test, preFSpostprocess_dict)
     
     
-    columns_train_zero = postprocess_assigninfill_dict['zeroinfill']
+    if 'stdrdinfill' not in postprocess_assigninfill_dict:
     
-    for column in columns_train_zero:
+      postprocess_assigninfill_dict.update({'stdrdinfill':[]})
+
+
+    if 'zeroinfill' in postprocess_assigninfill_dict:
+    
+      columns_train_zero = postprocess_assigninfill_dict['zeroinfill']
+    
+      for column in columns_train_zero:
       
-      categorylistlength = len(preFSpostprocess_dict['column_dict'][column]['categorylist'])
+        categorylistlength = len(preFSpostprocess_dict['column_dict'][column]['categorylist'])
       
-      #if (column not in excludetransformscolumns) \
-      if (column not in postprocess_assigninfill_dict['stdrdinfill']) \
-      and (column[-5:] != '_NArw') \
-      and (categorylistlength == 1):
-        #noting that currently we're only going to infill 0 for single column categorylists
-        #some comparable address for multi-column categories is a future extension
+        #if (column not in excludetransformscolumns) \
+        if (column not in postprocess_assigninfill_dict['stdrdinfill']) \
+        and (column[-5:] != '_NArw') \
+        and (categorylistlength == 1):
+          #noting that currently we're only going to infill 0 for single column categorylists
+          #some comparable address for multi-column categories is a future extension
         
-        df_test = \
-        self.zeroinfillfunction(df_test, column, preFSpostprocess_dict, \
-                                masterNArows_test)    
+          df_test = \
+          self.zeroinfillfunction(df_test, column, preFSpostprocess_dict, \
+                                  masterNArows_test)    
     
     
-    columns_train_adj = postprocess_assigninfill_dict['adjinfill']
-    for column in columns_train_adj:
+    if 'adjinfill' in postprocess_assigninfill_dict:
+    
+      columns_train_adj = postprocess_assigninfill_dict['adjinfill']
+      for column in columns_train_adj:
 
       
-      #if column not in excludetransformscolumns \
-      if column not in postprocess_assigninfill_dict['stdrdinfill'] \
-      and column[-5:] != '_NArw':
+        #if column not in excludetransformscolumns \
+        if column not in postprocess_assigninfill_dict['stdrdinfill'] \
+        and column[-5:] != '_NArw':
         
-        df_test = \
-        self.adjinfillfunction(df_test, column, preFSpostprocess_dict, \
-                               masterNArows_test)    
+          df_test = \
+          self.adjinfillfunction(df_test, column, preFSpostprocess_dict, \
+                                 masterNArows_test)    
+    
+    
+    if 'medianinfill' in postprocess_assigninfill_dict: 
+    
+      columns_train_median = postprocess_assigninfill_dict['medianinfill']
+
+      for column in columns_train_median:
+      
+        #check if column is boolean
+        boolcolumn = False
+        if set(df_test[column].unique()) == {0,1} \
+        or set(df_test[column].unique()) == {0} \
+        or set(df_test[column].unique()) == {1}:
+          boolcolumn = True
+    
+        categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
+      
+        #if (column not in excludetransformscolumns) \
+        if (column not in postprocess_assigninfill_dict['stdrdinfill']) \
+        and (column[-5:] != '_NArw') \
+        and (categorylistlength == 1) \
+        and boolcolumn == False:
+          #noting that currently we're only going to infill 0 for single column categorylists
+          #some comparable address for multi-column categories is a future extension
+        
+          infillvalue = postprocess_dict['column_dict'][column]['normalization_dict']['infillvalue']
+        
+        
+          df_test = \
+          self.test_medianinfillfunction(df_test, column, postprocess_dict, \
+                                         masterNArows_test, infillvalue)
+    
+    
+
+    if 'meaninfill' in postprocess_assigninfill_dict: 
+        
+      columns_train_mean = postprocess_assigninfill_dict['meaninfill']
+
+      for column in columns_train_mean:
+      
+        #check if column is boolean
+        boolcolumn = False
+        if set(df_test[column].unique()) == {0,1} \
+        or set(df_test[column].unique()) == {0} \
+        or set(df_test[column].unique()) == {1}:
+          boolcolumn = True
+    
+        categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
+      
+        #if (column not in excludetransformscolumns) \
+        if (column not in postprocess_assigninfill_dict['stdrdinfill']) \
+        and (column[-5:] != '_NArw') \
+        and (categorylistlength == 1) \
+        and boolcolumn == False:
+          #noting that currently we're only going to infill 0 for single column categorylists
+          #some comparable address for multi-column categories is a future extension
+        
+          infillvalue = postprocess_dict['column_dict'][column]['normalization_dict']['infillvalue']
+        
+          df_test = \
+          self.test_meaninfillfunction(df_test, column, postprocess_dict, \
+                                       masterNArows_test, infillvalue)
     
 
     
@@ -9515,13 +9149,20 @@ class AutoMunge:
       #columns_train_ML = list(df_train)
 #       columns_test_ML = postprocess_assigninfill_dict['stdrdinfill'] \
 #                          + postprocess_assigninfill_dict['MLinfill']
-      columns_test_ML = list(set().union(postprocess_assigninfill_dict['stdrdinfill'], \
+
+      if 'MLinfill' in postprocess_assigninfill_dict:
+        columns_test_ML = list(set().union(postprocess_assigninfill_dict['stdrdinfill'], \
                                           postprocess_assigninfill_dict['MLinfill']))
+        
+      else:
+        columns_train_ML = postprocess_assigninfill_dict['stdrdinfill']
         
 
     else:
-      
-      columns_test_ML = postprocess_assigninfill_dict['MLinfill']
+      if 'MLinfill' in postprocess_assigninfill_dict:
+        columns_test_ML = postprocess_assigninfill_dict['MLinfill']
+      else:
+        columns_test_ML = []
     
     iteration = 0
     #while iteration < infilliterate:
@@ -9559,8 +9200,8 @@ class AutoMunge:
                                 masterNArows_test)
 
 
-      iteration += 1                     
-
+      iteration += 1
+    
 
 
     #trim branches associated with feature selection
