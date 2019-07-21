@@ -411,8 +411,10 @@ minimum should be 'tidy' meaning a single column per feature and a
 single row per observation. If desired the set may include a row ID
 column and a column intended to be used as labels for a downstream
 training operation. The set must have string column headers. The tool
-does not currenlty support the inclusion of a designated index column, 
-a desired index column may be passed as a seperate column in the ID list.
+supports the inclusion of non-index-range column as index or multicolumn 
+index (requires named index columns). Such index types are added to the 
+returned "ID" sets which are consistently shuffled and partitioned as 
+the train and test sets.
 
 * df_test: a pandas dataframe containing a structured dataset intended for
 use to generate predictions from a downstream machine learning model
@@ -421,7 +423,10 @@ formated as the train set with consistent column labels (This set may
 optionally contain a labels column if one was included in the train set 
 although it's inclusion is not required). If desired the set may include 
 a row ID column or a column intended for use as labels. A user may pass 
-False if this set not available.
+False if this set not available. The tool supports the inclusion of non-
+index-range column as index or multicolumn index (requires named index 
+columns). Such index types are added to the returned "ID" sets which are 
+consistently shuffled and partitioned as the train and test sets.
 
 * labels_column: a string of the column title for the column from the
 df_train set intended for use as labels in training a downstream machine
@@ -869,9 +874,10 @@ the original automunge call.
 use to generate predictions from a machine learning model trained from
 the automunge returned sets. The set must be consistantly formated as
 the train set with consistent column labels. If desired the set may
-include an ID column. The tool does not currenlty support the inclusion 
-of a designated index column, a desired index column may be passed as a 
-seperate column in the ID list.
+include an ID column. The tool supports the inclusion of non-index-range 
+column as index or multicolumn index (requires named index columns). Such 
+index types are added to the returned "ID" sets which are consistently 
+shuffled and partitioned as the train and test sets.
 
 * testID_column: a string of the column title for the column from the
 df_test set intended for use as a row identifier value (such as could be
