@@ -3688,10 +3688,12 @@ class AutoMunge:
         infillindex = df.loc[df[NArowcolumn]]['tempindex1']
 
         #create a dictionary for use to insert infill using df's index as the key
-        infill_dict = dict(zip(infillindex, infill.values))
+        #infill_dict = dict(zip(infillindex, infill.values))
+        infill_dict = dict(zip(infillindex, infill['infill']))
 
         #replace 'tempindex1' column with infill in rows where NArows is True
-        df['tempindex1'] = np.where(df[NArowcolumn], df['tempindex1'].replace(infill_dict), 'fill')
+        #df['tempindex1'] = np.where(df[NArowcolumn], df['tempindex1'].replace(infill_dict), 'fill')
+        df['tempindex1'] = np.where(df[NArowcolumn], df['tempindex1'].replace(infill_dict), 0)
 
         #now carry that infill over to the target column for rows where NArows is True
         df[column] = np.where(df[NArowcolumn], df['tempindex1'], df[column])
@@ -6882,7 +6884,7 @@ class AutoMunge:
                              'processdict' : processdict, \
                              'process_dict' : process_dict, \
                              'ML_cmnd' : ML_cmnd, \
-                             'automungeversion' : '2.19' })
+                             'automungeversion' : '2.20' })
 
     
     
