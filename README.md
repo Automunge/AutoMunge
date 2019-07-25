@@ -93,7 +93,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
             shuffletrain = False, TrainLabelFreqLevel = False, powertransform = False, \
             binstransform = False, MLinfill = True, infilliterate=1, randomseed = 42, \
             numbercategoryheuristic = 0.0, pandasoutput = True, \
-            featureselection = True, featurepct = 1.0, featuremetric = .02, \
+            featureselection = False, featurepct = 1.0, featuremetric = .02, \
             featuremethod = 'pct', PCAn_components = None, PCAexcl = [], \
             ML_cmnd = {'MLinfill_type':'default', \
                        'MLinfill_cmnd':{'RandomForestClassifier':{}, 'RandomForestRegressor':{}}, \
@@ -102,7 +102,8 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
             assigncat = {'mnmx':[], 'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[], \
                          'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], \
                          'bins':[], 'bint':[], \
-			 'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
+                         'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
+                         'log0':[], 'log1':[], 'pwrs':[], \
                          'bnry':[], 'text':[], \
                          'date':[], 'dat2':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
                          'excl':[], 'exc2':[], 'exc3':[], 'null':[]}, \
@@ -239,7 +240,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
             shuffletrain = False, TrainLabelFreqLevel = False, powertransform = False, \
             binstransform = False, MLinfill = True, infilliterate=1, randomseed = 42, \
             numbercategoryheuristic = 0.0, pandasoutput = True, \
-            featureselection = True, featurepct = 1.0, featuremetric = .02, \
+            featureselection = False, featurepct = 1.0, featuremetric = .02, \
             featuremethod = 'pct', PCAn_components = None, PCAexcl = [], \
             ML_cmnd = {'MLinfill_type':'default', \
                        'MLinfill_cmnd':{'RandomForestClassifier':{}, 'RandomForestRegressor':{}}, \
@@ -248,7 +249,8 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
             assigncat = {'mnmx':[], 'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[], \
                          'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], \
                          'bins':[], 'bint':[], \
-			 'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
+                         'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
+                         'log0':[], 'log1':[], 'pwrs':[], \
                          'bnry':[], 'text':[], \
                          'date':[], 'dat2':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
                          'excl':[], 'exc2':[], 'exc3':[], 'null':[]}, \
@@ -387,7 +389,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
             shuffletrain = False, TrainLabelFreqLevel = False, powertransform = False, \
             binstransform = False, MLinfill = True, infilliterate=1, randomseed = 42, \
             numbercategoryheuristic = 0.0, pandasoutput = True, \
-            featureselection = True, featurepct = 1.0, featuremetric = .02, \
+            featureselection = False, featurepct = 1.0, featuremetric = .02, \
             featuremethod = 'pct', PCAn_components = None, PCAexcl = [], \
             ML_cmnd = {'MLinfill_type':'default', \
                        'MLinfill_cmnd':{'RandomForestClassifier':{}, 'RandomForestRegressor':{}}, \
@@ -396,7 +398,8 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
             assigncat = {'mnmx':[], 'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[], \
                          'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], \
                          'bins':[], 'bint':[], \
-			 'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
+                         'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
+                         'log0':[], 'log1':[], 'pwrs':[], \
                          'bnry':[], 'text':[], \
                          'date':[], 'dat2':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
                          'excl':[], 'exc2':[], 'exc3':[], 'null':[]}, \
@@ -540,7 +543,8 @@ return a summary of feature importance findings in the featureimportance
 returned dictionary. This also activates the trimming of derived sets
 that did not meet the importance threshold if [featurepct < 1.0 and 
 featuremethod = 'pct'] or if [fesaturemetric > 0.0 and featuremethod = 
-'metric'].
+'metric']. Note this defaults to False because it cannot operate without
+a designated label column in the train set.
 
 * featurepct: the percentage of derived sets that are kept in the output
 based on the feature importance evaluation. Note that NArw columns are
@@ -624,13 +628,14 @@ such as could potentially result in memory savings.
 #Here are the current trasnformation options built into our library, which
 #we are continuing to build out. A user may also define their own.
 
-        assigncat = {'mnmx':[], 'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[], \
-                     'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], \
-                     'bins':[], 'bint':[], \
-		     'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
-                     'bnry':[], 'text':[], \
-                     'date':[], 'dat2':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
-                     'excl':[], 'exc2':[], 'exc3':[], 'null':[]}, \
+    assigncat = {'mnmx':[], 'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[], \
+		 'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], \
+		 'bins':[], 'bint':[], \
+		 'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
+		 'log0':[], 'log1':[], 'pwrs':[], \
+		 'bnry':[], 'text':[], \
+		 'date':[], 'dat2':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
+		 'excl':[], 'exc2':[], 'exc3':[], 'null':[]}
 ```         
 
 A user may add column identifier strings to each
@@ -1031,6 +1036,7 @@ And here arethe series of family trees currently built into the internal library
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
+    
     transform_dict.update({'nbr3' : {'greatgrandparents' : [], \
                                      'grandparents' : ['NArw'], \
                                      'parents' : ['nmbr'], \
@@ -1041,6 +1047,7 @@ And here arethe series of family trees currently built into the internal library
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : ['bint']}})
+    
     transform_dict.update({'MADn' : {'greatgrandparents' : [], \
                                      'grandparents' : ['NArw'], \
                                      'parents' : [], \
@@ -1051,16 +1058,18 @@ And here arethe series of family trees currently built into the internal library
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
+    
     transform_dict.update({'MAD2' : {'greatgrandparents' : [], \
                                      'grandparents' : ['NArw'], \
                                      'parents' : ['MAD2'], \
                                      'siblings': [], \
                                      'auntsuncles' : [], \
                                      'cousins' : [], \
-                                     'children' : [], \
+                                     'children' : ['nmbr'], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : ['bint']}})
+    
     transform_dict.update({'mnmx' : {'greatgrandparents' : [], \
                                      'grandparents' : ['NArw'], \
                                      'parents' : [], \
@@ -1093,6 +1102,7 @@ And here arethe series of family trees currently built into the internal library
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
+    
     transform_dict.update({'mnm4' : {'greatgrandparents' : [], \
                                      'grandparents' : ['NArw'], \
                                      'parents' : [], \
@@ -1103,6 +1113,7 @@ And here arethe series of family trees currently built into the internal library
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
+    
     transform_dict.update({'mnm5' : {'greatgrandparents' : [], \
                                      'grandparents' : ['NArw'], \
                                      'parents' : [], \
@@ -1113,6 +1124,7 @@ And here arethe series of family trees currently built into the internal library
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
+    
     transform_dict.update({'mnm6' : {'greatgrandparents' : [], \
                                      'grandparents' : ['NArw'], \
                                      'parents' : [], \
@@ -1123,6 +1135,7 @@ And here arethe series of family trees currently built into the internal library
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
+    
     transform_dict.update({'mnm7' : {'greatgrandparents' : [], \
                                      'grandparents' : [], \
                                      'parents' : [], \
@@ -1153,6 +1166,7 @@ And here arethe series of family trees currently built into the internal library
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
+    
     transform_dict.update({'bxc2' : {'greatgrandparents' : [], \
                                      'grandparents' : ['NArw'], \
                                      'parents' : ['bxc2'], \
@@ -1163,6 +1177,7 @@ And here arethe series of family trees currently built into the internal library
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
+    
     transform_dict.update({'bxc3' : {'greatgrandparents' : [], \
                                      'grandparents' : ['NArw'], \
                                      'parents' : ['bxc3'], \
@@ -1173,6 +1188,7 @@ And here arethe series of family trees currently built into the internal library
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
+    
     transform_dict.update({'bxc4' : {'greatgrandparents' : [], \
                                      'grandparents' : ['NArw'], \
                                      'parents' : ['bxcx'], \
@@ -1183,6 +1199,40 @@ And here arethe series of family trees currently built into the internal library
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
+    
+    transform_dict.update({'pwrs' : {'greatgrandparents' : [], \
+                                     'grandparents' : ['NArw'], \
+                                     'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['pwrs'], \
+                                     'cousins' : [], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'log0' : {'greatgrandparents' : [], \
+                                     'grandparents' : ['NArw'], \
+                                     'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['log0'], \
+                                     'cousins' : [], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'log1' : {'greatgrandparents' : [], \
+                                     'grandparents' : ['NArw'], \
+                                     'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['log0', 'pwrs'], \
+                                     'cousins' : [], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
     transform_dict.update({'wkdy' : {'greatgrandparents' : [], \
                                      'grandparents' : [], \
                                      'parents' : [], \
@@ -1193,6 +1243,7 @@ And here arethe series of family trees currently built into the internal library
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
+    
     transform_dict.update({'bshr' : {'greatgrandparents' : [], \
                                      'grandparents' : [], \
                                      'parents' : [], \
@@ -1203,6 +1254,7 @@ And here arethe series of family trees currently built into the internal library
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
+    
     transform_dict.update({'hldy' : {'greatgrandparents' : [], \
                                      'grandparents' : [], \
                                      'parents' : [], \
@@ -1213,6 +1265,7 @@ And here arethe series of family trees currently built into the internal library
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
+    
     transform_dict.update({'bins' : {'greatgrandparents' : [], \
                                      'grandparents' : [], \
                                      'parents' : [], \
@@ -1223,6 +1276,7 @@ And here arethe series of family trees currently built into the internal library
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
+    
     transform_dict.update({'bint' : {'greatgrandparents' : [], \
                                      'grandparents' : [], \
                                      'parents' : [], \
@@ -1233,6 +1287,7 @@ And here arethe series of family trees currently built into the internal library
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
+    
     transform_dict.update({'excl' : {'greatgrandparents' : [], \
                                      'grandparents' : [], \
                                      'parents' : [], \
@@ -1243,6 +1298,7 @@ And here arethe series of family trees currently built into the internal library
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
+    
     transform_dict.update({'exc2' : {'greatgrandparents' : [], \
                                      'grandparents' : [], \
                                      'parents' : ['exc2'], \
@@ -1253,6 +1309,7 @@ And here arethe series of family trees currently built into the internal library
                                      'niecesnephews' : [], \
                                      'coworkers' : ['bins'], \
                                      'friends' : []}})
+    
     transform_dict.update({'exc3' : {'greatgrandparents' : [], \
                                      'grandparents' : [], \
                                      'parents' : [], \
@@ -1307,6 +1364,8 @@ column with missing or improperly formatted values.
 * bnry: converts sets with two values to boolean identifiers
 * text: converts categorical sets to one-hot encoded set of boolean identifiers
 * bxcx/bxc2/bxc3/bxc4: performs Box-Cox power law transformation
+* log0/log1: performs logarithmic transofrm (base 10)
+* pwrs: bins groupings by powers of 10
 * date/dat2: for datetime formatted data, segregates data by time scale to multiple
 columns (year/month/day/hour/minute/second) and then performs z-score normalization
 * wkdy: boolean identifier indicating whether a datetime object is a weekday
