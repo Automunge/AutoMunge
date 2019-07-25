@@ -7,10 +7,6 @@ from copy import deepcopy
 from pandas import Series
 from sklearn import preprocessing
 
-#imports for process_text_class, postprocess_text_class
-from sklearn.preprocessing import LabelEncoder
-from sklearn.preprocessing import OneHotEncoder
-
 #imports for process_time_class, postprocess_time_class
 import datetime as dt
 
@@ -336,6 +332,39 @@ class AutoMunge:
                                      'coworkers' : [], \
                                      'friends' : []}})
     
+    transform_dict.update({'pwrs' : {'greatgrandparents' : [], \
+                                     'grandparents' : ['NArw'], \
+                                     'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['pwrs'], \
+                                     'cousins' : [], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'log0' : {'greatgrandparents' : [], \
+                                     'grandparents' : ['NArw'], \
+                                     'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['log0'], \
+                                     'cousins' : [], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'log1' : {'greatgrandparents' : [], \
+                                     'grandparents' : ['NArw'], \
+                                     'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['log0', 'pwrs'], \
+                                     'cousins' : [], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
     transform_dict.update({'wkdy' : {'greatgrandparents' : [], \
                                      'grandparents' : [], \
                                      'parents' : [], \
@@ -482,7 +511,8 @@ class AutoMunge:
     #MLinfilltype entries are:
     # - 'numeric' for columns with numeric entries
     # - 'singlct' for single column sets with boolean entries
-    # - 'multict' for multi column sets with boolean entrie
+    # - 'multict' / 'multisp' for multi column sets with boolean entries 
+    #(note I need to audit these two items 'multict' / 'multisp' I think they're duplicate)
     # - 'exclude' for columns which will be excluded from ML infill
     '''
     
@@ -613,6 +643,24 @@ class AutoMunge:
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'bxc4_nmbr'}})
+    process_dict.update({'pwrs' : {'dualprocess' : self.process_pwrs_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_pwrs_class, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'multisp', \
+                                  'labelctgy' : 'pwrs'}})
+    process_dict.update({'log0' : {'dualprocess' : self.process_log0_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_log0_class, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'log0'}})
+    process_dict.update({'log1' : {'dualprocess' : self.process_log0_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_log0_class, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'log0'}})
     process_dict.update({'wkdy' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_wkdy_class, \
                                   'postprocess' : None, \
@@ -1630,35 +1678,19 @@ class AutoMunge:
     labels_test = mdf_test[column].unique()
     labels_test.sort(axis=0)
 
-    #transform text classifications to numerical id
-    encoder = LabelEncoder()
-    cat_train = mdf_train[column]
-    cat_train_encoded = encoder.fit_transform(cat_train)
 
-    cat_test = mdf_test[column]
-    cat_test_encoded = encoder.fit_transform(cat_test)
-
-
-    #apply onehotencoding
-    onehotencoder = OneHotEncoder()
-    cat_train_1hot = onehotencoder.fit_transform(cat_train_encoded.reshape(-1,1))
-    cat_test_1hot = onehotencoder.fit_transform(cat_test_encoded.reshape(-1,1))
+    #pandas one hot encoder
+    df_train_cat = pd.get_dummies(mdf_train[column])
+    df_test_cat = pd.get_dummies(mdf_test[column])
 
     #append column header name to each category listing
     #note the iteration is over a numpy array hence the [...] approach
     labels_train[...] = column + '_' + labels_train[...]
     labels_test[...] = column + '_' + labels_test[...]
-
-
+    
     #convert sparse array to pandas dataframe with column labels
-    df_train_cat = pd.DataFrame(cat_train_1hot.toarray(), columns=labels_train)
-    df_test_cat = pd.DataFrame(cat_test_1hot.toarray(), columns=labels_test)
-
-#     #add a missing column to train if it's not present
-#     if column + '_NArw' not in df_train_cat.columns:
-#       missingcolumn = pd.DataFrame(0, index=np.arange(df_train_cat.shape[0]), columns=[column+'_NArw'])
-#       df_train_cat = pd.concat([missingcolumn, df_train_cat], axis=1)
-
+    df_train_cat.columns = labels_train
+    df_test_cat.columns = labels_test
 
     #Get missing columns in test set that are present in training set
     missing_cols = set( df_train_cat.columns ) - set( df_test_cat.columns )
@@ -2271,10 +2303,197 @@ class AutoMunge:
 
     #return df, nmbrcolumns, nmbrnormalization_dict, categorylist
     return df, column_dict_list
+
+
+  def process_log0_class(self, mdf_train, mdf_test, column, category, \
+                         postprocess_dict):
+    '''
+    #process_log0_class(mdf_train, mdf_test, column, category)
+    #function to apply logatrithmic transform
+    #takes as arguement pandas dataframe of training and test data (mdf_train), (mdf_test)\
+    #and the name of the column string ('column') and parent category (category)
+    #applies a logarithmic transform (base 10)
+    #replaces missing or improperly formatted data with mean of remaining log values
+    #returns same dataframes with new column of name column + '_log0'
+    '''
+    
+    #copy source column into new column
+    mdf_train[column + '_log0'] = mdf_train[column].copy()
+    mdf_test[column + '_log0'] = mdf_test[column].copy()
+
+    #convert all values to either numeric or NaN
+    mdf_train[column + '_log0'] = pd.to_numeric(mdf_train[column + '_log0'], errors='coerce')
+    mdf_test[column + '_log0'] = pd.to_numeric(mdf_test[column + '_log0'], errors='coerce')
+    
+    #log transform column
+    #note that this replaces negative values with nan which we will infill with meanlog
+    mdf_train[column + '_log0'] = np.log10(mdf_train[column + '_log0'])
+    mdf_test[column + '_log0'] = np.log10(mdf_test[column + '_log0'])
+    
+    #get mean of train set
+    meanlog = mdf_train[column + '_log0'].mean() 
+
+    #replace missing data with training set mean
+    mdf_train[column + '_log0'] = mdf_train[column + '_log0'].fillna(meanlog)
+    mdf_test[column + '_log0'] = mdf_test[column + '_log0'].fillna(meanlog)
+
+
+    #create list of columns
+    nmbrcolumns = [column + '_log0']
+
+
+    nmbrnormalization_dict = {column + '_log0' : {'meanlog' : meanlog}}
+
+    #store some values in the nmbr_dict{} for use later in ML infill methods
+    column_dict_list = []
+
+    for nc in nmbrcolumns:
+
+      if nc[-5:] == '_log0':
+
+        column_dict = { nc : {'category' : 'log0', \
+                             'origcategory' : category, \
+                             'normalization_dict' : nmbrnormalization_dict, \
+                             'origcolumn' : column, \
+                             'columnslist' : nmbrcolumns, \
+                             'categorylist' : [nc], \
+                             'infillmodel' : False, \
+                             'infillcomplete' : False, \
+                             'deletecolumn' : False}}
+
+        column_dict_list.append(column_dict.copy())
+    
+
+        
+    return mdf_train, mdf_test, column_dict_list
+
   
-  
-  
-  
+  def process_pwrs_class(self, mdf_train, mdf_test, column, category, \
+                         postprocess_dict):
+    '''
+    #processes a numerical set by creating bins coresponding to powers
+    #of ten in one hot encoded columns
+    
+    #pwrs will be intended for a raw set that is not yet normalized
+    
+    #we'll use an initial plug value of median of the log transformed set
+    '''
+
+    #store original column for later reversion
+    mdf_train[column + '_temp'] = mdf_train[column].copy()
+    mdf_test[column + '_temp'] = mdf_test[column].copy()
+
+    #convert all values to either numeric or NaN
+    mdf_train[column] = pd.to_numeric(mdf_train[column], errors='coerce')
+    mdf_test[column] = pd.to_numeric(mdf_test[column], errors='coerce')
+    
+    #log transform column
+    #note that this replaces negative values with nan which we will infill with meanlog
+    mdf_train[column] = np.floor(np.log10(mdf_train[column]))
+    mdf_test[column] = np.floor(np.log10(mdf_test[column]))
+    
+    #get mean of train set
+    meanlog = np.floor(mdf_train[column].mean())
+    
+    #get max of train set
+    maxlog = max(mdf_train[column])
+    
+    #replace missing data with training set mean
+    mdf_train[column] = mdf_train[column].fillna(meanlog)
+    mdf_test[column] = mdf_test[column].fillna(meanlog)
+    
+    
+    #replace numerical with string equivalent
+    mdf_train[column] = mdf_train[column].astype(int).astype(str)
+    mdf_test[column] = mdf_test[column].astype(int).astype(str)
+    
+    #extract categories for column labels
+    #note that .unique() extracts the labels as a numpy array
+    labels_train = mdf_train[column].unique()
+    labels_train.sort(axis=0)
+    labels_test = mdf_test[column].unique()
+    labels_test.sort(axis=0)
+    
+    #pandas one hot encoder
+    df_train_cat = pd.get_dummies(mdf_train[column])
+    df_test_cat = pd.get_dummies(mdf_test[column])
+    
+    #append column header name to each category listing
+    labels_train[...] = column + '_10^' + labels_train[...]
+    labels_test[...] = column + '_10^' + labels_test[...]
+    
+    #convert sparse array to pandas dataframe with column labels
+    df_train_cat.columns = labels_train
+    df_test_cat.columns = labels_test
+    
+    #Get missing columns in test set that are present in training set
+    missing_cols = set( df_train_cat.columns ) - set( df_test_cat.columns )
+    
+    #Add a missing column in test set with default value equal to 0
+    for c in missing_cols:
+        df_test_cat[c] = 0
+    #Ensure the order of column in the test set is in the same order than in train set
+    #Note this also removes categories in test set that aren't present in training set
+    df_test_cat = df_test_cat[df_train_cat.columns]
+    
+    #concatinate the sparse set with the rest of our training data
+    mdf_train = pd.concat([df_train_cat, mdf_train], axis=1)
+    mdf_test = pd.concat([df_test_cat, mdf_test], axis=1)
+    
+    #replace original column from training data
+    del mdf_train[column]    
+    del mdf_test[column]
+    
+    mdf_train[column] = mdf_train[column + '_temp'].copy()
+    mdf_test[column] = mdf_test[column + '_temp'].copy()
+
+    del mdf_train[column + '_temp']    
+    del mdf_test[column + '_temp']
+    
+    #create output of a list of the created column names
+#     NAcolumn = columnNAr2
+    labels_train = list(df_train_cat)
+#     if NAcolumn in labels_train:
+#       labels_train.remove(NAcolumn)
+    powercolumns = labels_train
+    
+    normalizationdictvalues = labels_train
+    normalizationdictkeys = powercolumns
+    
+    normalizationdictkeys.sort()
+    normalizationdictvalues.sort()
+    
+    powerlabelsdict = dict(zip(normalizationdictkeys, normalizationdictvalues))
+    
+    #change data types to 8-bit (1 byte) integers for memory savings
+    for powercolumn in powercolumns:
+      mdf_train[powercolumn] = mdf_train[powercolumn].astype(np.int8)
+      mdf_test[powercolumn] = mdf_test[powercolumn].astype(np.int8)
+        
+    #store some values in the text_dict{} for use later in ML infill methods
+    column_dict_list = []
+    
+    categorylist = powercolumns.copy()
+    
+    for pc in powercolumns:
+
+      powernormalization_dict = {pc : {'powerlabelsdict' : powerlabelsdict, \
+                                       'meanlog' : meanlog, \
+                                       'maxlog' : maxlog}}
+    
+      column_dict = {pc : {'category' : 'pwrs', \
+                           'origcategory' : category, \
+                           'normalization_dict' : powernormalization_dict, \
+                           'origcolumn' : column, \
+                           'columnslist' : powercolumns, \
+                           'categorylist' : categorylist, \
+                           'infillmodel' : False, \
+                           'infillcomplete' : False, \
+                           'deletecolumn' : False}}
+        
+      column_dict_list.append(column_dict.copy())
+    
+    return mdf_train, mdf_test, column_dict_list
   
   
   def process_bins_class(self, mdf_train, mdf_test, column, category, \
@@ -2540,7 +2759,8 @@ class AutoMunge:
     #note this is a. singleprocess transform
     '''
     
-    df = df.drop([column], axis=1)
+    #df = df.drop([column], axis=1)
+    #deletion takes place elsewhere
 
     column_dict_list = []
 
@@ -4837,10 +5057,12 @@ class AutoMunge:
     for stndrdcolumn in allstdrdinfill_list:
       
       columnkey = postprocess_dict['origcolumn'][stndrdcolumn]['columnkey']
+        
+      if columnkey in postprocess_dict['column_dict']:
       
-      postprocess_assigninfill_dict['stdrdinfill'] = \
-      postprocess_assigninfill_dict['stdrdinfill'] + \
-      postprocess_dict['column_dict'][columnkey]['columnslist']
+        postprocess_assigninfill_dict['stdrdinfill'] = \
+        postprocess_assigninfill_dict['stdrdinfill'] + \
+        postprocess_dict['column_dict'][columnkey]['columnslist']
       
       
     #ok great now let's do the other infill methods  
@@ -5592,16 +5814,22 @@ class AutoMunge:
                 shuffletrain = True, TrainLabelFreqLevel = False, powertransform = False, \
                 binstransform = True, MLinfill = True, infilliterate=1, randomseed = 42, \
                 numbercategoryheuristic = 0.000, pandasoutput = False, \
-                featureselection = True, featurepct = 1.0, featuremetric = 0.0, \
+                featureselection = False, featurepct = 1.0, featuremetric = 0.0, \
                 featuremethod = 'pct', PCAn_components = None, PCAexcl = [], \
                 ML_cmnd = {'MLinfill_type':'default', \
                            'MLinfill_cmnd':{'RandomForestClassifier':{}, 'RandomForestRegressor':{}}, \
                            'PCA_type':'default', \
                            'PCA_cmnd':{}}, \
-                assigncat = {'nmbr':[], 'nbr2':[], 'bxcx':[], 'bnry':[], 'text':[], \
-                             'date':[], 'excl':[]}, \
-                assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'adjinfill':[], \
-                                'meaninfill':[], 'medianinfill':[]}, \
+                assigncat = {'mnmx':[], 'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[], \
+                             'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], \
+                             'bins':[], 'bint':[], \
+                             'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
+                             'log0':[], 'log1':[], 'pwrs':[], \
+                             'bnry':[], 'text':[], \
+                             'date':[], 'dat2':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
+                             'excl':[], 'exc2':[], 'exc3':[], 'null':[]}, \
+                assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], \
+                                'adjinfill':[], 'meaninfill':[], 'medianinfill':[]}, \
                 transformdict = {}, processdict = {}):
 
     '''
@@ -6884,7 +7112,7 @@ class AutoMunge:
                              'processdict' : processdict, \
                              'process_dict' : process_dict, \
                              'ML_cmnd' : ML_cmnd, \
-                             'automungeversion' : '2.21' })
+                             'automungeversion' : '2.22' })
 
     
     
@@ -7700,24 +7928,17 @@ class AutoMunge:
     labels_test = mdf_test[column].unique()
     labels_test.sort(axis=0)
 
-    #transform text classifications to numerical id
-    encoder = LabelEncoder()
-
-    cat_test = mdf_test[column]
-    cat_test_encoded = encoder.fit_transform(cat_test)
-
 
     #apply onehotencoding
-    onehotencoder = OneHotEncoder()
-    cat_test_1hot = onehotencoder.fit_transform(cat_test_encoded.reshape(-1,1))
-
+    df_test_cat = pd.get_dummies(mdf_test[column])
+    
     #append column header name to each category listing
     #note the iteration is over a numpy array hence the [...] approach
     labels_test[...] = column + '_' + labels_test[...]
-
-
+    
     #convert sparse array to pandas dataframe with column labels
-    df_test_cat = pd.DataFrame(cat_test_1hot.toarray(), columns=labels_test)
+    df_test_cat.columns = labels_test
+    
 
 
     #Get missing columns in test set that are present in training set
@@ -8021,9 +8242,143 @@ class AutoMunge:
                              trnsfrm_mean = bxcxnormalization_dict['trnsfrm_mean'])
 
     return mdf_test
+
+
+  def postprocess_log0_class(self, mdf_test, column, postprocess_dict, columnkey):
+        
+    '''
+    #function to apply logatrithmic transform
+    #takes as arguement pandas dataframe of training and test data (mdf_train), (mdf_test)\
+    #and the name of the column string ('column') and parent category (category)
+    #applies a logarithmic transform (base 10)
+    #replaces missing or improperly formatted data with mean of remaining log values
+    #returns same dataframes with new column of name column + '_log0'
+    '''
+    
+    
+    #retrieve normalizastion parameters from postprocess_dict
+    normkey = column + '_log0'
+    
+    meanlog = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['meanlog']
+
+    #copy original column for implementation
+    mdf_test[column + '_log0'] = mdf_test[column].copy()
+
+
+    #convert all values to either numeric or NaN
+    mdf_test[column + '_log0'] = pd.to_numeric(mdf_test[column + '_log0'], errors='coerce')
+    
+    #log transform column
+    #note that this replaces negative values with nan which we will infill with meanlog
+    mdf_test[column + '_log0'] = np.log10(mdf_test[column + '_log0'])
+    
+
+    #get mean of training data
+    meanlog = meanlog  
+
+    #replace missing data with training set mean
+    mdf_test[column + '_log0'] = mdf_test[column + '_log0'].fillna(meanlog)
+
+
+    return mdf_test
+    
   
-  
-  
+  def postprocess_pwrs_class(self, mdf_test, column, postprocess_dict, columnkey):
+    '''
+    #processes a numerical set by creating bins coresponding to powers
+    #of ten in one hot encoded columns
+    
+    #pwrs will be intended for a raw set that is not yet normalized
+    
+    #we'll use an initial plug value of median of the log transformed set
+    '''
+    
+    #retrieve normalization parameters from postprocess_dict
+    normkey = columnkey
+    
+    meanlog = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['meanlog']
+    maxlog = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['maxlog']
+    powerlabelsdict = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['powerlabelsdict']
+    
+    textcolumns = postprocess_dict['column_dict'][columnkey]['categorylist']
+    
+    #store original column for later reversion
+    mdf_test[column + '_temp'] = mdf_test[column].copy()
+    
+    #convert all values to either numeric or NaN
+    mdf_test[column] = pd.to_numeric(mdf_test[column], errors='coerce')
+    
+    #log transform column
+    #note that this replaces negative values with nan which we will infill with meanlog
+    mdf_test[column] = np.floor(np.log10(mdf_test[column]))
+    
+    #replace missing data with training set mean
+    mdf_test[column] = mdf_test[column].fillna(meanlog)
+    
+    #replace numerical with string equivalent
+    mdf_test[column] = mdf_test[column].astype(int).astype(str)
+    
+    #extract categories for column labels
+    #note that .unique() extracts the labels as a numpy array
+
+    #we'll get the category names from the textcolumns array by stripping the \
+    #prefixes of column name + '_'
+    prefixlength = len(column)+1
+    labels_train = textcolumns[:]
+    for textcolumn in labels_train:
+      textcolumn = textcolumn[prefixlength :]
+    #labels_train.sort(axis=0)
+    labels_train.sort()
+    labels_test = mdf_test[column].unique()
+    labels_test.sort(axis=0)
+    
+    #apply onehotencoding
+    df_test_cat = pd.get_dummies(mdf_test[column])
+    
+    #append column header name to each category listing
+    #note the iteration is over a numpy array hence the [...] approach
+    labels_test[...] = column + '_10^' + labels_test[...]
+    
+    #convert sparse array to pandas dataframe with column labels
+    df_test_cat.columns = labels_test
+    
+    #Get missing columns in test set that are present in training set
+    missing_cols = set( textcolumns ) - set( df_test_cat.columns )
+    
+    #Add a missing column in test set with default value equal to 0
+    for c in missing_cols:
+        df_test_cat[c] = 0
+
+    #Ensure the order of column in the test set is in the same order than in train set
+    #Note this also removes categories in test set that aren't present in training set
+    df_test_cat = df_test_cat[textcolumns]
+
+
+    #concatinate the sparse set with the rest of our training data
+    mdf_test = pd.concat([df_test_cat, mdf_test], axis=1)
+    
+    #replace original column
+    del mdf_test[column]
+    mdf_test[column] = mdf_test[column + '_temp'].copy()
+    del mdf_test[column + '_temp']
+    
+#     #delete support NArw2 column
+#     columnNAr2 = column + '_NAr2'
+#     if columnNAr2 in list(mdf_test):
+#       del mdf_test[columnNAr2]
+    
+    #change data types to 8-bit (1 byte) integers for memory savings
+    for textcolumn in textcolumns:
+      
+      
+      
+      mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.int8)
+
+    
+    return mdf_test
+
+
   
   def postprocess_bins_class(self, mdf_test, column, postprocess_dict, columnkey):
     '''
