@@ -92,7 +92,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
             testID_column = False, valpercent1=0.20, valpercent2 = 0.10, \
             shuffletrain = False, TrainLabelFreqLevel = False, powertransform = False, \
             binstransform = False, MLinfill = True, infilliterate=1, randomseed = 42, \
-            numbercategoryheuristic = 0.0, pandasoutput = True, \
+            numbercategoryheuristic = 15, pandasoutput = True, \
             featureselection = False, featurepct = 1.0, featuremetric = .02, \
             featuremethod = 'pct', PCAn_components = None, PCAexcl = [], \
             ML_cmnd = {'MLinfill_type':'default', \
@@ -104,12 +104,13 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
                          'bins':[], 'bint':[], \
                          'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
                          'log0':[], 'log1':[], 'pwrs':[], \
-                         'bnry':[], 'text':[], \
+                         'bnry':[], 'text':[], 'ordl':[], 'ord2':[], \
                          'date':[], 'dat2':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
                          'excl':[], 'exc2':[], 'exc3':[], 'null':[]}, \
             assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], \
                             'adjinfill':[], 'meaninfill':[], 'medianinfill':[]}, \
-            transformdict = {}, processdict = {})
+            transformdict = {}, processdict = {}, \
+            printstatus = True)
 
 ```
 
@@ -124,7 +125,7 @@ function to consistently process subsequently available data.
 test, testID, testlabels, \
 labelsencoding_dict, finalcolumns_test = \
 am.postmunge(postprocess_dict, df_test, testID_column = False, \
-             labelscolumn = False, pandasoutput=True)
+             labelscolumn = False, pandasoutput=True, printstatus = True))
 ```
 
 
@@ -239,7 +240,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
             testID_column = False, valpercent1=0.20, valpercent2 = 0.10, \
             shuffletrain = False, TrainLabelFreqLevel = False, powertransform = False, \
             binstransform = False, MLinfill = True, infilliterate=1, randomseed = 42, \
-            numbercategoryheuristic = 0.0, pandasoutput = True, \
+            numbercategoryheuristic = 15, pandasoutput = True, \
             featureselection = False, featurepct = 1.0, featuremetric = .02, \
             featuremethod = 'pct', PCAn_components = None, PCAexcl = [], \
             ML_cmnd = {'MLinfill_type':'default', \
@@ -251,12 +252,13 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
                          'bins':[], 'bint':[], \
                          'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
                          'log0':[], 'log1':[], 'pwrs':[], \
-                         'bnry':[], 'text':[], \
+                         'bnry':[], 'text':[], 'ordl':[], 'ord2':[], \
                          'date':[], 'dat2':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
                          'excl':[], 'exc2':[], 'exc3':[], 'null':[]}, \
             assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], \
                             'adjinfill':[], 'meaninfill':[], 'medianinfill':[]}, \
-            transformdict = {}, processdict = {})
+            transformdict = {}, processdict = {}, \
+            printstatus = True)
 ```
 
 Or for the postmunge function:
@@ -273,7 +275,7 @@ With the full set of arguments available to be passed as:
 
 ```
 am.postmunge(postprocess_dict, df_test, testID_column = False, \
-             labelscolumn = False, pandasoutput=True)
+             labelscolumn = False, pandasoutput=True, printstatus = True))
 ```
 
 Note that the only required argument to the automunge function is the
@@ -388,7 +390,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
             testID_column = False, valpercent1=0.20, valpercent2 = 0.10, \
             shuffletrain = False, TrainLabelFreqLevel = False, powertransform = False, \
             binstransform = False, MLinfill = True, infilliterate=1, randomseed = 42, \
-            numbercategoryheuristic = 0.0, pandasoutput = True, \
+            numbercategoryheuristic = 15, pandasoutput = True, \
             featureselection = False, featurepct = 1.0, featuremetric = .02, \
             featuremethod = 'pct', PCAn_components = None, PCAexcl = [], \
             ML_cmnd = {'MLinfill_type':'default', \
@@ -400,12 +402,13 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
                          'bins':[], 'bint':[], \
                          'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
                          'log0':[], 'log1':[], 'pwrs':[], \
-                         'bnry':[], 'text':[], \
+                         'bnry':[], 'text':[], 'ordl':[], 'ord2':[], \
                          'date':[], 'dat2':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
                          'excl':[], 'exc2':[], 'exc3':[], 'null':[]}, \
             assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], \
                             'adjinfill':[], 'meaninfill':[], 'medianinfill':[]}, \
-            transformdict = {}, processdict = {})
+            transformdict = {}, processdict = {}, \
+            printstatus = True)
 ```
 
 * df_train: a pandas dataframe containing a structured dataset intended
@@ -522,15 +525,11 @@ normalization. *update this aregument no longer supported, a user can
 instead assign distinct methods to each column with assigncat per below, 
 such as assigning a column to category 'text' for categorical.
 
-* numbercategoryheuristic: a float value between 0 and 1 which will be
-used as a heuristic to identify numerically encoded columns which are to
-be treated as categorical sets, for example a value of 0.10 here would
-indicate that if the number of distinct values in a column is less than
-10% of the total number of rows then this should be treated as a
-categorical set and receive one-hot encoding. I may later change this
-heuristic to just a integer number of distinct values, in hindsight that
-may have made more sense. This defaults to 0.00 meaning the heuristic is
-not applied.
+* numbercategoryheuristic: an integer used as a heuristic in two ways. 
+When a numerical set has fewer unique values than this heuristic, it
+defaults to a categorical treatment via one-hot encoding. When a 
+categorical set has more unique values than this heuristic, it defaults 
+to categorical treatment via ordinal processing. This defaults to 15.
 
 * pandasoutput: a selector for format of returned sets. Defaults to False
 for returned Numpy arrays. If set to True returns pandas dataframes
@@ -544,7 +543,8 @@ returned dictionary. This also activates the trimming of derived sets
 that did not meet the importance threshold if [featurepct < 1.0 and 
 featuremethod = 'pct'] or if [fesaturemetric > 0.0 and featuremethod = 
 'metric']. Note this defaults to False because it cannot operate without
-a designated label column in the train set.
+a designated label column in the train set. Note that the user-specified
+size of validationratios if passed are used in this method.
 
 * featurepct: the percentage of derived sets that are kept in the output
 based on the feature importance evaluation. Note that NArw columns are
@@ -789,6 +789,9 @@ processdict =  {'newt' : {'dualprocess' : None, \
 
 ```
 
+* printstatus: user can pass True/False indicating whether the function will print 
+status of processing during operation. Defaults to True.
+
 Ok well we'll demonstrate further below how to build custom processing functions,
 for now this just gives you sufficient tools to build sets of processing using
 the built in sets in the library.
@@ -818,7 +821,7 @@ am = AutoMunge.AutoMunge()
 test, testID, testlabels, \
 labelsencoding_dict, finalcolumns_test = \
 am.postmunge(postprocess_dict, df_test, testID_column = False, \
-             labelscolumn = False, pandasoutput=True)
+             labelscolumn = False, pandasoutput=True, printstatus = True))
 ```
              
 
@@ -907,6 +910,9 @@ for returned Numpy arrays. If set to True returns pandas dataframes
 (note that index is not preserved, an ID column may be passed for index
 identification).
 
+* printstatus: user can pass True/False indicating whether the function 
+will print status of processing during operation. Defaults to True.
+
 ...
 
 ## Library of Transformations
@@ -991,6 +997,28 @@ And here arethe series of family trees currently built into the internal library
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'ordl' : {'greatgrandparents' : [], \
+                                     'grandparents' : ['NArw'], \
+                                     'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['ordl'], \
+                                     'cousins' : [], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+        
+    transform_dict.update({'ord2' : {'greatgrandparents' : [], \
+                                     'grandparents' : ['NArw'], \
+                                     'parents' : ['ord2'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : ['mnmx'], \
                                      'friends' : []}})
 
     transform_dict.update({'null' : {'greatgrandparents' : [], \
@@ -1363,6 +1391,7 @@ column with missing or improperly formatted values.
 * mnm6: min-max scaling with test set capped at min/max of train set
 * bnry: converts sets with two values to boolean identifiers
 * text: converts categorical sets to one-hot encoded set of boolean identifiers
+* ordl: converts categorical sets to ordinally encoded set of integer identifiers
 * bxcx/bxc2/bxc3/bxc4: performs Box-Cox power law transformation
 * log0/log1: performs logarithmic transofrm (base 10)
 * pwrs: bins groupings by powers of 10
