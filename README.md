@@ -619,6 +619,8 @@ instance. Also a user can simply turn off default PCA transforms by
 passing 'PCA_cmnd':{'PCA_type':'off'}. A user can also exclude returned
 boolean (0/1) columns from any PCA application by passing 
 'PCA_cmnd':{'bool_PCA_excl':True}
+or exclude returned boolean and ordinal columns from PCA application by
+'PCA_cmnd':{'bool_ordl_PCAexcl':True}
 such as could potentially result in memory savings.
 
 
