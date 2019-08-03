@@ -525,9 +525,7 @@ normalization. *update this aregument no longer supported, a user can
 instead assign distinct methods to each column with assigncat per below, 
 such as assigning a column to category 'text' for categorical.
 
-* numbercategoryheuristic: an integer used as a heuristic in two ways. 
-When a numerical set has fewer unique values than this heuristic, it
-defaults to a categorical treatment via one-hot encoding. When a 
+* numbercategoryheuristic: an integer used as a heuristic. When a 
 categorical set has more unique values than this heuristic, it defaults 
 to categorical treatment via ordinal processing. This defaults to 15.
 
