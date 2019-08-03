@@ -1,8 +1,13 @@
 """
-Code subject to license and intellectual property provisions as detailed in the
-official Automunge github repo at
-https://github.com/Automunge/AutoMunge
+This file is part of Automunge which is released under GNU General Public License v3.0.
+See file LICENSE or go to https://github.com/Automunge/AutoMunge for full license details.
+
+contact available via automunge.com
+
+Copyright (C) 2018, 2019 Nicholas Teague - All Rights Reserved
+
 patent pending
+
 """
 
 
@@ -27,6 +32,8 @@ from pandas.tseries.holiday import USFederalHolidayCalendar
 #imports for evalcategory
 import collections
 import datetime as dt
+from scipy.stats import shapiro
+from scipy.stats import skew
 
 #imports for predictinfill, predictpostinfill, trainFSmodel
 from sklearn.ensemble import RandomForestRegressor
@@ -51,8 +58,6 @@ class AutoMunge:
   
   def __init__(self):
     pass
-  
-  
 
   def assembletransformdict(self, powertransform, binstransform):
     '''
@@ -99,64 +104,52 @@ class AutoMunge:
 
     #initialize trasnform_dict. Note in a future extension the range of categories
     #is intended to be built out
-    transform_dict.update({'nmbr' : {'greatgrandparents' : [], \
-                                     'grandparents' : ['NArw'], \
-                                     'parents' : ['nmbr'], \
+    transform_dict.update({'nmbr' : {'parents' : ['nmbr'], \
                                      'siblings': [], \
                                      'auntsuncles' : [], \
-                                     'cousins' : [], \
+                                     'cousins' : ['NArw'], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : [bint]}})
 
-    transform_dict.update({'bnry' : {'greatgrandparents' : [], \
-                                     'grandparents' : ['NArw'], \
-                                     'parents' : [], \
+    transform_dict.update({'bnry' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['bnry'], \
-                                     'cousins' : [], \
+                                     'cousins' : ['NArw'], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
 
-    transform_dict.update({'text' : {'greatgrandparents' : [], \
-                                     'grandparents' : ['NArw'], \
-                                     'parents' : [], \
+    transform_dict.update({'text' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['text'], \
-                                     'cousins' : [], \
+                                     'cousins' : ['NArw'], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
     
-    transform_dict.update({'ordl' : {'greatgrandparents' : [], \
-                                     'grandparents' : ['NArw'], \
-                                     'parents' : [], \
+    transform_dict.update({'ordl' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['ordl'], \
-                                     'cousins' : [], \
+                                     'cousins' : ['NArw'], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
         
-    transform_dict.update({'ord2' : {'greatgrandparents' : [], \
-                                     'grandparents' : ['NArw'], \
-                                     'parents' : ['ord2'], \
+    transform_dict.update({'ord2' : {'parents' : ['ord2'], \
                                      'siblings': [], \
                                      'auntsuncles' : [], \
-                                     'cousins' : [], \
+                                     'cousins' : ['NArw'], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : ['mnmx'], \
                                      'friends' : []}})
 
-    transform_dict.update({'null' : {'greatgrandparents' : [], \
-                                     'grandparents' : [], \
-                                     'parents' : [], \
+    transform_dict.update({'null' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['null'], \
                                      'cousins' : [], \
@@ -165,9 +158,7 @@ class AutoMunge:
                                      'coworkers' : [], \
                                      'friends' : []}})
     
-    transform_dict.update({'NArw' : {'greatgrandparents' : [], \
-                                     'grandparents' : [], \
-                                     'parents' : [], \
+    transform_dict.update({'NArw' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['NArw'], \
                                      'cousins' : [], \
@@ -176,9 +167,7 @@ class AutoMunge:
                                      'coworkers' : [], \
                                      'friends' : []}})
     
-    transform_dict.update({'rgrl' : {'greatgrandparents' : [], \
-                                     'grandparents' : [], \
-                                     'parents' : [], \
+    transform_dict.update({'rgrl' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['nmbr'], \
                                      'cousins' : [], \
@@ -187,119 +176,106 @@ class AutoMunge:
                                      'coworkers' : [], \
                                      'friends' : []}})
     
-    transform_dict.update({'nbr2' : {'greatgrandparents' : [], \
-                                     'grandparents' : ['NArw'], \
-                                     'parents' : [], \
+    transform_dict.update({'nbr2' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['nmbr'], \
-                                     'cousins' : [], \
+                                     'cousins' : ['NArw'], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
     
-    transform_dict.update({'nbr3' : {'greatgrandparents' : [], \
-                                     'grandparents' : ['NArw'], \
-                                     'parents' : ['nmbr'], \
+    transform_dict.update({'nbr3' : {'parents' : ['nmbr'], \
                                      'siblings': [], \
                                      'auntsuncles' : [], \
-                                     'cousins' : [], \
+                                     'cousins' : ['NArw'], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : ['bint']}})
     
-    transform_dict.update({'MADn' : {'greatgrandparents' : [], \
-                                     'grandparents' : ['NArw'], \
-                                     'parents' : [], \
+    transform_dict.update({'MADn' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['MADn'], \
-                                     'cousins' : [], \
+                                     'cousins' : ['NArw'], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
     
-    transform_dict.update({'MAD2' : {'greatgrandparents' : [], \
-                                     'grandparents' : ['NArw'], \
-                                     'parents' : ['MAD2'], \
+    transform_dict.update({'MAD2' : {'parents' : ['MAD2'], \
                                      'siblings': [], \
                                      'auntsuncles' : [], \
-                                     'cousins' : [], \
+                                     'cousins' : ['NArw'], \
                                      'children' : ['nmbr'], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
     
-    transform_dict.update({'mnmx' : {'greatgrandparents' : [], \
-                                     'grandparents' : ['NArw'], \
-                                     'parents' : [], \
+    transform_dict.update({'MAD3' : {'parents' : [], \
                                      'siblings': [], \
-                                     'auntsuncles' : ['mnmx'], \
-                                     'cousins' : [], \
+                                     'auntsuncles' : ['MAD3'], \
+                                     'cousins' : ['NArw'], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
     
-    transform_dict.update({'mnm2' : {'greatgrandparents' : [], \
-                                     'grandparents' : ['NArw'], \
-                                     'parents' : ['nmbr'], \
+    transform_dict.update({'mnmx' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['mnmx'], \
-                                     'cousins' : [], \
+                                     'cousins' : ['NArw'], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
     
-    transform_dict.update({'mnm3' : {'greatgrandparents' : [], \
-                                     'grandparents' : ['NArw'], \
-                                     'parents' : ['nmbr'], \
+    transform_dict.update({'mnm2' : {'parents' : ['nmbr'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['mnmx'], \
+                                     'cousins' : ['NArw'], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'mnm3' : {'parents' : ['nmbr'], \
                                      'siblings': [], \
                                      'auntsuncles' : ['mnm3'], \
-                                     'cousins' : [], \
+                                     'cousins' : ['NArw'], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
     
-    transform_dict.update({'mnm4' : {'greatgrandparents' : [], \
-                                     'grandparents' : ['NArw'], \
-                                     'parents' : [], \
+    transform_dict.update({'mnm4' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['mnm3'], \
-                                     'cousins' : [], \
+                                     'cousins' : ['NArw'], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
     
-    transform_dict.update({'mnm5' : {'greatgrandparents' : [], \
-                                     'grandparents' : ['NArw'], \
-                                     'parents' : [], \
+    transform_dict.update({'mnm5' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['mnmx'], \
-                                     'cousins' : ['nmbr'], \
+                                     'cousins' : ['nmbr', 'NArw'], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
     
-    transform_dict.update({'mnm6' : {'greatgrandparents' : [], \
-                                     'grandparents' : ['NArw'], \
-                                     'parents' : [], \
+    transform_dict.update({'mnm6' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['mnm6'], \
-                                     'cousins' : [], \
+                                     'cousins' : ['NArw'], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
     
-    transform_dict.update({'mnm7' : {'greatgrandparents' : [], \
-                                     'grandparents' : [], \
-                                     'parents' : [], \
+    transform_dict.update({'mnm7' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['mnmx', 'bins'], \
                                      'cousins' : [], \
@@ -307,96 +283,78 @@ class AutoMunge:
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
-    transform_dict.update({'date' : {'greatgrandparents' : [], \
-                                     'grandparents' : ['NArw'], \
-                                     'parents' : [], \
+    transform_dict.update({'date' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['date'], \
-                                     'cousins' : [], \
+                                     'cousins' : ['NArw'], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
-    transform_dict.update({'dat2' : {'greatgrandparents' : [], \
-                                     'grandparents' : ['NArw'], \
-                                     'parents' : [], \
+    transform_dict.update({'dat2' : {'parents' : [], \
                                      'siblings': ['bshr', 'wkdy', 'hldy'], \
                                      'auntsuncles' : ['date'], \
-                                     'cousins' : [], \
+                                     'cousins' : ['NArw'], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
     
-    transform_dict.update({'bxc2' : {'greatgrandparents' : [], \
-                                     'grandparents' : ['NArw'], \
-                                     'parents' : ['bxc2'], \
+    transform_dict.update({'bxc2' : {'parents' : ['bxc2'], \
                                      'siblings': ['nmbr'], \
                                      'auntsuncles' : [], \
-                                     'cousins' : [], \
+                                     'cousins' : ['NArw'], \
                                      'children' : ['nmbr'], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
     
-    transform_dict.update({'bxc3' : {'greatgrandparents' : [], \
-                                     'grandparents' : ['NArw'], \
-                                     'parents' : ['bxc3'], \
+    transform_dict.update({'bxc3' : {'parents' : ['bxc3'], \
                                      'siblings': [], \
                                      'auntsuncles' : [], \
-                                     'cousins' : [], \
+                                     'cousins' : ['NArw'], \
                                      'children' : ['nmbr'], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
     
-    transform_dict.update({'bxc4' : {'greatgrandparents' : [], \
-                                     'grandparents' : ['NArw'], \
-                                     'parents' : ['bxc4'], \
+    transform_dict.update({'bxc4' : {'parents' : ['bxc4'], \
                                      'siblings': [], \
                                      'auntsuncles' : [], \
-                                     'cousins' : [], \
+                                     'cousins' : ['NArw'], \
                                      'children' : ['nbr2'], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
     
-    transform_dict.update({'pwrs' : {'greatgrandparents' : [], \
-                                     'grandparents' : ['NArw'], \
-                                     'parents' : [], \
+    transform_dict.update({'pwrs' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['pwrs'], \
-                                     'cousins' : [], \
+                                     'cousins' : ['NArw'], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
     
-    transform_dict.update({'log0' : {'greatgrandparents' : [], \
-                                     'grandparents' : ['NArw'], \
-                                     'parents' : [], \
+    transform_dict.update({'log0' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['log0'], \
-                                     'cousins' : [], \
+                                     'cousins' : ['NArw'], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
     
-    transform_dict.update({'log1' : {'greatgrandparents' : [], \
-                                     'grandparents' : ['NArw'], \
-                                     'parents' : [], \
+    transform_dict.update({'log1' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['log0', 'pwrs'], \
-                                     'cousins' : [], \
+                                     'cousins' : ['NArw'], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
     
-    transform_dict.update({'wkdy' : {'greatgrandparents' : [], \
-                                     'grandparents' : [], \
-                                     'parents' : [], \
+    transform_dict.update({'wkdy' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['wkdy'], \
                                      'cousins' : [], \
@@ -405,9 +363,7 @@ class AutoMunge:
                                      'coworkers' : [], \
                                      'friends' : []}})
     
-    transform_dict.update({'bshr' : {'greatgrandparents' : [], \
-                                     'grandparents' : [], \
-                                     'parents' : [], \
+    transform_dict.update({'bshr' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['bshr'], \
                                      'cousins' : [], \
@@ -416,9 +372,7 @@ class AutoMunge:
                                      'coworkers' : [], \
                                      'friends' : []}})
     
-    transform_dict.update({'hldy' : {'greatgrandparents' : [], \
-                                     'grandparents' : [], \
-                                     'parents' : [], \
+    transform_dict.update({'hldy' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['hldy'], \
                                      'cousins' : [], \
@@ -427,9 +381,7 @@ class AutoMunge:
                                      'coworkers' : [], \
                                      'friends' : []}})
     
-    transform_dict.update({'bins' : {'greatgrandparents' : [], \
-                                     'grandparents' : [], \
-                                     'parents' : [], \
+    transform_dict.update({'bins' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['bins'], \
                                      'cousins' : [], \
@@ -438,9 +390,7 @@ class AutoMunge:
                                      'coworkers' : [], \
                                      'friends' : []}})
     
-    transform_dict.update({'bint' : {'greatgrandparents' : [], \
-                                     'grandparents' : [], \
-                                     'parents' : [], \
+    transform_dict.update({'bint' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['bint'], \
                                      'cousins' : [], \
@@ -449,9 +399,7 @@ class AutoMunge:
                                      'coworkers' : [], \
                                      'friends' : []}})
     
-    transform_dict.update({'excl' : {'greatgrandparents' : [], \
-                                     'grandparents' : [], \
-                                     'parents' : [], \
+    transform_dict.update({'excl' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['excl'], \
                                      'cousins' : [], \
@@ -460,9 +408,7 @@ class AutoMunge:
                                      'coworkers' : [], \
                                      'friends' : []}})
     
-    transform_dict.update({'exc2' : {'greatgrandparents' : [], \
-                                     'grandparents' : [], \
-                                     'parents' : ['exc2'], \
+    transform_dict.update({'exc2' : {'parents' : ['exc2'], \
                                      'siblings': [], \
                                      'auntsuncles' : [], \
                                      'cousins' : [], \
@@ -471,9 +417,7 @@ class AutoMunge:
                                      'coworkers' : ['bins'], \
                                      'friends' : []}})
     
-    transform_dict.update({'exc3' : {'greatgrandparents' : [], \
-                                     'grandparents' : [], \
-                                     'parents' : [], \
+    transform_dict.update({'exc3' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['exc2'], \
                                      'cousins' : [], \
@@ -487,12 +431,10 @@ class AutoMunge:
     #initialize bxcx based on what was passed through application of automunge(.)
     if powertransform == True:
 
-      transform_dict.update({'bxcx' : {'greatgrandparents' : [], \
-                                       'grandparents' : ['NArw'], \
-                                       'parents' : ['bxcx'], \
+      transform_dict.update({'bxcx' : {'parents' : ['bxcx'], \
                                        'siblings': ['nmbr'], \
                                        'auntsuncles' : [], \
-                                       'cousins' : [], \
+                                       'cousins' : ['NArw'], \
                                        'children' : ['nmbr'], \
                                        'niecesnephews' : [], \
                                        'coworkers' : [], \
@@ -500,12 +442,10 @@ class AutoMunge:
 
     else:
 
-      transform_dict.update({'bxcx' : {'greatgrandparents' : [], \
-                                       'grandparents' : ['NArw'], \
-                                       'parents' : ['nmbr'], \
+      transform_dict.update({'bxcx' : {'parents' : ['nmbr'], \
                                        'siblings': [], \
                                        'auntsuncles' : [], \
-                                       'cousins' : [], \
+                                       'cousins' : ['NArw'], \
                                        'children' : [], \
                                        'niecesnephews' : [bins], \
                                        'coworkers' : [], \
@@ -515,7 +455,7 @@ class AutoMunge:
 
     return transform_dict
   
-  
+
   
   
   def assembleprocessdict(self):
@@ -580,6 +520,12 @@ class AutoMunge:
     process_dict.update({'MAD2' : {'dualprocess' : self.process_MADn_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_MADn_class, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'MADn'}})
+    process_dict.update({'MAD3' : {'dualprocess' : self.process_MAD3_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_MAD3_class, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'MADn'}})
@@ -771,36 +717,36 @@ class AutoMunge:
 
   
   
-  def processancestors(self, df_train, df_test, column, category, origcategory, process_dict, \
-                      transform_dict, postprocess_dict):
-    '''
-    #as automunge runs a for loop through each column in automunge, this is the  
-    #processing function applied which runs through the grandparents family primitives
-    #populated in the transform_dict by assembletransformdict, only applied to
-    #first generation of transforms (others are recursive through the processfamily function)
-    '''
+#   def processancestors(self, df_train, df_test, column, category, origcategory, process_dict, \
+#                       transform_dict, postprocess_dict):
+#     '''
+#     #as automunge runs a for loop through each column in automunge, this is the  
+#     #processing function applied which runs through the grandparents family primitives
+#     #populated in the transform_dict by assembletransformdict, only applied to
+#     #first generation of transforms (others are recursive through the processfamily function)
+#     '''
     
-    #process the grandparents (no downstream, supplemental, only applied ot first generation)
-    for grandparent in transform_dict[category]['grandparents']:
+#     #process the grandparents (no downstream, supplemental, only applied ot first generation)
+#     for grandparent in transform_dict[category]['grandparents']:
       
-      if grandparent != None:
+#       if grandparent != None:
       
-        #note we use the processcousin function here
-        df_train, df_test, postprocess_dict = \
-        self.processcousin(df_train, df_test, column, grandparent, origcategory, \
-                            process_dict, transform_dict, postprocess_dict)
+#         #note we use the processcousin function here
+#         df_train, df_test, postprocess_dict = \
+#         self.processcousin(df_train, df_test, column, grandparent, origcategory, \
+#                             process_dict, transform_dict, postprocess_dict)
       
-    for greatgrandparent in transform_dict[category]['greatgrandparents']:
+#     for greatgrandparent in transform_dict[category]['greatgrandparents']:
       
       
-      if greatgrandparent != None:
-        #note we use the processparent function here
-        df_train, df_test, postprocess_dict = \
-        self.processparent(df_train, df_test, column, greatgrandparent, origcategory, \
-                          process_dict, transform_dict, postprocess_dict)
+#       if greatgrandparent != None:
+#         #note we use the processparent function here
+#         df_train, df_test, postprocess_dict = \
+#         self.processparent(df_train, df_test, column, greatgrandparent, origcategory, \
+#                           process_dict, transform_dict, postprocess_dict)
       
     
-    return df_train, df_test, postprocess_dict
+#     return df_train, df_test, postprocess_dict
   
   
 
@@ -1317,6 +1263,81 @@ class AutoMunge:
       if nc[-5:] == '_MADn':
 
         column_dict = { nc : {'category' : 'MADn', \
+                             'origcategory' : category, \
+                             'normalization_dict' : nmbrnormalization_dict, \
+                             'origcolumn' : column, \
+                             'columnslist' : nmbrcolumns, \
+                             'categorylist' : [nc], \
+                             'infillmodel' : False, \
+                             'infillcomplete' : False, \
+                             'deletecolumn' : False}}
+
+        column_dict_list.append(column_dict.copy())
+    
+
+        
+    return mdf_train, mdf_test, column_dict_list
+
+  def process_MAD3_class(self, mdf_train, mdf_test, column, category, \
+                              postprocess_dict):
+    '''
+    #process_MADn_class(mdf_train, mdf_test, column, category)
+    #function to normalize data by subtracting maximum and dividing by median absolute deviation
+    #takes as arguement pandas dataframe of training and test data (mdf_train), (mdf_test)\
+    #and the name of the column string ('column') and parent category (category)
+    #replaces missing or improperly formatted data with mean of remaining values
+    #returns same dataframes with new column of name column + '_MADn'
+    #note this is a "dualprocess" function since is applied to both train and test dataframes
+    #expect this approach works better than z-score for when the numerical distribution isn't thin tailed
+    #if only have training but not test data handy, use same training data for both dataframe inputs
+    #the use of maximum instead of mean for normalization based on comment from RWRI lectures 
+    #documented in medium essay "Machine Learning and Miscelanea"
+    '''
+    
+    #copy source column into new column
+    mdf_train[column + '_MAD3'] = mdf_train[column].copy()
+    mdf_test[column + '_MAD3'] = mdf_test[column].copy()
+
+    #convert all values to either numeric or NaN
+    mdf_train[column + '_MAD3'] = pd.to_numeric(mdf_train[column + '_MAD3'], errors='coerce')
+    mdf_test[column + '_MAD3'] = pd.to_numeric(mdf_test[column + '_MAD3'], errors='coerce')
+
+    #get mean of training data
+    mean = mdf_train[column + '_MAD3'].mean()
+    
+    #get max of training data
+    datamax = mdf_train[column + '_MAD3'].max()
+    
+    #get mean absolute deviation of training data
+    MAD = mdf_train[column + '_MAD3'].mad()
+
+    #replace missing data with training set mean
+    mdf_train[column + '_MAD3'] = mdf_train[column + '_MAD3'].fillna(mean)
+    mdf_test[column + '_MAD3'] = mdf_test[column + '_MAD3'].fillna(mean)
+
+    #subtract max from column for both train and test
+    mdf_train[column + '_MAD3'] = mdf_train[column + '_MAD3'] - datamax
+    mdf_test[column + '_MAD3'] = mdf_test[column + '_MAD3'] - datamax
+
+    #divide column values by mad for both training and test data
+    mdf_train[column + '_MAD3'] = mdf_train[column + '_MAD3'] / MAD
+    mdf_test[column + '_MAD3'] = mdf_test[column + '_MAD3'] / MAD
+
+
+    #create list of columns
+    nmbrcolumns = [column + '_MAD3']
+
+
+    nmbrnormalization_dict = {column + '_MAD3' : {'mean' : mean, 'MAD' : MAD, 'datamax' : datamax}}
+
+    #store some values in the nmbr_dict{} for use later in ML infill methods
+    column_dict_list = []
+
+    for nc in nmbrcolumns:
+
+      if nc[-5:] == '_MAD3':
+
+        column_dict = { nc : {'category' : 'MAD3', \
                              'origcategory' : category, \
                              'normalization_dict' : nmbrnormalization_dict, \
                              'origcolumn' : column, \
@@ -3050,7 +3071,7 @@ class AutoMunge:
 #     return df, column_dict_list  
 
 
-  def evalcategory(self, df, column, numbercategoryheuristic):
+  def evalcategory(self, df, column, numbercategoryheuristic, powertransform):
     '''
     #evalcategory(df, column)
     #Function that dakes as input a dataframe and associated column id \
@@ -3248,6 +3269,33 @@ class AutoMunge:
     if category == 'text':
       if df[column].nunique() > numbercategoryheuristic:
         category = 'ordl'
+    
+    #new statistical tests for numerical sets from v2.25
+    #I don't consider mytself an expert here, these are kind of a placeholder while I conduct more research
+    
+    if category in ['nmbr', 'bxcx']:
+    
+      #shapiro tests for normality, we'll use a common threshold p<0.05 to reject the normality hypothesis
+      #stat, p = shapiro(df[column])
+      stat, p = shapiro(df[pd.to_numeric(df[column], errors='coerce').notnull()][column])
+      if p > 0.05:
+        category = 'nmbr'
+      if p <= 0.05:
+        #skewness helps recognize exponential distributions, reference wikipedia
+        #reference from wikipedia
+#       A normal distribution and any other symmetric distribution with finite third moment has a skewness of 0
+#       A half-normal distribution has a skewness just below 1
+#       An exponential distribution has a skewness of 2
+#       A lognormal distribution can have a skewness of any positive value, depending on its parameters
+        #skewness = skew(df[column])
+        skewness = skew(df[pd.to_numeric(df[column], errors='coerce').notnull()][column])
+        if skewness < 1.5:
+          category = 'mnmx'
+        else:
+          if powertrasnform == True:
+            category = 'bxcx'
+          else:
+            category = 'MAD3'
 
     return category
 
@@ -5272,13 +5320,15 @@ class AutoMunge:
     #of corresponding postprocess columns
     for stndrdcolumn in allstdrdinfill_list:
       
-      columnkey = postprocess_dict['origcolumn'][stndrdcolumn]['columnkey']
+      if stndrdcolumn in postprocess_dict['origcolumn']:
+            
+        columnkey = postprocess_dict['origcolumn'][stndrdcolumn]['columnkey']
         
-      if columnkey in postprocess_dict['column_dict']:
+        if columnkey in postprocess_dict['column_dict']:
       
-        postprocess_assigninfill_dict['stdrdinfill'] = \
-        postprocess_assigninfill_dict['stdrdinfill'] + \
-        postprocess_dict['column_dict'][columnkey]['columnslist']
+          postprocess_assigninfill_dict['stdrdinfill'] = \
+          postprocess_assigninfill_dict['stdrdinfill'] + \
+          postprocess_dict['column_dict'][columnkey]['columnslist']
       
       
     #ok great now let's do the other infill methods  
@@ -5290,11 +5340,16 @@ class AutoMunge:
         
         for infillcolumn in assigninfill[infillcatkey]:
           
-          columnkey = postprocess_dict['origcolumn'][infillcolumn]['columnkey']
+          if infillcolumn in postprocess_dict['origcolumn']:
           
-          postprocess_assigninfill_dict[infillcatkey] = \
-          postprocess_assigninfill_dict[infillcatkey] + \
-          postprocess_dict['column_dict'][columnkey]['columnslist']
+            columnkey = postprocess_dict['origcolumn'][infillcolumn]['columnkey']
+            
+            #this if is for null category
+            if columnkey in postprocess_dict['column_dict']:
+            
+              postprocess_assigninfill_dict[infillcatkey] = \
+              postprocess_assigninfill_dict[infillcatkey] + \
+              postprocess_dict['column_dict'][columnkey]['columnslist']
         
     
     return postprocess_assigninfill_dict
@@ -5312,7 +5367,7 @@ class AutoMunge:
     NAcount = len(masterNArows[masterNArows[NArw_columnname] == 1])
 
     infill = pd.DataFrame(np.zeros((NAcount, 1)))
-
+    
     category = postprocess_dict['column_dict'][column]['category']
     columnslist = postprocess_dict['column_dict'][column]['columnslist']
     categorylist = postprocess_dict['column_dict'][column]['categorylist']
@@ -6173,7 +6228,7 @@ class AutoMunge:
                            'PCA_type':'default', \
                            'PCA_cmnd':{}}, \
                 assigncat = {'mnmx':[], 'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[], \
-                             'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], \
+                             'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'MAD3':[], \
                              'bins':[], 'bint':[], \
                              'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
                              'log0':[], 'log1':[], 'pwrs':[], \
@@ -6708,7 +6763,7 @@ class AutoMunge:
             
         if categorycomplete == False:
           
-          category = self.evalcategory(df_train, column, numbercategoryheuristic)
+          category = self.evalcategory(df_train, column, numbercategoryheuristic, powertransform)
 
           #special case for categorical
           if df_train[column].dtype.name == 'category':
@@ -6718,7 +6773,7 @@ class AutoMunge:
           #let's make sure the category is consistent between train and test sets
           #we'll only evaluate if we didn't use a dummy set for df_set
           if test_plug_marker != True:
-            category_test = self.evalcategory(df_test, column, numbercategoryheuristic)
+            category_test = self.evalcategory(df_test, column, numbercategoryheuristic, powertransform)
             
             #special case for categorical
             if df_test[column].dtype.name == 'category':
@@ -6747,8 +6802,14 @@ class AutoMunge:
             category_test = 'text'
         
           #special case for bug fix, need because these are part of the evalcategory outputs
-          if (category == 'text' or category == 'ordl') and category_test == 'bnry':
-              category_test = category
+#           if (category == 'text' or category == 'ordl') and category_test == 'bnry':
+#               category_test = category
+          if category in ['text', 'ordl', 'bnry'] and category_test in ['text', 'ordl', 'bnry']:
+            category_test = category
+          if category in ['nmbr', 'bxcx', 'mnmx', 'MAD3'] and category_test in ['nmbr', 'bxcx', 'mnmx', 'MAD3']:
+            category_test = category
+          if category == 'null':
+            category_test = category
         
         #otherwise if train category != test category return error
         if category != category_test:
@@ -6794,10 +6855,10 @@ class AutoMunge:
             print("    root category: ", category)
             print("")
           
-          #now process ancestors
-          df_train, df_test, postprocess_dict = \
-          self.processancestors(df_train, df_test, column, category, category, process_dict, \
-                                transform_dict, postprocess_dict)
+#           #now process ancestors
+#           df_train, df_test, postprocess_dict = \
+#           self.processancestors(df_train, df_test, column, category, category, process_dict, \
+#                                 transform_dict, postprocess_dict)
           
           #now process family
           df_train, df_test, postprocess_dict = \
@@ -6854,6 +6915,11 @@ class AutoMunge:
     self.assemblepostprocess_assigninfill(assigninfill, infillcolumns_list, \
                                           columns_train, postprocess_dict)
     
+#     #if a column was deleted as a 'null' category, we'll remove from postprocess_assigninfill_dict
+#     #asdfasdf
+#     for assigninfill_key in postprocess_assigninfill_dict:
+#       for assigninfill_entry in postprocess_assigninfill_dict[assigninfill_key]:
+        
     
     if 'stdrdinfill' not in postprocess_assigninfill_dict:
     
@@ -7046,7 +7112,7 @@ class AutoMunge:
       if categorycomplete == False:
         
         #determine labels category and apply appropriate function
-        labelscategory = self.evalcategory(df_labels, labels_column, numbercategoryheuristic)
+        labelscategory = self.evalcategory(df_labels, labels_column, numbercategoryheuristic, powertransform)
 
       #printout display progress
       if printstatus == True:
@@ -7084,10 +7150,10 @@ class AutoMunge:
         #list of columns
         templist1 = list(df_labels)
     
-        #now process ancestors
-        df_labels, df_testlabels, postprocess_dict = \
-        self.processancestors(df_labels, df_testlabels, labels_column, labelscategory, labelscategory, \
-                              labelsprocess_dict, labelstransform_dict, postprocess_dict)
+#         #now process ancestors
+#         df_labels, df_testlabels, postprocess_dict = \
+#         self.processancestors(df_labels, df_testlabels, labels_column, labelscategory, labelscategory, \
+#                               labelsprocess_dict, labelstransform_dict, postprocess_dict)
 
 
         #now process family
@@ -7159,10 +7225,10 @@ class AutoMunge:
         #list of columns
         templist1 = list(df_labels)
         
-        #now process ancestors
-        df_labels, df_testlabels, postprocess_dict = \
-        self.processancestors(df_labels, df_testlabels, labels_column, labelscategory, labelscategory, \
-                              labelsprocess_dict, labelstransform_dict, postprocess_dict)
+#         #now process ancestors
+#         df_labels, df_testlabels, postprocess_dict = \
+#         self.processancestors(df_labels, df_testlabels, labels_column, labelscategory, labelscategory, \
+#                               labelsprocess_dict, labelstransform_dict, postprocess_dict)
 
 
         #now process family
@@ -7259,10 +7325,10 @@ class AutoMunge:
         #however it may also benefit to parallel train model to predict transformations
         #plus we'll use the std bins for leveling the frequency of labels for oversampling
         
-        #now process ancestors
-        df_labels, df_testlabels, postprocess_dict = \
-        self.processancestors(df_labels, df_testlabels, labels_column, labelscategory, labelscategory, \
-                              labelsprocess_dict, labelstransform_dict, postprocess_dict)
+#         #now process ancestors
+#         df_labels, df_testlabels, postprocess_dict = \
+#         self.processancestors(df_labels, df_testlabels, labels_column, labelscategory, labelscategory, \
+#                               labelsprocess_dict, labelstransform_dict, postprocess_dict)
 
 
         #now process family
@@ -7309,10 +7375,10 @@ class AutoMunge:
         #list of columns
         templist1 = list(df_labels)
         
-        #now process ancestors
-        df_labels, df_testlabels, postprocess_dict = \
-        self.processancestors(df_labels, df_testlabels, labels_column, labelscategory, labelscategory, \
-                              labelsprocess_dict, labelstransform_dict, postprocess_dict)
+#         #now process ancestors
+#         df_labels, df_testlabels, postprocess_dict = \
+#         self.processancestors(df_labels, df_testlabels, labels_column, labelscategory, labelscategory, \
+#                               labelsprocess_dict, labelstransform_dict, postprocess_dict)
 
 
         #now process family
@@ -7584,7 +7650,7 @@ class AutoMunge:
                              'process_dict' : process_dict, \
                              'ML_cmnd' : ML_cmnd, \
                              'printstatus' : printstatus, \
-                             'automungeversion' : '2.24' })
+                             'automungeversion' : '2.25' })
 
     
     
@@ -7723,39 +7789,39 @@ class AutoMunge:
 
 
 
-  def postprocessancestors(self, df_test, column, category, origcategory, process_dict, \
-                          transform_dict, postprocess_dict, columnkey):
-    '''
-    #as automunge runs a for loop through each column in automunge, this is the  
-    #processing function applied which runs through the grandparents family primitives
-    #populated in the transform_dict by assembletransformdict, only applied to
-    #first generation of transforms (others are recursive through the processfamily function)
-    '''
+#   def postprocessancestors(self, df_test, column, category, origcategory, process_dict, \
+#                           transform_dict, postprocess_dict, columnkey):
+#     '''
+#     #as automunge runs a for loop through each column in automunge, this is the  
+#     #processing function applied which runs through the grandparents family primitives
+#     #populated in the transform_dict by assembletransformdict, only applied to
+#     #first generation of transforms (others are recursive through the processfamily function)
+#     '''
     
     
-    #process the grandparents (no downstream, supplemental, only applied ot first generation)
-    for grandparent in transform_dict[category]['grandparents']:
+#     #process the grandparents (no downstream, supplemental, only applied ot first generation)
+#     for grandparent in transform_dict[category]['grandparents']:
       
-#       print("grandparent =. ", grandparent)
+# #       print("grandparent =. ", grandparent)
       
-      if grandparent != None:
-        #note we use the processsibling function here
-        df_test = \
-        self.postprocesscousin(df_test, column, grandparent, category, process_dict, \
-                                transform_dict, postprocess_dict, columnkey)
+#       if grandparent != None:
+#         #note we use the processsibling function here
+#         df_test = \
+#         self.postprocesscousin(df_test, column, grandparent, category, process_dict, \
+#                                 transform_dict, postprocess_dict, columnkey)
       
-    for greatgrandparent in transform_dict[category]['greatgrandparents']:
+#     for greatgrandparent in transform_dict[category]['greatgrandparents']:
       
-#       print("greatgrandparent = ", greatgrandparent)
+# #       print("greatgrandparent = ", greatgrandparent)
       
-      if greatgrandparent != None:
-        #note we use the processparent function here
-        df_test = \
-        self.postprocessparent(df_test, column, greatgrandparent, category, process_dict, \
-                              transform_dict, postprocess_dict, columnkey)
+#       if greatgrandparent != None:
+#         #note we use the processparent function here
+#         df_test = \
+#         self.postprocessparent(df_test, column, greatgrandparent, category, process_dict, \
+#                               transform_dict, postprocess_dict, columnkey)
       
     
-    return df_test
+#     return df_test
   
   
 
@@ -8076,7 +8142,55 @@ class AutoMunge:
     return mdf_test
 
     
+  def postprocess_MAD3_class(self, mdf_test, column, postprocess_dict, columnkey):
+    '''
+    #postprocess_MADn_class(mdf_test, column, postprocess_dict, columnkey)
+    #function to normalize data by subtracting max and dividing by mean absolute deviation from training distribution
+    #takes as arguement pandas dataframe of test data (mdf_test)\
+    #and the name of the column string ('column'), and the mean and MAD from the train set \
+    #stored in postprocess_dict
+    #replaces missing or improperly formatted data with mean of remaining values
+    #leaves original specified column in dataframe
+    #returns transformed dataframe
+    #expect this approach works better than z-score for when the numerical distribution isn't thin tailed
+    #if only have training but not test data handy, use same training data for both dataframe inputs
+    '''
     
+    
+    #retrieve normalizastion parameters from postprocess_dict
+    normkey = column + '_MAD3'
+    
+    mean = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
+    MAD = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['MAD']
+    datamax = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['datamax']
+
+    #copy original column for implementation
+    mdf_test[column + '_MAD3'] = mdf_test[column].copy()
+
+
+    #convert all values to either numeric or NaN
+    mdf_test[column + '_MAD3'] = pd.to_numeric(mdf_test[column + '_MAD3'], errors='coerce')
+
+    #get mean of training data
+    mean = mean  
+
+    #replace missing data with training set mean
+    mdf_test[column + '_MAD3'] = mdf_test[column + '_MAD3'].fillna(mean)
+
+    #subtract datamax from column
+    mdf_test[column + '_MAD3'] = mdf_test[column + '_MAD3'] - datamax
+
+    #get mean absolute deviation of training data
+    MAD = MAD
+
+    #divide column values by std
+    mdf_test[column + '_MAD3'] = mdf_test[column + '_MAD3'] / MAD
+
+
+    return mdf_test
     
     
   def postprocess_mnmx_class(self, mdf_test, column, postprocess_dict, columnkey):
@@ -9970,10 +10084,10 @@ class AutoMunge:
             print("    root category: ", category)
             print("")
           
-          #process ancestors
-          df_test = \
-          self.postprocessancestors(df_test, column, category, category, process_dict, \
-                                    transform_dict, preFSpostprocess_dict, columnkey)
+#           #process ancestors
+#           df_test = \
+#           self.postprocessancestors(df_test, column, category, category, process_dict, \
+#                                     transform_dict, preFSpostprocess_dict, columnkey)
           
           #process family
           df_test = \
@@ -10255,11 +10369,11 @@ class AutoMunge:
         print("")
     
 
-      #if category in ['nmbr', 'bxcx', 'excl']:
-      #process ancestors
-      df_testlabels = \
-      self.postprocessancestors(df_testlabels, labels_column, category, category, process_dict, \
-                                transform_dict, preFSpostprocess_dict, columnkey)
+#       #if category in ['nmbr', 'bxcx', 'excl']:
+#       #process ancestors
+#       df_testlabels = \
+#       self.postprocessancestors(df_testlabels, labels_column, category, category, process_dict, \
+#                                 transform_dict, preFSpostprocess_dict, columnkey)
           
       #process family
       df_testlabels = \
