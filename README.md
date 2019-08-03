@@ -100,13 +100,13 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
                        'PCA_type':'default', \
                        'PCA_cmnd':{}}, \
             assigncat = {'mnmx':[], 'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[], \
-                         'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], \
+                         'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'MAD3':[], \
                          'bins':[], 'bint':[], \
                          'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
                          'log0':[], 'log1':[], 'pwrs':[], \
                          'bnry':[], 'text':[], 'ordl':[], 'ord2':[], \
                          'date':[], 'dat2':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
-                         'excl':[], 'exc2':[], 'exc3':[], 'null':[]}, \
+                         'excl':[], 'exc2':[], 'exc3':[], 'null':[]}
             assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], \
                             'adjinfill':[], 'meaninfill':[], 'medianinfill':[]}, \
             transformdict = {}, processdict = {}, \
@@ -148,20 +148,21 @@ function to apply, for example whether a column is a numerical, categorical,
 binary, or time-series set. Alternately, a user can pass column header IDs to 
 assign specific processing functions to distinct columns - which processing functions
 may be pulled from the internal library of transformations or alternately user
-defined.
-Normalization parameters from the initial automunge application are
+defined. Normalization parameters from the initial automunge application are
 saved to a returned dictionary for subsequent consistent processing of test data
 that wasn't available at initial address with the postmunge(.) function. 
 
 The feature engineering transformations are recorded with a series of suffixes 
 appended to the column header title in the returned sets, for example the 
-application of z-score normalization returns a column with header 'origname' + '_nmbr'. 
+application of z-score normalization returns a column with header origname + _ + nmbr. 
 The function allows feature engineering methods for the training data, test data,
 and any column designated for labels if included with the sets.
 
 In automation, for numerical data, the functions generate a series of derived
-transformations resulting in multiple child columns, with
-transformations including z-score normalization (nmbr), and standard
+transformations resulting in multiple child columns. For numerical data 
+distribution properties are evaluated for potential application of z-score 
+normalization, min-max scaling, power law transform via box-cox method, or
+mean absolute deviation scaling. With z-score normalization options for standard
 deviation bins for values in range <-2, -2-1, -10, 01, 12, >2 from the
 mean. For numerical sets with all positive values the functions also optionally can 
 return a power-law transformed set using the box-cox method, along with
@@ -171,11 +172,13 @@ hour, minute, second) and returns a set for each with z-score
 normalization applied. For binary categorical data the functions
 return a single column with 1/0 designation. For multimodal categorical
 data the functions return one-hot encoded sets using the naming
-convention 'origname' + '_category'. (I believe this automation of the
+convention origname + _ + category. (I believe this automation of the
 one-hot encoding method to be a particularily useful feature of the
 tool.) For all cases the functions generate a supplemental column (NArw)
 with a boolean identifier for cells that were subject to infill due to
-missing or improperly formatted data.
+missing or improperly formatted data. (Please note that I don't
+consider the current methods of numerical set distribution evaluation very 
+sophisticated and have some work to do here). 
 
 The functions also include a method we call 'ML infill' which if elected
 predicts infill for missing values in both the train and test sets using
@@ -248,13 +251,13 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
                        'PCA_type':'default', \
                        'PCA_cmnd':{}}, \
             assigncat = {'mnmx':[], 'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[], \
-                         'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], \
+                         'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'MAD3':[], \
                          'bins':[], 'bint':[], \
                          'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
                          'log0':[], 'log1':[], 'pwrs':[], \
                          'bnry':[], 'text':[], 'ordl':[], 'ord2':[], \
                          'date':[], 'dat2':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
-                         'excl':[], 'exc2':[], 'exc3':[], 'null':[]}, \
+                         'excl':[], 'exc2':[], 'exc3':[], 'null':[]}
             assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], \
                             'adjinfill':[], 'meaninfill':[], 'medianinfill':[]}, \
             transformdict = {}, processdict = {}, \
@@ -398,13 +401,13 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
                        'PCA_type':'default', \
                        'PCA_cmnd':{}}, \
             assigncat = {'mnmx':[], 'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[], \
-                         'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], \
+                         'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'MAD3':[], \
                          'bins':[], 'bint':[], \
                          'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
                          'log0':[], 'log1':[], 'pwrs':[], \
                          'bnry':[], 'text':[], 'ordl':[], 'ord2':[], \
                          'date':[], 'dat2':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
-                         'excl':[], 'exc2':[], 'exc3':[], 'null':[]}, \
+                         'excl':[], 'exc2':[], 'exc3':[], 'null':[]}
             assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], \
                             'adjinfill':[], 'meaninfill':[], 'medianinfill':[]}, \
             transformdict = {}, processdict = {}, \
@@ -629,13 +632,13 @@ such as could potentially result in memory savings.
 #we are continuing to build out. A user may also define their own.
 
     assigncat = {'mnmx':[], 'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[], \
-		 'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], \
-		 'bins':[], 'bint':[], \
-		 'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
-		 'log0':[], 'log1':[], 'pwrs':[], \
-		 'bnry':[], 'text':[], \
-		 'date':[], 'dat2':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
-		 'excl':[], 'exc2':[], 'exc3':[], 'null':[]}
+                 'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'MAD3':[], \
+                 'bins':[], 'bint':[], \
+                 'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
+                 'log0':[], 'log1':[], 'pwrs':[], \
+                 'bnry':[], 'text':[], 'ordl':[], 'ord2':[], \
+                 'date':[], 'dat2':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
+                 'excl':[], 'exc2':[], 'exc3':[], 'null':[]}
 ```         
 
 A user may add column identifier strings to each
@@ -679,12 +682,10 @@ For example, a user wishing to define a new set of transformations
 for numerical series 'newt' that combines NArows, min-max, box-cox, z-score, 
 and standard deviation bins could do so by passing a trasnformdict as:
 ```
-transformdict =  {'newt' : {'greatgrandparents' : [], \
-                            'grandparents' : ['NArw'], \
-                            'parents' : ['bxc4'], \
+transformdict =  {'newt' : {'parents' : ['bxc4'], \
                             'siblings': [], \
                             'auntsuncles' : ['mnmx'], \
-                            'cousins' : [], \
+                            'cousins' : ['NArw'], \
                             'children' : [], \
                             'niecesnephews' : [], \
                             'coworkers' : [], \
@@ -694,12 +695,10 @@ transformdict =  {'newt' : {'greatgrandparents' : [], \
 #ofspring keys from the bxcx family tree, which has a nbr2 key as children.
 
 #from automunge library:
-    transform_dict.update({'bxc4' : {'greatgrandparents' : [], \
-                                     'grandparents' : ['NArw'], \
-                                     'parents' : ['bxcx'], \
+    transform_dict.update({'bxc4' : {'parents' : ['bxcx'], \
                                      'siblings': [], \
                                      'auntsuncles' : [], \
-                                     'cousins' : [], \
+                                     'cousins' : ['NArw'], \
                                      'children' : ['nbr2'], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
@@ -719,16 +718,14 @@ bxcx key is passed as a parent which means the bxcx trasnform is applied coupled
 with any downstream transforms from the bxcx key family tree, which we also show.
 Note the family primitives tree of transformations can be summarized as:
 ```
-'greatgrandparents' : upstream / first generation / suplements column / with offspring
-'grandparents' :      upstream / first generation / supplements column / no offspring
-'parents' :           upstream / all generations / replaces column / with offspring
-'siblings':           upstream / all generations / supplements column / with offspring
-'auntsuncles' :       upstream / all generations / replaces column / no offspring
-'cousins' :           upstream / all generations / supplements column / no offspring
-'children' :          downstream parents / all generations / replaces column / with offspring
-'niecesnephews' :     downstream siblings / all generations / supplements column / with offspring
-'coworkers' :         downstream auntsuncles / all generations / replaces column / no offspring
-'friends' :           downstream cousins / all generations / supplements column / no offspring
+'parents' :           upstream / first generation / replaces column / with offspring
+'siblings':           upstream / first generation / supplements column / with offspring
+'auntsuncles' :       upstream / first generation / replaces column / no offspring
+'cousins' :           upstream / first generation / supplements column / no offspring
+'children' :          downstream parents / offspring generations / replaces column / with offspring
+'niecesnephews' :     downstream siblings / offspring generations / supplements column / with offspring
+'coworkers' :         downstream auntsuncles / offspring generations / replaces column / no offspring
+'friends' :           downstream cousins / offspring generations / supplements column / no offspring
 ```
 Note that when we define a new transform such as 'newt' above, we also need 
 to define a corresponding processdict entry for the new category, which we 
@@ -742,8 +739,8 @@ corresponding to new transformdict keys. We'll describe the entries here:
 processdict =  {'newt' : {'dualprocess' : None, \
 			  'singleprocess' : None, \
 			  'postprocess' : None, \
-        		  'NArowtype' : 'numeric', \
-      			  'MLinfilltype' : 'numeric', \
+        	          'NArowtype' : 'numeric', \
+      		          'MLinfilltype' : 'numeric', \
            		  'labelctgy' : 'mnmx'}}
 
 #A user should pass either a pair of processing functions to both 
@@ -932,7 +929,7 @@ tree of family primitives, as introduced earlier, applies first the first
 generation transforms of greatgrandparents and grandparents specific to the 
 original root key, and then any transforms for keys found in upstream primitives
 i.e. parents/siblings/auntsuncles/cousins. If a transform is applied for a 
-primitive that includes downstream offspring, such as greatgrandparents/parents/
+primitive that includes downstream offspring, such as parents/
 siblings, then the family tree for that key with offspring is inspected to determine
 downstream offspring categories, for example if we have a parents key of 'mnmx',
 then any children/niecesnephews/coworkers/friends in the 'mnmx' family tree will
@@ -951,79 +948,65 @@ narrative for each of the associated transformation functions. First here again
 are the family tree primitives.
 
 ```
-'greatgrandparents' : upstream / first generation / suplements column / with offspring
-'grandparents' :      upstream / first generation / supplements column / no offspring
-'parents' :           upstream / all generations / replaces column / with offspring
-'siblings':           upstream / all generations / supplements column / with offspring
-'auntsuncles' :       upstream / all generations / replaces column / no offspring
-'cousins' :           upstream / all generations / supplements column / no offspring
-'children' :          downstream parents / all generations / replaces column / with offspring
-'niecesnephews' :     downstream siblings / all generations / supplements column / with offspring
-'coworkers' :         downstream auntsuncles / all generations / replaces column / no offspring
-'friends' :           downstream cousins / all generations / supplements column / no offspring
+'parents' :           upstream / first generation / replaces column / with offspring
+'siblings':           upstream / first generation / supplements column / with offspring
+'auntsuncles' :       upstream / first generation / replaces column / no offspring
+'cousins' :           upstream / first generation / supplements column / no offspring
+'children' :          downstream parents / offspring generations / replaces column / with offspring
+'niecesnephews' :     downstream siblings / offspring generations / supplements column / with offspring
+'coworkers' :         downstream auntsuncles / offspring generations / replaces column / no offspring
+'friends' :           downstream cousins / offspring generations / supplements column / no offspring
 ```
 
 And here arethe series of family trees currently built into the internal library.
 
 ```
-    transform_dict.update({'nmbr' : {'greatgrandparents' : [], \
-                                     'grandparents' : ['NArw'], \
-                                     'parents' : ['nmbr'], \
+    transform_dict.update({'nmbr' : {'parents' : ['nmbr'], \
                                      'siblings': [], \
                                      'auntsuncles' : [], \
-                                     'cousins' : [], \
+                                     'cousins' : ['NArw'], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : [bint]}})
 
-    transform_dict.update({'bnry' : {'greatgrandparents' : [], \
-                                     'grandparents' : ['NArw'], \
-                                     'parents' : [], \
+    transform_dict.update({'bnry' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['bnry'], \
-                                     'cousins' : [], \
+                                     'cousins' : ['NArw'], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
 
-    transform_dict.update({'text' : {'greatgrandparents' : [], \
-                                     'grandparents' : ['NArw'], \
-                                     'parents' : [], \
+    transform_dict.update({'text' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['text'], \
-                                     'cousins' : [], \
+                                     'cousins' : ['NArw'], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
     
-    transform_dict.update({'ordl' : {'greatgrandparents' : [], \
-                                     'grandparents' : ['NArw'], \
-                                     'parents' : [], \
+    transform_dict.update({'ordl' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['ordl'], \
-                                     'cousins' : [], \
+                                     'cousins' : ['NArw'], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
         
-    transform_dict.update({'ord2' : {'greatgrandparents' : [], \
-                                     'grandparents' : ['NArw'], \
-                                     'parents' : ['ord2'], \
+    transform_dict.update({'ord2' : {'parents' : ['ord2'], \
                                      'siblings': [], \
                                      'auntsuncles' : [], \
-                                     'cousins' : [], \
+                                     'cousins' : ['NArw'], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : ['mnmx'], \
                                      'friends' : []}})
 
-    transform_dict.update({'null' : {'greatgrandparents' : [], \
-                                     'grandparents' : [], \
-                                     'parents' : [], \
+    transform_dict.update({'null' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['null'], \
                                      'cousins' : [], \
@@ -1032,9 +1015,7 @@ And here arethe series of family trees currently built into the internal library
                                      'coworkers' : [], \
                                      'friends' : []}})
     
-    transform_dict.update({'NArw' : {'greatgrandparents' : [], \
-                                     'grandparents' : [], \
-                                     'parents' : [], \
+    transform_dict.update({'NArw' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['NArw'], \
                                      'cousins' : [], \
@@ -1043,9 +1024,7 @@ And here arethe series of family trees currently built into the internal library
                                      'coworkers' : [], \
                                      'friends' : []}})
     
-    transform_dict.update({'rgrl' : {'greatgrandparents' : [], \
-                                     'grandparents' : [], \
-                                     'parents' : [], \
+    transform_dict.update({'rgrl' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['nmbr'], \
                                      'cousins' : [], \
@@ -1054,119 +1033,106 @@ And here arethe series of family trees currently built into the internal library
                                      'coworkers' : [], \
                                      'friends' : []}})
     
-    transform_dict.update({'nbr2' : {'greatgrandparents' : [], \
-                                     'grandparents' : ['NArw'], \
-                                     'parents' : [], \
+    transform_dict.update({'nbr2' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['nmbr'], \
-                                     'cousins' : [], \
+                                     'cousins' : ['NArw'], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
     
-    transform_dict.update({'nbr3' : {'greatgrandparents' : [], \
-                                     'grandparents' : ['NArw'], \
-                                     'parents' : ['nmbr'], \
+    transform_dict.update({'nbr3' : {'parents' : ['nmbr'], \
                                      'siblings': [], \
                                      'auntsuncles' : [], \
-                                     'cousins' : [], \
+                                     'cousins' : ['NArw'], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : ['bint']}})
     
-    transform_dict.update({'MADn' : {'greatgrandparents' : [], \
-                                     'grandparents' : ['NArw'], \
-                                     'parents' : [], \
+    transform_dict.update({'MADn' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['MADn'], \
-                                     'cousins' : [], \
+                                     'cousins' : ['NArw'], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
     
-    transform_dict.update({'MAD2' : {'greatgrandparents' : [], \
-                                     'grandparents' : ['NArw'], \
-                                     'parents' : ['MAD2'], \
+    transform_dict.update({'MAD2' : {'parents' : ['MAD2'], \
                                      'siblings': [], \
                                      'auntsuncles' : [], \
-                                     'cousins' : [], \
+                                     'cousins' : ['NArw'], \
                                      'children' : ['nmbr'], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
-                                     'friends' : ['bint']}})
+                                     'friends' : []}})
     
-    transform_dict.update({'mnmx' : {'greatgrandparents' : [], \
-                                     'grandparents' : ['NArw'], \
-                                     'parents' : [], \
+    transform_dict.update({'MAD3' : {'parents' : [], \
                                      'siblings': [], \
-                                     'auntsuncles' : ['mnmx'], \
-                                     'cousins' : [], \
+                                     'auntsuncles' : ['MAD3'], \
+                                     'cousins' : ['NArw'], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
     
-    transform_dict.update({'mnm2' : {'greatgrandparents' : [], \
-                                     'grandparents' : ['NArw'], \
-                                     'parents' : ['nmbr'], \
+    transform_dict.update({'mnmx' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['mnmx'], \
-                                     'cousins' : [], \
+                                     'cousins' : ['NArw'], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
     
-    transform_dict.update({'mnm3' : {'greatgrandparents' : [], \
-                                     'grandparents' : ['NArw'], \
-                                     'parents' : ['nmbr'], \
+    transform_dict.update({'mnm2' : {'parents' : ['nmbr'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['mnmx'], \
+                                     'cousins' : ['NArw'], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'mnm3' : {'parents' : ['nmbr'], \
                                      'siblings': [], \
                                      'auntsuncles' : ['mnm3'], \
-                                     'cousins' : [], \
+                                     'cousins' : ['NArw'], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
     
-    transform_dict.update({'mnm4' : {'greatgrandparents' : [], \
-                                     'grandparents' : ['NArw'], \
-                                     'parents' : [], \
+    transform_dict.update({'mnm4' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['mnm3'], \
-                                     'cousins' : [], \
+                                     'cousins' : ['NArw'], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
     
-    transform_dict.update({'mnm5' : {'greatgrandparents' : [], \
-                                     'grandparents' : ['NArw'], \
-                                     'parents' : [], \
+    transform_dict.update({'mnm5' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['mnmx'], \
-                                     'cousins' : ['nmbr'], \
+                                     'cousins' : ['nmbr', 'NArw'], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
     
-    transform_dict.update({'mnm6' : {'greatgrandparents' : [], \
-                                     'grandparents' : ['NArw'], \
-                                     'parents' : [], \
+    transform_dict.update({'mnm6' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['mnm6'], \
-                                     'cousins' : [], \
+                                     'cousins' : ['NArw'], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
     
-    transform_dict.update({'mnm7' : {'greatgrandparents' : [], \
-                                     'grandparents' : [], \
-                                     'parents' : [], \
+    transform_dict.update({'mnm7' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['mnmx', 'bins'], \
                                      'cousins' : [], \
@@ -1174,96 +1140,78 @@ And here arethe series of family trees currently built into the internal library
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
-    transform_dict.update({'date' : {'greatgrandparents' : [], \
-                                     'grandparents' : ['NArw'], \
-                                     'parents' : [], \
+    transform_dict.update({'date' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['date'], \
-                                     'cousins' : [], \
+                                     'cousins' : ['NArw'], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
-    transform_dict.update({'dat2' : {'greatgrandparents' : [], \
-                                     'grandparents' : ['NArw'], \
-                                     'parents' : [], \
+    transform_dict.update({'dat2' : {'parents' : [], \
                                      'siblings': ['bshr', 'wkdy', 'hldy'], \
                                      'auntsuncles' : ['date'], \
-                                     'cousins' : [], \
+                                     'cousins' : ['NArw'], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
     
-    transform_dict.update({'bxc2' : {'greatgrandparents' : [], \
-                                     'grandparents' : ['NArw'], \
-                                     'parents' : ['bxc2'], \
+    transform_dict.update({'bxc2' : {'parents' : ['bxc2'], \
                                      'siblings': ['nmbr'], \
                                      'auntsuncles' : [], \
-                                     'cousins' : [], \
+                                     'cousins' : ['NArw'], \
                                      'children' : ['nmbr'], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
     
-    transform_dict.update({'bxc3' : {'greatgrandparents' : [], \
-                                     'grandparents' : ['NArw'], \
-                                     'parents' : ['bxc3'], \
+    transform_dict.update({'bxc3' : {'parents' : ['bxc3'], \
                                      'siblings': [], \
                                      'auntsuncles' : [], \
-                                     'cousins' : [], \
+                                     'cousins' : ['NArw'], \
                                      'children' : ['nmbr'], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
     
-    transform_dict.update({'bxc4' : {'greatgrandparents' : [], \
-                                     'grandparents' : ['NArw'], \
-                                     'parents' : ['bxcx'], \
+    transform_dict.update({'bxc4' : {'parents' : ['bxc4'], \
                                      'siblings': [], \
                                      'auntsuncles' : [], \
-                                     'cousins' : [], \
+                                     'cousins' : ['NArw'], \
                                      'children' : ['nbr2'], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
     
-    transform_dict.update({'pwrs' : {'greatgrandparents' : [], \
-                                     'grandparents' : ['NArw'], \
-                                     'parents' : [], \
+    transform_dict.update({'pwrs' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['pwrs'], \
-                                     'cousins' : [], \
+                                     'cousins' : ['NArw'], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
     
-    transform_dict.update({'log0' : {'greatgrandparents' : [], \
-                                     'grandparents' : ['NArw'], \
-                                     'parents' : [], \
+    transform_dict.update({'log0' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['log0'], \
-                                     'cousins' : [], \
+                                     'cousins' : ['NArw'], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
     
-    transform_dict.update({'log1' : {'greatgrandparents' : [], \
-                                     'grandparents' : ['NArw'], \
-                                     'parents' : [], \
+    transform_dict.update({'log1' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['log0', 'pwrs'], \
-                                     'cousins' : [], \
+                                     'cousins' : ['NArw'], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
     
-    transform_dict.update({'wkdy' : {'greatgrandparents' : [], \
-                                     'grandparents' : [], \
-                                     'parents' : [], \
+    transform_dict.update({'wkdy' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['wkdy'], \
                                      'cousins' : [], \
@@ -1272,9 +1220,7 @@ And here arethe series of family trees currently built into the internal library
                                      'coworkers' : [], \
                                      'friends' : []}})
     
-    transform_dict.update({'bshr' : {'greatgrandparents' : [], \
-                                     'grandparents' : [], \
-                                     'parents' : [], \
+    transform_dict.update({'bshr' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['bshr'], \
                                      'cousins' : [], \
@@ -1283,9 +1229,7 @@ And here arethe series of family trees currently built into the internal library
                                      'coworkers' : [], \
                                      'friends' : []}})
     
-    transform_dict.update({'hldy' : {'greatgrandparents' : [], \
-                                     'grandparents' : [], \
-                                     'parents' : [], \
+    transform_dict.update({'hldy' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['hldy'], \
                                      'cousins' : [], \
@@ -1294,9 +1238,7 @@ And here arethe series of family trees currently built into the internal library
                                      'coworkers' : [], \
                                      'friends' : []}})
     
-    transform_dict.update({'bins' : {'greatgrandparents' : [], \
-                                     'grandparents' : [], \
-                                     'parents' : [], \
+    transform_dict.update({'bins' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['bins'], \
                                      'cousins' : [], \
@@ -1305,9 +1247,7 @@ And here arethe series of family trees currently built into the internal library
                                      'coworkers' : [], \
                                      'friends' : []}})
     
-    transform_dict.update({'bint' : {'greatgrandparents' : [], \
-                                     'grandparents' : [], \
-                                     'parents' : [], \
+    transform_dict.update({'bint' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['bint'], \
                                      'cousins' : [], \
@@ -1316,9 +1256,7 @@ And here arethe series of family trees currently built into the internal library
                                      'coworkers' : [], \
                                      'friends' : []}})
     
-    transform_dict.update({'excl' : {'greatgrandparents' : [], \
-                                     'grandparents' : [], \
-                                     'parents' : [], \
+    transform_dict.update({'excl' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['excl'], \
                                      'cousins' : [], \
@@ -1327,20 +1265,16 @@ And here arethe series of family trees currently built into the internal library
                                      'coworkers' : [], \
                                      'friends' : []}})
     
-    transform_dict.update({'exc2' : {'greatgrandparents' : [], \
-                                     'grandparents' : [], \
-                                     'parents' : ['exc2'], \
+    transform_dict.update({'exc2' : {'parents' : ['exc2'], \
                                      'siblings': [], \
-                                     'auntsuncles' : ['exc2'], \
+                                     'auntsuncles' : [], \
                                      'cousins' : [], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : ['bins'], \
                                      'friends' : []}})
     
-    transform_dict.update({'exc3' : {'greatgrandparents' : [], \
-                                     'grandparents' : [], \
-                                     'parents' : [], \
+    transform_dict.update({'exc3' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['exc2'], \
                                      'cousins' : [], \
@@ -1354,12 +1288,10 @@ And here arethe series of family trees currently built into the internal library
     #initialize bxcx based on what was passed through application of automunge(.)
     if powertransform == True:
 
-      transform_dict.update({'bxcx' : {'greatgrandparents' : [], \
-                                       'grandparents' : ['NArw'], \
-                                       'parents' : ['bxcx'], \
+      transform_dict.update({'bxcx' : {'parents' : ['bxcx'], \
                                        'siblings': ['nmbr'], \
                                        'auntsuncles' : [], \
-                                       'cousins' : [], \
+                                       'cousins' : ['NArw'], \
                                        'children' : ['nmbr'], \
                                        'niecesnephews' : [], \
                                        'coworkers' : [], \
@@ -1367,12 +1299,10 @@ And here arethe series of family trees currently built into the internal library
 
     else:
 
-      transform_dict.update({'bxcx' : {'greatgrandparents' : [], \
-                                       'grandparents' : ['NArw'], \
-                                       'parents' : ['nmbr'], \
+      transform_dict.update({'bxcx' : {'parents' : ['nmbr'], \
                                        'siblings': [], \
                                        'auntsuncles' : [], \
-                                       'cousins' : [], \
+                                       'cousins' : ['NArw'], \
                                        'children' : [], \
                                        'niecesnephews' : [bins], \
                                        'coworkers' : [], \
@@ -1386,12 +1316,14 @@ a root key). We're continuing to build out this library of transformations.
 * NArw: produces a column of boolean identifiers for rows in the source
 column with missing or improperly formatted values.
 * nmbr/nbr2/nbr3: z-score normalization
+* MADn/MAD2: mean absolute deviation normalization, subtract set mean
+* MAD3: mean absolute deviation normalization, subtract set maximum
 * mnmx/mnm2/mnm5: vanilla min-max scaling
 * mnm3/mnm4: min-max scaling with outliers capped at 0.01 and 0.99 quantiles
 * mnm6: min-max scaling with test set capped at min/max of train set
 * bnry: converts sets with two values to boolean identifiers
 * text: converts categorical sets to one-hot encoded set of boolean identifiers
-* ordl: converts categorical sets to ordinally encoded set of integer identifiers
+* ordl/ord2: converts categorical sets to ordinally encoded set of integer identifiers
 * bxcx/bxc2/bxc3/bxc4: performs Box-Cox power law transformation
 * log0/log1: performs logarithmic transofrm (base 10)
 * pwrs: bins groupings by powers of 10
@@ -1435,12 +1367,10 @@ define a new root category trasnformdict and a corresponding processdict.
 #a z-score normalization, and seperately performs a version of the new transform
 #mnm8 which we'll define below.
 
-transformdict = {'mnm8' : {'greatgrandparents' : [], \
-                           'grandparents' : ['NArw'], \
-                           'parents' : [], \
+transformdict = {'mnm8' : {'parents' : [], \
                            'siblings': [], \
                            'auntsuncles' : ['mnm8', 'nmbr'], \
-                           'cousins' : [], \
+                           'cousins' : ['NArw'], \
                            'children' : [], \
                            'niecesnephews' : [], \
                            'coworkers' : [], \
