@@ -1,3 +1,11 @@
+"""
+Code subject to license and intellectual property provisions as detailed in the
+official Automunge github repo at
+https://github.com/Automunge/AutoMunge
+patent pending
+"""
+
+
 #global imports
 import numpy as np
 import pandas as pd
@@ -221,7 +229,7 @@ class AutoMunge:
                                      'children' : ['nmbr'], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
-                                     'friends' : ['bint']}})
+                                     'friends' : []}})
     
     transform_dict.update({'mnmx' : {'greatgrandparents' : [], \
                                      'grandparents' : ['NArw'], \
@@ -344,7 +352,7 @@ class AutoMunge:
     
     transform_dict.update({'bxc4' : {'greatgrandparents' : [], \
                                      'grandparents' : ['NArw'], \
-                                     'parents' : ['bxcx'], \
+                                     'parents' : ['bxc4'], \
                                      'siblings': [], \
                                      'auntsuncles' : [], \
                                      'cousins' : [], \
@@ -1464,7 +1472,7 @@ class AutoMunge:
     mdf_train[column + '_mnm3'] = (mdf_train[column + '_mnm3'] - quantilemin) / \
                                   (quantilemax - quantilemin)
 
-    mdf_test[column + '_mnm2'] = (mdf_test[column + '_mnm3'] - quantilemin) / \
+    mdf_test[column + '_mnm3'] = (mdf_test[column + '_mnm3'] - quantilemin) / \
                                  (quantilemax - quantilemin)
 
     #create list of columns
@@ -3065,6 +3073,9 @@ class AutoMunge:
     c = collections.Counter(type1_df)
     mc = c.most_common(1)
     mc2 = c.most_common(2)
+    
+    #count number of unique values
+    nunique = df[column].nunique()
 
     #free memory (dtypes are memory hogs)
     type1_df = None
@@ -3107,7 +3118,7 @@ class AutoMunge:
 
 
     #if most common in column is string and > two values, set category to text
-    if isinstance(checkstring, mc[0][0]) and df[column].nunique() > 2:
+    if isinstance(checkstring, mc[0][0]) and nunique > 2:
       category = 'text'
 
     #if most common is date, set category to date
@@ -3115,14 +3126,16 @@ class AutoMunge:
       category = 'date'
 
     #if most common in column is integer and > two values, set category to number of bxcx
-    if isinstance(checkint, mc[0][0]) and df[column].nunique() > 2:
+    if isinstance(checkint, mc[0][0]) and nunique > 2:
 
-      #take account for numbercategoryheuristic
-      #if df[column].nunique() / df[column].shape[0] < numbercategoryheuristic:
-      if df[column].nunique() < numbercategoryheuristic:
+#       #take account for numbercategoryheuristic
+#       #if df[column].nunique() / df[column].shape[0] < numbercategoryheuristic:
+#       if nunique < numbercategoryheuristic:
 
-        category = 'text'
-
+#         category = 'text'
+      if True == False:
+        pass
+    
       else:
 
         #if all postiive set category to bxcx
@@ -3146,8 +3159,9 @@ class AutoMunge:
 
       #take account for numbercategoryheuristic
       #if df[column].nunique() / df[column].shape[0] < numbercategoryheuristic \
-      if df[column].nunique() < numbercategoryheuristic \
-      or df[column].dtype.name == 'category':
+#       if nunique < numbercategoryheuristic \
+#       or df[column].dtype.name == 'category':
+      if df[column].dtype.name == 'category':
         category = 'text'
 
       else:
@@ -3163,17 +3177,17 @@ class AutoMunge:
           category = 'nmbr'
 
     #if most common in column is integer and <= two values, set category to binary
-    if isinstance(checkint, mc[0][0]) and df[column].nunique() <= 2:
+    if isinstance(checkint, mc[0][0]) and nunique <= 2:
       category = 'bnry'
 
     #if most common in column is string and <= two values, set category to binary
-    if isinstance(checkstring, mc[0][0]) and df[column].nunique() <= 2:
+    if isinstance(checkstring, mc[0][0]) and nunique <= 2:
       category = 'bnry'
 
 
-    #if > 85% (ARBITRARY FIGURE) are NaN we'll just delete the column
-    if df[column].isna().sum() >= df.shape[0] * 0.85:
-      category = 'null'
+#     #if > 85% (ARBITRARY FIGURE) are NaN we'll just delete the column
+#     if df[column].isna().sum() >= df.shape[0] * 0.85:
+#       category = 'null'
 
     #else if most common in column is NaN, re-evaluate using the second most common type
     #(I suspect the below might have a bug somewhere but is working on my current 
@@ -3181,7 +3195,7 @@ class AutoMunge:
     elif df[column].isna().sum() >= df.shape[0] / 2:
 
       #if 2nd most common in column is string and > two values, set category to text
-      if isinstance(checkstring, mc2[0][0]) and df[column].nunique() > 2:
+      if isinstance(checkstring, mc2[0][0]) and nunique > 2:
         category = 'text'
 
       #if 2nd most common is date, set category to date   
@@ -3189,15 +3203,18 @@ class AutoMunge:
         category = 'date'
 
       #if 2nd most common in column is integer and > two values, set category to number
-      if isinstance(checkint, mc2[0][0]) and df[column].nunique() > 2:
+      if isinstance(checkint, mc2[0][0]) and nunique > 2:
 
 
-        #take account for numbercategoryheuristic
-        #if df[column].nunique() / df[column].shape[0] < numbercategoryheuristic:
-        if df[column].nunique() < numbercategoryheuristic:
+#         #take account for numbercategoryheuristic
+#         #if df[column].nunique() / df[column].shape[0] < numbercategoryheuristic:
+#         if nunique < numbercategoryheuristic:
 
-          category = 'text'
+#           category = 'text'
 
+        if True == False:
+          pass
+        
         else:
 
           category = 'nmbr'
@@ -3205,24 +3222,28 @@ class AutoMunge:
       #if 2nd most common in column is float, set category to number
       if isinstance(checkfloat, mc2[0][0]):
 
-        #take account for numbercategoryheuristic
-        #if df[column].nunique() / df[column].shape[0] < numbercategoryheuristic:
-        if df[column].nunique() < numbercategoryheuristic:
+#         #take account for numbercategoryheuristic
+#         #if df[column].nunique() / df[column].shape[0] < numbercategoryheuristic:
+#         if df[column].nunique() < numbercategoryheuristic:
 
-          category = 'text'
+#           category = 'text'
 
-        else:
+#         else:
 
-          category = 'nmbr'
+        category = 'nmbr'
 
       #if 2nd most common in column is integer and <= two values, set category to binary
-      if isinstance(checkint, mc2[0][0]) and df[column].nunique() <= 2:
+      if isinstance(checkint, mc2[0][0]) and nunique <= 2:
         category = 'bnry'
 
       #if 2nd most common in column is string and <= two values, set category to binary
-      if isinstance(checkstring, mc2[0][0]) and df[column].nunique() <= 2:
+      if isinstance(checkstring, mc2[0][0]) and nunique <= 2:
         category = 'bnry'
-    
+        
+    #if > 85% (ARBITRARY FIGURE) are NaN we'll just delete the column
+    #if df[column].isna().sum() >= df.shape[0] * 0.85:
+    if df[column].isna().sum() > df.shape[0] * 0.8:
+      category = 'null'
 
     if category == 'text':
       if df[column].nunique() > numbercategoryheuristic:
@@ -4011,7 +4032,7 @@ class AutoMunge:
 
 
   def insertinfill(self, df, column, infill, category, NArows, postprocess_dict, \
-                   columnslist = [], categorylist = []):
+                   columnslist = [], categorylist = [], singlecolumncase = False):
     '''
     #insertinfill(df, column, infill, category, NArows, columnslist = [])
     #function that takes as input a dataframe, column id, category string of either\
@@ -4020,6 +4041,8 @@ class AutoMunge:
     #class preprocessor when applicable. Replaces the column cells in rows \
     #coresponding to the NArows True values with the values from infill, returns\
     #the associated transformed dataframe.
+    #singlecolumn case is for special case (used in adjinfill) when we want to 
+    #override the categorylist >1 methods
     '''
     
     MLinfilltype = postprocess_dict['process_dict'][category]['MLinfilltype']
@@ -4034,7 +4057,7 @@ class AutoMunge:
     if MLinfilltype in ['numeric', 'singlct', 'multisp', 'multirt']:
 
       #if this is a single column set (not categorical)
-      if len(categorylist) == 1:
+      if len(categorylist) == 1 or singlecolumncase == True:
 
         #create new dataframe for infills wherein the infill values are placed in \
         #rows coresponding to NArows True values and rows coresponding to NArows \
@@ -5313,7 +5336,7 @@ class AutoMunge:
     NAcount = len(masterNArows[masterNArows[NArw_columnname] == 1])
     
 
-    infill = pd.DataFrame(np.zeros((NAcount, 1)))
+    infill = pd.DataFrame(np.zeros((NAcount, 1)), columns=[column])
     infill = infill.replace(0, np.nan)
     
     category = postprocess_dict['column_dict'][column]['category']
@@ -5324,7 +5347,7 @@ class AutoMunge:
     df = self.insertinfill(df, column, infill, category, \
                            pd.DataFrame(masterNArows[NArw_columnname]), \
                            postprocess_dict, columnslist = columnslist, \
-                           categorylist = categorylist)
+                           categorylist = categorylist, singlecolumncase=True)
     
     
     #this is hack
@@ -6048,6 +6071,95 @@ class AutoMunge:
     return PCAset_train, PCAset_test, postprocess_dict
 
 
+  def check_assigncat(self, assigncat):
+    """
+    #Here we'll do a quick check for any redundant column assignments in the
+    #assigncat, if any found return an error message
+    """
+
+    assigncat_redundant_dict = {}
+    result = False
+
+    for assigncatkey1 in sorted(assigncat):
+      #assigncat_list.append(set(assigncat[key]))
+      current_set = set(assigncat[assigncatkey1])
+      redundant_items = {}
+      for assigncatkey2 in assigncat:
+        if assigncatkey2 != assigncatkey1:
+          second_set = set(assigncat[assigncatkey2])
+          common = current_set & second_set
+          if len(common) > 0:
+            for common_item in common:
+              if common_item not in assigncat_redundant_dict:
+                assigncat_redundant_dict.update({common_item:[assigncatkey1, assigncatkey2]})
+              else:
+                if assigncatkey1 not in assigncat_redundant_dict[common_item]:
+                  assigncat_redundant_dict[common_item].append(assigncatkey1)
+                  #assigncat_redundant_dict[common_item] += key1
+                if assigncatkey2 not in assigncat_redundant_dict[common_item]:
+                  assigncat_redundant_dict[common_item].append(assigncatkey2)
+                  #assigncat_redundant_dict[common_item] += key2
+
+    #assigncat_redundant_dict
+
+
+    if len(assigncat_redundant_dict) > 0:
+      result = True
+      print("Error, the following columns assigned to multiple root categories in assigncat:")
+      for assigncatkey3 in sorted(assigncat_redundant_dict):
+        print("")
+        print("Column: ", assigncatkey3)
+        print("Found in following assigncat entries:")
+        print(assigncat_redundant_dict[assigncatkey3])
+        print("")
+
+    return result
+
+
+
+  def check_assigninfill(self, assigninfill):
+    """
+    #Here we'll do a quick check for any redundant column assignments in the
+    #assigninfill, if any found return an error message
+    """
+
+    assigninfill_redundant_dict = {}
+    result = False
+
+    for assigninfill_key1 in sorted(assigninfill):
+      #assigncat_list.append(set(assigncat[key]))
+      current_set = set(assigninfill[assigninfill_key1])
+      redundant_items = {}
+      for assigninfill_key2 in assigninfill:
+        if assigninfill_key2 != assigninfill_key1:
+          second_set = set(assigninfill[assigninfill_key2])
+          common = current_set & second_set
+          if len(common) > 0:
+            for common_item in common:
+              if common_item not in assigninfill_redundant_dict:
+                assigninfill_redundant_dict.update({common_item:[assigninfill_key1, assigninfill_key2]})
+              else:
+                if assigninfill_key1 not in assigninfill_redundant_dict[common_item]:
+                  assigninfill_redundant_dict[common_item].append(assigninfill_key1)
+                  #assigncat_redundant_dict[common_item] += key1
+                if assigninfill_key2 not in assigninfill_redundant_dict[common_item]:
+                  assigninfill_redundant_dict[common_item].append(assigninfill_key2)
+                  #assigncat_redundant_dict[common_item] += key2
+
+    #assigncat_redundant_dict
+
+
+    if len(assigninfill_redundant_dict) > 0:
+      result = True
+      print("Error, the following columns assigned to multiple root categories in assigninfill:")
+      for assigninfill_key3 in sorted(assigninfill_redundant_dict):
+        print("")
+        print("Column: ", assigninfill_key3)
+        print("Found in following assigninfill entries:")
+        print(assigninfill_redundant_dict[assigninfill_key3])
+        print("")
+    
+    return result
 
   def automunge(self, df_train, df_test = False, labels_column = False, trainID_column = False, \
                 testID_column = False, valpercent1=0.20, valpercent2 = 0.10, \
@@ -6122,6 +6234,14 @@ class AutoMunge:
     #along with a custom process_dict such as to define and import new categories with
     #corresponding processing functions
     '''
+    
+    #quick check to ensure each column only assigned once in assigncat and assigninfill
+    result1 = self.check_assigncat(assigncat)
+    result2 = self.check_assigninfill(assigninfill)
+    
+#     #if we found any redundant column assignments
+#     if result1 == True or result2 = True:
+#       return
     
     
 #     #initialize processing dicitonaries
@@ -6198,9 +6318,12 @@ class AutoMunge:
 
     #we'll introduce convention that if df_test provided as False then we'll create
     #a dummy set derived from df_train's first 10 rows
+    #test_plug_marker used to identify that this step was taken
+    test_plug_marker = False
     if not isinstance(df_test, pd.DataFrame):
       df_test = df_train[0:10].copy()
       testID_column = trainID_column
+      test_plug_marker = True
       if labels_column != False:
         del df_test[labels_column]
     
@@ -6333,7 +6456,7 @@ class AutoMunge:
     if shuffletrain == True:
       #shuffle training set and labels
       df_train = shuffle(df_train, random_state = answer)
-      df_labels = shuffle(df_labels, random_state = answer)
+      #df_labels = shuffle(df_labels, random_state = answer)
 
       if trainID_column != False:
         df_trainID = shuffle(df_trainID, random_state = answer)
@@ -6591,14 +6714,21 @@ class AutoMunge:
           if df_train[column].dtype.name == 'category':
             category = 'text'
 
+          
           #let's make sure the category is consistent between train and test sets
-          category_test = self.evalcategory(df_test, column, numbercategoryheuristic)
+          #we'll only evaluate if we didn't use a dummy set for df_set
+          if test_plug_marker != True:
+            category_test = self.evalcategory(df_test, column, numbercategoryheuristic)
+            
+            #special case for categorical
+            if df_test[column].dtype.name == 'category':
+              category_test = 'text'
+            
+          else:
+            category_test = category
 
-          #special case for categorical
-          if df_test[column].dtype.name == 'category':
-            category_test = 'text'
 
-
+        
           #for the special case of train category = bxcx and test category = nmbr
           #(meaning there were no negative values in train but there were in test)
           #we'll resolve by reseting the train category to nmbr
@@ -6615,7 +6745,11 @@ class AutoMunge:
           #on heuristic, let's force test to as well
           if category == 'text' and category_test == 'nmbr':
             category_test = 'text'
-
+        
+          #special case for bug fix, need because these are part of the evalcategory outputs
+          if (category == 'text' or category == 'ordl') and category_test == 'bnry':
+              category_test = category
+        
         #otherwise if train category != test category return error
         if category != category_test:
           print('error - different category between train and test sets for column ',\
@@ -6695,8 +6829,6 @@ class AutoMunge:
               if len(columnkey) >= 5:
                 if columnkey[-5:] == '_NArw':
                   columnkey = columnkeylist[1]
-              
-          
           
           #ok this is sort of a hack, originating in version 1.77,
           #we're going to create an entry to postprocess_dict to
@@ -6704,9 +6836,6 @@ class AutoMunge:
           postprocess_dict['origcolumn'].update({column : {'category' : category, \
                                                            'columnkeylist' : columnkeylist, \
                                                            'columnkey' : columnkey}})
-          
-          
-    
 
     
     
@@ -7455,11 +7584,11 @@ class AutoMunge:
                              'process_dict' : process_dict, \
                              'ML_cmnd' : ML_cmnd, \
                              'printstatus' : printstatus, \
-                             'automungeversion' : '2.23' })
+                             'automungeversion' : '2.24' })
 
     
     
-    if totalvalidationratio > 0.0:
+    if totalvalidationratio > 0:
         
       #printout display progress
       if printstatus == True:
@@ -7527,7 +7656,11 @@ class AutoMunge:
 
     df_test = df_test
 
-    
+    #now if user never passed a test set and we just created a dummy set 
+    #then reset returned test sets to empty
+    if test_plug_marker == True:
+      df_test = pd.DataFrame()
+      df_testID = pd.DataFrame()    
 
     
     #set output format based on pandasoutput argument
@@ -8416,11 +8549,16 @@ class AutoMunge:
     normkey1 = column+'_year'
     normkey2 = column+'_month'
     normkey3 = column+'_day'
-    normkey4 = column+'hour'
-    normkey5 = column+'minute'
+    normkey4 = column+'_hour'
+    normkey5 = column+'_minute'
     normkey6 = column+'_second'
     normkeylist = [normkey1, normkey2, normkey3, normkey4, normkey5, normkey6]
-    datecolumns = postprocess_dict['column_dict'][columnkey]['categorylist']
+    
+    for normkeyiterate in normkeylist:
+      if normkeyiterate in postprocess_dict['column_dict']:
+        datekey = normkeyiterate
+    
+    datecolumns = postprocess_dict['column_dict'][datekey]['categorylist']
     for normkeyiterate in normkeylist:
       if normkeyiterate in datecolumns:
         normkey = normkeyiterate
@@ -8639,7 +8777,8 @@ class AutoMunge:
   #       bxcxnormalization_dict = column_dict[columnkeybxcx]['normalization_dict'][columnkey]
 
 
-    bxcxkey = columnkey[:-5] + '_bxcx'
+    #bxcxkey = columnkey[:-5] + '_bxcx'
+
 
     #grab the normalization_dict associated with the bxcx category
     normkey = column+'_bxcx'
