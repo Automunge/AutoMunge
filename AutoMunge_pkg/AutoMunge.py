@@ -3292,7 +3292,7 @@ class AutoMunge:
         if skewness < 1.5:
           category = 'mnmx'
         else:
-          if powertrasnform == True:
+          if powertransform == True:
             category = 'bxcx'
           else:
             category = 'MAD3'
@@ -7650,7 +7650,7 @@ class AutoMunge:
                              'process_dict' : process_dict, \
                              'ML_cmnd' : ML_cmnd, \
                              'printstatus' : printstatus, \
-                             'automungeversion' : '2.25' })
+                             'automungeversion' : '2.26' })
 
     
     
