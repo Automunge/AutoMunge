@@ -3296,7 +3296,7 @@ class AutoMunge:
             category = 'bxcx'
           else:
             category = 'MAD3'
-
+    
     return category
 
 
@@ -6760,8 +6760,16 @@ class AutoMunge:
               category = key
               category_test = key
               categorycomplete = True
+              
+              #printout display progress
+              if printstatus == True:
+                print("evaluating column: ", column)
             
         if categorycomplete == False:
+            
+          #printout display progress
+          if printstatus == True:
+            print("evaluating column: ", column)
           
           category = self.evalcategory(df_train, column, numbercategoryheuristic, powertransform)
 
@@ -7109,7 +7117,15 @@ class AutoMunge:
             labelscategory = key
             categorycomplete = True
             
+            #printout display progress
+            if printstatus == True:
+              print("evaluating label column: ", column)
+            
       if categorycomplete == False:
+        
+        #printout display progress
+        if printstatus == True:
+          print("evaluating label column: ", column)
         
         #determine labels category and apply appropriate function
         labelscategory = self.evalcategory(df_labels, labels_column, numbercategoryheuristic, powertransform)
@@ -7650,7 +7666,7 @@ class AutoMunge:
                              'process_dict' : process_dict, \
                              'ML_cmnd' : ML_cmnd, \
                              'printstatus' : printstatus, \
-                             'automungeversion' : '2.26' })
+                             'automungeversion' : '2.27' })
 
     
     
