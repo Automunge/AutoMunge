@@ -133,10 +133,9 @@ am.postmunge(postprocess_dict, df_test, testID_column = False, \
 The functions depend on pandas dataframe formatted train and test data
 with consistent column labels (column headers are required). The functions 
 return Numpy arrays numerically encoded and normalized such as to make 
-them suitable for
-direct application to a machine learning model in the framework of a
-user's choice, including sets for the various activities of a generic
-machine learning project such as training, hyperparameter tuning
+them suitable for direct application to a machine learning model in the 
+framework of a user's choice, including sets for the various activities of 
+a generic machine learning project such as training, hyperparameter tuning
 validation (validation1), final  validation (validation2), or data intended 
 for use in generation of predictions from the trained model (test set). The
 functions also return a few other sets such as labels, column headers,
@@ -159,10 +158,11 @@ The function allows feature engineering methods for the training data, test data
 and any column designated for labels if included with the sets.
 
 In automation, for numerical data, the functions generate a series of derived
-transformations resulting in multiple child columns. For numerical data 
-distribution properties are evaluated for potential application of z-score 
-normalization, min-max scaling, power law transform via box-cox method, or
-mean absolute deviation scaling. With z-score normalization options for standard
+transformations resulting in multiple child columns. For numerical data, if the
+powertransform option is selected distribution properties are evaluated for 
+potential application of z-score normalization, min-max scaling, power law transform 
+via box-cox method, or mean absolute deviation scaling. Otherwise numerical data 
+defaults to z-score, with z-score normalization options for standard
 deviation bins for values in range <-2, -2-1, -10, 01, 12, >2 from the
 mean. For numerical sets with all positive values the functions also optionally can 
 return a power-law transformed set using the box-cox method, along with
@@ -488,13 +488,15 @@ an (approximately) levelized frequency. This defaults to False. Note that
 this feature may be applied to numerical label sets if the processing
 applied to the set includes standard deviation bins.
 
-* powertransform: a boolean identifier (True/False) which indicates if the
-box-cox power law transform will be included for default application to
-numerical sets with all positive values. This defaults to False. Note
-that after application of box-cox transform child columns are generated
-for a subsequent z-score normalization as well as a set of bins
-associated with number of standard deviations from the mean. For more on
-box-cox transform I'd recommend a google search or something.
+* powertransform: a boolean identifier (True/False) which indicates if an
+evaluation will be performed of distribution properties to select between
+box-cox, z-score, min-max scaling, or mean absolute deviaiton scaling 
+normalization. Note that after application of box-cox transform child columns 
+are generated for a subsequent z-score normalization as well as a set of bins
+associated with number of standard deviations from the mean. Please note that
+I don't consider the current means of distribution property evaluation very
+sophisticated and we will continue to refine this method with further research
+going forward.
 
 * binstransform: a boolean identifier (True/False) which indicates if the
 numerical sets will receive bin processing such as to generate child
