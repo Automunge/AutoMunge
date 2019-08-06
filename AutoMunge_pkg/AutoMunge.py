@@ -1631,6 +1631,10 @@ class AutoMunge:
     valuecounts = mdf_train[column + '_bnry'].value_counts().index.tolist()
     binary_missing_plug = valuecounts[0]
     
+    #test for nan
+    if binary_missing_plug != binary_missing_plug:
+      binary_missing_plug = valuecounts[1]
+    
     #note LabelBinarizer encodes alphabetically, with 1 assigned to first and 0 to second
     valuecounts.sort()
     #we'll save these in the normalization dictionary for future reference
@@ -3071,6 +3075,8 @@ class AutoMunge:
 #     return df, column_dict_list  
 
 
+
+
   def evalcategory(self, df, column, numbercategoryheuristic, powertransform):
     '''
     #evalcategory(df, column)
@@ -3095,8 +3101,19 @@ class AutoMunge:
     mc = c.most_common(1)
     mc2 = c.most_common(2)
     
+    #this is to address scenario where only one value so we can still call mc2[1][0]
+    if len(mc2) == len(mc):
+      mc2 = mc + mc
+    
     #count number of unique values
     nunique = df[column].nunique()
+    
+    #check if nan present for cases where nunique == 3
+    nanpresent = False
+    if nunique == 3:
+      for unique in df[column].unique():
+        if unique != unique:
+          nanpresent = True
 
     #free memory (dtypes are memory hogs)
     type1_df = None
@@ -3110,6 +3127,10 @@ class AutoMunge:
     datec = collections.Counter(type2_df)
     datemc = datec.most_common(1)
     datemc2 = datec.most_common(2)
+    
+    #this is to address scenario where only one value so we can still call mc2[1][0]
+    if len(datemc2) == len(datemc):
+      datemc2 = datemc + datemc
 
     #free memory (dtypes are memory hogs)
     type2_df = None
@@ -3149,13 +3170,16 @@ class AutoMunge:
     #if most common in column is integer and > two values, set category to number of bxcx
     if isinstance(checkint, mc[0][0]) and nunique > 2:
 
-#       #take account for numbercategoryheuristic
-#       #if df[column].nunique() / df[column].shape[0] < numbercategoryheuristic:
-#       if nunique < numbercategoryheuristic:
-
-#         category = 'text'
-      if True == False:
-        pass
+      #take account for numbercategoryheuristic
+      #if df[column].nunique() / df[column].shape[0] < numbercategoryheuristic:
+      #if nunique < numbercategoryheuristic:
+      if nunique <= 3:
+        if nunique == 3:
+          category = 'text'
+        else:
+          category = 'bnry'
+#       if True == False:
+#         pass
     
       else:
 
@@ -3182,8 +3206,20 @@ class AutoMunge:
       #if df[column].nunique() / df[column].shape[0] < numbercategoryheuristic \
 #       if nunique < numbercategoryheuristic \
 #       or df[column].dtype.name == 'category':
+#       if df[column].dtype.name == 'category':
       if df[column].dtype.name == 'category':
-        category = 'text'
+        if nunique == 3:
+          category = 'text'
+        elif nunique <= 2:
+          category = 'bnry'
+        else:
+          category = 'text'
+      
+      elif nunique <= 3:
+        if nunique == 3:
+          category = 'text'
+        elif nunique <= 2:
+          category = 'bnry'
 
       else:
 
@@ -3213,35 +3249,43 @@ class AutoMunge:
     #else if most common in column is NaN, re-evaluate using the second most common type
     #(I suspect the below might have a bug somewhere but is working on my current 
     #tests so will leave be for now)
-    elif df[column].isna().sum() >= df.shape[0] / 2:
-
+    #elif df[column].isna().sum() >= df.shape[0] / 2:
+    if df[column].isna().sum() >= df.shape[0] / 2:
+      
+      #if 2nd most common in column is string and two values, set category to binary
+      if isinstance(checkstring, mc2[1][0]) and nunique == 2:
+        category = 'bnry'
+    
       #if 2nd most common in column is string and > two values, set category to text
-      if isinstance(checkstring, mc2[0][0]) and nunique > 2:
+      if isinstance(checkstring, mc2[1][0]) and nunique > 2:
         category = 'text'
 
       #if 2nd most common is date, set category to date   
-      if isinstance(df_checkdate['checkdate'][0], datemc2[0][0]):
+      if isinstance(df_checkdate['checkdate'][0], datemc2[1][0]):
         category = 'date'
 
       #if 2nd most common in column is integer and > two values, set category to number
-      if isinstance(checkint, mc2[0][0]) and nunique > 2:
+      if isinstance(checkint, mc2[1][0]) and nunique > 2:
 
 
 #         #take account for numbercategoryheuristic
 #         #if df[column].nunique() / df[column].shape[0] < numbercategoryheuristic:
-#         if nunique < numbercategoryheuristic:
+        if nunique <= 3:
 
-#           category = 'text'
+          if nunique == 3:
+            category = 'text'
+          else:
+            category = 'bnry'
 
-        if True == False:
-          pass
+#         if True == False:
+#           pass
         
         else:
 
           category = 'nmbr'
 
       #if 2nd most common in column is float, set category to number
-      if isinstance(checkfloat, mc2[0][0]):
+      if isinstance(checkfloat, mc2[1][0]):
 
 #         #take account for numbercategoryheuristic
 #         #if df[column].nunique() / df[column].shape[0] < numbercategoryheuristic:
@@ -3251,14 +3295,23 @@ class AutoMunge:
 
 #         else:
 
-        category = 'nmbr'
+        if df[column].nunique() <= 3:
+
+          if nunique == 3:
+            category = 'text'
+          else:
+            category = 'bnry'
+
+        else:
+
+          category = 'nmbr'
 
       #if 2nd most common in column is integer and <= two values, set category to binary
-      if isinstance(checkint, mc2[0][0]) and nunique <= 2:
+      if isinstance(checkint, mc2[1][0]) and nunique <= 2:
         category = 'bnry'
 
       #if 2nd most common in column is string and <= two values, set category to binary
-      if isinstance(checkstring, mc2[0][0]) and nunique <= 2:
+      if isinstance(checkstring, mc2[1][0]) and nunique <= 2:
         category = 'bnry'
         
     #if > 85% (ARBITRARY FIGURE) are NaN we'll just delete the column
@@ -3298,9 +3351,6 @@ class AutoMunge:
             category = 'MAD3'
     
     return category
-
-
-
 
 
   def NArows(self, df, column, category, postprocess_dict):
@@ -7442,6 +7492,25 @@ class AutoMunge:
       madethecutset = set(madethecut)
       trimcolumns = [b for b in currentcolumns if b not in madethecutset]
 
+      if len(trimcolumns) > 0:
+        #printout display progress
+        if printstatus == True:
+          print("_______________")
+          print("Begin feature importance dimensionality reduction")
+          print("")
+          print("   method: ", featuremethod)
+          if featuremethod == 'pct':
+            print("threshold: ", featurepct)
+          if featuremethod == 'metric':
+            print("threshold: ", featuremetric)
+          print("")
+          print("trimmed columns: ")
+          print(trimcolumns)
+          print("")
+          print("returned columns: ")
+          print(madethecut)
+          print("")
+
       #trim columns using circle of life function
       for trimmee in trimcolumns:
         
@@ -7450,7 +7519,6 @@ class AutoMunge:
     
     
     
-    #PCA stuff added in version 1.900
 
     prePCAcolumns = list(df_train)
     
@@ -7468,6 +7536,10 @@ class AutoMunge:
     
     #if PCAn_components != None:
     if n_components != None:
+      
+      #this is for cases where automated PCA methods performed and we want to carry through 
+      #results to postmunge through postprocess_dict
+      PCAn_components = n_components
       
       #If user passed bool_PCA_excl as True in ML_cmnd['PCA_cmnd']
       #Then add boolean columns to the PCAexcl list of columns
@@ -7490,8 +7562,14 @@ class AutoMunge:
         
         #printout display progress
         if printstatus == True:
+          print("_______________")
           print("Applying PCA dimensionality reduction")
           print("")
+          if len(bool_PCAexcl) > 0:
+            print("columns excluded from PCA: ")
+            print(bool_PCAexcl)
+            print("")
+          
       
         #this is to carve the excluded columns out from the set
         PCAset_train, PCAset_test, PCAexcl_posttransform = \
@@ -7505,6 +7583,12 @@ class AutoMunge:
         #reattach the excluded columns to PCA set
         df_train = pd.concat([PCAset_train, df_train[PCAexcl_posttransform]], axis=1)
         df_test = pd.concat([PCAset_test, df_test[PCAexcl_posttransform]], axis=1)
+        
+        #printout display progress
+        if printstatus == True:
+          print("returned PCA columns: ")
+          print(list(PCAset_train))
+          print("")
 
       else:
         #else we'll just populate the PCAmodel slot in postprocess_dict with a placeholder
@@ -7619,7 +7703,7 @@ class AutoMunge:
                              'process_dict' : process_dict, \
                              'ML_cmnd' : ML_cmnd, \
                              'printstatus' : printstatus, \
-                             'automungeversion' : '2.28' })
+                             'automungeversion' : '2.29' })
 
     
     
@@ -7748,6 +7832,11 @@ class AutoMunge:
     
     #printout display progress
     if printstatus == True:
+      
+      print("Automunge returned column set: ")
+      print(list(df_train))
+      print("")
+      
       print("_______________")
       print("Automunge Complete")
       print("")
@@ -10392,13 +10481,31 @@ class AutoMunge:
       #get list of columns to trim
       madethecutset = set(postprocess_dict['madethecut'])
       trimcolumns = [b for b in currentcolumns if b not in madethecutset]
+        
+      if len(trimcolumns) > 0:
+        #printout display progress
+        if printstatus == True:
+          print("_______________")
+          print("Begin feature importance dimensionality reduction")
+          print("")
+          print("   method: ", postprocess_dict['featuremethod'])
+          if postprocess_dict['featuremethod'] == 'pct':
+            print("threshold: ", postprocess_dict['featurepct'])
+          if postprocess_dict['featuremethod'] == 'metric':
+            print("threshold: ", postprocess_dict['featuremetric'])
+          print("")
+          print("trimmed columns: ")
+          print(trimcolumns)
+          print("")
+          print("returned columns: ")
+          print(postprocess_dict['madethecut'])
+          print("")
       
       #trim columns manually
       for trimmee in trimcolumns:
         del df_test[trimmee]
     
     
-    #postmunge PCA stuff for version 1.900
     
     #first this check allows for backward compatibility with published demonstrations
     if 'PCAn_components' in postprocess_dict:
@@ -10408,20 +10515,32 @@ class AutoMunge:
 
 
       if PCAn_components != None:
-        
-        #printout display progress
-        if printstatus == True:
-          print("Applying PCA dimensionality reduction")
-          print("")
+
 
         PCAset_test, PCAexcl_posttransform = \
         self.postcreatePCAsets(df_test, postprocess_dict)
+        
+        #printout display progress
+        if printstatus == True:
+          print("_______________")
+          print("Applying PCA dimensionality reduction")
+          print("")
+          if len(postprocess_dict['PCAexcl']) > 0:
+            print("columns excluded from PCA: ")
+            print(postprocess_dict['PCAexcl'])
+            print("")
 
         PCAset_test, postprocess_dict = \
         self.postPCAfunction(PCAset_test, postprocess_dict)
-
+        
         #reattach the excluded columns to PCA set
         df_test = pd.concat([PCAset_test, df_test[PCAexcl_posttransform]], axis=1)
+        
+        #printout display progress
+        if printstatus == True:
+          print("returned PCA columns: ")
+          print(list(PCAset_test))
+          print("")
     
     
     #here's a list of final column names saving here since the translation to \
@@ -10530,6 +10649,11 @@ class AutoMunge:
         
     #printout display progress
     if printstatus == True:
+      
+      print("Postmunge returned column set: ")
+      print(list(df_test))
+      print("")
+        
       print("_______________")
       print("Postmunge Complete")
       print("")
