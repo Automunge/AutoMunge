@@ -1648,16 +1648,23 @@ class AutoMunge:
     #replace missing data with specified classification
     mdf_train[column + '_bnry'] = mdf_train[column + '_bnry'].fillna(binary_missing_plug)
     mdf_test[column + '_bnry'] = mdf_test[column + '_bnry'].fillna(binary_missing_plug)
-
-    #if more than two remaining classifications, return error message    
-    if len(mdf_train[column + '_bnry'].unique()) > 2 or len(mdf_test[column + '_bnry'].unique()) > 2:
-        print('ERROR: number of categories in column for process_binary_class() call >2')
-        return mdf_train
-
-    #convert column to binary 0/1 classification
-    lb = preprocessing.LabelBinarizer()
-    mdf_train[column + '_bnry'] = lb.fit_transform(mdf_train[column + '_bnry'])
-    mdf_test[column + '_bnry'] = lb.fit_transform(mdf_test[column + '_bnry'])
+    
+    #this addressess issue where nunique for mdftest > than that for mdf_train
+    #note is currently an oportunity for improvement that NArows won't identify these poinsts as candiadates
+    #for user specified infill, and as currently addressed will default to infill with most common value
+    #in the mean time a workaround could be for user to manually replace extra values with nan prior to
+    #postmunge application such as if they want to apply ML infill
+    #this will only be an issue when nunique for df_train == 2, and nunique for df_test > 2
+    if len(mdf_test[column + '_bnry'].unique()) > 2:
+      mdf_test.loc[~mdf_test[column + '_bnry'].isin([onevalue, zerovalue]), column + '_bnry'] = binary_missing_plug
+    
+    
+    #convert column to binary 0/1 classification (replaces scikit LabelBinarizer)
+    mdf_train.loc[mdf_train[column + '_bnry'].isin([onevalue]), column + '_bnry'] = 1
+    mdf_train.loc[mdf_train[column + '_bnry'].isin([zerovalue]), column + '_bnry'] = 0
+    
+    mdf_test.loc[mdf_test[column + '_bnry'].isin([onevalue]), column + '_bnry'] = 1
+    mdf_test.loc[mdf_test[column + '_bnry'].isin([zerovalue]), column + '_bnry'] = 0
 
     #create list of columns
     bnrycolumns = [column + '_bnry']
@@ -1670,8 +1677,8 @@ class AutoMunge:
     categorylist = []
 
     bnrynormalization_dict = {column + '_bnry' : {'missing' : binary_missing_plug, \
-                                                 'onevalue' : onevalue, \
-                                                 'zerovalue' : zerovalue}}
+                                                  'onevalue' : onevalue, \
+                                                  'zerovalue' : zerovalue}}
 
     #store some values in the column_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -6266,9 +6273,9 @@ class AutoMunge:
     return result
 
   def automunge(self, df_train, df_test = False, labels_column = False, trainID_column = False, \
-                testID_column = False, valpercent1=0.20, valpercent2 = 0.10, \
-                shuffletrain = True, TrainLabelFreqLevel = False, powertransform = False, \
-                binstransform = True, MLinfill = True, infilliterate=1, randomseed = 42, \
+                testID_column = False, valpercent1=0.0, valpercent2 = 0.0, \
+                shuffletrain = False, TrainLabelFreqLevel = False, powertransform = False, \
+                binstransform = False, MLinfill = False, infilliterate=1, randomseed = 42, \
                 numbercategoryheuristic = 15, pandasoutput = False, \
                 featureselection = False, featurepct = 1.0, featuremetric = 0.0, \
                 featuremethod = 'pct', PCAn_components = None, PCAexcl = [], \
@@ -7703,7 +7710,7 @@ class AutoMunge:
                              'process_dict' : process_dict, \
                              'ML_cmnd' : ML_cmnd, \
                              'printstatus' : printstatus, \
-                             'automungeversion' : '2.29' })
+                             'automungeversion' : '2.30' })
 
     
     
@@ -8482,6 +8489,12 @@ class AutoMunge:
     normkey = column + '_bnry'
     binary_missing_plug = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['missing']
+    
+    onevalue = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['onevalue']
+    
+    zerovalue = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['zerovalue']
 
     #change column name to column + '_bnry'
     mdf_test[column + '_bnry'] = mdf_test[column].copy()
@@ -8490,15 +8503,19 @@ class AutoMunge:
     #replace missing data with specified classification
     mdf_test[column + '_bnry'] = mdf_test[column + '_bnry'].fillna(binary_missing_plug)
 
-    #if more than two remaining classifications, return error message    
-    #if len(mdf_train[column + '_bnry'].unique()) > 2 or len(mdf_test[column + '_bnry'].unique()) > 2:
+    #this addressess issue where nunique for mdftest > than that for mdf_train
+    #note is currently an oportunity for improvement that NArows won't identify these poinsts as candiadates
+    #for user specified infill, and as currently addressed will default to infill with most common value
+    #in the mean time a workaround could be for user to manually replace extra values with nan prior to
+    #postmunge application such as if they want to apply ML infill
+    #this will only be an issue when nunique for df_train == 2, and nunique for df_test > 2
     if len(mdf_test[column + '_bnry'].unique()) > 2:
-        print('ERROR: number of categories in column for process_binary_class() call >2')
-        return mdf_train
+      mdf_test.loc[~mdf_test[column + '_bnry'].isin([onevalue, zerovalue]), column + '_bnry'] = binary_missing_plug
 
-    #convert column to binary 0/1 classification
-    lb = preprocessing.LabelBinarizer()
-    mdf_test[column + '_bnry'] = lb.fit_transform(mdf_test[column + '_bnry'])
+    
+    #convert column to binary 0/1 classification (replaces scikit LabelBinarizer)
+    mdf_test.loc[mdf_test[column + '_bnry'].isin([onevalue]), column + '_bnry'] = 1
+    mdf_test.loc[mdf_test[column + '_bnry'].isin([zerovalue]), column + '_bnry'] = 0
 
     #create list of columns
     bnrycolumns = [column + '_bnry']
