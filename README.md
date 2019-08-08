@@ -92,7 +92,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
             testID_column = False, valpercent1=0.0, valpercent2 = 0.0, \
             shuffletrain = False, TrainLabelFreqLevel = False, powertransform = False, \
             binstransform = False, MLinfill = False, infilliterate=1, randomseed = 42, \
-            numbercategoryheuristic = 15, pandasoutput = True, \
+            numbercategoryheuristic = 15, pandasoutput = True, NArw_marker = True, \
             featureselection = False, featurepct = 1.0, featuremetric = .02, \
             featuremethod = 'pct', PCAn_components = None, PCAexcl = [], \
             ML_cmnd = {'MLinfill_type':'default', \
@@ -249,7 +249,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
             testID_column = False, valpercent1=0.0, valpercent2 = 0.0, \
             shuffletrain = False, TrainLabelFreqLevel = False, powertransform = False, \
             binstransform = False, MLinfill = False, infilliterate=1, randomseed = 42, \
-            numbercategoryheuristic = 15, pandasoutput = True, \
+            numbercategoryheuristic = 15, pandasoutput = True, NArw_marker = True, \
             featureselection = False, featurepct = 1.0, featuremetric = .02, \
             featuremethod = 'pct', PCAn_components = None, PCAexcl = [], \
             ML_cmnd = {'MLinfill_type':'default', \
@@ -399,7 +399,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
             testID_column = False, valpercent1=0.0, valpercent2 = 0.0, \
             shuffletrain = False, TrainLabelFreqLevel = False, powertransform = False, \
             binstransform = False, MLinfill = False, infilliterate=1, randomseed = 42, \
-            numbercategoryheuristic = 15, pandasoutput = True, \
+            numbercategoryheuristic = 15, pandasoutput = True, NArw_marker = True, \
             featureselection = False, featurepct = 1.0, featuremetric = .02, \
             featuremethod = 'pct', PCAn_components = None, PCAexcl = [], \
             ML_cmnd = {'MLinfill_type':'default', \
@@ -544,6 +544,10 @@ to categorical treatment via ordinal processing. This defaults to 15.
 for returned Numpy arrays. If set to True returns pandas dataframes
 (note that index is not preserved in the train/validation split, an ID
 column may be passed for index identification).
+
+* NArw_marker: a boolean identifier (True/False) which indicates if the
+returned sets will include columns with markers for rows subject to 
+infill (columns with suffix 'NArw'). This value defaults to True.
 
 * featureselection: a boolean identifier telling the function whether to
 perform a feature importance evaluation. If selected automunge will
