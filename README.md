@@ -89,9 +89,9 @@ test, testID, testlabels, \
 labelsencoding_dict, finalcolumns_train, finalcolumns_test, \
 featureimportance, postprocess_dict = \
 am.automunge(df_train, df_test = False, labels_column = False, trainID_column = False, \
-            testID_column = False, valpercent1=0.20, valpercent2 = 0.10, \
+            testID_column = False, valpercent1=0.0, valpercent2 = 0.0, \
             shuffletrain = False, TrainLabelFreqLevel = False, powertransform = False, \
-            binstransform = False, MLinfill = True, infilliterate=1, randomseed = 42, \
+            binstransform = False, MLinfill = False, infilliterate=1, randomseed = 42, \
             numbercategoryheuristic = 15, pandasoutput = True, \
             featureselection = False, featurepct = 1.0, featuremetric = .02, \
             featuremethod = 'pct', PCAn_components = None, PCAexcl = [], \
@@ -239,10 +239,16 @@ The full set of arguments available to be passed are given here, with
 explanations provided below: 
 
 ```
+train, trainID, labels, \
+validation1, validationID1, validationlabels1, \
+validation2, validationID2, validationlabels2, \
+test, testID, testlabels, \
+labelsencoding_dict, finalcolumns_train, finalcolumns_test, \
+featureimportance, postprocess_dict = \
 am.automunge(df_train, df_test = False, labels_column = False, trainID_column = False, \
-            testID_column = False, valpercent1=0.20, valpercent2 = 0.10, \
+            testID_column = False, valpercent1=0.0, valpercent2 = 0.0, \
             shuffletrain = False, TrainLabelFreqLevel = False, powertransform = False, \
-            binstransform = False, MLinfill = True, infilliterate=1, randomseed = 42, \
+            binstransform = False, MLinfill = False, infilliterate=1, randomseed = 42, \
             numbercategoryheuristic = 15, pandasoutput = True, \
             featureselection = False, featurepct = 1.0, featuremetric = .02, \
             featuremethod = 'pct', PCAn_components = None, PCAexcl = [], \
@@ -390,9 +396,9 @@ test data.
 
 ```
 am.automunge(df_train, df_test = False, labels_column = False, trainID_column = False, \
-            testID_column = False, valpercent1=0.20, valpercent2 = 0.10, \
+            testID_column = False, valpercent1=0.0, valpercent2 = 0.0, \
             shuffletrain = False, TrainLabelFreqLevel = False, powertransform = False, \
-            binstransform = False, MLinfill = True, infilliterate=1, randomseed = 42, \
+            binstransform = False, MLinfill = False, infilliterate=1, randomseed = 42, \
             numbercategoryheuristic = 15, pandasoutput = True, \
             featureselection = False, featurepct = 1.0, featuremetric = .02, \
             featuremethod = 'pct', PCAn_components = None, PCAexcl = [], \
@@ -459,17 +465,17 @@ columns to be excluded from processing but consistently partitioned.
 * valpercent1: a float value between 0 and 1 which designates the percent
 of the training data which will be set aside for the first validation
 set (generally used for hyperparameter tuning of a downstream model).
-Note the default here is set at 20% but that is fairly an arbitrary
-value and a user may wish to deviate for different size sets. Note that
-this value may be set to 0 if no validation set is needed (such as may
-be the case for k-means validation).
+This value defaults to 0. (Previously the default here was set at 0.20 but 
+that is fairly an arbitrary value and a user may wish to deviate for 
+different size sets. Note that this value may be set to 0 if no validation 
+set is needed (such as may be the case for k-means validation).)
 
 * valpercent2: a float value between 0 and 1 which designates the percent
 of the training data which will be set aside for the second validation
 set (generally used for final validation of a model prior to release).
-Note the default here is set at 10% but that is fairly an arbitrary
-value and a user may wish to deviate for different size sets. This value
-may also be set to 0 if desired.
+This value defaults to 0. (Previously the default was set at 0.10 but that 
+is fairly an arbitrary value and a user may wish to deviate for different 
+size sets.)
 
 * shuffletrain: a boolean identifier (True/False) which indicates if the
 rows in df_train will be shuffled prior to carving out the validation
@@ -478,7 +484,7 @@ will be pulled from the bottom x% sequential rows of the dataframe.
 (Where x% is the sum of validation ratios.) Note that if this value is
 set to False although the validations will be pulled from sequential
 rows, the split between validaiton1 and validation2 sets will be
-randomized.
+randomized. This value defaults to False.
 
 * TrainLabelFreqLevel: a boolean identifier (True/False) which indicates
 if the TrainLabelFreqLevel method will be applied to oversample training
@@ -496,7 +502,7 @@ are generated for a subsequent z-score normalization as well as a set of bins
 associated with number of standard deviations from the mean. Please note that
 I don't consider the current means of distribution property evaluation very
 sophisticated and we will continue to refine this method with further research
-going forward.
+going forward. This defaults to False.
 
 * binstransform: a boolean identifier (True/False) which indicates if the
 numerical sets will receive bin processing such as to generate child
@@ -504,18 +510,18 @@ columns with boolean identifiers for number of standard deviations from
 the mean, with groups for values <-2, -2-1, -10, 01, 12, and >2 . Note
 that the bins and bint transformations are the same, only difference is
 that the bint transform assumes the column has already been normalized
-while the bins transform does not. This value defaults to True.
+while the bins transform does not. This value defaults to False.
 
 * MLinfill: a boolean identifier (True/False) which indicates if the ML
 infill method will be applied as a default to predict infill for missing 
 or improperly formatted data using machine learning models trained on the
-rest of the set.
+rest of the set. This defaults to False.
 
 * infilliterate: an integer indicating how many applications of the ML
 infill processing are to be performed for purposes of predicting infill.
 The assumption is that for sets with high frequency of missing values
 that multiple applications of ML infill may improve accuracy although
-note this is not an extensively tested hypothesis.
+note this is not an extensively tested hypothesis. This defaults to 1.
 
 * randomseed: a postitive integer used as a seed for randomness in data
 set shuffling, ML infill, and fearture importance  algorithms. This 
