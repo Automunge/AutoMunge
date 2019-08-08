@@ -59,7 +59,7 @@ class AutoMunge:
   def __init__(self):
     pass
 
-  def assembletransformdict(self, powertransform, binstransform):
+  def assembletransformdict(self, powertransform, binstransform, NArw_marker):
     '''
     #assembles the range of transformations to be applied based on the evaluated \
     #category of data
@@ -101,13 +101,18 @@ class AutoMunge:
     else:
       bins = None
       bint = None
+        
+    if NArw_marker == True:
+      NArw = 'NArw'
+    else:
+      NArw = None
 
     #initialize trasnform_dict. Note in a future extension the range of categories
     #is intended to be built out
     transform_dict.update({'nmbr' : {'parents' : ['nmbr'], \
                                      'siblings': [], \
                                      'auntsuncles' : [], \
-                                     'cousins' : ['NArw'], \
+                                     'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
@@ -116,7 +121,7 @@ class AutoMunge:
     transform_dict.update({'bnry' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['bnry'], \
-                                     'cousins' : ['NArw'], \
+                                     'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
@@ -125,7 +130,7 @@ class AutoMunge:
     transform_dict.update({'text' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['text'], \
-                                     'cousins' : ['NArw'], \
+                                     'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
@@ -134,7 +139,7 @@ class AutoMunge:
     transform_dict.update({'ordl' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['ordl'], \
-                                     'cousins' : ['NArw'], \
+                                     'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
@@ -143,7 +148,7 @@ class AutoMunge:
     transform_dict.update({'ord2' : {'parents' : ['ord2'], \
                                      'siblings': [], \
                                      'auntsuncles' : [], \
-                                     'cousins' : ['NArw'], \
+                                     'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : ['mnmx'], \
@@ -160,7 +165,7 @@ class AutoMunge:
     
     transform_dict.update({'NArw' : {'parents' : [], \
                                      'siblings': [], \
-                                     'auntsuncles' : ['NArw'], \
+                                     'auntsuncles' : [NArw], \
                                      'cousins' : [], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
@@ -179,7 +184,7 @@ class AutoMunge:
     transform_dict.update({'nbr2' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['nmbr'], \
-                                     'cousins' : ['NArw'], \
+                                     'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
@@ -188,7 +193,7 @@ class AutoMunge:
     transform_dict.update({'nbr3' : {'parents' : ['nmbr'], \
                                      'siblings': [], \
                                      'auntsuncles' : [], \
-                                     'cousins' : ['NArw'], \
+                                     'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
@@ -197,7 +202,7 @@ class AutoMunge:
     transform_dict.update({'MADn' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['MADn'], \
-                                     'cousins' : ['NArw'], \
+                                     'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
@@ -206,7 +211,7 @@ class AutoMunge:
     transform_dict.update({'MAD2' : {'parents' : ['MAD2'], \
                                      'siblings': [], \
                                      'auntsuncles' : [], \
-                                     'cousins' : ['NArw'], \
+                                     'cousins' : [NArw], \
                                      'children' : ['nmbr'], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
@@ -215,7 +220,7 @@ class AutoMunge:
     transform_dict.update({'MAD3' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['MAD3'], \
-                                     'cousins' : ['NArw'], \
+                                     'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
@@ -224,7 +229,7 @@ class AutoMunge:
     transform_dict.update({'mnmx' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['mnmx'], \
-                                     'cousins' : ['NArw'], \
+                                     'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
@@ -233,7 +238,7 @@ class AutoMunge:
     transform_dict.update({'mnm2' : {'parents' : ['nmbr'], \
                                      'siblings': [], \
                                      'auntsuncles' : ['mnmx'], \
-                                     'cousins' : ['NArw'], \
+                                     'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
@@ -242,7 +247,7 @@ class AutoMunge:
     transform_dict.update({'mnm3' : {'parents' : ['nmbr'], \
                                      'siblings': [], \
                                      'auntsuncles' : ['mnm3'], \
-                                     'cousins' : ['NArw'], \
+                                     'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
@@ -251,7 +256,7 @@ class AutoMunge:
     transform_dict.update({'mnm4' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['mnm3'], \
-                                     'cousins' : ['NArw'], \
+                                     'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
@@ -260,7 +265,7 @@ class AutoMunge:
     transform_dict.update({'mnm5' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['mnmx'], \
-                                     'cousins' : ['nmbr', 'NArw'], \
+                                     'cousins' : ['nmbr', NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
@@ -269,7 +274,7 @@ class AutoMunge:
     transform_dict.update({'mnm6' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['mnm6'], \
-                                     'cousins' : ['NArw'], \
+                                     'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
@@ -286,7 +291,7 @@ class AutoMunge:
     transform_dict.update({'date' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['date'], \
-                                     'cousins' : ['NArw'], \
+                                     'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
@@ -294,7 +299,7 @@ class AutoMunge:
     transform_dict.update({'dat2' : {'parents' : [], \
                                      'siblings': ['bshr', 'wkdy', 'hldy'], \
                                      'auntsuncles' : ['date'], \
-                                     'cousins' : ['NArw'], \
+                                     'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
@@ -303,7 +308,7 @@ class AutoMunge:
     transform_dict.update({'bxc2' : {'parents' : ['bxc2'], \
                                      'siblings': ['nmbr'], \
                                      'auntsuncles' : [], \
-                                     'cousins' : ['NArw'], \
+                                     'cousins' : [NArw], \
                                      'children' : ['nmbr'], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
@@ -312,7 +317,7 @@ class AutoMunge:
     transform_dict.update({'bxc3' : {'parents' : ['bxc3'], \
                                      'siblings': [], \
                                      'auntsuncles' : [], \
-                                     'cousins' : ['NArw'], \
+                                     'cousins' : [NArw], \
                                      'children' : ['nmbr'], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
@@ -321,7 +326,7 @@ class AutoMunge:
     transform_dict.update({'bxc4' : {'parents' : ['bxc4'], \
                                      'siblings': [], \
                                      'auntsuncles' : [], \
-                                     'cousins' : ['NArw'], \
+                                     'cousins' : [NArw], \
                                      'children' : ['nbr2'], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
@@ -330,7 +335,7 @@ class AutoMunge:
     transform_dict.update({'pwrs' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['pwrs'], \
-                                     'cousins' : ['NArw'], \
+                                     'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
@@ -339,7 +344,7 @@ class AutoMunge:
     transform_dict.update({'log0' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['log0'], \
-                                     'cousins' : ['NArw'], \
+                                     'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
@@ -348,7 +353,7 @@ class AutoMunge:
     transform_dict.update({'log1' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['log0', 'pwrs'], \
-                                     'cousins' : ['NArw'], \
+                                     'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
@@ -434,7 +439,7 @@ class AutoMunge:
       transform_dict.update({'bxcx' : {'parents' : ['bxcx'], \
                                        'siblings': ['nmbr'], \
                                        'auntsuncles' : [], \
-                                       'cousins' : ['NArw'], \
+                                       'cousins' : [NArw], \
                                        'children' : ['nmbr'], \
                                        'niecesnephews' : [], \
                                        'coworkers' : [], \
@@ -445,7 +450,7 @@ class AutoMunge:
       transform_dict.update({'bxcx' : {'parents' : ['nmbr'], \
                                        'siblings': [], \
                                        'auntsuncles' : [], \
-                                       'cousins' : ['NArw'], \
+                                       'cousins' : [NArw], \
                                        'children' : [], \
                                        'niecesnephews' : [bins], \
                                        'coworkers' : [], \
@@ -1655,8 +1660,11 @@ class AutoMunge:
     #in the mean time a workaround could be for user to manually replace extra values with nan prior to
     #postmunge application such as if they want to apply ML infill
     #this will only be an issue when nunique for df_train == 2, and nunique for df_test > 2
-    if len(mdf_test[column + '_bnry'].unique()) > 2:
-      mdf_test.loc[~mdf_test[column + '_bnry'].isin([onevalue, zerovalue]), column + '_bnry'] = binary_missing_plug
+    #if len(mdf_test[column + '_bnry'].unique()) > 2:
+    uniqueintest = mdf_test[column + '_bnry'].unique()
+    for unique in uniqueintest:
+      if unique not in [onevalue, zerovalue]:
+        mdf_test.loc[~mdf_test[column + '_bnry'].isin([onevalue, zerovalue]), column + '_bnry'] = binary_missing_plug
     
     
     #convert column to binary 0/1 classification (replaces scikit LabelBinarizer)
@@ -6276,7 +6284,7 @@ class AutoMunge:
                 testID_column = False, valpercent1=0.0, valpercent2 = 0.0, \
                 shuffletrain = False, TrainLabelFreqLevel = False, powertransform = False, \
                 binstransform = False, MLinfill = False, infilliterate=1, randomseed = 42, \
-                numbercategoryheuristic = 15, pandasoutput = False, \
+                numbercategoryheuristic = 15, pandasoutput = False, NArw_marker = True, \
                 featureselection = False, featurepct = 1.0, featuremetric = 0.0, \
                 featuremethod = 'pct', PCAn_components = None, PCAexcl = [], \
                 ML_cmnd = {'MLinfill_type':'default', \
@@ -6369,7 +6377,7 @@ class AutoMunge:
 #       process_dict = processdict
     
     #initialize processing dicitonaries
-    transform_dict = self.assembletransformdict(powertransform, binstransform)
+    transform_dict = self.assembletransformdict(powertransform, binstransform, NArw_marker)
     
     if bool(transformdict) != False:
       
@@ -6944,9 +6952,11 @@ class AutoMunge:
         
 #         labels_binary_missing_plug = df_labels[labels_column].value_counts().index.tolist()[0]
 #         df_labels, _1 = self.process_binary_class(df_labels, labels_column, labels_binary_missing_plug)
-
-        del df_labels[labels_column + '_NArw']
-        del df_testlabels[labels_column + '_NArw']
+        
+        if labels_column + '_NArw' in list(df_labels):
+          del df_labels[labels_column + '_NArw']
+        if labels_column + '_NArw' in list(df_testlabels):
+          del df_testlabels[labels_column + '_NArw']
 
         finalcolumns_labels = list(df_labels)
     
@@ -7055,6 +7065,7 @@ class AutoMunge:
         #we'll have convention that labels don't include a NArw, this might be worth some more thought
         if labels_column + '_NArw' in list(df_labels):
           del df_labels[labels_column + '_NArw']
+        if labels_column + '_NArw' in list(df_testlabels):
           del df_testlabels[labels_column + '_NArw']
   
         labelsnormalization_dict = postprocess_dict['column_dict'][finalcolumns_labels[0]]['normalization_dict'][finalcolumns_labels[0]]
@@ -7199,8 +7210,10 @@ class AutoMunge:
 #         df_labels, labelsdummy, _1 = \
 #         self.process_text_class(df_labels, labelsdummy, labels_column)
 
-        del df_labels[labels_column + '_NArw']
-        del df_testlabels[labels_column + '_NArw']
+        if labels_column + '_NArw' in list(df_labels):
+          del df_labels[labels_column + '_NArw']
+        if labels_column + '_NArw' in list(df_testlabels):
+          del df_testlabels[labels_column + '_NArw']
 
         finalcolumns_labels = list(df_labels)
 
@@ -7690,6 +7703,7 @@ class AutoMunge:
                              'binstransform' : binstransform, \
                              'numbercategoryheuristic' : numbercategoryheuristic, \
                              'pandasoutput' : pandasoutput, \
+                             'NArw_marker' : NArw_marker, \
                              'labelsencoding_dict' : labelsencoding_dict, \
                              'preFSpostprocess_dict' : preFSpostprocess_dict, \
                              'featureselection' : featureselection, \
@@ -7710,7 +7724,7 @@ class AutoMunge:
                              'process_dict' : process_dict, \
                              'ML_cmnd' : ML_cmnd, \
                              'printstatus' : printstatus, \
-                             'automungeversion' : '2.30' })
+                             'automungeversion' : '2.31' })
 
     
     
@@ -8509,9 +8523,12 @@ class AutoMunge:
     #in the mean time a workaround could be for user to manually replace extra values with nan prior to
     #postmunge application such as if they want to apply ML infill
     #this will only be an issue when nunique for df_train == 2, and nunique for df_test > 2
-    if len(mdf_test[column + '_bnry'].unique()) > 2:
-      mdf_test.loc[~mdf_test[column + '_bnry'].isin([onevalue, zerovalue]), column + '_bnry'] = binary_missing_plug
-
+    #if len(mdf_test[column + '_bnry'].unique()) > 2:
+    uniqueintest = mdf_test[column + '_bnry'].unique()
+    for unique in uniqueintest:
+      if unique not in [onevalue, zerovalue]:
+        mdf_test.loc[~mdf_test[column + '_bnry'].isin([onevalue, zerovalue]), column + '_bnry'] = binary_missing_plug
+   
     
     #convert column to binary 0/1 classification (replaces scikit LabelBinarizer)
     mdf_test.loc[mdf_test[column + '_bnry'].isin([onevalue]), column + '_bnry'] = 1
@@ -8519,6 +8536,7 @@ class AutoMunge:
 
     #create list of columns
     bnrycolumns = [column + '_bnry']
+    
 
     #change data types to 8-bit (1 byte) integers for memory savings
     mdf_test[column + '_bnry'] = mdf_test[column + '_bnry'].astype(np.int8)
@@ -9874,8 +9892,9 @@ class AutoMunge:
     
     powertransform = postprocess_dict['powertransform']
     binstransform = postprocess_dict['binstransform']
+    NArw_marker = postprocess_dict['NArw_marker']
     
-    transform_dict = self.assembletransformdict(powertransform, binstransform)
+    transform_dict = self.assembletransformdict(powertransform, binstransform, NArw_marker)
     
     if bool(postprocess_dict['transformdict']) != False:
       transform_dict.update(postprocess_dict['transformdict'])
