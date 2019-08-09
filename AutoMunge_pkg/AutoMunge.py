@@ -1648,6 +1648,25 @@ class AutoMunge:
       zerovalue = valuecounts[1]
     else:
       zerovalue = 'plug'
+    
+    #special case for when the source column is already encoded as 0/1
+    if 0 in valuecounts:
+      zerovalue = 0
+      if 1 in valuecounts:
+        onevalue = 1
+      else:
+        if valuecounts[0] == 0:
+          if len(valuecounts) > 1:
+            onevalue = valuecounts[1]
+          else:
+            onevalue = 'plug'
+            
+    if 1 in valuecounts:
+      if 0 not in valuecounts:
+        if valuecounts[0] != 1:
+          onevalue = 1
+          zerovalue = valuecounts[0]
+        
 
 
     #replace missing data with specified classification
@@ -7724,7 +7743,7 @@ class AutoMunge:
                              'process_dict' : process_dict, \
                              'ML_cmnd' : ML_cmnd, \
                              'printstatus' : printstatus, \
-                             'automungeversion' : '2.31' })
+                             'automungeversion' : '2.32' })
 
     
     
