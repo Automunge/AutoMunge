@@ -305,6 +305,15 @@ class AutoMunge:
                                      'coworkers' : [], \
                                      'friends' : []}})
     
+    transform_dict.update({'bxcx' : {'parents' : ['bxcx'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : ['nmbr'], \
+                                     'friends' : []}})
+    
     transform_dict.update({'bxc2' : {'parents' : ['bxc2'], \
                                      'siblings': ['nmbr'], \
                                      'auntsuncles' : [], \
@@ -433,28 +442,28 @@ class AutoMunge:
     
     
 
-    #initialize bxcx based on what was passed through application of automunge(.)
-    if powertransform == True:
+#     #initialize bxcx based on what was passed through application of automunge(.)
+#     if powertransform == True:
 
-      transform_dict.update({'bxcx' : {'parents' : ['bxcx'], \
-                                       'siblings': ['nmbr'], \
-                                       'auntsuncles' : [], \
-                                       'cousins' : [NArw], \
-                                       'children' : ['nmbr'], \
-                                       'niecesnephews' : [], \
-                                       'coworkers' : [], \
-                                       'friends' : []}})
+#       transform_dict.update({'bxcx' : {'parents' : ['bxcx'], \
+#                                        'siblings': ['nmbr'], \
+#                                        'auntsuncles' : [], \
+#                                        'cousins' : [NArw], \
+#                                        'children' : ['nmbr'], \
+#                                        'niecesnephews' : [], \
+#                                        'coworkers' : [], \
+#                                        'friends' : []}})
 
-    else:
+#     else:
 
-      transform_dict.update({'bxcx' : {'parents' : ['nmbr'], \
-                                       'siblings': [], \
-                                       'auntsuncles' : [], \
-                                       'cousins' : [NArw], \
-                                       'children' : [], \
-                                       'niecesnephews' : [bins], \
-                                       'coworkers' : [], \
-                                       'friends' : []}})
+#       transform_dict.update({'bxcx' : {'parents' : ['nmbr'], \
+#                                        'siblings': [], \
+#                                        'auntsuncles' : [], \
+#                                        'cousins' : [NArw], \
+#                                        'children' : [], \
+#                                        'niecesnephews' : [bins], \
+#                                        'coworkers' : [], \
+#                                        'friends' : []}})
 
 
 
@@ -7743,7 +7752,7 @@ class AutoMunge:
                              'process_dict' : process_dict, \
                              'ML_cmnd' : ML_cmnd, \
                              'printstatus' : printstatus, \
-                             'automungeversion' : '2.32' })
+                             'automungeversion' : '2.33' })
 
     
     
