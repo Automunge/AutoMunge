@@ -976,7 +976,7 @@ And here arethe series of family trees currently built into the internal library
     transform_dict.update({'nmbr' : {'parents' : ['nmbr'], \
                                      'siblings': [], \
                                      'auntsuncles' : [], \
-                                     'cousins' : ['NArw'], \
+                                     'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
@@ -985,7 +985,7 @@ And here arethe series of family trees currently built into the internal library
     transform_dict.update({'bnry' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['bnry'], \
-                                     'cousins' : ['NArw'], \
+                                     'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
@@ -994,7 +994,7 @@ And here arethe series of family trees currently built into the internal library
     transform_dict.update({'text' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['text'], \
-                                     'cousins' : ['NArw'], \
+                                     'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
@@ -1003,7 +1003,7 @@ And here arethe series of family trees currently built into the internal library
     transform_dict.update({'ordl' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['ordl'], \
-                                     'cousins' : ['NArw'], \
+                                     'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
@@ -1012,7 +1012,7 @@ And here arethe series of family trees currently built into the internal library
     transform_dict.update({'ord2' : {'parents' : ['ord2'], \
                                      'siblings': [], \
                                      'auntsuncles' : [], \
-                                     'cousins' : ['NArw'], \
+                                     'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : ['mnmx'], \
@@ -1029,7 +1029,7 @@ And here arethe series of family trees currently built into the internal library
     
     transform_dict.update({'NArw' : {'parents' : [], \
                                      'siblings': [], \
-                                     'auntsuncles' : ['NArw'], \
+                                     'auntsuncles' : [NArw], \
                                      'cousins' : [], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
@@ -1048,7 +1048,7 @@ And here arethe series of family trees currently built into the internal library
     transform_dict.update({'nbr2' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['nmbr'], \
-                                     'cousins' : ['NArw'], \
+                                     'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
@@ -1057,7 +1057,7 @@ And here arethe series of family trees currently built into the internal library
     transform_dict.update({'nbr3' : {'parents' : ['nmbr'], \
                                      'siblings': [], \
                                      'auntsuncles' : [], \
-                                     'cousins' : ['NArw'], \
+                                     'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
@@ -1066,7 +1066,7 @@ And here arethe series of family trees currently built into the internal library
     transform_dict.update({'MADn' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['MADn'], \
-                                     'cousins' : ['NArw'], \
+                                     'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
@@ -1075,7 +1075,7 @@ And here arethe series of family trees currently built into the internal library
     transform_dict.update({'MAD2' : {'parents' : ['MAD2'], \
                                      'siblings': [], \
                                      'auntsuncles' : [], \
-                                     'cousins' : ['NArw'], \
+                                     'cousins' : [NArw], \
                                      'children' : ['nmbr'], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
@@ -1084,7 +1084,7 @@ And here arethe series of family trees currently built into the internal library
     transform_dict.update({'MAD3' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['MAD3'], \
-                                     'cousins' : ['NArw'], \
+                                     'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
@@ -1093,7 +1093,7 @@ And here arethe series of family trees currently built into the internal library
     transform_dict.update({'mnmx' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['mnmx'], \
-                                     'cousins' : ['NArw'], \
+                                     'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
@@ -1102,7 +1102,7 @@ And here arethe series of family trees currently built into the internal library
     transform_dict.update({'mnm2' : {'parents' : ['nmbr'], \
                                      'siblings': [], \
                                      'auntsuncles' : ['mnmx'], \
-                                     'cousins' : ['NArw'], \
+                                     'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
@@ -1111,7 +1111,7 @@ And here arethe series of family trees currently built into the internal library
     transform_dict.update({'mnm3' : {'parents' : ['nmbr'], \
                                      'siblings': [], \
                                      'auntsuncles' : ['mnm3'], \
-                                     'cousins' : ['NArw'], \
+                                     'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
@@ -1120,7 +1120,7 @@ And here arethe series of family trees currently built into the internal library
     transform_dict.update({'mnm4' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['mnm3'], \
-                                     'cousins' : ['NArw'], \
+                                     'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
@@ -1129,7 +1129,7 @@ And here arethe series of family trees currently built into the internal library
     transform_dict.update({'mnm5' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['mnmx'], \
-                                     'cousins' : ['nmbr', 'NArw'], \
+                                     'cousins' : ['nmbr', NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
@@ -1138,7 +1138,7 @@ And here arethe series of family trees currently built into the internal library
     transform_dict.update({'mnm6' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['mnm6'], \
-                                     'cousins' : ['NArw'], \
+                                     'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
@@ -1155,7 +1155,7 @@ And here arethe series of family trees currently built into the internal library
     transform_dict.update({'date' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['date'], \
-                                     'cousins' : ['NArw'], \
+                                     'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
@@ -1163,16 +1163,25 @@ And here arethe series of family trees currently built into the internal library
     transform_dict.update({'dat2' : {'parents' : [], \
                                      'siblings': ['bshr', 'wkdy', 'hldy'], \
                                      'auntsuncles' : ['date'], \
-                                     'cousins' : ['NArw'], \
+                                     'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
     
+    transform_dict.update({'bxcx' : {'parents' : ['bxcx'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : ['nmbr'], \
+                                     'friends' : []}})
+    
     transform_dict.update({'bxc2' : {'parents' : ['bxc2'], \
                                      'siblings': ['nmbr'], \
                                      'auntsuncles' : [], \
-                                     'cousins' : ['NArw'], \
+                                     'cousins' : [NArw], \
                                      'children' : ['nmbr'], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
@@ -1181,7 +1190,7 @@ And here arethe series of family trees currently built into the internal library
     transform_dict.update({'bxc3' : {'parents' : ['bxc3'], \
                                      'siblings': [], \
                                      'auntsuncles' : [], \
-                                     'cousins' : ['NArw'], \
+                                     'cousins' : [NArw], \
                                      'children' : ['nmbr'], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
@@ -1190,7 +1199,7 @@ And here arethe series of family trees currently built into the internal library
     transform_dict.update({'bxc4' : {'parents' : ['bxc4'], \
                                      'siblings': [], \
                                      'auntsuncles' : [], \
-                                     'cousins' : ['NArw'], \
+                                     'cousins' : [NArw], \
                                      'children' : ['nbr2'], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
@@ -1199,7 +1208,7 @@ And here arethe series of family trees currently built into the internal library
     transform_dict.update({'pwrs' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['pwrs'], \
-                                     'cousins' : ['NArw'], \
+                                     'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
@@ -1208,7 +1217,7 @@ And here arethe series of family trees currently built into the internal library
     transform_dict.update({'log0' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['log0'], \
-                                     'cousins' : ['NArw'], \
+                                     'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
@@ -1217,7 +1226,7 @@ And here arethe series of family trees currently built into the internal library
     transform_dict.update({'log1' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['log0', 'pwrs'], \
-                                     'cousins' : ['NArw'], \
+                                     'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
@@ -1294,31 +1303,6 @@ And here arethe series of family trees currently built into the internal library
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
-    
-    
-
-    #initialize bxcx based on what was passed through application of automunge(.)
-    if powertransform == True:
-
-      transform_dict.update({'bxcx' : {'parents' : ['bxcx'], \
-                                       'siblings': ['nmbr'], \
-                                       'auntsuncles' : [], \
-                                       'cousins' : ['NArw'], \
-                                       'children' : ['nmbr'], \
-                                       'niecesnephews' : [], \
-                                       'coworkers' : [], \
-                                       'friends' : []}})
-
-    else:
-
-      transform_dict.update({'bxcx' : {'parents' : ['nmbr'], \
-                                       'siblings': [], \
-                                       'auntsuncles' : [], \
-                                       'cousins' : ['NArw'], \
-                                       'children' : [], \
-                                       'niecesnephews' : [bins], \
-                                       'coworkers' : [], \
-                                       'friends' : []}})
 ```
 
 Here is a quick description of the transformation functions associated 
