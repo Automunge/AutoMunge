@@ -7752,7 +7752,7 @@ class AutoMunge:
                              'process_dict' : process_dict, \
                              'ML_cmnd' : ML_cmnd, \
                              'printstatus' : printstatus, \
-                             'automungeversion' : '2.33' })
+                             'automungeversion' : '2.34' })
 
     
     
@@ -9089,7 +9089,13 @@ class AutoMunge:
     '''
     
     #retrieve normalization parameters from postprocess_dict
-    normkey = columnkey
+    for power in range(20):
+      power = str(power)
+      if (column + '_10^' + power) in postprocess_dict['column_dict']:
+        if (column + '_10^' + power) in postprocess_dict['column_dict'][(column + '_10^' + power)]['normalization_dict']:
+            normkey = (column + '_10^' + power)
+    
+    #normkey = columnkey
     
     meanlog = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['meanlog']
     maxlog = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['maxlog']
