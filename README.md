@@ -107,7 +107,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
                          'bnry':[], 'text':[], 'ordl':[], 'ord2':[], \
                          'date':[], 'dat2':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
                          'excl':[], 'exc2':[], 'exc3':[], 'null':[]}
-            assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], \
+            assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                             'adjinfill':[], 'meaninfill':[], 'medianinfill':[]}, \
             transformdict = {}, processdict = {}, \
             printstatus = True)
@@ -264,7 +264,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
                          'bnry':[], 'text':[], 'ordl':[], 'ord2':[], \
                          'date':[], 'dat2':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
                          'excl':[], 'exc2':[], 'exc3':[], 'null':[]}
-            assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], \
+            assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                             'adjinfill':[], 'meaninfill':[], 'medianinfill':[]}, \
             transformdict = {}, processdict = {}, \
             printstatus = True)
@@ -414,7 +414,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
                          'bnry':[], 'text':[], 'ordl':[], 'ord2':[], \
                          'date':[], 'dat2':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
                          'excl':[], 'exc2':[], 'exc3':[], 'null':[]}
-            assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], \
+            assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                             'adjinfill':[], 'meaninfill':[], 'medianinfill':[]}, \
             transformdict = {}, processdict = {}, \
             printstatus = True)
@@ -668,7 +668,7 @@ details on each of the built-in library of transformations below.
 ```
 #Here are the current infill options built into our library, which
 #we are continuing to build out.
-assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], \
+assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                 'adjinfill':[], 'meaninfill':[], 'medianinfill':[]}, \
 ```
 A user may add column identifier strings to each of these lists to 
@@ -677,12 +677,13 @@ improperly formated values. Note that this infill category defaults to
 MLinfill if nothing assigned and the MLinfill argument to automunge is
 set to True. stdrdinfill means: mean for numeric sets, most common for 
 binary, and new column boolean for categorical. zeroinfill means inserting 
-the integer 0 to missing cells. adjinfill means passing the value from the 
-preceding row to missing cells. meaninfill means inserting the mean 
-derived from the train set to numeric columns. medianinfill means 
-inserting the median derived from the train set to numeric columns. (Note
-currently boolean columns derived from numeric are not supported for 
-mean/median and for those cases default to those infill from stdrdinfill.)
+the integer 0 to missing cells. oneinfill means inserting the integer 1.
+adjinfill means passing the value from the preceding row to missing cells. 
+meaninfill means inserting the mean derived from the train set to numeric 
+columns. medianinfill means inserting the median derived from the train 
+set to numeric columns. (Note currently boolean columns derived from 
+numeric are not supported for mean/median and for those cases default to 
+those infill from stdrdinfill.)
 
 * transformdict: allows a user to pass a custom tree of transformations.
 Note that a user may define their own 4 character string "root"
