@@ -1643,7 +1643,13 @@ class AutoMunge:
 
     #create plug value for missing cells as most common value
     valuecounts = mdf_train[column + '_bnry'].value_counts().index.tolist()
-    binary_missing_plug = valuecounts[0]
+    
+    if len(valuecounts) > 1:
+      binary_missing_plug = valuecounts[0]
+    else:
+      #making an executive decision here to deviate from standardinfill of most common value
+      #for this edge case where a column evaluated as binary has only single value and NaN's
+      binary_missing_plug = 'plug'
     
     #test for nan
     if binary_missing_plug != binary_missing_plug:
@@ -3374,9 +3380,10 @@ class AutoMunge:
       #shapiro tests for normality, we'll use a common threshold p<0.05 to reject the normality hypothesis
       #stat, p = shapiro(df[column])
       stat, p = shapiro(df[pd.to_numeric(df[column], errors='coerce').notnull()][column])
-      if p > 0.05:
+      #a typical threshold to test for normality is >0.05, let's try a lower bar for this application
+      if p > 0.025:
         category = 'nmbr'
-      if p <= 0.05:
+      if p <= 0.025:
         #skewness helps recognize exponential distributions, reference wikipedia
         #reference from wikipedia
 #       A normal distribution and any other symmetric distribution with finite third moment has a skewness of 0
@@ -3388,7 +3395,8 @@ class AutoMunge:
         if skewness < 1.5:
           category = 'mnmx'
         else:
-          if powertransform == True:
+          #if powertransform == True:
+          if category in ['bxcx']:
             category = 'bxcx'
           else:
             category = 'MAD3'
@@ -5107,7 +5115,8 @@ class AutoMunge:
                     powertransform, binstransform, randomseed, \
                     numbercategoryheuristic, assigncat, transformdict, \
                     processdict, featurepct, featuremetric, featuremethod, \
-                    ML_cmnd, process_dict, valpercent1, valpercent2, printstatus):
+                    ML_cmnd, process_dict, valpercent1, valpercent2, printstatus, \
+                    NArw_marker):
     '''
     featureselect is a function called within automunge() that applies methods
     to evaluate predictive power of derived features towards a downstream model
@@ -5148,11 +5157,11 @@ class AutoMunge:
                   testID_column = False, valpercent1 = totalvalidation, valpercent2 = 0.0, \
                   shuffletrain = False, TrainLabelFreqLevel = False, powertransform = powertransform, \
                   binstransform = binstransform, MLinfill = False, infilliterate=1, randomseed = randomseed, \
-                  numbercategoryheuristic = numbercategoryheuristic, pandasoutput = True, \
+                  numbercategoryheuristic = numbercategoryheuristic, pandasoutput = True, NArw_marker = NArw_marker, \
                   featureselection = False, featurepct = 1.00, featuremetric = featuremetric, \
                   featuremethod = 'pct', ML_cmnd = FSML_cmnd, assigncat = assigncat, \
-                  assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'adjinfill':[], \
-                                 'meaninfill':[], 'medianinfill':[]}, \
+                  assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
+                                 'adjinfill':[], 'meaninfill':[], 'medianinfill':[]}, \
                   transformdict = transformdict, processdict = processdict, printstatus=printstatus)
     
     
@@ -5471,6 +5480,32 @@ class AutoMunge:
                            categorylist = categorylist, singlecolumncase=True)
 
     return df
+
+  def oneinfillfunction(self, df, column, postprocess_dict, \
+                        masterNArows):
+
+
+    #create infill dataframe of all zeros with number of rows corepsonding to the
+    #number of 1's found in masterNArows
+    NArw_columnname = \
+    postprocess_dict['column_dict'][column]['origcolumn'] + '_NArows'
+
+    NAcount = len(masterNArows[masterNArows[NArw_columnname] == 1])
+
+    infill = pd.DataFrame(np.ones((NAcount, 1)), columns=[column])
+    
+    category = postprocess_dict['column_dict'][column]['category']
+    columnslist = postprocess_dict['column_dict'][column]['columnslist']
+    categorylist = postprocess_dict['column_dict'][column]['categorylist']
+
+    #insert infill
+    df = self.insertinfill(df, column, infill, category, \
+                           pd.DataFrame(masterNArows[NArw_columnname]), \
+                           postprocess_dict, columnslist = columnslist, \
+                           categorylist = categorylist, singlecolumncase=True)
+
+    return df
+
 
   def adjinfillfunction(self, df, column, postprocess_dict, \
                         masterNArows):
@@ -6215,7 +6250,7 @@ class AutoMunge:
     PCAset_train = pd.DataFrame(np_PCAset_train, columns = columnnames)
     PCAset_test = pd.DataFrame(np_PCAset_test, columns = columnnames)
 
-    return PCAset_train, PCAset_test, postprocess_dict
+    return PCAset_train, PCAset_test, postprocess_dict, PCActgy
 
 
   def check_assigncat(self, assigncat):
@@ -6327,7 +6362,7 @@ class AutoMunge:
                              'bnry':[], 'text':[], 'ordl':[], 'ord2':[], \
                              'date':[], 'dat2':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
                              'excl':[], 'exc2':[], 'exc3':[], 'null':[]}, \
-                assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], \
+                assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                                 'adjinfill':[], 'meaninfill':[], 'medianinfill':[]}, \
                 transformdict = {}, processdict = {}, \
                 printstatus = True):
@@ -6448,7 +6483,7 @@ class AutoMunge:
                           powertransform, binstransform, randomseed, \
                           numbercategoryheuristic, assigncat, transformdict, \
                           processdict, featurepct, featuremetric, featuremethod, \
-                          ML_cmnd, process_dict, valpercent1, valpercent2, printstatus)
+                          ML_cmnd, process_dict, valpercent1, valpercent2, printstatus, NArw_marker)
      
     else:
     
@@ -7305,6 +7340,10 @@ class AutoMunge:
   
       columns_train_zero = postprocess_assigninfill_dict['zeroinfill']
     
+    if 'oneinfill' in postprocess_assigninfill_dict:
+  
+      columns_train_one = postprocess_assigninfill_dict['oneinfill']
+    
     if 'adjinfill' in postprocess_assigninfill_dict:
     
       columns_train_adj = postprocess_assigninfill_dict['adjinfill']
@@ -7383,6 +7422,34 @@ class AutoMunge:
               self.zeroinfillfunction(df_test, column, postprocess_dict, \
                                       masterNArows_test)
         
+        if 'oneinfill' in postprocess_assigninfill_dict:
+      
+          #for column in columns_train_zero:
+          if column in columns_train_one:
+            
+            #printout display progress
+            if printstatus == True:
+              print("infill to column: ", column)
+              print("     infill type: oneinfill")
+              print("")
+      
+            categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
+      
+            #if (column not in excludetransformscolumns) \
+            #if (column not in postprocess_assigninfill_dict['stdrdinfill']) \
+            #and (column[-5:] != '_NArw') \
+            #and (categorylistlength == 1):
+            if (column not in postprocess_assigninfill_dict['stdrdinfill']):
+              #noting that currently we're only going to infill 0 for single column categorylists
+              #some comparable address for multi-column categories is a future extension
+        
+              df_train = \
+              self.oneinfillfunction(df_train, column, postprocess_dict, \
+                                     masterNArows_train)
+        
+              df_test = \
+              self.oneinfillfunction(df_test, column, postprocess_dict, \
+                                     masterNArows_test)
 
         if 'adjinfill' in postprocess_assigninfill_dict:
             
@@ -7624,10 +7691,16 @@ class AutoMunge:
         self.createPCAsets(df_train, df_test, PCAexcl, postprocess_dict)
       
         #this is to train the PCA model and perform transforms on train and test set
-        PCAset_train, PCAset_test, postprocess_dict = \
+        PCAset_train, PCAset_test, postprocess_dict, PCActgy = \
         self.PCAfunction(PCAset_train, PCAset_test, PCAn_components, postprocess_dict, \
-                       randomseed, ML_cmnd)
-
+                         randomseed, ML_cmnd)
+        
+        #printout display progress
+        if printstatus == True:
+          print("PCA model applied: ")
+          print(PCActgy)
+          print("")
+        
         #reattach the excluded columns to PCA set
         df_train = pd.concat([PCAset_train, df_train[PCAexcl_posttransform]], axis=1)
         df_test = pd.concat([PCAset_test, df_test[PCAexcl_posttransform]], axis=1)
@@ -7752,7 +7825,7 @@ class AutoMunge:
                              'process_dict' : process_dict, \
                              'ML_cmnd' : ML_cmnd, \
                              'printstatus' : printstatus, \
-                             'automungeversion' : '2.34' })
+                             'automungeversion' : '2.35' })
 
     
     
@@ -10323,6 +10396,9 @@ class AutoMunge:
     if 'zeroinfill' in postprocess_assigninfill_dict:
       columns_train_zero = postprocess_assigninfill_dict['zeroinfill']
     
+    if 'oneinfill' in postprocess_assigninfill_dict:
+      columns_train_one = postprocess_assigninfill_dict['oneinfill']
+    
     if 'adjinfill' in postprocess_assigninfill_dict:
       columns_train_adj = postprocess_assigninfill_dict['adjinfill']
     
@@ -10396,6 +10472,30 @@ class AutoMunge:
               self.zeroinfillfunction(df_test, column, preFSpostprocess_dict, \
                                       masterNArows_test)    
 
+        if 'oneinfill' in postprocess_assigninfill_dict:
+
+          #for column in columns_train_zero:
+          if column in columns_train_one:
+            
+            #printout display progress
+            if printstatus == True:
+              print("infill to column: ", column)
+              print("     infill type: oneinfill")
+              print("")
+
+            categorylistlength = len(preFSpostprocess_dict['column_dict'][column]['categorylist'])
+
+#             #if (column not in excludetransformscolumns) \
+#             if (column not in postprocess_assigninfill_dict['stdrdinfill']) \
+#             and (column[-5:] != '_NArw') \
+#             and (categorylistlength == 1):
+            if (column not in postprocess_assigninfill_dict['stdrdinfill']):
+              #noting that currently we're only going to infill 0 for single column categorylists
+              #some comparable address for multi-column categories is a future extension
+
+              df_test = \
+              self.oneinfillfunction(df_test, column, preFSpostprocess_dict, \
+                                     masterNArows_test)
 
         if 'adjinfill' in postprocess_assigninfill_dict:
         
