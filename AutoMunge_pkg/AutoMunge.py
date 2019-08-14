@@ -190,7 +190,7 @@ class AutoMunge:
                                      'coworkers' : [], \
                                      'friends' : []}})
     
-    transform_dict.update({'nbr3' : {'parents' : ['nmbr'], \
+    transform_dict.update({'nbr3' : {'parents' : ['nbr3'], \
                                      'siblings': [], \
                                      'auntsuncles' : [], \
                                      'cousins' : [NArw], \
@@ -3810,6 +3810,7 @@ class AutoMunge:
     #initialize ML_cmnd
     #ML_cmnd = postprocess_dict['ML_cmnd']
     ML_cmnd = ML_cmnd
+
     
     MLinfilltype = postprocess_dict['process_dict'][category]['MLinfilltype']
     
@@ -6343,6 +6344,54 @@ class AutoMunge:
     
     return result
 
+  def check_transformdict(self, transformdict):
+    """
+    #Here we'll do a quick check for any entries in the user passed
+    #transformdict which don't have at least one replacement column specified
+    """
+    
+    result = False
+    
+    for transformkey in sorted(transformdict):
+      replacements = len(transformdict[transformkey]['parents']) \
+                     + len(transformdict[transformkey]['auntsuncles'])
+
+      if replacements == 0:
+        result = True
+        
+        print("Error: a root category was defined in the user passed trasnformdict")
+        print("without at least one replacement primitive for the root column.")
+        print("root category = ", transformkey)
+        print("Replacement primitives are 'parents' and 'auntsuncles'.")
+        print("If a user wishes to leave a column unaltered they can pass")
+        print("'excl' category as a replacement primitive.")
+        print("Please refer to the READ ME for more info on family tree primitives.")
+        print("")
+
+
+    return result
+
+  def check_ML_cmnd(self, ML_cmnd):
+    """
+    #Here we'll do a quick check for any entries in the user passed
+    #ML_cmnd and add any missing entries with default values
+    #a future extension should validate any entries
+    """
+    
+    result = False
+    
+    if 'MLinfill_type' not in ML_cmnd:
+      ML_cmnd.update({'MLinfill_type':'default'})
+    if 'MLinfill_cmnd' not in ML_cmnd:
+      ML_cmnd.update({'MLinfill_cmnd':{'RandomForestClassifier':{}, 'RandomForestRegressor':{}}})
+    if 'PCA_type' not in ML_cmnd:
+      ML_cmnd.update({'PCA_type':'default'})
+    if 'PCA_cmnd' not in ML_cmnd:
+      ML_cmnd.update({'PCA_cmnd':{}})
+
+
+    return result
+
   def automunge(self, df_train, df_test = False, labels_column = False, trainID_column = False, \
                 testID_column = False, valpercent1=0.0, valpercent2 = 0.0, \
                 shuffletrain = False, TrainLabelFreqLevel = False, powertransform = False, \
@@ -6361,7 +6410,7 @@ class AutoMunge:
                              'log0':[], 'log1':[], 'pwrs':[], \
                              'bnry':[], 'text':[], 'ordl':[], 'ord2':[], \
                              'date':[], 'dat2':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
-                             'excl':[], 'exc2':[], 'exc3':[], 'null':[]}, \
+                             'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'eval':[]}, \
                 assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                                 'adjinfill':[], 'meaninfill':[], 'medianinfill':[]}, \
                 transformdict = {}, processdict = {}, \
@@ -6420,6 +6469,7 @@ class AutoMunge:
     #quick check to ensure each column only assigned once in assigncat and assigninfill
     result1 = self.check_assigncat(assigncat)
     result2 = self.check_assigninfill(assigninfill)
+    result3 = self.check_ML_cmnd(ML_cmnd)
     
 #     #if we found any redundant column assignments
 #     if result1 == True or result2 = True:
@@ -6443,6 +6493,8 @@ class AutoMunge:
     transform_dict = self.assembletransformdict(powertransform, binstransform, NArw_marker)
     
     if bool(transformdict) != False:
+        
+      result4 = self.check_transformdict(transformdict)
       
 #       #first print a notification if we are overwriting anything
 #       for keytd in list(transformdict.keys()):
@@ -6801,10 +6853,16 @@ class AutoMunge:
               category = key
               category_test = key
               categorycomplete = True
-              
+                
               #printout display progress
               if printstatus == True:
                 print("evaluating column: ", column)
+                
+              #special case, if user assigned column to 'eval' then we'll run evalcategory
+              #passing a True for powertransform parameter
+              if key in ['eval']:
+                category = self.evalcategory(df_train, column, numbercategoryheuristic, True)
+                category_test = category
             
         if categorycomplete == False:
             
@@ -7825,7 +7883,7 @@ class AutoMunge:
                              'process_dict' : process_dict, \
                              'ML_cmnd' : ML_cmnd, \
                              'printstatus' : printstatus, \
-                             'automungeversion' : '2.35' })
+                             'automungeversion' : '2.36' })
 
     
     
@@ -7834,7 +7892,7 @@ class AutoMunge:
       #printout display progress
       if printstatus == True:
         print("_______________")
-        print("Begin Validation set processing with postmunge")
+        print("Begin Validation set processing with Postmunge")
         print("")
     
       #process validation set consistent to train set with postmunge here
@@ -7958,6 +8016,11 @@ class AutoMunge:
       print("Automunge returned column set: ")
       print(list(df_train))
       print("")
+        
+      if df_labels.empty == False:
+        print("Automunge returned label column set: ")
+        print(list(df_labels))
+        print("")
       
       print("_______________")
       print("Automunge Complete")
@@ -9826,6 +9889,7 @@ class AutoMunge:
     #the revision of these functions to accept pandas series is a
     #possible future extension
     '''
+
     
     if postprocess_dict['column_dict'][column]['infillcomplete'] == False \
     and postprocess_dict['column_dict'][column]['category'] not in ['date']:
@@ -9975,7 +10039,8 @@ class AutoMunge:
 
 
   def postmunge(self, postprocess_dict, df_test, testID_column = False, \
-                labelscolumn = False, pandasoutput = False, printstatus = True):
+                labelscolumn = False, pandasoutput = False, printstatus = True, \
+                TrainLabelFreqLevel = False):
     '''
     #postmunge(df_test, testID_column, postprocess_dict) Function that when fed a \
     #test data set coresponding to a previously processed train data set which was \
@@ -9994,6 +10059,12 @@ class AutoMunge:
     #columns to be excluded from processing.
     '''
     
+        
+    #printout display progress
+    if printstatus == True:
+      print("_______________")
+      print("Begin Postmunge processing")
+      print("")
     
     #initialize processing dicitonaries
     
@@ -10325,12 +10396,12 @@ class AutoMunge:
       #troubleshoot "find labels category"
       columnkey = postprocess_dict['origcolumn'][labels_column]['columnkey']        
       #traincategory = postprocess_dict['column_dict'][columnkey]['origcategory']
-      category = postprocess_dict['origcolumn'][labels_column]['category']
+      labelscategory = postprocess_dict['origcolumn'][labels_column]['category']
         
       if printstatus == True:
         #printout display progress
         print("processing label column: ", labels_column)
-        print("    root label category: ", category)
+        print("    root label category: ", labelscategory)
         print("")
     
 
@@ -10342,13 +10413,13 @@ class AutoMunge:
           
       #process family
       df_testlabels = \
-      self.postprocessfamily(df_testlabels, labels_column, category, category, process_dict, \
+      self.postprocessfamily(df_testlabels, labels_column, labelscategory, labelscategory, process_dict, \
                              transform_dict, preFSpostprocess_dict, columnkey)
          
           
       #delete columns subject to replacement
       df_testlabels = \
-      self.postcircleoflife(df_testlabels, labels_column, category, category, process_dict, \
+      self.postcircleoflife(df_testlabels, labels_column, labelscategory, labelscategory, process_dict, \
                             transform_dict, preFSpostprocess_dict, columnkey)
       
       #per our convention that NArw's aren't included in labels output 
@@ -10718,6 +10789,48 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
     
     
+    #here is the process to levelize the frequency of label rows in train data
+    #currently only label categories of 'bnry' or 'text' are considered
+    #a future extension will include numerical labels by adding supplemental 
+    #label columns to designate inclusion in some fractional bucket of the distribution
+    #e.g. such as quintiles for instance
+    if TrainLabelFreqLevel == True \
+    and labelscolumn != False:
+
+
+#       train_df = pd.DataFrame(np_train, columns = finalcolumns_train)
+#       labels_df = pd.DataFrame(np_labels, columns = finalcolumns_labels)
+      if testID_column != False:
+#         trainID_df = pd.DataFrame(np_trainID, columns = [trainID_column])
+        #add trainID set to train set for consistent processing
+#         train_df = pd.concat([train_df, trainID_df], axis=1)                        
+        df_test = pd.concat([df_test, df_testID], axis=1)                        
+      
+      
+      if postprocess_dict['process_dict'][labelscategory]['MLinfilltype'] \
+      in ['numeric', 'singlct', 'multirt', 'multisp', 'label']:
+        
+        #apply LabelFrequencyLevelizer defined function
+        df_test, df_testlabels = \
+        self.LabelFrequencyLevelizer(df_test, df_testlabels, labelsencoding_dict, \
+                                     postprocess_dict, process_dict)
+      
+
+      
+      #extract trainID
+      if testID_column != False:
+            
+        df_testID = pd.DataFrame(df_test[testID_column])
+        
+        if isinstance(testID_column, str):
+          tempIDlist = [testID_column]
+        elif isinstance(testID_column, list):
+          tempIDlist = testID_column
+        for IDcolumn in tempIDlist:
+          del df_test[IDcolumn]
+        #del df_train[trainID_column]
+    
+    
     
             
 #     #ok here we'll introduct the new functionality to process labels consistent to the train 
@@ -10823,6 +10936,11 @@ class AutoMunge:
       print("Postmunge returned column set: ")
       print(list(df_test))
       print("")
+        
+      if df_testlabels.empty == False:
+        print("Postmunge returned label column set: ")
+        print(list(df_testlabels))
+        print("")
         
       print("_______________")
       print("Postmunge Complete")
