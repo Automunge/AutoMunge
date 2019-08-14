@@ -106,7 +106,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
                          'log0':[], 'log1':[], 'pwrs':[], \
                          'bnry':[], 'text':[], 'ordl':[], 'ord2':[], \
                          'date':[], 'dat2':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
-                         'excl':[], 'exc2':[], 'exc3':[], 'null':[]}
+                         'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'eval':[]}
             assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                             'adjinfill':[], 'meaninfill':[], 'medianinfill':[]}, \
             transformdict = {}, processdict = {}, \
@@ -125,7 +125,8 @@ function to consistently process subsequently available data.
 test, testID, testlabels, \
 labelsencoding_dict, finalcolumns_test = \
 am.postmunge(postprocess_dict, df_test, testID_column = False, \
-             labelscolumn = False, pandasoutput=True, printstatus = True))
+             labelscolumn = False, pandasoutput=True, printstatus = True, \
+             TrainLabelFreqLevel = False):
 ```
 
 
@@ -263,7 +264,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
                          'log0':[], 'log1':[], 'pwrs':[], \
                          'bnry':[], 'text':[], 'ordl':[], 'ord2':[], \
                          'date':[], 'dat2':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
-                         'excl':[], 'exc2':[], 'exc3':[], 'null':[]}
+                         'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'eval':[]}
             assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                             'adjinfill':[], 'meaninfill':[], 'medianinfill':[]}, \
             transformdict = {}, processdict = {}, \
@@ -284,7 +285,8 @@ With the full set of arguments available to be passed as:
 
 ```
 am.postmunge(postprocess_dict, df_test, testID_column = False, \
-             labelscolumn = False, pandasoutput=True, printstatus = True))
+             labelscolumn = False, pandasoutput=True, printstatus = True, \
+             TrainLabelFreqLevel = False):
 ```
 
 Note that the only required argument to the automunge function is the
@@ -413,7 +415,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
                          'log0':[], 'log1':[], 'pwrs':[], \
                          'bnry':[], 'text':[], 'ordl':[], 'ord2':[], \
                          'date':[], 'dat2':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
-                         'excl':[], 'exc2':[], 'exc3':[], 'null':[]}
+                         'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'eval':[]}
             assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                             'adjinfill':[], 'meaninfill':[], 'medianinfill':[]}, \
             transformdict = {}, processdict = {}, \
@@ -650,7 +652,7 @@ such as could potentially result in memory savings.
                  'log0':[], 'log1':[], 'pwrs':[], \
                  'bnry':[], 'text':[], 'ordl':[], 'ord2':[], \
                  'date':[], 'dat2':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
-                 'excl':[], 'exc2':[], 'exc3':[], 'null':[]}
+                 'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'eval':[]}
 ```         
 
 A user may add column identifier strings to each
@@ -831,7 +833,8 @@ am = AutoMunge.AutoMunge()
 test, testID, testlabels, \
 labelsencoding_dict, finalcolumns_test = \
 am.postmunge(postprocess_dict, df_test, testID_column = False, \
-             labelscolumn = False, pandasoutput=True, printstatus = True))
+             labelscolumn = False, pandasoutput=True, printstatus = True, \
+             TrainLabelFreqLevel = False):
 ```
              
 
@@ -881,7 +884,8 @@ am = AutoMunge.AutoMunge()
 test, testID, testlabels, \
 labelsencoding_dict, finalcolumns_test = \
 am.postmunge(postprocess_dict, df_test, testID_column = False, \
-             labelscolumn = False, pandasoutput=True)
+             labelscolumn = False, pandasoutput=True, printstatus = True, \
+             TrainLabelFreqLevel = False):)
 ```
 
 * postprocess_dict: this is the dictionary returned from the initial
@@ -922,6 +926,14 @@ identification).
 
 * printstatus: user can pass True/False indicating whether the function 
 will print status of processing during operation. Defaults to True.
+
+* TrainLabelFreqLevel: a boolean identifier (True/False) which indicates
+if the TrainLabelFreqLevel method will be applied to oversample test
+data associated with underrepresented labels. The method adds multiples
+to test data rows for those labels with lower frequency resulting in
+an (approximately) levelized frequency. This defaults to False. Note that
+this feature may be applied to numerical label sets if the processing
+applied to the set includes standard deviation bins.
 
 ...
 
@@ -1338,6 +1350,8 @@ set (i.e. <-2, -2-1, -10, 01, 12, >2)
 * null: deletes source column
 * excl: passes source column un-altered
 * exc2: passes source column unaltered except for infill
+* eval: performs distribution property evaluation consistent with the automunge
+'powertransform' parameter to designated column
 
 
 ...
