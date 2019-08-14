@@ -7883,7 +7883,7 @@ class AutoMunge:
                              'process_dict' : process_dict, \
                              'ML_cmnd' : ML_cmnd, \
                              'printstatus' : printstatus, \
-                             'automungeversion' : '2.36' })
+                             'automungeversion' : '2.37' })
 
     
     
@@ -10894,6 +10894,20 @@ class AutoMunge:
 #     labelsencoding_dict = postprocess_dict['labelsencoding_dict']
     
     
+            
+    #printout display progress
+    if printstatus == True:
+      
+      print("Postmunge returned column set: ")
+      print(list(df_test))
+      print("")
+        
+      if labelscolumn != False:
+        print("Postmunge returned label column set: ")
+        print(list(df_testlabels))
+        print("")
+
+    
     #determine output type based on pandasoutput argument
     if pandasoutput == True:
       #global processing to test set including conversion to numpy array
@@ -10929,18 +10943,10 @@ class AutoMunge:
         
       else:
         testlabels = []
+
         
     #printout display progress
     if printstatus == True:
-      
-      print("Postmunge returned column set: ")
-      print(list(df_test))
-      print("")
-        
-      if df_testlabels.empty == False:
-        print("Postmunge returned label column set: ")
-        print(list(df_testlabels))
-        print("")
         
       print("_______________")
       print("Postmunge Complete")
