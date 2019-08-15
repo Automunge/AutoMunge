@@ -3215,10 +3215,22 @@ class AutoMunge:
     #if most common is date, set category to date
     if isinstance(df_checkdate['checkdate'][0], datemc[0][0]):
       category = 'date'
+    
+      if df[column].dtype.name == 'category':
+        if nunique <= 2:
+          category = 'bnry'
+        else:
+          category = 'text'
 
     #if most common in column is integer and > two values, set category to number of bxcx
     if isinstance(checkint, mc[0][0]) and nunique > 2:
-
+      
+      if df[column].dtype.name == 'category':
+        if nunique <= 2:
+          category = 'bnry'
+        else:
+          category = 'text'
+    
       #take account for numbercategoryheuristic
       #if df[column].nunique() / df[column].shape[0] < numbercategoryheuristic:
       #if nunique < numbercategoryheuristic:
@@ -3257,9 +3269,7 @@ class AutoMunge:
 #       or df[column].dtype.name == 'category':
 #       if df[column].dtype.name == 'category':
       if df[column].dtype.name == 'category':
-        if nunique == 3:
-          category = 'text'
-        elif nunique <= 2:
+        if nunique <= 2:
           category = 'bnry'
         else:
           category = 'text'
@@ -3291,10 +3301,6 @@ class AutoMunge:
       category = 'bnry'
 
 
-#     #if > 85% (ARBITRARY FIGURE) are NaN we'll just delete the column
-#     if df[column].isna().sum() >= df.shape[0] * 0.85:
-#       category = 'null'
-
     #else if most common in column is NaN, re-evaluate using the second most common type
     #(I suspect the below might have a bug somewhere but is working on my current 
     #tests so will leave be for now)
@@ -3316,6 +3322,11 @@ class AutoMunge:
       #if 2nd most common in column is integer and > two values, set category to number
       if isinstance(checkint, mc2[1][0]) and nunique > 2:
 
+        if df[column].dtype.name == 'category':
+          if nunique <= 2:
+            category = 'bnry'
+          else:
+            category = 'text'
 
 #         #take account for numbercategoryheuristic
 #         #if df[column].nunique() / df[column].shape[0] < numbercategoryheuristic:
@@ -3344,6 +3355,12 @@ class AutoMunge:
 
 #         else:
 
+        if df[column].dtype.name == 'category':
+          if nunique <= 2:
+            category = 'bnry'
+          else:
+            category = 'text'
+
         if df[column].nunique() <= 3:
 
           if nunique == 3:
@@ -3362,10 +3379,9 @@ class AutoMunge:
       #if 2nd most common in column is string and <= two values, set category to binary
       if isinstance(checkstring, mc2[1][0]) and nunique <= 2:
         category = 'bnry'
-        
-    #if > 85% (ARBITRARY FIGURE) are NaN we'll just delete the column
-    #if df[column].isna().sum() >= df.shape[0] * 0.85:
-    if df[column].isna().sum() > df.shape[0] * 0.8:
+
+    
+    if df[column].isna().sum() == df.shape[0]:
       category = 'null'
 
     if category == 'text':
@@ -3374,6 +3390,10 @@ class AutoMunge:
     
     #new statistical tests for numerical sets from v2.25
     #I don't consider mytself an expert here, these are kind of a placeholder while I conduct more research
+    
+    #default to 'nmbr' category instead of 'bxcx'
+    if category == 'bxcx' and powertransform == False:
+      category = 'nmbr'
     
     if category in ['nmbr', 'bxcx'] and powertransform == True:
     
@@ -6357,15 +6377,17 @@ class AutoMunge:
                      + len(transformdict[transformkey]['auntsuncles'])
 
       if replacements == 0:
+        
+        transformdict[transformkey]['auntsuncles'] = ['excl']
+        
         result = True
         
-        print("Error: a root category was defined in the user passed trasnformdict")
-        print("without at least one replacement primitive for the root column.")
+        print("Please note a category was defined in the user passed transformdict")
+        print("without at least one replacement primitive for the source column.")
         print("root category = ", transformkey)
-        print("Replacement primitives are 'parents' and 'auntsuncles'.")
-        print("If a user wishes to leave a column unaltered they can pass")
-        print("'excl' category as a replacement primitive.")
-        print("Please refer to the READ ME for more info on family tree primitives.")
+        print("Added auntsuncles primitive 'excl' to pass the original column unaltered.")
+        print("Please note ML infill or feature importance evaluation require all")
+        print("columns numerically encoded.")
         print("")
 
 
@@ -6467,9 +6489,9 @@ class AutoMunge:
     '''
     
     #quick check to ensure each column only assigned once in assigncat and assigninfill
-    result1 = self.check_assigncat(assigncat)
-    result2 = self.check_assigninfill(assigninfill)
-    result3 = self.check_ML_cmnd(ML_cmnd)
+    check_assigncat_result = self.check_assigncat(assigncat)
+    check_assigninfill_result = self.check_assigninfill(assigninfill)
+    check_ML_cmnd_result = self.check_ML_cmnd(ML_cmnd)
     
 #     #if we found any redundant column assignments
 #     if result1 == True or result2 = True:
@@ -6494,7 +6516,7 @@ class AutoMunge:
     
     if bool(transformdict) != False:
         
-      result4 = self.check_transformdict(transformdict)
+      check_transformdict_result = self.check_transformdict(transformdict)
       
 #       #first print a notification if we are overwriting anything
 #       for keytd in list(transformdict.keys()):
@@ -6871,59 +6893,56 @@ class AutoMunge:
             print("evaluating column: ", column)
           
           category = self.evalcategory(df_train, column, numbercategoryheuristic, powertransform)
-
-          #special case for categorical
-          if df_train[column].dtype.name == 'category':
-            category = 'text'
-
           
-          #let's make sure the category is consistent between train and test sets
-          #we'll only evaluate if we didn't use a dummy set for df_set
-          if test_plug_marker != True:
-            category_test = self.evalcategory(df_test, column, numbercategoryheuristic, powertransform)
+#           #let's make sure the category is consistent between train and test sets
+#           #we'll only evaluate if we didn't use a dummy set for df_set
+#           if test_plug_marker != True:
+#             category_test = self.evalcategory(df_test, column, numbercategoryheuristic, powertransform)
             
-            #special case for categorical
-            if df_test[column].dtype.name == 'category':
-              category_test = 'text'
-            
-          else:
-            category_test = category
+#           else:
+#             category_test = category
 
 
         
-          #for the special case of train category = bxcx and test category = nmbr
-          #(meaning there were no negative values in train but there were in test)
-          #we'll resolve by reseting the train category to nmbr
-          if category == 'bxcx' and category_test == 'nmbr':
-            category = 'nmbr'
+#           #for the special case of train category = bxcx and test category = nmbr
+#           #(meaning there were no negative values in train but there were in test)
+#           #we'll resolve by reseting the train category to nmbr
+#           if category == 'bxcx' and category_test == 'nmbr':
+#             category = 'nmbr'
 
-          #one more bxcx special case: if user elects not to apply boxcox transform
-          #default to 'nmbr' category instead of 'bxcx'
-          if category == 'bxcx' and powertransform == False:
-            category = 'nmbr'
-            category_test = 'nmbr'
+#           #one more bxcx special case: if user elects not to apply boxcox transform
+#           #default to 'nmbr' category instead of 'bxcx'
+#           if category == 'bxcx' and powertransform == False:
+#             category = 'nmbr'
+#             category_test = 'nmbr'
 
-          #one more special case, if train was a numerical set to categorical based
-          #on heuristic, let's force test to as well
-          if category == 'text' and category_test == 'nmbr':
-            category_test = 'text'
+#           #one more special case, if train was a numerical set to categorical based
+#           #on heuristic, let's force test to as well
+#           if category == 'text' and category_test == 'nmbr':
+#             category_test = 'text'
         
-          #special case for bug fix, need because these are part of the evalcategory outputs
-#           if (category == 'text' or category == 'ordl') and category_test == 'bnry':
-#               category_test = category
-          if category in ['text', 'ordl', 'bnry'] and category_test in ['text', 'ordl', 'bnry']:
-            category_test = category
-          if category in ['nmbr', 'bxcx', 'mnmx', 'MAD3'] and category_test in ['nmbr', 'bxcx', 'mnmx', 'MAD3']:
-            category_test = category
-          if category == 'null':
-            category_test = category
+#           #special case for bug fix, need because these are part of the evalcategory outputs
+# #           if (category == 'text' or category == 'ordl') and category_test == 'bnry':
+# #               category_test = category
+#           if category in ['text', 'ordl', 'bnry'] and category_test in ['text', 'ordl', 'bnry']:
+#             category_test = category
+#           if category in ['nmbr', 'bxcx', 'mnmx', 'MAD3'] and category_test in ['nmbr', 'bxcx', 'mnmx', 'MAD3']:
+#             category_test = category
+#           if category == 'null':
+#             category_test = category
         
-        #otherwise if train category != test category return error
-        if category != category_test:
-          print('error - different category between train and test sets for column ',\
-               column)
+#         #otherwise if train category != test category return error
+#         if category != category_test:
+#           print('error - different category between train and test sets for column ',\
+#                column)
 
-
+        #Previously had a few methods here to validate consistensy of data between train
+        #and test sets. Found it was introducing too much complexity and was having trouble
+        #keeping track of all the edge cases. So let's just make outright assumption that
+        #test data if passed is consistently formatted as train data (for now)
+        #added benefit that this reduces running time
+        if True == False:
+          pass
 
         #so if we didn't find discrepency let's proceed
         else:
@@ -7883,7 +7902,7 @@ class AutoMunge:
                              'process_dict' : process_dict, \
                              'ML_cmnd' : ML_cmnd, \
                              'printstatus' : printstatus, \
-                             'automungeversion' : '2.37' })
+                             'automungeversion' : '2.38' })
 
     
     
