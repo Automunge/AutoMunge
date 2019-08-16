@@ -2601,10 +2601,22 @@ class AutoMunge:
     mdf_train[column] = pd.to_numeric(mdf_train[column], errors='coerce')
     mdf_test[column] = pd.to_numeric(mdf_test[column], errors='coerce')
     
+    #convert all values <= 0 to Nan
+    mdf_train[column] = \
+    np.where(mdf_train[column] <= 0, np.nan, mdf_train[column].values)
+    mdf_test[column] = \
+    np.where(mdf_test[column] <= 0, np.nan, mdf_test[column].values)
+    
     #log transform column
     #note that this replaces negative values with nan which we will infill with meanlog
-    mdf_train[column] = np.floor(np.log10(mdf_train[column]))
-    mdf_test[column] = np.floor(np.log10(mdf_test[column]))
+#     mdf_train[column] = np.floor(np.log10(mdf_train[column]))
+#     mdf_test[column] = np.floor(np.log10(mdf_test[column]))
+    mdf_train[column] = \
+    np.where(mdf_train[column] != np.nan, np.floor(np.log10(mdf_train[column])), mdf_train[column].values)
+    mdf_test[column] = \
+    np.where(mdf_test[column] != np.nan, np.floor(np.log10(mdf_test[column])), mdf_test[column].values)
+
+
     
     #get mean of train set
     meanlog = np.floor(mdf_train[column].mean())
@@ -5221,6 +5233,12 @@ class AutoMunge:
       
       labelctgy = labelctgy[-4:]
         
+      #printout display progress
+      if printstatus == True:
+        print("_______________")
+        print("Training feature importance evaluation model")
+        print("")
+        
       #apply function trainFSmodel
       #FSmodel, baseaccuracy = \
       FSmodel = \
@@ -5256,6 +5274,13 @@ class AutoMunge:
                                         'baseaccuracy' : baseaccuracy, \
                                         'metric' : None, \
                                         'metric2' : None}})
+        
+      #printout display progress
+      if printstatus == True:
+        print("_______________")
+        print("Evaluating feature importances")
+        print("")
+        
         
       #perform feature evaluation on each column
       for column in am_train_columns:
@@ -7868,7 +7893,9 @@ class AutoMunge:
     postprocess_dict.update({'origtraincolumns' : columns_train, \
                              'finalcolumns_train' : finalcolumns_train, \
                              'labels_column' : labels_column, \
+                             'finalcolumns_labels' : list(df_labels), \
                              'trainID_column' : trainID_column, \
+                             'finalcolumns_trainID' : list(df_trainID), \
                              'testID_column' : testID_column, \
                              'valpercent1' : valpercent1, \
                              'valpercent2' : valpercent2, \
@@ -7902,7 +7929,7 @@ class AutoMunge:
                              'process_dict' : process_dict, \
                              'ML_cmnd' : ML_cmnd, \
                              'printstatus' : printstatus, \
-                             'automungeversion' : '2.38' })
+                             'automungeversion' : '2.39' })
 
     
     
@@ -9264,9 +9291,15 @@ class AutoMunge:
     #convert all values to either numeric or NaN
     mdf_test[column] = pd.to_numeric(mdf_test[column], errors='coerce')
     
+    #convert all values <= 0 to Nan
+    mdf_test[column] = \
+    np.where(mdf_test[column] <= 0, np.nan, mdf_test[column].values)
+    
     #log transform column
     #note that this replaces negative values with nan which we will infill with meanlog
-    mdf_test[column] = np.floor(np.log10(mdf_test[column]))
+#     mdf_test[column] = np.floor(np.log10(mdf_test[column]))
+    mdf_test[column] = \
+    np.where(mdf_test[column] != np.nan, np.floor(np.log10(mdf_test[column])), mdf_test[column].values)
     
     #replace missing data with training set mean
     mdf_test[column] = mdf_test[column].fillna(meanlog)
