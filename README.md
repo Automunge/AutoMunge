@@ -1606,8 +1606,8 @@ automunge platform. Feedback is welcome.
 
 ...
 
-As a citation, please note that the Automunge package makes use of both
-the Pandas and Sciki-learn libraries.
+As a citation, please note that the Automunge package makes use of 
+the Pandas, Sciki-learn, and NumPy libraries.
 
 Wes McKinney. Data Structures for Statistical Computing in Python,
 Proceedings of the 9th Python in Science Conference, 51-56 (2010)
@@ -1621,6 +1621,9 @@ Cournapeau, Matthieu Brucher, Matthieu Perrot, Édouard Duchesnay.
 Scikit-learn: Machine Learning in Python, Journal of Machine Learning
 Research, 12, 2825-2830 (2011) [publisher
 link](http://jmlr.org/papers/v12/pedregosa11a.html)
+
+Sorry I don't know paper to cite, but Numpy website at:
+https://www.numpy.org/
 
 ...
 
