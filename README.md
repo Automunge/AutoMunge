@@ -6,8 +6,8 @@ The automunge(.) function takes as input structured training data intended
 to train a machine learning model with any corresponding labels if available 
 included in the set, and also if available consistently formatted test  data 
 that can then be used to generate predictions from that trained model. When 
-fed pandas dataframes for these sets the function returns a series of 
-transformed numpy arrays (or pandas dataframes depending on selection) which 
+fed pandas dataframes or numpy arrays for these sets the function returns a 
+series of transformed numpy arrays or pandas dataframes per a selection which 
 are numerically encoded and suitable for the direct application of machine 
 learning algorithms. A user has an option between default feature engineering 
 based on inferred properties of the data with feature transformations such as 
@@ -132,11 +132,11 @@ am.postmunge(postprocess_dict, df_test, testID_column = False, \
 
 
 The functions depend on pandas dataframe formatted train and test data
-with consistent column labels (column headers are required). The functions 
-return Numpy arrays numerically encoded and normalized such as to make 
-them suitable for direct application to a machine learning model in the 
-framework of a user's choice, including sets for the various activities of 
-a generic machine learning project such as training, hyperparameter tuning
+or numpy arrays with consistent order of columns. The functions return 
+numpy arrays or pandas dataframes numerically encoded and normalized such 
+as to make them suitable for direct application to a machine learning model 
+in the framework of a user's choice, including sets for the various activities
+of a generic machine learning project such as training, hyperparameter tuning
 validation (validation1), final  validation (validation2), or data intended 
 for use in generation of predictions from the trained model (test set). The
 functions also return a few other sets such as labels, column headers,
@@ -422,28 +422,28 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
             printstatus = True)
 ```
 
-* df_train: a pandas dataframe containing a structured dataset intended
-for use to subsequently train a machine learning model. The set at a
-minimum should be 'tidy' meaning a single column per feature and a
-single row per observation. If desired the set may include a row ID
+* df_train: a pandas dataframe or numpy array containing a structured 
+dataset intended for use to subsequently train a machine learning model. 
+The set at a minimum should be 'tidy' meaning a single column per feature 
+and a single row per observation. If desired the set may include a row ID
 column and a column intended to be used as labels for a downstream
-training operation. The set must have string column headers. The tool
-supports the inclusion of non-index-range column as index or multicolumn 
-index (requires named index columns). Such index types are added to the 
-returned "ID" sets which are consistently shuffled and partitioned as 
-the train and test sets.
+training operation. The tool supports the inclusion of non-index-range 
+column as index or multicolumn index (requires named index columns). Such 
+index types are added to the returned "ID" sets which are consistently 
+shuffled and partitioned as the train and test sets. 
 
-* df_test: a pandas dataframe containing a structured dataset intended for
-use to generate predictions from a downstream machine learning model
-trained from the automunge returned sets. The set must be consistantly
-formated as the train set with consistent column labels (This set may 
-optionally contain a labels column if one was included in the train set 
-although it's inclusion is not required). If desired the set may include 
-a row ID column or a column intended for use as labels. A user may pass 
-False if this set not available. The tool supports the inclusion of non-
-index-range column as index or multicolumn index (requires named index 
-columns). Such index types are added to the returned "ID" sets which are 
-consistently shuffled and partitioned as the train and test sets.
+* df_test: a pandas dataframe or numpy array containing a structured 
+dataset intended for use to generate predictions from a downstream machine 
+learning model trained from the automunge returned sets. The set must be 
+consistantly formated as the train set with consistent column labels and/or
+order of columns. (This set may optionally contain a labels column if one 
+was included in the train set although it's inclusion is not required). If 
+desired the set may include a row ID column or a column intended for use as 
+labels. A user may pass False if this set not available. The tool supports 
+the inclusion of non-index-range column as index or multicolumn index 
+(requires named index columns). Such index types are added to the returned 
+"ID" sets which are consistently shuffled and partitioned as the train and 
+test sets.
 
 * labels_column: a string of the column title for the column from the
 df_train set intended for use as labels in training a downstream machine
@@ -897,14 +897,15 @@ dictionary is not available a user can feed this subsequent test data to
 the automunge along with the original train data exactly as was used in
 the original automunge call.
 
-* df_test: a pandas dataframe containing a structured dataset intended for
-use to generate predictions from a machine learning model trained from
-the automunge returned sets. The set must be consistantly formated as
-the train set with consistent column labels. If desired the set may
-include an ID column. The tool supports the inclusion of non-index-range 
-column as index or multicolumn index (requires named index columns). Such 
-index types are added to the returned "ID" sets which are consistently 
-shuffled and partitioned as the train and test sets.
+* df_test: a pandas dataframe or numpy array containing a structured 
+dataset intended for use to generate predictions from a machine learning 
+model trained from the automunge returned sets. The set must be consistantly 
+formated as the train set with consistent order of columns and if labels are
+included consistent labels. If desired the set may include an ID column. The 
+tool supports the inclusion of non-index-range column as index or multicolumn 
+index (requires named index columns). Such index types are added to the 
+returned "ID" sets which are consistently shuffled and partitioned as the 
+train and test sets.
 
 * testID_column: a string of the column title for the column from the
 df_test set intended for use as a row identifier value (such as could be
