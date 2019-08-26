@@ -6596,6 +6596,22 @@ class AutoMunge:
       print("_______________")
       print("Begin Automunge processing")
       print("")
+    
+        
+    #functionality to support passed numpy arrays
+    #if passed object was a numpy array, convert to pandas dataframe
+    checknp = np.array([])
+    if isinstance(checknp, type(df_train)):
+      df_train = pd.DataFrame(df_train)
+    if isinstance(checknp, type(df_test)):
+      df_test = pd.DataFrame(df_test)
+    
+
+    #this converts any numeric columns labels, such as from a passed numpy array, to strings
+    trainlabels=[]
+    for column in list(df_train):
+      trainlabels.append(str(column))
+    df_train.columns = trainlabels
 
     #we'll introduce convention that if df_test provided as False then we'll create
     #a dummy set derived from df_train's first 10 rows
@@ -6607,11 +6623,18 @@ class AutoMunge:
       test_plug_marker = True
       if labels_column != False:
         del df_test[labels_column]
+        
+    #this converts any numeric columns labels, such as from a passed numpy array, to strings
+    testlabels=[]
+    for column in list(df_test):
+      testlabels.append(str(column))
+    df_test.columns = testlabels
     
     #copy input dataframes to internal state so as not to edit exterior objects
     df_train = df_train.copy()
     df_test = df_test.copy()
     
+
     
 #     if type(df_train.index) != pd.RangeIndex:
 #       #if df_train.index.names == [None]:
@@ -7929,7 +7952,7 @@ class AutoMunge:
                              'process_dict' : process_dict, \
                              'ML_cmnd' : ML_cmnd, \
                              'printstatus' : printstatus, \
-                             'automungeversion' : '2.39' })
+                             'automungeversion' : '2.40' })
 
     
     
@@ -10117,6 +10140,18 @@ class AutoMunge:
       print("_______________")
       print("Begin Postmunge processing")
       print("")
+    
+    #functionality to support passed numpy arrays
+    #if passed object was a numpy array, convert to pandas dataframe
+    checknp = np.array([])
+    if isinstance(checknp, type(df_test)):
+      df_test = pd.DataFrame(df_test)
+    
+    #this converts any numeric columns labels, such as from a passed numpy array, to strings
+    testlabels=[]
+    for column in list(df_test):
+      testlabels.append(str(column))
+    df_test.columns = testlabels
     
     #initialize processing dicitonaries
     
