@@ -126,7 +126,7 @@ test, testID, testlabels, \
 labelsencoding_dict, finalcolumns_test = \
 am.postmunge(postprocess_dict, df_test, testID_column = False, \
              labelscolumn = False, pandasoutput=True, printstatus = True, \
-             TrainLabelFreqLevel = False):
+             TrainLabelFreqLevel = False, featureeval = False):
 ```
 
 
@@ -834,7 +834,7 @@ test, testID, testlabels, \
 labelsencoding_dict, finalcolumns_test = \
 am.postmunge(postprocess_dict, df_test, testID_column = False, \
              labelscolumn = False, pandasoutput=True, printstatus = True, \
-             TrainLabelFreqLevel = False):
+             TrainLabelFreqLevel = False, featureeval = False):
 ```
              
 
@@ -885,7 +885,7 @@ test, testID, testlabels, \
 labelsencoding_dict, finalcolumns_test = \
 am.postmunge(postprocess_dict, df_test, testID_column = False, \
              labelscolumn = False, pandasoutput=True, printstatus = True, \
-             TrainLabelFreqLevel = False):)
+             TrainLabelFreqLevel = False, featureeval = False)
 ```
 
 * postprocess_dict: this is the dictionary returned from the initial
@@ -935,6 +935,12 @@ to test data rows for those labels with lower frequency resulting in
 an (approximately) levelized frequency. This defaults to False. Note that
 this feature may be applied to numerical label sets if the processing
 applied to the set includes standard deviation bins.
+
+* featureeval: a boolean identifier (True/False) to activate a feature
+importqance evaluationl, comparable to one performed in automunge but based
+on the test set passed to postmunge. Currently the results report is not
+returned as an object, the results are printed in the output (for backward
+compatibility).
 
 ...
 
