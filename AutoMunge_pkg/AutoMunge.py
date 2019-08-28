@@ -10400,7 +10400,7 @@ class AutoMunge:
     print("")
         
     #to inspect values returned in featureimportance object one could run
-    for keys,values in featureimportance.items():
+    for keys,values in FScolumn_dict.items():
       print(keys)
       print('metric = ', values['metric'])
       print('metric2 = ', values['metric2'])
