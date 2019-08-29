@@ -6746,7 +6746,6 @@ class AutoMunge:
         df_testID = pd.DataFrame()
     else:
       df_testID = pd.DataFrame()
-
     
     
     #carve out the validation rows
@@ -7952,7 +7951,7 @@ class AutoMunge:
                              'process_dict' : process_dict, \
                              'ML_cmnd' : ML_cmnd, \
                              'printstatus' : printstatus, \
-                             'automungeversion' : '2.41' })
+                             'automungeversion' : '2.42' })
 
     
     
