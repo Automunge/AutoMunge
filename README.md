@@ -1649,4 +1649,4 @@ The AutoMunge website is helpfully located at URL
 
 ...
 
-Patent Pending
+Patent Pending, application 16552857
