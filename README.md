@@ -106,7 +106,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
                          'log0':[], 'log1':[], 'pwrs':[], \
                          'bnry':[], 'text':[], 'ordl':[], 'ord2':[], \
                          'date':[], 'dat2':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
-                         'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'eval':[]}
+                         'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'eval':[]}, \
             assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                             'adjinfill':[], 'meaninfill':[], 'medianinfill':[]}, \
             transformdict = {}, processdict = {}, \
@@ -264,7 +264,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
                          'log0':[], 'log1':[], 'pwrs':[], \
                          'bnry':[], 'text':[], 'ordl':[], 'ord2':[], \
                          'date':[], 'dat2':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
-                         'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'eval':[]}
+                         'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'eval':[]}, \
             assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                             'adjinfill':[], 'meaninfill':[], 'medianinfill':[]}, \
             transformdict = {}, processdict = {}, \
@@ -415,7 +415,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
                          'log0':[], 'log1':[], 'pwrs':[], \
                          'bnry':[], 'text':[], 'ordl':[], 'ord2':[], \
                          'date':[], 'dat2':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
-                         'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'eval':[]}
+                         'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'eval':[]}, \
             assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                             'adjinfill':[], 'meaninfill':[], 'medianinfill':[]}, \
             transformdict = {}, processdict = {}, \
