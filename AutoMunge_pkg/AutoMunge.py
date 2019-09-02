@@ -4085,12 +4085,11 @@ class AutoMunge:
         #create copy of df_train to serve as training set for fill
         df_train_filltrain = df_train.copy()
         #now delete rows coresponding to True
-        df_train_filltrain = df_train_filltrain[df_train_filltrain[trainNArows.columns.get_values()[0]] == False]
-        
+        df_train_filltrain = df_train_filltrain[df_train_filltrain[trainNArows.columns[0]] == False]
 
         #now delete columns = columnslist and the NA labels (orig column+'_NArows') from this df
         df_train_filltrain = df_train_filltrain.drop(columnslist, axis=1)
-        df_train_filltrain = df_train_filltrain.drop([trainNArows.columns.get_values()[0]], axis=1)
+        df_train_filltrain = df_train_filltrain.drop([trainNArows.columns[0]], axis=1)
 
 
 
@@ -4099,33 +4098,33 @@ class AutoMunge:
         #concatinate with the NArows
         df_train_filllabel = pd.concat([df_train_filllabel, trainNArows], axis=1)
         #drop rows corresponding to True
-        df_train_filllabel = df_train_filllabel[df_train_filllabel[trainNArows.columns.get_values()[0]] == False]
+        df_train_filllabel = df_train_filllabel[df_train_filllabel[trainNArows.columns[0]] == False]
 
         #delete the NArows column
-        df_train_filllabel = df_train_filllabel.drop([trainNArows.columns.get_values()[0]], axis=1)
+        df_train_filllabel = df_train_filllabel.drop([trainNArows.columns[0]], axis=1)
 
         #create features df_train for rows needing infill
         #create copy of df_train (note it already has NArows included)
         df_train_fillfeatures = df_train.copy()
         #delete rows coresponding to False
-        df_train_fillfeatures = df_train_fillfeatures[(df_train_fillfeatures[trainNArows.columns.get_values()[0]])]
+        df_train_fillfeatures = df_train_fillfeatures[(df_train_fillfeatures[trainNArows.columns[0]])]
         #delete columnslist and column+'_NArows'
         df_train_fillfeatures = df_train_fillfeatures.drop(columnslist, axis=1)
-        df_train_fillfeatures = df_train_fillfeatures.drop([trainNArows.columns.get_values()[0]], axis=1)
+        df_train_fillfeatures = df_train_fillfeatures.drop([trainNArows.columns[0]], axis=1)
 
 
         #create features df_test for rows needing infill
         #create copy of df_test (note it already has NArows included)
         df_test_fillfeatures = df_test.copy()
         #delete rows coresponding to False
-        df_test_fillfeatures = df_test_fillfeatures[(df_test_fillfeatures[testNArows.columns.get_values()[0]])]
+        df_test_fillfeatures = df_test_fillfeatures[(df_test_fillfeatures[testNArows.columns[0]])]
         #delete column and column+'_NArows'
         df_test_fillfeatures = df_test_fillfeatures.drop(columnslist, axis=1)
-        df_test_fillfeatures = df_test_fillfeatures.drop([testNArows.columns.get_values()[0]], axis=1)
+        df_test_fillfeatures = df_test_fillfeatures.drop([testNArows.columns[0]], axis=1)
 
         #delete NArows from df_train, df_test
-        df_train = df_train.drop([trainNArows.columns.get_values()[0]], axis=1)
-        df_test = df_test.drop([testNArows.columns.get_values()[0]], axis=1)
+        df_train = df_train.drop([trainNArows.columns[0]], axis=1)
+        df_test = df_test.drop([testNArows.columns[0]], axis=1)
 
 
 
@@ -4148,11 +4147,11 @@ class AutoMunge:
         #create copy of df_train to serve as training set for fill
         df_train_filltrain = df_train.copy()
         #now delete rows coresponding to True
-        df_train_filltrain = df_train_filltrain[df_train_filltrain[trainNArows.columns.get_values()[0]] == False]
+        df_train_filltrain = df_train_filltrain[df_train_filltrain[trainNArows.columns[0]] == False]
 
         #now delete columns = columnslist and the NA labels (orig column+'_NArows') from this df
         df_train_filltrain = df_train_filltrain.drop(columnslist, axis=1)
-        df_train_filltrain = df_train_filltrain.drop([trainNArows.columns.get_values()[0]], axis=1)
+        df_train_filltrain = df_train_filltrain.drop([trainNArows.columns[0]], axis=1)
 
 
         #create a copy of df_train[categorylist] for fill train labels
@@ -4160,36 +4159,36 @@ class AutoMunge:
         #concatinate with the NArows
         df_train_filllabel = pd.concat([df_train_filllabel, trainNArows], axis=1)
         #drop rows corresponding to True
-        df_train_filllabel = df_train_filllabel[df_train_filllabel[trainNArows.columns.get_values()[0]] == False]
+        df_train_filllabel = df_train_filllabel[df_train_filllabel[trainNArows.columns[0]] == False]
 
 
 
         #delete the NArows column
-        df_train_filllabel = df_train_filllabel.drop([trainNArows.columns.get_values()[0]], axis=1)
+        df_train_filllabel = df_train_filllabel.drop([trainNArows.columns[0]], axis=1)
 
 
         #create features df_train for rows needing infill
         #create copy of df_train (note it already has NArows included)
         df_train_fillfeatures = df_train.copy()
         #delete rows coresponding to False
-        df_train_fillfeatures = df_train_fillfeatures[(df_train_fillfeatures[trainNArows.columns.get_values()[0]])]
+        df_train_fillfeatures = df_train_fillfeatures[(df_train_fillfeatures[trainNArows.columns[0]])]
         #delete columnslist and column+'_NArows'
         df_train_fillfeatures = df_train_fillfeatures.drop(columnslist, axis=1)
-        df_train_fillfeatures = df_train_fillfeatures.drop([trainNArows.columns.get_values()[0]], axis=1)
+        df_train_fillfeatures = df_train_fillfeatures.drop([trainNArows.columns[0]], axis=1)
 
 
         #create features df_test for rows needing infill
         #create copy of df_test (note it already has NArows included)
         df_test_fillfeatures = df_test.copy()
         #delete rows coresponding to False
-        df_test_fillfeatures = df_test_fillfeatures[(df_test_fillfeatures[testNArows.columns.get_values()[0]])]
+        df_test_fillfeatures = df_test_fillfeatures[(df_test_fillfeatures[testNArows.columns[0]])]
         #delete column and column+'_NArows'
         df_test_fillfeatures = df_test_fillfeatures.drop(columnslist, axis=1)
-        df_test_fillfeatures = df_test_fillfeatures.drop([testNArows.columns.get_values()[0]], axis=1)
+        df_test_fillfeatures = df_test_fillfeatures.drop([testNArows.columns[0]], axis=1)
 
         #delete NArows from df_train, df_test
-        df_train = df_train.drop([trainNArows.columns.get_values()[0]], axis=1)
-        df_test = df_test.drop([testNArows.columns.get_values()[0]], axis=1)
+        df_train = df_train.drop([trainNArows.columns[0]], axis=1)
+        df_test = df_test.drop([testNArows.columns[0]], axis=1)
 
 
 
@@ -7951,7 +7950,7 @@ class AutoMunge:
                              'process_dict' : process_dict, \
                              'ML_cmnd' : ML_cmnd, \
                              'printstatus' : printstatus, \
-                             'automungeversion' : '2.42' })
+                             'automungeversion' : '2.43' })
 
     
     
@@ -9627,11 +9626,11 @@ class AutoMunge:
   #       #create copy of df_train to serve as training set for fill
   #       df_train_filltrain = df_train.copy()
   #       #now delete rows coresponding to True
-  #       df_train_filltrain = df_train_filltrain[df_train_filltrain[trainNArows.columns.get_values()[0]] == False]
+  #       df_train_filltrain = df_train_filltrain[df_train_filltrain[trainNArows.columns[0]] == False]
 
   #       #now delete columns = columnslist and the NA labels (orig column+'_NArows') from this df
   #       df_train_filltrain = df_train_filltrain.drop(columnslist, axis=1)
-  #       df_train_filltrain = df_train_filltrain.drop([trainNArows.columns.get_values()[0]], axis=1)
+  #       df_train_filltrain = df_train_filltrain.drop([trainNArows.columns[0]], axis=1)
 
 
   #       #create a copy of df_train[column] for fill train labels
@@ -9639,33 +9638,33 @@ class AutoMunge:
   #       #concatinate with the NArows
   #       df_train_filllabel = pd.concat([df_train_filllabel, trainNArows], axis=1)
   #       #drop rows corresponding to True
-  #       df_train_filllabel = df_train_filllabel[df_train_filllabel[trainNArows.columns.get_values()[0]] == False]
+  #       df_train_filllabel = df_train_filllabel[df_train_filllabel[trainNArows.columns[0]] == False]
 
   #       #delete the NArows column
-  #       df_train_filllabel = df_train_filllabel.drop([trainNArows.columns.get_values()[0]], axis=1)
+  #       df_train_filllabel = df_train_filllabel.drop([trainNArows.columns[0]], axis=1)
 
   #       #create features df_train for rows needing infill
   #       #create copy of df_train (note it already has NArows included)
   #       df_train_fillfeatures = df_train.copy()
   #       #delete rows coresponding to False
-  #       df_train_fillfeatures = df_train_fillfeatures[(df_train_fillfeatures[trainNArows.columns.get_values()[0]])]
+  #       df_train_fillfeatures = df_train_fillfeatures[(df_train_fillfeatures[trainNArows.columns[0]])]
   #       #delete columnslist and column+'_NArows'
   #       df_train_fillfeatures = df_train_fillfeatures.drop(columnslist, axis=1)
-  #       df_train_fillfeatures = df_train_fillfeatures.drop([trainNArows.columns.get_values()[0]], axis=1)
+  #       df_train_fillfeatures = df_train_fillfeatures.drop([trainNArows.columns[0]], axis=1)
 
 
         #create features df_test for rows needing infill
         #create copy of df_test (note it already has NArows included)
         df_test_fillfeatures = df_test.copy()
         #delete rows coresponding to False
-        df_test_fillfeatures = df_test_fillfeatures[(df_test_fillfeatures[testNArows.columns.get_values()[0]])]
+        df_test_fillfeatures = df_test_fillfeatures[(df_test_fillfeatures[testNArows.columns[0]])]
         #delete column and column+'_NArows'
         df_test_fillfeatures = df_test_fillfeatures.drop(columnslist, axis=1)
-        df_test_fillfeatures = df_test_fillfeatures.drop([testNArows.columns.get_values()[0]], axis=1)
+        df_test_fillfeatures = df_test_fillfeatures.drop([testNArows.columns[0]], axis=1)
 
         #delete NArows from df_train, df_test
-  #       df_train = df_train.drop([trainNArows.columns.get_values()[0]], axis=1)
-        df_test = df_test.drop([testNArows.columns.get_values()[0]], axis=1)
+  #       df_train = df_train.drop([trainNArows.columns[0]], axis=1)
+        df_test = df_test.drop([testNArows.columns[0]], axis=1)
 
       #else if categorylist wasn't empty
       else:
@@ -9684,11 +9683,11 @@ class AutoMunge:
   #       #create copy of df_train to serve as training set for fill
   #       df_train_filltrain = df_train.copy()
   #       #now delete rows coresponding to True
-  #       df_train_filltrain = df_train_filltrain[df_train_filltrain[trainNArows.columns.get_values()[0]] == False]
+  #       df_train_filltrain = df_train_filltrain[df_train_filltrain[trainNArows.columns[0]] == False]
 
   #       #now delete columns = columnslist and the NA labels (orig column+'_NArows') from this df
   #       df_train_filltrain = df_train_filltrain.drop(columnslist, axis=1)
-  #       df_train_filltrain = df_train_filltrain.drop([trainNArows.columns.get_values()[0]], axis=1)
+  #       df_train_filltrain = df_train_filltrain.drop([trainNArows.columns[0]], axis=1)
 
 
   #       #create a copy of df_train[columnslist] for fill train labels
@@ -9696,39 +9695,39 @@ class AutoMunge:
   #       #concatinate with the NArows
   #       df_train_filllabel = pd.concat([df_train_filllabel, trainNArows], axis=1)
   #       #drop rows corresponding to True
-  #       df_train_filllabel = df_train_filllabel[df_train_filllabel[trainNArows.columns.get_values()[0]] == False]
+  #       df_train_filllabel = df_train_filllabel[df_train_filllabel[trainNArows.columns[0]] == False]
 
   #       #now delete columns = noncategorylist from this df
   #       df_train_filltrain = df_train_filltrain.drop(noncategorylist, axis=1)
 
   #       #delete the NArows column
-  #       df_train_filllabel = df_train_filllabel.drop([trainNArows.columns.get_values()[0]], axis=1)
+  #       df_train_filllabel = df_train_filllabel.drop([trainNArows.columns[0]], axis=1)
 
 
   #       #create features df_train for rows needing infill
   #       #create copy of df_train (note it already has NArows included)
   #       df_train_fillfeatures = df_train.copy()
   #       #delete rows coresponding to False
-  #       df_train_fillfeatures = df_train_fillfeatures[(df_train_fillfeatures[trainNArows.columns.get_values()[0]])]
+  #       df_train_fillfeatures = df_train_fillfeatures[(df_train_fillfeatures[trainNArows.columns[0]])]
   #       #delete columnslist and column+'_NArows'
   #       df_train_fillfeatures = df_train_fillfeatures.drop(columnslist, axis=1)
-  #       df_train_fillfeatures = df_train_fillfeatures.drop([trainNArows.columns.get_values()[0]], axis=1)
+  #       df_train_fillfeatures = df_train_fillfeatures.drop([trainNArows.columns[0]], axis=1)
 
 
         #create features df_test for rows needing infill
         #create copy of df_test (note it already has NArows included)
         df_test_fillfeatures = df_test.copy()
         #delete rows coresponding to False
-        df_test_fillfeatures = df_test_fillfeatures[(df_test_fillfeatures[testNArows.columns.get_values()[0]])]
+        df_test_fillfeatures = df_test_fillfeatures[(df_test_fillfeatures[testNArows.columns[0]])]
         #delete column and column+'_NArows'
         df_test_fillfeatures = df_test_fillfeatures.drop(columnslist, axis=1)
-        df_test_fillfeatures = df_test_fillfeatures.drop([testNArows.columns.get_values()[0]], axis=1)
+        df_test_fillfeatures = df_test_fillfeatures.drop([testNArows.columns[0]], axis=1)
         
 
         #delete NArows from df_train, df_test
-  #       df_train = df_train.drop([trainNArows.columns.get_values()[0]], axis=1)
+  #       df_train = df_train.drop([trainNArows.columns[0]], axis=1)
         
-        df_test = df_test.drop([testNArows.columns.get_values()[0]], axis=1)
+        df_test = df_test.drop([testNArows.columns[0]], axis=1)
         
         
         
