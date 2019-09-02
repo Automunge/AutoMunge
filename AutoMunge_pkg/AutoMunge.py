@@ -4308,7 +4308,7 @@ class AutoMunge:
             
             #first let's create a copy of this textcolumn's infill column replacing 
             #0/1 with True False (this works because we are one hot encoding)
-            infill[textcolumnname + '_bool'] = infill[textcolumnname].astype('bool')
+            infill[textcolumnname + '_bool'] = infill[textcolumnname].astype('int').astype('bool')
 
             #we'll use the mask feature to create infillindex which only contains \
             #rows coresponding to the True value in the column we just created
