@@ -7950,7 +7950,7 @@ class AutoMunge:
                              'process_dict' : process_dict, \
                              'ML_cmnd' : ML_cmnd, \
                              'printstatus' : printstatus, \
-                             'automungeversion' : '2.43' })
+                             'automungeversion' : '2.44' })
 
     
     
