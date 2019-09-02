@@ -27,8 +27,8 @@ each column or alternatively by the automated "ML infill" method which
 predicts infill using machine learning models trained on the rest of the set 
 in a fully generalized and automated fashion. automunge(.) returns a python 
 dictionary which can be used as an input along with a subsequent test data 
-set to the function postmunge(.) for  consistent processing of test data which
-wasn't available for the initial address.
+set to the function postmunge(.) for  consistent processing of test data 
+which wasn't available for the initial address.
 
 In addition to it's use for feature engineering transformations, automunge(.) 
 also can serve an evaluatory purpose by way of a feature importance evaluation 
