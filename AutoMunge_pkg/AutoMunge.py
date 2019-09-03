@@ -3994,8 +3994,8 @@ class AutoMunge:
 
 
         #convert infill values to dataframe
-        df_traininfill = pd.DataFrame(np_traininfill, columns = [columnslist])
-        df_testinfill = pd.DataFrame(np_testinfill, columns = [columnslist]) 
+        df_traininfill = pd.DataFrame(np_traininfill, columns = columnslist)
+        df_testinfill = pd.DataFrame(np_testinfill, columns = columnslist)
 
 
   #       print('category is text, df_traininfill is')
@@ -4023,8 +4023,8 @@ class AutoMunge:
       if category == 'text':
         np_traininfill = np.zeros(shape=(1,len(columnslist)))
         np_testinfill = np.zeros(shape=(1,len(columnslist)))
-        df_traininfill = pd.DataFrame(np_traininfill, columns = [columnslist])
-        df_testinfill = pd.DataFrame(np_testinfill, columns = [columnslist]) 
+        df_traininfill = pd.DataFrame(np_traininfill, columns = columnslist)
+        df_testinfill = pd.DataFrame(np_testinfill, columns = columnslist) 
 
       else :
         df_traininfill = pd.DataFrame({'infill' : [0]}) 
@@ -4308,12 +4308,12 @@ class AutoMunge:
             
             #first let's create a copy of this textcolumn's infill column replacing 
             #0/1 with True False (this works because we are one hot encoding)
-            infill[textcolumnname + '_bool'] = infill[textcolumnname].astype('int').astype('bool')
+            infill[textcolumnname + '_bool'] = infill[textcolumnname].astype('bool')
 
             #we'll use the mask feature to create infillindex which only contains \
             #rows coresponding to the True value in the column we just created
 
-            mask = (infill[[textcolumnname + '_bool']]==True).all(1)
+            mask = (infill[textcolumnname + '_bool']==True)
             infillindex = infill[mask]['tempindex1']
 
 
@@ -4389,7 +4389,7 @@ class AutoMunge:
       df_traininfill, df_testinfill, model = \
       self.predictinfill(category, df_train_filltrain, df_train_filllabel, \
                     df_train_fillfeatures, df_test_fillfeatures, \
-                    randomseed, postprocess_dict, ML_cmnd, columnslist = columnslist)
+                    randomseed, postprocess_dict, ML_cmnd, columnslist = categorylist)
 
       #now we'll add our trained model to the postprocess_dict
       postprocess_dict['column_dict'][column]['infillmodel'] \
@@ -7950,7 +7950,7 @@ class AutoMunge:
                              'process_dict' : process_dict, \
                              'ML_cmnd' : ML_cmnd, \
                              'printstatus' : printstatus, \
-                             'automungeversion' : '2.44' })
+                             'automungeversion' : '2.45' })
 
     
     
@@ -9904,8 +9904,8 @@ class AutoMunge:
 
 
         #convert infill values to dataframe
-  #       df_traininfill = pd.DataFrame(np_traininfill, columns = [columnslist])
-        df_testinfill = pd.DataFrame(np_testinfill, columns = [columnslist]) 
+  #       df_traininfill = pd.DataFrame(np_traininfill, columns = columnslist)
+        df_testinfill = pd.DataFrame(np_testinfill, columns = columnslist) 
 
 
   #       print('category is text, df_traininfill is')
@@ -9933,8 +9933,8 @@ class AutoMunge:
       if category == 'text':
   #       np_traininfill = np.zeros(shape=(1,len(columnslist)))
         np_testinfill = np.zeros(shape=(1,len(columnslist)))
-  #       df_traininfill = pd.DataFrame(np_traininfill, columns = [columnslist])
-        df_testinfill = pd.DataFrame(np_testinfill, columns = [columnslist]) 
+  #       df_traininfill = pd.DataFrame(np_traininfill, columns = columnslist)
+        df_testinfill = pd.DataFrame(np_testinfill, columns = columnslist) 
 
       else :
   #       df_traininfill = pd.DataFrame({'infill' : [0]}) 
@@ -9984,7 +9984,7 @@ class AutoMunge:
       #predict infill values using defined function predictinfill(.)
       df_testinfill = \
       self.predictpostinfill(category, model, df_test_fillfeatures, \
-                             postprocess_dict, columnslist = columnslist)
+                             postprocess_dict, columnslist = categorylist)
 
 
       #if model != False:
