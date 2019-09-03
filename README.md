@@ -33,13 +33,13 @@ which wasn't available for the initial address.
 In addition to it's use for feature engineering transformations, automunge(.) 
 also can serve an evaluatory purpose by way of a feature importance evaluation 
 through the derivation of two metrics which provide an indication for the 
-importance of original and derived features towards the accuracy of a predictive 
-model.
+importance of original and derived features towards the accuracy of a 
+predictive model.
 
-If elected, a user can also use the tool to perform a dimensionality reduction via 
-principle component analysis (a type of entity embedding via unsupervised learning) 
-of the data sets with the automunge(.) function or consistently for subsequently 
-available data with the postmunge(.) function.
+If elected, a user can also use the tool to perform a dimensionality reduction 
+via principle component analysis (a type of entity embedding via unsupervised 
+learning) of the data sets with the automunge(.) function or consistently for 
+subsequently available data with the postmunge(.) function.
 
 AutoMunge is now available for free pip install for your open source
 python data-wrangling
