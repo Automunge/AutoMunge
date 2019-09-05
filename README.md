@@ -447,21 +447,26 @@ test sets.
 * labels_column: a string of the column title for the column from the
 df_train set intended for use as labels in training a downstream machine
 learning model. The function defaults to False for cases where the
-training set does not include a label column.
+training set does not include a label column. An integer column index may 
+also be passed such as if the source dataset was numpy array.
 
 * trainID_column: a string of the column title for the column from the
 df_train set intended for use as a row identifier value (such as could
 be sequential numbers for instance). The function defaults to False for
 cases where the training set does not include an ID column. A user can 
 also pass a list of string columns titles such as to carve out multiple
-columns to be excluded from processing but consistently partitioned.
+columns to be excluded from processing but consistently partitioned. An 
+integer column index or list of integer column indexes may also be passed 
+such as if the source dataset was numpy array.
 
 * testID_column: a string of the column title for the column from the
 df_test set intended for use as a row identifier value (such as could be
 sequential numbers for instance). The function defaults to False for
 cases where the training set does not include an ID column. A user can 
 also pass a list of string columns titles such as to carve out multiple
-columns to be excluded from processing but consistently partitioned.
+columns to be excluded from processing but consistently partitioned. An 
+integer column index or list of integer column indexes may also be passed 
+such as if the source dataset was numpy array.
 
 * valpercent1: a float value between 0 and 1 which designates the percent
 of the training data which will be set aside for the first validation
@@ -911,13 +916,16 @@ df_test set intended for use as a row identifier value (such as could be
 sequential numbers for instance). The function defaults to False for
 cases where the training set does not include an ID column. A user can 
 also pass a list of string columns titles such as to carve out multiple
-columns to be excluded from processing but consistently partitioned.
+columns to be excluded from processing but consistently partitioned. An 
+integer column index or list of integer column indexes may also be passed 
+such as if the source dataset was numpy array.
 
 * labelscolumn: default to False indicates that a labels column is not 
 included in the test set passed to postmunge. A user can either pass
 True or the string ID of the labels column, noting that it is a requirement
 that the labels column header string must be consistent with that from
-the original train set.
+the original train set. An integer column index may also be passed such
+as if the source dataset was numpy array.
 
 * pandasoutput: a selector for format of returned sets. Defaults to False
 for returned Numpy arrays. If set to True returns pandas dataframes
