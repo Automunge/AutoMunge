@@ -104,8 +104,10 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
                          'bins':[], 'bint':[], \
                          'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
                          'log0':[], 'log1':[], 'pwrs':[], \
-                         'bnry':[], 'text':[], 'ordl':[], 'ord2':[], \
-                         'date':[], 'dat2':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
+                         'bnry':[], 'text':[], 'ordl':[], 'ord2':[], '1010':[], \
+                         'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
+                         'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
+                         'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
                          'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'eval':[]}, \
             assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                             'adjinfill':[], 'meaninfill':[], 'medianinfill':[]}, \
@@ -261,8 +263,10 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
                          'bins':[], 'bint':[], \
                          'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
                          'log0':[], 'log1':[], 'pwrs':[], \
-                         'bnry':[], 'text':[], 'ordl':[], 'ord2':[], \
-                         'date':[], 'dat2':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
+                         'bnry':[], 'text':[], 'ordl':[], 'ord2':[], '1010':[], \
+                         'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
+                         'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
+                         'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
                          'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'eval':[]}, \
             assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                             'adjinfill':[], 'meaninfill':[], 'medianinfill':[]}, \
@@ -412,8 +416,10 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
                          'bins':[], 'bint':[], \
                          'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
                          'log0':[], 'log1':[], 'pwrs':[], \
-                         'bnry':[], 'text':[], 'ordl':[], 'ord2':[], \
-                         'date':[], 'dat2':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
+                         'bnry':[], 'text':[], 'ordl':[], 'ord2':[], '1010':[], \
+                         'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
+                         'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
+                         'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
                          'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'eval':[]}, \
             assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                             'adjinfill':[], 'meaninfill':[], 'medianinfill':[]}, \
@@ -649,14 +655,16 @@ such as could potentially result in memory savings.
 #Here are the current trasnformation options built into our library, which
 #we are continuing to build out. A user may also define their own.
 
-    assigncat = {'mnmx':[], 'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[], \
-                 'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'MAD3':[], \
-                 'bins':[], 'bint':[], \
-                 'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
-                 'log0':[], 'log1':[], 'pwrs':[], \
-                 'bnry':[], 'text':[], 'ordl':[], 'ord2':[], \
-                 'date':[], 'dat2':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
-                 'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'eval':[]}
+            assigncat = {'mnmx':[], 'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[], \
+                         'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'MAD3':[], \
+                         'bins':[], 'bint':[], \
+                         'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
+                         'log0':[], 'log1':[], 'pwrs':[], \
+                         'bnry':[], 'text':[], 'ordl':[], 'ord2':[], '1010':[], \
+                         'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
+                         'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
+                         'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
+                         'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'eval':[]}, \
 ```         
 
 A user may add column identifier strings to each
@@ -997,6 +1005,49 @@ are the family tree primitives.
 'friends' :           downstream cousins / offspring generations / supplements column / no offspring
 ```
 
+Here is a quick description of the transformation functions associated 
+with each key which can be assigned to a primitive (and not just used as 
+a root key). We're continuing to build out this library of transformations.
+
+* NArw: produces a column of boolean identifiers for rows in the source
+column with missing or improperly formatted values.
+* nmbr/nbr2/nbr3: z-score normalization
+* MADn/MAD2: mean absolute deviation normalization, subtract set mean
+* MAD3: mean absolute deviation normalization, subtract set maximum
+* mnmx/mnm2/mnm5: vanilla min-max scaling
+* mnm3/mnm4: min-max scaling with outliers capped at 0.01 and 0.99 quantiles
+* mnm6: min-max scaling with test set capped at min/max of train set
+* bnry: converts sets with two values to boolean identifiers
+* text: converts categorical sets to one-hot encoded set of boolean identifiers
+* ordl/ord2: converts categorical sets to ordinally encoded set of integer identifiers
+* 1010: converts categorical sets to binary encoding (more efficent than one-hot encoding)
+* bxcx/bxc2/bxc3/bxc4: performs Box-Cox power law transformation
+* log0/log1: performs logarithmic transofrm (base 10)
+* pwrs: bins groupings by powers of 10
+* date/dat2: for datetime formatted data, segregates data by time scale to multiple
+columns (year/month/day/hour/minute/second) and then performs z-score normalization
+* wkdy: boolean identifier indicating whether a datetime object is a weekday
+* bshr: boolean identifier indicating whether a datetime object is a business
+hour (9-5, time zone unaware)
+* hldy: boolean identifier indicating whether a datetime object is a US Federal
+holiday
+* year/mnth/days/hour/mint/scnd: segregated by time scale and z-score normalization
+* mnsn/mncs/dysn/dycs/hrsn/hrcs/misn/mics/scsn/sccs: segregated by time scale and 
+dual columns with sin and cos transformations for time scale period
+* mdsn/mdcs: similar sin/cos treatment, but for combined month/day
+* hmss/hmsc: similar sin/cos treatment, but for combined hour/minute/second
+* bins: for numerical sets, outputs a set of 6 columns indicating where a
+value fell with respect to number of standard deviations from the mean of the
+set (i.e. <-2, -2-1, -10, 01, 12, >2)
+* bint: comparable to bins except assumes that source data was already normalized
+* null: deletes source column
+* excl: passes source column un-altered
+* exc2: passes source column unaltered except for infill
+* eval: performs distribution property evaluation consistent with the automunge
+'powertransform' parameter to designated column
+
+
+
 And here arethe series of family trees currently built into the internal library.
 
 ```
@@ -1331,41 +1382,6 @@ And here arethe series of family trees currently built into the internal library
                                      'coworkers' : [], \
                                      'friends' : []}})
 ```
-
-Here is a quick description of the transformation functions associated 
-with each key which can be assigned to a primitive (and not just used as 
-a root key). We're continuing to build out this library of transformations.
-
-* NArw: produces a column of boolean identifiers for rows in the source
-column with missing or improperly formatted values.
-* nmbr/nbr2/nbr3: z-score normalization
-* MADn/MAD2: mean absolute deviation normalization, subtract set mean
-* MAD3: mean absolute deviation normalization, subtract set maximum
-* mnmx/mnm2/mnm5: vanilla min-max scaling
-* mnm3/mnm4: min-max scaling with outliers capped at 0.01 and 0.99 quantiles
-* mnm6: min-max scaling with test set capped at min/max of train set
-* bnry: converts sets with two values to boolean identifiers
-* text: converts categorical sets to one-hot encoded set of boolean identifiers
-* ordl/ord2: converts categorical sets to ordinally encoded set of integer identifiers
-* bxcx/bxc2/bxc3/bxc4: performs Box-Cox power law transformation
-* log0/log1: performs logarithmic transofrm (base 10)
-* pwrs: bins groupings by powers of 10
-* date/dat2: for datetime formatted data, segregates data by time scale to multiple
-columns (year/month/day/hour/minute/second) and then performs z-score normalization
-* wkdy: boolean identifier indicating whether a datetime object is a weekday
-* bshr: boolean identifier indicating whether a datetime object is a business
-hour (9-5, time zone unaware)
-* hldy: boolean identifier indicating whether a datetime object is a US Federal
-holiday
-* bins: for numerical sets, outputs a set of 6 columns indicating where a
-value fell with respect to number of standard deviations from the mean of the
-set (i.e. <-2, -2-1, -10, 01, 12, >2)
-* bint: comparable to bins except assumes that source data was already normalized
-* null: deletes source column
-* excl: passes source column un-altered
-* exc2: passes source column unaltered except for infill
-* eval: performs distribution property evaluation consistent with the automunge
-'powertransform' parameter to designated column
 
 
 ...
