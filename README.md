@@ -582,7 +582,10 @@ are trimmed from the output. Note that this item only used if
 featuremethod passed as 'metric'.
 
 * featuremethod: can be passed as either 'pct' or 'metric' to select which
-feature importance method is used for trimming the derived sets.
+feature importance method is used for trimming the derived sets. Or can pass
+as 'default' for ignoring the featurepct/featuremetric parameters or can 
+pass as 'report' to return the featureimportance results with no further
+processing (other returned sets are empty).
 
 * PCAn_components: a user can pass an integer to define the number of PCA
 derived features for purposes of dimensionality reduction, such integer to 
@@ -1020,6 +1023,8 @@ column with missing or improperly formatted values.
 * bnry: converts sets with two values to boolean identifiers
 * text: converts categorical sets to one-hot encoded set of boolean identifiers
 * ordl/ord2: converts categorical sets to ordinally encoded set of integer identifiers
+* ord3/ord4: converts categorical sets to ordinally encoded set of integer identifiers
+sorted by frequency of category occurance
 * 1010: converts categorical sets to binary encoding (more efficent than one-hot encoding)
 * bxcx/bxc2/bxc3/bxc4: performs Box-Cox power law transformation
 * log0/log1: performs logarithmic transofrm (base 10)
@@ -1088,6 +1093,24 @@ And here arethe series of family trees currently built into the internal library
                                      'friends' : []}})
         
     transform_dict.update({'ord2' : {'parents' : ['ord2'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : ['mnmx'], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'ord3' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['ord3'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+        
+    transform_dict.update({'ord4' : {'parents' : ['ord4'], \
                                      'siblings': [], \
                                      'auntsuncles' : [], \
                                      'cousins' : [NArw], \
