@@ -6259,10 +6259,6 @@ class AutoMunge:
     [binscolumn + '_s<-2', binscolumn + '_s-21', binscolumn + '_s-10', \
      binscolumn + '_s+01', binscolumn + '_s+12', binscolumn + '_s>+2']
 
-    #change data type for memory savings
-    for textcolumn in textcolumns:
-      mdf_train[textcolumn] = mdf_train[textcolumn].astype(np.int8)
-      mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.int8)
 
     
     #we're going to use the postprocess_text_class function here since it 
@@ -6287,7 +6283,13 @@ class AutoMunge:
     self.postprocess_text_class(mdf_train, binscolumn, tempbins_postprocess_dict, tempkey)
     mdf_test = \
     self.postprocess_text_class(mdf_test, binscolumn, tempbins_postprocess_dict, tempkey)
+
     
+    
+    #change data type for memory savings
+    for textcolumn in textcolumns:
+      mdf_train[textcolumn] = mdf_train[textcolumn].astype(np.int8)
+      mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.int8)
     
     #delete the support column
     del mdf_train[binscolumn]
@@ -6393,10 +6395,6 @@ class AutoMunge:
     [binscolumn + '_t<-2', binscolumn + '_t-21', binscolumn + '_t-10', \
      binscolumn + '_t+01', binscolumn + '_t+12', binscolumn + '_t>+2']
 
-    #change data type for memory savings
-    for textcolumn in textcolumns:
-      mdf_train[textcolumn] = mdf_train[textcolumn].astype(np.int8)
-      mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.int8)
 
     
     #we're going to use the postprocess_text_class function here since it 
@@ -6419,6 +6417,11 @@ class AutoMunge:
     mdf_test = \
     self.postprocess_text_class(mdf_test, binscolumn, tempbint_postprocess_dict, tempkey)
     
+
+    #change data type for memory savings
+    for textcolumn in textcolumns:
+      mdf_train[textcolumn] = mdf_train[textcolumn].astype(np.int8)
+      mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.int8)
     
     #delete the support column
     del mdf_train[binscolumn]
@@ -11232,7 +11235,7 @@ class AutoMunge:
                              'process_dict' : process_dict, \
                              'ML_cmnd' : ML_cmnd, \
                              'printstatus' : printstatus, \
-                             'automungeversion' : '2.48' })
+                             'automungeversion' : '2.49' })
 
     
     
@@ -14128,10 +14131,7 @@ class AutoMunge:
     textcolumns = \
     [binscolumn + '_s<-2', binscolumn + '_s-21', binscolumn + '_s-10', \
      binscolumn + '_s+01', binscolumn + '_s+12', binscolumn + '_s>+2']
-    
-    #change data type for memory savings
-    for textcolumn in textcolumns:
-      mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.int8)
+
 
 #     #process bins as a categorical set
 #     mdf_test = \
@@ -14155,6 +14155,10 @@ class AutoMunge:
     mdf_test = \
     self.postprocess_text_class(mdf_test, binscolumn, temppostprocess_dict, tempkey)
     
+    
+    #change data type for memory savings
+    for textcolumn in textcolumns:
+      mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.int8)
     
     #delete the support column
     del mdf_test[binscolumn]
@@ -14234,9 +14238,6 @@ class AutoMunge:
     [binscolumn + '_t<-2', binscolumn + '_t-21', binscolumn + '_t-10', \
      binscolumn + '_t+01', binscolumn + '_t+12', binscolumn + '_t>+2']
 
-    #change data type for memory savings
-    for textcolumn in textcolumns:
-      mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.int8)
     
 #     #process bins as a categorical set
 #     mdf_test = \
@@ -14260,6 +14261,10 @@ class AutoMunge:
     mdf_test = \
     self.postprocess_text_class(mdf_test, binscolumn, temppostprocess_dict, tempkey)
     
+
+    #change data type for memory savings
+    for textcolumn in textcolumns:
+      mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.int8)
     
     #delete the support column
     del mdf_test[binscolumn]
