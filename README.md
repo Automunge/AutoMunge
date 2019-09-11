@@ -2104,10 +2104,10 @@ You can read more about the tool through the blog posts documenting the
 development on medium [here](https://medium.com/automunge) or for more
 writing I recently completed my first collection of essays titled "From
 the Diaries of John Henry" which is also available on Medium
-[here](https://medium.com/from-the-diaries-of-john-henry).
+[turingsquared.com](https://turingsquared.com).
 
 The AutoMunge website is helpfully located at URL
-[automunge.com](automunge.com).
+[automunge.com](https://automunge.com).
 
 ...
 
