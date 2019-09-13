@@ -1434,15 +1434,15 @@ class AutoMunge:
                                   'NArowtype' : 'exclude', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'excl'}})
-    process_dict.update({'exc2' : {'dualprocess' : None, \
-                                  'singleprocess' : self.process_exc2_class, \
-                                  'postprocess' : None, \
+    process_dict.update({'exc2' : {'dualprocess' : self.process_exc2_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_exc2_class, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'label', \
                                   'labelctgy' : 'exc2'}})
-    process_dict.update({'exc3' : {'dualprocess' : None, \
-                                  'singleprocess' : self.process_exc2_class, \
-                                  'postprocess' : None, \
+    process_dict.update({'exc3' : {'dualprocess' : self.process_exc2_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.process_exc2_class, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'label', \
                                   'labelctgy' : 'exc2'}})
@@ -6549,7 +6549,8 @@ class AutoMunge:
     return df, column_dict_list  
 
 
-  def process_exc2_class(self, df, column, category, postprocess_dict):
+  def process_exc2_class(self, mdf_train, mdf_test, column, category, \
+                         postprocess_dict):
     '''
     #here we'll address any columns that returned a 'excl' category
     #note this is a. singleprocess transform
@@ -6558,31 +6559,32 @@ class AutoMunge:
     
     
     exclcolumn = column + '_exc2'
-    df[exclcolumn] = df[column].copy()
+    
+    
+    mdf_train[exclcolumn] = mdf_train[column].copy()
+    mdf_test[exclcolumn] = mdf_test[column].copy()
+    
     #del df[column]
     
-    df[exclcolumn] = pd.to_numeric(df[exclcolumn], errors='coerce')
+    mdf_train[exclcolumn] = pd.to_numeric(mdf_train[exclcolumn], errors='coerce')
+    mdf_test[exclcolumn] = pd.to_numeric(mdf_test[exclcolumn], errors='coerce')
     
-    #since this is for labels, we'll create convention that if 
-    #number of distinct values >3 (eg bool + nan) we'll infill with mean
-    #otherwise we'll infill with most common, kind of. arbitary
-    #a future extension may incorporate ML infill to labels
-    
-    if df[exclcolumn].nunique() > 3:
-      fillvalue = df[exclcolumn].mean()
+    if len(mdf_train[exclcolumn].mode())<1:
+      fillvalue = mdf_train[exclcolumn].mean()
     else:
-      #fillvalue = df[exclcolumn].value_counts().argmax()
-      fillvalue = df[exclcolumn].value_counts().idxmax()
+      fillvalue = mdf_train[exclcolumn].mode()[0]
     
+    #replace missing data with fill value
+    mdf_train[exclcolumn] = mdf_train[exclcolumn].fillna(fillvalue)
+    mdf_test[exclcolumn] = mdf_test[exclcolumn].fillna(fillvalue)
     
-    #replace missing data with training set mean
-    df[exclcolumn] = df[exclcolumn].fillna(fillvalue)
+    exc2_normalization_dict = {exclcolumn : {'fillvalue' : fillvalue}}
     
     column_dict_list = []
 
     column_dict = {exclcolumn : {'category' : 'exc2', \
                                  'origcategory' : category, \
-                                 'normalization_dict' : {exclcolumn:{}}, \
+                                 'normalization_dict' : exc2_normalization_dict, \
                                  'origcolumn' : column, \
                                  'columnslist' : [exclcolumn], \
                                  'categorylist' : [exclcolumn], \
@@ -6595,7 +6597,7 @@ class AutoMunge:
 
 
 
-    return df, column_dict_list  
+    return mdf_train, mdf_test, column_dict_list
 
     
 #   #this method needs troubleshooting, for now just use excl
@@ -7661,6 +7663,7 @@ class AutoMunge:
     #override the categorylist >1 methods
     '''
     
+    
     MLinfilltype = postprocess_dict['process_dict'][category]['MLinfilltype']
     
     #NArows column name uses original column name + _NArows as key
@@ -7717,6 +7720,7 @@ class AutoMunge:
         #text infill contains multiple columns for each predicted calssification
         #which were derived from one-hot encoding the original column in preprocessing
         for textcolumnname in categorylist:
+          
 
           #create newcolumn which will serve as the NArows specific to textcolumnname
           df['textNArows'] = NArows
@@ -7727,16 +7731,19 @@ class AutoMunge:
           #assign index values to a column
           df['tempindex1'] = df.index
 
-
           #create list of index numbers coresponding to the NArows True values
           textinfillindex = pd.DataFrame(df.loc[df['textNArows']]['tempindex1'])
+          
+          
           #reset the index
           textinfillindex = textinfillindex.reset_index()
+          
 
           #now before we create our infill dicitonaries, we're going to need to
           #create a seperate textinfillindex for each category
 
           infill['tempindex1'] = textinfillindex['tempindex1']
+          
           
           #if we didn't have infill we created a plug infill set with column name 'infill'
           if 'infill' not in list(infill):
@@ -9158,6 +9165,176 @@ class AutoMunge:
     return df
 
 
+  def train_modeinfillfunction(self, df, column, postprocess_dict, \
+                               masterNArows):
+
+
+    #create infill dataframe of all zeros with number of rows corepsonding to the
+    #number of 1's found in masterNArows
+    NArw_columnname = \
+    postprocess_dict['column_dict'][column]['origcolumn'] + '_NArows'
+
+    NAcount = len(masterNArows[masterNArows[NArw_columnname] == 1])
+    
+    #create df without rows that were subject to infill to dervie mode
+    tempdf = pd.concat([df[column], masterNArows[NArw_columnname]], axis=1)
+    #remove rows that were subject to infill
+    tempdf = tempdf[tempdf[NArw_columnname] != 1]
+    
+    
+    #calculate mode of remaining rows
+    mode = tempdf[column].mode()[0]
+    
+    del tempdf
+
+    infill = pd.DataFrame(np.zeros((NAcount, 1)))
+    infill = infill.replace(0, mode)
+
+    category = postprocess_dict['column_dict'][column]['category']
+    columnslist = postprocess_dict['column_dict'][column]['columnslist']
+    categorylist = postprocess_dict['column_dict'][column]['categorylist']
+
+    #insert infill
+    df = self.insertinfill(df, column, infill, category, \
+                           pd.DataFrame(masterNArows[NArw_columnname]), \
+                           postprocess_dict, columnslist = columnslist, \
+                           categorylist = categorylist)
+
+    return df, mode
+
+
+  def test_modeinfillfunction(self, df, column, postprocess_dict, \
+                              masterNArows, mode):
+
+
+    #create infill dataframe of all zeros with number of rows corepsonding to the
+    #number of 1's found in masterNArows
+    NArw_columnname = \
+    postprocess_dict['column_dict'][column]['origcolumn'] + '_NArows'
+
+    NAcount = len(masterNArows[masterNArows[NArw_columnname] == 1])
+    
+    mode = mode
+
+    infill = pd.DataFrame(np.zeros((NAcount, 1)))
+    infill = infill.replace(0, mode)
+
+    category = postprocess_dict['column_dict'][column]['category']
+    columnslist = postprocess_dict['column_dict'][column]['columnslist']
+    categorylist = postprocess_dict['column_dict'][column]['categorylist']
+
+    #insert infill
+    df = self.insertinfill(df, column, infill, category, \
+                           pd.DataFrame(masterNArows[NArw_columnname]), \
+                           postprocess_dict, columnslist = columnslist, \
+                           categorylist = categorylist)
+
+    return df
+
+  
+  def train_catmodeinfillfunction(self, df, column, postprocess_dict, \
+                               masterNArows):
+
+
+    #create infill dataframe of all zeros with number of rows corepsonding to the
+    #number of 1's found in masterNArows
+    NArw_columnname = \
+    postprocess_dict['column_dict'][column]['origcolumn'] + '_NArows'
+
+    NAcount = len(masterNArows[masterNArows[NArw_columnname] == 1])
+
+        
+    NArw_categorylist = \
+    postprocess_dict['column_dict'][column]['categorylist']
+    
+    
+    #create df without rows that were subject to infill to dervie mode
+    tempdf = pd.concat([df[NArw_categorylist], masterNArows[NArw_columnname]], axis=1)
+    #remove rows that were subject to infill
+    tempdf2 = tempdf[tempdf[NArw_columnname] != 1]
+    
+    #del tempdf[NArw_columnname]
+    
+    #find first column with max number of activations
+    df_sum = tempdf2.sum()
+    maxcolumn = df_sum.idxmax()
+    
+    
+    #now create infill
+    infill = tempdf[tempdf[NArw_columnname] == 1]
+    del infill[NArw_columnname]
+    
+    for catcolumn in NArw_categorylist:
+      if catcolumn == maxcolumn:
+        #infill[catcolumn] = 1
+        infill = infill.assign(catcolumn=1)
+      if catcolumn != maxcolumn:
+        #infill[catcolumn] = 0
+        infill = infill.assign(catcolumn=0)
+    
+    infill = infill.reset_index()
+    
+    del tempdf
+    del tempdf2
+
+    category = postprocess_dict['column_dict'][column]['category']
+    columnslist = postprocess_dict['column_dict'][column]['columnslist']
+    categorylist = postprocess_dict['column_dict'][column]['categorylist']
+
+    #insert infill
+    df = self.insertinfill(df, column, infill, category, \
+                           pd.DataFrame(masterNArows[NArw_columnname]), \
+                           postprocess_dict, columnslist = columnslist, \
+                           categorylist = categorylist)
+
+    return df, maxcolumn
+
+
+  def test_catmodeinfillfunction(self, df, column, postprocess_dict, \
+                                 masterNArows, maxcolumn):
+
+
+    #create infill dataframe of all zeros with number of rows corepsonding to the
+    #number of 1's found in masterNArows
+    NArw_columnname = \
+    postprocess_dict['column_dict'][column]['origcolumn'] + '_NArows'
+
+    NAcount = len(masterNArows[masterNArows[NArw_columnname] == 1])
+    
+    NArw_categorylist = \
+    postprocess_dict['column_dict'][column]['categorylist']
+    
+    maxcolumn = maxcolumn
+    
+    #create df without rows that were subject to infill
+    tempdf = pd.concat([df[NArw_categorylist], masterNArows[NArw_columnname]], axis=1)
+    
+    #now create infill
+    infill = tempdf[tempdf[NArw_columnname] == 1]
+    del infill[NArw_columnname]
+    
+    for catcolumn in NArw_categorylist:
+      if catcolumn == maxcolumn:
+        #infill[catcolumn] = 1
+        infill = infill.assign(catcolumn=1)
+      if catcolumn != maxcolumn:
+        #infill[catcolumn] = 0
+        infill = infill.assign(catcolumn=0)
+
+    infill = infill.reset_index()
+        
+    category = postprocess_dict['column_dict'][column]['category']
+    columnslist = postprocess_dict['column_dict'][column]['columnslist']
+    categorylist = postprocess_dict['column_dict'][column]['categorylist']
+
+    #insert infill
+    df = self.insertinfill(df, column, infill, category, \
+                           pd.DataFrame(masterNArows[NArw_columnname]), \
+                           postprocess_dict, columnslist = columnslist, \
+                           categorylist = categorylist)
+
+    return df
+  
 
   def populatePCAdefaults(self, randomseed):
     '''
@@ -9941,7 +10118,7 @@ class AutoMunge:
                              'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
                              'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'eval':[]}, \
                 assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
-                                'adjinfill':[], 'meaninfill':[], 'medianinfill':[]}, \
+                                'adjinfill':[], 'meaninfill':[], 'medianinfill':[], 'modeinfill':[]}, \
                 transformdict = {}, processdict = {}, \
                 printstatus = True):
 
@@ -10759,6 +10936,10 @@ class AutoMunge:
     if 'meaninfill' in postprocess_assigninfill_dict: 
     
       columns_train_mean = postprocess_assigninfill_dict['meaninfill']
+      
+    if 'modeinfill' in postprocess_assigninfill_dict: 
+    
+      columns_train_mode = postprocess_assigninfill_dict['modeinfill']
         
     if MLinfill == True:
       
@@ -10956,6 +11137,59 @@ class AutoMunge:
               self.test_meaninfillfunction(df_test, column, postprocess_dict, \
                                            masterNArows_test, infillvalue)
                 
+        if 'modeinfill' in postprocess_assigninfill_dict: 
+
+          #for column in columns_train_mean:
+          if column in columns_train_mode:
+          
+            #printout display progress
+            if printstatus == True:
+              print("infill to column: ", column)
+              print("     infill type: modeinfill")
+              print("")
+      
+            #check if column is boolean
+            boolcolumn = False
+            if set(df_train[column].unique()) == {0,1} \
+            or set(df_train[column].unique()) == {0} \
+            or set(df_train[column].unique()) == {1}:
+              boolcolumn = True
+    
+            categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
+      
+            #if (column not in excludetransformscolumns) \
+            if (column not in postprocess_assigninfill_dict['stdrdinfill']) \
+            and (column[-5:] != '_NArw') \
+            and (categorylistlength == 1) \
+            and boolcolumn == False:
+              #noting that currently we're only going to infill 0 for single column categorylists
+              #some comparable address for multi-column categories is a future extension
+        
+              df_train, infillvalue = \
+              self.train_modeinfillfunction(df_train, column, postprocess_dict, \
+                                            masterNArows_train)
+          
+              postprocess_dict['column_dict'][column]['normalization_dict'].update({'infillvalue':infillvalue})
+        
+              df_test = \
+              self.test_modeinfillfunction(df_test, column, postprocess_dict, \
+                                           masterNArows_test, infillvalue)
+          
+            #if (column not in excludetransformscolumns) \
+            if (column not in postprocess_assigninfill_dict['stdrdinfill']) \
+            and (column[-5:] != '_NArw') \
+            and (categorylistlength > 1) \
+            and boolcolumn == True:
+              
+              df_train, infillvalue = \
+              self.train_catmodeinfillfunction(df_train, column, postprocess_dict, \
+                                            masterNArows_train)
+          
+              postprocess_dict['column_dict'][column]['normalization_dict'].update({'infillvalue':infillvalue})
+        
+              df_test = \
+              self.test_catmodeinfillfunction(df_test, column, postprocess_dict, \
+                                           masterNArows_test, infillvalue)
         
         if len(columns_train_ML) > 0:
     
@@ -11235,7 +11469,7 @@ class AutoMunge:
                              'process_dict' : process_dict, \
                              'ML_cmnd' : ML_cmnd, \
                              'printstatus' : printstatus, \
-                             'automungeversion' : '2.49' })
+                             'automungeversion' : '2.50' })
 
     
     
@@ -14291,7 +14525,38 @@ class AutoMunge:
     return mdf_test
   
 
+  def postprocess_exc2_class(self, mdf_test, column, postprocess_dict, columnkey):
+    '''
+    #here we'll address any columns that returned a 'excl' category
+    #note this is a. singleprocess transform
+    #we'll simply maintain the same column but with a suffix to the header
+    '''
+    
+    #retrieve normalizastion parameters from postprocess_dict
+    normkey = column + '_exc2'
+    
+    fillvalue = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['fillvalue']
+    
+    
+    exclcolumn = column + '_exc2'
+    
+    
+    mdf_test[exclcolumn] = mdf_test[column].copy()
+    
+    #del df[column]
+    
+    mdf_test[exclcolumn] = pd.to_numeric(mdf_test[exclcolumn], errors='coerce')
 
+    
+    #fillvalue = mdf_train[exclcolumn].mode()[0]
+    
+    #replace missing data with fill value
+    mdf_test[exclcolumn] = mdf_test[exclcolumn].fillna(fillvalue)
+    
+
+
+    return mdf_test
 
 
   def createpostMLinfillsets(self, df_test, column, testNArows, category, \
@@ -15568,6 +15833,9 @@ class AutoMunge:
     
     if 'meaninfill' in postprocess_assigninfill_dict: 
       columns_train_mean = postprocess_assigninfill_dict['meaninfill']
+      
+    if 'modeinfill' in postprocess_assigninfill_dict: 
+      columns_train_mode = postprocess_assigninfill_dict['modeinfill']
     
     if postprocess_dict['MLinfill'] == True:
       if 'MLinfill' in postprocess_assigninfill_dict:
@@ -15750,6 +16018,52 @@ class AutoMunge:
               self.test_meaninfillfunction(df_test, column, postprocess_dict, \
                                            masterNArows_test, infillvalue)
 
+        if 'modeinfill' in postprocess_assigninfill_dict:
+
+          #for column in columns_train_median:
+          if column in columns_train_mode:
+            
+            #printout display progress
+            if printstatus == True:
+              print("infill to column: ", column)
+              print("     infill type: modeinfill")
+              print("")
+
+            #check if column is boolean
+            boolcolumn = False
+            if set(df_test[column].unique()) == {0,1} \
+            or set(df_test[column].unique()) == {0} \
+            or set(df_test[column].unique()) == {1}:
+              boolcolumn = True
+
+            categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
+
+            #if (column not in excludetransformscolumns) \
+            if (column not in postprocess_assigninfill_dict['stdrdinfill']) \
+            and (column[-5:] != '_NArw') \
+            and (categorylistlength == 1) \
+            and boolcolumn == False:
+              #noting that currently we're only going to infill 0 for single column categorylists
+              #some comparable address for multi-column categories is a future extension
+
+              infillvalue = postprocess_dict['column_dict'][column]['normalization_dict']['infillvalue']
+
+
+              df_test = \
+              self.test_modeinfillfunction(df_test, column, postprocess_dict, \
+                                             masterNArows_test, infillvalue)
+              
+            #if (column not in excludetransformscolumns) \
+            if (column not in postprocess_assigninfill_dict['stdrdinfill']) \
+            and (column[-5:] != '_NArw') \
+            and (categorylistlength > 1) \
+            and boolcolumn == True:
+              
+              infillvalue = postprocess_dict['column_dict'][column]['normalization_dict']['infillvalue']
+              
+              df_test = \
+              self.test_catmodeinfillfunction(df_test, column, postprocess_dict, \
+                                             masterNArows_test, infillvalue)
 
 
 
