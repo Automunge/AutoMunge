@@ -110,7 +110,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
                          'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
                          'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'eval':[]}, \
             assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
-                            'adjinfill':[], 'meaninfill':[], 'medianinfill':[]}, \
+                            'adjinfill':[], 'meaninfill':[], 'medianinfill':[], 'modeinfill':[]}, \
             transformdict = {}, processdict = {}, \
             printstatus = True)
 
@@ -269,7 +269,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
                          'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
                          'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'eval':[]}, \
             assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
-                            'adjinfill':[], 'meaninfill':[], 'medianinfill':[]}, \
+                            'adjinfill':[], 'meaninfill':[], 'medianinfill':[], 'modeinfill':[]}, \
             transformdict = {}, processdict = {}, \
             printstatus = True)
 ```
@@ -422,7 +422,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
                          'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
                          'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'eval':[]}, \
             assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
-                            'adjinfill':[], 'meaninfill':[], 'medianinfill':[]}, \
+                            'adjinfill':[], 'meaninfill':[], 'medianinfill':[], 'modeinfill':[]}, \
             transformdict = {}, processdict = {}, \
             printstatus = True)
 ```
@@ -658,16 +658,17 @@ such as could potentially result in memory savings.
 #Here are the current trasnformation options built into our library, which
 #we are continuing to build out. A user may also define their own.
 
-            assigncat = {'mnmx':[], 'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[], \
-                         'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'MAD3':[], \
-                         'bins':[], 'bint':[], \
-                         'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
-                         'log0':[], 'log1':[], 'pwrs':[], \
-                         'bnry':[], 'text':[], 'ordl':[], 'ord2':[], '1010':[], \
-                         'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
-                         'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
-                         'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
-                         'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'eval':[]}, \
+assigncat = {'mnmx':[], 'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[], \
+	     'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'MAD3':[], \
+	     'bins':[], 'bint':[], \
+	     'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
+	     'log0':[], 'log1':[], 'pwrs':[], \
+	     'bnry':[], 'text':[], '1010':[], \
+	     'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], \
+	     'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
+	     'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
+	     'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
+	     'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'eval':[]}
 ```         
 
 A user may add column identifier strings to each
@@ -686,7 +687,7 @@ details on each of the built-in library of transformations below.
 #Here are the current infill options built into our library, which
 #we are continuing to build out.
 assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
-                'adjinfill':[], 'meaninfill':[], 'medianinfill':[]}, \
+                'adjinfill':[], 'meaninfill':[], 'medianinfill':[], 'modeinfill':[]}, \
 ```
 A user may add column identifier strings to each of these lists to 
 designate the column-specific infill approach for missing or
@@ -700,7 +701,8 @@ meaninfill means inserting the mean derived from the train set to numeric
 columns. medianinfill means inserting the median derived from the train 
 set to numeric columns. (Note currently boolean columns derived from 
 numeric are not supported for mean/median and for those cases default to 
-those infill from stdrdinfill.)
+those infill from stdrdinfill.) modeinfill means inserting the most common
+cvalue for a set, note that modeinfill supports one-hot encoded sets.
 
 * transformdict: allows a user to pass a custom tree of transformations.
 Note that a user may define their own 4 character string "root"
