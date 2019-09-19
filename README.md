@@ -89,7 +89,7 @@ test, testID, testlabels, \
 labelsencoding_dict, finalcolumns_train, finalcolumns_test, \
 featureimportance, postprocess_dict = \
 am.automunge(df_train, df_test = False, labels_column = False, trainID_column = False, \
-            testID_column = False, valpercent1=0.0, valpercent2 = 0.0, \
+            testID_column = False, valpercent1=0.0, valpercent2 = 0.0, floatprecision = 32, \
             shuffletrain = False, TrainLabelFreqLevel = False, powertransform = False, \
             binstransform = False, MLinfill = False, infilliterate=1, randomseed = 42, \
             numbercategoryheuristic = 15, pandasoutput = True, NArw_marker = True, \
@@ -99,17 +99,17 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
                        'MLinfill_cmnd':{'RandomForestClassifier':{}, 'RandomForestRegressor':{}}, \
                        'PCA_type':'default', \
                        'PCA_cmnd':{}}, \
-            assigncat = {'mnmx':[], 'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[], \
-                         'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'MAD3':[], \
-                         'bins':[], 'bint':[], \
-                         'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
-                         'log0':[], 'log1':[], 'pwrs':[], \
-                         'bnry':[], 'text':[], '1010':[], \
-                         'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], \
-                         'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
-                         'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
-                         'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[],
-			 'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'eval':[]}, \
+       	    assigncat = {'mnmx':[], 'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[], \
+		         'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'MAD3':[], \
+		     	 'bins':[], 'bint':[], \
+		         'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
+		         'log0':[], 'log1':[], 'pwrs':[], \
+		         'bnry':[], 'text':[], '1010':[], 'or10':[], 'om10':[], \
+		         'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'mnmo':[], \
+		         'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
+		         'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
+		         'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
+		         'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'eval':[]}, \
             assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                             'adjinfill':[], 'meaninfill':[], 'medianinfill':[], 'modeinfill':[]}, \
             transformdict = {}, processdict = {}, \
@@ -249,7 +249,7 @@ test, testID, testlabels, \
 labelsencoding_dict, finalcolumns_train, finalcolumns_test, \
 featureimportance, postprocess_dict = \
 am.automunge(df_train, df_test = False, labels_column = False, trainID_column = False, \
-            testID_column = False, valpercent1=0.0, valpercent2 = 0.0, \
+            testID_column = False, valpercent1=0.0, valpercent2 = 0.0, floatprecision = 32, \
             shuffletrain = False, TrainLabelFreqLevel = False, powertransform = False, \
             binstransform = False, MLinfill = False, infilliterate=1, randomseed = 42, \
             numbercategoryheuristic = 15, pandasoutput = True, NArw_marker = True, \
@@ -259,17 +259,17 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
                        'MLinfill_cmnd':{'RandomForestClassifier':{}, 'RandomForestRegressor':{}}, \
                        'PCA_type':'default', \
                        'PCA_cmnd':{}}, \
-            assigncat = {'mnmx':[], 'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[], \
-                         'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'MAD3':[], \
-                         'bins':[], 'bint':[], \
-                         'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
-                         'log0':[], 'log1':[], 'pwrs':[], \
-                         'bnry':[], 'text':[], '1010':[], \
-                         'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], \
-                         'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
-                         'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
-                         'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[],
-			 'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'eval':[]}, \
+       	    assigncat = {'mnmx':[], 'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[], \
+		         'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'MAD3':[], \
+		     	 'bins':[], 'bint':[], \
+		         'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
+		         'log0':[], 'log1':[], 'pwrs':[], \
+		         'bnry':[], 'text':[], '1010':[], 'or10':[], 'om10':[], \
+		         'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'mnmo':[], \
+		         'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
+		         'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
+		         'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
+		         'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'eval':[]}, \
             assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                             'adjinfill':[], 'meaninfill':[], 'medianinfill':[], 'modeinfill':[]}, \
             transformdict = {}, processdict = {}, \
@@ -403,7 +403,7 @@ test data.
 
 ```
 am.automunge(df_train, df_test = False, labels_column = False, trainID_column = False, \
-            testID_column = False, valpercent1=0.0, valpercent2 = 0.0, \
+            testID_column = False, valpercent1=0.0, valpercent2 = 0.0, floatprecision = 32, \
             shuffletrain = False, TrainLabelFreqLevel = False, powertransform = False, \
             binstransform = False, MLinfill = False, infilliterate=1, randomseed = 42, \
             numbercategoryheuristic = 15, pandasoutput = True, NArw_marker = True, \
@@ -413,17 +413,17 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
                        'MLinfill_cmnd':{'RandomForestClassifier':{}, 'RandomForestRegressor':{}}, \
                        'PCA_type':'default', \
                        'PCA_cmnd':{}}, \
-            assigncat = {'mnmx':[], 'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[], \
-                         'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'MAD3':[], \
-                         'bins':[], 'bint':[], \
-                         'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
-                         'log0':[], 'log1':[], 'pwrs':[], \
-                         'bnry':[], 'text':[], '1010':[], \
-                         'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], \
-                         'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
-                         'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
-                         'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[],
-			 'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'eval':[]}, \
+       	    assigncat = {'mnmx':[], 'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[], \
+		         'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'MAD3':[], \
+		     	 'bins':[], 'bint':[], \
+		         'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
+		         'log0':[], 'log1':[], 'pwrs':[], \
+		         'bnry':[], 'text':[], '1010':[], 'or10':[], 'om10':[], \
+		         'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'mnmo':[], \
+		         'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
+		         'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
+		         'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
+		         'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'eval':[]}, \
             assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                             'adjinfill':[], 'meaninfill':[], 'medianinfill':[], 'modeinfill':[]}, \
             transformdict = {}, processdict = {}, \
@@ -491,6 +491,10 @@ set (generally used for final validation of a model prior to release).
 This value defaults to 0. (Previously the default was set at 0.10 but that 
 is fairly an arbitrary value and a user may wish to deviate for different 
 size sets.)
+
+* floatprecision: an integer with acceptable values of 16/32/64 designating
+the memory precision for returned float values. (A tradeoff between memory
+usage and floating point precision, smaller for smaller footprint.)
 
 * shuffletrain: a boolean identifier (True/False) which indicates if the
 rows in df_train will be shuffled prior to carving out the validation
@@ -1123,7 +1127,33 @@ And here arethe series of family trees currently built into the internal library
                                      'niecesnephews' : [], \
                                      'coworkers' : ['mnmx'], \
                                      'friends' : []}})
+        
+    transform_dict.update({'or10' : {'parents' : ['ord4'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['1010'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : ['mnmx'], \
+                                     'friends' : []}})
     
+    transform_dict.update({'om10' : {'parents' : ['ord4'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['1010', 'mnmx'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : ['mnmx'], \
+                                     'friends' : []}})
+
+    transform_dict.update({'mnm0' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['mnmx', '1010'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
     transform_dict.update({'1010' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['1010'], \
