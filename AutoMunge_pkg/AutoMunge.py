@@ -170,6 +170,33 @@ class AutoMunge:
                                      'coworkers' : ['mnmx'], \
                                      'friends' : []}})
     
+    transform_dict.update({'or10' : {'parents' : ['ord4'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['1010'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : ['mnmx'], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'om10' : {'parents' : ['ord4'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['1010', 'mnmx'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : ['mnmx'], \
+                                     'friends' : []}})
+
+    transform_dict.update({'mnm0' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['mnmx', '1010'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
     transform_dict.update({'1010' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['1010'], \
@@ -1053,6 +1080,24 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'mnmx'}})
+    process_dict.update({'or10' : {'dualprocess' : None, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'exclude', \
+                                  'labelctgy' : 'mnmx'}})
+    process_dict.update({'om10' : {'dualprocess' : None, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'exclude', \
+                                  'labelctgy' : 'mnmx'}})
+    process_dict.update({'mnm0' : {'dualprocess' : None, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'mnmx'}})
     process_dict.update({'1010' : {'dualprocess' : self.process_1010_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_1010_class, \
@@ -1915,9 +1960,9 @@ class AutoMunge:
     mdf_train[column + '_nmbr'] = mdf_train[column + '_nmbr'] / std
     mdf_test[column + '_nmbr'] = mdf_test[column + '_nmbr'] / std
     
-    #change data type for memory savings
-    mdf_train[column + '_nmbr'] = mdf_train[column + '_nmbr'].astype(np.float32)
-    mdf_test[column + '_nmbr'] = mdf_test[column + '_nmbr'].astype(np.float32)
+#     #change data type for memory savings
+#     mdf_train[column + '_nmbr'] = mdf_train[column + '_nmbr'].astype(np.float32)
+#     mdf_test[column + '_nmbr'] = mdf_test[column + '_nmbr'].astype(np.float32)
 
     #create list of columns
     nmbrcolumns = [column + '_nmbr']
@@ -1993,9 +2038,9 @@ class AutoMunge:
     mdf_train[column + '_MADn'] = mdf_train[column + '_MADn'] / MAD
     mdf_test[column + '_MADn'] = mdf_test[column + '_MADn'] / MAD
 
-    #change data type for memory savings
-    mdf_train[column + '_MADn'] = mdf_train[column + '_MADn'].astype(np.float32)
-    mdf_test[column + '_MADn'] = mdf_test[column + '_MADn'].astype(np.float32)
+#     #change data type for memory savings
+#     mdf_train[column + '_MADn'] = mdf_train[column + '_MADn'].astype(np.float32)
+#     mdf_test[column + '_MADn'] = mdf_test[column + '_MADn'].astype(np.float32)
 
     #create list of columns
     nmbrcolumns = [column + '_MADn']
@@ -2075,9 +2120,9 @@ class AutoMunge:
     mdf_train[column + '_MAD3'] = mdf_train[column + '_MAD3'] / MAD
     mdf_test[column + '_MAD3'] = mdf_test[column + '_MAD3'] / MAD
 
-    #change data type for memory savings
-    mdf_train[column + '_MAD3'] = mdf_train[column + '_MAD3'].astype(np.float32)
-    mdf_test[column + '_MAD3'] = mdf_test[column + '_MAD3'].astype(np.float32)
+#     #change data type for memory savings
+#     mdf_train[column + '_MAD3'] = mdf_train[column + '_MAD3'].astype(np.float32)
+#     mdf_test[column + '_MAD3'] = mdf_test[column + '_MAD3'].astype(np.float32)
 
     #create list of columns
     nmbrcolumns = [column + '_MAD3']
@@ -2153,9 +2198,9 @@ class AutoMunge:
     mdf_test[column + '_mnmx'] = (mdf_test[column + '_mnmx'] - minimum) / \
                                  (maximum - minimum)
 
-    #change data type for memory savings
-    mdf_train[column + '_mnmx'] = mdf_train[column + '_mnmx'].astype(np.float32)
-    mdf_test[column + '_mnmx'] = mdf_test[column + '_mnmx'].astype(np.float32)
+#     #change data type for memory savings
+#     mdf_train[column + '_mnmx'] = mdf_train[column + '_mnmx'].astype(np.float32)
+#     mdf_test[column + '_mnmx'] = mdf_test[column + '_mnmx'].astype(np.float32)
     
     #create list of columns
     nmbrcolumns = [column + '_mnmx']
@@ -2255,9 +2300,9 @@ class AutoMunge:
     mdf_test[column + '_mnm3'] = (mdf_test[column + '_mnm3'] - quantilemin) / \
                                  (quantilemax - quantilemin)
 
-    #change data type for memory savings
-    mdf_train[column + '_mnm3'] = mdf_train[column + '_mnm3'].astype(np.float32)
-    mdf_test[column + '_mnm3'] = mdf_test[column + '_mnm3'].astype(np.float32)
+#     #change data type for memory savings
+#     mdf_train[column + '_mnm3'] = mdf_train[column + '_mnm3'].astype(np.float32)
+#     mdf_test[column + '_mnm3'] = mdf_test[column + '_mnm3'].astype(np.float32)
     
     #create list of columns
     nmbrcolumns = [column + '_mnm3']
@@ -2341,9 +2386,9 @@ class AutoMunge:
     mdf_test.loc[mdf_train[column + '_mnm6'] < 0, (column + '_mnm6')] \
     = 0
 
-    #change data type for memory savings
-    mdf_train[column + '_mnm6'] = mdf_train[column + '_mnm6'].astype(np.float32)
-    mdf_test[column + '_mnm6'] = mdf_test[column + '_mnm6'].astype(np.float32)
+#     #change data type for memory savings
+#     mdf_train[column + '_mnm6'] = mdf_train[column + '_mnm6'].astype(np.float32)
+#     mdf_test[column + '_mnm6'] = mdf_test[column + '_mnm6'].astype(np.float32)
     
     #create list of columns
     nmbrcolumns = [column + '_mnm6']
@@ -2770,8 +2815,15 @@ class AutoMunge:
     mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].replace(ordinal_dict)
     
     #just want to make sure these arent' being saved as floats for memory considerations
-    mdf_train[column + '_ordl'] = mdf_train[column + '_ordl'].astype(int)
-    mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype(int)
+    if len(ordinal_dict) < 254:
+      mdf_train[column + '_ordl'] = mdf_train[column + '_ordl'].astype(np.uint8)
+      mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype(np.uint8)
+    elif len(ordinal_dict) < 65530:
+      mdf_train[column + '_ordl'] = mdf_train[column + '_ordl'].astype(np.uint16)
+      mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype(np.uint16)
+    else:
+      mdf_train[column + '_ordl'] = mdf_train[column + '_ordl'].astype(np.uint32)
+      mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype(np.uint32)
     
 #     #convert column to category
 #     mdf_train[column + '_ordl'] = mdf_train[column + '_ordl'].astype('category')
@@ -2913,8 +2965,15 @@ class AutoMunge:
     mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].replace(ordinal_dict)
     
     #just want to make sure these arent' being saved as floats for memory considerations
-    mdf_train[column + '_ord3'] = mdf_train[column + '_ord3'].astype(int)
-    mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype(int)
+    if len(ordinal_dict) < 254:
+      mdf_train[column + '_ord3'] = mdf_train[column + '_ord3'].astype(np.uint8)
+      mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype(np.uint8)
+    elif len(ordinal_dict) < 65530:
+      mdf_train[column + '_ord3'] = mdf_train[column + '_ord3'].astype(np.uint16)
+      mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype(np.uint16)
+    else:
+      mdf_train[column + '_ord3'] = mdf_train[column + '_ord3'].astype(np.uint32)
+      mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype(np.uint32)
     
 #     #convert column to category
 #     mdf_train[column + '_ordl'] = mdf_train[column + '_ordl'].astype('category')
@@ -3580,9 +3639,9 @@ class AutoMunge:
 #       if column + '_year' in mdf_test.columns:
 #         del mdf_test[column + '_year']
 
-    #change data type for memory savings
-    mdf_train[column + '_year'] = mdf_train[column + '_year'].astype(np.float32)
-    mdf_test[column + '_year'] = mdf_test[column + '_year'].astype(np.float32)
+#     #change data type for memory savings
+#     mdf_train[column + '_year'] = mdf_train[column + '_year'].astype(np.float32)
+#     mdf_test[column + '_year'] = mdf_test[column + '_year'].astype(np.float32)
 
     #store some values in the date_dict{} for use later in ML infill methods
 
@@ -3683,9 +3742,9 @@ class AutoMunge:
 #     #do same for test set
 #     mdf_test[column + '_mnth'] = mdf_test[column + '_mnth'].fillna(0)
 
-    #change data type for memory savings
-    mdf_train[column + '_mnth'] = mdf_train[column + '_mnth'].astype(np.float32)
-    mdf_test[column + '_mnth'] = mdf_test[column + '_mnth'].astype(np.float32)
+#     #change data type for memory savings
+#     mdf_train[column + '_mnth'] = mdf_train[column + '_mnth'].astype(np.float32)
+#     mdf_test[column + '_mnth'] = mdf_test[column + '_mnth'].astype(np.float32)
 
     #output of a list of the created column names
     datecolumns = [column + '_mnth']
@@ -3790,9 +3849,9 @@ class AutoMunge:
 #       if column + '_year' in mdf_test.columns:
 #         del mdf_test[column + '_year']
 
-    #change data type for memory savings
-    mdf_train[column + '_mnsn'] = mdf_train[column + '_mnsn'].astype(np.float32)
-    mdf_test[column + '_mnsn'] = mdf_test[column + '_mnsn'].astype(np.float32)
+#     #change data type for memory savings
+#     mdf_train[column + '_mnsn'] = mdf_train[column + '_mnsn'].astype(np.float32)
+#     mdf_test[column + '_mnsn'] = mdf_test[column + '_mnsn'].astype(np.float32)
 
     #store some values in the date_dict{} for use later in ML infill methods
 
@@ -3882,9 +3941,9 @@ class AutoMunge:
 #       if column + '_year' in mdf_test.columns:
 #         del mdf_test[column + '_year']
 
-    #change data type for memory savings
-    mdf_train[column + '_mncs'] = mdf_train[column + '_mncs'].astype(np.float32)
-    mdf_test[column + '_mncs'] = mdf_test[column + '_mncs'].astype(np.float32)
+#     #change data type for memory savings
+#     mdf_train[column + '_mncs'] = mdf_train[column + '_mncs'].astype(np.float32)
+#     mdf_test[column + '_mncs'] = mdf_test[column + '_mncs'].astype(np.float32)
 
     #store some values in the date_dict{} for use later in ML infill methods
 
@@ -3974,9 +4033,9 @@ class AutoMunge:
 #       if column + '_year' in mdf_test.columns:
 #         del mdf_test[column + '_year']
 
-    #change data type for memory savings
-    mdf_train[column + '_mdsn'] = mdf_train[column + '_mdsn'].astype(np.float32)
-    mdf_test[column + '_mdsn'] = mdf_test[column + '_mdsn'].astype(np.float32)
+#     #change data type for memory savings
+#     mdf_train[column + '_mdsn'] = mdf_train[column + '_mdsn'].astype(np.float32)
+#     mdf_test[column + '_mdsn'] = mdf_test[column + '_mdsn'].astype(np.float32)
 
     #store some values in the date_dict{} for use later in ML infill methods
 
@@ -4066,9 +4125,9 @@ class AutoMunge:
 #       if column + '_year' in mdf_test.columns:
 #         del mdf_test[column + '_year']
 
-    #change data type for memory savings
-    mdf_train[column + '_mdcs'] = mdf_train[column + '_mdcs'].astype(np.float32)
-    mdf_test[column + '_mdcs'] = mdf_test[column + '_mdcs'].astype(np.float32)
+#     #change data type for memory savings
+#     mdf_train[column + '_mdcs'] = mdf_train[column + '_mdcs'].astype(np.float32)
+#     mdf_test[column + '_mdcs'] = mdf_test[column + '_mdcs'].astype(np.float32)
 
     #store some values in the date_dict{} for use later in ML infill methods
 
@@ -4163,9 +4222,9 @@ class AutoMunge:
 #     #do same for test set
 #     mdf_test[column + '_days'] = mdf_test[column + '_days'].fillna(0)
 
-    #change data type for memory savings
-    mdf_train[column + '_days'] = mdf_train[column + '_days'].astype(np.float32)
-    mdf_test[column + '_days'] = mdf_test[column + '_days'].astype(np.float32)
+#     #change data type for memory savings
+#     mdf_train[column + '_days'] = mdf_train[column + '_days'].astype(np.float32)
+#     mdf_test[column + '_days'] = mdf_test[column + '_days'].astype(np.float32)
 
     #output of a list of the created column names
     datecolumns = [column + '_days']
@@ -4271,9 +4330,9 @@ class AutoMunge:
 #       if column + '_year' in mdf_test.columns:
 #         del mdf_test[column + '_year']
 
-    #change data type for memory savings
-    mdf_train[column + '_dysn'] = mdf_train[column + '_dysn'].astype(np.float32)
-    mdf_test[column + '_dysn'] = mdf_test[column + '_dysn'].astype(np.float32)
+#     #change data type for memory savings
+#     mdf_train[column + '_dysn'] = mdf_train[column + '_dysn'].astype(np.float32)
+#     mdf_test[column + '_dysn'] = mdf_test[column + '_dysn'].astype(np.float32)
 
     #store some values in the date_dict{} for use later in ML infill methods
 
@@ -4364,9 +4423,9 @@ class AutoMunge:
 #       if column + '_year' in mdf_test.columns:
 #         del mdf_test[column + '_year']
 
-    #change data type for memory savings
-    mdf_train[column + '_dycs'] = mdf_train[column + '_dycs'].astype(np.float32)
-    mdf_test[column + '_dycs'] = mdf_test[column + '_dycs'].astype(np.float32)
+#     #change data type for memory savings
+#     mdf_train[column + '_dycs'] = mdf_train[column + '_dycs'].astype(np.float32)
+#     mdf_test[column + '_dycs'] = mdf_test[column + '_dycs'].astype(np.float32)
 
     #store some values in the date_dict{} for use later in ML infill methods
 
@@ -4455,9 +4514,9 @@ class AutoMunge:
 #       if column + '_year' in mdf_test.columns:
 #         del mdf_test[column + '_year']
 
-    #change data type for memory savings
-    mdf_train[column + '_dhms'] = mdf_train[column + '_dhms'].astype(np.float32)
-    mdf_test[column + '_dhms'] = mdf_test[column + '_dhms'].astype(np.float32)
+#     #change data type for memory savings
+#     mdf_train[column + '_dhms'] = mdf_train[column + '_dhms'].astype(np.float32)
+#     mdf_test[column + '_dhms'] = mdf_test[column + '_dhms'].astype(np.float32)
 
     #store some values in the date_dict{} for use later in ML infill methods
 
@@ -4547,9 +4606,9 @@ class AutoMunge:
 #       if column + '_year' in mdf_test.columns:
 #         del mdf_test[column + '_year']
 
-    #change data type for memory savings
-    mdf_train[column + '_dhmc'] = mdf_train[column + '_dhmc'].astype(np.float32)
-    mdf_test[column + '_dhmc'] = mdf_test[column + '_dhmc'].astype(np.float32)
+#     #change data type for memory savings
+#     mdf_train[column + '_dhmc'] = mdf_train[column + '_dhmc'].astype(np.float32)
+#     mdf_test[column + '_dhmc'] = mdf_test[column + '_dhmc'].astype(np.float32)
 
     #store some values in the date_dict{} for use later in ML infill methods
 
@@ -4659,9 +4718,9 @@ class AutoMunge:
 #       if column + '_year' in mdf_test.columns:
 #         del mdf_test[column + '_year']
 
-    #change data type for memory savings
-    mdf_train[column + '_hour'] = mdf_train[column + '_hour'].astype(np.float32)
-    mdf_test[column + '_hour'] = mdf_test[column + '_hour'].astype(np.float32)
+#     #change data type for memory savings
+#     mdf_train[column + '_hour'] = mdf_train[column + '_hour'].astype(np.float32)
+#     mdf_test[column + '_hour'] = mdf_test[column + '_hour'].astype(np.float32)
 
     #store some values in the date_dict{} for use later in ML infill methods
 
@@ -4753,9 +4812,9 @@ class AutoMunge:
 #       if column + '_year' in mdf_test.columns:
 #         del mdf_test[column + '_year']
 
-    #change data type for memory savings
-    mdf_train[column + '_hrsn'] = mdf_train[column + '_hrsn'].astype(np.float32)
-    mdf_test[column + '_hrsn'] = mdf_test[column + '_hrsn'].astype(np.float32)
+#     #change data type for memory savings
+#     mdf_train[column + '_hrsn'] = mdf_train[column + '_hrsn'].astype(np.float32)
+#     mdf_test[column + '_hrsn'] = mdf_test[column + '_hrsn'].astype(np.float32)
 
     #store some values in the date_dict{} for use later in ML infill methods
 
@@ -4846,9 +4905,9 @@ class AutoMunge:
 #       if column + '_year' in mdf_test.columns:
 #         del mdf_test[column + '_year']
 
-    #change data type for memory savings
-    mdf_train[column + '_hrcs'] = mdf_train[column + '_hrcs'].astype(np.float32)
-    mdf_test[column + '_hrcs'] = mdf_test[column + '_hrcs'].astype(np.float32)
+#     #change data type for memory savings
+#     mdf_train[column + '_hrcs'] = mdf_train[column + '_hrcs'].astype(np.float32)
+#     mdf_test[column + '_hrcs'] = mdf_test[column + '_hrcs'].astype(np.float32)
 
     #store some values in the date_dict{} for use later in ML infill methods
 
@@ -4938,9 +4997,9 @@ class AutoMunge:
 #       if column + '_year' in mdf_test.columns:
 #         del mdf_test[column + '_year']
 
-    #change data type for memory savings
-    mdf_train[column + '_hmss'] = mdf_train[column + '_hmss'].astype(np.float32)
-    mdf_test[column + '_hmss'] = mdf_test[column + '_hmss'].astype(np.float32)
+#     #change data type for memory savings
+#     mdf_train[column + '_hmss'] = mdf_train[column + '_hmss'].astype(np.float32)
+#     mdf_test[column + '_hmss'] = mdf_test[column + '_hmss'].astype(np.float32)
 
     #store some values in the date_dict{} for use later in ML infill methods
 
@@ -5030,9 +5089,9 @@ class AutoMunge:
 #       if column + '_year' in mdf_test.columns:
 #         del mdf_test[column + '_year']
 
-    #change data type for memory savings
-    mdf_train[column + '_hmsc'] = mdf_train[column + '_hmsc'].astype(np.float32)
-    mdf_test[column + '_hmsc'] = mdf_test[column + '_hmsc'].astype(np.float32)
+#     #change data type for memory savings
+#     mdf_train[column + '_hmsc'] = mdf_train[column + '_hmsc'].astype(np.float32)
+#     mdf_test[column + '_hmsc'] = mdf_test[column + '_hmsc'].astype(np.float32)
 
     #store some values in the date_dict{} for use later in ML infill methods
 
@@ -5142,9 +5201,9 @@ class AutoMunge:
 #       if column + '_year' in mdf_test.columns:
 #         del mdf_test[column + '_year']
 
-    #change data type for memory savings
-    mdf_train[column + '_mint'] = mdf_train[column + '_mint'].astype(np.float32)
-    mdf_test[column + '_mint'] = mdf_test[column + '_mint'].astype(np.float32)
+#     #change data type for memory savings
+#     mdf_train[column + '_mint'] = mdf_train[column + '_mint'].astype(np.float32)
+#     mdf_test[column + '_mint'] = mdf_test[column + '_mint'].astype(np.float32)
 
     #store some values in the date_dict{} for use later in ML infill methods
 
@@ -5236,9 +5295,9 @@ class AutoMunge:
 #       if column + '_year' in mdf_test.columns:
 #         del mdf_test[column + '_year']
 
-    #change data type for memory savings
-    mdf_train[column + '_misn'] = mdf_train[column + '_misn'].astype(np.float32)
-    mdf_test[column + '_misn'] = mdf_test[column + '_misn'].astype(np.float32)
+#     #change data type for memory savings
+#     mdf_train[column + '_misn'] = mdf_train[column + '_misn'].astype(np.float32)
+#     mdf_test[column + '_misn'] = mdf_test[column + '_misn'].astype(np.float32)
 
     #store some values in the date_dict{} for use later in ML infill methods
 
@@ -5329,9 +5388,9 @@ class AutoMunge:
 #       if column + '_year' in mdf_test.columns:
 #         del mdf_test[column + '_year']
 
-    #change data type for memory savings
-    mdf_train[column + '_mics'] = mdf_train[column + '_mics'].astype(np.float32)
-    mdf_test[column + '_mics'] = mdf_test[column + '_mics'].astype(np.float32)
+#     #change data type for memory savings
+#     mdf_train[column + '_mics'] = mdf_train[column + '_mics'].astype(np.float32)
+#     mdf_test[column + '_mics'] = mdf_test[column + '_mics'].astype(np.float32)
 
     #store some values in the date_dict{} for use later in ML infill methods
 
@@ -5421,9 +5480,9 @@ class AutoMunge:
 #       if column + '_year' in mdf_test.columns:
 #         del mdf_test[column + '_year']
 
-    #change data type for memory savings
-    mdf_train[column + '_mssn'] = mdf_train[column + '_mssn'].astype(np.float32)
-    mdf_test[column + '_mssn'] = mdf_test[column + '_mssn'].astype(np.float32)
+#     #change data type for memory savings
+#     mdf_train[column + '_mssn'] = mdf_train[column + '_mssn'].astype(np.float32)
+#     mdf_test[column + '_mssn'] = mdf_test[column + '_mssn'].astype(np.float32)
 
     #store some values in the date_dict{} for use later in ML infill methods
 
@@ -5513,9 +5572,9 @@ class AutoMunge:
 #       if column + '_year' in mdf_test.columns:
 #         del mdf_test[column + '_year']
 
-    #change data type for memory savings
-    mdf_train[column + '_mscs'] = mdf_train[column + '_mscs'].astype(np.float32)
-    mdf_test[column + '_mscs'] = mdf_test[column + '_mscs'].astype(np.float32)
+#     #change data type for memory savings
+#     mdf_train[column + '_mscs'] = mdf_train[column + '_mscs'].astype(np.float32)
+#     mdf_test[column + '_mscs'] = mdf_test[column + '_mscs'].astype(np.float32)
 
     #store some values in the date_dict{} for use later in ML infill methods
 
@@ -5625,9 +5684,9 @@ class AutoMunge:
 #       if column + '_year' in mdf_test.columns:
 #         del mdf_test[column + '_year']
 
-    #change data type for memory savings
-    mdf_train[column + '_scnd'] = mdf_train[column + '_scnd'].astype(np.float32)
-    mdf_test[column + '_scnd'] = mdf_test[column + '_scnd'].astype(np.float32)
+#     #change data type for memory savings
+#     mdf_train[column + '_scnd'] = mdf_train[column + '_scnd'].astype(np.float32)
+#     mdf_test[column + '_scnd'] = mdf_test[column + '_scnd'].astype(np.float32)
 
     #store some values in the date_dict{} for use later in ML infill methods
 
@@ -5719,9 +5778,9 @@ class AutoMunge:
 #       if column + '_year' in mdf_test.columns:
 #         del mdf_test[column + '_year']
 
-    #change data type for memory savings
-    mdf_train[column + '_scsn'] = mdf_train[column + '_scsn'].astype(np.float32)
-    mdf_test[column + '_scsn'] = mdf_test[column + '_scsn'].astype(np.float32)
+#     #change data type for memory savings
+#     mdf_train[column + '_scsn'] = mdf_train[column + '_scsn'].astype(np.float32)
+#     mdf_test[column + '_scsn'] = mdf_test[column + '_scsn'].astype(np.float32)
 
     #store some values in the date_dict{} for use later in ML infill methods
 
@@ -5812,9 +5871,9 @@ class AutoMunge:
 #       if column + '_year' in mdf_test.columns:
 #         del mdf_test[column + '_year']
 
-    #change data type for memory savings
-    mdf_train[column + '_sccs'] = mdf_train[column + '_sccs'].astype(np.float32)
-    mdf_test[column + '_sccs'] = mdf_test[column + '_sccs'].astype(np.float32)
+#     #change data type for memory savings
+#     mdf_train[column + '_sccs'] = mdf_train[column + '_sccs'].astype(np.float32)
+#     mdf_test[column + '_sccs'] = mdf_test[column + '_sccs'].astype(np.float32)
 
     #store some values in the date_dict{} for use later in ML infill methods
 
@@ -5939,8 +5998,8 @@ class AutoMunge:
 
     del df[column + '_temp']
 
-    #change data type for memory savings
-    df[column + '_bxcx'] = df[column + '_bxcx'].astype(np.float32)
+#     #change data type for memory savings
+#     df[column + '_bxcx'] = df[column + '_bxcx'].astype(np.float32)
 
     #output of a list of the created column names
     #nmbrcolumns = [column + '_nmbr', column + '_bxcx', column + '_NArw']
@@ -6020,9 +6079,9 @@ class AutoMunge:
     mdf_train[column + '_log0'] = mdf_train[column + '_log0'].fillna(0)
     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].fillna(0)
 
-    #change data type for memory savings
-    mdf_train[column + '_log0'] = mdf_train[column + '_log0'].astype(np.float32)
-    mdf_test[column + '_log0'] = mdf_test[column + '_log0'].astype(np.float32)
+#     #change data type for memory savings
+#     mdf_train[column + '_log0'] = mdf_train[column + '_log0'].astype(np.float32)
+#     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].astype(np.float32)
 
     #create list of columns
     nmbrcolumns = [column + '_log0']
@@ -10050,6 +10109,22 @@ class AutoMunge:
 
     return result
   
+  def check_floatprecision(self, floatprecision):
+    """
+    #Quick check to ensure float precision is valid value (16/32/64)
+    """
+    
+    result = False
+    
+    if floatprecision not in [16, 32, 64]:
+      result = True
+      
+      print("Please note an invalid floatprecision value was passed")
+      print("Acceptible floatprecision values are 16, 32, 64.")
+      print("(Default is 32.)")
+      
+    return result
+  
   
   def assigncat_str_convert(self, assigncat):
     """
@@ -10094,9 +10169,35 @@ class AutoMunge:
 
     return parameter
   
+  def floatprecision_transform(self, df, columnkeylist, floatprecision):
+    """
+    #floatprecision is a parameter user passed to automunge
+    #allowable values are 16/32/64
+    #if 64 do nothing (we'll assume our transofrm functions default to 64)
+    #if 16 or 32 then check each column in df for columnkeylist and if
+    #float convert to this precision
+    """
+    
+    if isinstance(columnkeylist, str):
+      columnkeylist = [columnkeylist]
+    
+    if floatprecision in [16, 32]:
+      
+      for columnkey in columnkeylist:
+        
+        if df[columnkey].dtypes == np.float64:
+          
+          if floatprecision == 32:
+            df[columnkey] = df[columnkey].astype(np.float32)
+            
+          if floatprecision == 16:
+            df[columnkey] = df[columnkey].astype(np.float16)
+    
+    return df
+  
 
   def automunge(self, df_train, df_test = False, labels_column = False, trainID_column = False, \
-                testID_column = False, valpercent1=0.0, valpercent2 = 0.0, \
+                testID_column = False, valpercent1=0.0, valpercent2 = 0.0, floatprecision = 32, \
                 shuffletrain = False, TrainLabelFreqLevel = False, powertransform = False, \
                 binstransform = False, MLinfill = False, infilliterate=1, randomseed = 42, \
                 numbercategoryheuristic = 15, pandasoutput = False, NArw_marker = True, \
@@ -10111,8 +10212,8 @@ class AutoMunge:
                              'bins':[], 'bint':[], \
                              'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
                              'log0':[], 'log1':[], 'pwrs':[], \
-                             'bnry':[], 'text':[], '1010':[], \
-                             'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], \
+                             'bnry':[], 'text':[], '1010':[], 'or10':[], 'om10':[], \
+                             'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'mnmo':[], \
                              'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
                              'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
                              'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
@@ -10185,6 +10286,9 @@ class AutoMunge:
     check_assigncat_result = self.check_assigncat(assigncat)
     check_assigninfill_result = self.check_assigninfill(assigninfill)
     check_ML_cmnd_result = self.check_ML_cmnd(ML_cmnd)
+    
+    #quick check of floatprecision
+    check_floatprecision_result = self.check_floatprecision(floatprecision)
     
 #     #if we found any redundant column assignments
 #     if result1 == True or result2 = True:
@@ -10725,6 +10829,11 @@ class AutoMunge:
           #as a "columnkey" for pulling datas from the postprocess_dict down the road
           #columnkeylist = list(set(templist2) - set(templist1))[0]
           columnkeylist = list(set(templist2) - set(templist1))
+          
+          #now we'll apply the floatprecision transformation
+          df_train = self.floatprecision_transform(df_train, columnkeylist, floatprecision)
+          df_test = self.floatprecision_transform(df_test, columnkeylist, floatprecision)
+          
             
           #so last line I believe returns string if only one entry, so let's run a test
           if isinstance(columnkeylist, str):
@@ -11383,7 +11492,15 @@ class AutoMunge:
     #e.g. such as quintiles for instance
     if TrainLabelFreqLevel == True \
     and labels_column != False:
-
+      
+      #printout display progress
+      if printstatus == True:
+        print("_______________")
+        print("Begin label rebalancing")
+        print("")
+        print("Before rebalancing train set row count = ")
+        print(df_labels.shape[0])
+        print("")
 
 #       train_df = pd.DataFrame(np_train, columns = finalcolumns_train)
 #       labels_df = pd.DataFrame(np_labels, columns = finalcolumns_labels)
@@ -11426,6 +11543,14 @@ class AutoMunge:
 
         if trainID_column != False:
           df_trainID = shuffle(df_trainID, random_state = answer)
+          
+      #printout display progress
+      if printstatus == True:
+
+        print("")
+        print("After rebalancing train set row count = ")
+        print(df_labels.shape[0])
+        print("")
 
 
     #here we'll populate the postprocess_dci8t that is returned from automunge
@@ -11439,6 +11564,7 @@ class AutoMunge:
                              'testID_column' : testID_column, \
                              'valpercent1' : valpercent1, \
                              'valpercent2' : valpercent2, \
+                             'floatprecision' : floatprecision, \
                              'shuffletrain' : shuffletrain, \
                              'TrainLabelFreqLevel' : TrainLabelFreqLevel, \
                              'MLinfill' : MLinfill, \
@@ -11469,7 +11595,7 @@ class AutoMunge:
                              'process_dict' : process_dict, \
                              'ML_cmnd' : ML_cmnd, \
                              'printstatus' : printstatus, \
-                             'automungeversion' : '2.50' })
+                             'automungeversion' : '2.51' })
 
     
     
@@ -11547,6 +11673,15 @@ class AutoMunge:
       df_test = pd.DataFrame()
       df_testID = pd.DataFrame()    
 
+      
+    #now we'll apply the floatprecision transformation
+    if floatprecision != 64:
+      df_train = self.floatprecision_transform(df_train, finalcolumns_train, floatprecision)
+      if test_plug_marker == False:
+        df_test = self.floatprecision_transform(df_test, finalcolumns_train, floatprecision)
+      if labels_column != False:
+        finalcolumns_labels = list(df_labels)
+        df_labels = self.floatprecision_transform(df_labels, finalcolumns_labels, floatprecision)
     
     #set output format based on pandasoutput argument
     if pandasoutput == True:
@@ -11923,8 +12058,8 @@ class AutoMunge:
     #divide column values by std
     mdf_test[column + '_nmbr'] = mdf_test[column + '_nmbr'] / std
 
-    #change data type for memory savings
-    mdf_test[column + '_nmbr'] = mdf_test[column + '_nmbr'].astype(np.float32)
+#     #change data type for memory savings
+#     mdf_test[column + '_nmbr'] = mdf_test[column + '_nmbr'].astype(np.float32)
 
     return mdf_test
   
@@ -11975,8 +12110,8 @@ class AutoMunge:
     #divide column values by std
     mdf_test[column + '_MADn'] = mdf_test[column + '_MADn'] / MAD
 
-    #change data type for memory savings
-    mdf_test[column + '_MADn'] = mdf_test[column + '_MADn'].astype(np.float32)
+#     #change data type for memory savings
+#     mdf_test[column + '_MADn'] = mdf_test[column + '_MADn'].astype(np.float32)
 
     return mdf_test
 
@@ -12028,8 +12163,8 @@ class AutoMunge:
     #divide column values by std
     mdf_test[column + '_MAD3'] = mdf_test[column + '_MAD3'] / MAD
 
-    #change data type for memory savings
-    mdf_test[column + '_MAD3'] = mdf_test[column + '_MAD3'].astype(np.float32)
+#     #change data type for memory savings
+#     mdf_test[column + '_MAD3'] = mdf_test[column + '_MAD3'].astype(np.float32)
 
     return mdf_test
     
@@ -12078,8 +12213,8 @@ class AutoMunge:
     mdf_test[column + '_mnmx'] = (mdf_test[column + '_mnmx'] - minimum) / \
                                  (maximum - minimum)
 
-    #change data type for memory savings
-    mdf_test[column + '_mnmx'] = mdf_test[column + '_mnmx'].astype(np.float32)
+#     #change data type for memory savings
+#     mdf_test[column + '_mnmx'] = mdf_test[column + '_mnmx'].astype(np.float32)
 
     return mdf_test
 
@@ -12185,8 +12320,8 @@ class AutoMunge:
     mdf_test[column + '_mnm3'] = (mdf_test[column + '_mnm3'] - quantilemin) / \
                                  (quantilemax - quantilemin)
 
-    #change data type for memory savings
-    mdf_test[column + '_mnm3'] = mdf_test[column + '_mnm3'].astype(np.float32)
+#     #change data type for memory savings
+#     mdf_test[column + '_mnm3'] = mdf_test[column + '_mnm3'].astype(np.float32)
 
     return mdf_test
 
@@ -12241,8 +12376,8 @@ class AutoMunge:
     mdf_test.loc[mdf_test[column + '_mnm6'] < 0, (column + '_mnm6')] \
     = 0
 
-    #change data type for memory savings
-    mdf_test[column + '_mnm6'] = mdf_test[column + '_mnm6'].astype(np.float32)
+#     #change data type for memory savings
+#     mdf_test[column + '_mnm6'] = mdf_test[column + '_mnm6'].astype(np.float32)
 
     return mdf_test
 
@@ -12506,7 +12641,12 @@ class AutoMunge:
     mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].replace(ordinal_dict)
     
     #just want to make sure these arent' being saved as floats for memory considerations
-    mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype(int)
+    if len(ordinal_dict) < 254:
+      mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype(np.uint8)
+    elif len(ordinal_dict) < 65530:
+      mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype(np.uint16)
+    else:
+      mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype(np.uint32)
     
         
 #     #convert column to category
@@ -12580,7 +12720,12 @@ class AutoMunge:
     mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].replace(ordinal_dict)
     
     #just want to make sure these arent' being saved as floats for memory considerations
-    mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype(int)
+    if len(ordinal_dict) < 254:
+      mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype(np.uint8)
+    elif len(ordinal_dict) < 65530:
+      mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype(np.uint16)
+    else:
+      mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype(np.uint32)
     
         
 #     #convert column to category
@@ -12962,8 +13107,8 @@ class AutoMunge:
 #     #now replace NaN with 0
 #     mdf_test[column + '_year'] = mdf_test[column + '_year'].fillna(0)
 
-    #change data type for memory savings
-    mdf_test[column + '_year'] = mdf_test[column + '_year'].astype(np.float32)
+#     #change data type for memory savings
+#     mdf_test[column + '_year'] = mdf_test[column + '_year'].astype(np.float32)
 
 
     return mdf_test
@@ -13020,8 +13165,8 @@ class AutoMunge:
 #     #now replace NaN with 0
 #     mdf_test[column + '_mnth'] = mdf_test[column + '_mnth'].fillna(0)
 
-    #change data type for memory savings
-    mdf_test[column + '_mnth'] = mdf_test[column + '_mnth'].astype(np.float32)
+#     #change data type for memory savings
+#     mdf_test[column + '_mnth'] = mdf_test[column + '_mnth'].astype(np.float32)
 
     return mdf_test
 
@@ -13068,8 +13213,8 @@ class AutoMunge:
     #replace missing data with training set mean
     mdf_test[column + '_mnsn'] = mdf_test[column + '_mnsn'].fillna(mean_mnsn)
     
-    #change data type for memory savings
-    mdf_test[column + '_mnsn'] = mdf_test[column + '_mnsn'].astype(np.float32)
+#     #change data type for memory savings
+#     mdf_test[column + '_mnsn'] = mdf_test[column + '_mnsn'].astype(np.float32)
     
     return mdf_test
   
@@ -13115,8 +13260,8 @@ class AutoMunge:
     #replace missing data with training set mean
     mdf_test[column + '_mncs'] = mdf_test[column + '_mncs'].fillna(mean_mncs)
     
-    #change data type for memory savings
-    mdf_test[column + '_mncs'] = mdf_test[column + '_mncs'].astype(np.float32)
+#     #change data type for memory savings
+#     mdf_test[column + '_mncs'] = mdf_test[column + '_mncs'].astype(np.float32)
     
     return mdf_test
   
@@ -13161,8 +13306,8 @@ class AutoMunge:
     #replace missing data with training set mean
     mdf_test[column + '_mdsn'] = mdf_test[column + '_mdsn'].fillna(mean_mdsn)
     
-    #change data type for memory savings
-    mdf_test[column + '_mdsn'] = mdf_test[column + '_mdsn'].astype(np.float32)
+#     #change data type for memory savings
+#     mdf_test[column + '_mdsn'] = mdf_test[column + '_mdsn'].astype(np.float32)
     
     return mdf_test
   
@@ -13208,8 +13353,8 @@ class AutoMunge:
     #replace missing data with training set mean
     mdf_test[column + '_mdcs'] = mdf_test[column + '_mdcs'].fillna(mean_mdcs)
     
-    #change data type for memory savings
-    mdf_test[column + '_mdcs'] = mdf_test[column + '_mdcs'].astype(np.float32)
+#     #change data type for memory savings
+#     mdf_test[column + '_mdcs'] = mdf_test[column + '_mdcs'].astype(np.float32)
     
     return mdf_test
   
@@ -13265,8 +13410,8 @@ class AutoMunge:
 #     #now replace NaN with 0
 #     mdf_test[column + '_days'] = mdf_test[column + '_days'].fillna(0)
 
-    #change data type for memory savings
-    mdf_test[column + '_days'] = mdf_test[column + '_days'].astype(np.float32)
+#     #change data type for memory savings
+#     mdf_test[column + '_days'] = mdf_test[column + '_days'].astype(np.float32)
 
     return mdf_test
 
@@ -13314,8 +13459,8 @@ class AutoMunge:
     #replace missing data with training set mean
     mdf_test[column + '_dysn'] = mdf_test[column + '_dysn'].fillna(mean_dysn)
     
-    #change data type for memory savings
-    mdf_test[column + '_dysn'] = mdf_test[column + '_dysn'].astype(np.float32)
+#     #change data type for memory savings
+#     mdf_test[column + '_dysn'] = mdf_test[column + '_dysn'].astype(np.float32)
     
     return mdf_test
   
@@ -13362,8 +13507,8 @@ class AutoMunge:
     #replace missing data with training set mean
     mdf_test[column + '_dycs'] = mdf_test[column + '_dycs'].fillna(mean_dycs)
     
-    #change data type for memory savings
-    mdf_test[column + '_dycs'] = mdf_test[column + '_dycs'].astype(np.float32)
+#     #change data type for memory savings
+#     mdf_test[column + '_dycs'] = mdf_test[column + '_dycs'].astype(np.float32)
     
     return mdf_test
   
@@ -13410,8 +13555,8 @@ class AutoMunge:
     #replace missing data with training set mean
     mdf_test[column + '_dhms'] = mdf_test[column + '_dhms'].fillna(mean_dhms)
     
-    #change data type for memory savings
-    mdf_test[column + '_dhms'] = mdf_test[column + '_dhms'].astype(np.float32)
+#     #change data type for memory savings
+#     mdf_test[column + '_dhms'] = mdf_test[column + '_dhms'].astype(np.float32)
     
     return mdf_test
   
@@ -13458,8 +13603,8 @@ class AutoMunge:
     #replace missing data with training set mean
     mdf_test[column + '_dhmc'] = mdf_test[column + '_dhmc'].fillna(mean_dhmc)
     
-    #change data type for memory savings
-    mdf_test[column + '_dhmc'] = mdf_test[column + '_dhmc'].astype(np.float32)
+#     #change data type for memory savings
+#     mdf_test[column + '_dhmc'] = mdf_test[column + '_dhmc'].astype(np.float32)
     
     return mdf_test
   
@@ -13515,8 +13660,8 @@ class AutoMunge:
 #     #now replace NaN with 0
 #     mdf_test[column + '_days'] = mdf_test[column + '_days'].fillna(0)
 
-    #change data type for memory savings
-    mdf_test[column + '_hour'] = mdf_test[column + '_hour'].astype(np.float32)
+#     #change data type for memory savings
+#     mdf_test[column + '_hour'] = mdf_test[column + '_hour'].astype(np.float32)
 
     return mdf_test
 
@@ -13564,8 +13709,8 @@ class AutoMunge:
     #replace missing data with training set mean
     mdf_test[column + '_hrsn'] = mdf_test[column + '_hrsn'].fillna(mean_hrsn)
     
-    #change data type for memory savings
-    mdf_test[column + '_hrsn'] = mdf_test[column + '_hrsn'].astype(np.float32)
+#     #change data type for memory savings
+#     mdf_test[column + '_hrsn'] = mdf_test[column + '_hrsn'].astype(np.float32)
     
     return mdf_test
   
@@ -13612,8 +13757,8 @@ class AutoMunge:
     #replace missing data with training set mean
     mdf_test[column + '_hrcs'] = mdf_test[column + '_hrcs'].fillna(mean_hrcs)
     
-    #change data type for memory savings
-    mdf_test[column + '_hrcs'] = mdf_test[column + '_hrcs'].astype(np.float32)
+#     #change data type for memory savings
+#     mdf_test[column + '_hrcs'] = mdf_test[column + '_hrcs'].astype(np.float32)
     
     return mdf_test
   
@@ -13660,8 +13805,8 @@ class AutoMunge:
     #replace missing data with training set mean
     mdf_test[column + '_hmss'] = mdf_test[column + '_hmss'].fillna(mean_hmss)
     
-    #change data type for memory savings
-    mdf_test[column + '_hmss'] = mdf_test[column + '_hmss'].astype(np.float32)
+#     #change data type for memory savings
+#     mdf_test[column + '_hmss'] = mdf_test[column + '_hmss'].astype(np.float32)
     
     return mdf_test
   
@@ -13708,8 +13853,8 @@ class AutoMunge:
     #replace missing data with training set mean
     mdf_test[column + '_hmsc'] = mdf_test[column + '_hmsc'].fillna(mean_hmsc)
     
-    #change data type for memory savings
-    mdf_test[column + '_hmsc'] = mdf_test[column + '_hmsc'].astype(np.float32)
+#     #change data type for memory savings
+#     mdf_test[column + '_hmsc'] = mdf_test[column + '_hmsc'].astype(np.float32)
     
     return mdf_test
   
@@ -13765,8 +13910,8 @@ class AutoMunge:
 #     #now replace NaN with 0
 #     mdf_test[column + '_days'] = mdf_test[column + '_days'].fillna(0)
 
-    #change data type for memory savings
-    mdf_test[column + '_mint'] = mdf_test[column + '_mint'].astype(np.float32)
+#     #change data type for memory savings
+#     mdf_test[column + '_mint'] = mdf_test[column + '_mint'].astype(np.float32)
 
     return mdf_test
 
@@ -13814,8 +13959,8 @@ class AutoMunge:
     #replace missing data with training set mean
     mdf_test[column + '_misn'] = mdf_test[column + '_misn'].fillna(mean_misn)
     
-    #change data type for memory savings
-    mdf_test[column + '_misn'] = mdf_test[column + '_misn'].astype(np.float32)
+#     #change data type for memory savings
+#     mdf_test[column + '_misn'] = mdf_test[column + '_misn'].astype(np.float32)
     
     return mdf_test
   
@@ -13862,8 +14007,8 @@ class AutoMunge:
     #replace missing data with training set mean
     mdf_test[column + '_mics'] = mdf_test[column + '_mics'].fillna(mean_mics)
     
-    #change data type for memory savings
-    mdf_test[column + '_mics'] = mdf_test[column + '_mics'].astype(np.float32)
+#     #change data type for memory savings
+#     mdf_test[column + '_mics'] = mdf_test[column + '_mics'].astype(np.float32)
     
     return mdf_test
   
@@ -13910,8 +14055,8 @@ class AutoMunge:
     #replace missing data with training set mean
     mdf_test[column + '_mssn'] = mdf_test[column + '_mssn'].fillna(mean_mssn)
     
-    #change data type for memory savings
-    mdf_test[column + '_mssn'] = mdf_test[column + '_mssn'].astype(np.float32)
+#     #change data type for memory savings
+#     mdf_test[column + '_mssn'] = mdf_test[column + '_mssn'].astype(np.float32)
     
     return mdf_test
   
@@ -13958,8 +14103,8 @@ class AutoMunge:
     #replace missing data with training set mean
     mdf_test[column + '_mscs'] = mdf_test[column + '_mscs'].fillna(mean_mscs)
     
-    #change data type for memory savings
-    mdf_test[column + '_mscs'] = mdf_test[column + '_mscs'].astype(np.float32)
+#     #change data type for memory savings
+#     mdf_test[column + '_mscs'] = mdf_test[column + '_mscs'].astype(np.float32)
     
     return mdf_test
   
@@ -14015,8 +14160,8 @@ class AutoMunge:
 #     #now replace NaN with 0
 #     mdf_test[column + '_days'] = mdf_test[column + '_days'].fillna(0)
 
-    #change data type for memory savings
-    mdf_test[column + '_scnd'] = mdf_test[column + '_scnd'].astype(np.float32)
+#     #change data type for memory savings
+#     mdf_test[column + '_scnd'] = mdf_test[column + '_scnd'].astype(np.float32)
 
 
     return mdf_test
@@ -14065,8 +14210,8 @@ class AutoMunge:
     #replace missing data with training set mean
     mdf_test[column + '_scsn'] = mdf_test[column + '_scsn'].fillna(mean_scsn)
     
-    #change data type for memory savings
-    mdf_test[column + '_scsn'] = mdf_test[column + '_scsn'].astype(np.float32)
+#     #change data type for memory savings
+#     mdf_test[column + '_scsn'] = mdf_test[column + '_scsn'].astype(np.float32)
     
     return mdf_test
   
@@ -14113,8 +14258,8 @@ class AutoMunge:
     #replace missing data with training set mean
     mdf_test[column + '_sccs'] = mdf_test[column + '_sccs'].fillna(mean_sccs)
     
-    #change data type for memory savings
-    mdf_test[column + '_sccs'] = mdf_test[column + '_sccs'].astype(np.float32)
+#     #change data type for memory savings
+#     mdf_test[column + '_sccs'] = mdf_test[column + '_sccs'].astype(np.float32)
     
     return mdf_test
   
@@ -14197,8 +14342,8 @@ class AutoMunge:
     #replace missing data with 0
     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].fillna(0)
 
-    #change data type for memory savings
-    mdf_test[column + '_log0'] = mdf_test[column + '_log0'].astype(np.float32)
+#     #change data type for memory savings
+#     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].astype(np.float32)
 
     return mdf_test
     
@@ -15428,6 +15573,7 @@ class AutoMunge:
     powertransform = postprocess_dict['powertransform']
     binstransform = postprocess_dict['binstransform']
     NArw_marker = postprocess_dict['NArw_marker']
+    floatprecision = postprocess_dict['floatprecision']
     
     transform_dict = self.assembletransformdict(powertransform, binstransform, NArw_marker)
     
@@ -15718,6 +15864,11 @@ class AutoMunge:
           df_test = \
           self.postcircleoflife(df_test, column, category, category, process_dict, \
                                 transform_dict, preFSpostprocess_dict, columnkey)
+
+          
+          #now we'll apply the floatprecision transformation
+          columnkeylist = postprocess_dict['origcolumn'][column]['columnkeylist']
+          df_test = self.floatprecision_transform(df_test, columnkeylist, floatprecision)
           
           #printout display progress
           if printstatus == True:
@@ -16200,6 +16351,15 @@ class AutoMunge:
     #e.g. such as quintiles for instance
     if TrainLabelFreqLevel == True \
     and labelscolumn != False:
+      
+      #printout display progress
+      if printstatus == True:
+        print("_______________")
+        print("Begin label rebalancing")
+        print("")
+        print("Before rebalancing row count = ")
+        print(df_testlabels.shape[0])
+        print("")
 
 
 #       train_df = pd.DataFrame(np_train, columns = finalcolumns_train)
@@ -16234,7 +16394,11 @@ class AutoMunge:
           del df_test[IDcolumn]
         #del df_train[trainID_column]
     
-    
+      #printout display progress
+      if printstatus == True:
+        print("After rebalancing row count = ")
+        print(df_testlabels.shape[0])
+        print("")
     
             
 #     #ok here we'll introduct the new functionality to process labels consistent to the train 
@@ -16311,6 +16475,13 @@ class AutoMunge:
         print(list(df_testlabels))
         print("")
 
+    #now we'll apply the floatprecision transformation
+    if floatprecision != 64:
+      df_test = self.floatprecision_transform(df_test, finalcolumns_test, floatprecision)
+      if labelscolumn != False:
+        finalcolumns_labels = list(df_testlabels)
+        df_testlabels = self.floatprecision_transform(df_testlabels, finalcolumns_labels, floatprecision)
+    
     
     #determine output type based on pandasoutput argument
     if pandasoutput == True:
