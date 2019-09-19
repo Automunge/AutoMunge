@@ -104,11 +104,12 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
                          'bins':[], 'bint':[], \
                          'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
                          'log0':[], 'log1':[], 'pwrs':[], \
-                         'bnry':[], 'text':[], 'ordl':[], 'ord2':[], '1010':[], \
+                         'bnry':[], 'text':[], '1010':[], \
+                         'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], \
                          'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
                          'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
-                         'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
-                         'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'eval':[]}, \
+                         'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[],
+			 'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'eval':[]}, \
             assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                             'adjinfill':[], 'meaninfill':[], 'medianinfill':[], 'modeinfill':[]}, \
             transformdict = {}, processdict = {}, \
@@ -263,11 +264,12 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
                          'bins':[], 'bint':[], \
                          'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
                          'log0':[], 'log1':[], 'pwrs':[], \
-                         'bnry':[], 'text':[], 'ordl':[], 'ord2':[], '1010':[], \
+                         'bnry':[], 'text':[], '1010':[], \
+                         'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], \
                          'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
                          'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
-                         'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
-                         'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'eval':[]}, \
+                         'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[],
+			 'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'eval':[]}, \
             assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                             'adjinfill':[], 'meaninfill':[], 'medianinfill':[], 'modeinfill':[]}, \
             transformdict = {}, processdict = {}, \
@@ -416,11 +418,12 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
                          'bins':[], 'bint':[], \
                          'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
                          'log0':[], 'log1':[], 'pwrs':[], \
-                         'bnry':[], 'text':[], 'ordl':[], 'ord2':[], '1010':[], \
+                         'bnry':[], 'text':[], '1010':[], \
+                         'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], \
                          'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
                          'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
-                         'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
-                         'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'eval':[]}, \
+                         'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[],
+			 'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'eval':[]}, \
             assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                             'adjinfill':[], 'meaninfill':[], 'medianinfill':[], 'modeinfill':[]}, \
             transformdict = {}, processdict = {}, \
@@ -658,17 +661,17 @@ such as could potentially result in memory savings.
 #Here are the current trasnformation options built into our library, which
 #we are continuing to build out. A user may also define their own.
 
-assigncat = {'mnmx':[], 'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[], \
-	     'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'MAD3':[], \
-	     'bins':[], 'bint':[], \
-	     'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
-	     'log0':[], 'log1':[], 'pwrs':[], \
-	     'bnry':[], 'text':[], '1010':[], \
-	     'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], \
-	     'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
-	     'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
-	     'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
-	     'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'eval':[]}
+    assigncat = {'mnmx':[], 'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[], \
+		 'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'MAD3':[], \
+		 'bins':[], 'bint':[], \
+		 'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
+		 'log0':[], 'log1':[], 'pwrs':[], \
+		 'bnry':[], 'text':[], '1010':[], \
+		 'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], \
+		 'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
+		 'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
+		 'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[],
+		 'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'eval':[]}, \
 ```         
 
 A user may add column identifier strings to each
