@@ -48,6 +48,11 @@ python data-wrangling
 pip install AutoMunge-pkg
 ```
 
+```
+#or to upgrade (we currently roll out upgrades pretty frequently)
+pip install AutoMunge-pkg --upgrade
+```
+
 Once installed, run this in a local session to initialize:
 
 ```
