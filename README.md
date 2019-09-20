@@ -4,7 +4,7 @@ Automunge is a tool for automating the final steps of data wrangling of
 structured (tabular) data prior to the application of machine learning.
 The automunge(.) function takes as input structured training data intended 
 to train a machine learning model with any corresponding labels if available 
-included in the set, and also if available consistently formatted test  data 
+included in the set, and also if available consistently formatted test data 
 that can then be used to generate predictions from that trained model. When 
 fed pandas dataframes or numpy arrays for these sets the function returns a 
 series of transformed numpy arrays or pandas dataframes per a selection which 
