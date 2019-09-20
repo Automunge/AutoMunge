@@ -188,9 +188,9 @@ class AutoMunge:
                                      'coworkers' : ['mnmx'], \
                                      'friends' : []}})
 
-    transform_dict.update({'mnm0' : {'parents' : [], \
+    transform_dict.update({'mmor' : {'parents' : ['ord4'], \
                                      'siblings': [], \
-                                     'auntsuncles' : ['mnmx', '1010'], \
+                                     'auntsuncles' : ['mnmx'], \
                                      'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
@@ -1092,7 +1092,7 @@ class AutoMunge:
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'mnmx'}})
-    process_dict.update({'mnm0' : {'dualprocess' : None, \
+    process_dict.update({'mmor' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
                                   'NArowtype' : 'numeric', \
@@ -10185,7 +10185,8 @@ class AutoMunge:
       
       for columnkey in columnkeylist:
         
-        if df[columnkey].dtypes == np.float64:
+        #if df[columnkey].dtypes == np.float64:
+        if pd.api.types.is_float_dtype(df[columnkey]):
           
           if floatprecision == 32:
             df[columnkey] = df[columnkey].astype(np.float32)
@@ -10199,10 +10200,10 @@ class AutoMunge:
   def automunge(self, df_train, df_test = False, labels_column = False, trainID_column = False, \
                 testID_column = False, valpercent1=0.0, valpercent2 = 0.0, floatprecision = 32, \
                 shuffletrain = False, TrainLabelFreqLevel = False, powertransform = False, \
-                binstransform = False, MLinfill = False, infilliterate=1, randomseed = 42, \
+                binstransform = False, MLinfill = True, infilliterate=1, randomseed = 42, \
                 numbercategoryheuristic = 15, pandasoutput = False, NArw_marker = True, \
                 featureselection = False, featurepct = 1.0, featuremetric = 0.0, \
-                featuremethod = 'pct', PCAn_components = None, PCAexcl = [], \
+                featuremethod = 'default', PCAn_components = None, PCAexcl = [], \
                 ML_cmnd = {'MLinfill_type':'default', \
                            'MLinfill_cmnd':{'RandomForestClassifier':{}, 'RandomForestRegressor':{}}, \
                            'PCA_type':'default', \
@@ -10213,7 +10214,7 @@ class AutoMunge:
                              'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
                              'log0':[], 'log1':[], 'pwrs':[], \
                              'bnry':[], 'text':[], '1010':[], 'or10':[], 'om10':[], \
-                             'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'mnmo':[], \
+                             'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'mmor':[], \
                              'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
                              'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
                              'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
@@ -11595,7 +11596,7 @@ class AutoMunge:
                              'process_dict' : process_dict, \
                              'ML_cmnd' : ML_cmnd, \
                              'printstatus' : printstatus, \
-                             'automungeversion' : '2.51' })
+                             'automungeversion' : '2.52' })
 
     
     
