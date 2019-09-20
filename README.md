@@ -94,7 +94,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
             binstransform = False, MLinfill = False, infilliterate=1, randomseed = 42, \
             numbercategoryheuristic = 15, pandasoutput = True, NArw_marker = True, \
             featureselection = False, featurepct = 1.0, featuremetric = .02, \
-            featuremethod = 'pct', PCAn_components = None, PCAexcl = [], \
+            featuremethod = 'default', PCAn_components = None, PCAexcl = [], \
             ML_cmnd = {'MLinfill_type':'default', \
                        'MLinfill_cmnd':{'RandomForestClassifier':{}, 'RandomForestRegressor':{}}, \
                        'PCA_type':'default', \
@@ -105,7 +105,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
 		         'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
 		         'log0':[], 'log1':[], 'pwrs':[], \
 		         'bnry':[], 'text':[], '1010':[], 'or10':[], 'om10':[], \
-		         'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'mnmo':[], \
+		         'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'mmor':[], \
 		         'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
 		         'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
 		         'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
@@ -254,7 +254,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
             binstransform = False, MLinfill = False, infilliterate=1, randomseed = 42, \
             numbercategoryheuristic = 15, pandasoutput = True, NArw_marker = True, \
             featureselection = False, featurepct = 1.0, featuremetric = .02, \
-            featuremethod = 'pct', PCAn_components = None, PCAexcl = [], \
+            featuremethod = 'default', PCAn_components = None, PCAexcl = [], \
             ML_cmnd = {'MLinfill_type':'default', \
                        'MLinfill_cmnd':{'RandomForestClassifier':{}, 'RandomForestRegressor':{}}, \
                        'PCA_type':'default', \
@@ -265,7 +265,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
 		         'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
 		         'log0':[], 'log1':[], 'pwrs':[], \
 		         'bnry':[], 'text':[], '1010':[], 'or10':[], 'om10':[], \
-		         'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'mnmo':[], \
+		         'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'mmor':[], \
 		         'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
 		         'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
 		         'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
@@ -408,7 +408,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
             binstransform = False, MLinfill = False, infilliterate=1, randomseed = 42, \
             numbercategoryheuristic = 15, pandasoutput = True, NArw_marker = True, \
             featureselection = False, featurepct = 1.0, featuremetric = .02, \
-            featuremethod = 'pct', PCAn_components = None, PCAexcl = [], \
+            featuremethod = 'default', PCAn_components = None, PCAexcl = [], \
             ML_cmnd = {'MLinfill_type':'default', \
                        'MLinfill_cmnd':{'RandomForestClassifier':{}, 'RandomForestRegressor':{}}, \
                        'PCA_type':'default', \
@@ -419,7 +419,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
 		         'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
 		         'log0':[], 'log1':[], 'pwrs':[], \
 		         'bnry':[], 'text':[], '1010':[], 'or10':[], 'om10':[], \
-		         'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'mnmo':[], \
+		         'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'mmor':[], \
 		         'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
 		         'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
 		         'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
@@ -670,12 +670,12 @@ such as could potentially result in memory savings.
 		 'bins':[], 'bint':[], \
 		 'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
 		 'log0':[], 'log1':[], 'pwrs':[], \
-		 'bnry':[], 'text':[], '1010':[], \
-		 'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], \
+		 'bnry':[], 'text':[], '1010':[], 'or10':[], 'om10':[], \
+		 'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'mmor':[], \
 		 'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
 		 'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
-		 'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[],
-		 'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'eval':[]}, \
+		 'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
+		 'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'eval':[]}
 ```         
 
 A user may add column identifier strings to each
@@ -1146,14 +1146,15 @@ And here arethe series of family trees currently built into the internal library
                                      'coworkers' : ['mnmx'], \
                                      'friends' : []}})
 
-    transform_dict.update({'mnm0' : {'parents' : [], \
+    transform_dict.update({'mmor' : {'parents' : ['ord4'], \
                                      'siblings': [], \
-                                     'auntsuncles' : ['mnmx', '1010'], \
+                                     'auntsuncles' : ['mnmx'], \
                                      'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
+				     
     transform_dict.update({'1010' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['1010'], \
