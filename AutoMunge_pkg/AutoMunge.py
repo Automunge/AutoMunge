@@ -6339,9 +6339,9 @@ class AutoMunge:
     
     #process bins as a categorical set
     mdf_train = \
-    self.postprocess_text_class(mdf_train, binscolumn, tempbins_postprocess_dict, tempkey)
+    self.postprocess_textsupport_class(mdf_train, binscolumn, tempbins_postprocess_dict, tempkey)
     mdf_test = \
-    self.postprocess_text_class(mdf_test, binscolumn, tempbins_postprocess_dict, tempkey)
+    self.postprocess_textsupport_class(mdf_test, binscolumn, tempbins_postprocess_dict, tempkey)
 
     
     
@@ -6472,9 +6472,9 @@ class AutoMunge:
     
     #process bins as a categorical set
     mdf_train = \
-    self.postprocess_text_class(mdf_train, binscolumn, tempbint_postprocess_dict, tempkey)
+    self.postprocess_textsupport_class(mdf_train, binscolumn, tempbint_postprocess_dict, tempkey)
     mdf_test = \
-    self.postprocess_text_class(mdf_test, binscolumn, tempbint_postprocess_dict, tempkey)
+    self.postprocess_textsupport_class(mdf_test, binscolumn, tempbint_postprocess_dict, tempkey)
     
 
     #change data type for memory savings
@@ -11596,7 +11596,7 @@ class AutoMunge:
                              'process_dict' : process_dict, \
                              'ML_cmnd' : ML_cmnd, \
                              'printstatus' : printstatus, \
-                             'automungeversion' : '2.53' })
+                             'automungeversion' : '2.54' })
 
     
     
@@ -12468,6 +12468,125 @@ class AutoMunge:
     #ensures order of all new columns consistent between both sets
     #returns two transformed dataframe (mdf_train, mdf_test) \
     #and a list of the new column names (textcolumns)
+    '''
+    
+    #note it is kind of a hack here to create a column for missing values with \
+    #two underscores (__) in the column name to ensure appropriate order for cases\
+    #where NaN present in test data but not train data, if a category starts with|
+    #an underscore such that it preceeds '__missing' alphabetically in this scenario\
+    #this might create error due to different order of columns, address of this \
+    #potential issue will be a future extension
+
+#     #add _NArw to textcolumns to ensure a column gets populated even if no missing
+#     textcolumns = [column + '_NArw'] + textcolumns
+
+    
+
+    #note this will need to be revised in a future extension where 
+    #downstream transforms are performed on multicolumn parents 
+    #by pulling the categorylist instead of columnslist (noting that will require
+    #a more exact evaluation for columnkey somehow)
+
+    
+    #create copy of original column for later retrieval
+    mdf_test[column + '_temp'] = mdf_test[column].copy()
+
+    #convert column to category
+    mdf_test[column] = mdf_test[column].astype('category')
+
+#     #if set is categorical we'll need the plug value for missing values included
+#     mdf_test[column] = mdf_test[column].cat.add_categories(['NArw'])
+
+#     #replace NA with a dummy variable
+#     mdf_test[column] = mdf_test[column].fillna('NArw')
+    
+    #if set is categorical we'll need the plug value for missing values included
+    mdf_test[column] = mdf_test[column].cat.add_categories(['NAr2'])
+
+    #replace NA with a dummy variable
+    mdf_test[column] = mdf_test[column].fillna('NAr2')
+
+    #replace numerical with string equivalent
+    #mdf_train[column] = mdf_train[column].astype(str)
+    mdf_test[column] = mdf_test[column].astype(str)
+    
+    #moved this to after the initial infill
+    #new method for retrieving a columnkey
+    for unique in mdf_test[column].unique():
+      if column + '_' + str(unique) in postprocess_dict['column_dict']:
+        normkey = column + '_' + str(unique)
+        break
+    #textcolumns = postprocess_dict['column_dict'][columnkey]['columnslist']
+    textcolumns = postprocess_dict['column_dict'][normkey]['categorylist']
+
+
+    #extract categories for column labels
+    #note that .unique() extracts the labels as a numpy array
+
+    #we'll get the category names from the textcolumns array by stripping the \
+    #prefixes of column name + '_'
+    prefixlength = len(column)+1
+    labels_train = textcolumns[:]
+    for textcolumn in labels_train:
+      textcolumn = textcolumn[prefixlength :]
+    #labels_train.sort(axis=0)
+    labels_train.sort()
+    labels_test = mdf_test[column].unique()
+    labels_test.sort(axis=0)
+
+
+    #apply onehotencoding
+    df_test_cat = pd.get_dummies(mdf_test[column])
+    
+    #append column header name to each category listing
+    #note the iteration is over a numpy array hence the [...] approach
+    labels_test[...] = column + '_' + labels_test[...]
+    
+    #convert sparse array to pandas dataframe with column labels
+    df_test_cat.columns = labels_test
+    
+
+
+    #Get missing columns in test set that are present in training set
+    missing_cols = set( textcolumns ) - set( df_test_cat.columns )
+
+    #Add a missing column in test set with default value equal to 0
+    for c in missing_cols:
+        df_test_cat[c] = 0
+
+    #Ensure the order of column in the test set is in the same order than in train set
+    #Note this also removes categories in test set that aren't present in training set
+    df_test_cat = df_test_cat[textcolumns]
+
+
+    #concatinate the sparse set with the rest of our training data
+    mdf_test = pd.concat([df_test_cat, mdf_test], axis=1)
+    
+
+    #replace original column
+    del mdf_test[column]
+    mdf_test[column] = mdf_test[column + '_temp'].copy()
+    del mdf_test[column + '_temp']
+    
+    #delete support NArw2 column
+    columnNAr2 = column + '_NAr2'
+    if columnNAr2 in list(mdf_test):
+      del mdf_test[columnNAr2]
+    
+    #change data types to 8-bit (1 byte) integers for memory savings
+    for textcolumn in textcolumns:
+      
+      mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.int8)
+
+    
+    return mdf_test
+  
+  
+  def postprocess_textsupport_class(self, mdf_test, column, postprocess_dict, columnkey):
+    '''
+    #just like the postprocess_text_class function but uses different approach for
+    #normalizaation key (uses passed columnkey). This function supports some of the
+    #other methods.
     '''
     
     #note it is kind of a hack here to create a column for missing values with \
@@ -14533,7 +14652,7 @@ class AutoMunge:
     
     #process bins as a categorical set
     mdf_test = \
-    self.postprocess_text_class(mdf_test, binscolumn, temppostprocess_dict, tempkey)
+    self.postprocess_textsupport_class(mdf_test, binscolumn, temppostprocess_dict, tempkey)
     
     
     #change data type for memory savings
@@ -14639,7 +14758,7 @@ class AutoMunge:
     
     #process bins as a categorical set
     mdf_test = \
-    self.postprocess_text_class(mdf_test, binscolumn, temppostprocess_dict, tempkey)
+    self.postprocess_textsupport_class(mdf_test, binscolumn, temppostprocess_dict, tempkey)
     
 
     #change data type for memory savings
