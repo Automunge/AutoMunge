@@ -11596,7 +11596,7 @@ class AutoMunge:
                              'process_dict' : process_dict, \
                              'ML_cmnd' : ML_cmnd, \
                              'printstatus' : printstatus, \
-                             'automungeversion' : '2.52' })
+                             'automungeversion' : '2.53' })
 
     
     
@@ -14372,7 +14372,7 @@ class AutoMunge:
     maxlog = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['maxlog']
     powerlabelsdict = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['powerlabelsdict']
     
-    textcolumns = postprocess_dict['column_dict'][columnkey]['categorylist']
+    textcolumns = postprocess_dict['column_dict'][normkey]['categorylist']
     
     #store original column for later reversion
     mdf_test[column + '_temp'] = mdf_test[column].copy()
