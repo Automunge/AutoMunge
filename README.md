@@ -1,4 +1,4 @@
-# Automunge Package
+# Automunge
 # 
 Automunge is a tool for automating the final steps of data wrangling of
 structured (tabular) data prior to the application of machine learning.
