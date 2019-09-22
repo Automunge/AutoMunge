@@ -56,8 +56,8 @@ pip install Automunge --upgrade
 Once installed, run this in a local session to initialize:
 
 ```
-import Automunge
-am = Automunge.Automunger()
+from Automunge import Automunger
+am = Automunger.AutoMunge()
 ```
 
 Where eg for train/test set processing run:
