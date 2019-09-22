@@ -45,19 +45,19 @@ AutoMunge is now available for free pip install for your open source
 python data-wrangling
 
 ```
-pip install AutoMunge-pkg
+pip install Automunge
 ```
 
 ```
 #or to upgrade (we currently roll out upgrades pretty frequently)
-pip install AutoMunge-pkg --upgrade
+pip install Automunge --upgrade
 ```
 
 Once installed, run this in a local session to initialize:
 
 ```
-from AutoMunge_pkg import AutoMunge
-am = AutoMunge.AutoMunge()
+import Automunge
+am = Automunge.AutoMunge()
 ```
 
 Where eg for train/test set processing run:
