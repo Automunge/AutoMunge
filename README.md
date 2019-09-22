@@ -57,7 +57,7 @@ Once installed, run this in a local session to initialize:
 
 ```
 import Automunge
-am = Automunge.Automunge()
+am = Automunge.Automunger()
 ```
 
 Where eg for train/test set processing run:
