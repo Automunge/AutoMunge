@@ -989,11 +989,9 @@ When a user assigns a column to a specific category, that category is treated
 as the root category for the tree of transformations. Each key has an 
 associated transformation function, and that transformation function is only
 applied if the root key is also found in the tree of family primitives. The
-tree of family primitives, as introduced earlier, applies first the first
-generation transforms of greatgrandparents and grandparents specific to the 
-original root key, and then any transforms for keys found in upstream primitives
-i.e. parents/siblings/auntsuncles/cousins. If a transform is applied for a 
-primitive that includes downstream offspring, such as parents/
+tree of family primitives, as introduced earlier, applies first the keys found 
+in upstream primitives i.e. parents/siblings/auntsuncles/cousins. If a transform 
+is applied for a primitive that includes downstream offspring, such as parents/
 siblings, then the family tree for that key with offspring is inspected to determine
 downstream offspring categories, for example if we have a parents key of 'mnmx',
 then any children/niecesnephews/coworkers/friends in the 'mnmx' family tree will
@@ -2147,7 +2145,7 @@ writing I recently completed my first collection of essays titled "From
 the Diaries of John Henry" which is also available on Medium
 [turingsquared.com](https://turingsquared.com).
 
-The AutoMunge website is helpfully located at URL
+The Automunge website is helpfully located at URL
 [automunge.com](https://automunge.com).
 
 ...
