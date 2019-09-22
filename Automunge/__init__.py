@@ -1,3 +1,3 @@
 name = "Automunge"
 
-from Automunge import Automunge
+from Automunge import Automunger
