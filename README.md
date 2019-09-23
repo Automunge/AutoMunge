@@ -104,17 +104,19 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
                        'MLinfill_cmnd':{'RandomForestClassifier':{}, 'RandomForestRegressor':{}}, \
                        'PCA_type':'default', \
                        'PCA_cmnd':{}}, \
-       	    assigncat = {'mnmx':[], 'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[], \
-		         'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'MAD3':[], \
-		     	 'bins':[], 'bint':[], \
-		         'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
-		         'log0':[], 'log1':[], 'pwrs':[], \
-		         'bnry':[], 'text':[], '1010':[], 'or10':[], 'om10':[], \
-		         'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'mmor':[], \
-		         'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
-		         'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
-		         'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
-		         'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'eval':[]}, \
+            assigncat = {'mnmx':[], 'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[], \
+                         'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'MAD3':[], \
+                         'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
+                         'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
+                         'bins':[], 'bint':[], \
+                         'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
+                         'log0':[], 'log1':[], 'pwrs':[], \
+                         'bnry':[], 'text':[], '1010':[], 'or10':[], 'om10':[], \
+                         'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'mmor':[], \
+                         'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
+                         'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
+                         'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
+                         'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'eval':[]}, \
             assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                             'adjinfill':[], 'meaninfill':[], 'medianinfill':[], 'modeinfill':[]}, \
             transformdict = {}, processdict = {}, \
@@ -264,17 +266,19 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
                        'MLinfill_cmnd':{'RandomForestClassifier':{}, 'RandomForestRegressor':{}}, \
                        'PCA_type':'default', \
                        'PCA_cmnd':{}}, \
-       	    assigncat = {'mnmx':[], 'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[], \
-		         'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'MAD3':[], \
-		     	 'bins':[], 'bint':[], \
-		         'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
-		         'log0':[], 'log1':[], 'pwrs':[], \
-		         'bnry':[], 'text':[], '1010':[], 'or10':[], 'om10':[], \
-		         'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'mmor':[], \
-		         'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
-		         'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
-		         'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
-		         'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'eval':[]}, \
+            assigncat = {'mnmx':[], 'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[], \
+                         'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'MAD3':[], \
+                         'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
+                         'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
+                         'bins':[], 'bint':[], \
+                         'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
+                         'log0':[], 'log1':[], 'pwrs':[], \
+                         'bnry':[], 'text':[], '1010':[], 'or10':[], 'om10':[], \
+                         'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'mmor':[], \
+                         'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
+                         'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
+                         'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
+                         'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'eval':[]}, \
             assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                             'adjinfill':[], 'meaninfill':[], 'medianinfill':[], 'modeinfill':[]}, \
             transformdict = {}, processdict = {}, \
@@ -418,17 +422,19 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
                        'MLinfill_cmnd':{'RandomForestClassifier':{}, 'RandomForestRegressor':{}}, \
                        'PCA_type':'default', \
                        'PCA_cmnd':{}}, \
-       	    assigncat = {'mnmx':[], 'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[], \
-		         'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'MAD3':[], \
-		     	 'bins':[], 'bint':[], \
-		         'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
-		         'log0':[], 'log1':[], 'pwrs':[], \
-		         'bnry':[], 'text':[], '1010':[], 'or10':[], 'om10':[], \
-		         'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'mmor':[], \
-		         'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
-		         'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
-		         'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
-		         'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'eval':[]}, \
+            assigncat = {'mnmx':[], 'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[], \
+                         'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'MAD3':[], \
+                         'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
+                         'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
+                         'bins':[], 'bint':[], \
+                         'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
+                         'log0':[], 'log1':[], 'pwrs':[], \
+                         'bnry':[], 'text':[], '1010':[], 'or10':[], 'om10':[], \
+                         'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'mmor':[], \
+                         'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
+                         'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
+                         'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
+                         'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'eval':[]}, \
             assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                             'adjinfill':[], 'meaninfill':[], 'medianinfill':[], 'modeinfill':[]}, \
             transformdict = {}, processdict = {}, \
@@ -672,6 +678,8 @@ such as could potentially result in memory savings.
 
     assigncat = {'mnmx':[], 'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[], \
 		 'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'MAD3':[], \
+		 'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
+		 'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
 		 'bins':[], 'bint':[], \
 		 'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
 		 'log0':[], 'log1':[], 'pwrs':[], \
@@ -680,7 +688,7 @@ such as could potentially result in memory savings.
 		 'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
 		 'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
 		 'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
-		 'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'eval':[]}
+		 'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'eval':[]}, \
 ```         
 
 A user may add column identifier strings to each
@@ -1027,6 +1035,9 @@ a root key). We're continuing to build out this library of transformations.
 * NArw: produces a column of boolean identifiers for rows in the source
 column with missing or improperly formatted values.
 * nmbr/nbr2/nbr3: z-score normalization
+* dxdt: rate of change (row value minus value in preceding row)
+* dxd2: denoised rate of change (average of last two rows minus average
+of preceding two rows)
 * MADn/MAD2: mean absolute deviation normalization, subtract set mean
 * MAD3: mean absolute deviation normalization, subtract set maximum
 * mnmx/mnm2/mnm5: vanilla min-max scaling
@@ -1065,7 +1076,7 @@ set (i.e. <-2, -2-1, -10, 01, 12, >2)
 
 
 
-And here arethe series of family trees currently built into the internal library.
+And here are the series of family trees currently built into the internal library.
 
 ```
     transform_dict.update({'nmbr' : {'parents' : ['nmbr'], \
@@ -1076,6 +1087,114 @@ And here arethe series of family trees currently built into the internal library
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : [bint]}})
+				    
+    transform_dict.update({'dxdt' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['dxdt'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'d2dt' : {'parents' : ['d2dt'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : ['dxdt']}})
+    
+    transform_dict.update({'d3dt' : {'parents' : ['d3dt'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : ['d2dt'], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'dxd2' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['dxd2'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'d2d2' : {'parents' : ['d2d2'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : ['dxd2']}})
+    
+    transform_dict.update({'d3d2' : {'parents' : ['d3d2'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : ['d2d2'], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'nmdx' : {'parents' : ['nmbr'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : ['dxdt']}})
+    
+    transform_dict.update({'nmd2' : {'parents' : ['nmd2'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : ['d2dt'], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'nmd3' : {'parents' : ['nmd3'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : ['d3dt'], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'mmdx' : {'parents' : ['mnmx'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : ['dxdt']}})
+    
+    transform_dict.update({'mmd2' : {'parents' : ['mmd2'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : ['d2dt'], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'mmd3' : {'parents' : ['mmd3'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : ['d3dt'], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
 
     transform_dict.update({'bnry' : {'parents' : [], \
                                      'siblings': [], \
