@@ -115,6 +115,114 @@ class AutoMunge:
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : [bint]}})
+    
+    transform_dict.update({'dxdt' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['dxdt'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'d2dt' : {'parents' : ['d2dt'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : ['dxdt']}})
+    
+    transform_dict.update({'d3dt' : {'parents' : ['d3dt'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : ['d2dt'], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'dxd2' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['dxd2'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'d2d2' : {'parents' : ['d2d2'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : ['dxd2']}})
+    
+    transform_dict.update({'d3d2' : {'parents' : ['d3d2'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : ['d2d2'], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'nmdx' : {'parents' : ['nmbr'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : ['dxdt']}})
+    
+    transform_dict.update({'nmd2' : {'parents' : ['nmd2'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : ['d2dt'], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'nmd3' : {'parents' : ['nmd3'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : ['d3dt'], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'mmdx' : {'parents' : ['mnmx'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : ['dxdt']}})
+    
+    transform_dict.update({'mmd2' : {'parents' : ['mmd2'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : ['d2dt'], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'mmd3' : {'parents' : ['mmd3'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : ['d3dt'], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
 
     transform_dict.update({'bnry' : {'parents' : [], \
                                      'siblings': [], \
@@ -969,6 +1077,78 @@ class AutoMunge:
     process_dict.update({'nmbr' : {'dualprocess' : self.process_numerical_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_numerical_class, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'nmbr'}})
+    process_dict.update({'dxdt' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_dxdt_class, \
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'dxdt'}})
+    process_dict.update({'d2dt' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_dxdt_class, \
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'dxdt'}})
+    process_dict.update({'d3dt' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_dxdt_class, \
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'dxdt'}})
+    process_dict.update({'dxd2' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_dxd2_class, \
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'dxd2'}})
+    process_dict.update({'d2d2' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_dxd2_class, \
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'dxd2'}})
+    process_dict.update({'d3d2' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_dxd2_class, \
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'dxd2'}})
+    process_dict.update({'nmdx' : {'dualprocess' : self.process_numerical_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_numerical_class, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'nmbr'}})
+    process_dict.update({'nmd2' : {'dualprocess' : self.process_numerical_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_numerical_class, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'nmbr'}})
+    process_dict.update({'nmd3' : {'dualprocess' : self.process_numerical_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_numerical_class, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'nmbr'}})
+    process_dict.update({'mmdx' : {'dualprocess' : self.process_mnmx_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_mnmx_class, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'nmbr'}})
+    process_dict.update({'mmd2' : {'dualprocess' : self.process_mnmx_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_mnmx_class, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'nmbr'}})
+    process_dict.update({'mmd3' : {'dualprocess' : self.process_mnmx_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_mnmx_class, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmbr'}})
@@ -1992,6 +2172,139 @@ class AutoMunge:
 
         
     return mdf_train, mdf_test, column_dict_list
+  
+  def process_dxdt_class(self, df, column, category, postprocess_dict):
+    '''
+    #process_dxdt_class(df, column, category, postprocess_dict)
+    #function to translate a continues variable into a bounded variable
+    #by taking delta of row from preceding row
+    #assumes the rows are not shuffled and represent a continuous funciton 
+    #with consistent time steps
+    
+    #for missing values, uses adjacent cell infill as default
+    '''
+    
+    #copy source column into new column
+    df[column + '_dxdt'] = df[column].copy()
+    
+    #convert all values to either numeric or NaN
+    df[column + '_dxdt'] = pd.to_numeric(df[column + '_dxdt'], errors='coerce')
+    
+    #apply ffill to replace NArows with value from adjacent cell in pre4ceding row
+    df[column + '_dxdt'] = df[column + '_dxdt'].fillna(method='ffill')
+    
+    #we'll follow with a bfill just in case first row had a nan
+    df[column + '_dxdt'] = df[column + '_dxdt'].fillna(method='bfill')
+    
+    #(still a potential bug if both first and last row had a nan, we'll address with 
+    #apply ffill to replace NArows with value from adjacent cell in pre4ceding row
+    df[column + '_dxdt'] = df[column + '_dxdt'].fillna(method='ffill')   
+    
+    #subtract preceding row
+    df[column + '_dxdt'] = df[column + '_dxdt'] - df[column + '_dxdt'].shift()
+    
+    #first row will have a nan so just one more backfill
+    df[column + '_dxdt'] = df[column + '_dxdt'].fillna(method='bfill')
+    
+    
+    
+    #create list of columns
+    nmbrcolumns = [column + '_dxdt']
+
+
+    nmbrnormalization_dict = {column + '_dxdt' : {}}
+
+    #store some values in the nmbr_dict{} for use later in ML infill methods
+    column_dict_list = []
+
+    for nc in nmbrcolumns:
+
+      if nc[-5:] == '_dxdt':
+
+        column_dict = { nc : {'category' : 'dxdt', \
+                             'origcategory' : category, \
+                             'normalization_dict' : nmbrnormalization_dict, \
+                             'origcolumn' : column, \
+                             'columnslist' : nmbrcolumns, \
+                             'categorylist' : [nc], \
+                             'infillmodel' : False, \
+                             'infillcomplete' : False, \
+                             'deletecolumn' : False}}
+
+        column_dict_list.append(column_dict.copy())
+    
+
+        
+    return df, column_dict_list
+  
+  def process_dxd2_class(self, df, column, category, postprocess_dict):
+    '''
+    #process_dxd2_class(df, column, category, postprocess_dict)
+    #function to translate a continues variable into a bounded variable
+    #by taking delta of average of last two rows minus 
+    #average of preceding two rows before that
+    #should take a littel noise out of noisy data
+    #assumes the rows are not shuffled and represent a continuous funciton 
+    #with consistent time steps
+    
+    #for missing values, uses adjacent cell infill as default
+    '''
+    
+    #copy source column into new column
+    df[column + '_dxd2'] = df[column].copy()
+    
+    #convert all values to either numeric or NaN
+    df[column + '_dxd2'] = pd.to_numeric(df[column + '_dxd2'], errors='coerce')
+    
+    #apply ffill to replace NArows with value from adjacent cell in pre4ceding row
+    df[column + '_dxd2'] = df[column + '_dxd2'].fillna(method='ffill')
+    
+    #we'll follow with a bfill just in case first row had a nan
+    df[column + '_dxd2'] = df[column + '_dxd2'].fillna(method='bfill')
+    
+    #(still a potential bug if both first and last row had a nan, we'll address with 
+    #apply ffill to replace NArows with value from adjacent cell in pre4ceding row
+    df[column + '_dxd2'] = df[column + '_dxd2'].fillna(method='ffill')   
+    
+    #we're going to take difference of average of last two rows with two rows preceding
+    df[column + '_dxd2'] = (df[column + '_dxd2'] + df[column + '_dxd2'].shift()) / 2 \
+                           - ((df[column + '_dxd2'].shift(periods=3) + df[column + '_dxd2'].shift(periods=4)) / 2)
+    
+    
+    
+    #first row will have a nan so just one more backfill
+    df[column + '_dxd2'] = df[column + '_dxd2'].fillna(method='bfill')
+    
+    
+    
+    #create list of columns
+    nmbrcolumns = [column + '_dxd2']
+
+
+    nmbrnormalization_dict = {column + '_dxd2' : {}}
+
+    #store some values in the nmbr_dict{} for use later in ML infill methods
+    column_dict_list = []
+
+    for nc in nmbrcolumns:
+
+      if nc[-5:] == '_dxd2':
+
+        column_dict = { nc : {'category' : 'dxd2', \
+                             'origcategory' : category, \
+                             'normalization_dict' : nmbrnormalization_dict, \
+                             'origcolumn' : column, \
+                             'columnslist' : nmbrcolumns, \
+                             'categorylist' : [nc], \
+                             'infillmodel' : False, \
+                             'infillcomplete' : False, \
+                             'deletecolumn' : False}}
+
+        column_dict_list.append(column_dict.copy())
+    
+
+        
+    return df, column_dict_list
 
 
   def process_MADn_class(self, mdf_train, mdf_test, column, category, \
@@ -10210,6 +10523,8 @@ class AutoMunge:
                            'PCA_cmnd':{}}, \
                 assigncat = {'mnmx':[], 'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[], \
                              'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'MAD3':[], \
+                             'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
+                             'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
                              'bins':[], 'bint':[], \
                              'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
                              'log0':[], 'log1':[], 'pwrs':[], \
@@ -11596,7 +11911,7 @@ class AutoMunge:
                              'process_dict' : process_dict, \
                              'ML_cmnd' : ML_cmnd, \
                              'printstatus' : printstatus, \
-                             'automungeversion' : '2.58' })
+                             'automungeversion' : '2.59' })
 
     
     
