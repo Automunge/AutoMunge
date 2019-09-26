@@ -9400,11 +9400,6 @@ class AutoMunge:
     #we'll follow with a bfill just in case first row had a nan
     df[column] = df[column].fillna(method='bfill')
     
-    #(still a potential bug if both first and last row had a nan, we'll leave 
-    #that to chance for now)
-    
-    #df[[column]] = df[[column]].fillna(method='bfill')
-    
 
     return df
 
@@ -10443,12 +10438,15 @@ class AutoMunge:
     """
     #Converts all assigncat entries to string (just in case user passed integer)
     """
+    
+    #ignore edge case where user passes empty dictionary
+    if assigncat != {}:
+    
+      for assigncatkey in sorted(assigncat):
+        current_list = assigncat[assigncatkey]
+        assigncat[assigncatkey] = [str(i) for i in current_list]
 
-    for assigncatkey in sorted(assigncat):
-      current_list = assigncat[assigncatkey]
-      assigncat[assigncatkey] = [str(i) for i in current_list]
-
-    del current_list
+      del current_list
 
     return assigncat
 
@@ -10457,12 +10455,15 @@ class AutoMunge:
     """
     #Converts all assigninfill entries to string (just in case user passed integer)
     """
+    
+    #ignore edge case where user passes empty dictionary
+    if assigninfill != {}:
 
-    for assigninfillkey in sorted(assigninfill):
-      current_list = assigninfill[assigninfillkey]
-      assigninfill[assigninfillkey] = [str(i) for i in current_list]
+      for assigninfillkey in sorted(assigninfill):
+        current_list = assigninfill[assigninfillkey]
+        assigninfill[assigninfillkey] = [str(i) for i in current_list]
 
-    del current_list
+      del current_list
 
     return assigninfill
   
@@ -11911,7 +11912,7 @@ class AutoMunge:
                              'process_dict' : process_dict, \
                              'ML_cmnd' : ML_cmnd, \
                              'printstatus' : printstatus, \
-                             'automungeversion' : '2.59' })
+                             'automungeversion' : '2.60' })
 
     
     
