@@ -6971,39 +6971,6 @@ class AutoMunge:
 
     return mdf_train, mdf_test, column_dict_list
 
-    
-#   #this method needs troubleshooting, for now just use excl
-#   def process_exc2_class(self, df, column, category, postprocess_dict):
-#     '''
-#     #here we'll address any columns that returned a 'exc2' category
-#     #note this is a. singleprocess transform
-#     #we'll simply populate the column_dict, no new column
-#     '''
-#     #exclcolumn = column + '_excl'
-#     exclcolumn = column
-#     #df[exclcolumn] = df[column].copy()
-#     #del df[column]
-    
-#     column_dict_list = []
-
-#     column_dict = {exclcolumn : {'category' : 'excl', \
-#                                  'origcategory' : category, \
-#                                  'normalization_dict' : {exclcolumn:{}}, \
-#                                  'origcolumn' : column, \
-#                                  'columnslist' : [exclcolumn], \
-#                                  'categorylist' : [exclcolumn], \
-#                                  'infillmodel' : False, \
-#                                  'infillcomplete' : False, \
-#                                  'deletecolumn' : False, \
-#                                  'downstream':[]}}
-    
-#     #now append column_dict onto postprocess_dict
-#     column_dict_list.append(column_dict.copy())
-
-
-
-#     return df, column_dict_list  
-
 
 
 
@@ -7046,7 +7013,7 @@ class AutoMunge:
           nanpresent = True
 
     #free memory (dtypes are memory hogs)
-    type1_df = None
+    del type1_df
 
 
     #additional array needed to check for time series
@@ -7063,8 +7030,7 @@ class AutoMunge:
       datemc2 = datemc + datemc
 
     #free memory (dtypes are memory hogs)
-    type2_df = None
-
+    del type2_df
 
     #an extension of this approach could be for those columns that produce a text\
     #category to implement an additional text to determine the number of \
@@ -7078,7 +7044,7 @@ class AutoMunge:
     checkint = 1
     checkfloat = 1.1
     checkstring = 'string'
-    checkNAN = None
+    checkNAN = np.nan
 
     #there's probably easier way to do this, here will create a check for date
     df_checkdate = pd.DataFrame([{'checkdate' : '7/4/2018'}])
@@ -7124,22 +7090,8 @@ class AutoMunge:
 #         pass
     
       else:
+        category = 'nmbr'
 
-        #if all postiive set category to bxcx
-
-        #if (pd.to_numeric(df[column], errors = 'coerce').notnull() >= 0).all():
-
-        #note we'll only allow bxcx category if all values greater than a clip value
-        #>0 (currently set at 0.1)since there is an asymptote for box-cox at 0
-        if (df[pd.to_numeric(df[column], errors='coerce').notnull()][column] >= 0.1).all():
-          category = 'bxcx'
-          #note a future extension may test for skewness before assigning bxcx category
-
-        #note a future extension mayt test for skewness here and only assign category
-        #of bxcx for skewness beyond a certain threshold
-
-        else:
-          category = 'nmbr'
 
     #if most common in column is float, set category to number or bxcx
     if isinstance(checkfloat, mc[0][0]):
@@ -7162,16 +7114,8 @@ class AutoMunge:
           category = 'bnry'
 
       else:
+        category = 'nmbr'
 
-        #if all postiive set category to bxcx
-
-        #note we'll only allow bxcx category if all values greater than a clip value
-        #>0 (currently set at 0.1) since there is an asymptote for box-cox at 0
-        if (df[pd.to_numeric(df[column], errors='coerce').notnull()][column] >= 0.1).all():
-          category = 'bxcx'
-
-        else:
-          category = 'nmbr'
 
     #if most common in column is integer and <= two values, set category to binary
     if isinstance(checkint, mc[0][0]) and nunique <= 2:
@@ -7272,9 +7216,9 @@ class AutoMunge:
     #new statistical tests for numerical sets from v2.25
     #I don't consider mytself an expert here, these are kind of a placeholder while I conduct more research
     
-    #default to 'nmbr' category instead of 'bxcx'
-    if category == 'bxcx' and powertransform == False:
-      category = 'nmbr'
+#     #default to 'nmbr' category instead of 'bxcx'
+#     if category == 'bxcx' and powertransform == False:
+#       category = 'nmbr'
     
     if category in ['nmbr', 'bxcx'] and powertransform == True:
     
@@ -7297,13 +7241,20 @@ class AutoMunge:
           category = 'mnmx'
         else:
           #if powertransform == True:
-          if category in ['bxcx']:
-            category = 'bxcx'
+          if category in ['nmbr', 'bxcx']:
+            
+            #note we'll only allow bxcx category if all values greater than a clip value
+            #>0 (currently set at 0.1) since there is an asymptote for box-cox at 0
+            if (df[pd.to_numeric(df[column], errors='coerce').notnull()][column] >= 0.1).all():
+              category = 'bxcx'
+
+            else:
+              category = 'nmbr'
+            
           else:
             category = 'MAD3'
     
     return category
-
 
   def NArows(self, df, column, category, postprocess_dict):
     '''
@@ -11912,7 +11863,7 @@ class AutoMunge:
                              'process_dict' : process_dict, \
                              'ML_cmnd' : ML_cmnd, \
                              'printstatus' : printstatus, \
-                             'automungeversion' : '2.60' })
+                             'automungeversion' : '2.61' })
 
     
     
