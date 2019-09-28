@@ -758,7 +758,6 @@ transformdict =  {'newt' : {'parents' : ['bxc4'], \
 #note that 'nmbr' is passed as a children primitize meaning if nbr2 key
 #has any offspring those will be produced as well.
 
-
 ```
 Basically here 'newt' is the key and when passed to one of the family primitives
 the corresponding process function is applied, and if it is passed to a family
