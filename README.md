@@ -121,7 +121,6 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
                             'adjinfill':[], 'meaninfill':[], 'medianinfill':[], 'modeinfill':[]}, \
             transformdict = {}, processdict = {}, \
             printstatus = True)
-
 ```
 
 Please remember to save the automunge(.) returned object postprocess_dict 
