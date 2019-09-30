@@ -173,21 +173,22 @@ potential application of z-score normalization, min-max scaling, power law trans
 via box-cox method, or mean absolute deviation scaling. Otherwise numerical data 
 defaults to z-score, with z-score normalization options for standard
 deviation bins for values in range <-2, -2-1, -10, 01, 12, >2 from the
-mean. For numerical sets with all positive values the functions also optionally can 
-return a power-law transformed set using the box-cox method, along with
+mean. For numerical sets with all positive values the functions also optionally
+can return a power-law transformed set using the box-cox method, along with
 a corresponding set with z-score normalization applied. For time-series
-data the model segregates the data by time-scale (year, month, day,
-hour, minute, second) and returns a set for each with z-score
-normalization applied. For binary categorical data the functions
-return a single column with 1/0 designation. For multimodal categorical
-data the functions return one-hot encoded sets using the naming
-convention origname + _ + category. (I believe this automation of the
-one-hot encoding method to be a particularily useful feature of the
-tool.) For all cases the functions generate a supplemental column (NArw)
-with a boolean identifier for cells that were subject to infill due to
-missing or improperly formatted data. (Please note that I don't
-consider the current methods of numerical set distribution evaluation very 
-sophisticated and have some work to do here). 
+data the model segregates the data by time-scale (year, month, day, hour, minute, 
+second) and returns year z-score normalized, a pair of sets for combined month/day 
+and combined hour / minute / second with sin and cos transformations at period of 
+time-scale, and also returns binned sets identifying business hours, weekdays, and 
+US holidays. For binary categorical data the functions return a single column with 
+1/0 designation. For multimodal categorical data the functions return one-hot 
+encoded sets using the naming convention origname + _ + category. (I believe this 
+automation of the one-hot encoding method to be a particularily useful feature of 
+the tool.) For all cases the functions generate a supplemental column (NArw)
+with a boolean identifier for cells that were subject to infill due to missing or 
+improperly formatted data. (Please note that I don't consider the current methods 
+of numerical set distribution evaluation highly sophisticated and have some work to 
+do here). 
 
 The functions also include a method we call 'ML infill' which if elected
 predicts infill for missing values in both the train and test sets using
