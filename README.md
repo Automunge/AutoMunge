@@ -77,8 +77,8 @@ dictionary returned from original application of automunge(.), run:
 
 ```
 test, testID, testlabels, \
-labelsencoding_dict, finalcolumns_test \ =
-am.postmunge(postprocess_dict, df_test)
+labelsencoding_dict, finalcolumns_test \
+= am.postmunge(postprocess_dict, df_test)
 ```
 
 I find it helpful to pass these functions with the full range of arguments
