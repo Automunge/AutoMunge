@@ -50,6 +50,9 @@ from sklearn.decomposition import KernelPCA
 #imports for automunge
 from sklearn.utils import shuffle
 from sklearn.model_selection import train_test_split
+import random
+#import datetime as dt
+
 
 
 class AutoMunge:
@@ -2067,9 +2070,12 @@ class AutoMunge:
 
     #create list of columns
     nmbrcolumns = [column + '_NArw']
+    
+    #for drift report
+    pct_NArw = df[column + '_NArw'].sum() / df[column + '_NArw'].shape[0]
 
     #create normalization dictionary
-    NArwnormalization_dict = {column + '_NArw' : {}}
+    NArwnormalization_dict = {column + '_NArw' : {'pct_NArw':pct_NArw}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -11884,6 +11890,13 @@ class AutoMunge:
         print("After rebalancing train set row count = ")
         print(df_labels.shape[0])
         print("")
+        
+    #we'll create some tags specific to the application to support postprocess_dict versioning
+    automungeversion = '2.63'
+    application_number = random.randint(100000000000,999999999999)
+    application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
+    version_combined = str(automungeversion) + '_' + str(application_number) + '_' \
+                       + str(application_timestamp)
 
 
     #here we'll populate the postprocess_dci8t that is returned from automunge
@@ -11928,7 +11941,10 @@ class AutoMunge:
                              'process_dict' : process_dict, \
                              'ML_cmnd' : ML_cmnd, \
                              'printstatus' : printstatus, \
-                             'automungeversion' : '2.62' })
+                             'automungeversion' : automungeversion, \
+                             'application_number' : application_number, \
+                             'application_timestamp' : application_timestamp, \
+                             'version_combined' : version_combined})
 
     
     
@@ -15982,9 +15998,12 @@ class AutoMunge:
     for drift_column in df_test:
       
       returnedcolumns = postprocess_dict['origcolumn'][drift_column]['columnkeylist']
+      returnedcolumns.sort()
       
       print("______")
       print("Preparing drift report for columns derived from: ", drift_column)
+      print("")
+      print("original returned columns:")
       print(returnedcolumns)
       print("")
       
@@ -16011,17 +16030,36 @@ class AutoMunge:
                          drift_category, drift_process_dict, drift_transform_dict, \
                          drift_ppd)
       
-#       for returnedcolumn in returnedcolumns:
+      newreturnedcolumns = \
+      drift_ppd['column_dict'][drift_ppd['origcolumn'][drift_column]['columnkey']]['columnslist']
+      
+      newreturnedcolumns.sort()
+      
+      print("new returned columns:")
+      print(newreturnedcolumns)
+      print("")
+      
+      for origreturnedcolumn in returnedcolumns:
+        if origreturnedcolumn not in newreturnedcolumns:
+          print("___")
+          print("original derived column not in new returned column: ", origreturnedcolumn)
+          print("")
+          print("original automunge normalization parameters:")
+          print(postprocess_dict['column_dict'][origreturnedcolumn]['normalization_dict'][origreturnedcolumn])
+          print("")
+      
+      for returnedcolumn in newreturnedcolumns:
         
-      print("___")
-#       print("derived column: ", returnedcolumn)
-      print("")
-      print("original automunge normalization parameters:")
-      print(postprocess_dict['column_dict'][returnedcolumns[0]]['normalization_dict'])
-      print("")
-      print("new postmunge normalization parameters:")
-      print(drift_ppd['column_dict'][returnedcolumns[0]]['normalization_dict'])
-      print("")
+        print("___")
+        print("derived column: ", returnedcolumn)
+        print("")
+        if returnedcolumn in returnedcolumns:
+          print("original automunge normalization parameters:")
+          print(postprocess_dict['column_dict'][returnedcolumn]['normalization_dict'][returnedcolumn])
+          print("")
+        print("new postmunge normalization parameters:")
+        print(drift_ppd['column_dict'][returnedcolumn]['normalization_dict'][returnedcolumn])
+        print("")
       
       #free up some memory
       del df_test2_temp, df_test3_temp, returnedcolumns
