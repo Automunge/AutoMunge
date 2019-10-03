@@ -2234,7 +2234,7 @@ def process_mnm4_class(df, column, category, postprocess_dict):
 ```
 
 And there you have it, you now have all you need to wrangle data on the 
-automunge platform. Feedback is welcome.
+Automunge platform. Feedback is welcome.
 
 
 ...
