@@ -2761,13 +2761,39 @@ class AutoMunge:
       #making an executive decision here to deviate from standardinfill of most common value
       #for this edge case where a column evaluated as binary has only single value and NaN's
       binary_missing_plug = 'plug'
-    
+      
+
     #test for nan
     if binary_missing_plug != binary_missing_plug:
       binary_missing_plug = valuecounts[1]
     
+    #edge case when applying this transform to set with >2 values
+    #this only comes up when caluclating driftreport in postmunge
+    extravalues = []
+    if len(valuecounts) > 2:
+      i=0
+      for value in valuecounts:
+        if i>1:
+          extravalues.append(value)
+        i+=1
+        
+
+    #replace nan in valuecounts with binary_missing_plug so we can sort
+    valuecounts = [x if x == x else binary_missing_plug for x in valuecounts]
+#     #convert everything to string for sort
+#     valuecounts = [str(x) for x in valuecounts]
+    
     #note LabelBinarizer encodes alphabetically, with 1 assigned to first and 0 to second
-    valuecounts.sort()
+    #we'll take different approach of going by most common value to 1 unless 0 or 1
+    #are already in the set then we'll defer to keeping those designations in place
+    #there's some added complexity here to deal with edge case of passing this function
+    #to a set with >2 values as we might run into when caluclating drift in postmunge
+    
+#     valuecounts.sort()
+#     valuecounts = sorted(valuecounts)
+    #in case this includes both strings and integers for instance we'll sort this way
+#     valuecounts = sorted(valuecounts, key=lambda p: str(p))
+  
     #we'll save these in the normalization dictionary for future reference
     onevalue = valuecounts[0]
     if len(valuecounts) > 1:
@@ -2776,28 +2802,66 @@ class AutoMunge:
       zerovalue = 'plug'
     
     #special case for when the source column is already encoded as 0/1
-    if 0 in valuecounts:
-      zerovalue = 0
-      if 1 in valuecounts:
-        onevalue = 1
-      else:
-        if valuecounts[0] == 0:
-          if len(valuecounts) > 1:
-            onevalue = valuecounts[1]
-          else:
-            onevalue = 'plug'
-            
-    if 1 in valuecounts:
-      if 0 not in valuecounts:
-        if valuecounts[0] != 1:
+    
+    if len(valuecounts) <= 2:
+    
+      if 0 in valuecounts:
+        zerovalue = 0
+        if 1 in valuecounts:
           onevalue = 1
-          zerovalue = valuecounts[0]
-        
+        else:
+          if valuecounts[0] == 0:
+            if len(valuecounts) > 1:
+              onevalue = valuecounts[1]
+            else:
+              onevalue = 'plug'
+
+      if 1 in valuecounts:
+        if 0 not in valuecounts:
+          if valuecounts[0] != 1:
+            onevalue = 1
+            zerovalue = valuecounts[0]
+
+    
+    #edge case same as above but when values of 0 or 1. are in set and 
+    #len(valuecounts) > 2
+    if len(valuecounts) > 2:
+      valuecounts2 = valuecounts[:2]
+      
+      if 0 in valuecounts2:
+        zerovalue = 0
+        if 1 in valuecounts2:
+          onevalue = 1
+        else:
+          if valuecounts2[0] == 0:
+            if len(valuecounts) > 1:
+              onevalue = valuecounts2[1]
+            else:
+              onevalue = 'plug'
+
+      if 1 in valuecounts2:
+        if 0 not in valuecounts2:
+          if valuecounts2[0] != 1:
+            onevalue = 1
+            zerovalue = valuecounts2[0]
+
+          
+    #edge case that might come up in drift report
+    if binary_missing_plug not in [onevalue, zerovalue]:
+      binary_missing_plug = onevalue
+      
+    #edge case when applying this transform to set with >2 values
+    #this only comes up when caluclating driftreport in postmunge
+    if len(valuecounts) > 2:
+      for value in extravalues:
+        mdf_train.loc[mdf_train[column + '_bnry'].isin([value]), column + '_bnry'] = binary_missing_plug
+        mdf_test.loc[mdf_test[column + '_bnry'].isin([value]), column + '_bnry'] = binary_missing_plug
 
 
     #replace missing data with specified classification
     mdf_train[column + '_bnry'] = mdf_train[column + '_bnry'].fillna(binary_missing_plug)
     mdf_test[column + '_bnry'] = mdf_test[column + '_bnry'].fillna(binary_missing_plug)
+
     
     #this addressess issue where nunique for mdftest > than that for mdf_train
     #note is currently an oportunity for improvement that NArows won't identify these poinsts as candiadates
@@ -2835,7 +2899,8 @@ class AutoMunge:
     
     bnrynormalization_dict = {column + '_bnry' : {'missing' : binary_missing_plug, \
                                                   1 : onevalue, \
-                                                  0 : zerovalue}}
+                                                  0 : zerovalue, \
+                                                  'extravalues' : extravalues}}
 
     #store some values in the column_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -11863,7 +11928,7 @@ class AutoMunge:
                              'process_dict' : process_dict, \
                              'ML_cmnd' : ML_cmnd, \
                              'printstatus' : printstatus, \
-                             'automungeversion' : '2.61' })
+                             'automungeversion' : '2.62' })
 
     
     
@@ -15892,10 +15957,86 @@ class AutoMunge:
     return FSmodel, FScolumn_dict
 
 
+  def prepare_driftreport(self, df_test, postprocess_dict):
+    """
+    #driftreport uses the processfamily functions as originally implemented
+    #in automunge to recalculate normalization parameters based on the test
+    #set passed to postmunge and print a comparison with those original 
+    #normalization parameters saved in the postprocess_dict, such as may 
+    #prove useful to track drift from original training data.
+    #returns a store of the temporary postprocess_dict containing the newly 
+    #calculated normalziation parameters
+    """
+    
+    print("_______________")
+    print("Drift Report results:")
+    print("")
+    
+    #temporary store for updated normalization parameters
+    #we'll copy all the support stuff from original pp_d but delete the 'column_dict'
+    #entries for our new derivations below
+    drift_ppd = deepcopy(postprocess_dict)
+    drift_ppd['column_dict'] = {}
+    
+    #for each column in df_test
+    for drift_column in df_test:
+      
+      returnedcolumns = postprocess_dict['origcolumn'][drift_column]['columnkeylist']
+      
+      print("______")
+      print("Preparing drift report for columns derived from: ", drift_column)
+      print(returnedcolumns)
+      print("")
+      
+      drift_category = \
+      postprocess_dict['column_dict'][postprocess_dict['origcolumn'][drift_column]['columnkey']]['origcategory']
+      
+      drift_process_dict = \
+      postprocess_dict['process_dict']
+      
+      drift_transform_dict = \
+      postprocess_dict['transform_dict']
+      
+      #we're only going to copy one source column at a time, as should be 
+      #more memory efficient than copying the entire set
+      df_test2_temp = pd.DataFrame(df_test[drift_column].copy())
+      
+      #then a second copy set, here of just a few rows, to follow convention of 
+      #automunge processfamily calls
+      df_test3_temp = df_test2_temp[0:10].copy()
+    
+      #now process family
+      df_test2_temp, df_test3_temp, drift_ppd = \
+      self.processfamily(df_test2_temp, df_test3_temp, drift_column, drift_category, \
+                         drift_category, drift_process_dict, drift_transform_dict, \
+                         drift_ppd)
+      
+#       for returnedcolumn in returnedcolumns:
+        
+      print("___")
+#       print("derived column: ", returnedcolumn)
+      print("")
+      print("original automunge normalization parameters:")
+      print(postprocess_dict['column_dict'][returnedcolumns[0]]['normalization_dict'])
+      print("")
+      print("new postmunge normalization parameters:")
+      print(drift_ppd['column_dict'][returnedcolumns[0]]['normalization_dict'])
+      print("")
+      
+      #free up some memory
+      del df_test2_temp, df_test3_temp, returnedcolumns
+      
+    print("")
+    print("_______________")
+    print("Drift Report Complete")
+    print("")
+      
+    return drift_ppd
+  
 
   def postmunge(self, postprocess_dict, df_test, testID_column = False, \
                 labelscolumn = False, pandasoutput = False, printstatus = True, \
-                TrainLabelFreqLevel = False, featureeval = False):
+                TrainLabelFreqLevel = False, featureeval = False, driftreport = False):
     '''
     #postmunge(df_test, testID_column, postprocess_dict) Function that when fed a \
     #test data set coresponding to a previously processed train data set which was \
@@ -16065,7 +16206,18 @@ class AutoMunge:
     if columns_train != columns_test:
       print("error, different order of column labels in the train and test set")
       return
-
+    
+    
+    #here we'll perform drift report if elected
+    if driftreport == True:
+      
+      #returns a new partially populated postpr4ocess_dict containing
+      #column_dict entries populated with newly calculated normalizaiton parameters
+      #for now we'll just print the results in the function, a future expansion may
+      #return these to the user somehow, need to put some thought into that
+      drift_ppd = self.prepare_driftreport(df_test, postprocess_dict)
+    
+    
     #create an empty dataframe to serve as a store for each column's NArows
     #the column id's for this df will follow convention from NArows of 
     #column+'_NArows' for each column in columns_train
