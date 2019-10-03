@@ -135,7 +135,7 @@ test, testID, testlabels, \
 labelsencoding_dict, finalcolumns_test = \
 am.postmunge(postprocess_dict, df_test, testID_column = False, \
              labelscolumn = False, pandasoutput=True, printstatus = True, \
-             TrainLabelFreqLevel = False, featureeval = False)
+             TrainLabelFreqLevel = False, featureeval = False, driftreport = False)
 ```
 
 
@@ -300,7 +300,7 @@ With the full set of arguments available to be passed as:
 ```
 am.postmunge(postprocess_dict, df_test, testID_column = False, \
              labelscolumn = False, pandasoutput=True, printstatus = True, \
-             TrainLabelFreqLevel = False):
+             TrainLabelFreqLevel = False, featureeval = False, driftreport = False):
 ```
 
 Note that the only required argument to the automunge function is the
@@ -860,8 +860,8 @@ train set.
 #using the postprocess_dict object returned from original automunge(.) application
 
 #Remember to initialize automunge
-from AutoMunge_pkg import AutoMunge
-am = AutoMunge.AutoMunge()
+from Automunge import Automunger
+am = Automunger.AutoMunge()
 
 
 #Then we can run postmunge function as:
@@ -870,7 +870,7 @@ test, testID, testlabels, \
 labelsencoding_dict, finalcolumns_test = \
 am.postmunge(postprocess_dict, df_test, testID_column = False, \
              labelscolumn = False, pandasoutput=True, printstatus = True, \
-             TrainLabelFreqLevel = False, featureeval = False):
+             TrainLabelFreqLevel = False, featureeval = False, driftreport = False):
 ```
              
 
@@ -911,8 +911,8 @@ column. Note that this list should match the one from automunge.
 #using the postprocess_dict object returned from original automunge(.) application
 
 #Remember to initialize automunge
-from AutoMunge_pkg import AutoMunge
-am = AutoMunge.AutoMunge()
+from Automunge import Automunger
+am = Automunger.AutoMunge()
 
 
 #Then we can run postmunge function as:
@@ -921,7 +921,7 @@ test, testID, testlabels, \
 labelsencoding_dict, finalcolumns_test = \
 am.postmunge(postprocess_dict, df_test, testID_column = False, \
              labelscolumn = False, pandasoutput=True, printstatus = True, \
-             TrainLabelFreqLevel = False, featureeval = False)
+             TrainLabelFreqLevel = False, featureeval = False, driftreport = False)
 ```
 
 * postprocess_dict: this is the dictionary returned from the initial
@@ -980,6 +980,13 @@ importance evaluation, comparable to one performed in automunge but based
 on the test set passed to postmunge. Currently the results report is not
 returned as an object, the results are printed in the output (for backward
 compatibility).
+
+* driftreport: a boolean identifier (True/False) to activate a drift report 
+evaluation, in which the normalization parameters are recalculated for the 
+columns of the test data passed to postmunge for comparison to the original 
+normalization parameters derived from the coresponding columns of the 
+automunge train data set. Currently the results report is not returned as 
+an object, the results are printed in the output (for backward compatibility).
 
 ...
 
