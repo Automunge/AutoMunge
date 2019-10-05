@@ -11055,7 +11055,7 @@ class AutoMunge:
                              'log0':[], 'log1':[], 'pwrs':[], \
                              'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
                              'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
-                             'splt':[], 'spl2':[], 'spl3':[], 'spl4':[], \
+                             'splt':[], 'spl2':[], 'spl3':[], 'spl4':[], 'ors2':[], \
                              'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
                              'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
                              'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
