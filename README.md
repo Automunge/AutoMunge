@@ -111,8 +111,8 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
                          'bins':[], 'bint':[], \
                          'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
                          'log0':[], 'log1':[], 'pwrs':[], \
-                         'bnry':[], 'text':[], '1010':[], 'or10':[], 'om10':[], \
-                         'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'mmor':[], \
+                         'bnry':[], 'text':[], 'txt2':[], '1010':[], 'or10':[], 'om10':[], \
+                         'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'mmor':[], 'splt':[], \
                          'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
                          'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
                          'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
@@ -273,8 +273,8 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
                          'bins':[], 'bint':[], \
                          'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
                          'log0':[], 'log1':[], 'pwrs':[], \
-                         'bnry':[], 'text':[], '1010':[], 'or10':[], 'om10':[], \
-                         'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'mmor':[], \
+                         'bnry':[], 'text':[], 'txt2':[], '1010':[], 'or10':[], 'om10':[], \
+                         'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'mmor':[], 'splt':[], \
                          'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
                          'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
                          'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
@@ -429,8 +429,8 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
                          'bins':[], 'bint':[], \
                          'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
                          'log0':[], 'log1':[], 'pwrs':[], \
-                         'bnry':[], 'text':[], '1010':[], 'or10':[], 'om10':[], \
-                         'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'mmor':[], \
+                         'bnry':[], 'text':[], 'txt2':[], '1010':[], 'or10':[], 'om10':[], \
+                         'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'mmor':[], 'splt':[], \
                          'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
                          'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
                          'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
@@ -683,8 +683,8 @@ such as could potentially result in memory savings.
 		 'bins':[], 'bint':[], \
 		 'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
 		 'log0':[], 'log1':[], 'pwrs':[], \
-		 'bnry':[], 'text':[], '1010':[], 'or10':[], 'om10':[], \
-		 'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'mmor':[], \
+		 'bnry':[], 'text':[], 'txt2':[], '1010':[], 'or10':[], 'om10':[], \
+		 'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'mmor':[], 'splt':[], \
 		 'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
 		 'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
 		 'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
@@ -1051,6 +1051,8 @@ of preceding two rows)
 * mnm6: min-max scaling with test set capped at min/max of train set
 * bnry: converts sets with two values to boolean identifiers
 * text: converts categorical sets to one-hot encoded set of boolean identifiers
+* splt: searches categorical sets for overlaps between strings and returns new boolean colunm
+for identified overlap categories
 * ordl/ord2: converts categorical sets to ordinally encoded set of integer identifiers
 * ord3/ord4: converts categorical sets to ordinally encoded set of integer identifiers
 sorted by frequency of category occurance
@@ -1219,7 +1221,24 @@ And here are the series of family trees currently built into the internal librar
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
+        
+    transform_dict.update({'txt2' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['text'], \
+                                     'cousins' : [NArw, 'splt'], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
     
+    transform_dict.update({'splt' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['splt'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
     transform_dict.update({'ordl' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['ordl'], \
