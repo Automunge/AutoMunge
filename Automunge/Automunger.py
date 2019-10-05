@@ -254,11 +254,47 @@ class AutoMunge:
                                      'coworkers' : [], \
                                      'friends' : []}})
     
+    transform_dict.update({'txt3' : {'parents' : ['txt3'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : ['text'], \
+                                     'friends' : []}})
+    
     transform_dict.update({'splt' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['splt'], \
                                      'cousins' : [NArw], \
                                      'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'spl2' : {'parents' : ['spl2'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : ['ordl'], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'spl3' : {'parents' : ['spl2'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : ['ord3'], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'spl4' : {'parents' : ['spl4'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : ['spl3'], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
@@ -297,6 +333,15 @@ class AutoMunge:
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : ['mnmx'], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'ors2' : {'parents' : ['spl3'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['ord3'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
                                      'friends' : []}})
     
     transform_dict.update({'or10' : {'parents' : ['ord4'], \
@@ -1263,12 +1308,36 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'multirt', \
                                   'labelctgy' : 'text'}})
+    process_dict.update({'txt3' : {'dualprocess' : self.process_spl2_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_spl2_class, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'singlct', \
+                                  'labelctgy' : 'text'}})
     process_dict.update({'splt' : {'dualprocess' : self.process_splt_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_splt_class, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'multirt', \
                                   'labelctgy' : 'text'}})
+    process_dict.update({'spl2' : {'dualprocess' : self.process_spl2_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_spl2_class, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'singlct', \
+                                  'labelctgy' : 'ordl'}})
+    process_dict.update({'spl3' : {'dualprocess' : self.process_spl2_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_spl2_class, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'singlct', \
+                                  'labelctgy' : 'ord3'}})
+    process_dict.update({'spl4' : {'dualprocess' : self.process_spl2_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_spl2_class, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'singlct', \
+                                  'labelctgy' : 'ord3'}})
     process_dict.update({'ordl' : {'dualprocess' : self.process_ordl_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_ordl_class, \
@@ -1293,6 +1362,12 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'mnmx'}})
+    process_dict.update({'ors2' : {'dualprocess' : self.process_spl2_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_spl2_class, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'singlct', \
+                                  'labelctgy' : 'ord3'}})
     process_dict.update({'or10' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
@@ -3299,6 +3374,228 @@ class AutoMunge:
     
     return mdf_train, mdf_test, column_dict_list
   
+  
+  def process_spl2_class(self, mdf_train, mdf_test, column, category, \
+                         postprocess_dict):
+    '''
+    #process_spl2_class(mdf_train, mdf_test, column, category)
+    #preprocess column with categorical entries as strings
+    #identifies overlaps of subsets of those strings and replaces entries with their redecued overlap
+    #for example, if a categoical set consisted of unique values ['west', 'north', 'northeast']
+    #then a new column would be created in which the entry 'north' replaced cells with north in their entries
+    #(here for north and northeast)
+    #returns as column titled origcolumn_spl2
+    #missing values are ignored by default
+    #this alternative to splt may be benficial for instance if one wanted to follow with an ordl encoding
+    '''
+    
+    overlap_lengths = [20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7 , 6, 5]
+
+    
+    #first we find overlaps from mdf_train
+    
+    unique_list = list(mdf_train[column].unique())
+
+    unique_list = list(map(str, unique_list))
+
+    overlap_dict = {}
+
+    #we'll populate overlap_dict as
+    #{extract_with_overlap : [list of associate categories with that overlap]}
+
+    #we'll cycle through the overlap lengths and only record an overlap 
+    #if it is not a subset of those already recorded
+    
+    for overlap_length in overlap_lengths:
+
+      for unique in unique_list:
+
+        len_unique = len(unique)
+
+        if len_unique >= overlap_length:
+
+          nbr_iterations = len_unique - overlap_length
+
+          for i in range(nbr_iterations + 1):
+
+            extract = unique[i:(overlap_length+i)]
+
+            extract_already_in_overlap_dict = False
+
+            for key in overlap_dict:
+
+              len_key = len(key)
+
+              if len_key >= overlap_length:
+
+                nbr_iterations3 = len_key - overlap_length
+
+                for k in range(nbr_iterations3 + 1):
+
+                  extract3 = key[k:(overlap_length+k)]
+
+                  if extract == extract3:
+
+                    extract_already_in_overlap_dict = True
+
+            if extract_already_in_overlap_dict == False:
+
+              for unique2 in unique_list:
+
+                if unique2 != unique:
+
+                  len_unique2 = len(unique2)
+
+                  nbr_iterations2 = len_unique2 - overlap_length
+
+                  for j in range(nbr_iterations2 + 1):
+
+                    extract2 = unique2[j:(overlap_length+j)]
+
+                    if extract2 == extract:
+
+                      if extract in overlap_dict:
+
+                        if unique2 not in overlap_dict[extract]:
+
+                          overlap_dict[extract].append(unique2)
+
+                        if unique not in overlap_dict[extract]:
+
+                          overlap_dict[extract].append(unique)
+
+                      #else if we don't have a key for extract
+                      else:
+
+                        overlap_dict.update({extract : [unique, unique2]})
+
+                        
+    #now for mdf_test we'll only consider those overlaps already identified from train set
+    
+    unique_list_test = list(mdf_test[column].unique())
+
+    unique_list_test = list(map(str, unique_list_test))
+
+    test_overlap_dict = {}
+
+    train_keys = list(overlap_dict)
+
+    train_keys.sort(key = len, reverse=True)
+
+    for key in train_keys:
+
+      test_overlap_dict.update({key:[]})
+
+    for dict_key in train_keys:
+
+      for unique_test in unique_list_test:
+
+        len_key = len(dict_key)
+
+        if len(unique_test) >= len_key:
+
+          nbr_iterations4 = len(unique_test) - len_key
+
+          for l in range(nbr_iterations4 + 1):
+
+            extract4 = unique_test[l:(len_key+l)]
+
+            if extract4 == dict_key:
+
+              test_overlap_dict[dict_key].append(unique_test)
+                        
+    
+    
+    #so that was all comparable to splt, now for spl2 we'll create a new dictionary structred as
+    #{original unique value : overlap extract for replacement}
+    
+    #since one original unique value may have entries as multiple overlaps, we'll prioritize overlaps with
+    #longer string lengths and then alphabetical
+    
+    spl2_overlap_dict = {}
+    
+    overlap_key_list = list(overlap_dict)
+    
+    overlap_key_list.sort()
+    overlap_key_list.sort(key = len, reverse=True)
+    
+    for overlap_key in overlap_key_list:
+      
+      for entry in overlap_dict[overlap_key]:
+        
+        if entry not in spl2_overlap_dict:
+          
+          spl2_overlap_dict.update({entry : overlap_key})
+          
+    
+    
+    #then we'll do same for test set
+    
+    spl2_test_overlap_dict = {}
+    
+    test_overlap_key_list = list(test_overlap_dict)
+    
+    test_overlap_key_list.sort()
+    test_overlap_key_list.sort(key = len, reverse=True)
+    
+    for overlap_key in test_overlap_key_list:
+      
+      for entry in test_overlap_dict[overlap_key]:
+        
+        if entry not in spl2_test_overlap_dict:
+          
+          spl2_test_overlap_dict.update({entry : overlap_key})
+    
+    
+    
+    
+    newcolumns = []
+
+    for dict_key in overlap_dict:
+
+      newcolumn = column + '_spl2'
+      
+      mdf_train[newcolumn] = mdf_train[column].replace(spl2_overlap_dict)
+
+#       mdf_train[newcolumn] = mdf_train[column].isin(overlap_dict[dict_key])
+#       mdf_train[newcolumn] = mdf_train[newcolumn].astype(np.int8)
+      
+      mdf_test[newcolumn] = mdf_test[column].replace(spl2_test_overlap_dict)
+  
+#       mdf_test[newcolumn] = mdf_test[column].isin(test_overlap_dict[dict_key])
+#       mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
+
+      newcolumns.append(newcolumn)
+    
+    
+    
+    column_dict_list = []
+
+    for tc in newcolumns:
+
+      textnormalization_dict = {tc : {'overlap_dict' : overlap_dict, \
+                                      'spl2_newcolumns'   : newcolumns, 
+                                      'spl2_overlap_dict' : spl2_overlap_dict, \
+                                      'spl2_test_overlap_dict' : spl2_test_overlap_dict}}
+      
+      column_dict = {tc : {'category' : 'spl2', \
+                           'origcategory' : category, \
+                           'normalization_dict' : textnormalization_dict, \
+                           'origcolumn' : column, \
+                           'columnslist' : newcolumns, \
+                           'categorylist' : newcolumns, \
+                           'infillmodel' : False, \
+                           'infillcomplete' : False, \
+                           'deletecolumn' : False}}
+
+      column_dict_list.append(column_dict.copy())
+      
+    if len(newcolumns) == 0:
+      
+      column_dict_list = []
+
+    
+    return mdf_train, mdf_test, column_dict_list
   
     
   def process_ordl_class(self, mdf_train, mdf_test, column, category, \
@@ -10756,8 +11053,9 @@ class AutoMunge:
                              'bins':[], 'bint':[], \
                              'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
                              'log0':[], 'log1':[], 'pwrs':[], \
-                             'bnry':[], 'text':[], 'txt2':[], '1010':[], 'or10':[], 'om10':[], \
-                             'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'mmor':[], 'splt':[], \
+                             'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
+                             'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
+                             'splt':[], 'spl2':[], 'spl3':[], 'spl4':[], \
                              'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
                              'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
                              'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
@@ -12100,7 +12398,7 @@ class AutoMunge:
         print("")
         
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '2.64'
+    automungeversion = '2.65'
     application_number = random.randint(100000000000,999999999999)
     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -13346,6 +13644,128 @@ class AutoMunge:
 
         mdf_test[newcolumn] = mdf_test[column].isin(test_overlap_dict[dict_key])
         mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
+
+        newcolumns.append(newcolumn)
+    
+    
+    return mdf_test
+  
+  
+  def postprocess_spl2_class(mdf_test, column, postprocess_dict, columnkey):
+    '''
+    #postprocess_spl2_class(mdf_test, column, postprocess_dict, category)
+    #preprocess column with categorical entries as strings
+    #identifies overlaps of subsets of those strings and replaces entries with their redecued overlap
+    #for example, if a categoical set consisted of unique values ['west', 'north', 'northeast']
+    #then a new column would be created in which the entry 'north' replaced cells with north in their entries
+    #(here for north and northeast)
+    #returns as column titled origcolumn_spl2
+    #missing values are ignored by default
+    #this alternative to splt may be benficial for instance if one wanted to follow with an ordl encoding
+    
+    #here in postprocess we only replace entries for those overlaps that were identified 
+    #from the train set
+    '''
+    
+    #to retrieve the normalization dictionary we're going to use new method since we don't yet 
+    #know what the returned columns titles are yet
+    
+    normkey = False
+    
+#     if column in postprocess_dict['origcolumn']:
+      
+#       columnkeylist = postprocess_dict['origcolumn'][column]['columnkeylist']
+      
+#     else:
+      
+#       origcolumn = postprocess_dict['column_dict'][column]['origcolumn']
+      
+#       columnkeylist = postprocess_dict['origcolumn'][origcolumn]['columnkeylist']
+    
+#     for columnkey in columnkeylist:
+      
+#       normalization_dict = postprocess_dict['column_dict'][columnkey]['normalization_dict']
+    
+#       if 'splt_newcolumns' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
+        
+#         normkey = columnkey
+
+    normkey = column + '_spl2'
+        
+    if normkey != False:
+
+      #great now we can grab normalization parameters
+      overlap_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['overlap_dict']
+
+#       newcolumns = \
+#       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['spl2_newcolumns']
+
+
+      #now for mdf_test we'll only consider those overlaps already identified from train set
+
+      unique_list_test = list(mdf_test[column].unique())
+
+      unique_list_test = list(map(str, unique_list_test))
+
+      test_overlap_dict = {}
+
+      train_keys = list(overlap_dict)
+
+      train_keys.sort(key = len, reverse=True)
+
+      for key in train_keys:
+
+        test_overlap_dict.update({key:[]})
+
+      for dict_key in train_keys:
+
+        for unique_test in unique_list_test:
+
+          len_key = len(dict_key)
+
+          if len(unique_test) >= len_key:
+
+            nbr_iterations4 = len(unique_test) - len_key
+
+            for l in range(nbr_iterations4 + 1):
+
+              extract4 = unique_test[l:(len_key+l)]
+
+              if extract4 == dict_key:
+
+                test_overlap_dict[dict_key].append(unique_test)
+                
+                
+      #then we'll populate the spl2 replacement dict
+
+      spl2_test_overlap_dict = {}
+
+      test_overlap_key_list = list(test_overlap_dict)
+
+      test_overlap_key_list.sort()
+      test_overlap_key_list.sort(key = len, reverse=True)
+
+      for overlap_key in test_overlap_key_list:
+
+        for entry in test_overlap_dict[overlap_key]:
+
+          if entry not in spl2_test_overlap_dict:
+
+            spl2_test_overlap_dict.update({entry : overlap_key})
+
+
+      newcolumns = []
+
+      for dict_key in overlap_dict:
+
+        newcolumn = column + '_spl2'
+
+#         mdf_test[newcolumn] = mdf_test[column].isin(test_overlap_dict[dict_key])
+#         mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
+
+      
+        mdf_test[newcolumn] = mdf_test[column].replace(spl2_test_overlap_dict)
 
         newcolumns.append(newcolumn)
     
