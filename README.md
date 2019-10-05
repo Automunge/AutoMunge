@@ -1,7 +1,22 @@
 # Automunge
 # 
-Automunge is a tool for automating the final steps of data wrangling of
-structured (tabular) data prior to the application of machine learning.
+Automunge is a tool to prepare tabular data for machine learning. A user
+has options between automated inference of column properties for application
+of appropriate feature engineering methods, or may also assign to distinct 
+columns custom feature engineering transformations, custom sets (e.g. "family 
+trees") of feature engineering transformations, or custom infill methods. The 
+feature engineering transformation functions may be accessed from the internal 
+library of transformation categories (a.k.a. a "feature store"), or may also 
+be user defined with minimal requirements of simple data structures for 
+incorporation into the platform. The tool includes options for automated 
+feature importance evaluation, automated derivation of infill predictions
+using machine learning models trained on the set in a fully generalized and
+automated fashion, automated dimensionality reductions such as based on 
+feature importance or principle component analysis, automated evaluation of 
+data property drift between training data and subsequent data, and perhaps 
+most importantly the simplest means for consistent processing of additional 
+data with just a single function call. In short, we make machine learning easy.
+
 The automunge(.) function takes as input structured training data intended 
 to train a machine learning model with any corresponding labels if available 
 included in the set, and also if available consistently formatted test data 
