@@ -3551,21 +3551,21 @@ class AutoMunge:
     
     newcolumns = []
 
-    for dict_key in overlap_dict:
+#     for dict_key in overlap_dict:
 
-      newcolumn = column + '_spl2'
-      
-      mdf_train[newcolumn] = mdf_train[column].replace(spl2_overlap_dict)
+    newcolumn = column + '_spl2'
+
+    mdf_train[newcolumn] = mdf_train[column].replace(spl2_overlap_dict)
 
 #       mdf_train[newcolumn] = mdf_train[column].isin(overlap_dict[dict_key])
 #       mdf_train[newcolumn] = mdf_train[newcolumn].astype(np.int8)
-      
-      mdf_test[newcolumn] = mdf_test[column].replace(spl2_test_overlap_dict)
-  
+
+    mdf_test[newcolumn] = mdf_test[column].replace(spl2_test_overlap_dict)
+
 #       mdf_test[newcolumn] = mdf_test[column].isin(test_overlap_dict[dict_key])
 #       mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
 
-      newcolumns.append(newcolumn)
+    newcolumns.append(newcolumn)
     
     
     
@@ -12398,7 +12398,7 @@ class AutoMunge:
         print("")
         
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '2.65'
+    automungeversion = '2.66'
     application_number = random.randint(100000000000,999999999999)
     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -13755,19 +13755,19 @@ class AutoMunge:
             spl2_test_overlap_dict.update({entry : overlap_key})
 
 
-      newcolumns = []
+#       newcolumns = []
 
-      for dict_key in overlap_dict:
+#       for dict_key in overlap_dict:
 
-        newcolumn = column + '_spl2'
+      newcolumn = column + '_spl2'
 
 #         mdf_test[newcolumn] = mdf_test[column].isin(test_overlap_dict[dict_key])
 #         mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
 
-      
-        mdf_test[newcolumn] = mdf_test[column].replace(spl2_test_overlap_dict)
 
-        newcolumns.append(newcolumn)
+      mdf_test[newcolumn] = mdf_test[column].replace(spl2_test_overlap_dict)
+
+#       newcolumns.append(newcolumn)
     
     
     return mdf_test
@@ -17810,7 +17810,7 @@ class AutoMunge:
         testID = df_testID
       else:
         testID = pd.DataFrame()
-        
+       
       if labelscolumn != False:
         testlabels = df_testlabels
       else:
