@@ -52,6 +52,7 @@ from sklearn.utils import shuffle
 from sklearn.model_selection import train_test_split
 import random
 #import datetime as dt
+import types
 
 
 
@@ -2255,11 +2256,18 @@ class AutoMunge:
 #     mdf_train[column + '_nmbr'] = mdf_train[column + '_nmbr'].astype(np.float32)
 #     mdf_test[column + '_nmbr'] = mdf_test[column + '_nmbr'].astype(np.float32)
 
+    #a few more metrics collected for driftreport
+    #get maximum value of training column
+    maximum = mdf_train[column + '_nmbr'].max()
+    #get minimum value of training column
+    minimum = mdf_train[column + '_nmbr'].min()
+
     #create list of columns
     nmbrcolumns = [column + '_nmbr']
 
 
-    nmbrnormalization_dict = {column + '_nmbr' : {'mean' : mean, 'std' : std}}
+    nmbrnormalization_dict = {column + '_nmbr' : {'mean' : mean, 'std' : std, \
+                                                  'max' : maximum, 'min' : minimum}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -2625,6 +2633,10 @@ class AutoMunge:
 #     #change data type for memory savings
 #     mdf_train[column + '_mnmx'] = mdf_train[column + '_mnmx'].astype(np.float32)
 #     mdf_test[column + '_mnmx'] = mdf_test[column + '_mnmx'].astype(np.float32)
+
+    #a few more metrics collected for driftreport
+    #get standard deviation of training data
+    std = mdf_train[column + '_mnmx'].std()
     
     #create list of columns
     nmbrcolumns = [column + '_mnmx']
@@ -2632,7 +2644,8 @@ class AutoMunge:
 
     nmbrnormalization_dict = {column + '_mnmx' : {'minimum' : minimum, \
                                                   'maximum' : maximum, \
-                                                  'mean' : mean}}
+                                                  'mean' : mean, \
+                                                  'std' : std}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -2727,6 +2740,10 @@ class AutoMunge:
 #     #change data type for memory savings
 #     mdf_train[column + '_mnm3'] = mdf_train[column + '_mnm3'].astype(np.float32)
 #     mdf_test[column + '_mnm3'] = mdf_test[column + '_mnm3'].astype(np.float32)
+
+    #a few more metrics collected for driftreport
+    #get standard deviation of training data
+    std = mdf_train[column + '_mnm3'].std()
     
     #create list of columns
     nmbrcolumns = [column + '_mnm3']
@@ -2734,7 +2751,8 @@ class AutoMunge:
 
     nmbrnormalization_dict = {column + '_mnm3' : {'quantilemin' : quantilemin, \
                                                   'quantilemax' : quantilemax, \
-                                                  'mean' : mean}}
+                                                  'mean' : mean, \
+                                                  'std' : std}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -2813,6 +2831,10 @@ class AutoMunge:
 #     #change data type for memory savings
 #     mdf_train[column + '_mnm6'] = mdf_train[column + '_mnm6'].astype(np.float32)
 #     mdf_test[column + '_mnm6'] = mdf_test[column + '_mnm6'].astype(np.float32)
+
+    #a few more metrics collected for driftreport
+    #get standard deviation of training data
+    std = mdf_train[column + '_mnm6'].std()
     
     #create list of columns
     nmbrcolumns = [column + '_mnm6']
@@ -2820,7 +2842,8 @@ class AutoMunge:
 
     nmbrnormalization_dict = {column + '_mnm6' : {'minimum' : minimum, \
                                                   'maximum' : maximum, \
-                                                  'mean' : mean}}
+                                                  'mean' : mean, \
+                                                  'std' : std}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -3000,6 +3023,11 @@ class AutoMunge:
     #change data types to 8-bit (1 byte) integers for memory savings
     mdf_train[column + '_bnry'] = mdf_train[column + '_bnry'].astype(np.int8)
     mdf_test[column + '_bnry'] = mdf_test[column + '_bnry'].astype(np.int8)
+    
+    #a few more metrics collected for driftreport
+    oneratio = mdf_train[column + '_bnry'].sum() / mdf_train[column + '_bnry'].shape[0]
+    zeroratio = (mdf_train[column + '_bnry'].shape[0] - mdf_train[column + '_bnry'].sum() )\
+                / mdf_train[column + '_bnry'].shape[0]
 
     #create list of columns associated with categorical transform (blank for now)
     categorylist = []
@@ -3011,7 +3039,9 @@ class AutoMunge:
     bnrynormalization_dict = {column + '_bnry' : {'missing' : binary_missing_plug, \
                                                   1 : onevalue, \
                                                   0 : zerovalue, \
-                                                  'extravalues' : extravalues}}
+                                                  'extravalues' : extravalues, \
+                                                  'oneratio' : oneratio, \
+                                                  'zeroratio' : zeroratio}}
 
     #store some values in the column_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -3182,8 +3212,13 @@ class AutoMunge:
 #     categorylist.remove(columnNArw)
 
     for tc in textcolumns:
+    
+      #new parameter collected for driftreport
+      tc_ratio = tc + '_ratio'
+      tcratio = mdf_train[tc].sum() / mdf_train[tc].shape[0]
 
-      textnormalization_dict = {tc : {'textlabelsdict' : textlabelsdict}}
+      textnormalization_dict = {tc : {'textlabelsdict' : textlabelsdict, \
+                                      tc_ratio : tcratio}}
       
       column_dict = {tc : {'category' : 'text', \
                            'origcategory' : category, \
@@ -11062,7 +11097,7 @@ class AutoMunge:
                              'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'eval':[]}, \
                 assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                                 'adjinfill':[], 'meaninfill':[], 'medianinfill':[], 'modeinfill':[]}, \
-                transformdict = {}, processdict = {}, \
+                transformdict = {}, processdict = {}, evalcat = False, \
                 printstatus = True):
 
     '''
@@ -11568,7 +11603,13 @@ class AutoMunge:
               #special case, if user assigned column to 'eval' then we'll run evalcategory
               #passing a True for powertransform parameter
               if key in ['eval']:
-                category = self.evalcategory(df_train, column, numbercategoryheuristic, True)
+                if evalcat == False:
+                  category = self.evalcategory(df_train, column, numbercategoryheuristic, True)
+                elif type(evalcat) == types.FunctionType:
+                  category = evalcat(df_train, column, numbercategoryheuristic, True)
+                else:
+                  print("error: evalcat must be passed as either False or as a defined function per READ ME")
+                  
                 category_test = category
             
         if categorycomplete == False:
@@ -11576,8 +11617,14 @@ class AutoMunge:
           #printout display progress
           if printstatus == True:
             print("evaluating column: ", column)
-          
-          category = self.evalcategory(df_train, column, numbercategoryheuristic, powertransform)
+            
+          if evalcat == False:
+            category = self.evalcategory(df_train, column, numbercategoryheuristic, powertransform)
+          elif type(evalcat) == types.FunctionType:
+            category = evalcat(df_train, column, numbercategoryheuristic, powertransform)
+          else:
+            print("error: evalcat must be passed as either False or as a defined function per READ ME")
+                
           
 #           #let's make sure the category is consistent between train and test sets
 #           #we'll only evaluate if we didn't use a dummy set for df_set
@@ -11744,8 +11791,14 @@ class AutoMunge:
           print("evaluating label column: ", labels_column)
         
         #determine labels category and apply appropriate function
-        labelscategory = self.evalcategory(df_labels, labels_column, numbercategoryheuristic, powertransform)
+        #labelscategory = self.evalcategory(df_labels, labels_column, numbercategoryheuristic, powertransform)
       
+        if evalcat == False:
+          labelscategory = self.evalcategory(df_labels, labels_column, numbercategoryheuristic, powertransform)
+        elif type(evalcat) == types.FunctionType:
+          labelscategory = evalcat(df_labels, labels_column, numbercategoryheuristic, powertransform)
+        else:
+          print("error: evalcat must be passed as either False or as a defined function per READ ME")
       
         #we've previously introduced the convention that for default numeric label sets
         #we forgo z-score normalization, here let's make that distinction
@@ -12398,7 +12451,7 @@ class AutoMunge:
         print("")
         
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '2.66'
+    automungeversion = '2.67'
     application_number = random.randint(100000000000,999999999999)
     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -16753,6 +16806,9 @@ class AutoMunge:
       #then a second copy set, here of just a few rows, to follow convention of 
       #automunge processfamily calls
       df_test3_temp = df_test2_temp[0:10].copy()
+      
+      #here's a templist to support the columnkey entry below
+      templist1 = list(df_test2_temp)
     
       #now process family
       df_test2_temp, df_test3_temp, drift_ppd = \
@@ -16760,9 +16816,33 @@ class AutoMunge:
                          drift_category, drift_process_dict, drift_transform_dict, \
                          drift_ppd)
 
+      #here's a second templist to support the columnkey entry below
+      templist2 = list(df_test2_temp)
       
+      #ok now we're going to pick one of the new entries of. returned columns to serve 
+      #as a "columnkey" for pulling datas from the postprocess_dict 
+      #columnkeylist = list(set(templist2) - set(templist1))[0]
+      columnkeylist = list(set(templist2) - set(templist1))
+
+
+      #so last line I believe returns string if only one entry, so let's run a test
+      if isinstance(columnkeylist, str):
+        columnkey = columnkeylist
+      else:
+        #if list is empty
+        if len(columnkeylist) == 0:
+          columnkey = column
+        else:
+          columnkey = columnkeylist[0]
+          if len(columnkey) >= 5:
+            if columnkey[-5:] == '_NArw':
+              if len(columnkeylist) > 1:
+                columnkey = columnkeylist[1]
+              else:
+                columnkey = columnkey
       
-      if drift_ppd['origcolumn'][drift_column]['columnkey'] not in drift_ppd['column_dict']:
+      #if drift_ppd['origcolumn'][drift_column]['columnkey'] not in drift_ppd['column_dict']:
+      if len(columnkeylist) == 0:
       
         print("no new returned columns:")
         print("")
@@ -16771,8 +16851,11 @@ class AutoMunge:
         
       else:
         
+#         newreturnedcolumns = \
+#         drift_ppd['column_dict'][drift_ppd['origcolumn'][drift_column]['columnkey']]['columnslist']
         newreturnedcolumns = \
-        drift_ppd['column_dict'][drift_ppd['origcolumn'][drift_column]['columnkey']]['columnslist']
+        drift_ppd['column_dict'][columnkey]['columnslist']
+
 
         newreturnedcolumns.sort()
 
