@@ -135,7 +135,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
 		         'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'eval':[]}, \
             assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                             'adjinfill':[], 'meaninfill':[], 'medianinfill':[], 'modeinfill':[]}, \
-            transformdict = {}, processdict = {}, \
+            transformdict = {}, processdict = {}, evalcat = False, \
             printstatus = True)
 ```
 
@@ -298,7 +298,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
 		         'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'eval':[]}, \
             assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                             'adjinfill':[], 'meaninfill':[], 'medianinfill':[], 'modeinfill':[]}, \
-            transformdict = {}, processdict = {}, \
+            transformdict = {}, processdict = {}, evalcat = False, \
             printstatus = True)
 ```
 
@@ -455,7 +455,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
 		         'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'eval':[]}, \
             assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                             'adjinfill':[], 'meaninfill':[], 'medianinfill':[], 'modeinfill':[]}, \
-            transformdict = {}, processdict = {}, \
+            transformdict = {}, processdict = {}, evalcat = False, \
             printstatus = True)
 ```
 
@@ -855,6 +855,13 @@ processdict =  {'newt' : {'dualprocess' : None, \
 #			   processing
 
 ```
+
+* evalcat: modularizes the automated evaluation of column properties for assignment 
+of root transformation categories, allowing user to pass custom functions for this 
+purpose (as we're little stretched thin I think there is much room for innovation on 
+this point and don't want to hold anyone back with my version if they have a better 
+mousetrap). Formal documentation for this option is pending, for now if you'd like to 
+experiment copy the evalcategory function from master file.
 
 * printstatus: user can pass True/False indicating whether the function will print 
 status of processing during operation. Defaults to True.
