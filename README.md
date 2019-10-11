@@ -863,6 +863,33 @@ this point and don't want to hold anyone back with my version if they have a bet
 mousetrap). Formal documentation for this option is pending, for now if you'd like to 
 experiment copy the evalcategory function from master file.
 
+* evalcat: modularizes the automated evaluation of column properties for assignment 
+of root transformation categories, allowing user to pass custom functions for this 
+purpose (there is much room for innovation on this point and don't want to hold anyone 
+back with my version if they have a better mousetrap). Passed functions should follow 
+following format:
+
+```
+def evalcat(df, column, numbercategoryheuristic, powertransform):
+  """
+  #user defined function that dakes as input a dataframe and associated column id
+  #evaluates the contents of cells and classifies the column for root category 
+  #of transformation (e.g. comparable to categories otherwise assigned in assigncat)
+  #returns category id as a string
+  """
+  ...
+  return category
+```
+And could then be passed to automunge function call such as:
+```
+evalcat = evalcat
+```
+I recomend using the evalcategory function defined in master file as starting point. Note 
+that the parameters numbercategoryheuristic and powertransform are passed as user 
+parameters in automunge call and only used in evalcategory function, so if user wants to 
+repurpose them totally can do so. (They default to 15, False.) Note evalcat defaults to 
+False to use built in evalcategory function.
+
 * printstatus: user can pass True/False indicating whether the function will print 
 status of processing during operation. Defaults to True.
 
