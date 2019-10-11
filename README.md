@@ -863,9 +863,9 @@ purpose. Passed functions should follow format:
 ```
 def evalcat(df, column, numbercategoryheuristic, powertransform):
   """
-  #user defined function that dakes as input a dataframe and associated column id
-  #evaluates the contents of cells and classifies the column for root category 
-  #of transformation (e.g. comparable to categories otherwise assigned in assigncat)
+  #user defined function that takes as input a dataframe df and column id string column
+  #evaluates the contents of cells and classifies the column for root category of 
+  #transformation (e.g. comparable to categories otherwise assigned in assigncat)
   #returns category id as a string
   """
   ...
