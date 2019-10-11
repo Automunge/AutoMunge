@@ -877,7 +877,7 @@ evalcat = evalcat
 ```
 I recomend using the evalcategory function defined in master file as starting point. 
 Note that the parameters numbercategoryheuristic and powertransform are passed as 
-user partameters in automunge call and only used in evalcategory function, so if user 
+user parameters in automunge call and only used in evalcategory function, so if user 
 wants to repurpose them totally can do so. (They default to 15, False.) Note evalcat 
 defaults to False to use built-in evalcategory function. Note evalcat will only be 
 applied to columns not assigned in assigncat.
