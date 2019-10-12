@@ -309,7 +309,25 @@ class AutoMunge:
                                      'coworkers' : ['ord3'], \
                                      'friends' : []}})
     
+    transform_dict.update({'spl6' : {'parents' : ['spl6'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : ['splt'], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : ['ord3']}})
+    
     transform_dict.update({'ors5' : {'parents' : ['spl5'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['ord3'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'ors6' : {'parents' : ['spl6'], \
                                      'siblings': [], \
                                      'auntsuncles' : ['ord3'], \
                                      'cousins' : [NArw], \
@@ -1363,7 +1381,19 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'ord3'}})
+    process_dict.update({'spl6' : {'dualprocess' : self.process_spl5_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_spl5_class, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'singlct', \
+                                  'labelctgy' : 'ord3'}})
     process_dict.update({'ors5' : {'dualprocess' : self.process_spl5_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_spl5_class, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'singlct', \
+                                  'labelctgy' : 'ord3'}})
+    process_dict.update({'ors6' : {'dualprocess' : self.process_spl5_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_spl5_class, \
                                   'NArowtype' : 'justNaN', \
@@ -3853,7 +3883,7 @@ class AutoMunge:
 
 #     for dict_key in overlap_dict:
 
-    newcolumn = column + '_spl2'
+    newcolumn = column + '_spl5'
 
     mdf_train[newcolumn] = mdf_train[column].replace(spl2_overlap_dict)
     mdf_train[newcolumn] = mdf_train[column].replace(spl5_zero_dict)
@@ -3878,7 +3908,8 @@ class AutoMunge:
       textnormalization_dict = {tc : {'overlap_dict' : overlap_dict, \
                                       'spl2_newcolumns'   : newcolumns, 
                                       'spl2_overlap_dict' : spl2_overlap_dict, \
-                                      'spl2_test_overlap_dict' : spl2_test_overlap_dict}}
+                                      'spl2_test_overlap_dict' : spl2_test_overlap_dict, \
+                                      'spl5_zero_dict' : spl5_zero_dict}}
       
       column_dict = {tc : {'category' : 'spl2', \
                            'origcategory' : category, \
@@ -4337,6 +4368,13 @@ class AutoMunge:
     del encoding_list
     del overlap_list
     
+    #new driftreport metric _1010_activations_dict
+    _1010_activations_dict = {}
+    for key in binary_encoding_dict:
+      sumcalc = (mdf_train[column+'_1010'] == key).sum() 
+      ratio = sumcalc / mdf_train[column+'_1010'].shape[0]
+      _1010_activations_dict.update({key:ratio})
+    
     #____
     
     #replace the cateogries in train set via ordinal trasnformation
@@ -4387,7 +4425,8 @@ class AutoMunge:
         
       normalization_dict = {tc : {'_1010_binary_encoding_dict' : binary_encoding_dict, \
                                   '_1010_overlap_replace' : overlap_replace, \
-                                  '_1010_binary_column_count' : binary_column_count}}
+                                  '_1010_binary_column_count' : binary_column_count, \
+                                  '_1010_activations_dict' : _1010_activations_dict}}
     
       column_dict = {tc : {'category' : '1010', \
                            'origcategory' : category, \
@@ -11373,7 +11412,8 @@ class AutoMunge:
                              'log0':[], 'log1':[], 'pwrs':[], \
                              'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
                              'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
-                             'splt':[], 'spl2':[], 'spl3':[], 'spl4':[], 'ors2':[], 'ors5':[], \
+                             'splt':[], 'spl2':[], 'spl3':[], 'spl4':[], 'spl5':[], \
+                             'ors2':[], 'ors5':[], 'ors6':[], \
                              'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
                              'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
                              'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
@@ -12734,7 +12774,7 @@ class AutoMunge:
         print("")
         
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '2.68'
+    automungeversion = '2.69'
     application_number = random.randint(100000000000,999999999999)
     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -14111,18 +14151,17 @@ class AutoMunge:
   
   def postprocess_spl5_class(self, mdf_test, column, postprocess_dict, columnkey):
     '''
-    #postprocess_spl2_class(mdf_test, column, postprocess_dict, category)
+    #postprocess_spl5_class(mdf_test, column, postprocess_dict, category)
     #preprocess column with categorical entries as strings
     #identifies overlaps of subsets of those strings and replaces entries with their redecued overlap
-    #for example, if a categoical set consisted of unique values ['west', 'north', 'northeast']
+    #replaces entries without overlap to 0 (unique to spl5)
+    #for example, if a categorical set consisted of unique values ['west', 'north', 'northeast']
     #then a new column would be created in which the entry 'north' replaced cells with north in their entries
     #(here for north and northeast)
+    #and cells with west would be set to 0
     #returns as column titled origcolumn_spl2
     #missing values are ignored by default
     #this alternative to splt may be benficial for instance if one wanted to follow with an ordl encoding
-    
-    #here in postprocess we only replace entries for those overlaps that were identified 
-    #from the train set
     '''
     
     #to retrieve the normalization dictionary we're going to use new method since we don't yet 
@@ -14148,7 +14187,7 @@ class AutoMunge:
         
 #         normkey = columnkey
 
-    normkey = column + '_spl2'
+    normkey = column + '_spl5'
         
     if normkey != False:
 
@@ -14224,7 +14263,7 @@ class AutoMunge:
 
 #       for dict_key in overlap_dict:
 
-      newcolumn = column + '_spl2'
+      newcolumn = column + '_spl5'
 
 #         mdf_test[newcolumn] = mdf_test[column].isin(test_overlap_dict[dict_key])
 #         mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
