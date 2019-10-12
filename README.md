@@ -876,11 +876,12 @@ And could then be passed to automunge function call such as:
 evalcat = evalcat
 ```
 I recomend using the evalcategory function defined in master file as starting point. 
-Note that the parameters numbercategoryheuristic and powertransform are passed as 
-user parameters in automunge call and only used in evalcategory function, so if user 
-wants to repurpose them totally can do so. (They default to 15, False.) Note evalcat 
-defaults to False to use built-in evalcategory function. Note evalcat will only be 
-applied to columns not assigned in assigncat.
+(Minus the 'self' parameter since defining external to class.) Note that the 
+parameters numbercategoryheuristic and powertransform are passed as user parameters 
+in automunge call and only used in evalcategory function, so if user wants to 
+repurpose them totally can do so. (They default to 15, False.) Note evalcat defaults 
+to False to use built-in evalcategory function. Note evalcat will only be applied to 
+columns not assigned in assigncat.
 
 * printstatus: user can pass True/False indicating whether the function will print 
 status of processing during operation. Defaults to True.
