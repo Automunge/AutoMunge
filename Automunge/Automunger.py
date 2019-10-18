@@ -174,7 +174,7 @@ class AutoMunge:
                                      'coworkers' : [], \
                                      'friends' : []}})
     
-    transform_dict.update({'nmdx' : {'parents' : ['nmbr'], \
+    transform_dict.update({'nmdx' : {'parents' : ['nmdx'], \
                                      'siblings': [], \
                                      'auntsuncles' : [], \
                                      'cousins' : [NArw], \
@@ -428,16 +428,25 @@ class AutoMunge:
     
     transform_dict.update({'NArw' : {'parents' : [], \
                                      'siblings': [], \
-                                     'auntsuncles' : [NArw], \
+                                     'auntsuncles' : ['NArw'], \
                                      'cousins' : [], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
     
-    transform_dict.update({'rgrl' : {'parents' : [], \
+    transform_dict.update({'NAr2' : {'parents' : [], \
                                      'siblings': [], \
-                                     'auntsuncles' : ['nmbr'], \
+                                     'auntsuncles' : ['NArw'], \
+                                     'cousins' : [], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'NAr3' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['NArw'], \
                                      'cousins' : [], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
@@ -1006,9 +1015,9 @@ class AutoMunge:
                                      'siblings': [], \
                                      'auntsuncles' : [], \
                                      'cousins' : [NArw], \
-                                     'children' : ['nbr2'], \
+                                     'children' : [], \
                                      'niecesnephews' : [], \
-                                     'coworkers' : [], \
+                                     'coworkers' : ['nbr2'], \
                                      'friends' : []}})
     
     transform_dict.update({'pwrs' : {'parents' : [], \
@@ -1098,7 +1107,7 @@ class AutoMunge:
                                      'cousins' : [], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
-                                     'coworkers' : ['bins'], \
+                                     'coworkers' : [], \
                                      'friends' : []}})
     
     transform_dict.update({'exc3' : {'parents' : [], \
@@ -1108,33 +1117,7 @@ class AutoMunge:
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
-                                     'friends' : []}})
-    
-    
-
-#     #initialize bxcx based on what was passed through application of automunge(.)
-#     if powertransform == True:
-
-#       transform_dict.update({'bxcx' : {'parents' : ['bxcx'], \
-#                                        'siblings': ['nmbr'], \
-#                                        'auntsuncles' : [], \
-#                                        'cousins' : [NArw], \
-#                                        'children' : ['nmbr'], \
-#                                        'niecesnephews' : [], \
-#                                        'coworkers' : [], \
-#                                        'friends' : []}})
-
-#     else:
-
-#       transform_dict.update({'bxcx' : {'parents' : ['nmbr'], \
-#                                        'siblings': [], \
-#                                        'auntsuncles' : [], \
-#                                        'cousins' : [NArw], \
-#                                        'children' : [], \
-#                                        'niecesnephews' : [bins], \
-#                                        'coworkers' : [], \
-#                                        'friends' : []}})
-
+                                     'friends' : ['bins']}})
 
 
     return transform_dict
@@ -1456,7 +1439,7 @@ class AutoMunge:
     process_dict.update({'bxcx' : {'dualprocess' : self.process_bxcx_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_bxcx_class, \
-                                  'NArowtype' : 'numeric', \
+                                  'NArowtype' : 'positivenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'bxcx_nmbr'}})
     process_dict.update({'date' : {'dualprocess' : None, \
@@ -1744,37 +1727,37 @@ class AutoMunge:
     process_dict.update({'bxc2' : {'dualprocess' : self.process_bxcx_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_bxcx_class, \
-                                  'NArowtype' : 'numeric', \
+                                  'NArowtype' : 'positivenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'bxc2_nmbr'}})
     process_dict.update({'bxc3' : {'dualprocess' : self.process_bxcx_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_bxcx_class, \
-                                  'NArowtype' : 'numeric', \
+                                  'NArowtype' : 'positivenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'bxc3_nmbr'}})
     process_dict.update({'bxc4' : {'dualprocess' : self.process_bxcx_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_bxcx_class, \
-                                  'NArowtype' : 'numeric', \
+                                  'NArowtype' : 'positivenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'bxc4_nmbr'}})
     process_dict.update({'pwrs' : {'dualprocess' : self.process_pwrs_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_pwrs_class, \
-                                  'NArowtype' : 'numeric', \
+                                  'NArowtype' : 'positivenumeric', \
                                   'MLinfilltype' : 'multisp', \
                                   'labelctgy' : 'pwrs'}})
     process_dict.update({'log0' : {'dualprocess' : self.process_log0_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_log0_class, \
-                                  'NArowtype' : 'numeric', \
+                                  'NArowtype' : 'positivenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'log0'}})
     process_dict.update({'log1' : {'dualprocess' : self.process_log0_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_log0_class, \
-                                  'NArowtype' : 'numeric', \
+                                  'NArowtype' : 'positivenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'log0'}})
     process_dict.update({'wkdy' : {'dualprocess' : None, \
@@ -1807,15 +1790,24 @@ class AutoMunge:
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'multisp', \
                                   'labelctgy' : 'bint'}})
-
-    #single column functions
     process_dict.update({'NArw' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_NArw_class, \
                                   'postprocess' : None, \
-                                  'NArowtype' : 'exclude', \
+                                  'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'NArw'}})
-
+    process_dict.update({'NAr2' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_NArw_class, \
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'exclude', \
+                                  'labelctgy' : 'NArw'}})
+    process_dict.update({'NAr3' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_NArw_class, \
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'positivenumeric', \
+                                  'MLinfilltype' : 'exclude', \
+                                  'labelctgy' : 'NArw'}})
     process_dict.update({'null' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_null_class, \
                                   'postprocess' : None, \
@@ -2228,6 +2220,7 @@ class AutoMunge:
     #add a second column with boolean expression indicating a missing cell
     #(using NArows(.) function defined below, column name will be column+'_NArows')
     NArows_nmbr = self.NArows(df, column, category, postprocess_dict)
+    
     df[column + '_NArw'] = NArows_nmbr.copy()
     del NArows_nmbr
 
@@ -2245,7 +2238,7 @@ class AutoMunge:
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
-
+    
     for nc in nmbrcolumns:
 
       if nc[-5:] == '_NArw':
@@ -2288,10 +2281,18 @@ class AutoMunge:
 
     #convert all values to either numeric or NaN
     mdf_train[column + '_nmbr'] = pd.to_numeric(mdf_train[column + '_nmbr'], errors='coerce')
-    mdf_test[column + '_nmbr'] = pd.to_numeric(mdf_test[column + '_nmbr'], errors='coerce')
+    mdf_test[column + '_nmbr'] = pd.to_numeric(mdf_test[column + '_nmbr'], errors='coerce'
+                                              )
+    #a few more metrics collected for driftreport
+    #get maximum value of training column
+    maximum = mdf_train[column + '_nmbr'].max()
+    #get minimum value of training column
+    minimum = mdf_train[column + '_nmbr'].min()
 
     #get mean of training data
-    mean = mdf_train[column + '_nmbr'].mean()    
+    mean = mdf_train[column + '_nmbr'].mean()
+    if mean != mean:
+      mean = 0
 
     #replace missing data with training set mean
     mdf_train[column + '_nmbr'] = mdf_train[column + '_nmbr'].fillna(mean)
@@ -2316,11 +2317,6 @@ class AutoMunge:
 #     mdf_train[column + '_nmbr'] = mdf_train[column + '_nmbr'].astype(np.float32)
 #     mdf_test[column + '_nmbr'] = mdf_test[column + '_nmbr'].astype(np.float32)
 
-    #a few more metrics collected for driftreport
-    #get maximum value of training column
-    maximum = mdf_train[column + '_nmbr'].max()
-    #get minimum value of training column
-    minimum = mdf_train[column + '_nmbr'].min()
 
     #create list of columns
     nmbrcolumns = [column + '_nmbr']
@@ -2385,7 +2381,13 @@ class AutoMunge:
     #first row will have a nan so just one more backfill
     df[column + '_dxdt'] = df[column + '_dxdt'].fillna(method='bfill')
     
-    
+    #then one more infill with to address scenario when data wasn't numeric
+    #get arbitrary cell value, if one is nan then all will be
+    value = df[column + '_dxdt'].values[0]
+    if value != value:
+      value = 0
+
+      df[column + '_dxdt'] = df[column + '_dxdt'].fillna(value)
     
     #create list of columns
     nmbrcolumns = [column + '_dxdt']
@@ -2454,6 +2456,13 @@ class AutoMunge:
     #first row will have a nan so just one more backfill
     df[column + '_dxd2'] = df[column + '_dxd2'].fillna(method='bfill')
     
+    #then one more infill with to address scenario when data wasn't numeric
+    #get arbitrary cell value, if one is nan then all will be
+    value = df[column + '_dxd2'].values[0]
+    if value != value:
+      value = 0
+
+      df[column + '_dxd2'] = df[column + '_dxd2'].fillna(value)
     
     
     #create list of columns
@@ -2507,9 +2516,17 @@ class AutoMunge:
     #convert all values to either numeric or NaN
     mdf_train[column + '_MADn'] = pd.to_numeric(mdf_train[column + '_MADn'], errors='coerce')
     mdf_test[column + '_MADn'] = pd.to_numeric(mdf_test[column + '_MADn'], errors='coerce')
+    
+    #a few more metrics collected for driftreport
+    #get maximum value of training column
+    maximum = mdf_train[column + '_MADn'].max()
+    #get minimum value of training column
+    minimum = mdf_train[column + '_MADn'].min()
 
     #get mean of training data
-    mean = mdf_train[column + '_MADn'].mean()    
+    mean = mdf_train[column + '_MADn'].mean() 
+    if mean != mean:
+      mean = 0
 
     #replace missing data with training set mean
     mdf_train[column + '_MADn'] = mdf_train[column + '_MADn'].fillna(mean)
@@ -2538,7 +2555,8 @@ class AutoMunge:
     nmbrcolumns = [column + '_MADn']
 
 
-    nmbrnormalization_dict = {column + '_MADn' : {'mean' : mean, 'MAD' : MAD}}
+    nmbrnormalization_dict = {column + '_MADn' : {'mean' : mean, 'MAD' : MAD, \
+                                                  'maximum':maximum, 'minimum':minimum}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -2566,7 +2584,7 @@ class AutoMunge:
   def process_MAD3_class(self, mdf_train, mdf_test, column, category, \
                               postprocess_dict):
     '''
-    #process_MADn_class(mdf_train, mdf_test, column, category)
+    #process_MAD3_class(mdf_train, mdf_test, column, category)
     #function to normalize data by subtracting maximum and dividing by median absolute deviation
     #takes as arguement pandas dataframe of training and test data (mdf_train), (mdf_test)\
     #and the name of the column string ('column') and parent category (category)
@@ -2586,10 +2604,25 @@ class AutoMunge:
     #convert all values to either numeric or NaN
     mdf_train[column + '_MAD3'] = pd.to_numeric(mdf_train[column + '_MAD3'], errors='coerce')
     mdf_test[column + '_MAD3'] = pd.to_numeric(mdf_test[column + '_MAD3'], errors='coerce')
+    
+    #a few more metrics collected for driftreport
+    #get maximum value of training column
+    maximum = mdf_train[column + '_MAD3'].max()
+    #get minimum value of training column
+    minimum = mdf_train[column + '_MAD3'].min()
 
     #get mean of training data
     mean = mdf_train[column + '_MAD3'].mean()
     
+    if mean != mean:
+      mean = 0
+    
+    #replace missing data with training set mean
+    if mean != mean:
+      mean = 0
+    mdf_train[column + '_MAD3'] = mdf_train[column + '_MAD3'].fillna(mean)
+    mdf_test[column + '_MAD3'] = mdf_test[column + '_MAD3'].fillna(mean)
+
     #get max of training data
     datamax = mdf_train[column + '_MAD3'].max()
     
@@ -2599,11 +2632,7 @@ class AutoMunge:
     #special case to avoid div by 0
     if MAD == 0:
       MAD = 1
-
-    #replace missing data with training set mean
-    mdf_train[column + '_MAD3'] = mdf_train[column + '_MAD3'].fillna(mean)
-    mdf_test[column + '_MAD3'] = mdf_test[column + '_MAD3'].fillna(mean)
-
+    
     #subtract max from column for both train and test
     mdf_train[column + '_MAD3'] = mdf_train[column + '_MAD3'] - datamax
     mdf_test[column + '_MAD3'] = mdf_test[column + '_MAD3'] - datamax
@@ -2620,7 +2649,8 @@ class AutoMunge:
     nmbrcolumns = [column + '_MAD3']
 
 
-    nmbrnormalization_dict = {column + '_MAD3' : {'mean' : mean, 'MAD' : MAD, 'datamax' : datamax}}
+    nmbrnormalization_dict = {column + '_MAD3' : {'mean' : mean, 'MAD' : MAD, 'datamax' : datamax, \
+                                                  'maximum':maximum, 'minimum':minimum}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -2669,11 +2699,17 @@ class AutoMunge:
     #convert all values to either numeric or NaN
     mdf_train[column + '_mnmx'] = pd.to_numeric(mdf_train[column + '_mnmx'], errors='coerce')
     mdf_test[column + '_mnmx'] = pd.to_numeric(mdf_test[column + '_mnmx'], errors='coerce')
+    
+    #a few more metrics collected for driftreport
+    #get standard deviation of training data
+    std = mdf_train[column + '_mnmx'].std()
 
     #get mean of training data
     mean = mdf_train[column + '_mnmx'].mean()    
 
     #replace missing data with training set mean
+    if mean != mean:
+      mean = 0
     mdf_train[column + '_mnmx'] = mdf_train[column + '_mnmx'].fillna(mean)
     mdf_test[column + '_mnmx'] = mdf_test[column + '_mnmx'].fillna(mean)
     
@@ -2683,20 +2719,23 @@ class AutoMunge:
     #get minimum value of training column
     minimum = mdf_train[column + '_mnmx'].min()
     
+    #avoid outlier div by zero when max = min
+    maxminusmin = maximum - minimum
+    if maxminusmin == 0:
+      maxminusmin = 1
+    
     #perform min-max scaling to train and test sets using values from train
     mdf_train[column + '_mnmx'] = (mdf_train[column + '_mnmx'] - minimum) / \
-                                  (maximum - minimum)
+                                  (maxminusmin)
     
     mdf_test[column + '_mnmx'] = (mdf_test[column + '_mnmx'] - minimum) / \
-                                 (maximum - minimum)
+                                 (maxminusmin)
 
 #     #change data type for memory savings
 #     mdf_train[column + '_mnmx'] = mdf_train[column + '_mnmx'].astype(np.float32)
 #     mdf_test[column + '_mnmx'] = mdf_test[column + '_mnmx'].astype(np.float32)
 
-    #a few more metrics collected for driftreport
-    #get standard deviation of training data
-    std = mdf_train[column + '_mnmx'].std()
+
     
     #create list of columns
     nmbrcolumns = [column + '_mnmx']
@@ -2754,19 +2793,29 @@ class AutoMunge:
     #convert all values to either numeric or NaN
     mdf_train[column + '_mnm3'] = pd.to_numeric(mdf_train[column + '_mnm3'], errors='coerce')
     mdf_test[column + '_mnm3'] = pd.to_numeric(mdf_test[column + '_mnm3'], errors='coerce')
+    
+    #a few more metrics collected for driftreport
+    #get standard deviation of training data
+    std = mdf_train[column + '_mnm3'].std()
 
-    #get mean of training data
-    mean = mdf_train[column + '_mnm3'].mean()    
+#     #get mean of training data
+#     mean1 = mdf_train[column + '_mnm3'].mean()    
 
-    #replace missing data with training set mean
-    mdf_train[column + '_mnm3'] = mdf_train[column + '_mnm3'].fillna(mean)
-    mdf_test[column + '_mnm3'] = mdf_test[column + '_mnm3'].fillna(mean)
+#     #replace missing data with training set mean
+#     mdf_train[column + '_mnm3'] = mdf_train[column + '_mnm3'].fillna(mean1)
+#     mdf_test[column + '_mnm3'] = mdf_test[column + '_mnm3'].fillna(mean1)
 
     #get maximum value of training column
     quantilemax = mdf_train[column + '_mnm3'].quantile(.99)
+    
+    if quantilemax != quantilemax:
+      quantilemax = 0
 
     #get minimum value of training column
     quantilemin = mdf_train[column + '_mnm3'].quantile(.01)
+    
+    if quantilemin != quantilemin:
+      quantilemin = 0
 
     #replace values > quantilemax with quantilemax
     mdf_train.loc[mdf_train[column + '_mnm3'] > quantilemax, (column + '_mnm3')] \
@@ -2785,25 +2834,29 @@ class AutoMunge:
     #get mean of training data
     mean = mdf_train[column + '_mnm3'].mean()    
 
+    if mean != mean:
+      mean = 0
+    
     #replace missing data with training set mean
     mdf_train[column + '_mnm3'] = mdf_train[column + '_mnm3'].fillna(mean)
     mdf_test[column + '_mnm3'] = mdf_test[column + '_mnm3'].fillna(mean)
-
+    
+    #avoid outlier div by zero when max = min
+    maxminusmin = quantilemax - quantilemin
+    if maxminusmin == 0:
+      maxminusmin = 1
 
     #perform min-max scaling to train and test sets using values from train
     mdf_train[column + '_mnm3'] = (mdf_train[column + '_mnm3'] - quantilemin) / \
-                                  (quantilemax - quantilemin)
+                                  (maxminusmin)
 
     mdf_test[column + '_mnm3'] = (mdf_test[column + '_mnm3'] - quantilemin) / \
-                                 (quantilemax - quantilemin)
+                                 (maxminusmin)
 
 #     #change data type for memory savings
 #     mdf_train[column + '_mnm3'] = mdf_train[column + '_mnm3'].astype(np.float32)
 #     mdf_test[column + '_mnm3'] = mdf_test[column + '_mnm3'].astype(np.float32)
 
-    #a few more metrics collected for driftreport
-    #get standard deviation of training data
-    std = mdf_train[column + '_mnm3'].std()
     
     #create list of columns
     nmbrcolumns = [column + '_mnm3']
@@ -2863,10 +2916,17 @@ class AutoMunge:
     #convert all values to either numeric or NaN
     mdf_train[column + '_mnm6'] = pd.to_numeric(mdf_train[column + '_mnm6'], errors='coerce')
     mdf_test[column + '_mnm6'] = pd.to_numeric(mdf_test[column + '_mnm6'], errors='coerce')
+    
+    #a few more metrics collected for driftreport
+    #get standard deviation of training data
+    std = mdf_train[column + '_mnm6'].std()
 
     #get mean of training data
     mean = mdf_train[column + '_mnm6'].mean()    
 
+    if mean != mean:
+      mean = 0
+    
     #replace missing data with training set mean
     mdf_train[column + '_mnm6'] = mdf_train[column + '_mnm6'].fillna(mean)
     mdf_test[column + '_mnm6'] = mdf_test[column + '_mnm6'].fillna(mean)
@@ -2877,12 +2937,17 @@ class AutoMunge:
     #get minimum value of training column
     minimum = mdf_train[column + '_mnm6'].min()
     
+    #avoid outlier div by zero when max = min
+    maxminusmin = maximum - minimum
+    if maxminusmin == 0:
+      maxminusmin = 1
+    
     #perform min-max scaling to train and test sets using values from train
     mdf_train[column + '_mnm6'] = (mdf_train[column + '_mnm6'] - minimum) / \
-                                  (maximum - minimum)
+                                  (maxminusmin)
     
     mdf_test[column + '_mnm6'] = (mdf_test[column + '_mnm6'] - minimum) / \
-                                 (maximum - minimum)
+                                 (maxminusmin)
     
     #replace values in test < 0 with 0
     mdf_test.loc[mdf_train[column + '_mnm6'] < 0, (column + '_mnm6')] \
@@ -2892,9 +2957,6 @@ class AutoMunge:
 #     mdf_train[column + '_mnm6'] = mdf_train[column + '_mnm6'].astype(np.float32)
 #     mdf_test[column + '_mnm6'] = mdf_test[column + '_mnm6'].astype(np.float32)
 
-    #a few more metrics collected for driftreport
-    #get standard deviation of training data
-    std = mdf_train[column + '_mnm6'].std()
     
     #create list of columns
     nmbrcolumns = [column + '_mnm6']
@@ -3432,11 +3494,17 @@ class AutoMunge:
     for dict_key in overlap_dict:
 
       newcolumn = column + '_splt_' + dict_key
+      
+      mdf_train[newcolumn] = mdf_train[column].copy()
+      mdf_test[newcolumn] = mdf_test[column].copy()
 
-      mdf_train[newcolumn] = mdf_train[column].isin(overlap_dict[dict_key])
+      mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
+      mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
+
+      mdf_train[newcolumn] = mdf_train[newcolumn].isin(overlap_dict[dict_key])
       mdf_train[newcolumn] = mdf_train[newcolumn].astype(np.int8)
       
-      mdf_test[newcolumn] = mdf_test[column].isin(test_overlap_dict[dict_key])
+      mdf_test[newcolumn] = mdf_test[newcolumn].isin(test_overlap_dict[dict_key])
       mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
 
       newcolumns.append(newcolumn)
@@ -3649,13 +3717,19 @@ class AutoMunge:
 #     for dict_key in overlap_dict:
 
     newcolumn = column + '_spl2'
+  
+    mdf_train[newcolumn] = mdf_train[column].copy()
+    mdf_test[newcolumn] = mdf_test[column].copy()
+    
+    mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
+    mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
 
-    mdf_train[newcolumn] = mdf_train[column].replace(spl2_overlap_dict)
+    mdf_train[newcolumn] = mdf_train[newcolumn].replace(spl2_overlap_dict)
 
 #       mdf_train[newcolumn] = mdf_train[column].isin(overlap_dict[dict_key])
 #       mdf_train[newcolumn] = mdf_train[newcolumn].astype(np.int8)
 
-    mdf_test[newcolumn] = mdf_test[column].replace(spl2_test_overlap_dict)
+    mdf_test[newcolumn] = mdf_test[newcolumn].replace(spl2_test_overlap_dict)
 
 #       mdf_test[newcolumn] = mdf_test[column].isin(test_overlap_dict[dict_key])
 #       mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
@@ -3884,15 +3958,21 @@ class AutoMunge:
 #     for dict_key in overlap_dict:
 
     newcolumn = column + '_spl5'
+    
+    mdf_train[newcolumn] = mdf_train[column].copy()
+    mdf_test[newcolumn] = mdf_test[column].copy()
+    
+    mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
+    mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
 
-    mdf_train[newcolumn] = mdf_train[column].replace(spl2_overlap_dict)
-    mdf_train[newcolumn] = mdf_train[column].replace(spl5_zero_dict)
+    mdf_train[newcolumn] = mdf_train[newcolumn].replace(spl2_overlap_dict)
+    mdf_train[newcolumn] = mdf_train[newcolumn].replace(spl5_zero_dict)
 
 #       mdf_train[newcolumn] = mdf_train[column].isin(overlap_dict[dict_key])
 #       mdf_train[newcolumn] = mdf_train[newcolumn].astype(np.int8)
 
-    mdf_test[newcolumn] = mdf_test[column].replace(spl2_test_overlap_dict)
-    mdf_test[newcolumn] = mdf_test[column].replace(spl5_test_zero_dict)
+    mdf_test[newcolumn] = mdf_test[newcolumn].replace(spl2_test_overlap_dict)
+    mdf_test[newcolumn] = mdf_test[newcolumn].replace(spl5_test_zero_dict)
 
 #       mdf_test[newcolumn] = mdf_test[column].isin(test_overlap_dict[dict_key])
 #       mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
@@ -4834,6 +4914,9 @@ class AutoMunge:
 
     #get mean of various categories of datetime objects to use to plug in missing cells
     meanyear = mdf_train[column + '_year'].dt.year.mean()
+    
+    if meanyear != meanyear:
+      meanyear = 0
 
     #get standard deviation of training data
     stdyear = mdf_train[column + '_year'].dt.year.std()
@@ -4841,7 +4924,8 @@ class AutoMunge:
     #special case, if standard deviation is 0 we'll set it to 1 to avoid division by 0
     if stdyear == 0:
       stdyear = 1
-
+    if stdyear != stdyear:
+      stdyear = 1
 
     #create new columns for each category in train set
     mdf_train[column + '_year'] = mdf_train[column + '_year'].dt.year
@@ -4946,12 +5030,17 @@ class AutoMunge:
 
     #get mean of various categories of datetime objects to use to plug in missing cells
     meanmonth = mdf_train[column + '_mnth'].dt.month.mean()
+    
+    if meanmonth != meanmonth:
+      meanmonth = 0
 
     #get standard deviation of training data
     stdmonth = mdf_train[column + '_mnth'].dt.month.std()
 
     #special case, if standard deviation is 0 we'll set it to 1 to avoid division by 0
     if stdmonth == 0:
+      stdmonth = 1
+    if stdmonth != stdmonth:
       stdmonth = 1
 
     #create new columns for each category in train set
@@ -5073,7 +5162,9 @@ class AutoMunge:
     
     #get mean of various categories of datetime objects to use to plug in missing cells
     mean_mnsn = mdf_train[column + '_mnsn'].mean()
-
+    
+    if mean_mnsn != mean_mnsn:
+      mean_mnsn = 0
 
     #replace missing data with training set mean
     mdf_train[column + '_mnsn'] = mdf_train[column + '_mnsn'].fillna(mean_mnsn)
@@ -5158,7 +5249,7 @@ class AutoMunge:
     mdf_train[column + '_mncs'] = mdf_train[column + '_mncs'].dt.month
     mdf_test[column + '_mncs'] = mdf_test[column + '_mncs'].dt.month
     
-    #apply sin transform
+    #apply cos transform
     mdf_train[column + '_mncs'] = np.cos(mdf_train[column + '_mncs'] * 2 * np.pi / 12 )
     mdf_test[column + '_mncs'] = np.cos(mdf_test[column + '_mncs'] * 2 * np.pi / 12 )
     
@@ -5166,6 +5257,8 @@ class AutoMunge:
     #get mean of various categories of datetime objects to use to plug in missing cells
     mean_mncs = mdf_train[column + '_mncs'].mean()
 
+    if mean_mncs != mean_mncs:
+      mean_mncs = 0
 
     #replace missing data with training set mean
     mdf_train[column + '_mncs'] = mdf_train[column + '_mncs'].fillna(mean_mncs)
@@ -5258,6 +5351,8 @@ class AutoMunge:
     #get mean of various categories of datetime objects to use to plug in missing cells
     mean_mdsn = mdf_train[column + '_mdsn'].mean()
 
+    if mean_mdsn != mean_mdsn:
+      mean_mdsn = 0
 
     #replace missing data with training set mean
     mdf_train[column + '_mdsn'] = mdf_train[column + '_mdsn'].fillna(mean_mdsn)
@@ -5350,6 +5445,8 @@ class AutoMunge:
     #get mean of various categories of datetime objects to use to plug in missing cells
     mean_mdcs = mdf_train[column + '_mdcs'].mean()
 
+    if mean_mdcs != mean_mdcs:
+      mean_mdcs = 0
 
     #replace missing data with training set mean
     mdf_train[column + '_mdcs'] = mdf_train[column + '_mdcs'].fillna(mean_mdcs)
@@ -5432,12 +5529,17 @@ class AutoMunge:
 
     #get mean of various categories of datetime objects to use to plug in missing cells
     meanday = mdf_train[column + '_days'].dt.day.mean()
+    
+    if meanday != meanday:
+      meanday = 0
 
     #get standard deviation of training data
     stdday = mdf_train[column + '_days'].dt.day.std()
 
     #special case, if standard deviation is 0 we'll set it to 1 to avoid division by 0
     if stdday == 0:
+      stdday = 1
+    if stdday != stdday:
       stdday = 1
 
     #create new columns for each category in train set
@@ -5555,6 +5657,8 @@ class AutoMunge:
     #get mean of various categories of datetime objects to use to plug in missing cells
     mean_dysn = mdf_train[column + '_dysn'].mean()
 
+    if mean_dysn != mean_dysn:
+      mean_dysn = 0
 
     #replace missing data with training set mean
     mdf_train[column + '_dysn'] = mdf_train[column + '_dysn'].fillna(mean_dysn)
@@ -5648,6 +5752,8 @@ class AutoMunge:
     #get mean of various categories of datetime objects to use to plug in missing cells
     mean_dycs = mdf_train[column + '_dycs'].mean()
 
+    if mean_dycs != mean_dycs:
+      mean_dycs = 0
 
     #replace missing data with training set mean
     mdf_train[column + '_dycs'] = mdf_train[column + '_dycs'].fillna(mean_dycs)
@@ -5739,6 +5845,8 @@ class AutoMunge:
     #get mean of various categories of datetime objects to use to plug in missing cells
     mean_dhms = mdf_train[column + '_dhms'].mean()
 
+    if mean_dhms != mean_dhms:
+      mean_dhms = 0
 
     #replace missing data with training set mean
     mdf_train[column + '_dhms'] = mdf_train[column + '_dhms'].fillna(mean_dhms)
@@ -5824,17 +5932,19 @@ class AutoMunge:
 #     mdf_test[column + '_mdsn'] = mdf_test[column + '_mdsn'].dt.month
     
     #apply cos transform to combined day and month, note aversage of 30.42 days in a month, 12 months in a year
-    mdf_train[column + '_dhmc'] = np.cos((mdf_train[column + '_dhmc'].dt.day + mdf_train[column + '_dhmc'].dt.hour / 24 + mdf_train[column + '_dhms'].dt.minute / 24 / 60) * 2 * np.pi / 12 )
-    mdf_test[column + '_dhmc'] = np.cos((mdf_test[column + '_dhmc'].dt.day + mdf_test[column + '_dhmc'].dt.hour / 24 + mdf_test[column + '_dhms'].dt.minute / 24 / 60) * 2 * np.pi / 12 )
+    mdf_train[column + '_dhmc'] = np.cos((mdf_train[column + '_dhmc'].dt.day + mdf_train[column + '_dhmc'].dt.hour / 24 + mdf_train[column + '_dhmc'].dt.minute / 24 / 60) * 2 * np.pi / 12 )
+    mdf_test[column + '_dhmc'] = np.cos((mdf_test[column + '_dhmc'].dt.day + mdf_test[column + '_dhmc'].dt.hour / 24 + mdf_test[column + '_dhmc'].dt.minute / 24 / 60) * 2 * np.pi / 12 )
     
     
     #get mean of various categories of datetime objects to use to plug in missing cells
-    mean_dhms = mdf_train[column + '_dhmc'].mean()
+    mean_dhmc = mdf_train[column + '_dhmc'].mean()
 
+    if mean_dhmc != mean_dhmc:
+      mean_dhmc = 0
 
     #replace missing data with training set mean
-    mdf_train[column + '_dhmc'] = mdf_train[column + '_dhmc'].fillna(mean_dhms)
-    mdf_test[column + '_dhmc'] = mdf_test[column + '_dhmc'].fillna(mean_dhms)
+    mdf_train[column + '_dhmc'] = mdf_train[column + '_dhmc'].fillna(mean_dhmc)
+    mdf_test[column + '_dhmc'] = mdf_test[column + '_dhmc'].fillna(mean_dhmc)
 
     #output of a list of the created column names
     datecolumns = [column + '_dhmc']
@@ -5914,11 +6024,16 @@ class AutoMunge:
     #get mean of various categories of datetime objects to use to plug in missing cells
     meanhour = mdf_train[column + '_hour'].dt.hour.mean()
 
+    if meanhour != meanhour:
+      meanhour = 0
+    
     #get standard deviation of training data
     stdhour = mdf_train[column + '_hour'].dt.hour.std()
 
     #special case, if standard deviation is 0 we'll set it to 1 to avoid division by 0
     if stdhour == 0:
+      stdhour = 1
+    if stdhour != stdhour:
       stdhour = 1
 
     #create new columns for each category in train set
@@ -6037,6 +6152,8 @@ class AutoMunge:
     #get mean of various categories of datetime objects to use to plug in missing cells
     mean_hrsn = mdf_train[column + '_hrsn'].mean()
 
+    if mean_hrsn != mean_hrsn:
+      mean_hrsn = 0
 
     #replace missing data with training set mean
     mdf_train[column + '_hrsn'] = mdf_train[column + '_hrsn'].fillna(mean_hrsn)
@@ -6130,6 +6247,8 @@ class AutoMunge:
     #get mean of various categories of datetime objects to use to plug in missing cells
     mean_hrcs = mdf_train[column + '_hrcs'].mean()
 
+    if mean_hrcs != mean_hrcs:
+      mean_hrcs = 0
 
     #replace missing data with training set mean
     mdf_train[column + '_hrcs'] = mdf_train[column + '_hrcs'].fillna(mean_hrcs)
@@ -6222,6 +6341,8 @@ class AutoMunge:
     #get mean of various categories of datetime objects to use to plug in missing cells
     mean_hmss = mdf_train[column + '_hmss'].mean()
 
+    if mean_hmss != mean_hmss:
+      mean_hmss = 0
 
     #replace missing data with training set mean
     mdf_train[column + '_hmss'] = mdf_train[column + '_hmss'].fillna(mean_hmss)
@@ -6306,7 +6427,7 @@ class AutoMunge:
 #     mdf_train[column + '_mdsn'] = mdf_train[column + '_mdsn'].dt.month
 #     mdf_test[column + '_mdsn'] = mdf_test[column + '_mdsn'].dt.month
     
-    #apply sin transform to combined day and month, note aversage of 30.42 days in a month, 12 months in a year
+    #apply cos transform to combined day and month, note aversage of 30.42 days in a month, 12 months in a year
     mdf_train[column + '_hmsc'] = np.cos((mdf_train[column + '_hmsc'].dt.hour + mdf_train[column + '_hmsc'].dt.minute / 60 + mdf_train[column + '_hmsc'].dt.second / 60 / 60) * 2 * np.pi / 12 )
     mdf_test[column + '_hmsc'] = np.cos((mdf_test[column + '_hmsc'].dt.hour + mdf_test[column + '_hmsc'].dt.minute / 60 + mdf_test[column + '_hmsc'].dt.second / 60 / 60) * 2 * np.pi / 12 )
     
@@ -6314,6 +6435,8 @@ class AutoMunge:
     #get mean of various categories of datetime objects to use to plug in missing cells
     mean_hmsc = mdf_train[column + '_hmsc'].mean()
 
+    if mean_hmsc != mean_hmsc:
+      mean_hmsc = 0
 
     #replace missing data with training set mean
     mdf_train[column + '_hmsc'] = mdf_train[column + '_hmsc'].fillna(mean_hmsc)
@@ -6397,11 +6520,16 @@ class AutoMunge:
     #get mean of various categories of datetime objects to use to plug in missing cells
     meanmint = mdf_train[column + '_mint'].dt.minute.mean()
 
+    if meanmint != meanmint:
+      meanmint = 0
+      
     #get standard deviation of training data
     stdmint = mdf_train[column + '_mint'].dt.minute.std()
 
     #special case, if standard deviation is 0 we'll set it to 1 to avoid division by 0
     if stdmint == 0:
+      stdmint = 1
+    if stdmint != stdmint:
       stdmint = 1
 
     #create new columns for each category in train set
@@ -6520,6 +6648,8 @@ class AutoMunge:
     #get mean of various categories of datetime objects to use to plug in missing cells
     mean_misn = mdf_train[column + '_misn'].mean()
 
+    if mean_misn != mean_misn:
+      mean_misn = 0
 
     #replace missing data with training set mean
     mdf_train[column + '_misn'] = mdf_train[column + '_misn'].fillna(mean_misn)
@@ -6604,7 +6734,7 @@ class AutoMunge:
     mdf_train[column + '_mics'] = mdf_train[column + '_mics'].dt.minute
     mdf_test[column + '_mics'] = mdf_test[column + '_mics'].dt.minute
 
-    #apply sin transform
+    #apply cos transform
     #60 minutes in an hour
     mdf_train[column + '_mics'] = np.cos(mdf_train[column + '_mics'] * 2 * np.pi / 60 )
     mdf_test[column + '_mics'] = np.cos(mdf_test[column + '_mics'] * 2 * np.pi / 60 )
@@ -6613,6 +6743,8 @@ class AutoMunge:
     #get mean of various categories of datetime objects to use to plug in missing cells
     mean_mics = mdf_train[column + '_mics'].mean()
 
+    if mean_mics != mean_mics:
+      mean_mics = 0
 
     #replace missing data with training set mean
     mdf_train[column + '_mics'] = mdf_train[column + '_mics'].fillna(mean_mics)
@@ -6705,6 +6837,8 @@ class AutoMunge:
     #get mean of various categories of datetime objects to use to plug in missing cells
     mean_mssn = mdf_train[column + '_mssn'].mean()
 
+    if mean_mssn != mean_mssn:
+      mean_mssn = 0
 
     #replace missing data with training set mean
     mdf_train[column + '_mssn'] = mdf_train[column + '_mssn'].fillna(mean_mssn)
@@ -6789,7 +6923,7 @@ class AutoMunge:
 #     mdf_train[column + '_mdsn'] = mdf_train[column + '_mdsn'].dt.month
 #     mdf_test[column + '_mdsn'] = mdf_test[column + '_mdsn'].dt.month
     
-    #apply sin transform to combined day and month, note aversage of 30.42 days in a month, 12 months in a year
+    #apply cos transform to combined day and month, note aversage of 30.42 days in a month, 12 months in a year
     mdf_train[column + '_mscs'] = np.cos((mdf_train[column + '_mscs'].dt.minute + mdf_train[column + '_mscs'].dt.second / 60) * 2 * np.pi / 12 )
     mdf_test[column + '_mscs'] = np.cos((mdf_test[column + '_mscs'].dt.minute + mdf_test[column + '_mscs'].dt.second / 60) * 2 * np.pi / 12 )
     
@@ -6797,6 +6931,8 @@ class AutoMunge:
     #get mean of various categories of datetime objects to use to plug in missing cells
     mean_mscs = mdf_train[column + '_mscs'].mean()
 
+    if mean_mscs != mean_mscs:
+      mean_mscs = 0
 
     #replace missing data with training set mean
     mdf_train[column + '_mscs'] = mdf_train[column + '_mscs'].fillna(mean_mscs)
@@ -6879,12 +7015,17 @@ class AutoMunge:
 
     #get mean of various categories of datetime objects to use to plug in missing cells
     meanscnd = mdf_train[column + '_scnd'].dt.second.mean()
+    
+    if meanscnd != meanscnd:
+      meanscnd = 0
 
     #get standard deviation of training data
     stdscnd = mdf_train[column + '_scnd'].dt.second.std()
 
     #special case, if standard deviation is 0 we'll set it to 1 to avoid division by 0
     if stdscnd == 0:
+      stdscnd = 1
+    if stdscnd != stdscnd:
       stdscnd = 1
 
     #create new columns for each category in train set
@@ -6995,7 +7136,7 @@ class AutoMunge:
     mdf_test[column + '_scsn'] = mdf_test[column + '_scsn'].dt.second
 
     #apply sin transform
-    #60 minutes in a minute
+    #60 seconds in a minute
     mdf_train[column + '_scsn'] = np.sin(mdf_train[column + '_scsn'] * 2 * np.pi / 60 )
     mdf_test[column + '_scsn'] = np.sin(mdf_test[column + '_scsn'] * 2 * np.pi / 60 )
 
@@ -7003,6 +7144,8 @@ class AutoMunge:
     #get mean of various categories of datetime objects to use to plug in missing cells
     mean_scsn = mdf_train[column + '_scsn'].mean()
 
+    if mean_scsn != mean_scsn:
+      mean_scsn = 0
 
     #replace missing data with training set mean
     mdf_train[column + '_scsn'] = mdf_train[column + '_scsn'].fillna(mean_scsn)
@@ -7087,15 +7230,17 @@ class AutoMunge:
     mdf_train[column + '_sccs'] = mdf_train[column + '_sccs'].dt.second
     mdf_test[column + '_sccs'] = mdf_test[column + '_sccs'].dt.second
 
-    #apply sin transform
-    #60 minutes in a minute
-    mdf_train[column + '_sccs'] = np.sin(mdf_train[column + '_sccs'] * 2 * np.pi / 60 )
-    mdf_test[column + '_sccs'] = np.sin(mdf_test[column + '_sccs'] * 2 * np.pi / 60 )
+    #apply cos transform
+    #60 seconds in a minute
+    mdf_train[column + '_sccs'] = np.cos(mdf_train[column + '_sccs'] * 2 * np.pi / 60 )
+    mdf_test[column + '_sccs'] = np.cos(mdf_test[column + '_sccs'] * 2 * np.pi / 60 )
 
 
     #get mean of various categories of datetime objects to use to plug in missing cells
     mean_sccs = mdf_train[column + '_sccs'].mean()
 
+    if mean_sccs != mean_sccs:
+      mean_sccs = 0
 
     #replace missing data with training set mean
     mdf_train[column + '_sccs'] = mdf_train[column + '_sccs'].fillna(mean_sccs)
@@ -7177,6 +7322,114 @@ class AutoMunge:
   
   
   
+#   def process_bxcx_support(self, df, column, category, bxcxerrorcorrect, \
+#                           bxcx_lmbda = None, trnsfrm_mean = None):
+#     '''                      
+#     #process_bxcx_class(df, column, bxcx_lmbda = None, trnsfrm_mean = None, trnsfrm_std = None)
+#     #function that takes as input a dataframe with numnerical column for purposes
+#     #of applying a box-cox transformation. If lmbda = None it will infer a suitable
+#     #lambda value by minimizing log likelihood using SciPy's stats boxcox call. If
+#     #we pass a mean or std value it will apply the mean for the initial infill and 
+#     #use the values to apply postprocess_numerical_class function. 
+#     #Returns transformed dataframe, a list nmbrcolumns of the associated columns,
+#     #and a normalization dictionary nmbrnormalization_dict which we'll use for our
+#     #postprocess_dict, and the parameter lmbda that was used
+#     #expect this approach works better than our prior numerical address when the 
+#     #distribution is less thin tailed
+#     '''
+    
+#     #store original column for later reversion
+#     df[column + '_temp'] = df[column].copy()
+
+#     #convert all values to either numeric or NaN
+#     df[column] = pd.to_numeric(df[column], errors='coerce')
+
+#     #get the mean value to apply to infill
+#     if trnsfrm_mean == None:
+#       #get mean of training data
+#       mean = df[column].mean()  
+
+#     else:
+#       mean = trnsfrm_mean
+
+#     #replace missing data with training set mean
+#     df[column] = df[column].fillna(mean)
+
+#     #apply box-cox transformation to generate a new column
+#     #note the returns are different based on whether we passed a lmbda value
+
+#     if bxcx_lmbda == None:
+
+#       df[column + '_bxcx'], bxcx_lmbda = stats.boxcox(df[column])
+#       df[column + '_bxcx'] *= bxcxerrorcorrect
+
+#     else:
+
+#       df[column + '_bxcx'] = stats.boxcox(df[column], lmbda = bxcx_lmbda)
+#       df[column + '_bxcx'] *= bxcxerrorcorrect
+
+#     #this is to address an error when bxcx transofrm produces overflow
+#     #I'm not sure of cause, showed up in the housing set)
+#     bxcxerrorcorrect = 1
+#     if max(df[column + '_bxcx']) > (2 ** 31 - 1):
+#       bxcxerrorcorrect = 0
+#       df[column + '_bxcx'] = 0
+#       bxcxcolumn = column + '_bxcx'
+#       print("overflow condition found in boxcox transofrm, column set to 0: ", bxcxcolumn)
+
+
+
+#     #replace original column
+#     del df[column]
+
+#     df[column] = df[column + '_temp'].copy()
+
+#     del df[column + '_temp']
+
+# #     #change data type for memory savings
+# #     df[column + '_bxcx'] = df[column + '_bxcx'].astype(np.float32)
+
+#     #output of a list of the created column names
+#     #nmbrcolumns = [column + '_nmbr', column + '_bxcx', column + '_NArw']
+#     nmbrcolumns = [column + '_bxcx']
+
+#     #create list of columns associated with categorical transform (blank for now)
+#     categorylist = []
+
+
+#     #store some values in the nmbr_dict{} for use later in ML infill methods
+#     column_dict_list = []
+
+#     for nc in nmbrcolumns:
+
+
+#       #save a dictionary of the associated column mean and std
+
+#       normalization_dict = {nc : {'trnsfrm_mean' : mean, \
+#                                   'bxcx_lmbda' : bxcx_lmbda, \
+#                                   'bxcxerrorcorrect' : bxcxerrorcorrect, \
+#                                   'mean' : mean}}
+
+#       if nc[-5:] == '_bxcx':
+
+#         column_dict = { nc : {'category' : 'bxcx', \
+#                              'origcategory' : category, \
+#                              'normalization_dict' : normalization_dict, \
+#                              'origcolumn' : column, \
+#                              'columnslist' : nmbrcolumns, \
+#                              'categorylist' : [nc], \
+#                              'infillmodel' : False, \
+#                              'infillcomplete' : False, \
+#                              'deletecolumn' : False}}
+
+#         column_dict_list.append(column_dict.copy())
+
+
+
+
+#     #return df, nmbrcolumns, nmbrnormalization_dict, categorylist
+#     return df, column_dict_list
+
   def process_bxcx_support(self, df, column, category, bxcxerrorcorrect, \
                           bxcx_lmbda = None, trnsfrm_mean = None):
     '''                      
@@ -7198,6 +7451,8 @@ class AutoMunge:
 
     #convert all values to either numeric or NaN
     df[column] = pd.to_numeric(df[column], errors='coerce')
+    #convert non-positive values to nan
+    df.loc[df[column] <= 0, (column)] = np.nan
 
     #get the mean value to apply to infill
     if trnsfrm_mean == None:
@@ -7286,6 +7541,82 @@ class AutoMunge:
     return df, column_dict_list
 
 
+#   def process_log0_class(self, mdf_train, mdf_test, column, category, \
+#                          postprocess_dict):
+#     '''
+#     #process_log0_class(mdf_train, mdf_test, column, category)
+#     #function to apply logatrithmic transform
+#     #takes as arguement pandas dataframe of training and test data (mdf_train), (mdf_test)\
+#     #and the name of the column string ('column') and parent category (category)
+#     #applies a logarithmic transform (base 10)
+#     #replaces zeros and missing or improperly formatted data with 0
+#     #for negative values applies log transform to the abs value then reintroduces a negative sign
+#     #returns same dataframes with new column of name column + '_log0'
+#     '''
+    
+#     #copy source column into new column
+#     mdf_train[column + '_log0'] = mdf_train[column].copy()
+#     mdf_test[column + '_log0'] = mdf_test[column].copy()
+
+#     #convert all values to either numeric or NaN
+#     mdf_train[column + '_log0'] = pd.to_numeric(mdf_train[column + '_log0'], errors='coerce')
+#     mdf_test[column + '_log0'] = pd.to_numeric(mdf_test[column + '_log0'], errors='coerce')
+    
+#     #replace all zeros with nan for the log operation
+#     zeroreplace = {0 : np.nan}
+#     mdf_train[column + '_log0'] = mdf_train[column + '_log0'].replace(zeroreplace)
+#     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].replace(zeroreplace)
+    
+    
+#     #log transform column
+#     #note that this replaces negative values with nan which we will infill with 0
+#     mdf_train[column + '_log0'] = np.log10(mdf_train[column + '_log0'])
+#     mdf_test[column + '_log0'] = np.log10(mdf_test[column + '_log0'])
+    
+#     #get mean of train set
+#     meanlog = mdf_train[column + '_log0'].mean() 
+
+# #     #replace missing data with training set mean
+# #     mdf_train[column + '_log0'] = mdf_train[column + '_log0'].fillna(meanlog)
+# #     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].fillna(meanlog)
+
+#     #replace missing data with 0
+#     mdf_train[column + '_log0'] = mdf_train[column + '_log0'].fillna(0)
+#     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].fillna(0)
+
+# #     #change data type for memory savings
+# #     mdf_train[column + '_log0'] = mdf_train[column + '_log0'].astype(np.float32)
+# #     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].astype(np.float32)
+
+#     #create list of columns
+#     nmbrcolumns = [column + '_log0']
+
+
+#     nmbrnormalization_dict = {column + '_log0' : {'meanlog' : meanlog}}
+
+#     #store some values in the nmbr_dict{} for use later in ML infill methods
+#     column_dict_list = []
+
+#     for nc in nmbrcolumns:
+
+#       if nc[-5:] == '_log0':
+
+#         column_dict = { nc : {'category' : 'log0', \
+#                              'origcategory' : category, \
+#                              'normalization_dict' : nmbrnormalization_dict, \
+#                              'origcolumn' : column, \
+#                              'columnslist' : nmbrcolumns, \
+#                              'categorylist' : [nc], \
+#                              'infillmodel' : False, \
+#                              'infillcomplete' : False, \
+#                              'deletecolumn' : False}}
+
+#         column_dict_list.append(column_dict.copy())
+    
+
+        
+#     return mdf_train, mdf_test, column_dict_list
+
   def process_log0_class(self, mdf_train, mdf_test, column, category, \
                          postprocess_dict):
     '''
@@ -7294,7 +7625,7 @@ class AutoMunge:
     #takes as arguement pandas dataframe of training and test data (mdf_train), (mdf_test)\
     #and the name of the column string ('column') and parent category (category)
     #applies a logarithmic transform (base 10)
-    #replaces missing or improperly formatted data with 0
+    #replaces zeros, negative, and missing or improperly formatted data with post-log mean as default infill
     #returns same dataframes with new column of name column + '_log0'
     '''
     
@@ -7306,21 +7637,35 @@ class AutoMunge:
     mdf_train[column + '_log0'] = pd.to_numeric(mdf_train[column + '_log0'], errors='coerce')
     mdf_test[column + '_log0'] = pd.to_numeric(mdf_test[column + '_log0'], errors='coerce')
     
+#     #replace all zeros with nan for the log operation
+#     zeroreplace = {0 : np.nan}
+#     mdf_train[column + '_log0'] = mdf_train[column + '_log0'].replace(zeroreplace)
+#     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].replace(zeroreplace)
+    
+    #replace all non-positive with nan for the log operation
+    mdf_train.loc[mdf_train[column + '_log0'] <= 0, (column + '_log0')] = np.nan
+    mdf_test.loc[mdf_test[column + '_log0'] <= 0, (column + '_log0')] = np.nan
+    
+    
     #log transform column
-    #note that this replaces negative values with nan which we will infill with 0
+    #note that this replaces negative values with nan which we will infill with mean
     mdf_train[column + '_log0'] = np.log10(mdf_train[column + '_log0'])
     mdf_test[column + '_log0'] = np.log10(mdf_test[column + '_log0'])
     
     #get mean of train set
-    meanlog = mdf_train[column + '_log0'].mean() 
+    meanlog = mdf_train[column + '_log0'].mean()
+    
+    if meanlog != meanlog:
+      meanlog = 0
 
-#     #replace missing data with training set mean
-#     mdf_train[column + '_log0'] = mdf_train[column + '_log0'].fillna(meanlog)
-#     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].fillna(meanlog)
+    #replace missing data with training set mean
+    mdf_train[column + '_log0'] = mdf_train[column + '_log0'].fillna(meanlog)
+    mdf_test[column + '_log0'] = mdf_test[column + '_log0'].fillna(meanlog)
 
-    #replace missing data with 0
-    mdf_train[column + '_log0'] = mdf_train[column + '_log0'].fillna(0)
-    mdf_test[column + '_log0'] = mdf_test[column + '_log0'].fillna(0)
+
+#     #replace missing data with 0
+#     mdf_train[column + '_log0'] = mdf_train[column + '_log0'].fillna(0)
+#     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].fillna(0)
 
 #     #change data type for memory savings
 #     mdf_train[column + '_log0'] = mdf_train[column + '_log0'].astype(np.float32)
@@ -7875,6 +8220,10 @@ class AutoMunge:
       fillvalue = mdf_train[exclcolumn].mean()
     else:
       fillvalue = mdf_train[exclcolumn].mode()[0]
+      
+    #special case if column didn't have any numeric entries
+    if fillvalue != fillvalue:
+      fillvalue = 0
     
     #replace missing data with fill value
     mdf_train[exclcolumn] = mdf_train[exclcolumn].fillna(fillvalue)
@@ -7904,7 +8253,7 @@ class AutoMunge:
 
 
 
-  def evalcategory(self, df, column, numbercategoryheuristic, powertransform):
+  def evalcategory(self, df_source, column, numbercategoryheuristic, powertransform):
     '''
     #evalcategory(df, column)
     #Function that dakes as input a dataframe and associated column id \
@@ -7917,6 +8266,8 @@ class AutoMunge:
     #category 6, 'null', is for columns with >85% null values (arbitrary figure)
     #returns category id as a string
     '''
+    
+    df = pd.DataFrame(df_source[column].copy())
 
     #I couldn't find a good pandas tool for evaluating data class, \
     #So will produce an array containing data types of each cell and \
@@ -8141,7 +8492,7 @@ class AutoMunge:
 
     if category == 'text':
       if df[column].nunique() > numbercategoryheuristic:
-        category = 'ordl'
+        category = 'ord3'
     
     #new statistical tests for numerical sets from v2.25
     #I don't consider mytself an expert here, these are kind of a placeholder while I conduct more research
@@ -8153,8 +8504,7 @@ class AutoMunge:
     if category in ['nmbr', 'bxcx'] and powertransform == True:
     
       #shapiro tests for normality, we'll use a common threshold p<0.05 to reject the normality hypothesis
-      #stat, p = shapiro(df[column])
-      stat, p = shapiro(df[pd.to_numeric(df[column], errors='coerce').notnull()][column])
+      stat, p = shapiro(df[pd.to_numeric(df[column], errors='coerce').notnull()][column].astype(float))
       #a typical threshold to test for normality is >0.05, let's try a lower bar for this application
       if p > 0.025:
         category = 'nmbr'
@@ -8166,7 +8516,7 @@ class AutoMunge:
 #       An exponential distribution has a skewness of 2
 #       A lognormal distribution can have a skewness of any positive value, depending on its parameters
         #skewness = skew(df[column])
-        skewness = skew(df[pd.to_numeric(df[column], errors='coerce').notnull()][column])
+        skewness = skew(df[pd.to_numeric(df[column], errors='coerce').notnull()][column].astype(float))
         if skewness < 1.5:
           category = 'mnmx'
         else:
@@ -8175,7 +8525,7 @@ class AutoMunge:
             
             #note we'll only allow bxcx category if all values greater than a clip value
             #>0 (currently set at 0.1) since there is an asymptote for box-cox at 0
-            if (df[pd.to_numeric(df[column], errors='coerce').notnull()][column] >= 0.1).all():
+            if (df[pd.to_numeric(df[column], errors='coerce').notnull()][column].astype(float) >= 0.1).all():
               category = 'bxcx'
 
             else:
@@ -8184,7 +8534,10 @@ class AutoMunge:
           else:
             category = 'MAD3'
     
+    del df
+    
     return category
+
 
   def NArows(self, df, column, category, postprocess_dict):
     '''
@@ -8198,12 +8551,14 @@ class AutoMunge:
     
     NArowtype = postprocess_dict['process_dict'][category]['NArowtype']
     
+    df2 = pd.DataFrame(df[column].copy())
+    
     #if category == 'text':
     if NArowtype in ['justNaN']:
 
       #returns dataframe of True and False, where True coresponds to the NaN's
       #renames column name to column + '_NArows'
-      NArows = pd.isna(df[column])
+      NArows = pd.isna(df2[column])
       NArows = pd.DataFrame(NArows)
       NArows = NArows.rename(columns = {column:column+'_NArows'})
 
@@ -8211,7 +8566,7 @@ class AutoMunge:
 
 #       #returns dataframe of True and False, where True coresponds to the NaN's
 #       #renames column name to column + '_NArows'
-#       NArows = pd.isna(df[column])
+#       NArows = pd.isna(df2[column])
 #       NArows = pd.DataFrame(NArows)
 #       NArows = NArows.rename(columns = {column:column+'_NArows'})
 
@@ -8220,11 +8575,35 @@ class AutoMunge:
     if NArowtype in ['numeric']:
 
       #convert all values to either numeric or NaN
-      df[column] = pd.to_numeric(df[column], errors='coerce')
+      df2[column] = pd.to_numeric(df2[column], errors='coerce')
 
       #returns dataframe of True and False, where True coresponds to the NaN's
       #renames column name to column + '_NArows'
-      NArows = pd.isna(df[column])
+      NArows = pd.isna(df2[column])
+      NArows = pd.DataFrame(NArows)
+      NArows = NArows.rename(columns = {column:column+'_NArows'})
+    
+    if NArowtype in ['positivenumeric']:
+      
+      #convert all values to either numeric or NaN
+      df2[column] = pd.to_numeric(df2[column], errors='coerce')
+      df2.loc[df2[column] <= 0, (column)] = np.nan
+      
+      #returns dataframe of True and False, where True coresponds to the NaN's
+      #renames column name to column + '_NArows'
+      NArows = pd.isna(df2[column])
+      NArows = pd.DataFrame(NArows)
+      NArows = NArows.rename(columns = {column:column+'_NArows'})
+      
+    if NArowtype in ['nonzeronumeric']:
+      
+      #convert all values to either numeric or NaN
+      df2[column] = pd.to_numeric(df2[column], errors='coerce')
+      df2.loc[df2[column] == 0, (column)] = np.nan
+      
+      #returns dataframe of True and False, where True coresponds to the NaN's
+      #renames column name to column + '_NArows'
+      NArows = pd.isna(df2[column])
       NArows = pd.DataFrame(NArows)
       NArows = NArows.rename(columns = {column:column+'_NArows'})
 
@@ -8233,24 +8612,24 @@ class AutoMunge:
 
 #       #returns dataframe column of all False
 #       #renames column name to column + '_NArows'
-#       NArows = pd.isna(df[column])
+#       NArows = pd.isna(df2[column])
 #       NArows = pd.DataFrame(NArows)
 #       NArows = NArows.rename(columns = {column:column+'_NArows'})
       
-#       NArows = pd.DataFrame(False, index=np.arange(df.shape[0]), columns=[column+'NA'])
+#       NArows = pd.DataFrame(False, index=np.arange(df2.shape[0]), columns=[column+'NA'])
 #       NArows = pd.DataFrame(NArows)
 #       NArows = NArows.rename(columns = {column:column+'_NArows'})
 
     #if category in ['excl']:
     if NArowtype in ['exclude']:
       
-      NArows = pd.DataFrame(np.zeros((df.shape[0], 1)), columns=[column+'_NArows'])
+      NArows = pd.DataFrame(np.zeros((df2.shape[0], 1)), columns=[column+'_NArows'])
       #NArows = NArows.rename(columns = {column:column+'_NArows'})
+      
+    del df2
     
 
     return NArows
-
-
 
 
   def populateMLinfilldefaults(self, randomseed):
@@ -12295,7 +12674,7 @@ class AutoMunge:
         columns_train_ML = []
     
     
-
+    
     for column in infillcolumns_list:
       
       if column[-5:] != '_NArw':
@@ -12422,7 +12801,7 @@ class AutoMunge:
               self.train_medianinfillfunction(df_train, column, postprocess_dict, \
                                               masterNArows_train)
             
-              postprocess_dict['column_dict'][column]['normalization_dict'].update({'infillvalue':infillvalue})
+              postprocess_dict['column_dict'][column]['normalization_dict'][column].update({'infillvalue':infillvalue})
           
               df_test = \
               self.test_medianinfillfunction(df_test, column, postprocess_dict, \
@@ -12460,8 +12839,8 @@ class AutoMunge:
               df_train, infillvalue = \
               self.train_meaninfillfunction(df_train, column, postprocess_dict, \
                                             masterNArows_train)
-          
-              postprocess_dict['column_dict'][column]['normalization_dict'].update({'infillvalue':infillvalue})
+              
+              postprocess_dict['column_dict'][column]['normalization_dict'][column].update({'infillvalue':infillvalue})
         
               df_test = \
               self.test_meaninfillfunction(df_test, column, postprocess_dict, \
@@ -12499,7 +12878,7 @@ class AutoMunge:
               self.train_modeinfillfunction(df_train, column, postprocess_dict, \
                                             masterNArows_train)
           
-              postprocess_dict['column_dict'][column]['normalization_dict'].update({'infillvalue':infillvalue})
+              postprocess_dict['column_dict'][column]['normalization_dict'][column].update({'infillvalue':infillvalue})
         
               df_test = \
               self.test_modeinfillfunction(df_test, column, postprocess_dict, \
@@ -12515,7 +12894,7 @@ class AutoMunge:
               self.train_catmodeinfillfunction(df_train, column, postprocess_dict, \
                                             masterNArows_train)
           
-              postprocess_dict['column_dict'][column]['normalization_dict'].update({'infillvalue':infillvalue})
+              postprocess_dict['column_dict'][column]['normalization_dict'][column].update({'infillvalue':infillvalue})
         
               df_test = \
               self.test_catmodeinfillfunction(df_test, column, postprocess_dict, \
@@ -12774,7 +13153,7 @@ class AutoMunge:
         print("")
         
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '2.69'
+    automungeversion = '2.70'
     application_number = random.randint(100000000000,999999999999)
     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -13176,72 +13555,73 @@ class AutoMunge:
     #derive the new columns from the trasform
     categorylist = list(origcolumnsset^newcolumnsset)
     
+    
     if len(categorylist) > 1:
       #future extension
       pass
 
-    else:
+    elif len(categorylist) > 0:
       parentcolumn = categorylist[0]
       
 
-    #process any coworkers
-    for coworker in transform_dict[parent]['coworkers']:
+      #process any coworkers
+      for coworker in transform_dict[parent]['coworkers']:
 
-      if coworker != None:
+        if coworker != None:
 
-        #process the coworker
-        #note the function applied is processcousin
-        df_test = \
-        self.postprocesscousin(df_test, parentcolumn, coworker, origcategory, \
-                               process_dict, transform_dict, postprocess_dict, columnkey)
+          #process the coworker
+          #note the function applied is processcousin
+          df_test = \
+          self.postprocesscousin(df_test, parentcolumn, coworker, origcategory, \
+                                 process_dict, transform_dict, postprocess_dict, columnkey)
 
-    #process any friends
-    for friend in transform_dict[parent]['friends']:
+      #process any friends
+      for friend in transform_dict[parent]['friends']:
 
-      if friend != None:
+        if friend != None:
 
-        #process the friend
-        #note the function applied is processcousin
-        df_test = \
-        self.postprocesscousin(df_test, parentcolumn, friend, origcategory, \
-                               process_dict, transform_dict, postprocess_dict, columnkey)
-
-
-    #process any niecesnephews
-    #note the function applied is comparable to processsibling, just a different
-    #parent column
-    for niecenephew in transform_dict[parent]['niecesnephews']:
-
-      if niecenephew != None:
-
-        #process the niecenephew
-        #note the function applied is postprocessparent (using recursion)
-        df_test = \
-        self.postprocessparent(df_test, parentcolumn, niecenephew, origcategory, \
-                               process_dict, transform_dict, postprocess_dict, columnkey)
-#         self.postprocessfamily(df_test, parentcolumn, niecenephew, origcategory, \
-#                                process_dict, transform_dict, postprocess_dict, columnkey)
-
-    #process any children
-    for child in transform_dict[parent]['children']:
-
-      if child != None:
-
-        #process the child
-        #note the function applied is postprocessparent (using recursion)
-        #parent column
-        df_test = \
-        self.postprocessparent(df_test, parentcolumn, child, origcategory, process_dict, \
-                               transform_dict, postprocess_dict, columnkey)
-#         self.postprocessfamily(df_test, parentcolumn, child, origcategory, process_dict, \
-#                               transform_dict, postprocess_dict, columnkey)
+          #process the friend
+          #note the function applied is processcousin
+          df_test = \
+          self.postprocesscousin(df_test, parentcolumn, friend, origcategory, \
+                                 process_dict, transform_dict, postprocess_dict, columnkey)
 
 
-#     #if we had replacement transformations performed then delete the original column 
-#     #(circle of life)
-#     if len(transform_dict[parent]['children']) \
-#     + len(transform_dict[parent]['coworkers']) > 0:
-#       del df_test[parentcolumn]
+      #process any niecesnephews
+      #note the function applied is comparable to processsibling, just a different
+      #parent column
+      for niecenephew in transform_dict[parent]['niecesnephews']:
+
+        if niecenephew != None:
+
+          #process the niecenephew
+          #note the function applied is postprocessparent (using recursion)
+          df_test = \
+          self.postprocessparent(df_test, parentcolumn, niecenephew, origcategory, \
+                                 process_dict, transform_dict, postprocess_dict, columnkey)
+  #         self.postprocessfamily(df_test, parentcolumn, niecenephew, origcategory, \
+  #                                process_dict, transform_dict, postprocess_dict, columnkey)
+
+      #process any children
+      for child in transform_dict[parent]['children']:
+
+        if child != None:
+
+          #process the child
+          #note the function applied is postprocessparent (using recursion)
+          #parent column
+          df_test = \
+          self.postprocessparent(df_test, parentcolumn, child, origcategory, process_dict, \
+                                 transform_dict, postprocess_dict, columnkey)
+  #         self.postprocessfamily(df_test, parentcolumn, child, origcategory, process_dict, \
+  #                               transform_dict, postprocess_dict, columnkey)
+
+
+  #     #if we had replacement transformations performed then delete the original column 
+  #     #(circle of life)
+  #     if len(transform_dict[parent]['children']) \
+  #     + len(transform_dict[parent]['coworkers']) > 0:
+  #       del df_test[parentcolumn]
       
 
     return df_test
@@ -13443,10 +13823,16 @@ class AutoMunge:
 
     #replace missing data with training set mean
     mdf_test[column + '_mnmx'] = mdf_test[column + '_mnmx'].fillna(mean)
+    
+    
+    #avoid outlier div by zero when max = min
+    maxminusmin = maximum - minimum
+    if maxminusmin == 0:
+      maxminusmin = 1
 
     #perform min-max scaling to test set using values from train
     mdf_test[column + '_mnmx'] = (mdf_test[column + '_mnmx'] - minimum) / \
-                                 (maximum - minimum)
+                                 (maxminusmin)
 
 #     #change data type for memory savings
 #     mdf_test[column + '_mnmx'] = mdf_test[column + '_mnmx'].astype(np.float32)
@@ -13538,8 +13924,8 @@ class AutoMunge:
     #convert all values to either numeric or NaN
     mdf_test[column + '_mnm3'] = pd.to_numeric(mdf_test[column + '_mnm3'], errors='coerce')
 
-    #get mean of training data
-    mean = mean  
+#     #get mean of training data
+#     mean = mean    
     
     #replace values > quantilemax with quantilemax
     mdf_test.loc[mdf_test[column + '_mnm3'] > quantilemax, (column + '_mnm3')] \
@@ -13550,10 +13936,15 @@ class AutoMunge:
     
     #replace missing data with training set mean
     mdf_test[column + '_mnm3'] = mdf_test[column + '_mnm3'].fillna(mean)
+    
+    #avoid outlier div by zero when max = min
+    maxminusmin = quantilemax - quantilemin
+    if maxminusmin == 0:
+      maxminusmin = 1
 
     #perform min-max scaling to test set using values from train
     mdf_test[column + '_mnm3'] = (mdf_test[column + '_mnm3'] - quantilemin) / \
-                                 (quantilemax - quantilemin)
+                                 (maxminusmin)
 
 #     #change data type for memory savings
 #     mdf_test[column + '_mnm3'] = mdf_test[column + '_mnm3'].astype(np.float32)
@@ -13602,10 +13993,15 @@ class AutoMunge:
 
     #replace missing data with training set mean
     mdf_test[column + '_mnm6'] = mdf_test[column + '_mnm6'].fillna(mean)
+    
+    #avoid outlier div by zero when max = min
+    maxminusmin = maximum - minimum
+    if maxminusmin == 0:
+      maxminusmin = 1
 
     #perform min-max scaling to test set using values from train
     mdf_test[column + '_mnm6'] = (mdf_test[column + '_mnm6'] - minimum) / \
-                                 (maximum - minimum)
+                                 (maxminusmin)
     
     #replace values in test < 0 with 0
     mdf_test.loc[mdf_test[column + '_mnm6'] < 0, (column + '_mnm6')] \
@@ -14017,8 +14413,14 @@ class AutoMunge:
       for dict_key in overlap_dict:
 
         newcolumn = column + '_splt_' + dict_key
+        
+#         mdf_train[newcolumn] = mdf_train[column].copy()
+        mdf_test[newcolumn] = mdf_test[column].copy()
 
-        mdf_test[newcolumn] = mdf_test[column].isin(test_overlap_dict[dict_key])
+#         mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
+        mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
+
+        mdf_test[newcolumn] = mdf_test[newcolumn].isin(test_overlap_dict[dict_key])
         mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
 
         newcolumns.append(newcolumn)
@@ -14140,8 +14542,14 @@ class AutoMunge:
 #         mdf_test[newcolumn] = mdf_test[column].isin(test_overlap_dict[dict_key])
 #         mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
 
+#       mdf_train[newcolumn] = mdf_train[column].copy()
+      mdf_test[newcolumn] = mdf_test[column].copy()
 
-      mdf_test[newcolumn] = mdf_test[column].replace(spl2_test_overlap_dict)
+#       mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
+      mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
+
+
+      mdf_test[newcolumn] = mdf_test[newcolumn].replace(spl2_test_overlap_dict)
 
 #       newcolumns.append(newcolumn)
     
@@ -14268,9 +14676,14 @@ class AutoMunge:
 #         mdf_test[newcolumn] = mdf_test[column].isin(test_overlap_dict[dict_key])
 #         mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
 
+#       mdf_train[newcolumn] = mdf_train[column].copy()
+      mdf_test[newcolumn] = mdf_test[column].copy()
 
-      mdf_test[newcolumn] = mdf_test[column].replace(spl2_test_overlap_dict)
-      mdf_test[newcolumn] = mdf_test[column].replace(spl5_test_zero_dict)
+#       mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
+      mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
+
+      mdf_test[newcolumn] = mdf_test[newcolumn].replace(spl2_test_overlap_dict)
+      mdf_test[newcolumn] = mdf_test[newcolumn].replace(spl5_test_zero_dict)
 
 #       newcolumns.append(newcolumn)
     
@@ -15300,7 +15713,7 @@ class AutoMunge:
 #     mdf_test[column + '_mdsn'] = mdf_test[column + '_mdsn'].dt.month
     
     #apply sin transform to combined day hour minute
-    mdf_test[column + '_dhmc'] = np.cos((mdf_test[column + '_dhmc'].dt.day + mdf_test[column + '_dhmc'].dt.hour / 24 + mdf_test[column + '_dhms'].dt.minute / 24 / 60) * 2 * np.pi / 12 )
+    mdf_test[column + '_dhmc'] = np.cos((mdf_test[column + '_dhmc'].dt.day + mdf_test[column + '_dhmc'].dt.hour / 24 + mdf_test[column + '_dhmc'].dt.minute / 24 / 60) * 2 * np.pi / 12 )
 
     
     #replace missing data with training set mean
@@ -16006,6 +16419,50 @@ class AutoMunge:
     return mdf_test
 
 
+#   def postprocess_log0_class(self, mdf_test, column, postprocess_dict, columnkey):
+        
+#     '''
+#     #function to apply logatrithmic transform
+#     #takes as arguement pandas dataframe of training and test data (mdf_train), (mdf_test)\
+#     #and the name of the column string ('column') and parent category (category)
+#     #applies a logarithmic transform (base 10)
+#     #replaces missing or improperly formatted data with mean of remaining log values
+#     #returns same dataframes with new column of name column + '_log0'
+#     '''
+    
+    
+#     #retrieve normalizastion parameters from postprocess_dict
+#     normkey = column + '_log0'
+    
+#     meanlog = \
+#     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['meanlog']
+
+#     #copy original column for implementation
+#     mdf_test[column + '_log0'] = mdf_test[column].copy()
+
+
+#     #convert all values to either numeric or NaN
+#     mdf_test[column + '_log0'] = pd.to_numeric(mdf_test[column + '_log0'], errors='coerce')
+    
+#     #log transform column
+#     #note that this replaces negative values with nan which we will infill with meanlog
+#     mdf_test[column + '_log0'] = np.log10(mdf_test[column + '_log0'])
+    
+
+#     #get mean of training data
+#     meanlog = meanlog  
+
+# #     #replace missing data with training set mean
+# #     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].fillna(meanlog)
+
+#     #replace missing data with 0
+#     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].fillna(0)
+
+# #     #change data type for memory savings
+# #     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].astype(np.float32)
+
+#     return mdf_test
+
   def postprocess_log0_class(self, mdf_test, column, postprocess_dict, columnkey):
         
     '''
@@ -16013,7 +16470,7 @@ class AutoMunge:
     #takes as arguement pandas dataframe of training and test data (mdf_train), (mdf_test)\
     #and the name of the column string ('column') and parent category (category)
     #applies a logarithmic transform (base 10)
-    #replaces missing or improperly formatted data with mean of remaining log values
+    #replaces zeros, negative, and missing or improperly formatted data with post-log mean as default infill
     #returns same dataframes with new column of name column + '_log0'
     '''
     
@@ -16031,6 +16488,9 @@ class AutoMunge:
     #convert all values to either numeric or NaN
     mdf_test[column + '_log0'] = pd.to_numeric(mdf_test[column + '_log0'], errors='coerce')
     
+    #replace all non-positive with nan for the log operation
+    mdf_test.loc[mdf_test[column + '_log0'] <= 0, (column + '_log0')] = np.nan
+    
     #log transform column
     #note that this replaces negative values with nan which we will infill with meanlog
     mdf_test[column + '_log0'] = np.log10(mdf_test[column + '_log0'])
@@ -16039,11 +16499,11 @@ class AutoMunge:
     #get mean of training data
     meanlog = meanlog  
 
-#     #replace missing data with training set mean
-#     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].fillna(meanlog)
+    #replace missing data with training set mean
+    mdf_test[column + '_log0'] = mdf_test[column + '_log0'].fillna(meanlog)
 
-    #replace missing data with 0
-    mdf_test[column + '_log0'] = mdf_test[column + '_log0'].fillna(0)
+#     #replace missing data with 0
+#     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].fillna(0)
 
 #     #change data type for memory savings
 #     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].astype(np.float32)
@@ -17460,6 +17920,28 @@ class AutoMunge:
     #so I'll just get that out of the way
     df_test.fillna(value=float('nan'), inplace=True)
 
+    #we'll delete any rows from training set missing values in the labels column
+    if labelscolumn != False:
+#       df_train = df_train.dropna(subset=[labelscolumn])
+      if labelscolumn in list(df_test):
+        df_test = df_test.dropna(subset=[labelscolumn])
+      
+      
+    
+    if labelscolumn != False:
+      labels_column = postprocess_dict['labels_column']
+      if labels_column in list(df_test):
+        df_test = df_test.dropna(subset=[labels_column])
+      
+      if labelscolumn != True:
+        if labelscolumn != labels_column:
+          print("error, labelscolumn in test set passed to postmunge must have same column")
+          print("labeling convention, labels column from automunge was: ", labels_column)
+        
+      
+      df_testlabels = pd.DataFrame(df_test[labels_column])
+      del df_test[labels_column]
+
     
     #extract the ID columns from test set
     if testID_column != False:
@@ -17489,16 +17971,16 @@ class AutoMunge:
       df_testID = pd.DataFrame()
     
     
-    if labelscolumn != False:
-      labels_column = postprocess_dict['labels_column']
-      if labelscolumn != True:
-        if labelscolumn != labels_column:
-          print("error, labelscolumn in test set passed to postmunge must have same column")
-          print("labeling convention, labels column from automunge was: ", labels_column)
+#     if labelscolumn != False:
+#       labels_column = postprocess_dict['labels_column']
+#       if labelscolumn != True:
+#         if labelscolumn != labels_column:
+#           print("error, labelscolumn in test set passed to postmunge must have same column")
+#           print("labeling convention, labels column from automunge was: ", labels_column)
         
       
-      df_testlabels = pd.DataFrame(df_test[labels_column])
-      del df_test[labels_column]
+#       df_testlabels = pd.DataFrame(df_test[labels_column])
+#       del df_test[labels_column]
 
     #confirm consistency of train an test sets
 
@@ -17979,7 +18461,7 @@ class AutoMunge:
               #noting that currently we're only going to infill 0 for single column categorylists
               #some comparable address for multi-column categories is a future extension
 
-              infillvalue = postprocess_dict['column_dict'][column]['normalization_dict']['infillvalue']
+              infillvalue = postprocess_dict['column_dict'][column]['normalization_dict'][column]['infillvalue']
 
 
               df_test = \
@@ -18016,7 +18498,7 @@ class AutoMunge:
               #noting that currently we're only going to infill 0 for single column categorylists
               #some comparable address for multi-column categories is a future extension
 
-              infillvalue = postprocess_dict['column_dict'][column]['normalization_dict']['infillvalue']
+              infillvalue = postprocess_dict['column_dict'][column]['normalization_dict'][column]['infillvalue']
 
               df_test = \
               self.test_meaninfillfunction(df_test, column, postprocess_dict, \
@@ -18050,7 +18532,7 @@ class AutoMunge:
               #noting that currently we're only going to infill 0 for single column categorylists
               #some comparable address for multi-column categories is a future extension
 
-              infillvalue = postprocess_dict['column_dict'][column]['normalization_dict']['infillvalue']
+              infillvalue = postprocess_dict['column_dict'][column]['normalization_dict'][column]['infillvalue']
 
 
               df_test = \
