@@ -1217,32 +1217,6 @@ to set with >2 entries applies infill to those entries beyond two most common.
 * text: converts categorical sets to one-hot encoded set of boolean identifiers
   - default infill: all entries zero
   - default NArowtype: justNaN
-
-Please note that I consider the transforms split, spl2, and spl5 which make use of 
-string evaluation for character groupings overlap as somewhat experimental and while I 
-certainly consider them useful, don't yet feel comfortable certifying their operation as 
-fully audited. (beta)
-Please note I recommend caution on using splt/spl2/spl5/spl6 transforms on categorical
-sets that may include scientific units for instance, as prefixes will not be noted
-for overlaps, e.g. this wouldn't distinguish between kilometer and meter for instance.
-* splt: searches categorical sets for overlaps between strings and returns new boolean column
-for identified overlap categories. Note this treats numeric values as strings eg 1.3 = '1.3'.
-Note that priority is given to overlaps of higher length, and by default overlap searches
-start at 20 character length and go down to 5 character length.
-  - default infill: none
-  - default NArowtype: justNaN
-* spl2: similar to splt, but instead of creating new column identifier it replaces categorical 
-entries with the abbreviated string overlap
-  - default infill: none
-  - default NArowtype: justNaN
-* spl5: similar to spl2, but those entries without idenitified string overlap are set to 0,
-(used in ors5 in conjunction with ord3)
-  - default infill: none
-  - default NArowtype: justNaN
-* spl6: similar to spl5, but with a splt performed downstream for identification of overlaps
-within the overlaps
-  - default infill: none
-  - default NArowtype: justNaN
 * ordl/ord2: converts categorical sets to ordinally encoded set of integer identifiers
   - default infill: plug value 'zzzinfill'
   - default NArowtype: justNaN
@@ -1332,6 +1306,31 @@ column with missing or improperly formatted values.
   - default infill: not applicable
   - default NArowtype: positivenumeric
 
+Please note that I consider the transforms split, spl2, spl5, and spl6 which make use of 
+string evaluation for character groupings overlap as somewhat experimental and while I 
+certainly consider them useful, don't yet feel comfortable certifying their operation as 
+fully audited. (beta)
+Please note I recommend caution on using splt/spl2/spl5/spl6 transforms on categorical
+sets that may include scientific units for instance, as prefixes will not be noted
+for overlaps, e.g. this wouldn't distinguish between kilometer and meter for instance.
+* splt: searches categorical sets for overlaps between strings and returns new boolean column
+for identified overlap categories. Note this treats numeric values as strings eg 1.3 = '1.3'.
+Note that priority is given to overlaps of higher length, and by default overlap searches
+start at 20 character length and go down to 5 character length.
+  - default infill: none
+  - default NArowtype: justNaN
+* spl2: similar to splt, but instead of creating new column identifier it replaces categorical 
+entries with the abbreviated string overlap
+  - default infill: none
+  - default NArowtype: justNaN
+* spl5: similar to spl2, but those entries without idenitified string overlap are set to 0,
+(used in ors5 in conjunction with ord3)
+  - default infill: none
+  - default NArowtype: justNaN
+* spl6: similar to spl5, but with a splt performed downstream for identification of overlaps
+within the overlaps
+  - default infill: none
+  - default NArowtype: justNaN
 
 
 And here are the series of family trees currently built into the internal library.
