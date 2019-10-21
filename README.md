@@ -1185,74 +1185,98 @@ infill.
 * nmbr/nbr2/nbr3: z-score normalization
   - default infill: mean
   - default NArowtype: numeric
+  - suffix appender: '_nmbr'
 * dxdt: rate of change (row value minus value in preceding row)
   - default infill: adjacent cells
   - default NArowtype: numeric
+  - suffix appender: '_dxdt'
 * dxd2: denoised rate of change (average of last two rows minus average
 of preceding two rows)
   - default infill: adjacent cells
   - default NArowtype: numeric
+  - suffix appender: '_dxd2'
 * MADn/MAD2: mean absolute deviation normalization, subtract set mean
   - default infill: mean
   - default NArowtype: numeric
+  - suffix appender: '_MADn'
 * MAD3: mean absolute deviation normalization, subtract set maximum
   - default infill: mean
   - default NArowtype: numeric
+  - suffix appender: '_MAD3'
 * mnmx/mnm2/mnm5: vanilla min-max scaling
   - default infill: mean
   - default NArowtype: numeric
+  - suffix appender: '_mnmx'
 * mnm3/mnm4: min-max scaling with outliers capped at 0.01 and 0.99 quantiles
   - default infill: mean
   - default NArowtype: numeric
+  - suffix appender: '_mnm3'
 * mnm6: min-max scaling with test floor set capped at min of train set (ensures
 test set returned values >= 0, such as might be useful for kernel PCA for instance)
   - default infill: mean
   - default NArowtype: numeric
+  - suffix appender: '_mnm6'
 * bnry: converts sets with two values to boolean identifiers. Defaults to assiging
 1 to most common value and 0 to second most common, unless 1 or 0 is already included
 in most common of the set then defaults to maintaining those designations. If applied 
 to set with >2 entries applies infill to those entries beyond two most common. 
   - default infill: most common value
   - default NArowtype: justNaN
+  - suffix appender: '_bnry'
 * text: converts categorical sets to one-hot encoded set of boolean identifiers
   - default infill: all entries zero
   - default NArowtype: justNaN
+  - suffix appender: '_(category)' where category is the target of the column
 * ordl/ord2: converts categorical sets to ordinally encoded set of integer identifiers
   - default infill: plug value 'zzzinfill'
   - default NArowtype: justNaN
+  - suffix appender: '_ordl'
 * ord3/ord4: converts categorical sets to ordinally encoded set of integer identifiers
 sorted by frequency of category occurance
   - default infill: plug value 'zzzinfill'
   - default NArowtype: justNaN
+  - suffix appender: '_ord3'
 * 1010: converts categorical sets of >2 unique values to binary encoding (more memory 
 efficent than one-hot encoding)
   - default infill: plug value 'zzzinfill'
   - default NArowtype: justNaN
+  - suffix appender: '_1010_#' where # is integer indicating order of 1010 columns
+  (for example if 1010 encoded to three columns based on number of categories <8,
+  it would retuyrn three columns with suffix appenders 1010_1, 1010_2, 1010_3)
 * bxcx/bxc2/bxc3/bxc4: performs Box-Cox power law transformation. Applies infill to values 
 <= 0. Note we currently have a test for overflow in returned results and if found set to 0.
   - default infill: mean
   - default NArowtype: positivenumeric
+  - suffix appender: '_bxcx'
 * log0/log1: performs logarithmic transofrm (base 10). Applies infill to values <= 0.
   - default infill: mean
   - default NArowtype: positivenumeric
+  - suffix appender: '_log0'
 * pwrs: bins groupings by powers of 10
   - default infill: mean
   - default NArowtype: positivenumeric
+  - suffix appender: '_10^#' where # is integer indicating target powers of 10 for column
 * bins: for numerical sets, outputs a set of 6 columns indicating where a
 value fell with respect to number of standard deviations from the mean of the
 set (i.e. <-2, -2-1, -10, 01, 12, >2)
   - default infill: mean
   - default NArowtype: numeric
+  - suffix appender: '_bins_####' where #### is one of set (s<-2, s-21, s-10, s+01, s+12, s>+2)
+  which indicate column target for number of standard deviations from the mean
 * bint: comparable to bins but assumes data has already been z-score normalized
   - default infill: mean
   - default NArowtype: numeric
+  - suffix appender: '_bint_####' where #### is one of set (t<-2, t-21, t-10, t+01, t+12, t>+2)
+  which indicate column target for number of standard deviations from the mean
 * date/dat2: for datetime formatted data, segregates data by time scale to multiple
 columns (year/month/day/hour/minute/second) and then performs z-score normalization
   - default infill: mean
   - default NArowtype: justNaN
+  - suffix appender: includes appenders for (_year, _mnth, _days, _hour, _mint, _scnd)
 * wkdy: boolean identifier indicating whether a datetime object is a weekday
   - default infill: none
   - default NArowtype: justNaN
+  - suffix appender: '_wkdy'
 * bshr: boolean identifier indicating whether a datetime object falls within business
 hours (9-5, time zone unaware)
   - default infill: none
@@ -1261,50 +1285,63 @@ hours (9-5, time zone unaware)
 holiday
   - default infill: none
   - default NArowtype: justNaN
+  - suffix appender: '_hldy'
 * year/mnth/days/hour/mint/scnd: segregated by time scale and z-score normalization
   - default infill: mean
   - default NArowtype: justNaN
+  - suffix appender: includes appenders for (_year, _mnth, _days, _hour, _mint, _scnd)
 * mnsn/mncs/dysn/dycs/hrsn/hrcs/misn/mics/scsn/sccs: segregated by time scale and 
 dual columns with sin and cos transformations for time scale period
   - default infill: mean
   - default NArowtype: justNaN
+  - suffix appender: includes appenders for (mnsn/mncs/dysn/dycs/hrsn/hrcs/misn/mics/scsn/sccs)
 * mdsn/mdcs: similar sin/cos treatment, but for combined month/day
   - default infill: mean
   - default NArowtype: justNaN
+  - suffix appender: includes appenders for (mdsn/mdcs)
 * hmss/hmsc: similar sin/cos treatment, but for combined hour/minute/second
   - default infill: mean
   - default NArowtype: justNaN
+  - suffix appender: includes appenders for (hmss/hmsc)
 * dat6: default transformation set for time series data, returns:
 'year', 'mdsn', 'mdcs', 'hmss', 'hmsc', 'bshr', 'wkdy', 'hldy'
   - default infill: mean
   - default NArowtype: justNaN
+  - suffix appender: includes appenders for ('year', 'mdsn', 'mdcs', 'hmss', 'hmsc', 'bshr', 'wkdy', 'hldy')
 * null: deletes source column
   - default infill: none
   - default NArowtype: exclude
+  - no suffix appender, column deleted
 * excl: passes source column un-altered
   - default infill: none
   - default NArowtype: exclude
+  - suffix appender: '_excl'
 * exc2: passes source column unaltered other than force to numeric, mode infill applied
   - default infill: mode
   - default NArowtype: numeric
+  - suffix appender: '_exc2'
 * eval: performs distribution property evaluation consistent with the automunge
 'powertransform' parameter activated to designated column
   - default infill: based on evaluation
   - default NArowtype: based on evaluation
+  - suffix appender: based on evlauation
 * NArw: produces a column of boolean identifiers for rows in the source
 column with missing or improperly formatted values. Note that when NArw
 is assigned in a family tree it bases NArowtype on the root category, 
 when NArw is passed as the root category it bases NArowtype on default.
   - default infill: not applicable
   - default NArowtype: justNaN
+  - suffix appender: '_NArw'
 * NAr2: produces a column of boolean identifiers for rows in the source
 column with missing or improperly formatted values.
   - default infill: not applicable
   - default NArowtype: numeric
+  - suffix appender: '_NArw'
 * NAr3: produces a column of boolean identifiers for rows in the source
 column with missing or improperly formatted values.
   - default infill: not applicable
   - default NArowtype: positivenumeric
+  - suffix appender: '_NArw'
 
 Please note that I consider the transforms split, spl2, spl5, and spl6 which make use of 
 string evaluation for character groupings overlap as somewhat experimental and while I 
@@ -1319,18 +1356,22 @@ Note that priority is given to overlaps of higher length, and by default overlap
 start at 20 character length and go down to 5 character length.
   - default infill: none
   - default NArowtype: justNaN
+  - suffix appender: '_splt_##*##' where ##*## is target idenbtified string overlap 
 * spl2: similar to splt, but instead of creating new column identifier it replaces categorical 
 entries with the abbreviated string overlap
   - default infill: none
   - default NArowtype: justNaN
+  - suffix appender: '_spl2'
 * spl5: similar to spl2, but those entries without idenitified string overlap are set to 0,
 (used in ors5 in conjunction with ord3)
   - default infill: none
   - default NArowtype: justNaN
+  - suffix appender: '_spl5'
 * spl6: similar to spl5, but with a splt performed downstream for identification of overlaps
 within the overlaps
   - default infill: none
   - default NArowtype: justNaN
+  - suffix appender: '_spl5'
 
 
 And here are the series of family trees currently built into the internal library.
