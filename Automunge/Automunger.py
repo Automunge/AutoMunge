@@ -2281,8 +2281,8 @@ class AutoMunge:
 
     #convert all values to either numeric or NaN
     mdf_train[column + '_nmbr'] = pd.to_numeric(mdf_train[column + '_nmbr'], errors='coerce')
-    mdf_test[column + '_nmbr'] = pd.to_numeric(mdf_test[column + '_nmbr'], errors='coerce'
-                                              )
+    mdf_test[column + '_nmbr'] = pd.to_numeric(mdf_test[column + '_nmbr'], errors='coerce')
+    
     #a few more metrics collected for driftreport
     #get maximum value of training column
     maximum = mdf_train[column + '_nmbr'].max()
@@ -7319,116 +7319,7 @@ class AutoMunge:
 
     return mdf_train, mdf_test, column_dict_list
   
-  
-  
-  
-#   def process_bxcx_support(self, df, column, category, bxcxerrorcorrect, \
-#                           bxcx_lmbda = None, trnsfrm_mean = None):
-#     '''                      
-#     #process_bxcx_class(df, column, bxcx_lmbda = None, trnsfrm_mean = None, trnsfrm_std = None)
-#     #function that takes as input a dataframe with numnerical column for purposes
-#     #of applying a box-cox transformation. If lmbda = None it will infer a suitable
-#     #lambda value by minimizing log likelihood using SciPy's stats boxcox call. If
-#     #we pass a mean or std value it will apply the mean for the initial infill and 
-#     #use the values to apply postprocess_numerical_class function. 
-#     #Returns transformed dataframe, a list nmbrcolumns of the associated columns,
-#     #and a normalization dictionary nmbrnormalization_dict which we'll use for our
-#     #postprocess_dict, and the parameter lmbda that was used
-#     #expect this approach works better than our prior numerical address when the 
-#     #distribution is less thin tailed
-#     '''
-    
-#     #store original column for later reversion
-#     df[column + '_temp'] = df[column].copy()
 
-#     #convert all values to either numeric or NaN
-#     df[column] = pd.to_numeric(df[column], errors='coerce')
-
-#     #get the mean value to apply to infill
-#     if trnsfrm_mean == None:
-#       #get mean of training data
-#       mean = df[column].mean()  
-
-#     else:
-#       mean = trnsfrm_mean
-
-#     #replace missing data with training set mean
-#     df[column] = df[column].fillna(mean)
-
-#     #apply box-cox transformation to generate a new column
-#     #note the returns are different based on whether we passed a lmbda value
-
-#     if bxcx_lmbda == None:
-
-#       df[column + '_bxcx'], bxcx_lmbda = stats.boxcox(df[column])
-#       df[column + '_bxcx'] *= bxcxerrorcorrect
-
-#     else:
-
-#       df[column + '_bxcx'] = stats.boxcox(df[column], lmbda = bxcx_lmbda)
-#       df[column + '_bxcx'] *= bxcxerrorcorrect
-
-#     #this is to address an error when bxcx transofrm produces overflow
-#     #I'm not sure of cause, showed up in the housing set)
-#     bxcxerrorcorrect = 1
-#     if max(df[column + '_bxcx']) > (2 ** 31 - 1):
-#       bxcxerrorcorrect = 0
-#       df[column + '_bxcx'] = 0
-#       bxcxcolumn = column + '_bxcx'
-#       print("overflow condition found in boxcox transofrm, column set to 0: ", bxcxcolumn)
-
-
-
-#     #replace original column
-#     del df[column]
-
-#     df[column] = df[column + '_temp'].copy()
-
-#     del df[column + '_temp']
-
-# #     #change data type for memory savings
-# #     df[column + '_bxcx'] = df[column + '_bxcx'].astype(np.float32)
-
-#     #output of a list of the created column names
-#     #nmbrcolumns = [column + '_nmbr', column + '_bxcx', column + '_NArw']
-#     nmbrcolumns = [column + '_bxcx']
-
-#     #create list of columns associated with categorical transform (blank for now)
-#     categorylist = []
-
-
-#     #store some values in the nmbr_dict{} for use later in ML infill methods
-#     column_dict_list = []
-
-#     for nc in nmbrcolumns:
-
-
-#       #save a dictionary of the associated column mean and std
-
-#       normalization_dict = {nc : {'trnsfrm_mean' : mean, \
-#                                   'bxcx_lmbda' : bxcx_lmbda, \
-#                                   'bxcxerrorcorrect' : bxcxerrorcorrect, \
-#                                   'mean' : mean}}
-
-#       if nc[-5:] == '_bxcx':
-
-#         column_dict = { nc : {'category' : 'bxcx', \
-#                              'origcategory' : category, \
-#                              'normalization_dict' : normalization_dict, \
-#                              'origcolumn' : column, \
-#                              'columnslist' : nmbrcolumns, \
-#                              'categorylist' : [nc], \
-#                              'infillmodel' : False, \
-#                              'infillcomplete' : False, \
-#                              'deletecolumn' : False}}
-
-#         column_dict_list.append(column_dict.copy())
-
-
-
-
-#     #return df, nmbrcolumns, nmbrnormalization_dict, categorylist
-#     return df, column_dict_list
 
   def process_bxcx_support(self, df, column, category, bxcxerrorcorrect, \
                           bxcx_lmbda = None, trnsfrm_mean = None):
@@ -7541,81 +7432,6 @@ class AutoMunge:
     return df, column_dict_list
 
 
-#   def process_log0_class(self, mdf_train, mdf_test, column, category, \
-#                          postprocess_dict):
-#     '''
-#     #process_log0_class(mdf_train, mdf_test, column, category)
-#     #function to apply logatrithmic transform
-#     #takes as arguement pandas dataframe of training and test data (mdf_train), (mdf_test)\
-#     #and the name of the column string ('column') and parent category (category)
-#     #applies a logarithmic transform (base 10)
-#     #replaces zeros and missing or improperly formatted data with 0
-#     #for negative values applies log transform to the abs value then reintroduces a negative sign
-#     #returns same dataframes with new column of name column + '_log0'
-#     '''
-    
-#     #copy source column into new column
-#     mdf_train[column + '_log0'] = mdf_train[column].copy()
-#     mdf_test[column + '_log0'] = mdf_test[column].copy()
-
-#     #convert all values to either numeric or NaN
-#     mdf_train[column + '_log0'] = pd.to_numeric(mdf_train[column + '_log0'], errors='coerce')
-#     mdf_test[column + '_log0'] = pd.to_numeric(mdf_test[column + '_log0'], errors='coerce')
-    
-#     #replace all zeros with nan for the log operation
-#     zeroreplace = {0 : np.nan}
-#     mdf_train[column + '_log0'] = mdf_train[column + '_log0'].replace(zeroreplace)
-#     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].replace(zeroreplace)
-    
-    
-#     #log transform column
-#     #note that this replaces negative values with nan which we will infill with 0
-#     mdf_train[column + '_log0'] = np.log10(mdf_train[column + '_log0'])
-#     mdf_test[column + '_log0'] = np.log10(mdf_test[column + '_log0'])
-    
-#     #get mean of train set
-#     meanlog = mdf_train[column + '_log0'].mean() 
-
-# #     #replace missing data with training set mean
-# #     mdf_train[column + '_log0'] = mdf_train[column + '_log0'].fillna(meanlog)
-# #     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].fillna(meanlog)
-
-#     #replace missing data with 0
-#     mdf_train[column + '_log0'] = mdf_train[column + '_log0'].fillna(0)
-#     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].fillna(0)
-
-# #     #change data type for memory savings
-# #     mdf_train[column + '_log0'] = mdf_train[column + '_log0'].astype(np.float32)
-# #     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].astype(np.float32)
-
-#     #create list of columns
-#     nmbrcolumns = [column + '_log0']
-
-
-#     nmbrnormalization_dict = {column + '_log0' : {'meanlog' : meanlog}}
-
-#     #store some values in the nmbr_dict{} for use later in ML infill methods
-#     column_dict_list = []
-
-#     for nc in nmbrcolumns:
-
-#       if nc[-5:] == '_log0':
-
-#         column_dict = { nc : {'category' : 'log0', \
-#                              'origcategory' : category, \
-#                              'normalization_dict' : nmbrnormalization_dict, \
-#                              'origcolumn' : column, \
-#                              'columnslist' : nmbrcolumns, \
-#                              'categorylist' : [nc], \
-#                              'infillmodel' : False, \
-#                              'infillcomplete' : False, \
-#                              'deletecolumn' : False}}
-
-#         column_dict_list.append(column_dict.copy())
-    
-
-        
-#     return mdf_train, mdf_test, column_dict_list
 
   def process_log0_class(self, mdf_train, mdf_test, column, category, \
                          postprocess_dict):
@@ -11774,7 +11590,7 @@ class AutoMunge:
   def automunge(self, df_train, df_test = False, labels_column = False, trainID_column = False, \
                 testID_column = False, valpercent1=0.0, valpercent2 = 0.0, floatprecision = 32, \
                 shuffletrain = False, TrainLabelFreqLevel = False, powertransform = False, \
-                binstransform = False, MLinfill = True, infilliterate=1, randomseed = 42, \
+                binstransform = False, MLinfill = False, infilliterate=1, randomseed = 42, \
                 numbercategoryheuristic = 15, pandasoutput = False, NArw_marker = True, \
                 featureselection = False, featurepct = 1.0, featuremetric = 0.0, \
                 featuremethod = 'default', PCAn_components = None, PCAexcl = [], \
@@ -13153,7 +12969,7 @@ class AutoMunge:
         print("")
         
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '2.70'
+    automungeversion = '2.71'
     application_number = random.randint(100000000000,999999999999)
     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -16419,49 +16235,6 @@ class AutoMunge:
     return mdf_test
 
 
-#   def postprocess_log0_class(self, mdf_test, column, postprocess_dict, columnkey):
-        
-#     '''
-#     #function to apply logatrithmic transform
-#     #takes as arguement pandas dataframe of training and test data (mdf_train), (mdf_test)\
-#     #and the name of the column string ('column') and parent category (category)
-#     #applies a logarithmic transform (base 10)
-#     #replaces missing or improperly formatted data with mean of remaining log values
-#     #returns same dataframes with new column of name column + '_log0'
-#     '''
-    
-    
-#     #retrieve normalizastion parameters from postprocess_dict
-#     normkey = column + '_log0'
-    
-#     meanlog = \
-#     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['meanlog']
-
-#     #copy original column for implementation
-#     mdf_test[column + '_log0'] = mdf_test[column].copy()
-
-
-#     #convert all values to either numeric or NaN
-#     mdf_test[column + '_log0'] = pd.to_numeric(mdf_test[column + '_log0'], errors='coerce')
-    
-#     #log transform column
-#     #note that this replaces negative values with nan which we will infill with meanlog
-#     mdf_test[column + '_log0'] = np.log10(mdf_test[column + '_log0'])
-    
-
-#     #get mean of training data
-#     meanlog = meanlog  
-
-# #     #replace missing data with training set mean
-# #     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].fillna(meanlog)
-
-#     #replace missing data with 0
-#     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].fillna(0)
-
-# #     #change data type for memory savings
-# #     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].astype(np.float32)
-
-#     return mdf_test
 
   def postprocess_log0_class(self, mdf_test, column, postprocess_dict, columnkey):
         
