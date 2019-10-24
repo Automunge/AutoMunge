@@ -3357,7 +3357,8 @@ class AutoMunge:
     
     return mdf_train, mdf_test, column_dict_list
   
-  
+
+
   def process_splt_class(self, mdf_train, mdf_test, column, category, \
                          postprocess_dict):
     '''
@@ -3365,14 +3366,16 @@ class AutoMunge:
     #preprocess column with categorical entries as strings
     #identifies overlaps of subsets of those strings and records
     #as a new boolan column
-    #for example, if a categoical set consisted of unique values ['west', 'north', 'northeast']
-    #then a new column would be created idenitifying cells which included 'north' in their entries
+    #for example, if a categoical set consisted of unique values 
+    #['west', 'north', 'northeast']
+    #then a new column would be created idenitifying cells which included 
+    #'north' in their entries
     #(here for north and northeast)
     #returns as column titled origcolumn_splt_entry    
     #missing values are ignored by default
     '''
     
-    overlap_lengths = [20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7 , 6, 5]
+    #overlap_lengths = [20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7 , 6, 5]
 
     
     #first we find overlaps from mdf_train
@@ -3380,6 +3383,10 @@ class AutoMunge:
     unique_list = list(mdf_train[column].unique())
 
     unique_list = list(map(str, unique_list))
+    
+    maxlength = max(len(x) for x in unique_list)
+    
+    overlap_lengths = list(range(maxlength - 1, 5, -1))
 
     overlap_dict = {}
 
@@ -3543,16 +3550,20 @@ class AutoMunge:
     '''
     #process_spl2_class(mdf_train, mdf_test, column, category)
     #preprocess column with categorical entries as strings
-    #identifies overlaps of subsets of those strings and replaces entries with their redecued overlap
-    #for example, if a categoical set consisted of unique values ['west', 'north', 'northeast']
-    #then a new column would be created in which the entry 'north' replaced cells with north in their entries
+    #identifies overlaps of subsets of those strings and replaces entries 
+    #with their redecued overlap
+    #for example, if a categoical set consisted of unique values 
+    #['west', 'north', 'northeast']
+    #then a new column would be created in which the entry 'north' 
+    #replaced cells with north in their entries
     #(here for north and northeast)
     #returns as column titled origcolumn_spl2
     #missing values are ignored by default
-    #this alternative to splt may be benficial for instance if one wanted to follow with an ordl encoding
+    #this alternative to splt may be benficial for instance if one wanted 
+    #to follow with an ordl encoding
     '''
     
-    overlap_lengths = [20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7 , 6, 5]
+#     overlap_lengths = [20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7 , 6, 5]
 
     
     #first we find overlaps from mdf_train
@@ -3560,6 +3571,10 @@ class AutoMunge:
     unique_list = list(mdf_train[column].unique())
 
     unique_list = list(map(str, unique_list))
+    
+    maxlength = max(len(x) for x in unique_list)
+    
+    overlap_lengths = list(range(maxlength - 1, 5, -1))
 
     overlap_dict = {}
 
@@ -3669,10 +3684,12 @@ class AutoMunge:
                         
     
     
-    #so that was all comparable to splt, now for spl2 we'll create a new dictionary structred as
+    #so that was all comparable to splt, now for spl2 we'll create a new 
+    #dictionary structred as
     #{original unique value : overlap extract for replacement}
     
-    #since one original unique value may have entries as multiple overlaps, we'll prioritize overlaps with
+    #since one original unique value may have entries as multiple overlaps, 
+    #we'll prioritize overlaps with
     #longer string lengths and then alphabetical
     
     spl2_overlap_dict = {}
@@ -3772,18 +3789,22 @@ class AutoMunge:
     '''
     #process_spl5_class(mdf_train, mdf_test, column, category)
     #preprocess column with categorical entries as strings
-    #identifies overlaps of subsets of those strings and replaces entries with their redecued overlap
+    #identifies overlaps of subsets of those strings and replaces entries 
+    #with their redecued overlap
     #replaces entries without overlap to 0 (unique to spl5)
-    #for example, if a categorical set consisted of unique values ['west', 'north', 'northeast']
-    #then a new column would be created in which the entry 'north' replaced cells with north in their entries
+    #for example, if a categorical set consisted of unique values 
+    #['west', 'north', 'northeast']
+    #then a new column would be created in which the entry 'north' 
+    #replaced cells with north in their entries
     #(here for north and northeast)
     #and cells with west would be set to 0
     #returns as column titled origcolumn_spl2
     #missing values are ignored by default
-    #this alternative to splt may be benficial for instance if one wanted to follow with an ordl encoding
+    #this alternative to splt may be benficial for instance if one wanted 
+    #to follow with an ordl encoding
     '''
     
-    overlap_lengths = [20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7 , 6, 5]
+#     overlap_lengths = [20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7 , 6, 5]
 
     
     #first we find overlaps from mdf_train
@@ -3791,6 +3812,10 @@ class AutoMunge:
     unique_list = list(mdf_train[column].unique())
 
     unique_list = list(map(str, unique_list))
+    
+    maxlength = max(len(x) for x in unique_list)
+    
+    overlap_lengths = list(range(maxlength - 1, 5, -1))
 
     overlap_dict = {}
 
@@ -3864,7 +3889,8 @@ class AutoMunge:
                         overlap_dict.update({extract : [unique, unique2]})
 
                         
-    #now for mdf_test we'll only consider those overlaps already identified from train set
+    #now for mdf_test we'll only consider those overlaps already 
+    #identified from train set
     
     unique_list_test = list(mdf_test[column].unique())
 
@@ -3900,10 +3926,12 @@ class AutoMunge:
                         
     
     
-    #so that was all comparable to splt, now for spl2 we'll create a new dictionary structred as
+    #so that was all comparable to splt, now for spl2 we'll create a new 
+    #dictionary structred as
     #{original unique value : overlap extract for replacement}
     
-    #since one original unique value may have entries as multiple overlaps, we'll prioritize overlaps with
+    #since one original unique value may have entries as multiple overlaps, 
+    #we'll prioritize overlaps with
     #longer string lengths and then alphabetical
     
     spl2_overlap_dict = {}
@@ -10387,7 +10415,8 @@ class AutoMunge:
               postprocess_assigninfill_dict[infillcatkey] = \
               postprocess_assigninfill_dict[infillcatkey] + \
               postprocess_dict['column_dict'][columnkey]['columnslist']
-    
+              
+
     return postprocess_assigninfill_dict
 
 
@@ -12969,7 +12998,7 @@ class AutoMunge:
         print("")
         
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '2.71'
+    automungeversion = '2.72'
     application_number = random.randint(100000000000,999999999999)
     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
