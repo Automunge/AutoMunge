@@ -1343,13 +1343,10 @@ column with missing or improperly formatted values.
   - default NArowtype: positivenumeric
   - suffix appender: '_NArw'
 
-Please note that I consider the transforms split, spl2, spl5, and spl6 which make use of 
-string evaluation for character groupings overlap as somewhat experimental and while I 
-certainly consider them useful, don't yet feel comfortable certifying their operation as 
-fully audited. (beta)
 Please note I recommend caution on using splt/spl2/spl5/spl6 transforms on categorical
 sets that may include scientific units for instance, as prefixes will not be noted
 for overlaps, e.g. this wouldn't distinguish between kilometer and meter for instance.
+Note that overlap lengths below 5 characters are ignored.
 * splt: searches categorical sets for overlaps between strings and returns new boolean column
 for identified overlap categories. Note this treats numeric values as strings eg 1.3 = '1.3'.
 Note that priority is given to overlaps of higher length, and by default overlap searches
