@@ -3386,7 +3386,7 @@ class AutoMunge:
     
     maxlength = max(len(x) for x in unique_list)
     
-    overlap_lengths = list(range(maxlength - 1, 5, -1))
+    overlap_lengths = list(range(maxlength - 1, 4, -1))
 
     overlap_dict = {}
 
@@ -3574,7 +3574,7 @@ class AutoMunge:
     
     maxlength = max(len(x) for x in unique_list)
     
-    overlap_lengths = list(range(maxlength - 1, 5, -1))
+    overlap_lengths = list(range(maxlength - 1, 4, -1))
 
     overlap_dict = {}
 
@@ -3815,7 +3815,7 @@ class AutoMunge:
     
     maxlength = max(len(x) for x in unique_list)
     
-    overlap_lengths = list(range(maxlength - 1, 5, -1))
+    overlap_lengths = list(range(maxlength - 1, 4, -1))
 
     overlap_dict = {}
 
