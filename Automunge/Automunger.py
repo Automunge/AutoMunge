@@ -9507,9 +9507,11 @@ class AutoMunge:
             columns_labels.append(label)
         for label in list(labels_df):
           if label[-5:] in ['_10^0', '_10^1','_10^2','_10^3','_10^4','_10^5','_10^6', '_10^7','_10^8','_10^9'] \
-          or label[-6:] in ['_10^10','_10^11','_10^12','_10^13','_10^14','_10^15', '_10^16','_10^17','_10^18','_10^19']:
+          or label[-6:] in ['_10^10','_10^11','_10^12','_10^13','_10^14','_10^15', '_10^16','_10^17','_10^18','_10^19', \
+                            '_10^-1','_10^-2','_10^-3','_10^-4','_10^-5','_10^-6', '_10^-7','_10^-8','_10^-9'] \
+          or label[-7:] in ['_10^-10','_10^-11','_10^-12','_10^-13','_10^-14','_10^-15', '_10^-16','_10^-17','_10^-18','_10^-19']:
             columns_labels.append(label)
-        
+                    
             
             
       #if labelscategory in ['text', 'nmbr', 'bxcx']:
@@ -12998,7 +13000,7 @@ class AutoMunge:
         print("")
         
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '2.72'
+    automungeversion = '2.73'
     application_number = random.randint(100000000000,999999999999)
     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -18665,3 +18667,4 @@ class AutoMunge:
       print("")
 
     return test, testID, testlabels, labelsencoding_dict, finalcolumns_test
+  
