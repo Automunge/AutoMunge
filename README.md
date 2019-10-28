@@ -1182,15 +1182,15 @@ default infill refers to the infill applied under 'standardinfill'. Note the
 default NArowtype refers to the categories of data that won't be subject to 
 infill.
 
-* nmbr/nbr2/nbr3: z-score normalization
+* nmbr/nbr2/nbr3/nmdx/nmd2/nmd3: z-score normalization
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '_nmbr'
-* dxdt: rate of change (row value minus value in preceding row)
+* dxdt/d2dt/d3dt: rate of change (row value minus value in preceding row)
   - default infill: adjacent cells
   - default NArowtype: numeric
   - suffix appender: '_dxdt'
-* dxd2: denoised rate of change (average of last two rows minus average
+* dxd2/d2d2/d3d2: denoised rate of change (average of last two rows minus average
 of preceding two rows)
   - default infill: adjacent cells
   - default NArowtype: numeric
@@ -1203,7 +1203,7 @@ of preceding two rows)
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '_MAD3'
-* mnmx/mnm2/mnm5: vanilla min-max scaling
+* mnmx/mnm2/mnm5/mmdx/mmd2/mmd3: vanilla min-max scaling
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '_mnmx'
@@ -1223,7 +1223,7 @@ to set with >2 entries applies infill to those entries beyond two most common.
   - default infill: most common value
   - default NArowtype: justNaN
   - suffix appender: '_bnry'
-* text: converts categorical sets to one-hot encoded set of boolean identifiers
+* text/txt2: converts categorical sets to one-hot encoded set of boolean identifiers
   - default infill: all entries zero
   - default NArowtype: justNaN
   - suffix appender: '_(category)' where category is the target of the column
@@ -1316,7 +1316,7 @@ dual columns with sin and cos transformations for time scale period
   - default infill: none
   - default NArowtype: exclude
   - suffix appender: '_excl'
-* exc2: passes source column unaltered other than force to numeric, mode infill applied
+* exc2/exc3: passes source column unaltered other than force to numeric, mode infill applied
   - default infill: mode
   - default NArowtype: numeric
   - suffix appender: '_exc2'
@@ -1354,12 +1354,12 @@ start at 20 character length and go down to 5 character length.
   - default infill: none
   - default NArowtype: justNaN
   - suffix appender: '_splt_##*##' where ##*## is target idenbtified string overlap 
-* spl2: similar to splt, but instead of creating new column identifier it replaces categorical 
+* spl2/spl3/spl4/ors2/txt3: similar to splt, but instead of creating new column identifier it replaces categorical 
 entries with the abbreviated string overlap
   - default infill: none
   - default NArowtype: justNaN
   - suffix appender: '_spl2'
-* spl5: similar to spl2, but those entries without idenitified string overlap are set to 0,
+* spl5/spl6/ors5/ors6: similar to spl2, but those entries without idenitified string overlap are set to 0,
 (used in ors5 in conjunction with ord3)
   - default infill: none
   - default NArowtype: justNaN
