@@ -1084,9 +1084,11 @@ of bins indicating number of standard deviations from the mean.
 - text: for categorical data, columns are subject to one-hot encoding. If the 
 number of unique entries in the column exceeds the parameter 'numbercategoryheuristic'
 (which defaults to 15), the encoding will instead be by ord3 which is an ordinal
-(integer) encoding sorted by most common value.
+(integer) encoding sorted by most common value. Note that numerical sets with 3
+unique values in train set default to text.
 - bnry: for categorical data of <=2 unique values excluding infill (eg NaN), the 
-column is encoded to 0/1.
+column is encoded to 0/1. Note that numerical sets with <= 2 unique values in train
+set default to bnry.
 - dat6: for time-series data, a set of derivations are performed returning
 'year', 'mdsn', 'mdcs', 'hmss', 'hmsc', 'bshr', 'wkdy', 'hldy' (these are defined 
 in next section)
