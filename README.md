@@ -2681,7 +2681,7 @@ Scikit-learn: Machine Learning in Python, Journal of Machine Learning
 Research, 12, 2825-2830 (2011) [publisher
 link](http://jmlr.org/papers/v12/pedregosa11a.html)
 
-Sorry I don't know paper to cite, but Numpy website at:
+Sorry I don't know what paper to cite, but Numpy website at:
 https://www.numpy.org/
 
 ...
