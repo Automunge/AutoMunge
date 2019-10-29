@@ -6,7 +6,7 @@ of appropriate feature engineering methods, or may also assign to distinct
 columns custom feature engineering transformations, custom sets (e.g. "family 
 trees") of feature engineering transformations, or custom infill methods. The 
 feature engineering transformation functions may be accessed from the internal 
-library of transformation categories (a.k.a. a "feature store"), or may also 
+library of transformation categories (aka a "feature store"), or may also 
 be user defined with minimal requirements of simple data structures for 
 incorporation into the platform. The tool includes options for automated 
 feature importance evaluation, automated derivation of infill predictions
