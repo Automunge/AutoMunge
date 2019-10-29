@@ -13000,7 +13000,7 @@ class AutoMunge:
         print("")
         
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '2.73'
+    automungeversion = '2.74'
     application_number = random.randint(100000000000,999999999999)
     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -13989,10 +13989,35 @@ class AutoMunge:
     
     #moved this to after the initial infill
     #new method for retrieving a columnkey
+    normkey = False
     for unique in mdf_test[column].unique():
       if column + '_' + str(unique) in postprocess_dict['column_dict']:
         normkey = column + '_' + str(unique)
         break
+    
+    #this second method for normkey retrieval addresses outlier scenarios when 
+    #no unique valuies in test set match those in train set
+    if normkey == False:
+
+      if column in postprocess_dict['origcolumn']:
+
+        columnkeylist = postprocess_dict['origcolumn'][column]['columnkeylist']
+
+      else:
+
+        origcolumn = postprocess_dict['column_dict'][column]['origcolumn']
+
+        columnkeylist = postprocess_dict['origcolumn'][origcolumn]['columnkeylist']
+
+      for columnkey in columnkeylist:
+
+        normalization_dict = postprocess_dict['column_dict'][columnkey]['normalization_dict']
+
+        if 'textlabelsdict' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
+
+          normkey = columnkey
+      
+      
     #textcolumns = postprocess_dict['column_dict'][columnkey]['columnslist']
     textcolumns = postprocess_dict['column_dict'][normkey]['categorylist']
 
