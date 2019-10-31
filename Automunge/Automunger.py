@@ -453,6 +453,15 @@ class AutoMunge:
                                      'coworkers' : [], \
                                      'friends' : []}})
     
+    transform_dict.update({'NAr4' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['NArw'], \
+                                     'cousins' : [], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
     transform_dict.update({'nbr2' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['nmbr'], \
@@ -1047,6 +1056,15 @@ class AutoMunge:
                                      'coworkers' : [], \
                                      'friends' : []}})
     
+    transform_dict.update({'sqrt' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['sqrt'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
     transform_dict.update({'wkdy' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['wkdy'], \
@@ -1149,7 +1167,9 @@ class AutoMunge:
     # - 'singlct' for single column sets with boolean or ordinal entries
     # - 'multirt' for categorical multicolumn sets with boolean entries
     # - 'multisp' for bins multicolumn sets with boolean entries
-    #(the two are treated differently in labelfrequencylevelizer)
+    #(the two (rt/sp) are treated differently in labelfrequencylevelizer)
+    # - 'binary'  for multicolumn sets with boolean entries as may have 
+    #multiple entries in the same row (not currently used, future extension)
     # - 'exclude' for columns which will be excluded from ML infill
     '''
     
@@ -1760,6 +1780,12 @@ class AutoMunge:
                                   'NArowtype' : 'positivenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'log0'}})
+    process_dict.update({'sqrt' : {'dualprocess' : self.process_sqrt_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_sqrt_class, \
+                                  'NArowtype' : 'nonnegativenumeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'sqrt'}})
     process_dict.update({'wkdy' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_wkdy_class, \
                                   'postprocess' : None, \
@@ -1806,6 +1832,12 @@ class AutoMunge:
                                   'singleprocess' : self.process_NArw_class, \
                                   'postprocess' : None, \
                                   'NArowtype' : 'positivenumeric', \
+                                  'MLinfilltype' : 'exclude', \
+                                  'labelctgy' : 'NArw'}})
+    process_dict.update({'NAr4' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_NArw_class, \
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'nonnegativenumeric', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'NArw'}})
     process_dict.update({'null' : {'dualprocess' : None, \
@@ -2449,9 +2481,7 @@ class AutoMunge:
     
     #we're going to take difference of average of last two rows with two rows preceding
     df[column + '_dxd2'] = (df[column + '_dxd2'] + df[column + '_dxd2'].shift()) / 2 \
-                           - ((df[column + '_dxd2'].shift(periods=3) + df[column + '_dxd2'].shift(periods=4)) / 2)
-    
-    
+                           - ((df[column + '_dxd2'].shift(periods=2) + df[column + '_dxd2'].shift(periods=3)) / 2)
     
     #first row will have a nan so just one more backfill
     df[column + '_dxd2'] = df[column + '_dxd2'].fillna(method='bfill')
@@ -7543,6 +7573,89 @@ class AutoMunge:
 
         
     return mdf_train, mdf_test, column_dict_list
+  
+  def process_sqrt_class(self, mdf_train, mdf_test, column, category, \
+                         postprocess_dict):
+    '''
+    #process_sqrt_class(mdf_train, mdf_test, column, category)
+    #function to apply square root transform
+    #takes as arguement pandas dataframe of training and test data (mdf_train), (mdf_test)\
+    #and the name of the column string ('column') and parent category (category)
+    #applies a square root transform
+    #replaces zeros, negative, and missing or improperly formatted data with post-log mean as default infill
+    #returns same dataframes with new column of name column + '_log0'
+    '''
+    
+    #copy source column into new column
+    mdf_train[column + '_sqrt'] = mdf_train[column].copy()
+    mdf_test[column + '_sqrt'] = mdf_test[column].copy()
+
+    #convert all values to either numeric or NaN
+    mdf_train[column + '_sqrt'] = pd.to_numeric(mdf_train[column + '_sqrt'], errors='coerce')
+    mdf_test[column + '_sqrt'] = pd.to_numeric(mdf_test[column + '_sqrt'], errors='coerce')
+    
+#     #replace all zeros with nan for the log operation
+#     zeroreplace = {0 : np.nan}
+#     mdf_train[column + '_log0'] = mdf_train[column + '_log0'].replace(zeroreplace)
+#     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].replace(zeroreplace)
+    
+    #replace all non-positive with nan for the log operation
+    mdf_train.loc[mdf_train[column + '_sqrt'] < 0, (column + '_sqrt')] = np.nan
+    mdf_test.loc[mdf_test[column + '_sqrt'] < 0, (column + '_sqrt')] = np.nan
+    
+    
+    #log transform column
+    #note that this replaces negative values with nan which we will infill with mean
+    mdf_train[column + '_sqrt'] = np.sqrt(mdf_train[column + '_sqrt'])
+    mdf_test[column + '_sqrt'] = np.sqrt(mdf_test[column + '_sqrt'])
+    
+    #get mean of train set
+    meansqrt = mdf_train[column + '_sqrt'].mean()
+    
+    if meansqrt != meansqrt:
+      meansqrt = 0
+
+    #replace missing data with training set mean
+    mdf_train[column + '_sqrt'] = mdf_train[column + '_sqrt'].fillna(meansqrt)
+    mdf_test[column + '_sqrt'] = mdf_test[column + '_sqrt'].fillna(meansqrt)
+
+
+#     #replace missing data with 0
+#     mdf_train[column + '_log0'] = mdf_train[column + '_log0'].fillna(0)
+#     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].fillna(0)
+
+#     #change data type for memory savings
+#     mdf_train[column + '_log0'] = mdf_train[column + '_log0'].astype(np.float32)
+#     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].astype(np.float32)
+
+    #create list of columns
+    nmbrcolumns = [column + '_sqrt']
+
+
+    nmbrnormalization_dict = {column + '_sqrt' : {'meansqrt' : meansqrt}}
+
+    #store some values in the nmbr_dict{} for use later in ML infill methods
+    column_dict_list = []
+
+    for nc in nmbrcolumns:
+
+      if nc[-5:] == '_sqrt':
+
+        column_dict = { nc : {'category' : 'sqrt', \
+                             'origcategory' : category, \
+                             'normalization_dict' : nmbrnormalization_dict, \
+                             'origcolumn' : column, \
+                             'columnslist' : nmbrcolumns, \
+                             'categorylist' : [nc], \
+                             'infillmodel' : False, \
+                             'infillcomplete' : False, \
+                             'deletecolumn' : False}}
+
+        column_dict_list.append(column_dict.copy())
+    
+
+        
+    return mdf_train, mdf_test, column_dict_list
 
   
   def process_pwrs_class(self, mdf_train, mdf_test, column, category, \
@@ -8432,6 +8545,18 @@ class AutoMunge:
       #convert all values to either numeric or NaN
       df2[column] = pd.to_numeric(df2[column], errors='coerce')
       df2.loc[df2[column] <= 0, (column)] = np.nan
+      
+      #returns dataframe of True and False, where True coresponds to the NaN's
+      #renames column name to column + '_NArows'
+      NArows = pd.isna(df2[column])
+      NArows = pd.DataFrame(NArows)
+      NArows = NArows.rename(columns = {column:column+'_NArows'})
+      
+    if NArowtype in ['nonnegativenumeric']:
+      
+      #convert all values to either numeric or NaN
+      df2[column] = pd.to_numeric(df2[column], errors='coerce')
+      df2.loc[df2[column] < 0, (column)] = np.nan
       
       #returns dataframe of True and False, where True coresponds to the NaN's
       #renames column name to column + '_NArows'
@@ -11633,9 +11758,9 @@ class AutoMunge:
                              'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'MAD3':[], \
                              'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
                              'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
-                             'bins':[], 'bint':[], \
+                             'bins':[], 'bint':[], 'pwrs':[], \
                              'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
-                             'log0':[], 'log1':[], 'pwrs':[], \
+                             'log0':[], 'log1':[], 'sqrt':[], \
                              'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
                              'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
                              'splt':[], 'spl2':[], 'spl3':[], 'spl4':[], 'spl5':[], \
@@ -13000,7 +13125,7 @@ class AutoMunge:
         print("")
         
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '2.74'
+    automungeversion = '2.75'
     application_number = random.randint(100000000000,999999999999)
     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -16447,7 +16572,52 @@ class AutoMunge:
     
     return mdf_test
 
+  def postprocess_sqrt_class(self, mdf_test, column, postprocess_dict, columnkey):
+        
+    '''
+    #function to apply square root transform
+    #takes as arguement pandas dataframe of training and test data (mdf_train), (mdf_test)\
+    #and the name of the column string ('column') and parent category (category)
+    #applies a square root transform
+    #replaces zeros, negative, and missing or improperly formatted data with post-log mean as default infill
+    #returns same dataframes with new column of name column + '_log0'
+    '''
+    
+    
+    #retrieve normalizastion parameters from postprocess_dict
+    normkey = column + '_sqrt'
+    
+    meansqrt = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['meansqrt']
 
+    #copy original column for implementation
+    mdf_test[column + '_sqrt'] = mdf_test[column].copy()
+
+
+    #convert all values to either numeric or NaN
+    mdf_test[column + '_sqrt'] = pd.to_numeric(mdf_test[column + '_sqrt'], errors='coerce')
+    
+    #replace all non-positive with nan for the log operation
+    mdf_test.loc[mdf_test[column + '_sqrt'] < 0, (column + '_sqrt')] = np.nan
+    
+    #log transform column
+    #note that this replaces negative values with nan which we will infill with meanlog
+    mdf_test[column + '_sqrt'] = np.sqrt(mdf_test[column + '_sqrt'])
+    
+
+    #get mean of training data
+    meansqrt = meansqrt  
+
+    #replace missing data with training set mean
+    mdf_test[column + '_sqrt'] = mdf_test[column + '_sqrt'].fillna(meansqrt)
+
+#     #replace missing data with 0
+#     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].fillna(0)
+
+#     #change data type for memory savings
+#     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].astype(np.float32)
+
+    return mdf_test
   
   def postprocess_bins_class(self, mdf_test, column, postprocess_dict, columnkey):
     '''
