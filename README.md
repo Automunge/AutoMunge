@@ -884,10 +884,12 @@ processdict =  {'newt' : {'dualprocess' : None, \
 #		'multirt' refers to category returning multiple columns where 
 #			 predictive algorithms treat as a multi modal classifier
 #		'exclude' refers to categories excluded from predcitive address
-#		'multisp' for bins multicolumn sets with boolean entries, where a row 
-#                        may have multiple entries for instance
+#		'multisp' for bins multicolumn sets with boolean entries
+#                         (similar to multirt but treated differently in levelizer)
 #		'label' refers to categories specifically intended for label
 #			   processing
+#               'binary'  for multicolumn sets with boolean entries as may have 
+#                         multiple entries in the same row (not currently used, future extension)
 
 ```
 
