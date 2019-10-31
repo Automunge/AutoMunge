@@ -125,9 +125,9 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
 		         'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'MAD3':[], \
 		         'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
 		         'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
-		         'bins':[], 'bint':[], \
+		         'bins':[], 'bint':[], 'pwrs':[], \
 		         'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
-		         'log0':[], 'log1':[], 'pwrs':[], \
+		         'log0':[], 'log1':[], 'sqrt':[], \
 		         'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
 		         'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
                          'splt':[], 'spl2':[], 'spl3':[], 'spl4':[], 'spl5':[], \
@@ -310,9 +310,9 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
 		         'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'MAD3':[], \
 		         'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
 		         'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
-		         'bins':[], 'bint':[], \
+		         'bins':[], 'bint':[], 'pwrs':[], \
 		         'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
-		         'log0':[], 'log1':[], 'pwrs':[], \
+		         'log0':[], 'log1':[], 'sqrt':[], \
 		         'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
 		         'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
                          'splt':[], 'spl2':[], 'spl3':[], 'spl4':[], 'spl5':[], \
@@ -469,9 +469,9 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
 		         'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'MAD3':[], \
 		         'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
 		         'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
-		         'bins':[], 'bint':[], \
+		         'bins':[], 'bint':[], 'pwrs':[], \
 		         'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
-		         'log0':[], 'log1':[], 'pwrs':[], \
+		         'log0':[], 'log1':[], 'sqrt':[], \
 		         'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
 		         'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
                          'splt':[], 'spl2':[], 'spl3':[], 'spl4':[], 'spl5':[], \
@@ -721,9 +721,9 @@ such as could potentially result in memory savings.
 		 'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'MAD3':[], \
 		 'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
 		 'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
-		 'bins':[], 'bint':[], \
+		 'bins':[], 'bint':[], 'pwrs':[], \
 		 'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
-		 'log0':[], 'log1':[], 'pwrs':[], \
+		 'log0':[], 'log1':[], 'sqrt':[], \
 		 'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
 		 'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
                  'splt':[], 'spl2':[], 'spl3':[], 'spl4':[], 'spl5':[], \
@@ -837,11 +837,11 @@ corresponding to new transformdict keys. We'll describe the entries here:
 ```
 #for example 
 processdict =  {'newt' : {'dualprocess' : None, \
-			              'singleprocess' : None, \
-			              'postprocess' : None, \
-        	              'NArowtype' : 'numeric', \
-      		              'MLinfilltype' : 'numeric', \
-           		          'labelctgy' : 'mnmx'}}
+			  'singleprocess' : None, \
+			  'postprocess' : None, \
+        	          'NArowtype' : 'numeric', \
+      		          'MLinfilltype' : 'numeric', \
+           		  'labelctgy' : 'mnmx'}}
 
 #A user should pass either a pair of processing functions to both 
 #dualprocess and postprocess, or alternatively just a single processing
@@ -866,25 +866,27 @@ processdict =  {'newt' : {'dualprocess' : None, \
 #NArowtype: can be entries of either 'numeric', 'positivenumeric', 'justNaN', 
 #or 'exclude' where
 #			'numeric' refers to columns where non-numeric entries are subject
-#					  to infill
-#           'positivenumeric' refers to columns where entries <= 0 are subject
-#                     to infill
+#			          to infill
+#                       'positivenumeric' refers to columns where entries <= 0 are subject
+#                                 to infill
+#                       'nonnegativenumeric' refers to columns where entries < 0 are subject
+#                                 to infill
 #			'justNaN' refers to columns where only NaN entries are subject
 #			          to infill
 #			'exclude' refers to columns where no infill will be performed
 
 #MLinfilltype: can be entries of 'numeric', 'singlct', 'multirt', 'exclude'
 #              'multisp', 'exclude', or 'label' where
-#			   'numeric' refers to columns where predictive algorithms treat
-#			   as a regression for numeric sets
-#			   'singlect' refers to columns where category gives a single column
-#			   where predictive algorithms treat as a classification target
-#			   'multirt' refers to category returning multiple columns where 
-#			   predictive algorithms treat as a multi modal classifier
-#			   'exclude' refers to categories excluded from predcitive address
-#			   'multisp' tbh I think this is just a duplicate of multirt, a
-#			   future update may strike this one
-#			   'label' refers to categories specifically intended for label
+#	       'numeric' refers to columns where predictive algorithms treat
+#			 as a regression for numeric sets
+#	       'singlect' refers to columns where category gives a single column
+#			 where predictive algorithms treat as a classification target
+#		'multirt' refers to category returning multiple columns where 
+#			 predictive algorithms treat as a multi modal classifier
+#		'exclude' refers to categories excluded from predcitive address
+#		'multisp' for bins multicolumn sets with boolean entries, where a row 
+#                        may have multiple entries for instance
+#		'label' refers to categories specifically intended for label
 #			   processing
 
 ```
@@ -1250,10 +1252,14 @@ efficent than one-hot encoding)
   - default infill: mean
   - default NArowtype: positivenumeric
   - suffix appender: '_bxcx'
-* log0/log1: performs logarithmic transofrm (base 10). Applies infill to values <= 0.
+* log0/log1: performs logarithmic transform (base 10). Applies infill to values <= 0.
   - default infill: mean
   - default NArowtype: positivenumeric
   - suffix appender: '_log0'
+* sqrt: performs square root transform. Applies infill to values < 0.
+  - default infill: mean
+  - default NArowtype: nonnegativenumeric
+  - suffix appender: '_sqrt'
 * pwrs: bins groupings by powers of 10
   - default infill: mean
   - default NArowtype: positivenumeric
@@ -1708,8 +1714,17 @@ And here are the series of family trees currently built into the internal librar
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
-                                     
+    
     transform_dict.update({'NAr3' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['NArw'], \
+                                     'cousins' : [], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'NAr4' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['NArw'], \
                                      'cousins' : [], \
@@ -2280,9 +2295,9 @@ And here are the series of family trees currently built into the internal librar
                                      'siblings': [], \
                                      'auntsuncles' : [], \
                                      'cousins' : [NArw], \
-                                     'children' : ['nbr2'], \
+                                     'children' : [], \
                                      'niecesnephews' : [], \
-                                     'coworkers' : [], \
+                                     'coworkers' : ['nbr2'], \
                                      'friends' : []}})
     
     transform_dict.update({'pwrs' : {'parents' : [], \
@@ -2306,6 +2321,15 @@ And here are the series of family trees currently built into the internal librar
     transform_dict.update({'log1' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['log0', 'pwrs'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'sqrt' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['sqrt'], \
                                      'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
