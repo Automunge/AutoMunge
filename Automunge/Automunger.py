@@ -1110,6 +1110,24 @@ class AutoMunge:
                                      'coworkers' : [], \
                                      'friends' : []}})
     
+    transform_dict.update({'bsor' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['bsor'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+  
+    transform_dict.update({'pwor' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['pwor'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
     transform_dict.update({'excl' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['excl'], \
@@ -1816,6 +1834,18 @@ class AutoMunge:
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'multisp', \
                                   'labelctgy' : 'bint'}})
+    process_dict.update({'bsor' : {'dualprocess' : self.process_bsor_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_bsor_class, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'singlct', \
+                                  'labelctgy' : 'bsor'}})
+    process_dict.update({'pwor' : {'dualprocess' : self.process_pwor_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_pwor_class, \
+                                  'NArowtype' : 'positivenumeric', \
+                                  'MLinfilltype' : 'singlct', \
+                                  'labelctgy' : 'pwor'}})
     process_dict.update({'NArw' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_NArw_class, \
                                   'postprocess' : None, \
@@ -7806,6 +7836,85 @@ class AutoMunge:
     
     return mdf_train, mdf_test, column_dict_list
   
+  def process_pwor_class(self, mdf_train, mdf_test, column, category, postprocess_dict):
+    '''
+    #processes a numerical set by creating bins coresponding to powers
+    #of ten in one hot encoded columns
+    
+    #pwrs will be intended for a raw set that is not yet normalized
+    
+    #we'll use an initial plug value of 0
+    '''
+
+    #store original column for later reversion
+    mdf_train[column + '_temp'] = mdf_train[column].copy()
+    mdf_test[column + '_temp'] = mdf_test[column].copy()
+
+    #convert all values to either numeric or NaN
+    mdf_train[column] = pd.to_numeric(mdf_train[column], errors='coerce')
+    mdf_test[column] = pd.to_numeric(mdf_test[column], errors='coerce')
+    
+    #convert all values <= 0 to Nan
+    mdf_train[column] = \
+    np.where(mdf_train[column] <= 0, np.nan, mdf_train[column].values)
+    mdf_test[column] = \
+    np.where(mdf_test[column] <= 0, np.nan, mdf_test[column].values)
+
+
+    pworcolumn = column + '_pwor'
+    mdf_train[pworcolumn] = \
+    np.where(mdf_train[column] != np.nan, np.floor(np.log10(mdf_train[column])), mdf_train[column].values)
+    mdf_test[pworcolumn] = \
+    np.where(mdf_test[column] != np.nan, np.floor(np.log10(mdf_test[column])), mdf_test[column].values)
+    
+    
+    #get mean of train set
+    meanlog = np.floor(mdf_train[column].mean())
+    
+    #get max of train set
+    maxlog = max(mdf_train[column])
+
+
+    #replace missing data with 0
+    mdf_train[pworcolumn] = mdf_train[pworcolumn].fillna(0)
+    mdf_test[pworcolumn] = mdf_test[pworcolumn].fillna(0)
+    
+    #replace original column from training data
+    del mdf_train[column]    
+    del mdf_test[column]
+    
+    mdf_train[column] = mdf_train[column + '_temp'].copy()
+    mdf_test[column] = mdf_test[column + '_temp'].copy()
+
+    del mdf_train[column + '_temp']    
+    del mdf_test[column + '_temp']
+        
+    #store some values in the text_dict{} for use later in ML infill methods
+    column_dict_list = []
+    
+    powercolumns = [column + '_pwor']
+    
+    categorylist = powercolumns.copy()
+    
+    for pc in powercolumns:
+
+      powernormalization_dict = {pc : {'meanlog' : meanlog, \
+                                       'maxlog' : maxlog}}
+    
+      column_dict = {pc : {'category' : 'pwor', \
+                           'origcategory' : category, \
+                           'normalization_dict' : powernormalization_dict, \
+                           'origcolumn' : column, \
+                           'columnslist' : powercolumns, \
+                           'categorylist' : categorylist, \
+                           'infillmodel' : False, \
+                           'infillcomplete' : False, \
+                           'deletecolumn' : False}}
+        
+      column_dict_list.append(column_dict.copy())
+    
+    return mdf_train, mdf_test, column_dict_list
+  
   
   def process_bins_class(self, mdf_train, mdf_test, column, category, \
                          postprocess_dict):
@@ -7826,7 +7935,10 @@ class AutoMunge:
     mdf_test[column] = pd.to_numeric(mdf_test[column], errors='coerce')
 
     #get mean of training data
-    mean = mdf_train[column].mean()    
+    mean = mdf_train[column].mean()
+    
+    if mean != mean:
+      mean = 0
 
     #replace missing data with training set mean
     mdf_train[column] = mdf_train[column].fillna(mean)
@@ -8074,7 +8186,111 @@ class AutoMunge:
     #return mdf_train, mdf_test, mean, std, nmbrcolumns, categorylist
     return mdf_train, mdf_test, column_dict_list
   
-  
+  def process_bsor_class(self, mdf_train, mdf_test, column, category, postprocess_dict):
+    '''
+    #processes a numerical set by creating bins coresponding to post z score
+    #normalization of <-2, -2-1, -10, 01, 12, >2 in one hot encoded columns
+    
+    #bins will be intended for a raw set that is not normalized
+    #bint will be intended for a previously normalized set
+    '''
+
+    #store original column for later reversion
+    mdf_train[column + '_temp'] = mdf_train[column].copy()
+    mdf_test[column + '_temp'] = mdf_test[column].copy()
+
+    #convert all values to either numeric or NaN
+    mdf_train[column] = pd.to_numeric(mdf_train[column], errors='coerce')
+    mdf_test[column] = pd.to_numeric(mdf_test[column], errors='coerce')
+
+    #get mean of training data
+    mean = mdf_train[column].mean()
+    
+    if mean != mean:
+      mean = 0
+
+    #replace missing data with training set mean
+    mdf_train[column] = mdf_train[column].fillna(mean)
+    mdf_test[column] = mdf_test[column].fillna(mean)
+
+    #subtract mean from column for both train and test
+    mdf_train[column] = mdf_train[column] - mean
+    mdf_test[column] = mdf_test[column] - mean
+
+    #get standard deviation of training data
+    std = mdf_train[column].std()
+    
+    #special case, if standard deviation is 0 we'll set it to 1 to avoid division by 0
+    if std == 0:
+      std = 1
+
+    #divide column values by std for both training and test data
+    mdf_train[column] = mdf_train[column] / std
+    mdf_test[column] = mdf_test[column] / std
+
+
+    binscolumn = column + '_bsor'
+    mdf_train[binscolumn] = \
+    pd.cut( mdf_train[column], bins = [-float('inf'),-2,-1,0,1,2,float('inf')],  \
+           labels = [0,1,2,3,4,5], precision=4)
+    mdf_test[binscolumn] = \
+    pd.cut( mdf_test[column], bins = [-float('inf'), -2, -1, 0, 1, 2, float('inf')],  \
+           labels = [0,1,2,3,4,5], precision=4)
+    
+    
+    ordinal_dict = {'s<-2':0,'s-21':1,'s-10':2,'s+01':3,'s+12':4,'s>+2':5}
+    
+    #new driftreport metric ordl_activations_dict
+    ordl_activations_dict = {}
+    for key in ordinal_dict:
+      sumcalc = (mdf_train[binscolumn] == ordinal_dict[key]).sum() 
+      ratio = sumcalc / mdf_train[binscolumn].shape[0]
+      ordl_activations_dict.update({key:ratio})
+
+    #replace original column
+    del mdf_train[column]
+    del mdf_test[column]
+    mdf_train[column] = mdf_train[column + '_temp'].copy()
+    mdf_test[column] = mdf_test[column + '_temp'].copy()
+    del mdf_train[column + '_temp']
+    del mdf_test[column + '_temp']
+
+
+    #create list of columns
+    nmbrcolumns = [column + '_bsor']
+
+
+
+    #nmbrnormalization_dict = {'mean' : mean, 'std' : std}
+
+    #store some values in the nmbr_dict{} for use later in ML infill methods
+    column_dict_list = []
+
+    for nc in nmbrcolumns:
+
+      nmbrnormalization_dict = {nc : {'ordinal_dict' : ordinal_dict, \
+                                      'ordl_activations_dict' : ordl_activations_dict, \
+                                      'binsmean' : mean, \
+                                      'binsstd' : std}}
+
+      if nc in nmbrcolumns:
+
+        column_dict = { nc : {'category' : 'bsor', \
+                             'origcategory' : category, \
+                             'normalization_dict' : nmbrnormalization_dict, \
+                             'origcolumn' : column, \
+                             'columnslist' : nmbrcolumns, \
+                             'categorylist' : nmbrcolumns, \
+                             'infillmodel' : False, \
+                             'infillcomplete' : False, \
+                             'deletecolumn' : False}}
+
+        column_dict_list.append(column_dict.copy())
+
+
+
+    #return mdf_train, mdf_test, mean, std, nmbrcolumns, categorylist
+    return mdf_train, mdf_test, column_dict_list
   
   
   def process_null_class(self, df, column, category, postprocess_dict):
@@ -11758,7 +11974,7 @@ class AutoMunge:
                              'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'MAD3':[], \
                              'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
                              'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
-                             'bins':[], 'bint':[], 'pwrs':[], \
+                             'bins':[], 'bint':[], 'bsor':[], 'pwrs':[], 'pwor':[], \
                              'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
                              'log0':[], 'log1':[], 'sqrt':[], \
                              'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
@@ -13125,7 +13341,7 @@ class AutoMunge:
         print("")
         
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '2.75'
+    automungeversion = '2.76'
     application_number = random.randint(100000000000,999999999999)
     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -16571,6 +16787,48 @@ class AutoMunge:
 
     
     return mdf_test
+  
+  def postprocess_pwor_class(self, mdf_test, column, postprocess_dict, columnkey):
+    '''
+    #processes a numerical set by creating bins coresponding to powers
+    #of ten in one hot encoded columns
+    
+    #pwrs will be intended for a raw set that is not yet normalized
+    
+    #we'll use an initial plug value of 0
+    '''
+            
+    normkey = column + '_pwor'
+    
+    #normkey = columnkey
+    
+    meanlog = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['meanlog']
+    maxlog = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['maxlog']
+    
+    #store original column for later reversion
+    mdf_test[column + '_temp'] = mdf_test[column].copy()
+    
+    #convert all values to either numeric or NaN
+    mdf_test[column] = pd.to_numeric(mdf_test[column], errors='coerce')
+    
+    #convert all values <= 0 to Nan
+    mdf_test[column] = \
+    np.where(mdf_test[column] <= 0, np.nan, mdf_test[column].values)
+    
+    #log transform column
+    mdf_test[normkey] = \
+    np.where(mdf_test[column] != np.nan, np.floor(np.log10(mdf_test[column])), mdf_test[column].values)
+
+    #replace missing data with 0
+    mdf_test[normkey] = mdf_test[normkey].fillna(0)
+    
+    #replace original column
+    del mdf_test[column]
+    mdf_test[column] = mdf_test[column + '_temp'].copy()
+    del mdf_test[column + '_temp']
+
+    
+    return mdf_test
 
   def postprocess_sqrt_class(self, mdf_test, column, postprocess_dict, columnkey):
         
@@ -16828,6 +17086,66 @@ class AutoMunge:
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
+    
+    return mdf_test
+  
+  def postprocess_bsor_class(self, mdf_test, column, postprocess_dict, columnkey):
+    '''
+    #note that bins is intended for raw data that has not yet been nromalized
+    #bint is intended for values that have already recieved z-score normalization
+    
+    
+    #process_numerical_class(mdf_train, mdf_test, column)
+    #function to normalize data to mean of 0 and standard deviation of 1 \
+    #z score normalization) and also create set of onehot encoded bins based \
+    #on standaqrds deviation increments from training distribution \
+    #takes as arguement pandas dataframe of training and test data (mdf_train), (mdf_test)\
+    #and the name of the column string ('column') 
+    #replaces missing or improperly formatted data with mean of remaining values
+    #replaces original specified column in dataframe
+    #returns transformed dataframe
+    #expect this approach works better when the numerical distribution is thin tailed
+    #if only have training but not test data handy, use same training data for both dataframe inputs
+    '''
+    
+    #retrieve normalization parameters from postprocess_dict
+    normkey = column +'_bsor'
+    #normkey = columnkey
+    
+    mean = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binsmean']
+    std = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binsstd']
+    ordinal_dict = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordinal_dict']
+    
+
+    #store original column for later reversion
+    mdf_test[column + '_temp'] = mdf_test[column].copy()
+
+    #convert all values to either numeric or NaN
+    mdf_test[column] = pd.to_numeric(mdf_test[column], errors='coerce')
+
+    #replace missing data with training set mean
+    mdf_test[column] = mdf_test[column].fillna(mean)
+
+    #subtract mean from column for test
+    mdf_test[column] = mdf_test[column] - mean
+
+    #divide column values by std for both training and test data
+    mdf_test[column] = mdf_test[column] / std
+
+
+    #create bins based on standard deviation increments
+    binscolumn = column + '_bsor'
+    mdf_test[binscolumn] = \
+    pd.cut( mdf_test[column], bins = [-float('inf'), -2, -1, 0, 1, 2, float('inf')],  \
+           labels = [0,1,2,3,4,5], precision=4)
+
+
+    
+    #replace original column
+    del mdf_test[column]
+    mdf_test[column] = mdf_test[column + '_temp'].copy()
+    del mdf_test[column + '_temp']
+
     
     return mdf_test
   
