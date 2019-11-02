@@ -1312,7 +1312,7 @@ holiday
   - default NArowtype: justNaN
   - suffix appender: includes appenders for (_year, _mnth, _days, _hour, _mint, _scnd)
 * mnsn/mncs/dysn/dycs/hrsn/hrcs/misn/mics/scsn/sccs: segregated by time scale and 
-dual columns with sin and cos transformations for time scale period
+dual columns with sin and cos transformations for time scale period (eg 12 months, 24 hrs, 7 days, etc)
   - default infill: mean
   - default NArowtype: justNaN
   - suffix appender: includes appenders for (mnsn/mncs/dysn/dycs/hrsn/hrcs/misn/mics/scsn/sccs)
