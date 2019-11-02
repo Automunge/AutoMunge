@@ -5738,8 +5738,9 @@ class AutoMunge:
 
     #apply sin transform
     #average number of days in a month is 30.42
-    mdf_train[column + '_dysn'] = np.sin(mdf_train[column + '_dysn'] * 2 * np.pi / 30.42 )
-    mdf_test[column + '_dysn'] = np.sin(mdf_test[column + '_dysn'] * 2 * np.pi / 30.42 )
+    #days in a week is 7
+    mdf_train[column + '_dysn'] = np.sin(mdf_train[column + '_dysn'] * 2 * np.pi / 7 )
+    mdf_test[column + '_dysn'] = np.sin(mdf_test[column + '_dysn'] * 2 * np.pi / 7 )
 
 
     #get mean of various categories of datetime objects to use to plug in missing cells
@@ -5833,8 +5834,9 @@ class AutoMunge:
 
     #apply sin transform
     #average number of days in a month is 30.42
-    mdf_train[column + '_dycs'] = np.cos(mdf_train[column + '_dycs'] * 2 * np.pi / 30.42 )
-    mdf_test[column + '_dycs'] = np.cos(mdf_test[column + '_dycs'] * 2 * np.pi / 30.42 )
+    #days in. a week is 7
+    mdf_train[column + '_dycs'] = np.cos(mdf_train[column + '_dycs'] * 2 * np.pi / 7 )
+    mdf_test[column + '_dycs'] = np.cos(mdf_test[column + '_dycs'] * 2 * np.pi / 7 )
 
 
     #get mean of various categories of datetime objects to use to plug in missing cells
@@ -5926,8 +5928,9 @@ class AutoMunge:
 #     mdf_test[column + '_mdsn'] = mdf_test[column + '_mdsn'].dt.month
     
     #apply sin transform to combined day and month, note aversage of 30.42 days in a month, 12 months in a year
-    mdf_train[column + '_dhms'] = np.sin((mdf_train[column + '_dhms'].dt.day + mdf_train[column + '_dhms'].dt.hour / 24 + mdf_train[column + '_dhms'].dt.minute / 24 / 60) * 2 * np.pi / 12 )
-    mdf_test[column + '_dhms'] = np.sin((mdf_test[column + '_dhms'].dt.day + mdf_test[column + '_dhms'].dt.hour / 24 + mdf_test[column + '_dhms'].dt.minute / 24 / 60) * 2 * np.pi / 12 )
+    #7 days in. a week
+    mdf_train[column + '_dhms'] = np.sin((mdf_train[column + '_dhms'].dt.day + mdf_train[column + '_dhms'].dt.hour / 24 + mdf_train[column + '_dhms'].dt.minute / 24 / 60) * 2 * np.pi / 7 )
+    mdf_test[column + '_dhms'] = np.sin((mdf_test[column + '_dhms'].dt.day + mdf_test[column + '_dhms'].dt.hour / 24 + mdf_test[column + '_dhms'].dt.minute / 24 / 60) * 2 * np.pi / 7 )
     
     
     #get mean of various categories of datetime objects to use to plug in missing cells
@@ -6020,8 +6023,9 @@ class AutoMunge:
 #     mdf_test[column + '_mdsn'] = mdf_test[column + '_mdsn'].dt.month
     
     #apply cos transform to combined day and month, note aversage of 30.42 days in a month, 12 months in a year
-    mdf_train[column + '_dhmc'] = np.cos((mdf_train[column + '_dhmc'].dt.day + mdf_train[column + '_dhmc'].dt.hour / 24 + mdf_train[column + '_dhmc'].dt.minute / 24 / 60) * 2 * np.pi / 12 )
-    mdf_test[column + '_dhmc'] = np.cos((mdf_test[column + '_dhmc'].dt.day + mdf_test[column + '_dhmc'].dt.hour / 24 + mdf_test[column + '_dhmc'].dt.minute / 24 / 60) * 2 * np.pi / 12 )
+    #7 days in a week
+    mdf_train[column + '_dhmc'] = np.cos((mdf_train[column + '_dhmc'].dt.day + mdf_train[column + '_dhmc'].dt.hour / 24 + mdf_train[column + '_dhmc'].dt.minute / 24 / 60) * 2 * np.pi / 7 )
+    mdf_test[column + '_dhmc'] = np.cos((mdf_test[column + '_dhmc'].dt.day + mdf_test[column + '_dhmc'].dt.hour / 24 + mdf_test[column + '_dhmc'].dt.minute / 24 / 60) * 2 * np.pi / 7 )
     
     
     #get mean of various categories of datetime objects to use to plug in missing cells
@@ -6422,8 +6426,9 @@ class AutoMunge:
 #     mdf_test[column + '_mdsn'] = mdf_test[column + '_mdsn'].dt.month
     
     #apply sin transform to combined day and month, note aversage of 30.42 days in a month, 12 months in a year
-    mdf_train[column + '_hmss'] = np.sin((mdf_train[column + '_hmss'].dt.hour + mdf_train[column + '_hmss'].dt.minute / 60 + mdf_train[column + '_hmss'].dt.second / 60 / 60) * 2 * np.pi / 12 )
-    mdf_test[column + '_hmss'] = np.sin((mdf_test[column + '_hmss'].dt.hour + mdf_test[column + '_hmss'].dt.minute / 60 + mdf_test[column + '_hmss'].dt.second / 60 / 60) * 2 * np.pi / 12 )
+    #24 hours in. a day
+    mdf_train[column + '_hmss'] = np.sin((mdf_train[column + '_hmss'].dt.hour + mdf_train[column + '_hmss'].dt.minute / 60 + mdf_train[column + '_hmss'].dt.second / 60 / 60) * 2 * np.pi / 24 )
+    mdf_test[column + '_hmss'] = np.sin((mdf_test[column + '_hmss'].dt.hour + mdf_test[column + '_hmss'].dt.minute / 60 + mdf_test[column + '_hmss'].dt.second / 60 / 60) * 2 * np.pi / 24 )
     
     
     #get mean of various categories of datetime objects to use to plug in missing cells
@@ -6516,8 +6521,9 @@ class AutoMunge:
 #     mdf_test[column + '_mdsn'] = mdf_test[column + '_mdsn'].dt.month
     
     #apply cos transform to combined day and month, note aversage of 30.42 days in a month, 12 months in a year
-    mdf_train[column + '_hmsc'] = np.cos((mdf_train[column + '_hmsc'].dt.hour + mdf_train[column + '_hmsc'].dt.minute / 60 + mdf_train[column + '_hmsc'].dt.second / 60 / 60) * 2 * np.pi / 12 )
-    mdf_test[column + '_hmsc'] = np.cos((mdf_test[column + '_hmsc'].dt.hour + mdf_test[column + '_hmsc'].dt.minute / 60 + mdf_test[column + '_hmsc'].dt.second / 60 / 60) * 2 * np.pi / 12 )
+    #24 hours in a day
+    mdf_train[column + '_hmsc'] = np.cos((mdf_train[column + '_hmsc'].dt.hour + mdf_train[column + '_hmsc'].dt.minute / 60 + mdf_train[column + '_hmsc'].dt.second / 60 / 60) * 2 * np.pi / 24 )
+    mdf_test[column + '_hmsc'] = np.cos((mdf_test[column + '_hmsc'].dt.hour + mdf_test[column + '_hmsc'].dt.minute / 60 + mdf_test[column + '_hmsc'].dt.second / 60 / 60) * 2 * np.pi / 24 )
     
     
     #get mean of various categories of datetime objects to use to plug in missing cells
@@ -6728,9 +6734,9 @@ class AutoMunge:
     mdf_test[column + '_misn'] = mdf_test[column + '_misn'].dt.minute
 
     #apply sin transform
-    #60 minutes in an hour
-    mdf_train[column + '_misn'] = np.sin(mdf_train[column + '_misn'] * 2 * np.pi / 60 )
-    mdf_test[column + '_misn'] = np.sin(mdf_test[column + '_misn'] * 2 * np.pi / 60 )
+    #60 minutes in an hour, 24 hours in a. day
+    mdf_train[column + '_misn'] = np.sin(mdf_train[column + '_misn'] * 2 * np.pi / 60 / 24 )
+    mdf_test[column + '_misn'] = np.sin(mdf_test[column + '_misn'] * 2 * np.pi / 60 / 24 )
 
 
     #get mean of various categories of datetime objects to use to plug in missing cells
@@ -6823,9 +6829,9 @@ class AutoMunge:
     mdf_test[column + '_mics'] = mdf_test[column + '_mics'].dt.minute
 
     #apply cos transform
-    #60 minutes in an hour
-    mdf_train[column + '_mics'] = np.cos(mdf_train[column + '_mics'] * 2 * np.pi / 60 )
-    mdf_test[column + '_mics'] = np.cos(mdf_test[column + '_mics'] * 2 * np.pi / 60 )
+    #60 minutes in an hour, 24 hours in a day
+    mdf_train[column + '_mics'] = np.cos(mdf_train[column + '_mics'] * 2 * np.pi / 60 / 24 )
+    mdf_test[column + '_mics'] = np.cos(mdf_test[column + '_mics'] * 2 * np.pi / 60 / 24 )
 
 
     #get mean of various categories of datetime objects to use to plug in missing cells
@@ -6918,8 +6924,8 @@ class AutoMunge:
 #     mdf_test[column + '_mdsn'] = mdf_test[column + '_mdsn'].dt.month
     
     #apply sin transform to combined day and month, note aversage of 30.42 days in a month, 12 months in a year
-    mdf_train[column + '_mssn'] = np.sin((mdf_train[column + '_mssn'].dt.minute + mdf_train[column + '_mssn'].dt.second / 60) * 2 * np.pi / 12 )
-    mdf_test[column + '_mssn'] = np.sin((mdf_test[column + '_mssn'].dt.minute + mdf_test[column + '_mssn'].dt.second / 60) * 2 * np.pi / 12 )
+    mdf_train[column + '_mssn'] = np.sin((mdf_train[column + '_mssn'].dt.minute + mdf_train[column + '_mssn'].dt.second / 60) * 2 * np.pi / 60 / 24 )
+    mdf_test[column + '_mssn'] = np.sin((mdf_test[column + '_mssn'].dt.minute + mdf_test[column + '_mssn'].dt.second / 60) * 2 * np.pi / 60 / 24 )
     
     
     #get mean of various categories of datetime objects to use to plug in missing cells
@@ -7012,8 +7018,8 @@ class AutoMunge:
 #     mdf_test[column + '_mdsn'] = mdf_test[column + '_mdsn'].dt.month
     
     #apply cos transform to combined day and month, note aversage of 30.42 days in a month, 12 months in a year
-    mdf_train[column + '_mscs'] = np.cos((mdf_train[column + '_mscs'].dt.minute + mdf_train[column + '_mscs'].dt.second / 60) * 2 * np.pi / 12 )
-    mdf_test[column + '_mscs'] = np.cos((mdf_test[column + '_mscs'].dt.minute + mdf_test[column + '_mscs'].dt.second / 60) * 2 * np.pi / 12 )
+    mdf_train[column + '_mscs'] = np.cos((mdf_train[column + '_mscs'].dt.minute + mdf_train[column + '_mscs'].dt.second / 60) * 2 * np.pi / 60 / 24 )
+    mdf_test[column + '_mscs'] = np.cos((mdf_test[column + '_mscs'].dt.minute + mdf_test[column + '_mscs'].dt.second / 60) * 2 * np.pi / 60 / 24 )
     
     
     #get mean of various categories of datetime objects to use to plug in missing cells
@@ -13341,7 +13347,7 @@ class AutoMunge:
         print("")
         
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '2.76'
+    automungeversion = '2.77'
     application_number = random.randint(100000000000,999999999999)
     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -15783,7 +15789,8 @@ class AutoMunge:
     
     #apply sin transform
     #average number of days in a month is 30.42
-    mdf_test[column + '_dysn'] = np.sin(mdf_test[column + '_dysn'] * 2 * np.pi / 30.42 )
+    #7 days in a week
+    mdf_test[column + '_dysn'] = np.sin(mdf_test[column + '_dysn'] * 2 * np.pi / 7 )
 
     #replace missing data with training set mean
     mdf_test[column + '_dysn'] = mdf_test[column + '_dysn'].fillna(mean_dysn)
@@ -15831,7 +15838,8 @@ class AutoMunge:
     
     #apply sin transform
     #average number of days in a month is 30.42
-    mdf_test[column + '_dycs'] = np.cos(mdf_test[column + '_dycs'] * 2 * np.pi / 30.42 )
+    #7 days in a week
+    mdf_test[column + '_dycs'] = np.cos(mdf_test[column + '_dycs'] * 2 * np.pi / 7 )
 
     #replace missing data with training set mean
     mdf_test[column + '_dycs'] = mdf_test[column + '_dycs'].fillna(mean_dycs)
@@ -15878,7 +15886,8 @@ class AutoMunge:
 #     mdf_test[column + '_mdsn'] = mdf_test[column + '_mdsn'].dt.month
     
     #apply sin transform to combined day hour minute
-    mdf_test[column + '_dhms'] = np.sin((mdf_test[column + '_dhms'].dt.day + mdf_test[column + '_dhms'].dt.hour / 24 + mdf_test[column + '_dhms'].dt.minute / 24 / 60) * 2 * np.pi / 12 )
+    #7 days in a week
+    mdf_test[column + '_dhms'] = np.sin((mdf_test[column + '_dhms'].dt.day + mdf_test[column + '_dhms'].dt.hour / 24 + mdf_test[column + '_dhms'].dt.minute / 24 / 60) * 2 * np.pi / 7 )
 
     
     #replace missing data with training set mean
@@ -15926,7 +15935,8 @@ class AutoMunge:
 #     mdf_test[column + '_mdsn'] = mdf_test[column + '_mdsn'].dt.month
     
     #apply sin transform to combined day hour minute
-    mdf_test[column + '_dhmc'] = np.cos((mdf_test[column + '_dhmc'].dt.day + mdf_test[column + '_dhmc'].dt.hour / 24 + mdf_test[column + '_dhmc'].dt.minute / 24 / 60) * 2 * np.pi / 12 )
+    #7 days in. a week
+    mdf_test[column + '_dhmc'] = np.cos((mdf_test[column + '_dhmc'].dt.day + mdf_test[column + '_dhmc'].dt.hour / 24 + mdf_test[column + '_dhmc'].dt.minute / 24 / 60) * 2 * np.pi / 7 )
 
     
     #replace missing data with training set mean
@@ -16128,7 +16138,8 @@ class AutoMunge:
 #     mdf_test[column + '_mdsn'] = mdf_test[column + '_mdsn'].dt.month
     
     #apply sin transform to combined hour minute sec
-    mdf_test[column + '_hmss'] = np.sin((mdf_test[column + '_hmss'].dt.hour + mdf_test[column + '_hmss'].dt.minute / 60 + mdf_test[column + '_hmss'].dt.second / 60 / 60) * 2 * np.pi / 12 )
+    #24 hours in a day
+    mdf_test[column + '_hmss'] = np.sin((mdf_test[column + '_hmss'].dt.hour + mdf_test[column + '_hmss'].dt.minute / 60 + mdf_test[column + '_hmss'].dt.second / 60 / 60) * 2 * np.pi / 24 )
 
     
     #replace missing data with training set mean
@@ -16176,7 +16187,8 @@ class AutoMunge:
 #     mdf_test[column + '_mdsn'] = mdf_test[column + '_mdsn'].dt.month
     
     #apply sin transform to combined hour minute sec
-    mdf_test[column + '_hmsc'] = np.cos((mdf_test[column + '_hmsc'].dt.hour + mdf_test[column + '_hmsc'].dt.minute / 60 + mdf_test[column + '_hmsc'].dt.second / 60 / 60) * 2 * np.pi / 12 )
+    #24 hours in a. day
+    mdf_test[column + '_hmsc'] = np.cos((mdf_test[column + '_hmsc'].dt.hour + mdf_test[column + '_hmsc'].dt.minute / 60 + mdf_test[column + '_hmsc'].dt.second / 60 / 60) * 2 * np.pi / 24 )
 
     
     #replace missing data with training set mean
@@ -16282,8 +16294,8 @@ class AutoMunge:
     mdf_test[column + '_misn'] = mdf_test[column + '_misn'].dt.minute
     
     #apply sin transform
-    #60 minutes in an hour
-    mdf_test[column + '_misn'] = np.sin(mdf_test[column + '_misn'] * 2 * np.pi / 60 )
+    #60 minutes in an hour, 24 hours in day
+    mdf_test[column + '_misn'] = np.sin(mdf_test[column + '_misn'] * 2 * np.pi / 60 / 24 )
 
     #replace missing data with training set mean
     mdf_test[column + '_misn'] = mdf_test[column + '_misn'].fillna(mean_misn)
@@ -16330,8 +16342,8 @@ class AutoMunge:
     mdf_test[column + '_mics'] = mdf_test[column + '_mics'].dt.minute
     
     #apply sin transform
-    #60 minutes in an hour
-    mdf_test[column + '_mics'] = np.cos(mdf_test[column + '_mics'] * 2 * np.pi / 60 )
+    #60 minutes in an hour, 24 hours in day
+    mdf_test[column + '_mics'] = np.cos(mdf_test[column + '_mics'] * 2 * np.pi / 60 / 24 )
 
     #replace missing data with training set mean
     mdf_test[column + '_mics'] = mdf_test[column + '_mics'].fillna(mean_mics)
@@ -16378,7 +16390,7 @@ class AutoMunge:
 #     mdf_test[column + '_mdsn'] = mdf_test[column + '_mdsn'].dt.month
     
     #apply sin transform to combined minute sec
-    mdf_test[column + '_mssn'] = np.sin((mdf_test[column + '_mssn'].dt.minute + mdf_test[column + '_mssn'].dt.second / 60 ) * 2 * np.pi / 12 )
+    mdf_test[column + '_mssn'] = np.sin((mdf_test[column + '_mssn'].dt.minute + mdf_test[column + '_mssn'].dt.second / 60 ) * 2 * np.pi / 60 / 24 )
 
     
     #replace missing data with training set mean
@@ -16426,7 +16438,7 @@ class AutoMunge:
 #     mdf_test[column + '_mdsn'] = mdf_test[column + '_mdsn'].dt.month
     
     #apply sin transform to combined minute sec
-    mdf_test[column + '_mscs'] = np.cos((mdf_test[column + '_mscs'].dt.minute + mdf_test[column + '_mscs'].dt.second / 60 ) * 2 * np.pi / 12 )
+    mdf_test[column + '_mscs'] = np.cos((mdf_test[column + '_mscs'].dt.minute + mdf_test[column + '_mscs'].dt.second / 60 ) * 2 * np.pi / 60 / 24 )
 
     
     #replace missing data with training set mean
