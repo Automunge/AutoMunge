@@ -125,7 +125,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
 		         'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'MAD3':[], \
 		         'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
 		         'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
-		         'bins':[], 'bint':[], 'pwrs':[], \
+		         'bins':[], 'bint':[], 'bsor':[], 'pwrs':[], 'pwor':[], \
 		         'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
 		         'log0':[], 'log1':[], 'sqrt':[], \
 		         'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
@@ -310,7 +310,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
 		         'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'MAD3':[], \
 		         'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
 		         'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
-		         'bins':[], 'bint':[], 'pwrs':[], \
+		         'bins':[], 'bint':[], 'bsor':[], 'pwrs':[], 'pwor':[], \
 		         'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
 		         'log0':[], 'log1':[], 'sqrt':[], \
 		         'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
@@ -469,7 +469,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
 		         'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'MAD3':[], \
 		         'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
 		         'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
-		         'bins':[], 'bint':[], 'pwrs':[], \
+		         'bins':[], 'bint':[], 'bsor':[], 'pwrs':[], 'pwor':[], \
 		         'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
 		         'log0':[], 'log1':[], 'sqrt':[], \
 		         'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
@@ -721,7 +721,7 @@ such as could potentially result in memory savings.
 		 'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'MAD3':[], \
 		 'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
 		 'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
-		 'bins':[], 'bint':[], 'pwrs':[], \
+		 'bins':[], 'bint':[], 'bsor':[], 'pwrs':[], 'pwor':[], \
 		 'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
 		 'log0':[], 'log1':[], 'sqrt':[], \
 		 'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
@@ -1266,6 +1266,11 @@ efficent than one-hot encoding)
   - default infill: mean
   - default NArowtype: positivenumeric
   - suffix appender: '_10^#' where # is integer indicating target powers of 10 for column
+* pwor: for numerical sets, outputs an ordinal encoding indicating where a
+value fell with respect to powers of 10
+  - default infill: zero
+  - default NArowtype: positivenumeric
+  - suffix appender: '_pwor'
 * bins: for numerical sets, outputs a set of 6 columns indicating where a
 value fell with respect to number of standard deviations from the mean of the
 set (i.e. <-2, -2-1, -10, 01, 12, >2)
@@ -1278,6 +1283,12 @@ set (i.e. <-2, -2-1, -10, 01, 12, >2)
   - default NArowtype: numeric
   - suffix appender: '_bint_####' where #### is one of set (t<-2, t-21, t-10, t+01, t+12, t>+2)
   which indicate column target for number of standard deviations from the mean
+* bsor: for numerical sets, outputs an ordinal encoding indicating where a
+value fell with respect to number of standard deviations from the mean of the
+set (i.e. <-2:0, -2-1:1, -10:2, 01:3, 12:4, >2:5)
+  - default infill: mean
+  - default NArowtype: numeric
+  - suffix appender: '_bsor'
 * date/dat2: for datetime formatted data, segregates data by time scale to multiple
 columns (year/month/day/hour/minute/second) and then performs z-score normalization
   - default infill: mean
@@ -2378,6 +2389,24 @@ And here are the series of family trees currently built into the internal librar
                                      'siblings': [], \
                                      'auntsuncles' : ['bint'], \
                                      'cousins' : [], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'bsor' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['bsor'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+  
+    transform_dict.update({'pwor' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['pwor'], \
+                                     'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
