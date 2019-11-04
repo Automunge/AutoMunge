@@ -8446,166 +8446,103 @@ class AutoMunge:
     #returns category id as a string
     '''
     
-    df = pd.DataFrame(df_source[column].copy())
-
-    #I couldn't find a good pandas tool for evaluating data class, \
-    #So will produce an array containing data types of each cell and \
-    #evaluate for most common variable using the collections library
-
-    type1_df = df[column].apply(lambda x: type(x)).values
-
-    c = collections.Counter(type1_df)
-    mc = c.most_common(1)
-    mc2 = c.most_common(2)
+    #we'll introduce convention of special values for powertransform to change default
+    #we'll allow powertransform == 'excl' to signal that nonassigned columns should
+    #be left untouched (a simpler version of existing functionality of assigning excl in assigncat)
+    if powertransform == 'excl':
+      category = 'excl'
+      
+    #or powertransform == 'exc2' for unprocessed but subject to force to numeric and modeinfill
+    elif powertransform == 'exc2':
+      category = 'exc2'
     
-    #this is to address scenario where only one value so we can still call mc2[1][0]
-    if len(mc2) == len(mc):
-      mc2 = mc + mc
+    else:
     
-    #count number of unique values
-    nunique = df[column].nunique()
-    
-    #check if nan present for cases where nunique == 3
-    nanpresent = False
-    if nunique == 3:
-      for unique in df[column].unique():
-        if unique != unique:
-          nanpresent = True
+      df = pd.DataFrame(df_source[column].copy())
 
-    #free memory (dtypes are memory hogs)
-    del type1_df
+      #I couldn't find a good pandas tool for evaluating data class, \
+      #So will produce an array containing data types of each cell and \
+      #evaluate for most common variable using the collections library
 
+      type1_df = df[column].apply(lambda x: type(x)).values
 
-    #additional array needed to check for time series
+      c = collections.Counter(type1_df)
+      mc = c.most_common(1)
+      mc2 = c.most_common(2)
 
-    #df['typecolumn2'] = df[column].apply(lambda x: type(pd.to_datetime(x, errors = 'coerce')))
-    type2_df = df[column].apply(lambda x: type(pd.to_datetime(x, errors = 'coerce'))).values
+      #this is to address scenario where only one value so we can still call mc2[1][0]
+      if len(mc2) == len(mc):
+        mc2 = mc + mc
 
-    datec = collections.Counter(type2_df)
-    datemc = datec.most_common(1)
-    datemc2 = datec.most_common(2)
-    
-    #this is to address scenario where only one value so we can still call mc2[1][0]
-    if len(datemc2) == len(datemc):
-      datemc2 = datemc + datemc
+      #count number of unique values
+      nunique = df[column].nunique()
 
-    #free memory (dtypes are memory hogs)
-    del type2_df
+      #check if nan present for cases where nunique == 3
+      nanpresent = False
+      if nunique == 3:
+        for unique in df[column].unique():
+          if unique != unique:
+            nanpresent = True
 
-    #an extension of this approach could be for those columns that produce a text\
-    #category to implement an additional text to determine the number of \
-    #common groupings / or the amount of uniquity. For example if every row has\
-    #a unique value then one-hot-encoding would not be appropriate. It would \
-    #probably be apopropraite to either return an error message if this is found \
-    #or alternatively find a furhter way to automate this processing such as \
-    #look for contextual clues to groupings that can be inferred.
-
-    #This is kind of hack to evaluate class by comparing these with output of mc
-    checkint = 1
-    checkfloat = 1.1
-    checkstring = 'string'
-    checkNAN = np.nan
-
-    #there's probably easier way to do this, here will create a check for date
-    df_checkdate = pd.DataFrame([{'checkdate' : '7/4/2018'}])
-    df_checkdate['checkdate'] = pd.to_datetime(df_checkdate['checkdate'], errors = 'coerce')
+      #free memory (dtypes are memory hogs)
+      del type1_df
 
 
-    #create dummy variable to store determined class (default is text class)
-    category = 'text'
+      #additional array needed to check for time series
+
+      #df['typecolumn2'] = df[column].apply(lambda x: type(pd.to_datetime(x, errors = 'coerce')))
+      type2_df = df[column].apply(lambda x: type(pd.to_datetime(x, errors = 'coerce'))).values
+
+      datec = collections.Counter(type2_df)
+      datemc = datec.most_common(1)
+      datemc2 = datec.most_common(2)
+
+      #this is to address scenario where only one value so we can still call mc2[1][0]
+      if len(datemc2) == len(datemc):
+        datemc2 = datemc + datemc
+
+      #free memory (dtypes are memory hogs)
+      del type2_df
+
+      #an extension of this approach could be for those columns that produce a text\
+      #category to implement an additional text to determine the number of \
+      #common groupings / or the amount of uniquity. For example if every row has\
+      #a unique value then one-hot-encoding would not be appropriate. It would \
+      #probably be apopropraite to either return an error message if this is found \
+      #or alternatively find a furhter way to automate this processing such as \
+      #look for contextual clues to groupings that can be inferred.
+
+      #This is kind of hack to evaluate class by comparing these with output of mc
+      checkint = 1
+      checkfloat = 1.1
+      checkstring = 'string'
+      checkNAN = np.nan
+
+      #there's probably easier way to do this, here will create a check for date
+      df_checkdate = pd.DataFrame([{'checkdate' : '7/4/2018'}])
+      df_checkdate['checkdate'] = pd.to_datetime(df_checkdate['checkdate'], errors = 'coerce')
 
 
-    #if most common in column is string and > two values, set category to text
-    if isinstance(checkstring, mc[0][0]) and nunique > 2:
+      #create dummy variable to store determined class (default is text class)
       category = 'text'
 
-    #if most common is date, set category to date
-    if isinstance(df_checkdate['checkdate'][0], datemc[0][0]):
-      category = 'dat6'
-    
-    if df[column].dtype.name == 'category':
-      if nunique <= 2:
-        category = 'bnry'
-      else:
+
+      #if most common in column is string and > two values, set category to text
+      if isinstance(checkstring, mc[0][0]) and nunique > 2:
         category = 'text'
 
-    #if most common in column is integer and > two values, set category to number of bxcx
-    if isinstance(checkint, mc[0][0]) and nunique > 2:
-      
-      if df[column].dtype.name == 'category':
-        if nunique <= 2:
-          category = 'bnry'
-        else:
-          category = 'text'
-    
-      #take account for numbercategoryheuristic
-      #if df[column].nunique() / df[column].shape[0] < numbercategoryheuristic:
-      #if nunique < numbercategoryheuristic:
-      if nunique <= 3:
-        if nunique == 3:
-          category = 'text'
-        else:
-          category = 'bnry'
-#       if True == False:
-#         pass
-    
-      else:
-        category = 'nmbr'
-
-
-    #if most common in column is float, set category to number or bxcx
-    if isinstance(checkfloat, mc[0][0]):
-
-      #take account for numbercategoryheuristic
-      #if df[column].nunique() / df[column].shape[0] < numbercategoryheuristic \
-#       if nunique < numbercategoryheuristic \
-#       or df[column].dtype.name == 'category':
-#       if df[column].dtype.name == 'category':
-      if df[column].dtype.name == 'category':
-        if nunique <= 2:
-          category = 'bnry'
-        else:
-          category = 'text'
-      
-      elif nunique <= 3:
-        if nunique == 3:
-          category = 'text'
-        elif nunique <= 2:
-          category = 'bnry'
-
-      else:
-        category = 'nmbr'
-
-
-    #if most common in column is integer and <= two values, set category to binary
-    if isinstance(checkint, mc[0][0]) and nunique <= 2:
-      category = 'bnry'
-
-    #if most common in column is string and <= two values, set category to binary
-    if isinstance(checkstring, mc[0][0]) and nunique <= 2:
-      category = 'bnry'
-
-
-    #else if most common in column is NaN, re-evaluate using the second most common type
-    #(I suspect the below might have a bug somewhere but is working on my current 
-    #tests so will leave be for now)
-    #elif df[column].isna().sum() >= df.shape[0] / 2:
-    if df[column].isna().sum() >= df.shape[0] / 2:
-      
-      #if 2nd most common in column is string and two values, set category to binary
-      if isinstance(checkstring, mc2[1][0]) and nunique == 2:
-        category = 'bnry'
-    
-      #if 2nd most common in column is string and > two values, set category to text
-      if isinstance(checkstring, mc2[1][0]) and nunique > 2:
-        category = 'text'
-
-      #if 2nd most common is date, set category to date   
-      if isinstance(df_checkdate['checkdate'][0], datemc2[1][0]):
+      #if most common is date, set category to date
+      if isinstance(df_checkdate['checkdate'][0], datemc[0][0]):
         category = 'dat6'
 
-      #if 2nd most common in column is integer and > two values, set category to number
-      if isinstance(checkint, mc2[1][0]) and nunique > 2:
+      if df[column].dtype.name == 'category':
+        if nunique <= 2:
+          category = 'bnry'
+        else:
+          category = 'text'
+
+      #if most common in column is integer and > two values, set category to number of bxcx
+      if isinstance(checkint, mc[0][0]) and nunique > 2:
 
         if df[column].dtype.name == 'category':
           if nunique <= 2:
@@ -8613,107 +8550,182 @@ class AutoMunge:
           else:
             category = 'text'
 
-#         #take account for numbercategoryheuristic
-#         #if df[column].nunique() / df[column].shape[0] < numbercategoryheuristic:
+        #take account for numbercategoryheuristic
+        #if df[column].nunique() / df[column].shape[0] < numbercategoryheuristic:
+        #if nunique < numbercategoryheuristic:
         if nunique <= 3:
-
           if nunique == 3:
             category = 'text'
           else:
             category = 'bnry'
+  #       if True == False:
+  #         pass
 
-#         if True == False:
-#           pass
-        
         else:
-
           category = 'nmbr'
 
-      #if 2nd most common in column is float, set category to number
-      if isinstance(checkfloat, mc2[1][0]):
 
-#         #take account for numbercategoryheuristic
-#         #if df[column].nunique() / df[column].shape[0] < numbercategoryheuristic:
-#         if df[column].nunique() < numbercategoryheuristic:
+      #if most common in column is float, set category to number or bxcx
+      if isinstance(checkfloat, mc[0][0]):
 
-#           category = 'text'
-
-#         else:
-
+        #take account for numbercategoryheuristic
+        #if df[column].nunique() / df[column].shape[0] < numbercategoryheuristic \
+  #       if nunique < numbercategoryheuristic \
+  #       or df[column].dtype.name == 'category':
+  #       if df[column].dtype.name == 'category':
         if df[column].dtype.name == 'category':
           if nunique <= 2:
             category = 'bnry'
           else:
             category = 'text'
 
-        if df[column].nunique() <= 3:
-
+        elif nunique <= 3:
           if nunique == 3:
             category = 'text'
-          else:
+          elif nunique <= 2:
             category = 'bnry'
 
         else:
-
           category = 'nmbr'
 
-      #if 2nd most common in column is integer and <= two values, set category to binary
-      if isinstance(checkint, mc2[1][0]) and nunique <= 2:
+
+      #if most common in column is integer and <= two values, set category to binary
+      if isinstance(checkint, mc[0][0]) and nunique <= 2:
         category = 'bnry'
 
-      #if 2nd most common in column is string and <= two values, set category to binary
-      if isinstance(checkstring, mc2[1][0]) and nunique <= 2:
+      #if most common in column is string and <= two values, set category to binary
+      if isinstance(checkstring, mc[0][0]) and nunique <= 2:
         category = 'bnry'
 
-    
-    if df[column].isna().sum() == df.shape[0]:
-      category = 'null'
 
-    if category == 'text':
-      if df[column].nunique() > numbercategoryheuristic:
-        category = 'ord3'
-    
-    #new statistical tests for numerical sets from v2.25
-    #I don't consider mytself an expert here, these are kind of a placeholder while I conduct more research
-    
-#     #default to 'nmbr' category instead of 'bxcx'
-#     if category == 'bxcx' and powertransform == False:
-#       category = 'nmbr'
-    
-    if category in ['nmbr', 'bxcx'] and powertransform == True:
-    
-      #shapiro tests for normality, we'll use a common threshold p<0.05 to reject the normality hypothesis
-      stat, p = shapiro(df[pd.to_numeric(df[column], errors='coerce').notnull()][column].astype(float))
-      #a typical threshold to test for normality is >0.05, let's try a lower bar for this application
-      if p > 0.025:
-        category = 'nmbr'
-      if p <= 0.025:
-        #skewness helps recognize exponential distributions, reference wikipedia
-        #reference from wikipedia
-#       A normal distribution and any other symmetric distribution with finite third moment has a skewness of 0
-#       A half-normal distribution has a skewness just below 1
-#       An exponential distribution has a skewness of 2
-#       A lognormal distribution can have a skewness of any positive value, depending on its parameters
-        #skewness = skew(df[column])
-        skewness = skew(df[pd.to_numeric(df[column], errors='coerce').notnull()][column].astype(float))
-        if skewness < 1.5:
-          category = 'mnmx'
-        else:
-          #if powertransform == True:
-          if category in ['nmbr', 'bxcx']:
-            
-            #note we'll only allow bxcx category if all values greater than a clip value
-            #>0 (currently set at 0.1) since there is an asymptote for box-cox at 0
-            if (df[pd.to_numeric(df[column], errors='coerce').notnull()][column].astype(float) >= 0.1).all():
-              category = 'bxcx'
+      #else if most common in column is NaN, re-evaluate using the second most common type
+      #(I suspect the below might have a bug somewhere but is working on my current 
+      #tests so will leave be for now)
+      #elif df[column].isna().sum() >= df.shape[0] / 2:
+      if df[column].isna().sum() >= df.shape[0] / 2:
+
+        #if 2nd most common in column is string and two values, set category to binary
+        if isinstance(checkstring, mc2[1][0]) and nunique == 2:
+          category = 'bnry'
+
+        #if 2nd most common in column is string and > two values, set category to text
+        if isinstance(checkstring, mc2[1][0]) and nunique > 2:
+          category = 'text'
+
+        #if 2nd most common is date, set category to date   
+        if isinstance(df_checkdate['checkdate'][0], datemc2[1][0]):
+          category = 'dat6'
+
+        #if 2nd most common in column is integer and > two values, set category to number
+        if isinstance(checkint, mc2[1][0]) and nunique > 2:
+
+          if df[column].dtype.name == 'category':
+            if nunique <= 2:
+              category = 'bnry'
+            else:
+              category = 'text'
+
+  #         #take account for numbercategoryheuristic
+  #         #if df[column].nunique() / df[column].shape[0] < numbercategoryheuristic:
+          if nunique <= 3:
+
+            if nunique == 3:
+              category = 'text'
+            else:
+              category = 'bnry'
+
+  #         if True == False:
+  #           pass
+
+          else:
+
+            category = 'nmbr'
+
+        #if 2nd most common in column is float, set category to number
+        if isinstance(checkfloat, mc2[1][0]):
+
+  #         #take account for numbercategoryheuristic
+  #         #if df[column].nunique() / df[column].shape[0] < numbercategoryheuristic:
+  #         if df[column].nunique() < numbercategoryheuristic:
+
+  #           category = 'text'
+
+  #         else:
+
+          if df[column].dtype.name == 'category':
+            if nunique <= 2:
+              category = 'bnry'
+            else:
+              category = 'text'
+
+          if df[column].nunique() <= 3:
+
+            if nunique == 3:
+              category = 'text'
+            else:
+              category = 'bnry'
+
+          else:
+
+            category = 'nmbr'
+
+        #if 2nd most common in column is integer and <= two values, set category to binary
+        if isinstance(checkint, mc2[1][0]) and nunique <= 2:
+          category = 'bnry'
+
+        #if 2nd most common in column is string and <= two values, set category to binary
+        if isinstance(checkstring, mc2[1][0]) and nunique <= 2:
+          category = 'bnry'
+
+
+      if df[column].isna().sum() == df.shape[0]:
+        category = 'null'
+
+      if category == 'text':
+        if df[column].nunique() > numbercategoryheuristic:
+          category = 'ord3'
+
+      #new statistical tests for numerical sets from v2.25
+      #I don't consider mytself an expert here, these are kind of a placeholder while I conduct more research
+
+  #     #default to 'nmbr' category instead of 'bxcx'
+  #     if category == 'bxcx' and powertransform == False:
+  #       category = 'nmbr'
+
+      if category in ['nmbr', 'bxcx'] and powertransform == True:
+
+        #shapiro tests for normality, we'll use a common threshold p<0.05 to reject the normality hypothesis
+        stat, p = shapiro(df[pd.to_numeric(df[column], errors='coerce').notnull()][column].astype(float))
+        #a typical threshold to test for normality is >0.05, let's try a lower bar for this application
+        if p > 0.025:
+          category = 'nmbr'
+        if p <= 0.025:
+          #skewness helps recognize exponential distributions, reference wikipedia
+          #reference from wikipedia
+  #       A normal distribution and any other symmetric distribution with finite third moment has a skewness of 0
+  #       A half-normal distribution has a skewness just below 1
+  #       An exponential distribution has a skewness of 2
+  #       A lognormal distribution can have a skewness of any positive value, depending on its parameters
+          #skewness = skew(df[column])
+          skewness = skew(df[pd.to_numeric(df[column], errors='coerce').notnull()][column].astype(float))
+          if skewness < 1.5:
+            category = 'mnmx'
+          else:
+            #if powertransform == True:
+            if category in ['nmbr', 'bxcx']:
+
+              #note we'll only allow bxcx category if all values greater than a clip value
+              #>0 (currently set at 0.1) since there is an asymptote for box-cox at 0
+              if (df[pd.to_numeric(df[column], errors='coerce').notnull()][column].astype(float) >= 0.1).all():
+                category = 'bxcx'
+
+              else:
+                category = 'nmbr'
 
             else:
-              category = 'nmbr'
-            
-          else:
-            category = 'MAD3'
-    
-    del df
+              category = 'MAD3'
+
+      del df
     
     return category
 
@@ -13265,19 +13277,6 @@ class AutoMunge:
       postprocess_dict.update({'PCAmodel' : None})
 
         
-        
-
-
-    #great the data is processed now let's do a few moore global training preps
-
-    #here's a list of final column names saving here since the translation to \
-    #numpy arrays scrubs the column names
-    finalcolumns_train = list(df_train)
-    finalcolumns_test = list(df_test)
-
-
-    
-
 
     #here is the process to levelize the frequency of label rows in train data
     #currently only label categories of 'bnry' or 'text' are considered
@@ -13346,8 +13345,38 @@ class AutoMunge:
         print(df_labels.shape[0])
         print("")
         
+        
+        
+
+
+    #great the data is processed now let's do a few moore global training preps
+    
+    #a special case, those columns that we completely excluded from processing via excl
+    #we'll scrub the suffix appender
+    df_train.columns = [column[:-5] if column[-5:] == '_excl' else column for column in df_train.columns]
+    df_test.columns = [column[:-5] if column[-5:] == '_excl' else column for column in df_test.columns]
+    if labels_column != False:
+      df_labels.columns = [column[:-5] if column[-5:] == '_excl' else column for column in df_labels.columns]
+      
+    if labelspresenttest == True:
+      df_testlabels.columns = [column[:-5] if column[-5:] == '_excl' else column for column in df_testlabels.columns]
+      
+    #this is admiuttedly kind of a weird spot to put this, we had introduced earlier
+    #convention of a dummy testlabels set, here we'll delete if no labels in test set
+    #(seems as good a place as any)
+    elif labelspresenttest == False:
+      df_testlabels = pd.DataFrame()
+    
+
+    #here's a list of final column names saving here since the translation to \
+    #numpy arrays scrubs the column names
+    finalcolumns_train = list(df_train)
+    finalcolumns_test = list(df_test)
+
+        
+        
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '2.77'
+    automungeversion = '2.78'
     application_number = random.randint(100000000000,999999999999)
     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -13486,6 +13515,8 @@ class AutoMunge:
       if labels_column != False:
         finalcolumns_labels = list(df_labels)
         df_labels = self.floatprecision_transform(df_labels, finalcolumns_labels, floatprecision)
+        if labelspresenttest == True:
+          df_testlabels = self.floatprecision_transform(df_testlabels, finalcolumns_labels, floatprecision)
     
     #set output format based on pandasoutput argument
     if pandasoutput == True:
@@ -19002,11 +19033,7 @@ class AutoMunge:
           print(list(PCAset_test))
           print("")
     
-    
-    #here's a list of final column names saving here since the translation to \
-    #numpy arrays scrubs the column names
-    finalcolumns_test = list(df_test)
-    
+   
     
     #here is the process to levelize the frequency of label rows in train data
     #currently only label categories of 'bnry' or 'text' are considered
@@ -19125,6 +19152,15 @@ class AutoMunge:
     
 #     labelsencoding_dict = postprocess_dict['labelsencoding_dict']
     
+    #a special case, those columns that we completely excluded from processing via excl
+    #we'll scrub the suffix appender
+    df_test.columns = [column[:-5] if column[-5:] == '_excl' else column for column in df_test.columns]
+    if labelscolumn != False:
+      df_testlabels.columns = [column[:-5] if column[-5:] == '_excl' else column for column in df_testlabels.columns]
+    
+    #here's a list of final column names saving here since the translation to \
+    #numpy arrays scrubs the column names
+    finalcolumns_test = list(df_test)
     
             
     #printout display progress
@@ -19192,4 +19228,3 @@ class AutoMunge:
       print("")
 
     return test, testID, testlabels, labelsencoding_dict, finalcolumns_test
-  
