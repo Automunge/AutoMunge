@@ -579,7 +579,14 @@ are generated for a subsequent z-score normalization as well as a set of bins
 associated with number of standard deviations from the mean. Please note that
 I don't consider the current means of distribution property evaluation very
 sophisticated and we will continue to refine this method with further research
-going forward. This defaults to False.
+going forward. This defaults to False. Additionally, powertransform may be 
+passed as values 'excl' or 'exc2', where for 'excl' columns not explicitly 
+assigned to a root category in assigncat will be left untouched, or for 'exc2'
+columns not explicitly assigned to a root category in assigncat will be forced 
+to numeric and subject to default modeinfill. (These two excl arguments may be 
+useful if a user wants to experiment with specific transforms on a subset of
+the columns without incurring processing time of an entire set (a simplified 
+version of existing functionality from assigning bulk columns in assigncat).)
 
 * binstransform: a boolean identifier (True/False) which indicates if the
 numerical sets will receive bin processing such as to generate child
