@@ -125,7 +125,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
 		         'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'MAD3':[], \
 		         'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
 		         'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
-		         'bins':[], 'bint':[], 'bsor':[], 'pwrs':[], 'pwor':[], \
+		         'bins':[], 'bint':[], 'bsor':[], 'pwr2':[], 'por2':[], \
 		         'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
 		         'log0':[], 'log1':[], 'sqrt':[], \
 		         'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
@@ -310,7 +310,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
 		         'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'MAD3':[], \
 		         'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
 		         'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
-		         'bins':[], 'bint':[], 'bsor':[], 'pwrs':[], 'pwor':[], \
+		         'bins':[], 'bint':[], 'bsor':[], 'pwr2':[], 'por2':[], \
 		         'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
 		         'log0':[], 'log1':[], 'sqrt':[], \
 		         'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
@@ -469,7 +469,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
 		         'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'MAD3':[], \
 		         'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
 		         'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
-		         'bins':[], 'bint':[], 'bsor':[], 'pwrs':[], 'pwor':[], \
+		         'bins':[], 'bint':[], 'bsor':[], 'pwr2':[], 'por2':[], \
 		         'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
 		         'log0':[], 'log1':[], 'sqrt':[], \
 		         'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
@@ -585,8 +585,7 @@ assigned to a root category in assigncat will be left untouched, or for 'exc2'
 columns not explicitly assigned to a root category in assigncat will be forced 
 to numeric and subject to default modeinfill. (These two excl arguments may be 
 useful if a user wants to experiment with specific transforms on a subset of
-the columns without incurring processing time of an entire set (a simplified 
-version of existing functionality from assigning bulk columns in assigncat).)
+the columns without incurring processing time of an entire set.)
 
 * binstransform: a boolean identifier (True/False) which indicates if the
 numerical sets will receive bin processing such as to generate child
@@ -728,7 +727,7 @@ such as could potentially result in memory savings.
 		 'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'MAD3':[], \
 		 'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
 		 'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
-		 'bins':[], 'bint':[], 'bsor':[], 'pwrs':[], 'pwor':[], \
+		 'bins':[], 'bint':[], 'bsor':[], 'pwr2':[], 'por2':[], \
 		 'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
 		 'log0':[], 'log1':[], 'sqrt':[], \
 		 'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
@@ -878,6 +877,7 @@ processdict =  {'newt' : {'dualprocess' : None, \
 #                                 to infill
 #                       'nonnegativenumeric' refers to columns where entries < 0 are subject
 #                                 to infill
+#                       'nonzeronumeric' refers to sets where 0 entries are subject to infill
 #			'justNaN' refers to columns where only NaN entries are subject
 #			          to infill
 #			'exclude' refers to columns where no infill will be performed
@@ -1270,14 +1270,23 @@ efficent than one-hot encoding)
   - default NArowtype: nonnegativenumeric
   - suffix appender: '_sqrt'
 * pwrs: bins groupings by powers of 10
-  - default infill: mean
+  - default infill: mean (ie log(mean))
   - default NArowtype: positivenumeric
   - suffix appender: '_10^#' where # is integer indicating target powers of 10 for column
+* pwr2: bins groupings by powers of 10
+  - default infill: no activation
+  - default NArowtype: nonzeronumeric
+  - suffix appender: '_10^#' or '_-10^#' where # is integer indicating target powers of 10 for column
 * pwor: for numerical sets, outputs an ordinal encoding indicating where a
 value fell with respect to powers of 10
   - default infill: zero
   - default NArowtype: positivenumeric
   - suffix appender: '_pwor'
+* por2: for numerical sets, outputs an ordinal encoding indicating where a
+value fell with respect to powers of 10
+  - default infill: zero (a distinct encoding)
+  - default NArowtype: nonzeronumeric
+  - suffix appender: '_por2'
 * bins: for numerical sets, outputs a set of 6 columns indicating where a
 value fell with respect to number of standard deviations from the mean of the
 set (i.e. <-2, -2-1, -10, 01, 12, >2)
@@ -2329,6 +2338,15 @@ And here are the series of family trees currently built into the internal librar
                                      'coworkers' : [], \
                                      'friends' : []}})
     
+    transform_dict.update({'pwr2' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['pwr2'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
     transform_dict.update({'log0' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['log0'], \
@@ -2340,7 +2358,7 @@ And here are the series of family trees currently built into the internal librar
     
     transform_dict.update({'log1' : {'parents' : [], \
                                      'siblings': [], \
-                                     'auntsuncles' : ['log0', 'pwrs'], \
+                                     'auntsuncles' : ['log0', 'pwr2'], \
                                      'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
@@ -2413,6 +2431,15 @@ And here are the series of family trees currently built into the internal librar
     transform_dict.update({'pwor' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['pwor'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'por2' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['por2'], \
                                      'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
