@@ -6,7 +6,7 @@ contact available via automunge.com
 
 Copyright (C) 2018, 2019 Nicholas Teague - All Rights Reserved
 
-patent pending
+patent pending, application 16552857
 
 """
 
@@ -317,6 +317,78 @@ class AutoMunge:
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : ['ord3']}})
+    
+    transform_dict.update({'spl7' : {'parents' : ['spl7'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : ['ord3'], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'nmrc' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['nmrc'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+  
+    transform_dict.update({'nmr2' : {'parents' : ['nmr2'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : ['nmbr'], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'nmr3' : {'parents' : ['nmr3'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : ['mnmx'], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'nmcm' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['nmcm'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+  
+    transform_dict.update({'nmc2' : {'parents' : ['nmc2'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : ['nmbr'], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'nmc3' : {'parents' : ['nmc3'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : ['mnmx'], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'ors7' : {'parents' : ['spl6', 'nmr2'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['ord3'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
     
     transform_dict.update({'ors5' : {'parents' : ['spl5'], \
                                      'siblings': [], \
@@ -1200,6 +1272,9 @@ class AutoMunge:
     # - 'positivenumeric' for source columns with expected positive numeric entries
     # - 'nonnegativenumeric' for source columns with expected non-nbegative numeric (zero allowed)
     # - 'nonzeronumeric' for source columns with allowed postiive and negative but no zero
+    # - 'parsenumeric' marks for infill strings that don't contain any numeric character entries
+    # - 'parsenumeric_commas' marks for infill strings that don't contain any numeric character entries, recognizes commas
+    # - 'datetime' marks for infill cells that arent' recognized as datetime objects
     
     #MLinfilltype entries are:
     # - 'numeric' for columns with numeric entries
@@ -1429,6 +1504,54 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'ord3'}})
+    process_dict.update({'spl7' : {'dualprocess' : self.process_spl7_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_spl7_class, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'singlct', \
+                                  'labelctgy' : 'ord3'}})
+    process_dict.update({'nmrc' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_nmrc_class, \
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'parsenumeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'nmrc'}})
+    process_dict.update({'nmr2' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_nmrc_class, \
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'parsenumeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'nmbr'}})
+    process_dict.update({'nmr3' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_nmrc_class, \
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'parsenumeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'mnmx'}})
+    process_dict.update({'nmcm' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_nmcm_class, \
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'parsenumeric_commas', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'nmcm'}})
+    process_dict.update({'nmc2' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_nmcm_class, \
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'parsenumeric_commas', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'nmbr'}})
+    process_dict.update({'nmc3' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_nmcm_class, \
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'parsenumeric_commas', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'mnmx'}})
+    process_dict.update({'ors7' : {'dualprocess' : self.process_spl5_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_spl5_class, \
+                                  'NArowtype' : 'parsenumeric', \
+                                  'MLinfilltype' : 'singlct', \
+                                  'labelctgy' : 'ord3'}})
     process_dict.update({'ors5' : {'dualprocess' : self.process_spl5_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_spl5_class, \
@@ -1504,283 +1627,283 @@ class AutoMunge:
     process_dict.update({'date' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
-                                  'NArowtype' : 'justNaN', \
+                                  'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'mnth'}})
     process_dict.update({'dat2' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
-                                  'NArowtype' : 'justNaN', \
+                                  'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'hldy'}})
     process_dict.update({'dat3' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
-                                  'NArowtype' : 'justNaN', \
+                                  'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'mnsn'}})
     process_dict.update({'dat4' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
-                                  'NArowtype' : 'justNaN', \
+                                  'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'mdsn'}})
     process_dict.update({'dat5' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
-                                  'NArowtype' : 'justNaN', \
+                                  'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'mdsn'}})
     process_dict.update({'dat6' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
-                                  'NArowtype' : 'justNaN', \
+                                  'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'mdsn'}})
     process_dict.update({'year' : {'dualprocess' : self.process_year_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_year_class, \
-                                  'NArowtype' : 'justNaN', \
+                                  'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'year'}})
     process_dict.update({'yea2' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
-                                  'NArowtype' : 'justNaN', \
+                                  'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'year'}})
     process_dict.update({'mnth' : {'dualprocess' : self.process_mnth_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_mnth_class, \
-                                  'NArowtype' : 'justNaN', \
+                                  'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mnth'}})
     process_dict.update({'mnt2' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
-                                  'NArowtype' : 'justNaN', \
+                                  'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mnsn'}})
     process_dict.update({'mnt3' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
-                                  'NArowtype' : 'justNaN', \
+                                  'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mnsn'}})
     process_dict.update({'mnt4' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
-                                  'NArowtype' : 'justNaN', \
+                                  'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mdsn'}})
     process_dict.update({'mnt5' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
-                                  'NArowtype' : 'justNaN', \
+                                  'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mdsn'}})
     process_dict.update({'mnt6' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
-                                  'NArowtype' : 'justNaN', \
+                                  'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mdsn'}})
     process_dict.update({'mnsn' : {'dualprocess' : self.process_mnsn_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_mnsn_class, \
-                                  'NArowtype' : 'justNaN', \
+                                  'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mnsn'}})
     process_dict.update({'mncs' : {'dualprocess' : self.process_mncs_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_mncs_class, \
-                                  'NArowtype' : 'justNaN', \
+                                  'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mncs'}})
     process_dict.update({'mdsn' : {'dualprocess' : self.process_mdsn_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_mdsn_class, \
-                                  'NArowtype' : 'justNaN', \
+                                  'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mdsn'}})
     process_dict.update({'mdcs' : {'dualprocess' : self.process_mdcs_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_mdcs_class, \
-                                  'NArowtype' : 'justNaN', \
+                                  'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mdcs'}})
     process_dict.update({'days' : {'dualprocess' : self.process_days_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_days_class, \
-                                  'NArowtype' : 'justNaN', \
+                                  'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'days'}})
     process_dict.update({'day2' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
-                                  'NArowtype' : 'justNaN', \
+                                  'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'dysn'}})
     process_dict.update({'day3' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
-                                  'NArowtype' : 'justNaN', \
+                                  'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'dysn'}})
     process_dict.update({'day4' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
-                                  'NArowtype' : 'justNaN', \
+                                  'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'dhms'}})
     process_dict.update({'day5' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
-                                  'NArowtype' : 'justNaN', \
+                                  'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'dhms'}})
     process_dict.update({'dysn' : {'dualprocess' : self.process_dysn_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_dysn_class, \
-                                  'NArowtype' : 'justNaN', \
+                                  'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'dysn'}})
     process_dict.update({'dycs' : {'dualprocess' : self.process_dycs_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_dycs_class, \
-                                  'NArowtype' : 'justNaN', \
+                                  'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'dycs'}})
     process_dict.update({'dhms' : {'dualprocess' : self.process_dhms_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_dhms_class, \
-                                  'NArowtype' : 'justNaN', \
+                                  'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'dhms'}})
     process_dict.update({'dhmc' : {'dualprocess' : self.process_dhmc_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_dhmc_class, \
-                                  'NArowtype' : 'justNaN', \
+                                  'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'dhmc'}})
     process_dict.update({'hour' : {'dualprocess' : self.process_hour_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_hour_class, \
-                                  'NArowtype' : 'justNaN', \
+                                  'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'hour'}})
     process_dict.update({'hrs2' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
-                                  'NArowtype' : 'justNaN', \
+                                  'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'hrsn'}})
     process_dict.update({'hrs3' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
-                                  'NArowtype' : 'justNaN', \
+                                  'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'hrsn'}})
     process_dict.update({'hrs4' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
-                                  'NArowtype' : 'justNaN', \
+                                  'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'hmss'}})
     process_dict.update({'hrsn' : {'dualprocess' : self.process_hrsn_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_hrsn_class, \
-                                  'NArowtype' : 'justNaN', \
+                                  'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'hrsn'}})
     process_dict.update({'hrcs' : {'dualprocess' : self.process_hrcs_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_hrcs_class, \
-                                  'NArowtype' : 'justNaN', \
+                                  'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'hrcs'}})
     process_dict.update({'hmss' : {'dualprocess' : self.process_hmss_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_hmss_class, \
-                                  'NArowtype' : 'justNaN', \
+                                  'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'hmss'}})
     process_dict.update({'hmsc' : {'dualprocess' : self.process_hmsc_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_hmsc_class, \
-                                  'NArowtype' : 'justNaN', \
+                                  'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'hmsc'}})
     process_dict.update({'mint' : {'dualprocess' : self.process_mint_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_mint_class, \
-                                  'NArowtype' : 'justNaN', \
+                                  'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mint'}})
     process_dict.update({'min2' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
-                                  'NArowtype' : 'justNaN', \
+                                  'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'misn'}})
     process_dict.update({'min3' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
-                                  'NArowtype' : 'justNaN', \
+                                  'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'misn'}})
     process_dict.update({'min4' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
-                                  'NArowtype' : 'justNaN', \
+                                  'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'misn'}})
     process_dict.update({'misn' : {'dualprocess' : self.process_misn_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_misn_class, \
-                                  'NArowtype' : 'justNaN', \
+                                  'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'misn'}})
     process_dict.update({'mics' : {'dualprocess' : self.process_mics_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_mics_class, \
-                                  'NArowtype' : 'justNaN', \
+                                  'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mics'}})
     process_dict.update({'mssn' : {'dualprocess' : self.process_mssn_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_mssn_class, \
-                                  'NArowtype' : 'justNaN', \
+                                  'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mssn'}})
     process_dict.update({'mscs' : {'dualprocess' : self.process_mscs_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_mscs_class, \
-                                  'NArowtype' : 'justNaN', \
+                                  'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mscs'}})
     process_dict.update({'scnd' : {'dualprocess' : self.process_scnd_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_scnd_class, \
-                                  'NArowtype' : 'justNaN', \
+                                  'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'scnd'}})
     process_dict.update({'scn2' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
-                                  'NArowtype' : 'justNaN', \
+                                  'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'scsn'}})
     process_dict.update({'scsn' : {'dualprocess' : self.process_scsn_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_scsn_class, \
-                                  'NArowtype' : 'justNaN', \
+                                  'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'scsn'}})
     process_dict.update({'sccs' : {'dualprocess' : self.process_sccs_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_sccs_class, \
-                                  'NArowtype' : 'justNaN', \
+                                  'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'sccs'}})
     process_dict.update({'bxc2' : {'dualprocess' : self.process_bxcx_class, \
@@ -2314,7 +2437,7 @@ class AutoMunge:
     
     #add a second column with boolean expression indicating a missing cell
     #(using NArows(.) function defined below, column name will be column+'_NArows')
-    NArows_nmbr = self.NArows(df, column, category, postprocess_dict)
+    NArows_nmbr = self.getNArows(df, column, category, postprocess_dict)
     
     df[column + '_NArw'] = NArows_nmbr.copy()
     del NArows_nmbr
@@ -4112,7 +4235,7 @@ class AutoMunge:
                                       'spl2_test_overlap_dict' : spl2_test_overlap_dict, \
                                       'spl5_zero_dict' : spl5_zero_dict}}
       
-      column_dict = {tc : {'category' : 'spl2', \
+      column_dict = {tc : {'category' : 'spl5', \
                            'origcategory' : category, \
                            'normalization_dict' : textnormalization_dict, \
                            'origcolumn' : column, \
@@ -4130,6 +4253,511 @@ class AutoMunge:
 
     
     return mdf_train, mdf_test, column_dict_list
+  
+  def process_spl7_class(self, mdf_train, mdf_test, column, category, \
+                         postprocess_dict):
+    '''
+    #(spl7 is same as spl5 but uses min overlap character legnth of 1 instead of 5)
+    #process_spl5_class(mdf_train, mdf_test, column, category)
+    #preprocess column with categorical entries as strings
+    #identifies overlaps of subsets of those strings and replaces entries 
+    #with their redecued overlap
+    #replaces entries without overlap to 0 (unique to spl5)
+    #for example, if a categorical set consisted of unique values 
+    #['west', 'north', 'northeast']
+    #then a new column would be created in which the entry 'north' 
+    #replaced cells with north in their entries
+    #(here for north and northeast)
+    #and cells with west would be set to 0
+    #returns as column titled origcolumn_spl2
+    #missing values are ignored by default
+    #this alternative to splt may be benficial for instance if one wanted 
+    #to follow with an ordl encoding
+    '''
+    
+#     overlap_lengths = [20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7 , 6, 5]
+
+    
+    #first we find overlaps from mdf_train
+    
+    unique_list = list(mdf_train[column].unique())
+
+    unique_list = list(map(str, unique_list))
+    
+    maxlength = max(len(x) for x in unique_list)
+    
+    overlap_lengths = list(range(maxlength - 1, 1, -1))
+
+    overlap_dict = {}
+
+    #we'll populate overlap_dict as
+    #{extract_with_overlap : [list of associate categories with that overlap]}
+
+    #we'll cycle through the overlap lengths and only record an overlap 
+    #if it is not a subset of those already recorded
+    
+    for overlap_length in overlap_lengths:
+
+      for unique in unique_list:
+
+        len_unique = len(unique)
+
+        if len_unique >= overlap_length:
+
+          nbr_iterations = len_unique - overlap_length
+
+          for i in range(nbr_iterations + 1):
+
+            extract = unique[i:(overlap_length+i)]
+
+            extract_already_in_overlap_dict = False
+
+            for key in overlap_dict:
+
+              len_key = len(key)
+
+              if len_key >= overlap_length:
+
+                nbr_iterations3 = len_key - overlap_length
+
+                for k in range(nbr_iterations3 + 1):
+
+                  extract3 = key[k:(overlap_length+k)]
+
+                  if extract == extract3:
+
+                    extract_already_in_overlap_dict = True
+
+            if extract_already_in_overlap_dict == False:
+
+              for unique2 in unique_list:
+
+                if unique2 != unique:
+
+                  len_unique2 = len(unique2)
+
+                  nbr_iterations2 = len_unique2 - overlap_length
+
+                  for j in range(nbr_iterations2 + 1):
+
+                    extract2 = unique2[j:(overlap_length+j)]
+
+                    if extract2 == extract:
+
+                      if extract in overlap_dict:
+
+                        if unique2 not in overlap_dict[extract]:
+
+                          overlap_dict[extract].append(unique2)
+
+                        if unique not in overlap_dict[extract]:
+
+                          overlap_dict[extract].append(unique)
+
+                      #else if we don't have a key for extract
+                      else:
+
+                        overlap_dict.update({extract : [unique, unique2]})
+
+                        
+    #now for mdf_test we'll only consider those overlaps already 
+    #identified from train set
+    
+    unique_list_test = list(mdf_test[column].unique())
+
+    unique_list_test = list(map(str, unique_list_test))
+
+    test_overlap_dict = {}
+
+    train_keys = list(overlap_dict)
+
+    train_keys.sort(key = len, reverse=True)
+
+    for key in train_keys:
+
+      test_overlap_dict.update({key:[]})
+
+    for dict_key in train_keys:
+
+      for unique_test in unique_list_test:
+
+        len_key = len(dict_key)
+
+        if len(unique_test) >= len_key:
+
+          nbr_iterations4 = len(unique_test) - len_key
+
+          for l in range(nbr_iterations4 + 1):
+
+            extract4 = unique_test[l:(len_key+l)]
+
+            if extract4 == dict_key:
+
+              test_overlap_dict[dict_key].append(unique_test)
+                        
+    
+    
+    #so that was all comparable to splt, now for spl2 we'll create a new 
+    #dictionary structred as
+    #{original unique value : overlap extract for replacement}
+    
+    #since one original unique value may have entries as multiple overlaps, 
+    #we'll prioritize overlaps with
+    #longer string lengths and then alphabetical
+    
+    spl2_overlap_dict = {}
+    
+    overlap_key_list = list(overlap_dict)
+    
+    overlap_key_list.sort()
+    overlap_key_list.sort(key = len, reverse=True)
+    
+    for overlap_key in overlap_key_list:
+      
+      for entry in overlap_dict[overlap_key]:
+        
+        if entry not in spl2_overlap_dict:
+          
+          spl2_overlap_dict.update({entry : overlap_key})
+    
+    #here's where we identify values to set to 0 for spl5
+    spl5_zero_dict = {}
+    for entry in unique_list:
+      if entry not in spl2_overlap_dict:
+        spl5_zero_dict.update({entry : 0})
+          
+    
+    
+    #then we'll do same for test set
+    
+    spl2_test_overlap_dict = {}
+    
+    test_overlap_key_list = list(test_overlap_dict)
+    
+    test_overlap_key_list.sort()
+    test_overlap_key_list.sort(key = len, reverse=True)
+    
+    for overlap_key in test_overlap_key_list:
+      
+      for entry in test_overlap_dict[overlap_key]:
+        
+        if entry not in spl2_test_overlap_dict:
+          
+          spl2_test_overlap_dict.update({entry : overlap_key})
+    
+    #here's where we identify values to set to 0 for spl5
+    spl5_test_zero_dict = {}
+    for entry in unique_list_test:
+      if entry not in spl2_test_overlap_dict:
+        spl5_test_zero_dict.update({entry : 0})
+    
+    
+    newcolumns = []
+
+#     for dict_key in overlap_dict:
+
+    newcolumn = column + '_spl7'
+    
+    mdf_train[newcolumn] = mdf_train[column].copy()
+    mdf_test[newcolumn] = mdf_test[column].copy()
+    
+    mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
+    mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
+
+    mdf_train[newcolumn] = mdf_train[newcolumn].replace(spl2_overlap_dict)
+    mdf_train[newcolumn] = mdf_train[newcolumn].replace(spl5_zero_dict)
+
+#       mdf_train[newcolumn] = mdf_train[column].isin(overlap_dict[dict_key])
+#       mdf_train[newcolumn] = mdf_train[newcolumn].astype(np.int8)
+
+    mdf_test[newcolumn] = mdf_test[newcolumn].replace(spl2_test_overlap_dict)
+    mdf_test[newcolumn] = mdf_test[newcolumn].replace(spl5_test_zero_dict)
+
+#       mdf_test[newcolumn] = mdf_test[column].isin(test_overlap_dict[dict_key])
+#       mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
+
+    newcolumns.append(newcolumn)
+    
+    
+    
+    column_dict_list = []
+
+    for tc in newcolumns:
+
+      textnormalization_dict = {tc : {'overlap_dict' : overlap_dict, \
+                                      'spl2_newcolumns'   : newcolumns, 
+                                      'spl2_overlap_dict' : spl2_overlap_dict, \
+                                      'spl2_test_overlap_dict' : spl2_test_overlap_dict, \
+                                      'spl5_zero_dict' : spl5_zero_dict}}
+      
+      column_dict = {tc : {'category' : 'spl7', \
+                           'origcategory' : category, \
+                           'normalization_dict' : textnormalization_dict, \
+                           'origcolumn' : column, \
+                           'columnslist' : newcolumns, \
+                           'categorylist' : newcolumns, \
+                           'infillmodel' : False, \
+                           'infillcomplete' : False, \
+                           'deletecolumn' : False}}
+
+      column_dict_list.append(column_dict.copy())
+      
+    if len(newcolumns) == 0:
+      
+      column_dict_list = []
+
+    
+    return mdf_train, mdf_test, column_dict_list
+  
+  
+  def process_nmrc_class(self, df, column, category, postprocess_dict):
+    """
+    #process_nmrc_class(df, column, category, postprocess_dict)
+    #parses string entries and if any numbers present returns numbers
+    #entries without numbers present subject to infill
+    """
+    
+    unique_list = list(df[column].unique())
+
+    unique_list = list(map(str, unique_list))
+    
+    maxlength = max(len(x) for x in unique_list)
+    
+    overlap_lengths = list(range(maxlength, 0, -1))
+
+    overlap_dict = {}
+    
+    for overlap_length in overlap_lengths:
+
+      for unique in unique_list:
+        
+        if unique not in overlap_dict:
+
+          len_unique = len(unique)
+
+          if len_unique >= overlap_length:
+            
+            if overlap_length > 1:
+
+              nbr_iterations = len_unique - overlap_length
+
+              for i in range(nbr_iterations + 1):
+                
+                if unique not in overlap_dict:
+
+                  extract = unique[i:(overlap_length+i)]
+
+  #                 extract_already_in_overlap_dict = False
+
+                  #if is_number(extract):
+                  if self.is_number(extract):
+
+                    overlap_dict.update({unique : float(extract)})
+                
+            #else if overlap_length == 1    
+            else:
+              
+              nbr_iterations = len_unique - overlap_length
+              
+              in_dict = False
+
+              for i in range(nbr_iterations + 1):
+                
+                if unique not in overlap_dict:
+
+                  extract = unique[i:(overlap_length+i)]
+
+  #                 extract_already_in_overlap_dict = False
+
+                  #if is_number(extract):
+                  if self.is_number(extract):
+
+                    in_dict = True
+
+                    overlap_dict.update({unique : float(extract)})
+                  
+              if in_dict == False:
+
+                overlap_dict.update({unique : np.nan})
+    
+    df[column + '_nmrc'] = df[column].astype(str)
+    df[column + '_nmrc'] = df[column + '_nmrc'].replace(overlap_dict)
+    
+
+
+    #get mean of training data
+    mean = df[column + '_nmrc'].mean()
+    if mean != mean:
+      mean = 0
+
+    #replace missing data with training set mean as default infill
+    df[column + '_nmrc'] = df[column + '_nmrc'].fillna(mean)
+    
+    
+    #a few more metrics collected for driftreport
+    #get maximum value of training column
+    maximum = df[column + '_nmrc'].max()
+    #get minimum value of training column
+    minimum = df[column + '_nmrc'].min()
+    
+    
+    #create list of columns
+    nmbrcolumns = [column + '_nmrc']
+
+
+    nmbrnormalization_dict = {column + '_nmrc' : {'overlap_dict' : overlap_dict, \
+                                                  'mean' : mean, \
+                                                  'maximum' : maximum, \
+                                                  'minimum' : minimum }}
+
+    #store some values in the nmbr_dict{} for use later in ML infill methods
+    column_dict_list = []
+
+    
+    for nc in nmbrcolumns:
+
+      if nc[-5:] == '_nmrc':
+
+        column_dict = { nc : {'category' : 'nmrc', \
+                             'origcategory' : category, \
+                             'normalization_dict' : nmbrnormalization_dict, \
+                             'origcolumn' : column, \
+                             'columnslist' : nmbrcolumns, \
+                             'categorylist' : nmbrcolumns, \
+                             'infillmodel' : False, \
+                             'infillcomplete' : False, \
+                             'deletecolumn' : False}}
+
+        column_dict_list.append(column_dict.copy())
+    
+        
+    return df, column_dict_list
+  
+  
+  def process_nmcm_class(self, df, column, category, postprocess_dict):
+    """
+    #process_nmcm_class(df, column, category, postprocess_dict)
+    #parses string entries and if any numbers present returns numbers
+    #the check for numbers strips commas and returned numbers have commas stripped
+    #entries without numbers present subject to infill
+    """
+    
+    unique_list = list(df[column].unique())
+
+    unique_list = list(map(str, unique_list))
+    
+    maxlength = max(len(x) for x in unique_list)
+    
+    overlap_lengths = list(range(maxlength, 0, -1))
+
+    overlap_dict = {}
+    
+    for overlap_length in overlap_lengths:
+
+      for unique in unique_list:
+        
+        if unique not in overlap_dict:
+
+          len_unique = len(unique)
+
+          if len_unique >= overlap_length:
+            
+            if overlap_length > 1:
+
+              nbr_iterations = len_unique - overlap_length
+
+              for i in range(nbr_iterations + 1):
+                
+                if unique not in overlap_dict:
+
+                  extract = unique[i:(overlap_length+i)]
+
+  #                 extract_already_in_overlap_dict = False
+
+                  #if is_number_comma(extract):
+                  if self.is_number_comma(extract):
+
+                    overlap_dict.update({unique : float(extract.replace(',',''))})
+                
+            #else if overlap_length == 1    
+            else:
+              
+              nbr_iterations = len_unique - overlap_length
+              
+              in_dict = False
+
+              for i in range(nbr_iterations + 1):
+                
+                if unique not in overlap_dict:
+
+                  extract = unique[i:(overlap_length+i)]
+
+  #                 extract_already_in_overlap_dict = False
+
+                  #if is_number_comma(extract):
+                  if self.is_number_comma(extract):
+
+                    in_dict = True
+
+                    overlap_dict.update({unique : float(extract.replace(',',''))})
+                  
+              if in_dict == False:
+
+                overlap_dict.update({unique : np.nan})
+    
+    df[column + '_nmcm'] = df[column].astype(str)
+    df[column + '_nmcm'] = df[column + '_nmcm'].replace(overlap_dict)
+    
+
+
+    #get mean of training data
+    mean = df[column + '_nmcm'].mean()
+    if mean != mean:
+      mean = 0
+
+    #replace missing data with training set mean as default infill
+    df[column + '_nmcm'] = df[column + '_nmcm'].fillna(mean)
+    
+    
+    #a few more metrics collected for driftreport
+    #get maximum value of training column
+    maximum = df[column + '_nmcm'].max()
+    #get minimum value of training column
+    minimum = df[column + '_nmcm'].min()
+    
+    
+    #create list of columns
+    nmbrcolumns = [column + '_nmcm']
+
+
+    nmbrnormalization_dict = {column + '_nmcm' : {'overlap_dict' : overlap_dict, \
+                                                  'mean' : mean, \
+                                                  'maximum' : maximum, \
+                                                  'minimum' : minimum }}
+
+
+    #store some values in the nmbr_dict{} for use later in ML infill methods
+    column_dict_list = []
+
+    
+    for nc in nmbrcolumns:
+
+      if nc[-5:] == '_nmcm':
+
+        column_dict = { nc : {'category' : 'nmcm', \
+                             'origcategory' : category, \
+                             'normalization_dict' : nmbrnormalization_dict, \
+                             'origcolumn' : column, \
+                             'columnslist' : nmbrcolumns, \
+                             'categorylist' : nmbrcolumns, \
+                             'infillmodel' : False, \
+                             'infillcomplete' : False, \
+                             'deletecolumn' : False}}
+
+        column_dict_list.append(column_dict.copy())
+    
+        
+    return df, column_dict_list
   
     
   def process_ordl_class(self, mdf_train, mdf_test, column, category, \
@@ -9160,7 +9788,7 @@ class AutoMunge:
     return category
 
 
-  def NArows(self, df, column, category, postprocess_dict):
+  def getNArows(self, df, column, category, postprocess_dict):
     '''
     #NArows(df, column), function that when fed a dataframe, \
     #column id, and category label outputs a single column dataframe composed of \
@@ -9239,19 +9867,19 @@ class AutoMunge:
       NArows = pd.isna(df2[column])
       NArows = pd.DataFrame(NArows)
       NArows = NArows.rename(columns = {column:column+'_NArows'})
-
-
-#     if category == 'date':
-
-#       #returns dataframe column of all False
-#       #renames column name to column + '_NArows'
-#       NArows = pd.isna(df2[column])
-#       NArows = pd.DataFrame(NArows)
-#       NArows = NArows.rename(columns = {column:column+'_NArows'})
       
-#       NArows = pd.DataFrame(False, index=np.arange(df2.shape[0]), columns=[column+'NA'])
-#       NArows = pd.DataFrame(NArows)
-#       NArows = NArows.rename(columns = {column:column+'_NArows'})
+    if NArowtype in ['parsenumeric']:
+      
+      NArows = self.parsenumeric(df2, column)
+      
+    if NArowtype in ['parsenumeric_commas']:
+      
+      NArows = self.parsenumeric_commas(df2, column)
+      
+    if NArowtype in ['datetime']:
+      
+      NArows = self.parsedate(df2, column)
+
 
     #if category in ['excl']:
     if NArowtype in ['exclude']:
@@ -9262,6 +9890,243 @@ class AutoMunge:
     del df2
     
 
+    return NArows
+  
+  
+  def parsedate(self, df, column):
+    """
+    #support function for NArows
+    #parses datetime entries and returns a column with boolean identification
+    #for entries that aren't registering as datetime objects
+    #wherein activations are 0 if a datetime is present and 1 if not
+    """
+    
+    df[column] = pd.to_datetime(df[column], errors = 'coerce')
+
+    NArows = pd.isna(df[column])
+    NArows = pd.DataFrame(NArows)
+    NArows = NArows.rename(columns = {column:column+'_NArows'})
+    
+    return NArows
+  
+  def is_number(self, s):
+    """
+    #support function for numeric parsing
+    #tests if a string s is numeric
+    #partly inspired by stack overflow discussion 
+    #https://stackoverflow.com/questions/354038/how-do-i-check-if-a-string-is-a-number-float
+    """
+    test = False
+    if s in ['True', 'False']:
+      return False
+    else:
+      try:
+        float(s)
+        #strips out commas
+        #float(s.replace(',',''))
+        #return True
+      except ValueError:
+        return False
+    if float(s) == float(s):
+      return True
+    else:
+      #(nan will be subject to infill)
+      return False
+    
+    
+  def is_number_comma(self, s):
+    """
+    #support function for numeric parsing
+    #tests if a string s is numeric after stripping out commas
+    #inspired by stack overflow discussion 
+    #https://stackoverflow.com/questions/354038/how-do-i-check-if-a-string-is-a-number-float
+    """
+    if s in ['True', 'False']:
+      return False
+    else:
+      try:
+        #float(s)
+        #strips out commas
+        float(s.replace(',',''))
+        #return True
+      except ValueError:
+        return False
+    if float(s.replace(',','')) == float(s.replace(',','')):
+      return True
+    else:
+      #(nan will be subject to infill)
+      return False
+    
+    
+  def parsenumeric(self, df, column):
+    """
+    #support function for process_nmrc and NArows
+    #parses string entries and returns a column with boolean identification
+    #for entries that include numeric string portions
+    #wherein activations are 0 if a number is present and 1 if not
+    #treats numeric entries as number as well
+    """
+    
+    #first we find overlaps from mdf_train
+    
+    unique_list = list(df[column].unique())
+
+    unique_list = list(map(str, unique_list))
+    
+    maxlength = max(len(x) for x in unique_list)
+    
+    overlap_lengths = list(range(maxlength, 0, -1))
+
+    overlap_dict = {}
+    
+    for overlap_length in overlap_lengths:
+
+      for unique in unique_list:
+        
+        if unique not in overlap_dict:
+
+          len_unique = len(unique)
+
+          if len_unique >= overlap_length:
+            
+            if overlap_length > 1:
+
+              nbr_iterations = len_unique - overlap_length
+
+              for i in range(nbr_iterations + 1):
+                
+                if unique not in overlap_dict:
+
+                  extract = unique[i:(overlap_length+i)]
+
+  #                 extract_already_in_overlap_dict = False
+
+                  #if is_number(extract):
+                  if self.is_number(extract):
+        
+                    overlap_dict.update({unique : False})
+                
+            #else if overlap_length == 1    
+            else:
+              
+              nbr_iterations = len_unique - overlap_length
+              
+              in_dict = False
+
+              for i in range(nbr_iterations + 1):
+                
+                if unique not in overlap_dict:
+
+                  extract = unique[i:(overlap_length+i)]
+
+  #                 extract_already_in_overlap_dict = False
+
+                  #if is_number(extract):
+                  if self.is_number(extract):
+
+                    in_dict = True
+
+                    overlap_dict.update({unique : False})
+                  
+              if in_dict == False:
+
+                overlap_dict.update({unique : True})
+    
+    df[column] = df[column].astype(str)
+    df[column] = df[column].replace(overlap_dict)
+    df[column] = df[column].astype(np.int8)
+    
+    NArows = pd.DataFrame(df[column].copy())
+    
+    NArows.columns = [column+'_NArows']
+    
+    
+    return NArows
+  
+  
+  def parsenumeric_commas(self, df, column):
+    """
+    #support function for process_nmrc and NArows
+    #parses string entries and returns a column with boolean identification
+    #for entries that include numeric string portions (after stripping commas)
+    #wherein activations are 0 if a number is present and 1 if not
+    #treats numeric entries as number as well
+    """
+    
+    #first we find overlaps from mdf_train
+    
+    unique_list = list(df[column].unique())
+
+    unique_list = list(map(str, unique_list))
+    
+    maxlength = max(len(x) for x in unique_list)
+    
+    overlap_lengths = list(range(maxlength, 0, -1))
+
+    overlap_dict = {}
+    
+    for overlap_length in overlap_lengths:
+
+      for unique in unique_list:
+        
+        if unique not in overlap_dict:
+
+          len_unique = len(unique)
+
+          if len_unique >= overlap_length:
+            
+            if overlap_length > 1:
+
+              nbr_iterations = len_unique - overlap_length
+
+              for i in range(nbr_iterations + 1):
+                
+                if unique not in overlap_dict:
+
+                  extract = unique[i:(overlap_length+i)]
+
+  #                 extract_already_in_overlap_dict = False
+
+                  #if is_number_comma(extract):
+                  if self.is_number_comma(extract):
+
+                    overlap_dict.update({unique : False})
+                
+            #else if overlap_length == 1    
+            else:
+              
+              nbr_iterations = len_unique - overlap_length
+              
+              in_dict = False
+
+              for i in range(nbr_iterations + 1):
+                
+                if unique not in overlap_dict:
+
+                  extract = unique[i:(overlap_length+i)]
+
+  #                 extract_already_in_overlap_dict = False
+
+                  #if is_number_comma(extract):
+                  if self.is_number_comma(extract):
+
+                    in_dict = True
+
+                    overlap_dict.update({unique : False})
+                  
+              if in_dict == False:
+
+                overlap_dict.update({unique : True})
+    
+    df[column] = df[column].astype(str)
+    df[column] = df[column].replace(overlap_dict)
+    df[column] = df[column].astype(np.int8)
+    
+    NArows = pd.DataFrame(df[column].copy())
+    
+    NArows.columns = [column+'_NArows']
+    
+    
     return NArows
 
 
@@ -12430,7 +13295,8 @@ class AutoMunge:
                              'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
                              'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
                              'splt':[], 'spl2':[], 'spl3':[], 'spl4':[], 'spl5':[], \
-                             'ors2':[], 'ors5':[], 'ors6':[], \
+                             'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
+                             'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], \
                              'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
                              'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
                              'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
@@ -13024,8 +13890,8 @@ class AutoMunge:
           templist1 = list(df_train)
           
           #create NArows (column of True/False where True coresponds to missing data)
-          trainNArows = self.NArows(df_train, column, category, postprocess_dict)
-          testNArows = self.NArows(df_test, column, category, postprocess_dict)
+          trainNArows = self.getNArows(df_train, column, category, postprocess_dict)
+          testNArows = self.getNArows(df_test, column, category, postprocess_dict)
             
           #now append that NArows onto a master NA rows df
           masterNArows_train = pd.concat([masterNArows_train, trainNArows], axis=1)
@@ -13808,7 +14674,7 @@ class AutoMunge:
         
         
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '2.79'
+    automungeversion = '2.80'
     application_number = random.randint(100000000000,999999999999)
     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -15354,6 +16220,140 @@ class AutoMunge:
 #       for dict_key in overlap_dict:
 
       newcolumn = column + '_spl5'
+
+#         mdf_test[newcolumn] = mdf_test[column].isin(test_overlap_dict[dict_key])
+#         mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
+
+#       mdf_train[newcolumn] = mdf_train[column].copy()
+      mdf_test[newcolumn] = mdf_test[column].copy()
+
+#       mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
+      mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
+
+      mdf_test[newcolumn] = mdf_test[newcolumn].replace(spl2_test_overlap_dict)
+      mdf_test[newcolumn] = mdf_test[newcolumn].replace(spl5_test_zero_dict)
+
+#       newcolumns.append(newcolumn)
+    
+    
+    return mdf_test
+  
+  def postprocess_spl7_class(self, mdf_test, column, postprocess_dict, columnkey):
+    '''
+    #(spl7 is same as spl5 but uses min overlap character legnth of 1 instead of 5)
+    #postprocess_spl5_class(mdf_test, column, postprocess_dict, category)
+    #preprocess column with categorical entries as strings
+    #identifies overlaps of subsets of those strings and replaces entries with their redecued overlap
+    #replaces entries without overlap to 0 (unique to spl5)
+    #for example, if a categorical set consisted of unique values ['west', 'north', 'northeast']
+    #then a new column would be created in which the entry 'north' replaced cells with north in their entries
+    #(here for north and northeast)
+    #and cells with west would be set to 0
+    #returns as column titled origcolumn_spl2
+    #missing values are ignored by default
+    #this alternative to splt may be benficial for instance if one wanted to follow with an ordl encoding
+    '''
+    
+    #to retrieve the normalization dictionary we're going to use new method since we don't yet 
+    #know what the returned columns titles are yet
+    
+    normkey = False
+    
+#     if column in postprocess_dict['origcolumn']:
+      
+#       columnkeylist = postprocess_dict['origcolumn'][column]['columnkeylist']
+      
+#     else:
+      
+#       origcolumn = postprocess_dict['column_dict'][column]['origcolumn']
+      
+#       columnkeylist = postprocess_dict['origcolumn'][origcolumn]['columnkeylist']
+    
+#     for columnkey in columnkeylist:
+      
+#       normalization_dict = postprocess_dict['column_dict'][columnkey]['normalization_dict']
+    
+#       if 'splt_newcolumns' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
+        
+#         normkey = columnkey
+
+    normkey = column + '_spl7'
+        
+    if normkey != False:
+
+      #great now we can grab normalization parameters
+      overlap_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['overlap_dict']
+
+#       newcolumns = \
+#       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['spl2_newcolumns']
+
+
+      #now for mdf_test we'll only consider those overlaps already identified from train set
+
+      unique_list_test = list(mdf_test[column].unique())
+
+      unique_list_test = list(map(str, unique_list_test))
+
+      test_overlap_dict = {}
+
+      train_keys = list(overlap_dict)
+
+      train_keys.sort(key = len, reverse=True)
+
+      for key in train_keys:
+
+        test_overlap_dict.update({key:[]})
+
+      for dict_key in train_keys:
+
+        for unique_test in unique_list_test:
+
+          len_key = len(dict_key)
+
+          if len(unique_test) >= len_key:
+
+            nbr_iterations4 = len(unique_test) - len_key
+
+            for l in range(nbr_iterations4 + 1):
+
+              extract4 = unique_test[l:(len_key+l)]
+
+              if extract4 == dict_key:
+
+                test_overlap_dict[dict_key].append(unique_test)
+                
+                
+      #then we'll populate the spl2 replacement dict
+
+      spl2_test_overlap_dict = {}
+
+      test_overlap_key_list = list(test_overlap_dict)
+
+      test_overlap_key_list.sort()
+      test_overlap_key_list.sort(key = len, reverse=True)
+
+      for overlap_key in test_overlap_key_list:
+
+        for entry in test_overlap_dict[overlap_key]:
+
+          if entry not in spl2_test_overlap_dict:
+
+            spl2_test_overlap_dict.update({entry : overlap_key})
+            
+            
+      #here's where we identify values to set to 0 for spl5
+      spl5_test_zero_dict = {}
+      for entry in unique_list_test:
+        if entry not in spl2_test_overlap_dict:
+          spl5_test_zero_dict.update({entry : 0})
+
+
+#       newcolumns = []
+
+#       for dict_key in overlap_dict:
+
+      newcolumn = column + '_spl7'
 
 #         mdf_test[newcolumn] = mdf_test[column].isin(test_overlap_dict[dict_key])
 #         mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
@@ -19225,7 +20225,7 @@ class AutoMunge:
         else:
 
           #create NArows (column of True/False where True coresponds to missing data)
-          testNArows = self.NArows(df_test, column, category, postprocess_dict)
+          testNArows = self.getNArows(df_test, column, category, postprocess_dict)
 
           #now append that NArows onto a master NA rows df
           masterNArows_test = pd.concat([masterNArows_test, testNArows], axis=1)
