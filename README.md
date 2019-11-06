@@ -131,7 +131,8 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
 		         'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
 		         'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
                          'splt':[], 'spl2':[], 'spl3':[], 'spl4':[], 'spl5':[], \
-                         'ors2':[], 'ors5':[], 'ors6':[], \
+                         'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
+                         'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], \
 		         'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
 		         'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
 		         'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
@@ -316,7 +317,8 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
 		         'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
 		         'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
                          'splt':[], 'spl2':[], 'spl3':[], 'spl4':[], 'spl5':[], \
-                         'ors2':[], 'ors5':[], 'ors6':[], \
+                         'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
+                         'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], \
 		         'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
 		         'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
 		         'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
@@ -475,7 +477,8 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
 		         'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
 		         'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
                          'splt':[], 'spl2':[], 'spl3':[], 'spl4':[], 'spl5':[], \
-                         'ors2':[], 'ors5':[], 'ors6':[], \
+                         'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
+                         'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], \
 		         'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
 		         'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
 		         'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
@@ -733,7 +736,8 @@ such as could potentially result in memory savings.
 		 'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
 		 'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
                  'splt':[], 'spl2':[], 'spl3':[], 'spl4':[], 'spl5':[], \
-                 'ors2':[], 'ors5':[], 'ors6':[], \
+                 'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
+                 'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], \
 		 'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
 		 'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
 		 'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
@@ -1308,42 +1312,42 @@ set (i.e. <-2:0, -2-1:1, -10:2, 01:3, 12:4, >2:5)
 * date/dat2: for datetime formatted data, segregates data by time scale to multiple
 columns (year/month/day/hour/minute/second) and then performs z-score normalization
   - default infill: mean
-  - default NArowtype: justNaN
+  - default NArowtype: datetime
   - suffix appender: includes appenders for (_year, _mnth, _days, _hour, _mint, _scnd)
 * wkdy: boolean identifier indicating whether a datetime object is a weekday
   - default infill: none
-  - default NArowtype: justNaN
+  - default NArowtype: datetime
   - suffix appender: '_wkdy'
 * bshr: boolean identifier indicating whether a datetime object falls within business
 hours (9-5, time zone unaware)
-  - default infill: none
+  - default infill: datetime
   - default NArowtype: justNaN
 * hldy: boolean identifier indicating whether a datetime object is a US Federal
 holiday
   - default infill: none
-  - default NArowtype: justNaN
+  - default NArowtype: datetime
   - suffix appender: '_hldy'
 * year/mnth/days/hour/mint/scnd: segregated by time scale and z-score normalization
   - default infill: mean
-  - default NArowtype: justNaN
+  - default NArowtype: datetime
   - suffix appender: includes appenders for (_year, _mnth, _days, _hour, _mint, _scnd)
 * mnsn/mncs/dysn/dycs/hrsn/hrcs/misn/mics/scsn/sccs: segregated by time scale and 
 dual columns with sin and cos transformations for time scale period (eg 12 months, 24 hrs, 7 days, etc)
   - default infill: mean
-  - default NArowtype: justNaN
+  - default NArowtype: datetime
   - suffix appender: includes appenders for (mnsn/mncs/dysn/dycs/hrsn/hrcs/misn/mics/scsn/sccs)
 * mdsn/mdcs: similar sin/cos treatment, but for combined month/day
   - default infill: mean
-  - default NArowtype: justNaN
+  - default NArowtype: datetime
   - suffix appender: includes appenders for (mdsn/mdcs)
 * hmss/hmsc: similar sin/cos treatment, but for combined hour/minute/second
   - default infill: mean
-  - default NArowtype: justNaN
+  - default NArowtype: datetime
   - suffix appender: includes appenders for (hmss/hmsc)
 * dat6: default transformation set for time series data, returns:
 'year', 'mdsn', 'mdcs', 'hmss', 'hmsc', 'bshr', 'wkdy', 'hldy'
   - default infill: mean
-  - default NArowtype: justNaN
+  - default NArowtype: datetime
   - suffix appender: includes appenders for ('year', 'mdsn', 'mdcs', 'hmss', 'hmsc', 'bshr', 'wkdy', 'hldy')
 * null: deletes source column
   - default infill: none
@@ -1406,6 +1410,19 @@ within the overlaps
   - default infill: none
   - default NArowtype: justNaN
   - suffix appender: '_spl5'
+* spl7: similar to spl5, but recognizes string character overlaps down to minimum 2 instead of 5
+  - default infill: none
+  - default NArowtype: justNaN
+  - suffix appender: '_spl5'
+  
+* nmrc/nmr2/nmr3: parses strings and returns any number groupings, prioritized by longest length
+  - default infill: mean
+  - default NArowtype: parsenumeric
+  - suffix appender: '_nmrc'
+* nmcm/nmc2/nmc3: similar to nmrc, but recognizes numbers with commas, returns numbers stripped of commas
+  - default infill: mean
+  - default NArowtype: parsenumeric_commas
+  - suffix appender: '_nmcm'
 
 
 And here are the series of family trees currently built into the internal library.
@@ -1617,6 +1634,78 @@ And here are the series of family trees currently built into the internal librar
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : ['ord3']}})
+    
+    transform_dict.update({'spl7' : {'parents' : ['spl7'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : ['ord3'], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'nmrc' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['nmrc'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+  
+    transform_dict.update({'nmr2' : {'parents' : ['nmr2'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : ['nmbr'], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'nmr3' : {'parents' : ['nmr3'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : ['mnmx'], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'nmcm' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['nmcm'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+  
+    transform_dict.update({'nmc2' : {'parents' : ['nmc2'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : ['nmbr'], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'nmc3' : {'parents' : ['nmc3'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : ['mnmx'], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'ors7' : {'parents' : ['spl6', 'nmr2'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['ord3'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
     
     transform_dict.update({'ors5' : {'parents' : ['spl5'], \
                                      'siblings': [], \
