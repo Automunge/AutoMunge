@@ -1422,6 +1422,14 @@ within the overlaps
   - default infill: mean
   - default NArowtype: parsenumeric_commas
   - suffix appender: '_nmcm'
+  
+* new processing functions nmr4/nmr5/nmr6/nmc4/nmc5/nmc6/spl8/spl9/sp10 (spelled sp"ten"):
+- comparable to functions nmrc/nmr2/nmr3/nmcm/nmc2/nmc3/splt/spl2/spl5
+- but make use of new assumption that set of unique values in test set is same or a subset of those values 
+from the train set, which allows for a more efficient application (no more string parsing of test sets)
+- default infill: comparable
+- default NArowtype: comparable
+- suffix appender: same format, updated per the new category
 
 
 And here are the series of family trees currently built into the internal library.
@@ -1642,6 +1650,33 @@ And here are the series of family trees currently built into the internal librar
                                      'niecesnephews' : [], \
                                      'coworkers' : ['ord3'], \
                                      'friends' : []}})
+
+    transform_dict.update({'spl8' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['spl8'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+
+    transform_dict.update({'spl9' : {'parents' : ['spl9'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : ['ordl'], \
+                                     'friends' : []}})
+
+    transform_dict.update({'sp10' : {'parents' : ['sp10'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : ['ord3'], \
+                                     'friends' : []}})
     
     transform_dict.update({'nmrc' : {'parents' : [], \
                                      'siblings': [], \
@@ -1669,6 +1704,33 @@ And here are the series of family trees currently built into the internal librar
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
+
+    transform_dict.update({'nmr4' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['nmr4'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+  
+    transform_dict.update({'nmr5' : {'parents' : ['nmr5'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : ['nmbr'], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'nmr6' : {'parents' : ['nmr6'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : ['mnmx'], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
     
     transform_dict.update({'nmcm' : {'parents' : [], \
                                      'siblings': [], \
@@ -1689,6 +1751,33 @@ And here are the series of family trees currently built into the internal librar
                                      'friends' : []}})
     
     transform_dict.update({'nmc3' : {'parents' : ['nmc3'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : ['mnmx'], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+
+    transform_dict.update({'nmc4' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['nmc4'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+  
+    transform_dict.update({'nmc5' : {'parents' : ['nmc5'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : ['nmbr'], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'nmc6' : {'parents' : ['nmc6'], \
                                      'siblings': [], \
                                      'auntsuncles' : [], \
                                      'cousins' : [NArw], \
