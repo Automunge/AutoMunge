@@ -132,6 +132,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
 		         'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
                          'splt':[], 'spl2':[], 'spl3':[], 'spl4':[], 'spl5':[], \
                          'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
+			 'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
                          'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], \
 		         'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
 		         'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
@@ -318,6 +319,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
 		         'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
                          'splt':[], 'spl2':[], 'spl3':[], 'spl4':[], 'spl5':[], \
                          'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
+			 'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
                          'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], \
 		         'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
 		         'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
@@ -478,6 +480,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
 		         'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
                          'splt':[], 'spl2':[], 'spl3':[], 'spl4':[], 'spl5':[], \
                          'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
+			 'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
                          'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], \
 		         'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
 		         'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
@@ -737,6 +740,7 @@ such as could potentially result in memory savings.
 		 'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
                  'splt':[], 'spl2':[], 'spl3':[], 'spl4':[], 'spl5':[], \
                  'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
+		 'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
                  'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], \
 		 'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
 		 'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
@@ -1427,6 +1431,15 @@ within the overlaps
 - comparable to functions nmrc/nmr2/nmr3/nmcm/nmc2/nmc3/splt/spl2/spl5
 - but make use of new assumption that set of unique values in test set is same or a subset of those values 
 from the train set, which allows for a more efficient application (no more string parsing of test sets)
+- default infill: comparable
+- default NArowtype: comparable
+- suffix appender: same format, updated per the new category
+
+* new processing functions nmr7/nmr8/nmr9/nmc7/nmc8/nmc9:
+- comparable to functions nmrc/nmr2/nmr3/nmcm/nmc2/nmc3
+- but implements string parsing only for unique test set entries not found in train set
+- for more efficient test set processing in automunge and postmunge
+- (less efficient than nmr4/nmc4 etc but captures outlier points as may not be unusual in continuous distributions)
 - default infill: comparable
 - default NArowtype: comparable
 - suffix appender: same format, updated per the new category
