@@ -777,6 +777,33 @@ class AutoMunge:
                                      'coworkers' : [], \
                                      'friends' : []}})
 
+    transform_dict.update({'mean' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['mean'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'mea2' : {'parents' : ['nmbr'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['mean'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'mea3' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['mean', 'bins'], \
+                                     'cousins' : [], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+
     transform_dict.update({'date' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['year', 'mnth', 'days', 'hour', 'mint', 'scnd'], \
@@ -1579,6 +1606,24 @@ class AutoMunge:
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mnm7'}})
+    process_dict.update({'mean' : {'dualprocess' : self.process_mean_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_mean_class, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'mean'}})
+    process_dict.update({'mea2' : {'dualprocess' : self.process_mean_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_mean_class, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'mean'}})
+    process_dict.update({'mea3' : {'dualprocess' : self.process_mean_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_mean_class, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'mean'}})
     process_dict.update({'bnry' : {'dualprocess' : self.process_binary_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_binary_class, \
@@ -3416,6 +3461,98 @@ class AutoMunge:
       if nc[-5:] == '_mnm6':
 
         column_dict = { nc : {'category' : 'mnm6', \
+                             'origcategory' : category, \
+                             'normalization_dict' : nmbrnormalization_dict, \
+                             'origcolumn' : column, \
+                             'columnslist' : nmbrcolumns, \
+                             'categorylist' : [nc], \
+                             'infillmodel' : False, \
+                             'infillcomplete' : False, \
+                             'deletecolumn' : False}}
+
+        column_dict_list.append(column_dict.copy())
+    
+
+        
+    return mdf_train, mdf_test, column_dict_list
+  
+  def process_mean_class(self, mdf_train, mdf_test, column, category, postprocess_dict):
+    '''
+    #process_mean_class(mdf_train, mdf_test, column, category)
+    #function to scale data to minimum of 0 and maximum of 1 \
+    #based on min/max values from training set for this column
+    #takes as arguement pandas dataframe of training and test data (mdf_train), (mdf_test)\
+    #and the name of the column string ('column') and parent category (category)
+    #replaces missing or improperly formatted data with mean of remaining values
+    #returns same dataframes with new column of name column + '_mnmx'
+    #note this is a "dualprocess" function since is applied to both dataframes
+    #expect this approach works better when the numerical distribution is thin tailed
+    #if only have training but not test data handy, use same training data for both
+    #dataframe inputs
+    '''
+    
+    #copy source column into new column
+    mdf_train[column + '_mean'] = mdf_train[column].copy()
+    mdf_test[column + '_mean'] = mdf_test[column].copy()
+
+    #convert all values to either numeric or NaN
+    mdf_train[column + '_mean'] = pd.to_numeric(mdf_train[column + '_mean'], errors='coerce')
+    mdf_test[column + '_mean'] = pd.to_numeric(mdf_test[column + '_mean'], errors='coerce')
+    
+    #a few more metrics collected for driftreport
+    #get standard deviation of training data
+    std = mdf_train[column + '_mean'].std()
+
+    #get mean of training data
+    mean = mdf_train[column + '_mean'].mean()    
+
+    #replace missing data with training set mean
+    if mean != mean:
+      mean = 0
+    mdf_train[column + '_mean'] = mdf_train[column + '_mean'].fillna(mean)
+    mdf_test[column + '_mean'] = mdf_test[column + '_mean'].fillna(mean)
+    
+    #get maximum value of training column
+    maximum = mdf_train[column + '_mean'].max()
+    
+    #get minimum value of training column
+    minimum = mdf_train[column + '_mean'].min()
+    
+    #avoid outlier div by zero when max = min
+    maxminusmin = maximum - minimum
+    if maxminusmin == 0:
+      maxminusmin = 1
+    
+    #perform min-max scaling to train and test sets using values from train
+    mdf_train[column + '_mean'] = (mdf_train[column + '_mean'] - mean) / \
+                                  (maxminusmin)
+    
+    mdf_test[column + '_mean'] = (mdf_test[column + '_mean'] - mean) / \
+                                 (maxminusmin)
+
+#     #change data type for memory savings
+#     mdf_train[column + '_mnmx'] = mdf_train[column + '_mnmx'].astype(np.float32)
+#     mdf_test[column + '_mnmx'] = mdf_test[column + '_mnmx'].astype(np.float32)
+
+
+    
+    #create list of columns
+    nmbrcolumns = [column + '_mean']
+
+
+    nmbrnormalization_dict = {column + '_mean' : {'minimum' : minimum, \
+                                                  'maximum' : maximum, \
+                                                  'mean' : mean, \
+                                                  'std' : std}}
+
+    #store some values in the nmbr_dict{} for use later in ML infill methods
+    column_dict_list = []
+
+    for nc in nmbrcolumns:
+
+      if nc[-5:] == '_mean':
+
+        column_dict = { nc : {'category' : 'mean', \
                              'origcategory' : category, \
                              'normalization_dict' : nmbrnormalization_dict, \
                              'origcolumn' : column, \
@@ -14943,6 +15080,7 @@ class AutoMunge:
                            'PCA_type':'default', \
                            'PCA_cmnd':{}}, \
                 assigncat = {'mnmx':[], 'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[], \
+                             'mean':[], 'mea2':[], 'mea3':[], \
                              'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'MAD3':[], \
                              'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
                              'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
@@ -16332,7 +16470,7 @@ class AutoMunge:
         
         
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '2.82'
+    automungeversion = '2.83'
     application_number = random.randint(100000000000,999999999999)
     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -17021,55 +17159,6 @@ class AutoMunge:
     return mdf_test
 
 
-#   def postprocess_mnm3_class(self, mdf_test, column, postprocess_dict, columnkey):
-#     '''
-#     #postprocess_mnmx_class(mdf_test, column, postprocess_dict, columnkey)
-#     #function to scale data to minimum of 0 and maximum of 1 based on training distribution
-#     #quantiles with values exceeding quantiles capped
-#     #takes as arguement pandas dataframe of training and test data (mdf_train), (mdf_test)\
-#     #and the name of the column string ('column'), and the normalization parameters \
-#     #stored in postprocess_dict
-#     #replaces missing or improperly formatted data with mean of training values
-#     #leaves original specified column in dataframe
-#     #returns transformed dataframe
-
-#     #expect this approach works better when the numerical distribution is thin tailed
-#     #if only have training but not test data handy, use same training data for both dataframe inputs
-#     '''
-
-
-#     #retrieve normalizastion parameters from postprocess_dict
-#     normkey = column + '_mnm3'
-
-#     mean = \
-#     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
-
-#     quantilemin = \
-#     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['quantilemin']
-
-#     quantilemax = \
-#     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['quantilemax']
-
-#     #copy original column for implementation
-#     mdf_test[column + '_mnm3'] = mdf_test[column].copy()
-
-
-#     #convert all values to either numeric or NaN
-#     mdf_test[column + '_mnm3'] = pd.to_numeric(mdf_test[column + '_mnm3'], errors='coerce')
-
-#     #get mean of training data
-#     mean = mean  
-
-#     #replace missing data with training set mean
-#     mdf_test[column + '_mnm3'] = mdf_test[column + '_mnm3'].fillna(mean)
-
-#     #perform min-max scaling to test set using values from train
-#     mdf_test[column + '_mnm3'] = (mdf_test[column + '_mnm3'] - quantilemin) / \
-#                                  (quantilemax - quantilemin)
-
-
-#     return mdf_test
-
   def postprocess_mnm3_class(self, mdf_test, column, postprocess_dict, columnkey):
     '''
     #postprocess_mnmx_class(mdf_test, column, postprocess_dict, columnkey)
@@ -17190,6 +17279,61 @@ class AutoMunge:
 
 #     #change data type for memory savings
 #     mdf_test[column + '_mnm6'] = mdf_test[column + '_mnm6'].astype(np.float32)
+
+    return mdf_test
+
+  def postprocess_mean_class(self, mdf_test, column, postprocess_dict, columnkey):
+    '''
+    #postprocess_mean_class(mdf_test, column, postprocess_dict, columnkey)
+    #function to scale data to minimum of 0 and maximum of 1 based on training distribution
+    #takes as arguement pandas dataframe of training and test data (mdf_train), (mdf_test)\
+    #and the name of the column string ('column'), and the normalization parameters \
+    #stored in postprocess_dict
+    #replaces missing or improperly formatted data with mean of training values
+    #leaves original specified column in dataframe
+    #returns transformed dataframe
+    #expect this approach works better when the numerical distribution is thin tailed
+    #if only have training but not test data handy, use same training data for both dataframe inputs
+    '''
+    
+    
+    #retrieve normalizastion parameters from postprocess_dict
+    normkey = column + '_mean'
+    
+    mean = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
+    
+    minimum = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['minimum']
+    
+    maximum = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['maximum']
+
+    #copy original column for implementation
+    mdf_test[column + '_mean'] = mdf_test[column].copy()
+
+
+    #convert all values to either numeric or NaN
+    mdf_test[column + '_mean'] = pd.to_numeric(mdf_test[column + '_mean'], errors='coerce')
+
+    #get mean of training data
+    mean = mean  
+
+    #replace missing data with training set mean
+    mdf_test[column + '_mean'] = mdf_test[column + '_mean'].fillna(mean)
+    
+    
+    #avoid outlier div by zero when max = min
+    maxminusmin = maximum - minimum
+    if maxminusmin == 0:
+      maxminusmin = 1
+
+    #perform min-max scaling to test set using values from train
+    mdf_test[column + '_mean'] = (mdf_test[column + '_mean'] - mean) / \
+                                 (maxminusmin)
+
+#     #change data type for memory savings
+#     mdf_test[column + '_mnmx'] = mdf_test[column + '_mnmx'].astype(np.float32)
 
     return mdf_test
 
