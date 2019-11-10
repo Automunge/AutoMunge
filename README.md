@@ -122,6 +122,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
                        'PCA_type':'default', \
                        'PCA_cmnd':{}}, \
             assigncat = {'mnmx':[], 'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[], \
+	                 'mean':[], 'mea2':[], 'mea3':[], \
 		         'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'MAD3':[], \
 		         'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
 		         'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
@@ -309,6 +310,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
                        'PCA_type':'default', \
                        'PCA_cmnd':{}}, \
             assigncat = {'mnmx':[], 'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[], \
+	                 'mean':[], 'mea2':[], 'mea3':[], \
 		         'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'MAD3':[], \
 		         'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
 		         'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
@@ -470,6 +472,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
                        'PCA_type':'default', \
                        'PCA_cmnd':{}}, \
             assigncat = {'mnmx':[], 'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[], \
+	                 'mean':[], 'mea2':[], 'mea3':[], \
 		         'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'MAD3':[], \
 		         'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
 		         'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
@@ -730,6 +733,7 @@ such as could potentially result in memory savings.
 #we are continuing to build out. A user may also define their own.
 
     assigncat = {'mnmx':[], 'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[], \
+                 'mean':[], 'mea2':[], 'mea3':[], \
 		 'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'MAD3':[], \
 		 'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
 		 'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
@@ -1203,6 +1207,7 @@ default NArowtype refers to the categories of data that won't be subject to
 infill.
 
 * nmbr/nbr2/nbr3/nmdx/nmd2/nmd3: z-score normalization
+(x - mean) / (standard deviation)
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '_nmbr'
@@ -1224,9 +1229,14 @@ of preceding two rows)
   - default NArowtype: numeric
   - suffix appender: '_MAD3'
 * mnmx/mnm2/mnm5/mmdx/mmd2/mmd3: vanilla min-max scaling
+(x - min) / (max - min)
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '_mnmx'
+* mean/mea2/mea3: mean normalization (like z-score in the numerator and min-max in the denominator)
+(x - mean) / (max - mean)
+Note this is what Andrew Ng suggested as default in his MOOC. My intuition says z-score has some 
+benefits but really up to the user which they prefer.
 * mnm3/mnm4: min-max scaling with outliers capped at 0.01 and 0.99 quantiles
   - default infill: mean
   - default NArowtype: numeric
@@ -2054,6 +2064,33 @@ And here are the series of family trees currently built into the internal librar
     transform_dict.update({'mnm7' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['mnmx', 'bins'], \
+                                     'cousins' : [], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+
+    transform_dict.update({'mean' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['mean'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'mea2' : {'parents' : ['nmbr'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['mean'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'mea3' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['mean', 'bins'], \
                                      'cousins' : [], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
