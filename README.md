@@ -1133,6 +1133,37 @@ In all cases, if the parameter NArw_marker is activated returned sets will be
 supplemented with a NArw column indicating rows that were subject to infill. Each 
 transformation category has a default infill approach detailed below.
 
+Note that default transformations can be overwritten within an automunge(.) call by way
+of passing custom transformdict family tree defintions which overwrite the family tree 
+of the default root categories listed above. For instance, if a user wishes to process 
+numerical columns with a default mean scaling ('mean') instead of z-score 
+normalization ('nmbr'), the user may copy the transform_dict entries from the code-base 
+for mean root category and assign as a definition of the nmbr root category, and then 
+pass that defined transformdict in the automunge call. (Note that we don't need to 
+overwrite the processdict for nnmbr if we don't intend to overwrite it's use as an entry 
+in other root category family trees. Also it's good practice to retain any downstream 
+entries such as in case the default for nmbr is used as an entry in some other root 
+category's family tree.) Here's a demonstration.
+
+```
+#create a transformdict that overwrites the root category definition of nmbr with mean:
+transformdict = {'nmbr' : {'parents' : [], \
+                           'siblings': [], \
+                           'auntsuncles' : ['mean'], \
+                           'cousins' : [], \
+                           'children' : [], \
+                           'niecesnephews' : [], \
+                           'coworkers' : [], \
+                           'friends' : []}}
+                           
+#And then we can simply pass this transformdict to an automunge(.) call.
+
+(returned sets) = \
+am.automunge(df_train, \
+             transformdict = transformdict)
+
+```
+
 ...
 
 ## Library of Transformations
