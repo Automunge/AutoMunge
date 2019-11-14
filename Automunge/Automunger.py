@@ -263,6 +263,87 @@ class AutoMunge:
                                      'niecesnephews' : [], \
                                      'coworkers' : ['text'], \
                                      'friends' : []}})
+
+    transform_dict.update({'UPCS' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['UPCS'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+  
+    transform_dict.update({'Utxt' : {'parents' : ['Utxt'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : ['text'], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'Utx2' : {'parents' : ['Utx2'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : ['text'], \
+                                     'friends' : ['splt']}})
+
+    transform_dict.update({'Utx3' : {'parents' : ['Utx3'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : ['txt3'], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'Uord' : {'parents' : ['Uord'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : ['ordl'], \
+                                     'friends' : []}})
+        
+    transform_dict.update({'Uor2' : {'parents' : ['Uor2'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : ['ord2'], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'Uor3' : {'parents' : ['Uor3'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : ['ord3'], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'Uor6' : {'parents' : ['Uor6'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : ['spl6'], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : ['ord3'], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'U101' : {'parents' : ['U101'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : ['1010'], \
+                                     'friends' : []}})
     
     transform_dict.update({'splt' : {'parents' : [], \
                                      'siblings': [], \
@@ -1648,6 +1729,60 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'text'}})
+    process_dict.update({'UPCS' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_UPCS_class, \
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'exclude', \
+                                  'labelctgy' : 'exclude'}})
+    process_dict.update({'Utxt' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_UPCS_class, \
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'exclude', \
+                                  'labelctgy' : 'text'}})
+    process_dict.update({'Utx2' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_UPCS_class, \
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'exclude', \
+                                  'labelctgy' : 'text'}})
+    process_dict.update({'Utx3' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_UPCS_class, \
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'exclude', \
+                                  'labelctgy' : 'text'}})
+    process_dict.update({'Uord' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_UPCS_class, \
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'exclude', \
+                                  'labelctgy' : 'ordl'}})
+    process_dict.update({'Uor2' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_UPCS_class, \
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'exclude', \
+                                  'labelctgy' : 'mnmx'}})
+    process_dict.update({'Uor3' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_UPCS_class, \
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'exclude', \
+                                  'labelctgy' : 'ord3'}})
+    process_dict.update({'Uor6' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_UPCS_class, \
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'exclude', \
+                                  'labelctgy' : 'ord3'}})
+    process_dict.update({'U101' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_UPCS_class, \
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'exclude', \
+                                  'labelctgy' : '1010'}})
     process_dict.update({'splt' : {'dualprocess' : self.process_splt_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_splt_class, \
@@ -3935,6 +4070,51 @@ class AutoMunge:
     
     return mdf_train, mdf_test, column_dict_list
   
+  def process_UPCS_class(self, df, column, category, postprocess_dict):
+    '''
+    #processing funciton that converts columns to uppercase strings
+    #such as to allow consistnet encoding if data has upper/lower case discrepencies
+    #default infill is a distinct entry as string NAN
+    #note that with assigninfill this can be converted to other infill methods
+    #returns same dataframe with new column of name column + '_UPCS'
+    #note this is a "singleprocess" function since is applied to single dataframe
+    '''
+    
+    #create new column
+    df[column + '_UPCS'] = df[column].copy()
+    
+    #convert column to string
+    df[column + '_UPCS'] = df[column + '_UPCS'].astype(str)
+    
+    #convert to uppercase string
+    df[column + '_UPCS'] = df[column + '_UPCS'].str.upper()
+
+    #create list of columns
+    UPCScolumns = [column + '_UPCS']
+
+    #create normalization dictionary
+    normalization_dict = {column + '_UPCS' : {}}
+
+    #store some values in the nmbr_dict{} for use later in ML infill methods
+    column_dict_list = []
+    
+    for nc in UPCScolumns:
+
+      if nc[-5:] != '_NArw':
+
+        column_dict = { nc : {'category' : 'UPCS', \
+                             'origcategory' : category, \
+                             'normalization_dict' : normalization_dict, \
+                             'origcolumn' : column, \
+                             'columnslist' : UPCScolumns, \
+                             'categorylist' : UPCScolumns, \
+                             'infillmodel' : False, \
+                             'infillcomplete' : False, \
+                             'deletecolumn' : False}}
+
+        column_dict_list.append(column_dict.copy())
+
+    return df, column_dict_list
 
 
   def process_splt_class(self, mdf_train, mdf_test, column, category, \
@@ -15089,6 +15269,7 @@ class AutoMunge:
                              'log0':[], 'log1':[], 'sqrt':[], \
                              'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
                              'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
+                             'Utxt':[], 'Utx2':[], 'Utx3':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
                              'splt':[], 'spl2':[], 'spl3':[], 'spl4':[], 'spl5':[], \
                              'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
                              'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
@@ -16470,7 +16651,7 @@ class AutoMunge:
         
         
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '2.83'
+    automungeversion = '2.84'
     application_number = random.randint(100000000000,999999999999)
     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
