@@ -131,6 +131,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
 		         'log0':[], 'log1':[], 'sqrt':[], \
 		         'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
 		         'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
+			 'Utxt':[], 'Utx2':[], 'Utx3':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
                          'splt':[], 'spl2':[], 'spl3':[], 'spl4':[], 'spl5':[], \
                          'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
 			 'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
@@ -319,6 +320,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
 		         'log0':[], 'log1':[], 'sqrt':[], \
 		         'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
 		         'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
+			 'Utxt':[], 'Utx2':[], 'Utx3':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
                          'splt':[], 'spl2':[], 'spl3':[], 'spl4':[], 'spl5':[], \
                          'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
 			 'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
@@ -481,6 +483,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
 		         'log0':[], 'log1':[], 'sqrt':[], \
 		         'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
 		         'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
+			 'Utxt':[], 'Utx2':[], 'Utx3':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
                          'splt':[], 'spl2':[], 'spl3':[], 'spl4':[], 'spl5':[], \
                          'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
 			 'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
@@ -742,6 +745,7 @@ such as could potentially result in memory savings.
 		 'log0':[], 'log1':[], 'sqrt':[], \
 		 'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
 		 'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
+		 'Utxt':[], 'Utx2':[], 'Utx3':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
                  'splt':[], 'spl2':[], 'spl3':[], 'spl4':[], 'spl5':[], \
                  'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
 		 'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
@@ -1485,6 +1489,15 @@ from the train set, which allows for a more efficient application (no more strin
 - default NArowtype: comparable
 - suffix appender: same format, updated per the new category
 
+* new processing functions Utxt / Utx2 / Utx3 / Uord / Uor2 / Uor3 / Uor6 / U101
+- comparable to functions text / txt2 / txt3 / ordl / ord2 / ord3 / ors6 / 1010
+- but upstream conversion of all strings to uppercase characters prior to encoding
+- (e.g. 'USA' and 'usa' would be consistently encoded)
+- default infill: in uppercase conversion NaN's are assigned distinct encoding 'NAN'
+- and may be assigned other 9infill methods in assigninfill
+- default NArowtype: 'justNaN'
+- suffix appender: '_UPCS'
+
 
 And here are the series of family trees currently built into the internal library.
 
@@ -1641,6 +1654,87 @@ And here are the series of family trees currently built into the internal librar
                                      'niecesnephews' : [], \
                                      'coworkers' : ['text'], \
                                      'friends' : []}})
+
+    transform_dict.update({'UPCS' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['UPCS'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+  
+    transform_dict.update({'Utxt' : {'parents' : ['Utxt'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : ['text'], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'Utx2' : {'parents' : ['Utx2'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : ['text'], \
+                                     'friends' : ['splt']}})
+
+    transform_dict.update({'Utx3' : {'parents' : ['Utx3'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : ['txt3'], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'Uord' : {'parents' : ['Uord'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : ['ordl'], \
+                                     'friends' : []}})
+        
+    transform_dict.update({'Uor2' : {'parents' : ['Uor2'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : ['ord2'], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'Uor3' : {'parents' : ['Uor3'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : ['ord3'], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'Uor6' : {'parents' : ['Uor6'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : ['spl6'], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : ['ord3'], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'U101' : {'parents' : ['U101'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : ['1010'], \
+                                     'friends' : []}})
     
     transform_dict.update({'splt' : {'parents' : [], \
                                      'siblings': [], \
@@ -1786,6 +1880,33 @@ And here are the series of family trees currently built into the internal librar
                                      'coworkers' : [], \
                                      'friends' : []}})
     
+    transform_dict.update({'nmr7' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['nmr7'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+  
+    transform_dict.update({'nmr8' : {'parents' : ['nmr8'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : ['nmbr'], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'nmr9' : {'parents' : ['nmr9'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : ['mnmx'], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
     transform_dict.update({'nmcm' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['nmcm'], \
@@ -1832,6 +1953,33 @@ And here are the series of family trees currently built into the internal librar
                                      'friends' : []}})
     
     transform_dict.update({'nmc6' : {'parents' : ['nmc6'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : ['mnmx'], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+
+    transform_dict.update({'nmc7' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['nmc7'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+  
+    transform_dict.update({'nmc8' : {'parents' : ['nmc8'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : ['nmbr'], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'nmc9' : {'parents' : ['nmc9'], \
                                      'siblings': [], \
                                      'auntsuncles' : [], \
                                      'cousins' : [NArw], \
