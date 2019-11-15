@@ -13939,6 +13939,19 @@ class AutoMunge:
     _8, _9, labelsencoding_dict, finalcolumns_train, _10,  \
     FSpostprocess_dict
     
+    if printstatus == True:
+      print("_______________")
+      print("Feature Importance results:")
+      print("")
+        
+    #to inspect values returned in featureimportance object one could run
+    if printstatus == True:
+      for keys,values in FScolumn_dict.items():
+        print(keys)
+        print('metric = ', values['metric'])
+        print('metric2 = ', values['metric2'])
+        print("")
+    
     #printout display progress
     if printstatus == True:
       print("_______________")
@@ -15523,9 +15536,9 @@ class AutoMunge:
     if type(df_train.index) != pd.RangeIndex:
       #if df_train.index.names == [None]:
       if None in df_train.index.names:
-        if len(list(df_train.index.names)) == 1 and df_train_concat.index.dtype == int:
+        if len(list(df_train.index.names)) == 1 and df_train.index.dtype == int:
           pass
-        elif len(list(df_train.index.names)) == 1 and df_train_concat.index.dtype != int:
+        elif len(list(df_train.index.names)) == 1 and df_train.index.dtype != int:
           print("error, non integer index passed without columns named")
         else:
           print("error, non integer index passed without columns named")
@@ -15544,7 +15557,7 @@ class AutoMunge:
       if None in df_test.index.names:
         if len(list(df_test.index.names)) == 1 and df_test.index.dtype == int:
           pass
-        elif len(list(df_test.index.names)) == 1 and df_train_concat.index.dtype != int:
+        elif len(list(df_test.index.names)) == 1 and df_test.index.dtype != int:
           print("error, non integer index passed without columns named")
         else:
           print("error, non integer index passed without columns named")
@@ -16651,7 +16664,7 @@ class AutoMunge:
         
         
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '2.84'
+    automungeversion = '2.85'
     application_number = random.randint(100000000000,999999999999)
     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -22440,17 +22453,18 @@ class AutoMunge:
     
     del am_train, _1, am_labels, labelsencoding_dict, finalcolumns_train, am_validation1, am_validationlabels1
     
-    
-    print("_______________")
-    print("Feature Importance results:")
-    print("")
+    if printstatus == True:
+      print("_______________")
+      print("Feature Importance results:")
+      print("")
         
     #to inspect values returned in featureimportance object one could run
-    for keys,values in FScolumn_dict.items():
-      print(keys)
-      print('metric = ', values['metric'])
-      print('metric2 = ', values['metric2'])
-      print()
+    if printstatus == True:
+      for keys,values in FScolumn_dict.items():
+        print(keys)
+        print('metric = ', values['metric'])
+        print('metric2 = ', values['metric2'])
+        print()
     
     #printout display progress
     if printstatus == True:
@@ -22465,7 +22479,146 @@ class AutoMunge:
     return FSmodel, FScolumn_dict
 
 
-  def prepare_driftreport(self, df_test, postprocess_dict):
+#   def prepare_driftreport(self, df_test, postprocess_dict):
+#     """
+#     #driftreport uses the processfamily functions as originally implemented
+#     #in automunge to recalculate normalization parameters based on the test
+#     #set passed to postmunge and print a comparison with those original 
+#     #normalization parameters saved in the postprocess_dict, such as may 
+#     #prove useful to track drift from original training data.
+#     #returns a store of the temporary postprocess_dict containing the newly 
+#     #calculated normalziation parameters
+#     """
+    
+#     print("_______________")
+#     print("Drift Report results:")
+#     print("")
+    
+#     #temporary store for updated normalization parameters
+#     #we'll copy all the support stuff from original pp_d but delete the 'column_dict'
+#     #entries for our new derivations below
+#     drift_ppd = deepcopy(postprocess_dict)
+#     drift_ppd['column_dict'] = {}
+    
+#     #for each column in df_test
+#     for drift_column in df_test:
+      
+#       returnedcolumns = postprocess_dict['origcolumn'][drift_column]['columnkeylist']
+#       returnedcolumns.sort()
+      
+#       print("______")
+#       print("Preparing drift report for columns derived from: ", drift_column)
+#       print("")
+#       print("original returned columns:")
+#       print(returnedcolumns)
+#       print("")
+      
+#       drift_category = \
+#       postprocess_dict['column_dict'][postprocess_dict['origcolumn'][drift_column]['columnkey']]['origcategory']
+      
+#       drift_process_dict = \
+#       postprocess_dict['process_dict']
+      
+#       drift_transform_dict = \
+#       postprocess_dict['transform_dict']
+      
+#       #we're only going to copy one source column at a time, as should be 
+#       #more memory efficient than copying the entire set
+#       df_test2_temp = pd.DataFrame(df_test[drift_column].copy())
+      
+#       #then a second copy set, here of just a few rows, to follow convention of 
+#       #automunge processfamily calls
+#       df_test3_temp = df_test2_temp[0:10].copy()
+      
+#       #here's a templist to support the columnkey entry below
+#       templist1 = list(df_test2_temp)
+    
+#       #now process family
+#       df_test2_temp, df_test3_temp, drift_ppd = \
+#       self.processfamily(df_test2_temp, df_test3_temp, drift_column, drift_category, \
+#                          drift_category, drift_process_dict, drift_transform_dict, \
+#                          drift_ppd)
+
+#       #here's a second templist to support the columnkey entry below
+#       templist2 = list(df_test2_temp)
+      
+#       #ok now we're going to pick one of the new entries of. returned columns to serve 
+#       #as a "columnkey" for pulling datas from the postprocess_dict 
+#       #columnkeylist = list(set(templist2) - set(templist1))[0]
+#       columnkeylist = list(set(templist2) - set(templist1))
+
+
+#       #so last line I believe returns string if only one entry, so let's run a test
+#       if isinstance(columnkeylist, str):
+#         columnkey = columnkeylist
+#       else:
+#         #if list is empty
+#         if len(columnkeylist) == 0:
+#           columnkey = column
+#         else:
+#           columnkey = columnkeylist[0]
+#           if len(columnkey) >= 5:
+#             if columnkey[-5:] == '_NArw':
+#               if len(columnkeylist) > 1:
+#                 columnkey = columnkeylist[1]
+#               else:
+#                 columnkey = columnkey
+      
+#       #if drift_ppd['origcolumn'][drift_column]['columnkey'] not in drift_ppd['column_dict']:
+#       if len(columnkeylist) == 0:
+      
+#         print("no new returned columns:")
+#         print("")
+        
+#         newreturnedcolumns = []
+        
+#       else:
+        
+# #         newreturnedcolumns = \
+# #         drift_ppd['column_dict'][drift_ppd['origcolumn'][drift_column]['columnkey']]['columnslist']
+#         newreturnedcolumns = \
+#         drift_ppd['column_dict'][columnkey]['columnslist']
+
+
+#         newreturnedcolumns.sort()
+
+#         print("new returned columns:")
+#         print(newreturnedcolumns)
+#         print("")
+      
+#       for origreturnedcolumn in returnedcolumns:
+#         if origreturnedcolumn not in newreturnedcolumns:
+#           print("___")
+#           print("original derived column not in new returned column: ", origreturnedcolumn)
+#           print("")
+#           print("original automunge normalization parameters:")
+#           print(postprocess_dict['column_dict'][origreturnedcolumn]['normalization_dict'][origreturnedcolumn])
+#           print("")
+      
+#       for returnedcolumn in newreturnedcolumns:
+        
+#         print("___")
+#         print("derived column: ", returnedcolumn)
+#         print("")
+#         if returnedcolumn in returnedcolumns:
+#           print("original automunge normalization parameters:")
+#           print(postprocess_dict['column_dict'][returnedcolumn]['normalization_dict'][returnedcolumn])
+#           print("")
+#         print("new postmunge normalization parameters:")
+#         print(drift_ppd['column_dict'][returnedcolumn]['normalization_dict'][returnedcolumn])
+#         print("")
+      
+#       #free up some memory
+#       del df_test2_temp, df_test3_temp, returnedcolumns
+      
+#     print("")
+#     print("_______________")
+#     print("Drift Report Complete")
+#     print("")
+      
+#     return drift_ppd
+
+  def prepare_driftreport(self, df_test, postprocess_dict, printstatus):
     """
     #driftreport uses the processfamily functions as originally implemented
     #in automunge to recalculate normalization parameters based on the test
@@ -22473,12 +22626,16 @@ class AutoMunge:
     #normalization parameters saved in the postprocess_dict, such as may 
     #prove useful to track drift from original training data.
     #returns a store of the temporary postprocess_dict containing the newly 
-    #calculated normalziation parameters
+    #calculated normalziation parameters and a report of the results
     """
     
-    print("_______________")
-    print("Drift Report results:")
-    print("")
+    if printstatus == True:
+      print("_______________")
+      print("Preparing Drift Report:")
+      print("")
+      
+    #initialize empty dictionary to store results
+    drift_report = {}
     
     #temporary store for updated normalization parameters
     #we'll copy all the support stuff from original pp_d but delete the 'column_dict'
@@ -22492,15 +22649,24 @@ class AutoMunge:
       returnedcolumns = postprocess_dict['origcolumn'][drift_column]['columnkeylist']
       returnedcolumns.sort()
       
-      print("______")
-      print("Preparing drift report for columns derived from: ", drift_column)
-      print("")
-      print("original returned columns:")
-      print(returnedcolumns)
-      print("")
+      if printstatus == True:
+        print("______")
+        print("Preparing drift report for columns derived from: ", drift_column)
+        print("")
+        print("original returned columns:")
+        print(returnedcolumns)
+        print("")
+        
       
       drift_category = \
       postprocess_dict['column_dict'][postprocess_dict['origcolumn'][drift_column]['columnkey']]['origcategory']
+      
+      #update driftreport with this column
+      drift_report.update({drift_column : {'origreturnedcolumns_list':returnedcolumns, \
+                                           'newreturnedcolumns_list':[], \
+                                           'drift_category' : drift_category, \
+                                           'orignotinnew' : {}, \
+                                           'newreturnedcolumn':{}}})
       
       drift_process_dict = \
       postprocess_dict['process_dict']
@@ -22552,9 +22718,10 @@ class AutoMunge:
       
       #if drift_ppd['origcolumn'][drift_column]['columnkey'] not in drift_ppd['column_dict']:
       if len(columnkeylist) == 0:
-      
-        print("no new returned columns:")
-        print("")
+        
+        if printstatus == True:
+          print("no new returned columns:")
+          print("")
         
         newreturnedcolumns = []
         
@@ -22568,41 +22735,67 @@ class AutoMunge:
 
         newreturnedcolumns.sort()
 
-        print("new returned columns:")
-        print(newreturnedcolumns)
-        print("")
+        if printstatus == True:
+          print("new returned columns:")
+          print(newreturnedcolumns)
+          print("")
+          
+        #add to driftreport
+        drift_report[drift_column]['newreturnedcolumns_list'] = newreturnedcolumns
       
       for origreturnedcolumn in returnedcolumns:
         if origreturnedcolumn not in newreturnedcolumns:
-          print("___")
-          print("original derived column not in new returned column: ", origreturnedcolumn)
-          print("")
-          print("original automunge normalization parameters:")
-          print(postprocess_dict['column_dict'][origreturnedcolumn]['normalization_dict'][origreturnedcolumn])
-          print("")
+          if printstatus == True:
+            print("___")
+            print("original derived column not in new returned column: ", origreturnedcolumn)
+            print("")
+            print("original automunge normalization parameters:")
+            print(postprocess_dict['column_dict'][origreturnedcolumn]['normalization_dict'][origreturnedcolumn])
+            print("")
+          
+          drift_report[drift_column]['orignotinnew'].update({origreturnedcolumn:{'orignormparam':\
+          postprocess_dict['column_dict'][origreturnedcolumn]['normalization_dict'][origreturnedcolumn]}})
       
       for returnedcolumn in newreturnedcolumns:
         
-        print("___")
-        print("derived column: ", returnedcolumn)
-        print("")
-        if returnedcolumn in returnedcolumns:
-          print("original automunge normalization parameters:")
-          print(postprocess_dict['column_dict'][returnedcolumn]['normalization_dict'][returnedcolumn])
+        drift_report[drift_column]['newreturnedcolumn'].update(\
+        {returnedcolumn:{'orignormparam':{}, 'newnormparam':{}}})
+        
+        
+        if printstatus == True:
+          print("___")
+          print("derived column: ", returnedcolumn)
           print("")
-        print("new postmunge normalization parameters:")
-        print(drift_ppd['column_dict'][returnedcolumn]['normalization_dict'][returnedcolumn])
-        print("")
+          
+        if returnedcolumn in returnedcolumns:
+          if printstatus == True:
+            print("original automunge normalization parameters:")
+            print(postprocess_dict['column_dict'][returnedcolumn]['normalization_dict'][returnedcolumn])
+            print("")
+            
+          #add to driftreport
+          drift_report[drift_column]['newreturnedcolumn'][returnedcolumn]['orignormparam'] \
+          = postprocess_dict['column_dict'][returnedcolumn]['normalization_dict'][returnedcolumn]
+          
+        if printstatus == True:
+          print("new postmunge normalization parameters:")
+          print(drift_ppd['column_dict'][returnedcolumn]['normalization_dict'][returnedcolumn])
+          print("")
+          
+        #add to driftreport
+        drift_report[drift_column]['newreturnedcolumn'][returnedcolumn]['orignormparam'] \
+        = drift_ppd['column_dict'][returnedcolumn]['normalization_dict'][returnedcolumn]
       
       #free up some memory
       del df_test2_temp, df_test3_temp, returnedcolumns
       
-    print("")
-    print("_______________")
-    print("Drift Report Complete")
-    print("")
+    if printstatus == True:
+      print("")
+      print("_______________")
+      print("Drift Report Complete")
+      print("")
       
-    return drift_ppd
+    return drift_ppd, drift_report
   
 
   def postmunge(self, postprocess_dict, df_test, testID_column = False, \
@@ -22633,6 +22826,7 @@ class AutoMunge:
       print("Begin Postmunge processing")
       print("")
       
+      
     #quick conversion of any passed column idenitfiers to str
     labelscolumn = self.parameter_str_convert(labelscolumn)
     testID_column = self.parameter_str_convert(testID_column)
@@ -22653,6 +22847,11 @@ class AutoMunge:
       madethecut = []
       FSmodel = None
       FScolumn_dict = {}
+      
+    #initialize postreports_dict
+    postreports_dict = {'featureimportance':FScolumn_dict, \
+                        'finalcolumns_test':[], \
+                        'driftreport':{}}
     
     
     #functionality to support passed numpy arrays
@@ -22698,7 +22897,7 @@ class AutoMunge:
       if None in df_test.index.names:
         if len(list(df_test.index.names)) == 1 and df_test.index.dtype == int:
           pass
-        elif len(list(df_test.index.names)) == 1 and df_train_concat.index.dtype != int:
+        elif len(list(df_test.index.names)) == 1 and df_test.index.dtype != int:
           print("error, non integer index passed without columns named")
         else:
           print("error, non integer index passed without columns named")
@@ -22808,8 +23007,9 @@ class AutoMunge:
       #column_dict entries populated with newly calculated normalizaiton parameters
       #for now we'll just print the results in the function, a future expansion may
       #return these to the user somehow, need to put some thought into that
-      drift_ppd = self.prepare_driftreport(df_test, postprocess_dict)
-    
+      drift_ppd, drift_report = self.prepare_driftreport(df_test, postprocess_dict, printstatus)
+      
+      postreports_dict['driftreport'] = drift_report
     
     #create an empty dataframe to serve as a store for each column's NArows
     #the column id's for this df will follow convention from NArows of 
@@ -23599,6 +23799,9 @@ class AutoMunge:
     #numpy arrays scrubs the column names
     finalcolumns_test = list(df_test)
     
+    postreports_dict['finalcolumns_test'] = finalcolumns_test
+    
+    
             
     #printout display progress
     if printstatus == True:
@@ -23664,4 +23867,4 @@ class AutoMunge:
       print("Postmunge Complete")
       print("")
 
-    return test, testID, testlabels, labelsencoding_dict, finalcolumns_test
+    return test, testID, testlabels, labelsencoding_dict, postreports_dict
