@@ -94,7 +94,7 @@ dictionary returned from original application of automunge(.), run:
 
 ```
 test, testID, testlabels, \
-labelsencoding_dict, finalcolumns_test \
+labelsencoding_dict, postreports_dict \
 = am.postmunge(postprocess_dict, df_test)
 ```
 
@@ -171,7 +171,7 @@ for consistent processing of additional data.
 #using the postprocess_dict object returned from original automunge(.) application
 
 test, testID, testlabels, \
-labelsencoding_dict, finalcolumns_test = \
+labelsencoding_dict, postreports_dict = \
 am.postmunge(postprocess_dict, df_test, testID_column = False, \
              labelscolumn = False, pandasoutput=True, printstatus = True, \
              TrainLabelFreqLevel = False, featureeval = False, driftreport = False)
@@ -342,7 +342,7 @@ Or for the postmunge function:
 #using the postprocess_dict object returned from original automunge(.) application
 
 test, testID, testlabels, \
-labelsencoding_dict, finalcolumns_test = \
+labelsencoding_dict, postreports_dict = \
 ```
 
 With the full set of arguments available to be passed as:
@@ -973,13 +973,12 @@ am = Automunger.AutoMunge()
 #Then we can run postmunge function as:
 
 test, testID, testlabels, \
-labelsencoding_dict, finalcolumns_test = \
+labelsencoding_dict, postreports_dict = \
 am.postmunge(postprocess_dict, df_test, testID_column = False, \
              labelscolumn = False, pandasoutput=True, printstatus = True, \
              TrainLabelFreqLevel = False, featureeval = False, driftreport = False)
 ```
              
-
 
 ## postmunge(.) returned sets:
 Here now are descriptions for the returned sets from postmunge, which
@@ -1005,6 +1004,20 @@ automunge, it's used in case one wants to reverse encode predicted labels
 test data. Note that the inclusion of suffix appenders is used to
 identify which feature engineering transformations were applied to each
 column. Note that this list should match the one from automunge.
+
+* postreports_dict: a dictionary containing entries for following:
+- postreports_dict['featureimportance']: results of optional feature 
+importance evaluation based on parameter featureeval
+- postreports_dict['driftreport']: results of optional drift report 
+evaluation tracking properties of psotmunge data in comparision to the 
+original data from automunge call associated with the postprocess_dict 
+presumably used to train a model. Results aggregated by entries for the
+original (pre-transform) list of columns, and include the normailzaiton
+parameters from the automunge call saved in postprocess_dict as well
+as the corresponding parameters from the new data consistently derived 
+in postmunge
+- postreports_dict['finalcolumns_test']: list of columns returned from 
+postmunge
 
 ...
 
@@ -1085,16 +1098,17 @@ this requires the inclusion of a designated labels column.
 
 * featureeval: a boolean identifier (True/False) to activate a feature
 importance evaluation, comparable to one performed in automunge but based
-on the test set passed to postmunge. Currently the results report is not
-returned as an object, the results are printed in the output (for backward
-compatibility).
+on the test set passed to postmunge. The results are returned in the
+postreports_dict object returned from postmunge as postreports_dict['featureimportance']. 
+The results will also be printed out if printstatus is activated.
 
 * driftreport: a boolean identifier (True/False) to activate a drift report 
 evaluation, in which the normalization parameters are recalculated for the 
 columns of the test data passed to postmunge for comparison to the original 
 normalization parameters derived from the coresponding columns of the 
-automunge train data set. Currently the results report is not returned as 
-an object, the results are printed in the output (for backward compatibility).
+automunge train data set. The results are returned in the
+postreports_dict object returned from postmunge as postreports_dict['driftreport']. 
+The results will also be printed out if printstatus is activated.
 
 ...
 
