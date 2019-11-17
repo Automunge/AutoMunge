@@ -1487,30 +1487,30 @@ within the overlaps
   - suffix appender: '_nmcm'
   
 * new processing functions nmr4/nmr5/nmr6/nmc4/nmc5/nmc6/spl8/spl9/sp10 (spelled sp"ten"):
-- comparable to functions nmrc/nmr2/nmr3/nmcm/nmc2/nmc3/splt/spl2/spl5
-- but make use of new assumption that set of unique values in test set is same or a subset of those values 
-from the train set, which allows for a more efficient application (no more string parsing of test sets)
-- default infill: comparable
-- default NArowtype: comparable
-- suffix appender: same format, updated per the new category
+  - comparable to functions nmrc/nmr2/nmr3/nmcm/nmc2/nmc3/splt/spl2/spl5
+  - but make use of new assumption that set of unique values in test set is same or a subset of those values 
+    from the train set, which allows for a more efficient application (no more string parsing of test sets)
+  - default infill: comparable
+  - default NArowtype: comparable
+  - suffix appender: same format, updated per the new category
 
 * new processing functions nmr7/nmr8/nmr9/nmc7/nmc8/nmc9:
-- comparable to functions nmrc/nmr2/nmr3/nmcm/nmc2/nmc3
-- but implements string parsing only for unique test set entries not found in train set
-- for more efficient test set processing in automunge and postmunge
-- (less efficient than nmr4/nmc4 etc but captures outlier points as may not be unusual in continuous distributions)
-- default infill: comparable
-- default NArowtype: comparable
-- suffix appender: same format, updated per the new category
+  - comparable to functions nmrc/nmr2/nmr3/nmcm/nmc2/nmc3
+  - but implements string parsing only for unique test set entries not found in train set
+  - for more efficient test set processing in automunge and postmunge
+  - (less efficient than nmr4/nmc4 etc but captures outlier points as may not be unusual in continuous distributions)
+  - default infill: comparable
+  - default NArowtype: comparable
+  - suffix appender: same format, updated per the new category
 
 * new processing functions Utxt / Utx2 / Utx3 / Uord / Uor2 / Uor3 / Uor6 / U101
-- comparable to functions text / txt2 / txt3 / ordl / ord2 / ord3 / ors6 / 1010
-- but upstream conversion of all strings to uppercase characters prior to encoding
-- (e.g. 'USA' and 'usa' would be consistently encoded)
-- default infill: in uppercase conversion NaN's are assigned distinct encoding 'NAN'
-- and may be assigned other 9infill methods in assigninfill
-- default NArowtype: 'justNaN'
-- suffix appender: '_UPCS'
+  - comparable to functions text / txt2 / txt3 / ordl / ord2 / ord3 / ors6 / 1010
+  - but upstream conversion of all strings to uppercase characters prior to encoding
+  - (e.g. 'USA' and 'usa' would be consistently encoded)
+  - default infill: in uppercase conversion NaN's are assigned distinct encoding 'NAN'
+  - and may be assigned other 9infill methods in assigninfill
+  - default NArowtype: 'justNaN'
+  - suffix appender: '_UPCS'
 
 
 And here are the series of family trees currently built into the internal library.
