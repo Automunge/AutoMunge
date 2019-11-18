@@ -678,6 +678,60 @@ class AutoMunge:
                                      'coworkers' : ['mnmx'], \
                                      'friends' : []}})
     
+    transform_dict.update({'or11' : {'parents' : ['sp11'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['1010'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+  
+    transform_dict.update({'or12' : {'parents' : ['nmr2'], \
+                                     'siblings': ['sp11'], \
+                                     'auntsuncles' : ['1010'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'or13' : {'parents' : ['sp12'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['1010'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'or14' : {'parents' : ['nmr2'], \
+                                     'siblings': ['sp12'], \
+                                     'auntsuncles' : ['1010'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'sp11' : {'parents' : ['sp11'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : ['spl5'], \
+                                     'coworkers' : ['ord3'], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'sp12' : {'parents' : ['sp12'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : ['sp11'], \
+                                     'coworkers' : ['ord3'], \
+                                     'friends' : []}})
+    
     transform_dict.update({'om10' : {'parents' : ['ord4'], \
                                      'siblings': [], \
                                      'auntsuncles' : ['1010', 'mnmx'], \
@@ -2005,6 +2059,42 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'mnmx'}})
+    process_dict.update({'or11' : {'dualprocess' : self.process_1010_class, \
+                                   'singleprocess' : None, \
+                                   'postprocess' : self.postprocess_1010_class, \
+                                   'NArowtype' : 'justNaN', \
+                                   'MLinfilltype' : 'exclude', \
+                                   'labelctgy' : 'ord3'}})
+    process_dict.update({'or12' : {'dualprocess' : self.process_1010_class, \
+                                   'singleprocess' : None, \
+                                   'postprocess' : self.postprocess_1010_class, \
+                                   'NArowtype' : 'justNaN', \
+                                   'MLinfilltype' : 'exclude', \
+                                   'labelctgy' : 'ord3'}})
+    process_dict.update({'or13' : {'dualprocess' : self.process_1010_class, \
+                                   'singleprocess' : None, \
+                                   'postprocess' : self.postprocess_1010_class, \
+                                   'NArowtype' : 'justNaN', \
+                                   'MLinfilltype' : 'exclude', \
+                                   'labelctgy' : 'ord3'}})
+    process_dict.update({'or14' : {'dualprocess' : self.process_1010_class, \
+                                   'singleprocess' : None, \
+                                   'postprocess' : self.postprocess_1010_class, \
+                                   'NArowtype' : 'justNaN', \
+                                   'MLinfilltype' : 'exclude', \
+                                   'labelctgy' : 'ord3'}})
+    process_dict.update({'sp11' : {'dualprocess' : self.process_spl2_class, \
+                                   'singleprocess' : None, \
+                                   'postprocess' : self.postprocess_spl2_class, \
+                                   'NArowtype' : 'justNaN', \
+                                   'MLinfilltype' : 'exclude', \
+                                   'labelctgy' : 'ord3'}})
+    process_dict.update({'sp12' : {'dualprocess' : self.process_spl2_class, \
+                                   'singleprocess' : None, \
+                                   'postprocess' : self.postprocess_spl2_class, \
+                                   'NArowtype' : 'justNaN', \
+                                   'MLinfilltype' : 'exclude', \
+                                   'labelctgy' : 'ord3'}})
     process_dict.update({'om10' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
@@ -15287,6 +15377,7 @@ class AutoMunge:
                              'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
                              'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
                              'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], \
+                             'or11':[], 'or12':[], 'or13':[], 'or14':[], \
                              'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
                              'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
                              'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
@@ -16664,7 +16755,7 @@ class AutoMunge:
         
         
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '2.85'
+    automungeversion = '2.86'
     application_number = random.randint(100000000000,999999999999)
     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
