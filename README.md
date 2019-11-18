@@ -136,6 +136,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
                          'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
 			 'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
                          'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], \
+			 'or11':[], 'or12':[], 'or13':[], 'or14':[], \
 		         'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
 		         'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
 		         'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
@@ -325,6 +326,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
                          'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
 			 'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
                          'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], \
+			 'or11':[], 'or12':[], 'or13':[], 'or14':[], \
 		         'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
 		         'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
 		         'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
@@ -488,6 +490,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
                          'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
 			 'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
                          'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], \
+			 'or11':[], 'or12':[], 'or13':[], 'or14':[], \
 		         'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
 		         'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
 		         'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
@@ -750,6 +753,7 @@ such as could potentially result in memory savings.
                  'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
 		 'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
                  'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], \
+		 'or11':[], 'or12':[], 'or13':[], 'or14':[], \
 		 'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
 		 'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
 		 'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
@@ -1511,6 +1515,15 @@ within the overlaps
   - and may be assigned other 9infill methods in assigninfill
   - default NArowtype: 'justNaN'
   - suffix appender: '_UPCS'
+  
+* new processing root categories or11 / or12 / or13 / or14
+  - or11 / or13 intended for categorical sets that may include multiple tiers of overlaps 
+  and include base binary encoding via 1010 suppplemented by tiers of string parsing for 
+  overlaps using spl2 and spl5, or11 has two tiers of overlap string parsing, or13 has three, 
+  each parsing returned with an ordinal encoding sorted by frequency (ord3)
+  - or12 / or14 are comparable to or11 / or13 but include an additional supplemental 
+  transform of string parsing for numerical entries with nmrc followed by a z-score normalization 
+  of returned numbers via nmbr
 
 
 And here are the series of family trees currently built into the internal library.
