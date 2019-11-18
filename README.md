@@ -2098,6 +2098,114 @@ And here are the series of family trees currently built into the internal librar
                                      'niecesnephews' : [], \
                                      'coworkers' : ['mnmx'], \
                                      'friends' : []}})
+				     
+    transform_dict.update({'or11' : {'parents' : ['sp11'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['1010'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+  
+    transform_dict.update({'or12' : {'parents' : ['nmr2'], \
+                                     'siblings': ['sp11'], \
+                                     'auntsuncles' : ['1010'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'or13' : {'parents' : ['sp12'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['1010'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'or14' : {'parents' : ['nmr2'], \
+                                     'siblings': ['sp12'], \
+                                     'auntsuncles' : ['1010'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'sp11' : {'parents' : ['sp11'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : ['spl5'], \
+                                     'coworkers' : ['ord3'], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'sp12' : {'parents' : ['sp12'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : ['sp11'], \
+                                     'coworkers' : ['ord3'], \
+                                     'friends' : []}})
+				     
+    transform_dict.update({'or15' : {'parents' : ['UPCS'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : ['sp13'], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : ['1010'], \
+                                     'friends' : []}})
+  
+    transform_dict.update({'or16' : {'parents' : ['UPCS'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : ['nmr2'], \
+                                     'niecesnephews' : ['sp13'], \
+                                     'coworkers' : ['1010'], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'or17' : {'parents' : ['UPCS'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : ['sp14'], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : ['1010'], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'or18' : {'parents' : ['UPCS'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : ['nmr2'], \
+                                     'niecesnephews' : ['sp14'], \
+                                     'coworkers' : ['1010'], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'sp13' : {'parents' : ['sp13'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : ['sp10'], \
+                                     'coworkers' : ['ord3'], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'sp14' : {'parents' : ['sp14'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : ['sp13'], \
+                                     'coworkers' : ['ord3'], \
+                                     'friends' : []}})
     
     transform_dict.update({'om10' : {'parents' : ['ord4'], \
                                      'siblings': [], \
