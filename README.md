@@ -2153,7 +2153,7 @@ And here are the series of family trees currently built into the internal librar
                                      'coworkers' : ['ord3'], \
                                      'friends' : []}})
 				     
-    transform_dict.update({'or15' : {'parents' : ['UPCS'], \
+    transform_dict.update({'or15' : {'parents' : ['or15'], \
                                      'siblings': [], \
                                      'auntsuncles' : [], \
                                      'cousins' : [NArw], \
@@ -2162,7 +2162,7 @@ And here are the series of family trees currently built into the internal librar
                                      'coworkers' : ['1010'], \
                                      'friends' : []}})
   
-    transform_dict.update({'or16' : {'parents' : ['UPCS'], \
+    transform_dict.update({'or16' : {'parents' : ['or16'], \
                                      'siblings': [], \
                                      'auntsuncles' : [], \
                                      'cousins' : [NArw], \
@@ -2171,7 +2171,7 @@ And here are the series of family trees currently built into the internal librar
                                      'coworkers' : ['1010'], \
                                      'friends' : []}})
     
-    transform_dict.update({'or17' : {'parents' : ['UPCS'], \
+    transform_dict.update({'or17' : {'parents' : ['or17'], \
                                      'siblings': [], \
                                      'auntsuncles' : [], \
                                      'cousins' : [NArw], \
@@ -2180,7 +2180,7 @@ And here are the series of family trees currently built into the internal librar
                                      'coworkers' : ['1010'], \
                                      'friends' : []}})
     
-    transform_dict.update({'or18' : {'parents' : ['UPCS'], \
+    transform_dict.update({'or18' : {'parents' : ['or18'], \
                                      'siblings': [], \
                                      'auntsuncles' : [], \
                                      'cousins' : [NArw], \
