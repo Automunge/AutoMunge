@@ -66,10 +66,6 @@ class AutoMunge:
     #assembles the range of transformations to be applied based on the evaluated \
     #category of data
     #the primitives are intented as follows:
-    #_greatgrandparents_: supplemental column derived from source column, only applied
-    #to first generation, with downstream transforms included
-    #_grandparents_: supplemental column derived from source column, only applied
-    #to first generation
     #_parents_: replace source column, with downstream trasnforms performed
     #_siblings_: supplemental column derived from source column, \
     #with downstream transforms performed
