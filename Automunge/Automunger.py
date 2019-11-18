@@ -66,6 +66,10 @@ class AutoMunge:
     #assembles the range of transformations to be applied based on the evaluated \
     #category of data
     #the primitives are intented as follows:
+    #_greatgrandparents_: supplemental column derived from source column, only applied
+    #to first generation, with downstream transforms included
+    #_grandparents_: supplemental column derived from source column, only applied
+    #to first generation
     #_parents_: replace source column, with downstream trasnforms performed
     #_siblings_: supplemental column derived from source column, \
     #with downstream transforms performed
@@ -762,6 +766,24 @@ class AutoMunge:
                                      'children' : [], \
                                      'niecesnephews' : ['sp13'], \
                                      'coworkers' : ['ord3'], \
+                                     'friends' : []}})
+
+    transform_dict.update({'or19' : {'parents' : ['or19'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : ['nmc8'], \
+                                     'niecesnephews' : ['sp13'], \
+                                     'coworkers' : ['1010'], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'or20' : {'parents' : ['or20'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : ['nmc8'], \
+                                     'niecesnephews' : ['sp14'], \
+                                     'coworkers' : ['1010'], \
                                      'friends' : []}})
     
     transform_dict.update({'sp11' : {'parents' : ['sp11'], \
@@ -2178,6 +2200,18 @@ class AutoMunge:
     process_dict.update({'sp14' : {'dualprocess' : self.process_spl9_class, \
                                    'singleprocess' : None, \
                                    'postprocess' : self.postprocess_spl9_class, \
+                                   'NArowtype' : 'justNaN', \
+                                   'MLinfilltype' : 'exclude', \
+                                   'labelctgy' : 'ord3'}})
+    process_dict.update({'or19' : {'dualprocess' : None, \
+                                   'singleprocess' : self.process_UPCS_class, \
+                                   'postprocess' : None, \
+                                   'NArowtype' : 'justNaN', \
+                                   'MLinfilltype' : 'exclude', \
+                                   'labelctgy' : 'ord3'}})
+    process_dict.update({'or20' : {'dualprocess' : None, \
+                                   'singleprocess' : self.process_UPCS_class, \
+                                   'postprocess' : None, \
                                    'NArowtype' : 'justNaN', \
                                    'MLinfilltype' : 'exclude', \
                                    'labelctgy' : 'ord3'}})
@@ -15463,7 +15497,7 @@ class AutoMunge:
                              'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
                              'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
                              'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], \
-                             'or11':[], 'or12':[], 'or15':[], 'or16':[], 'or17':[], 'or18':[], \
+                             'or11':[], 'or12':[], 'or15':[], 'or17':[], 'or19':[], 'or20':[], \
                              'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
                              'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
                              'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
@@ -16841,7 +16875,7 @@ class AutoMunge:
         
         
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '2.87'
+    automungeversion = '2.88'
     application_number = random.randint(100000000000,999999999999)
     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
