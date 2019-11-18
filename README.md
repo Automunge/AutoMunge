@@ -136,7 +136,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
                          'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
 			 'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
                          'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], \
-			 'or11':[], 'or12':[], 'or15':[], 'or16':[], 'or17':[], 'or18':[], \
+			 'or11':[], 'or12':[], 'or15':[], 'or17':[], 'or19':[], 'or20':[], \
 		         'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
 		         'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
 		         'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
@@ -326,7 +326,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
                          'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
 			 'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
                          'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], \
-			 'or11':[], 'or12':[], 'or15':[], 'or16':[], 'or17':[], 'or18':[], \
+			 'or11':[], 'or12':[], 'or15':[], 'or17':[], 'or19':[], 'or20':[], \
 		         'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
 		         'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
 		         'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
@@ -490,7 +490,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
                          'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
 			 'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
                          'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], \
-			 'or11':[], 'or12':[], 'or15':[], 'or16':[], 'or17':[], 'or18':[], \
+			 'or11':[], 'or12':[], 'or15':[], 'or17':[], 'or19':[], 'or20':[], \
 		         'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
 		         'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
 		         'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
@@ -753,7 +753,7 @@ such as could potentially result in memory savings.
                  'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
 		 'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
                  'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], \
-		 'or11':[], 'or12':[], 'or15':[], 'or16':[], 'or17':[], 'or18':[], \
+		 'or11':[], 'or12':[], 'or15':[], 'or17':[], 'or19':[], 'or20':[], \
 		 'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
 		 'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
 		 'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
@@ -1516,7 +1516,7 @@ within the overlaps
   - default NArowtype: 'justNaN'
   - suffix appender: '_UPCS'
   
-* new processing root categories or11 / or12 / or13 / or14 / or15 / or16 / or17 / or18
+* new processing root categories or11 / or12 / or13 / or14 / or15 / or16 / or17 / or18 / or19 / or20
   - or11 / or13 intended for categorical sets that may include multiple tiers of overlaps 
   and include base binary encoding via 1010 suppplemented by tiers of string parsing for 
   overlaps using spl2 and spl5, or11 has two tiers of overlap string parsing, or13 has three, 
@@ -1527,6 +1527,9 @@ within the overlaps
   - or15 / or16 / or17 / or18 comparable to or11 / or12 / or13 / or14 but incorporate an
   UPCS transform upstream and make use of spl9/sp10 insteadf of spl2/spl5 for assumption that
   set of unique values in test set is same or subset of train set for more efficient postmunge
+  - or19 / or20 comparable to or16 / or18 but replace the 'nmrc' string parsing for numeric entries
+  with nmc8 which allows comma characters in numbers and makes use of consistent assumption to
+  spl9/sp10 that set of unique values in test set is same or subset of train for efficient psotmunge
 
 
 And here are the series of family trees currently built into the internal library.
