@@ -3331,7 +3331,7 @@ Have fun munging!
 ...
 
 You can read more about the tool through the blog posts documenting the
-development on medium [here](https://medium.com/automunge) or for more
+development on Medium [here](https://medium.com/automunge) or for more
 writing I recently completed my first collection of essays titled "From
 the Diaries of John Henry" which is also available on Medium
 [turingsquared.com](https://turingsquared.com).
