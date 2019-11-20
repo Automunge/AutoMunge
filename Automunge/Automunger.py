@@ -1654,6 +1654,7 @@ class AutoMunge:
     # - 'binary'  for multicolumn sets with boolean entries as may have 
     #multiple entries in the same row (not currently used, future extension)
     # - 'exclude' for columns which will be excluded from ML infill
+    # - '1010' for binary encoded columns, will be converted to onehot for ML
     '''
     
     process_dict = {}
@@ -2135,25 +2136,25 @@ class AutoMunge:
                                    'singleprocess' : None, \
                                    'postprocess' : self.postprocess_1010_class, \
                                    'NArowtype' : 'justNaN', \
-                                   'MLinfilltype' : 'exclude', \
+                                   'MLinfilltype' : '1010', \
                                    'labelctgy' : 'ord3'}})
     process_dict.update({'or12' : {'dualprocess' : self.process_1010_class, \
                                    'singleprocess' : None, \
                                    'postprocess' : self.postprocess_1010_class, \
                                    'NArowtype' : 'justNaN', \
-                                   'MLinfilltype' : 'exclude', \
+                                   'MLinfilltype' : '1010', \
                                    'labelctgy' : 'ord3'}})
     process_dict.update({'or13' : {'dualprocess' : self.process_1010_class, \
                                    'singleprocess' : None, \
                                    'postprocess' : self.postprocess_1010_class, \
                                    'NArowtype' : 'justNaN', \
-                                   'MLinfilltype' : 'exclude', \
+                                   'MLinfilltype' : '1010', \
                                    'labelctgy' : 'ord3'}})
     process_dict.update({'or14' : {'dualprocess' : self.process_1010_class, \
                                    'singleprocess' : None, \
                                    'postprocess' : self.postprocess_1010_class, \
                                    'NArowtype' : 'justNaN', \
-                                   'MLinfilltype' : 'exclude', \
+                                   'MLinfilltype' : '1010', \
                                    'labelctgy' : 'ord3'}})
     process_dict.update({'sp11' : {'dualprocess' : self.process_spl2_class, \
                                    'singleprocess' : None, \
@@ -2231,7 +2232,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_1010_class, \
                                   'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'exclude', \
+                                  'MLinfilltype' : '1010', \
                                   'labelctgy' : '1010'}})
     process_dict.update({'bxcx' : {'dualprocess' : self.process_bxcx_class, \
                                   'singleprocess' : None, \
@@ -12751,6 +12752,46 @@ class AutoMunge:
 
   #       print('category is text, df_traininfill is')
   #       print(df_traininfill)
+  
+      if MLinfilltype in ['1010']:
+      
+        np_train_filllabel = \
+        self.convert_1010_to_onehot(np_train_filllabel)
+
+        #train logistic regression model using scikit-learn for binary classifier
+        #with multi_class argument activated
+        #model = LogisticRegression()
+        #model = SGDClassifier(random_state = randomseed)
+        #model = SVC(random_state = randomseed)
+        #model = RandomForestClassifier(n_estimators=100, random_state = randomseed, verbose=0)
+        model = self.initRandomForestClassifier(ML_cmnd, MLinfilldefaults)
+
+        model.fit(np_train_filltrain, np_train_filllabel)
+
+
+        #predict infill values
+        np_traininfill = model.predict(np_train_fillfeatures)
+        
+        np_traininfill = \
+        self.convert_onehot_to_1010(np_traininfill)
+
+        #only run following if we have any test rows needing infill
+        if df_test_fillfeatures.shape[0] > 0:
+          np_testinfill = model.predict(np_test_fillfeatures)
+          
+          np_testinfill = \
+          self.convert_onehot_to_1010(np_testinfill)
+          
+        else:
+          #this needs to have same number of columns as text category
+          np_testinfill = np.zeros(shape=(1,len(columnslist)))
+
+
+        #convert infill values to dataframe
+        df_traininfill = pd.DataFrame(np_traininfill, columns = columnslist)
+        df_testinfill = pd.DataFrame(np_testinfill, columns = columnslist)
+        
+        
 
       #if category in ['date', 'NArw', 'null']:
       if MLinfilltype in ['exclude', 'label']:
@@ -12824,7 +12865,7 @@ class AutoMunge:
     #if category in ['nmbr', 'bxcx', 'bnry', 'text', 'bins', 'bint']:
     
     #if category in ['nmbr', 'nbr2', 'bxcx', 'bnry', 'text', 'bins', 'bint']:
-    if MLinfilltype in ['numeric', 'singlct', 'multirt', 'multisp']:
+    if MLinfilltype in ['numeric', 'singlct', 'multirt', 'multisp', '1010']:
 
       #if this is a single column set (not categorical)
       if len(categorylist) == 1:
@@ -12987,7 +13028,7 @@ class AutoMunge:
     NArowcolumn = NArows.columns[0]
 
     #if category in ['nmbr', 'nbr2', 'bxcx', 'bnry', 'text']:
-    if MLinfilltype in ['numeric', 'singlct', 'multisp', 'multirt']:
+    if MLinfilltype in ['numeric', 'singlct', 'multisp', 'multirt', '1010']:
 
       #if this is a single column set (not categorical)
       if len(categorylist) == 1 or singlecolumncase == True:
@@ -13192,7 +13233,105 @@ class AutoMunge:
     return df_train, df_test, postprocess_dict
 
 
+  def convert_1010_to_onehot(self, np_1010):  
+    """
+    takes as input numpy array encoded in 1010 format
+    and translates to a one-hot encoding equivalent
+    with number of columns based on 2^n where n is number of 1010 columns
+    and potentially with columns with all 0
+    """
 
+    #create a dataframe because my numpy sauce is weak
+    df_array = pd.DataFrame(np_1010)
+
+    #initialize a column to store encodings
+    df_array['onehot'] = ''
+
+    #populate column to store encodings 
+    for column in list(df_array):
+      if column != 'onehot':
+        df_array['onehot'] = \
+        df_array['onehot'] + df_array[column].astype(int).astype(str)
+
+    #discard other columns
+    df_array = pd.DataFrame(df_array['onehot'])
+
+    #create list of columns for the encoding with binary encodings
+    #this will be full list of range of values based on number of 1010 columns
+    textcolumns = list(range(2**np_1010.shape[1]))
+    textcolumns = ['onehot_' + str(format(item, f"0{np_1010.shape[1]}b")) for item in textcolumns]
+
+    #we'll make use of the postprocess_textsupportclass function
+    #which requires some qadmittedly kind of hacky prepopulation of a temp ppd
+    temp_ppd = {'column_dict' : {'columnkey' : {'categorylist' : textcolumns}}}
+
+  #   df_onehot = \
+  #   postprocess_textsupport_class(df_array, 'onehot', temp_ppd, 'columnkey')
+    df_onehot = \
+    self.postprocess_textsupport_class(df_array, 'onehot', temp_ppd, 'columnkey')
+
+    del df_onehot['onehot']
+
+    np_onehot = df_onehot.values
+
+    return np_onehot
+  
+  
+
+  def convert_onehot_to_1010(self, np_onehot):  
+    """
+    takes as input numpy array encoded in one-hot format
+    and translates to a 1010 encoding equivalent
+    based on assumption that order of columns consistent per 
+    convention of convert_1010_to_onehot(.)
+    """
+
+    #create list of binary encodings corresponding to the onehot array
+    #assumes consistent order of columns from convert_1010_to_onehot basis
+    columnslist = list(range(np_onehot.shape[1]))
+    columnslist = \
+    [str(format(item, f"0{int(np.log2(np_onehot.shape[1]))}b")) for item in columnslist]
+
+    #convert to dataframe with columnslist as column headers
+    df_array = pd.DataFrame(np_onehot, columns = columnslist)
+
+    #create new column to store encodings
+    df_array['1010'] = 0
+
+    #copy columns headers to activated cells, others are 0
+    for column in df_array:
+
+      if column != '1010':
+
+        df_array[column].replace(1, column, inplace=True)
+
+        df_array['1010'] = \
+        np.where(df_array[column] != 0, df_array[column], df_array['1010'])
+
+        del df_array[column]
+
+    #get number of 1010 columns
+    nbrcolumns = len(uniquevalues[0])
+
+    _1010_columns = []
+    for i in range(nbrcolumns):
+      _1010_columns.append('1010_'+str(i))
+
+    #now let's store the encoding
+    i=0
+    for _1010_column in _1010_columns:
+
+      df_array[_1010_column] = df_array['1010'].str.slice(i,i+1).astype(np.int8)
+
+      i+=1
+
+
+    del df_array['1010']
+
+
+    np_1010 = df_array.values
+
+    return np_1010
 
   def LabelSetGenerator(self, df, column, label):
     '''
@@ -13334,7 +13473,7 @@ class AutoMunge:
 
 
       #if labelscategory in ['nmbr', 'bxcx']:
-      if MLinfilltype in ['label', 'numeric', 'exclude', 'multisp']:
+      if MLinfilltype in ['label', 'numeric', 'exclude', 'multisp', '1010']:
 
         columns_labels = []
         for label in list(labels_df):
@@ -13355,7 +13494,7 @@ class AutoMunge:
             
             
       #if labelscategory in ['text', 'nmbr', 'bxcx']:
-      if MLinfilltype in ['label', 'multirt', 'multisp', 'numeric', 'exclude']:
+      if MLinfilltype in ['label', 'multirt', 'multisp', 'numeric', 'exclude', '1010']:
         if columns_labels != []:
           i=0
           #for label in labels:
@@ -13688,7 +13827,21 @@ class AutoMunge:
 #       baseaccuracy = self.shuffleaccuracy(am_subset, am_labels, FSmodel, randomseed, \
 #                                           labelsencoding_dict, process_dict, labelctgy)
 
-        
+    if MLinfilltype in ['1010']:
+
+      #train logistic regression model using scikit-learn for binary classifier
+      #with multi_class argument activated
+      #FSmodel = RandomForestClassifier(n_estimators=100, random_state = randomseed, verbose=0)
+      FSmodel = self.initRandomForestClassifier(ML_cmnd, MLinfilldefaults)
+      
+      np_labels = \
+      self.convert_1010_to_onehot(np_labels)
+
+      FSmodel.fit(np_subset, np_labels)
+      
+#       baseaccuracy = self.shuffleaccuracy(am_subset, am_labels, FSmodel, randomseed, \
+#                                           labelsencoding_dict, process_dict, labelctgy)
+  
     #I think this will clear some memory
     del np_labels, np_subset
     
@@ -13812,6 +13965,19 @@ class AutoMunge:
       #columnaccuracy = accuracy_score(np_labels, np_predictions)
       columnaccuracy = accuracy_score(np_labels, np_predictions)
 
+    if MLinfilltype in ['1010']:
+
+      
+      np_labels = \
+      self.convert_1010_to_onehot(np_labels)
+      
+      #generate predictions
+      np_predictions = FSmodel.predict(np_shuffleset)
+      
+      
+      #evaluate accuracy metric
+      #columnaccuracy = accuracy_score(np_labels, np_predictions)
+      columnaccuracy = accuracy_score(np_labels, np_predictions)
         
     #I think this will clear some memory
     del np_labels, np_shuffleset
@@ -21906,7 +22072,7 @@ class AutoMunge:
     MLinfilltype = postprocess_dict['process_dict'][category]['MLinfilltype']
 
     #if category in ['nmbr', 'nbr2', 'bxcx', 'bnry', 'text', 'bins', 'bint']:
-    if MLinfilltype in ['numeric', 'singlct', 'multirt', 'multisp']:
+    if MLinfilltype in ['numeric', 'singlct', 'multirt', 'multisp', '1010']:
 
       #if this is a single column set (not categorical)
       #if categorylist == []:
@@ -22169,6 +22335,30 @@ class AutoMunge:
         #only run following if we have any test rows needing infill
         if df_test_fillfeatures.shape[0] > 0:
           np_testinfill = model.predict(np_test_fillfeatures)
+        else:
+          #this needs to have same number of columns as text category
+          np_testinfill = np.zeros(shape=(1,len(columnslist)))
+          
+      if MLinfilltype in ['1010']:
+
+  #       #train logistic regression model using scikit-learn for binary classifier
+  #       #with multi_class argument activated
+  #       #model = LogisticRegression()
+  #       #model = SGDClassifier(random_state = randomseed)
+  #       model = SVC(random_state = randomseed)
+
+  #       model.fit(np_train_filltrain, np_train_filllabel_argmax)
+
+  #       #predict infill values
+  #       np_traininfill = model.predict(np_train_fillfeatures)
+
+        #only run following if we have any test rows needing infill
+        if df_test_fillfeatures.shape[0] > 0:
+          np_testinfill = model.predict(np_test_fillfeatures)
+          
+          np_testinfill = \
+          self.convert_onehot_to_1010(np_testinfill)
+          
         else:
           #this needs to have same number of columns as text category
           np_testinfill = np.zeros(shape=(1,len(columnslist)))
