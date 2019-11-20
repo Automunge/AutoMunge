@@ -916,6 +916,8 @@ processdict =  {'newt' : {'dualprocess' : None, \
 #			   processing
 #               'binary'  for multicolumn sets with boolean entries as may have 
 #                         multiple entries in the same row (not currently used, future extension)
+#               '1010'   for multicolumn sets with binary encoding via 1010
+#                         will be converted to onehot for ML
 
 ```
 
