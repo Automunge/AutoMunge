@@ -22339,6 +22339,10 @@ class AutoMunge:
           #this needs to have same number of columns as text category
           np_testinfill = np.zeros(shape=(1,len(columnslist)))
           
+        #convert infill values to dataframe
+  #       df_traininfill = pd.DataFrame(np_traininfill, columns = columnslist)
+        df_testinfill = pd.DataFrame(np_testinfill, columns = columnslist) 
+          
       if MLinfilltype in ['1010']:
 
   #       #train logistic regression model using scikit-learn for binary classifier
