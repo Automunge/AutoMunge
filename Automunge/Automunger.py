@@ -11675,7 +11675,7 @@ class AutoMunge:
 
 
 
-  def evalcategory(self, df_source, column, numbercategoryheuristic, powertransform):
+  def evalcategory(self, df_source, column, numbercategoryheuristic, powertransform, labels = False):
     '''
     #evalcategory(df, column)
     #Function that dakes as input a dataframe and associated column id \
@@ -11768,11 +11768,13 @@ class AutoMunge:
 
       #create dummy variable to store determined class (default is text class)
       category = 'text'
+      #category = '1010'
 
 
       #if most common in column is string and > two values, set category to text
       if isinstance(checkstring, mc[0][0]) and nunique > 2:
         category = 'text'
+        #category = '1010'
 
       #if most common is date, set category to date
       if isinstance(df_checkdate['checkdate'][0], datemc[0][0]):
@@ -11783,6 +11785,7 @@ class AutoMunge:
           category = 'bnry'
         else:
           category = 'text'
+          #category = '1010'
 
       #if most common in column is integer and > two values, set category to number of bxcx
       if isinstance(checkint, mc[0][0]) and nunique > 2:
@@ -11792,6 +11795,7 @@ class AutoMunge:
             category = 'bnry'
           else:
             category = 'text'
+            #category = '1010'
 
         #take account for numbercategoryheuristic
         #if df[column].nunique() / df[column].shape[0] < numbercategoryheuristic:
@@ -11799,6 +11803,7 @@ class AutoMunge:
         if nunique <= 3:
           if nunique == 3:
             category = 'text'
+            #category = '1010'
           else:
             category = 'bnry'
   #       if True == False:
@@ -11821,10 +11826,12 @@ class AutoMunge:
             category = 'bnry'
           else:
             category = 'text'
+            #category = '1010'
 
         elif nunique <= 3:
           if nunique == 3:
             category = 'text'
+            #category = '1010'
           elif nunique <= 2:
             category = 'bnry'
 
@@ -11854,6 +11861,7 @@ class AutoMunge:
         #if 2nd most common in column is string and > two values, set category to text
         if isinstance(checkstring, mc2[1][0]) and nunique > 2:
           category = 'text'
+          #category = '1010'
 
         #if 2nd most common is date, set category to date   
         if isinstance(df_checkdate['checkdate'][0], datemc2[1][0]):
@@ -11867,6 +11875,7 @@ class AutoMunge:
               category = 'bnry'
             else:
               category = 'text'
+              #category = '1010'
 
   #         #take account for numbercategoryheuristic
   #         #if df[column].nunique() / df[column].shape[0] < numbercategoryheuristic:
@@ -11874,6 +11883,7 @@ class AutoMunge:
 
             if nunique == 3:
               category = 'text'
+              #category = '1010'
             else:
               category = 'bnry'
 
@@ -11900,11 +11910,13 @@ class AutoMunge:
               category = 'bnry'
             else:
               category = 'text'
+              #category = '1010'
 
           if df[column].nunique() <= 3:
 
             if nunique == 3:
               category = 'text'
+              #category = '1010'
             else:
               category = 'bnry'
 
@@ -11924,7 +11936,8 @@ class AutoMunge:
       if df[column].isna().sum() == df.shape[0]:
         category = 'null'
 
-      if category == 'text':
+      #if category == 'text':
+      if category == 'ord3':
         if df[column].nunique() > numbercategoryheuristic:
           category = 'ord3'
 
@@ -11969,6 +11982,15 @@ class AutoMunge:
               category = 'MAD3'
 
       del df
+      
+      #special cases for evlauation of labels column
+      if labels == True:
+        
+        if category == 'nmbr':
+          category = 'exc3'
+          
+        if category == '1010':
+          category = 'text'
     
     return category
 
@@ -12722,6 +12744,12 @@ class AutoMunge:
 
       #if category in ['text', 'bins', 'bint']:
       if MLinfilltype in ['multirt', 'multisp']:
+        
+#         #troubleshoot
+#         print("np_train_filllabel before text fit")
+#         print("")
+#         print(np_train_filllabel)
+#         print("")
 
         #train logistic regression model using scikit-learn for binary classifier
         #with multi_class argument activated
@@ -12736,6 +12764,12 @@ class AutoMunge:
         
         #predict infill values
         np_traininfill = model.predict(np_train_fillfeatures)
+        
+#         #troubleshoot
+#         print("np_traininfill after predict")
+#         print("")
+#         print(np_traininfill)
+#         print("")
 
         #only run following if we have any test rows needing infill
         if df_test_fillfeatures.shape[0] > 0:
@@ -12755,8 +12789,22 @@ class AutoMunge:
   
       if MLinfilltype in ['1010']:
       
+#         #troubleshoot
+#         print("np_train_filllabel before convert to onehot")
+#         print("")
+#         print(np_train_filllabel)
+#         print("")
+
+        labelcolumncount = np_train_filllabel.shape[1]
+      
         np_train_filllabel = \
         self.convert_1010_to_onehot(np_train_filllabel)
+        
+#         #troubleshoot
+#         print("np_train_filllabel after convert to onehot")
+#         print("")
+#         print(np_train_filllabel)
+#         print("")
 
         #train logistic regression model using scikit-learn for binary classifier
         #with multi_class argument activated
@@ -12772,9 +12820,29 @@ class AutoMunge:
         #predict infill values
         np_traininfill = model.predict(np_train_fillfeatures)
         
-        np_traininfill = \
-        self.convert_onehot_to_1010(np_traininfill)
+#         #troubleshoot
+#         print("np_traininfill before convert to 1010")
+#         print("")
+#         print(np_traininfill)
+#         print("")
 
+        #if not all zeros (edge case)
+        if np_traininfill.any():
+
+          np_traininfill = \
+          self.convert_onehot_to_1010(np_traininfill)
+      
+        else:
+          
+          np_traininfill = \
+          np.zeros((np_traininfill.shape[0], labelcolumncount))
+
+#         #troubleshoot
+#         print("np_traininfill after convert to 1010")
+#         print("")
+#         print(np_traininfill)
+#         print("")
+        
         #only run following if we have any test rows needing infill
         if df_test_fillfeatures.shape[0] > 0:
           np_testinfill = model.predict(np_test_fillfeatures)
@@ -13278,7 +13346,7 @@ class AutoMunge:
   
   
 
-  def convert_onehot_to_1010(self, np_onehot):  
+  def convert_onehot_to_1010(self, np_onehot):
     """
     takes as input numpy array encoded in one-hot format
     and translates to a 1010 encoding equivalent
@@ -13309,13 +13377,20 @@ class AutoMunge:
         np.where(df_array[column] != 0, df_array[column], df_array['1010'])
 
         del df_array[column]
+        
+    uniquevalues = df_array['1010'].unique()
+    uniquevalues.sort()
+    uniquevalues = list(uniquevalues)
 
     #get number of 1010 columns
-    nbrcolumns = len(uniquevalues[0])
+    nbrcolumns = len(str(uniquevalues[0]))
 
     _1010_columns = []
     for i in range(nbrcolumns):
       _1010_columns.append('1010_'+str(i))
+      
+    
+    df_array['1010'] = df_array['1010'].astype(str)
 
     #now let's store the encoding
     i=0
@@ -16177,9 +16252,9 @@ class AutoMunge:
               #passing a True for powertransform parameter
               if key in ['eval']:
                 if evalcat == False:
-                  category = self.evalcategory(df_train, column, numbercategoryheuristic, True)
+                  category = self.evalcategory(df_train, column, numbercategoryheuristic, True, False)
                 elif type(evalcat) == types.FunctionType:
-                  category = evalcat(df_train, column, numbercategoryheuristic, True)
+                  category = evalcat(df_train, column, numbercategoryheuristic, True, False)
                 else:
                   print("error: evalcat must be passed as either False or as a defined function per READ ME")
                   
@@ -16192,9 +16267,9 @@ class AutoMunge:
             print("evaluating column: ", column)
             
           if evalcat == False:
-            category = self.evalcategory(df_train, column, numbercategoryheuristic, powertransform)
+            category = self.evalcategory(df_train, column, numbercategoryheuristic, powertransform, False)
           elif type(evalcat) == types.FunctionType:
-            category = evalcat(df_train, column, numbercategoryheuristic, powertransform)
+            category = evalcat(df_train, column, numbercategoryheuristic, powertransform, False)
           else:
             print("error: evalcat must be passed as either False or as a defined function per READ ME")
                 
@@ -16367,16 +16442,17 @@ class AutoMunge:
         #labelscategory = self.evalcategory(df_labels, labels_column, numbercategoryheuristic, powertransform)
       
         if evalcat == False:
-          labelscategory = self.evalcategory(df_labels, labels_column, numbercategoryheuristic, powertransform)
+          labelscategory = self.evalcategory(df_labels, labels_column, numbercategoryheuristic, powertransform, True)
         elif type(evalcat) == types.FunctionType:
-          labelscategory = evalcat(df_labels, labels_column, numbercategoryheuristic, powertransform)
+          labelscategory = evalcat(df_labels, labels_column, numbercategoryheuristic, powertransform, True)
         else:
           print("error: evalcat must be passed as either False or as a defined function per READ ME")
       
-        #we've previously introduced the convention that for default numeric label sets
-        #we forgo z-score normalization, here let's make that distinction
-        if labelscategory in ['nmbr']:
-          labelscategory = 'exc3'
+        #this now moved into evalcategory function:
+#         #we've previously introduced the convention that for default numeric label sets
+#         #we forgo z-score normalization, here let's make that distinction
+#         if labelscategory in ['nmbr']:
+#           labelscategory = 'exc3'
       
       #printout display progress
       if printstatus == True:
@@ -17041,7 +17117,7 @@ class AutoMunge:
         
         
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '2.88'
+    automungeversion = '2.91'
     application_number = random.randint(100000000000,999999999999)
     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
