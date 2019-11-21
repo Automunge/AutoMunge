@@ -926,7 +926,7 @@ of root transformation categories, allowing user to pass custom functions for th
 purpose. Passed functions should follow format:
 
 ```
-def evalcat(df, column, numbercategoryheuristic, powertransform):
+def evalcat(df, column, numbercategoryheuristic, powertransform, labels = False):
   """
   #user defined function that takes as input a dataframe df and column id string column
   #evaluates the contents of cells and classifies the column for root category of 
@@ -942,9 +942,9 @@ evalcat = evalcat
 ```
 I recomend using the evalcategory function defined in master file as starting point. 
 (Minus the 'self' parameter since defining external to class.) Note that the 
-parameters numbercategoryheuristic and powertransform are passed as user parameters 
-in automunge call and only used in evalcategory function, so if user wants to 
-repurpose them totally can do so. (They default to 15, False.) Note evalcat defaults 
+parameters numbercategoryheuristic, powertransform, and labels are passed as user 
+parameters in automunge call and only used in evalcategory function, so if user wants 
+to repurpose them totally can do so. (They default to 15, False.) Note evalcat defaults 
 to False to use built-in evalcategory function. Note evalcat will only be applied to 
 columns not assigned in assigncat. (Note that columns assigned to 'eval' in assigncat
 will be passed to this function for evaluation with powertransform = True.)
