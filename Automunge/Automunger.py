@@ -7263,9 +7263,9 @@ class AutoMunge:
     #process_1010_class(mdf_train, mdf_test, column, category)
     #preprocess column with categories into binary encoded sets
     #corresponding to (sorted) categories of >2 values
-    #adresses infill with new point which we arbitrarily set as 'zzzinfill'
+    #adresses infill with new point which we arbitrarily set as '000000000_infill'
     #intended to show up as last point in set alphabetically
-    #for categories present in test set not present in train set use this 'zzz' category
+    #for categories present in test set not present in train set use this '000000000' category
     '''
     
     #create new column for trasnformation
@@ -7277,12 +7277,12 @@ class AutoMunge:
     mdf_test[column + '_1010'] = mdf_test[column + '_1010'].astype('category')
 
     #if set is categorical we'll need the plug value for missing values included
-    mdf_train[column + '_1010'] = mdf_train[column + '_1010'].cat.add_categories(['zzzinfill'])
-    mdf_test[column + '_1010'] = mdf_test[column + '_1010'].cat.add_categories(['zzzinfill'])
+    mdf_train[column + '_1010'] = mdf_train[column + '_1010'].cat.add_categories(['000000000_infill'])
+    mdf_test[column + '_1010'] = mdf_test[column + '_1010'].cat.add_categories(['000000000_infill'])
 
     #replace NA with a dummy variable
-    mdf_train[column + '_1010'] = mdf_train[column + '_1010'].fillna('zzzinfill')
-    mdf_test[column + '_1010'] = mdf_test[column + '_1010'].fillna('zzzinfill')
+    mdf_train[column + '_1010'] = mdf_train[column + '_1010'].fillna('000000000_infill')
+    mdf_test[column + '_1010'] = mdf_test[column + '_1010'].fillna('000000000_infill')
 
     #replace numerical with string equivalent
     mdf_train[column + '_1010'] = mdf_train[column + '_1010'].astype(str)
@@ -7296,11 +7296,11 @@ class AutoMunge:
     labels_test.sort()
 
     #if infill not present in train set, insert
-    if 'zzzinfill' not in labels_train:
-      labels_train = labels_train + ['zzzinfill']
+    if '000000000_infill' not in labels_train:
+      labels_train = labels_train + ['000000000_infill']
       labels_train.sort()
-    if 'zzzinfill' not in labels_test:
-      labels_test = labels_test + ['zzzinfill']
+    if '000000000_infill' not in labels_test:
+      labels_test = labels_test + ['000000000_infill']
       labels_test.sort()
     
     #get length of the list
@@ -7399,7 +7399,7 @@ class AutoMunge:
     testspecificcategories = list(set(labels_test)-set(labels_train))
     
     #so we'll just replace those items with our plug value
-    testplug_dict = dict(zip(testspecificcategories, ['zzzinfill'] * len(testspecificcategories)))
+    testplug_dict = dict(zip(testspecificcategories, ['000000000_infill'] * len(testspecificcategories)))
     mdf_test[column + '_1010'] = mdf_test[column + '_1010'].replace(testplug_dict)    
     
     #now we'll apply the 1010 transformation to the test set
@@ -11700,7 +11700,25 @@ class AutoMunge:
       category = 'exc2'
     
     else:
-    
+      
+      #_____
+      #a few default categories
+      
+      #default categorical
+      #defaultcategorical = 'text'
+      defaultcategorical = '1010'
+      
+      defaultordinal = 'ord3'
+      
+      
+      defaultnumerical = 'nmbr'
+      #defaultnumerical = 'mean'
+      
+      defaultdatetime = 'dat6'
+      
+      #_____
+      
+      
       df = pd.DataFrame(df_source[column].copy())
 
       #I couldn't find a good pandas tool for evaluating data class, \
@@ -11767,25 +11785,22 @@ class AutoMunge:
 
 
       #create dummy variable to store determined class (default is text class)
-      category = 'text'
-      #category = '1010'
+      category = defaultcategorical
 
 
       #if most common in column is string and > two values, set category to text
       if isinstance(checkstring, mc[0][0]) and nunique > 2:
-        category = 'text'
-        #category = '1010'
+        category = defaultcategorical
 
       #if most common is date, set category to date
       if isinstance(df_checkdate['checkdate'][0], datemc[0][0]):
-        category = 'dat6'
+        category = defaultdatetime
 
       if df[column].dtype.name == 'category':
         if nunique <= 2:
           category = 'bnry'
         else:
-          category = 'text'
-          #category = '1010'
+          category = defaultcategorical
 
       #if most common in column is integer and > two values, set category to number of bxcx
       if isinstance(checkint, mc[0][0]) and nunique > 2:
@@ -11794,8 +11809,7 @@ class AutoMunge:
           if nunique <= 2:
             category = 'bnry'
           else:
-            category = 'text'
-            #category = '1010'
+            category = defaultcategorical
 
         #take account for numbercategoryheuristic
         #if df[column].nunique() / df[column].shape[0] < numbercategoryheuristic:
@@ -11803,14 +11817,13 @@ class AutoMunge:
         if nunique <= 3:
           if nunique == 3:
             category = 'text'
-            #category = '1010'
           else:
             category = 'bnry'
   #       if True == False:
   #         pass
 
         else:
-          category = 'nmbr'
+          category = defaultnumerical
 
 
       #if most common in column is float, set category to number or bxcx
@@ -11825,18 +11838,16 @@ class AutoMunge:
           if nunique <= 2:
             category = 'bnry'
           else:
-            category = 'text'
-            #category = '1010'
+            category = defaultcategorical
 
         elif nunique <= 3:
           if nunique == 3:
             category = 'text'
-            #category = '1010'
           elif nunique <= 2:
             category = 'bnry'
 
         else:
-          category = 'nmbr'
+          category = defaultnumerical
 
 
       #if most common in column is integer and <= two values, set category to binary
@@ -11860,12 +11871,11 @@ class AutoMunge:
 
         #if 2nd most common in column is string and > two values, set category to text
         if isinstance(checkstring, mc2[1][0]) and nunique > 2:
-          category = 'text'
-          #category = '1010'
+          category = defaultcategorical
 
         #if 2nd most common is date, set category to date   
         if isinstance(df_checkdate['checkdate'][0], datemc2[1][0]):
-          category = 'dat6'
+          category = defaultdatetime
 
         #if 2nd most common in column is integer and > two values, set category to number
         if isinstance(checkint, mc2[1][0]) and nunique > 2:
@@ -11874,16 +11884,14 @@ class AutoMunge:
             if nunique <= 2:
               category = 'bnry'
             else:
-              category = 'text'
-              #category = '1010'
+              category = defaultcategorical
 
   #         #take account for numbercategoryheuristic
   #         #if df[column].nunique() / df[column].shape[0] < numbercategoryheuristic:
           if nunique <= 3:
 
             if nunique == 3:
-              category = 'text'
-              #category = '1010'
+              category = defaultcategorical
             else:
               category = 'bnry'
 
@@ -11892,7 +11900,7 @@ class AutoMunge:
 
           else:
 
-            category = 'nmbr'
+            category = defaultnumerical
 
         #if 2nd most common in column is float, set category to number
         if isinstance(checkfloat, mc2[1][0]):
@@ -11909,20 +11917,18 @@ class AutoMunge:
             if nunique <= 2:
               category = 'bnry'
             else:
-              category = 'text'
-              #category = '1010'
+              category = defaultcategorical
 
           if df[column].nunique() <= 3:
 
             if nunique == 3:
               category = 'text'
-              #category = '1010'
             else:
               category = 'bnry'
 
           else:
 
-            category = 'nmbr'
+            category = defaultnumerical
 
         #if 2nd most common in column is integer and <= two values, set category to binary
         if isinstance(checkint, mc2[1][0]) and nunique <= 2:
@@ -11937,9 +11943,9 @@ class AutoMunge:
         category = 'null'
 
       #if category == 'text':
-      if category == 'ord3':
+      if category == defaultcategorical:
         if df[column].nunique() > numbercategoryheuristic:
-          category = 'ord3'
+          category = defaultordinal
 
       #new statistical tests for numerical sets from v2.25
       #I don't consider mytself an expert here, these are kind of a placeholder while I conduct more research
@@ -11948,7 +11954,7 @@ class AutoMunge:
   #     if category == 'bxcx' and powertransform == False:
   #       category = 'nmbr'
 
-      if category in ['nmbr', 'bxcx'] and powertransform == True:
+      if category in ['nmbr', 'bxcx', defaultnumerical] and powertransform == True:
 
         #shapiro tests for normality, we'll use a common threshold p<0.05 to reject the normality hypothesis
         stat, p = shapiro(df[pd.to_numeric(df[column], errors='coerce').notnull()][column].astype(float))
@@ -12826,16 +12832,16 @@ class AutoMunge:
 #         print(np_traininfill)
 #         print("")
 
-        #if not all zeros (edge case)
-        if np_traininfill.any():
+#         #if not all zeros (edge case)
+#         if np_traininfill.any():
 
-          np_traininfill = \
-          self.convert_onehot_to_1010(np_traininfill)
+        np_traininfill = \
+        self.convert_onehot_to_1010(np_traininfill)
       
-        else:
+#         else:
           
-          np_traininfill = \
-          np.zeros((np_traininfill.shape[0], labelcolumncount))
+#           np_traininfill = \
+#           np.zeros((np_traininfill.shape[0], labelcolumncount))
 
 #         #troubleshoot
 #         print("np_traininfill after convert to 1010")
@@ -13345,7 +13351,7 @@ class AutoMunge:
     return np_onehot
   
   
-
+  
   def convert_onehot_to_1010(self, np_onehot):
     """
     takes as input numpy array encoded in one-hot format
@@ -13353,6 +13359,9 @@ class AutoMunge:
     based on assumption that order of columns consistent per 
     convention of convert_1010_to_onehot(.)
     """
+    
+#     #if not all zeros (all zeros is an edge case)
+#     if np_onehot.any():
 
     #create list of binary encodings corresponding to the onehot array
     #assumes consistent order of columns from convert_1010_to_onehot basis
@@ -13377,19 +13386,27 @@ class AutoMunge:
         np.where(df_array[column] != 0, df_array[column], df_array['1010'])
 
         del df_array[column]
-        
-    uniquevalues = df_array['1010'].unique()
-    uniquevalues.sort()
-    uniquevalues = list(uniquevalues)
 
-    #get number of 1010 columns
-    nbrcolumns = len(str(uniquevalues[0]))
+#       uniquevalues = df_array['1010'].unique()
+#       uniquevalues.sort()
+#       uniquevalues = list(uniquevalues)
+
+#       #get number of 1010 columns
+#       nbrcolumns = len(str(uniquevalues[0]))
+
+    nbrcolumns = int(np.ceil(np.log2(np_onehot.shape[1])))
+  
+    #replace zeros with infill partition (a string of zeros of lenth nmbrcolumns)
+    #note this corresponds to the default infill encoding for '1010'
+    infill_plug = '0' * nbrcolumns
+    df_array['1010'] = np.where(df_array.eq(0).all(1), infill_plug, df_array['1010'])
+    
 
     _1010_columns = []
     for i in range(nbrcolumns):
       _1010_columns.append('1010_'+str(i))
-      
-    
+
+
     df_array['1010'] = df_array['1010'].astype(str)
 
     #now let's store the encoding
@@ -13405,8 +13422,18 @@ class AutoMunge:
 
 
     np_1010 = df_array.values
+      
+    
+#     #else if np_onehot was all zeros (edge case)
+#     else:
+      
+#       nbrcolumns = int(np.ceil(np.log2(np_onehot.shape[1])))
+      
+#       np_1010 = \
+#       np.zeros((np_onehot.shape[0], nbrcolumns))
 
     return np_1010
+  
 
   def LabelSetGenerator(self, df, column, label):
     '''
@@ -15716,7 +15743,7 @@ class AutoMunge:
                 testID_column = False, valpercent1=0.0, valpercent2 = 0.0, floatprecision = 32, \
                 shuffletrain = False, TrainLabelFreqLevel = False, powertransform = False, \
                 binstransform = False, MLinfill = False, infilliterate=1, randomseed = 42, \
-                numbercategoryheuristic = 15, pandasoutput = False, NArw_marker = True, \
+                numbercategoryheuristic = 63, pandasoutput = False, NArw_marker = True, \
                 featureselection = False, featurepct = 1.0, featuremetric = 0.0, \
                 featuremethod = 'default', PCAn_components = None, PCAexcl = [], \
                 ML_cmnd = {'MLinfill_type':'default', \
@@ -17117,7 +17144,7 @@ class AutoMunge:
         
         
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '2.91'
+    automungeversion = '2.92'
     application_number = random.randint(100000000000,999999999999)
     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -19772,10 +19799,10 @@ class AutoMunge:
     mdf_test[column + '_1010'] = mdf_test[column + '_1010'].astype('category')
 
     #if set is categorical we'll need the plug value for missing values included
-    mdf_test[column + '_1010'] = mdf_test[column + '_1010'].cat.add_categories(['zzzinfill'])
+    mdf_test[column + '_1010'] = mdf_test[column + '_1010'].cat.add_categories(['000000000_infill'])
 
     #replace NA with a dummy variable
-    mdf_test[column + '_1010'] = mdf_test[column + '_1010'].fillna('zzzinfill')
+    mdf_test[column + '_1010'] = mdf_test[column + '_1010'].fillna('000000000_infill')
 
     #replace numerical with string equivalent
     mdf_test[column + '_1010'] = mdf_test[column + '_1010'].astype(str)
@@ -19789,11 +19816,11 @@ class AutoMunge:
     labels_test.sort()
     
     #if infill not present in train set, insert
-    if 'zzzinfill' not in labels_train:
-      labels_train = labels_train + ['zzzinfill']
+    if '000000000_infill' not in labels_train:
+      labels_train = labels_train + ['000000000_infill']
       labels_train.sort()
-    if 'zzzinfill' not in labels_test:
-      labels_test = labels_test + ['zzzinfill']
+    if '000000000_infill' not in labels_test:
+      labels_test = labels_test + ['000000000_infill']
       labels_test.sort()    
    
     #here we replace the overlaps with version with jibberish suffix
@@ -19805,7 +19832,7 @@ class AutoMunge:
     testspecificcategories = list(set(labels_test)-set(labels_train))
     
     #so we'll just replace those items with our plug value
-    testplug_dict = dict(zip(testspecificcategories, ['zzzinfill'] * len(testspecificcategories)))
+    testplug_dict = dict(zip(testspecificcategories, ['000000000_infill'] * len(testspecificcategories)))
     mdf_test[column + '_1010'] = mdf_test[column + '_1010'].replace(testplug_dict)    
     
     #now we'll apply the 1010 transformation to the test set
