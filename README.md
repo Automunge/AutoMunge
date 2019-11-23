@@ -114,7 +114,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
             testID_column = False, valpercent1=0.0, valpercent2 = 0.0, floatprecision = 32, \
             shuffletrain = False, TrainLabelFreqLevel = False, powertransform = False, \
             binstransform = False, MLinfill = False, infilliterate=1, randomseed = 42, \
-            numbercategoryheuristic = 15, pandasoutput = True, NArw_marker = True, \
+            numbercategoryheuristic = 63, pandasoutput = True, NArw_marker = True, \
             featureselection = False, featurepct = 1.0, featuremetric = .02, \
             featuremethod = 'default', PCAn_components = None, PCAexcl = [], \
             ML_cmnd = {'MLinfill_type':'default', \
@@ -304,7 +304,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
             testID_column = False, valpercent1=0.0, valpercent2 = 0.0, floatprecision = 32, \
             shuffletrain = False, TrainLabelFreqLevel = False, powertransform = False, \
             binstransform = False, MLinfill = False, infilliterate=1, randomseed = 42, \
-            numbercategoryheuristic = 15, pandasoutput = True, NArw_marker = True, \
+            numbercategoryheuristic = 63, pandasoutput = True, NArw_marker = True, \
             featureselection = False, featurepct = 1.0, featuremetric = .02, \
             featuremethod = 'default', PCAn_components = None, PCAexcl = [], \
             ML_cmnd = {'MLinfill_type':'default', \
@@ -468,7 +468,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
             testID_column = False, valpercent1=0.0, valpercent2 = 0.0, floatprecision = 32, \
             shuffletrain = False, TrainLabelFreqLevel = False, powertransform = False, \
             binstransform = False, MLinfill = False, infilliterate=1, randomseed = 42, \
-            numbercategoryheuristic = 15, pandasoutput = True, NArw_marker = True, \
+            numbercategoryheuristic = 63, pandasoutput = True, NArw_marker = True, \
             featureselection = False, featurepct = 1.0, featuremetric = .02, \
             featuremethod = 'default', PCAn_components = None, PCAexcl = [], \
             ML_cmnd = {'MLinfill_type':'default', \
@@ -628,8 +628,8 @@ This defaults to 42, a nice round number.
 
 * numbercategoryheuristic: an integer used as a heuristic. When a 
 categorical set has more unique values than this heuristic, it defaults 
-to categorical treatment via ordinal processing, otherwise categorical sets
-default to one-hot encoding. This defaults to 15.
+to categorical treatment via ordinal processing via 'ord3', otherwise 
+categorical sets default to binary encoding via '1010'. This defaults to 63.
 
 * pandasoutput: a selector for format of returned sets. Defaults to False
 for returned Numpy arrays. If set to True returns pandas dataframes
@@ -1127,11 +1127,11 @@ categories of transformations are as follows:
 - nmbr: for numerical data, columns are treated with z-score normalization. If 
 binstransform parameter was activated this will be supplemented by a collection
 of bins indicating number of standard deviations from the mean.
-- text: for categorical data, columns are subject to one-hot encoding. If the 
+- 1010: for categorical data, columns are subject to binary encoding. If the 
 number of unique entries in the column exceeds the parameter 'numbercategoryheuristic'
-(which defaults to 15), the encoding will instead be by ord3 which is an ordinal
+(which defaults to 63), the encoding will instead be by 'ord3' which is an ordinal
 (integer) encoding sorted by most common value. Note that numerical sets with 3
-unique values in train set default to text.
+unique values in train set default to categorical encoding via 'text'.
 - bnry: for categorical data of <=2 unique values excluding infill (eg NaN), the 
 column is encoded to 0/1. Note that numerical sets with <= 2 unique values in train
 set default to bnry.
