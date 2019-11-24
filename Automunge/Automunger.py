@@ -13237,8 +13237,7 @@ class AutoMunge:
     #possible future extension
     '''
 
-    if postprocess_dict['column_dict'][column]['infillcomplete'] == False \
-    and postprocess_dict['column_dict'][column]['category'] not in ['date']:
+    if postprocess_dict['column_dict'][column]['infillcomplete'] == False:
 
       columnslist = postprocess_dict['column_dict'][column]['columnslist']
       categorylist = postprocess_dict['column_dict'][column]['categorylist']
@@ -17144,7 +17143,7 @@ class AutoMunge:
         
         
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '2.92'
+    automungeversion = '2.93'
     application_number = random.randint(100000000000,999999999999)
     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
