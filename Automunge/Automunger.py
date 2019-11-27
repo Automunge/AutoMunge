@@ -2081,7 +2081,7 @@ class AutoMunge:
     process_dict.update({'ors7' : {'dualprocess' : self.process_spl5_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_spl5_class, \
-                                  'NArowtype' : 'parsenumeric', \
+                                  'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'ord3'}})
     process_dict.update({'ors5' : {'dualprocess' : self.process_spl5_class, \
@@ -2705,51 +2705,51 @@ class AutoMunge:
   
 
   def processfamily(self, df_train, df_test, column, category, origcategory, process_dict, \
-                    transform_dict, postprocess_dict):
+                    transform_dict, postprocess_dict, assign_param):
     '''
     #as automunge runs a for loop through each column in automunge, this is the master 
     #processing function applied which runs through the different family primitives
     #populated in the transform_dict by assembletransformdict
     '''
-    
+
     #process the cousins (no downstream, supplemental)
     for cousin in transform_dict[category]['cousins']:
-      
+
       if cousin != None:
-      
+
         #note we use the processcousin function here
         df_train, df_test, postprocess_dict = \
         self.processcousin(df_train, df_test, column, cousin, origcategory, \
-                            process_dict, transform_dict, postprocess_dict)
+                            process_dict, transform_dict, postprocess_dict, assign_param)
 
 
     #process the siblings (with downstream, supplemental)
     for sibling in transform_dict[category]['siblings']:
-      
+
       if sibling != None:
         #note we use the processparent function here
         df_train, df_test, postprocess_dict = \
         self.processparent(df_train, df_test, column, sibling, origcategory, \
-                          process_dict, transform_dict, postprocess_dict)
+                          process_dict, transform_dict, postprocess_dict, assign_param)
 
     #process the auntsuncles (no downstream, with replacement)
     for auntuncle in transform_dict[category]['auntsuncles']:
 
       if auntuncle != None:
-      
+
         #note we use the processcousin function here
         df_train, df_test, postprocess_dict = \
         self.processcousin(df_train, df_test, column, auntuncle, origcategory, \
-                            process_dict, transform_dict, postprocess_dict)
+                            process_dict, transform_dict, postprocess_dict, assign_param)
 
     #process the parents (with downstream, with replacement)
     for parent in transform_dict[category]['parents']:
-      
+
       if parent != None:
-      
+
         df_train, df_test, postprocess_dict = \
         self.processparent(df_train, df_test, column, parent, origcategory, \
-                          process_dict, transform_dict, postprocess_dict)
+                          process_dict, transform_dict, postprocess_dict, assign_param)
 
 
     #if we had replacement transformations performed then mark column for deletion
@@ -2761,32 +2761,32 @@ class AutoMunge:
         postprocess_dict['column_dict'][column]['deletecolumn'] = True
 
     return df_train, df_test, postprocess_dict
-  
-  
+
+
   def circleoflife(self, df_train, df_test, column, category, origcategory, process_dict, \
                     transform_dict, postprocess_dict):
     '''
     #This function deletes source column for cases where family primitives 
     #included replacement.
     '''
-    
+
     #if we had replacement transformations performed on first generation \
     #then delete the original column
     if len(transform_dict[category]['auntsuncles']) \
     + len(transform_dict[category]['parents']) > 0:
       del df_train[column]
       del df_test[column]
-      
+
     #if we had replacement transformations performed on downstream generation \
     #then delete the associated parent column 
     for columndict_column in postprocess_dict['column_dict']:
       if postprocess_dict['column_dict'][columndict_column]['deletecolumn'] == True:
-      
+
         #first we'll remove the column from columnslists 
         for columnslistcolumn in postprocess_dict['column_dict'][columndict_column]['columnslist']:
 
           if columndict_column in postprocess_dict['column_dict'][columnslistcolumn]['columnslist']:
-          
+
             postprocess_dict['column_dict'][columnslistcolumn]['columnslist'].remove(columndict_column)
 
         #now we'll delete column
@@ -2795,9 +2795,9 @@ class AutoMunge:
         if columndict_column in list(df_train):
           del df_train[columndict_column]
           del df_test[columndict_column]
-      
+
     return df_train, df_test, postprocess_dict
-  
+
 
   def dictupdate(self, column, column_dict, postprocess_dict):
     '''
@@ -2809,8 +2809,8 @@ class AutoMunge:
     #name of the column after the. last processing funciton is saved as a key
     #in the column_dict
     '''
-    
-    
+
+
     #(reason for "key2" instead of key1 is some shuffling during editing)
     for key2 in column_dict:
 
@@ -2830,7 +2830,7 @@ class AutoMunge:
           postprocess_dict['column_dict'][column]['origcategory']
 
       for key1 in postprocess_dict['column_dict']:
-        
+
 
         #if origcolumn is the same between column_dict saved in postprocess_dict and
         #the column_dict outputed from our processing, we'll combine a few values
@@ -2846,15 +2846,15 @@ class AutoMunge:
           #now we'll combine the normalization dictionary
           #remember that we are updating the strucutre to include the column+'_ctgy'
           #identifier as a key
-          
+
           #first we'll append column_dict normalization_dict onto postprocess_dict, 
           postprocess_dict['column_dict'][key1]['normalization_dict'].update(column_dict[key2]['normalization_dict'])
-          
+
           #then we'll copy postprocess_dict normalization_dict back onto column_dict
           column_dict[key2]['normalization_dict'] = postprocess_dict['column_dict'][key1]['normalization_dict']
-          
-          
-            
+
+
+
 
           #now save the postprocess_dict normalization dicitonary to the column_dict
           #the idea is that every normalization parameter for every column is saved in 
@@ -2862,21 +2862,21 @@ class AutoMunge:
           #would need to update our approach in postmunge in getting a column key
           column_dict[key2]['normalization_dict'] = \
           postprocess_dict['column_dict'][key1]['normalization_dict']
-    
+
 
     #now append column_dict onto postprocess_dict
     postprocess_dict['column_dict'].update(column_dict)
-    
-    
+
+
     #return column_dict, postprocess_dict
     return postprocess_dict
-  
-  
-  
-  
-  
+
+
+
+
+
   def processcousin(self, df_train, df_test, column, cousin, origcategory, \
-                     process_dict, transform_dict, postprocess_dict):
+                     process_dict, transform_dict, postprocess_dict, assign_param):
     '''
     #cousin is one of the primitives for processfamily function, and it involves
     #transformations without downstream derivations without replacement of source column
@@ -2885,25 +2885,56 @@ class AutoMunge:
     #used on the niecesnephews primitive downstream of parents or siblings since 
     #they don't have children (they're way to young for that)
     #note the processing funcitons are accessed through the process_dict
+
+    #reminder the format of assign_param is e.g.
+    #assignparam = {'splt' : {'column1' : {'minsplit' : 4}}, \
+    #               'spl2' : {'column2' : {'minsplit' : 3}}}
+
     '''
     
+    params = self.grab_params(assign_param, cousin, column)
     
-    #if this is a dual process function
-    if process_dict[cousin]['dualprocess'] != None:
-      df_train, df_test, column_dict_list = \
-      process_dict[cousin]['dualprocess'](df_train, df_test, column, origcategory, \
-                                          postprocess_dict)
+    if bool(params):
 
-    #else if this is a single process function process train and test seperately
-    elif process_dict[cousin]['singleprocess'] != None:
+      #call processing functions including passing params from assign_param
 
-      df_train, column_dict_list =  \
-      process_dict[cousin]['singleprocess'](df_train, column, origcategory, \
+      #if this is a dual process function
+      if process_dict[cousin]['dualprocess'] != None:
+        df_train, df_test, column_dict_list = \
+        process_dict[cousin]['dualprocess'](df_train, df_test, column, origcategory, \
+                                            postprocess_dict, params)
+
+      #else if this is a single process function process train and test seperately
+      elif process_dict[cousin]['singleprocess'] != None:
+
+        df_train, column_dict_list =  \
+        process_dict[cousin]['singleprocess'](df_train, column, origcategory, \
+                                              postprocess_dict, params)
+
+        df_test, _1 = \
+        process_dict[cousin]['singleprocess'](df_test, column, origcategory, \
+                                              postprocess_dict, params)
+
+
+    #else if there were no params call process functions without passing params
+    else:
+
+      #if this is a dual process function
+      if process_dict[cousin]['dualprocess'] != None:
+        df_train, df_test, column_dict_list = \
+        process_dict[cousin]['dualprocess'](df_train, df_test, column, origcategory, \
                                             postprocess_dict)
 
-      df_test, _1 = \
-      process_dict[cousin]['singleprocess'](df_test, column, origcategory, \
-                                            postprocess_dict)
+      #else if this is a single process function process train and test seperately
+      elif process_dict[cousin]['singleprocess'] != None:
+
+        df_train, column_dict_list =  \
+        process_dict[cousin]['singleprocess'](df_train, column, origcategory, \
+                                              postprocess_dict)
+
+        df_test, _1 = \
+        process_dict[cousin]['singleprocess'](df_test, column, origcategory, \
+                                              postprocess_dict)
 
 
     #update the columnslist and normalization_dict for both column_dict and postprocess_dict
@@ -2912,13 +2943,13 @@ class AutoMunge:
 
 
     return df_train, df_test, postprocess_dict
-  
-  
-  
-  
-  
+
+
+
+
+
   def processparent(self, df_train, df_test, column, parent, origcategory, \
-                    process_dict, transform_dict, postprocess_dict):
+                    process_dict, transform_dict, postprocess_dict, assign_param):
     '''
     #parent is one of the primitives for processfamily function, and it involves
     #transformations with downstream derivations with replacement of source column
@@ -2927,25 +2958,54 @@ class AutoMunge:
     #used on the children primitive downstream of parents or siblings, allowing
     #the children to have children of their own, you know, grandchildren and stuff.
     #note the processing functions are accessed through the process_dict
-    '''
     
-    #if this is a dual process function
-    if process_dict[parent]['dualprocess'] != None:
+    #reminder the format of assign_param is e.g.
+    #assignparam = {'splt' : {'column1' : {'minsplit' : 4}}, \
+    #               'spl2' : {'column2' : {'minsplit' : 3}}}
+    '''
 
-      df_train, df_test, column_dict_list = \
-      process_dict[parent]['dualprocess'](df_train, df_test, column, origcategory, \
-                                         postprocess_dict)
+    
+    params = self.grab_params(assign_param, parent, column)
+    
+    if bool(params):
+    
+      #if this is a dual process function
+      if process_dict[parent]['dualprocess'] != None:
 
-    #else if this is a single process function process train and test seperately
-    elif process_dict[parent]['singleprocess'] != None:
+        df_train, df_test, column_dict_list = \
+        process_dict[parent]['dualprocess'](df_train, df_test, column, origcategory, \
+                                           postprocess_dict, params)
 
-      df_train, column_dict_list =  \
-      process_dict[parent]['singleprocess'](df_train, column, origcategory, \
-                                         postprocess_dict)
+      #else if this is a single process function process train and test seperately
+      elif process_dict[parent]['singleprocess'] != None:
 
-      df_test, _1 = \
-      process_dict[parent]['singleprocess'](df_test, column, origcategory, \
-                                         postprocess_dict)
+        df_train, column_dict_list =  \
+        process_dict[parent]['singleprocess'](df_train, column, origcategory, \
+                                           postprocess_dict, params)
+
+        df_test, _1 = \
+        process_dict[parent]['singleprocess'](df_test, column, origcategory, \
+                                           postprocess_dict, params)
+        
+    else:
+      
+      #if this is a dual process function
+      if process_dict[parent]['dualprocess'] != None:
+
+        df_train, df_test, column_dict_list = \
+        process_dict[parent]['dualprocess'](df_train, df_test, column, origcategory, \
+                                           postprocess_dict)
+
+      #else if this is a single process function process train and test seperately
+      elif process_dict[parent]['singleprocess'] != None:
+
+        df_train, column_dict_list =  \
+        process_dict[parent]['singleprocess'](df_train, column, origcategory, \
+                                           postprocess_dict)
+
+        df_test, _1 = \
+        process_dict[parent]['singleprocess'](df_test, column, origcategory, \
+                                           postprocess_dict)
 
     #update the columnslist and normalization_dict for both column_dict and postprocess_dict
     for column_dict in column_dict_list:
@@ -2970,7 +3030,7 @@ class AutoMunge:
         #note the function applied is processcousin
         df_train, df_test, postprocess_dict = \
         self.processcousin(df_train, df_test, parentcolumn, coworker, origcategory, \
-                           process_dict, transform_dict, postprocess_dict)
+                           process_dict, transform_dict, postprocess_dict, assign_param)
 
     #process any friends
     for friend in transform_dict[parent]['friends']:
@@ -2981,7 +3041,7 @@ class AutoMunge:
         #note the function applied is processcousin
         df_train, df_test, postprocess_dict = \
         self.processcousin(df_train, df_test, parentcolumn, friend, origcategory, \
-                           process_dict, transform_dict, postprocess_dict)
+                           process_dict, transform_dict, postprocess_dict, assign_param)
 
 
     #process any niecesnephews
@@ -2996,9 +3056,9 @@ class AutoMunge:
         #parent column
         df_train, df_test, postprocess_dict = \
         self.processparent(df_train, df_test, parentcolumn, niecenephew, origcategory, \
-                           process_dict, transform_dict, postprocess_dict)
-#         self.processfamily(df_train, df_test, parentcolumn, niecenephew, origcategory, \
-#                            process_dict, transform_dict, postprocess_dict)
+                           process_dict, transform_dict, postprocess_dict, assign_param)
+  #         self.processfamily(df_train, df_test, parentcolumn, niecenephew, origcategory, \
+  #                            process_dict, transform_dict, postprocess_dict)
 
 
     #process any children
@@ -3011,22 +3071,22 @@ class AutoMunge:
         #parent column
         df_train, df_test, postprocess_dict = \
         self.processparent(df_train, df_test, parentcolumn, child, origcategory, \
-                           process_dict, transform_dict, postprocess_dict)
-#         self.processfamily(df_train, df_test, parentcolumn, child, origcategory, \
-#                            process_dict, transform_dict, postprocess_dict)
+                           process_dict, transform_dict, postprocess_dict, assign_param)
+  #         self.processfamily(df_train, df_test, parentcolumn, child, origcategory, \
+  #                            process_dict, transform_dict, postprocess_dict)
 
 
-#     #if we had replacement transformations performed then delete the original column 
-#     #(circle of life)
-#     if len(transform_dict[parent]['children']) \
-#     + len(transform_dict[parent]['coworkers']) > 0:
-#       del df_train[parentcolumn]
-#       del df_test[parentcolumn]
-# #       if column in postprocess_dict['column_dict']:
-# #         postprocess_dict['column_dict'][parentcolumn]['deletecolumn'] = True
-      
-# #       else:
-# #         postprocess_dict['column_dict'].update({parentcolumn : {'deletecolumn' : True}})
+  #     #if we had replacement transformations performed then delete the original column 
+  #     #(circle of life)
+  #     if len(transform_dict[parent]['children']) \
+  #     + len(transform_dict[parent]['coworkers']) > 0:
+  #       del df_train[parentcolumn]
+  #       del df_test[parentcolumn]
+  # #       if column in postprocess_dict['column_dict']:
+  # #         postprocess_dict['column_dict'][parentcolumn]['deletecolumn'] = True
+
+  # #       else:
+  # #         postprocess_dict['column_dict'].update({parentcolumn : {'deletecolumn' : True}})
 
     #if we had replacement transformations performed then mark column for deletion
     #(circle of life)
@@ -3042,7 +3102,7 @@ class AutoMunge:
   
   
   
-  def process_NArw_class(self, df, column, category, postprocess_dict):
+  def process_NArw_class(self, df, column, category, postprocess_dict, params = {}):
     '''
     #processing funciton that creates a boolean column indicating 1 for rows
     #corresponding to missing or improperly formated data in source column
@@ -3095,7 +3155,7 @@ class AutoMunge:
   
   
   def process_numerical_class(self, mdf_train, mdf_test, column, category, \
-                              postprocess_dict):
+                              postprocess_dict, params = {}):
     '''
     #process_numerical_class(mdf_train, mdf_test, column, category)
     #function to normalize data to mean of 0 and standard deviation of 1 \
@@ -3182,7 +3242,7 @@ class AutoMunge:
         
     return mdf_train, mdf_test, column_dict_list
   
-  def process_dxdt_class(self, df, column, category, postprocess_dict):
+  def process_dxdt_class(self, df, column, category, postprocess_dict, params = {}):
     '''
     #process_dxdt_class(df, column, category, postprocess_dict)
     #function to translate a continues variable into a bounded variable
@@ -3252,7 +3312,7 @@ class AutoMunge:
         
     return df, column_dict_list
   
-  def process_dxd2_class(self, df, column, category, postprocess_dict):
+  def process_dxd2_class(self, df, column, category, postprocess_dict, params = {}):
     '''
     #process_dxd2_class(df, column, category, postprocess_dict)
     #function to translate a continues variable into a bounded variable
@@ -3328,7 +3388,7 @@ class AutoMunge:
 
 
   def process_MADn_class(self, mdf_train, mdf_test, column, category, \
-                              postprocess_dict):
+                              postprocess_dict, params = {}):
     '''
     #process_MADn_class(mdf_train, mdf_test, column, category)
     #function to normalize data to mean of 0 and mean absolute deviation of 1
@@ -3414,7 +3474,7 @@ class AutoMunge:
     return mdf_train, mdf_test, column_dict_list
 
   def process_MAD3_class(self, mdf_train, mdf_test, column, category, \
-                              postprocess_dict):
+                              postprocess_dict, params = {}):
     '''
     #process_MAD3_class(mdf_train, mdf_test, column, category)
     #function to normalize data by subtracting maximum and dividing by median absolute deviation
@@ -3509,7 +3569,7 @@ class AutoMunge:
 
 
   def process_mnmx_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict):
+                         postprocess_dict, params = {}):
     '''
     #process_mnmx_class(mdf_train, mdf_test, column, category)
     #function to scale data to minimum of 0 and maximum of 1 \
@@ -3604,7 +3664,7 @@ class AutoMunge:
 
 
   def process_mnm3_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict):
+                         postprocess_dict, params = {}):
     '''
     #process_mnmx_class(mdf_train, mdf_test, column, category)
     #function to scale data to minimum of 0 and maximum of 1 \
@@ -3724,7 +3784,7 @@ class AutoMunge:
 
 
   def process_mnm6_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict):
+                         postprocess_dict, params = {}):
     '''
     #process_mnm6_class(mdf_train, mdf_test, column, category)
     #function to scale data to minimum of 0 and maximum of 1 \
@@ -3822,7 +3882,7 @@ class AutoMunge:
         
     return mdf_train, mdf_test, column_dict_list
   
-  def process_mean_class(self, mdf_train, mdf_test, column, category, postprocess_dict):
+  def process_mean_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
     '''
     #process_mean_class(mdf_train, mdf_test, column, category)
     #function to scale data to minimum of 0 and maximum of 1 \
@@ -3916,7 +3976,7 @@ class AutoMunge:
 
 
   def process_binary_class(self, mdf_train, mdf_test, column, category, \
-                           postprocess_dict):
+                           postprocess_dict, params = {}):
     '''
     #process_binary_class(mdf, column, missing)
     #converts binary classification values to 0 or 1
@@ -4115,7 +4175,7 @@ class AutoMunge:
   
   
   def process_text_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict):
+                         postprocess_dict, params = {}):
     '''
     #process_text_class(mdf_train, mdf_test, column, category)
     #preprocess column with text categories
@@ -4281,7 +4341,7 @@ class AutoMunge:
     
     return mdf_train, mdf_test, column_dict_list
   
-  def process_UPCS_class(self, df, column, category, postprocess_dict):
+  def process_UPCS_class(self, df, column, category, postprocess_dict, params = {}):
     '''
     #processing funciton that converts columns to uppercase strings
     #such as to allow consistnet encoding if data has upper/lower case discrepencies
@@ -4329,7 +4389,7 @@ class AutoMunge:
 
 
   def process_splt_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict):
+                         postprocess_dict, params = {}):
     '''
     #process_splt_class(mdf_train, mdf_test, column, category)
     #preprocess column with categorical entries as strings
@@ -4345,7 +4405,15 @@ class AutoMunge:
     '''
     
     #overlap_lengths = [20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7 , 6, 5]
-
+    
+    if 'minsplit' in params:
+        
+      minsplit = params['minsplit'] - 1
+    
+    else:
+      
+      minsplit = 4
+      
     
     #first we find overlaps from mdf_train
     
@@ -4355,7 +4423,7 @@ class AutoMunge:
     
     maxlength = max(len(x) for x in unique_list)
     
-    overlap_lengths = list(range(maxlength - 1, 4, -1))
+    overlap_lengths = list(range(maxlength - 1, minsplit, -1))
 
     overlap_dict = {}
 
@@ -4492,7 +4560,8 @@ class AutoMunge:
     for tc in newcolumns:
 
       textnormalization_dict = {tc : {'overlap_dict' : overlap_dict, \
-                                      'splt_newcolumns'   : newcolumns}}
+                                      'splt_newcolumns'   : newcolumns, \
+                                      'minsplit' : minsplit}}
       
       column_dict = {tc : {'category' : 'splt', \
                            'origcategory' : category, \
@@ -4515,7 +4584,7 @@ class AutoMunge:
   
   
   def process_spl2_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict):
+                         postprocess_dict, params = {}):
     '''
     #process_spl2_class(mdf_train, mdf_test, column, category)
     #preprocess column with categorical entries as strings
@@ -4534,7 +4603,15 @@ class AutoMunge:
     
 #     overlap_lengths = [20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7 , 6, 5]
 
+    if 'minsplit' in params:
+        
+      minsplit = params['minsplit'] - 1
     
+    else:
+      
+      minsplit = 4  
+  
+  
     #first we find overlaps from mdf_train
     
     unique_list = list(mdf_train[column].unique())
@@ -4543,7 +4620,7 @@ class AutoMunge:
     
     maxlength = max(len(x) for x in unique_list)
     
-    overlap_lengths = list(range(maxlength - 1, 4, -1))
+    overlap_lengths = list(range(maxlength - 1, minsplit, -1))
 
     overlap_dict = {}
 
@@ -4731,7 +4808,8 @@ class AutoMunge:
       textnormalization_dict = {tc : {'overlap_dict' : overlap_dict, \
                                       'spl2_newcolumns'   : newcolumns, 
                                       'spl2_overlap_dict' : spl2_overlap_dict, \
-                                      'spl2_test_overlap_dict' : spl2_test_overlap_dict}}
+                                      'spl2_test_overlap_dict' : spl2_test_overlap_dict, \
+                                      'minsplit' : minsplit}}
       
       column_dict = {tc : {'category' : 'spl2', \
                            'origcategory' : category, \
@@ -4754,7 +4832,7 @@ class AutoMunge:
   
   
   def process_spl5_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict):
+                         postprocess_dict, params = {}):
     '''
     #process_spl5_class(mdf_train, mdf_test, column, category)
     #preprocess column with categorical entries as strings
@@ -4775,6 +4853,13 @@ class AutoMunge:
     
 #     overlap_lengths = [20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7 , 6, 5]
 
+    if 'minsplit' in params:
+        
+      minsplit = params['minsplit'] - 1
+    
+    else:
+      
+      minsplit = 4
     
     #first we find overlaps from mdf_train
     
@@ -4784,7 +4869,7 @@ class AutoMunge:
     
     maxlength = max(len(x) for x in unique_list)
     
-    overlap_lengths = list(range(maxlength - 1, 4, -1))
+    overlap_lengths = list(range(maxlength - 1, minsplit, -1))
 
     overlap_dict = {}
 
@@ -4986,7 +5071,8 @@ class AutoMunge:
                                       'spl2_newcolumns'   : newcolumns, 
                                       'spl2_overlap_dict' : spl2_overlap_dict, \
                                       'spl2_test_overlap_dict' : spl2_test_overlap_dict, \
-                                      'spl5_zero_dict' : spl5_zero_dict}}
+                                      'spl5_zero_dict' : spl5_zero_dict, \
+                                      'minsplit' : minsplit}}
       
       column_dict = {tc : {'category' : 'spl5', \
                            'origcategory' : category, \
@@ -5008,7 +5094,7 @@ class AutoMunge:
     return mdf_train, mdf_test, column_dict_list
   
   def process_spl7_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict):
+                         postprocess_dict, params = {}):
     '''
     #(spl7 is same as spl5 but uses min overlap character legnth of 1 instead of 5)
     #process_spl5_class(mdf_train, mdf_test, column, category)
@@ -5029,7 +5115,13 @@ class AutoMunge:
     '''
     
 #     overlap_lengths = [20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7 , 6, 5]
-
+    if 'minsplit' in params:
+        
+      minsplit = params['minsplit'] - 1
+    
+    else:
+      
+      minsplit = 2 - 1
     
     #first we find overlaps from mdf_train
     
@@ -5039,7 +5131,7 @@ class AutoMunge:
     
     maxlength = max(len(x) for x in unique_list)
     
-    overlap_lengths = list(range(maxlength - 1, 1, -1))
+    overlap_lengths = list(range(maxlength - 1, minsplit, -1))
 
     overlap_dict = {}
 
@@ -5241,7 +5333,8 @@ class AutoMunge:
                                       'spl2_newcolumns'   : newcolumns, 
                                       'spl2_overlap_dict' : spl2_overlap_dict, \
                                       'spl2_test_overlap_dict' : spl2_test_overlap_dict, \
-                                      'spl5_zero_dict' : spl5_zero_dict}}
+                                      'spl5_zero_dict' : spl5_zero_dict, \
+                                      'minsplit' : minsplit}}
       
       column_dict = {tc : {'category' : 'spl7', \
                            'origcategory' : category, \
@@ -5262,7 +5355,7 @@ class AutoMunge:
     
     return mdf_train, mdf_test, column_dict_list
 
-  def process_spl8_class(self, mdf_train, mdf_test, column, category, postprocess_dict):
+  def process_spl8_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
     '''
     #process_spl8_class(mdf_train, mdf_test, column, category)
     #preprocess column with categorical entries as strings
@@ -5282,6 +5375,13 @@ class AutoMunge:
     
     #overlap_lengths = [20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7 , 6, 5]
 
+    if 'minsplit' in params:
+        
+      minsplit = params['minsplit'] - 1
+    
+    else:
+      
+      minsplit = 4
     
     #first we find overlaps from mdf_train
     
@@ -5291,7 +5391,7 @@ class AutoMunge:
     
     maxlength = max(len(x) for x in unique_list)
     
-    overlap_lengths = list(range(maxlength - 1, 4, -1))
+    overlap_lengths = list(range(maxlength - 1, minsplit, -1))
 
     overlap_dict = {}
 
@@ -5433,7 +5533,8 @@ class AutoMunge:
     for tc in newcolumns:
 
       textnormalization_dict = {tc : {'overlap_dict' : overlap_dict, \
-                                      'splt_newcolumns'   : newcolumns}}
+                                      'splt_newcolumns'   : newcolumns, \
+                                      'minsplit' : minsplit}}
       
       column_dict = {tc : {'category' : 'spl8', \
                            'origcategory' : category, \
@@ -5454,7 +5555,7 @@ class AutoMunge:
     
     return mdf_train, mdf_test, column_dict_list
   
-  def process_spl9_class(self, mdf_train, mdf_test, column, category, postprocess_dict):
+  def process_spl9_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
     '''
     #process_spl2_class(mdf_train, mdf_test, column, category)
     #preprocess column with categorical entries as strings
@@ -5476,6 +5577,13 @@ class AutoMunge:
     
 #     overlap_lengths = [20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7 , 6, 5]
 
+    if 'minsplit' in params:
+        
+      minsplit = params['minsplit'] - 1
+    
+    else:
+      
+      minsplit = 4
     
     #first we find overlaps from mdf_train
     
@@ -5485,7 +5593,7 @@ class AutoMunge:
     
     maxlength = max(len(x) for x in unique_list)
     
-    overlap_lengths = list(range(maxlength - 1, 4, -1))
+    overlap_lengths = list(range(maxlength - 1, minsplit, -1))
 
     overlap_dict = {}
 
@@ -5685,7 +5793,8 @@ class AutoMunge:
                                       'spl2_newcolumns'   : newcolumns, 
                                       'spl2_overlap_dict' : spl2_overlap_dict, \
                                       'unique_list' : unique_list, \
-                                      'spl2_test_overlap_dict' : spl2_test_overlap_dict}}
+                                      'spl2_test_overlap_dict' : spl2_test_overlap_dict, \
+                                      'minsplit' : minsplit}}
       
       column_dict = {tc : {'category' : 'spl9', \
                            'origcategory' : category, \
@@ -5706,7 +5815,7 @@ class AutoMunge:
     
     return mdf_train, mdf_test, column_dict_list
   
-  def process_sp10_class(self, mdf_train, mdf_test, column, category, postprocess_dict):
+  def process_sp10_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
     '''
     #process_spl5_class(mdf_train, mdf_test, column, category)
     #preprocess column with categorical entries as strings
@@ -5731,6 +5840,13 @@ class AutoMunge:
     
 #     overlap_lengths = [20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7 , 6, 5]
 
+    if 'minsplit' in params:
+        
+      minsplit = params['minsplit'] - 1
+    
+    else:
+      
+      minsplit = 4
     
     #first we find overlaps from mdf_train
     
@@ -5740,7 +5856,7 @@ class AutoMunge:
     
     maxlength = max(len(x) for x in unique_list)
     
-    overlap_lengths = list(range(maxlength - 1, 4, -1))
+    overlap_lengths = list(range(maxlength - 1, minsplit, -1))
 
     overlap_dict = {}
 
@@ -5958,7 +6074,8 @@ class AutoMunge:
                                       'spl2_overlap_dict' : spl2_overlap_dict, \
                                       'spl2_test_overlap_dict' : spl2_test_overlap_dict, \
                                       'spl5_zero_dict' : spl5_zero_dict, \
-                                      'unique_list' : unique_list }}
+                                      'unique_list' : unique_list, \
+                                      'minsplit' : minsplit }}
       
       column_dict = {tc : {'category' : 'sp10', \
                            'origcategory' : category, \
@@ -5980,7 +6097,7 @@ class AutoMunge:
     return mdf_train, mdf_test, column_dict_list
   
   
-  def process_nmrc_class(self, df, column, category, postprocess_dict):
+  def process_nmrc_class(self, df, column, category, postprocess_dict, params = {}):
     """
     #process_nmrc_class(df, column, category, postprocess_dict)
     #parses string entries and if any numbers present returns numbers
@@ -6103,7 +6220,7 @@ class AutoMunge:
         
     return df, column_dict_list
 
-  def process_nmr4_class(self, mdf_train, mdf_test, column, category, postprocess_dict):
+  def process_nmr4_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
     """
     #process_nmr4_class(df, column, category, postprocess_dict)
     #parses string entries and if any numbers present returns numbers
@@ -6244,7 +6361,7 @@ class AutoMunge:
         
     return mdf_train, mdf_test, column_dict_list
   
-  def process_nmr7_class(self, mdf_train, mdf_test, column, category, postprocess_dict):
+  def process_nmr7_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
     """
     #process_nmr4_class(df, column, category, postprocess_dict)
     #parses string entries and if any numbers present returns numbers
@@ -6456,7 +6573,7 @@ class AutoMunge:
     return mdf_train, mdf_test, column_dict_list
   
   
-  def process_nmcm_class(self, df, column, category, postprocess_dict):
+  def process_nmcm_class(self, df, column, category, postprocess_dict, params = {}):
     """
     #process_nmcm_class(df, column, category, postprocess_dict)
     #parses string entries and if any numbers present returns numbers
@@ -6581,7 +6698,7 @@ class AutoMunge:
         
     return df, column_dict_list
   
-  def process_nmc4_class(self, mdf_train, mdf_test, column, category, postprocess_dict):
+  def process_nmc4_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
     """
     #process_nmc4_class(df, column, category, postprocess_dict)
     #parses string entries and if any numbers present returns numbers
@@ -6725,7 +6842,7 @@ class AutoMunge:
         
     return mdf_train, mdf_test, column_dict_list
   
-  def process_nmc7_class(self, mdf_train, mdf_test, column, category, postprocess_dict):
+  def process_nmc7_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
     """
     #process_nmc7_class(df, column, category, postprocess_dict)
     #parses string entries and if any numbers present returns numbers
@@ -6946,7 +7063,7 @@ class AutoMunge:
   
     
   def process_ordl_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict):
+                         postprocess_dict, params = {}):
     '''
     #process_ordl_class(mdf_train, mdf_test, column, category)
     #preprocess column with categories into ordinal (sequentuial integer) sets
@@ -7100,7 +7217,7 @@ class AutoMunge:
   
 
   def process_ord3_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict):
+                         postprocess_dict, params = {}):
     '''
     #process_ord3_class(mdf_train, mdf_test, column, category)
     #preprocess column with categories into ordinal (sequentuial integer) sets
@@ -7258,7 +7375,7 @@ class AutoMunge:
   
   
   def process_1010_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict):
+                         postprocess_dict, params = {}):
     '''
     #process_1010_class(mdf_train, mdf_test, column, category)
     #preprocess column with categories into binary encoded sets
@@ -7664,7 +7781,7 @@ class AutoMunge:
 #     return mdf_train, mdf_test, column_dict_list
   
 
-  def process_bshr_class(self, df, column, category, postprocess_dict):
+  def process_bshr_class(self, df, column, category, postprocess_dict, params = {}):
     '''
     #processing funciton depending on input format of datetime data 
     #that creates a boolean column indicating 1 for rows
@@ -7716,7 +7833,7 @@ class AutoMunge:
 
 
 
-  def process_wkdy_class(self, df, column, category, postprocess_dict):
+  def process_wkdy_class(self, df, column, category, postprocess_dict, params = {}):
     '''
     #processing funciton depending on input format of datetime data 
     #that creates a boolean column indicating 1 for rows
@@ -7769,7 +7886,7 @@ class AutoMunge:
 
 
 
-  def process_hldy_class(self, df, column, category, postprocess_dict):
+  def process_hldy_class(self, df, column, category, postprocess_dict, params = {}):
     '''
     #processing funciton depending on input format of datetime data 
     #that creates a boolean column indicating 1 for rows
@@ -7818,7 +7935,7 @@ class AutoMunge:
     return df, column_dict_list
   
   def process_year_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict):
+                         postprocess_dict, params = {}):
     '''
     #process_year_class(mdf_train, mdf_test, column, category)
     #preprocess column with time classifications
@@ -7934,7 +8051,7 @@ class AutoMunge:
     return mdf_train, mdf_test, column_dict_list
   
   def process_mnth_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict):
+                         postprocess_dict, params = {}):
     '''
     #process_mnth_class(mdf_train, mdf_test, column, category)
     #preprocess column with time classifications
@@ -8057,7 +8174,7 @@ class AutoMunge:
   
   
   def process_mnsn_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict):
+                         postprocess_dict, params = {}):
     '''
     #process_mnsn_class(mdf_train, mdf_test, column, category)
     #preprocess column with time classifications
@@ -8151,7 +8268,7 @@ class AutoMunge:
   
   
   def process_mncs_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict):
+                         postprocess_dict, params = {}):
     '''
     #process_mncs_class(mdf_train, mdf_test, column, category)
     #preprocess column with time classifications
@@ -8245,7 +8362,7 @@ class AutoMunge:
   
   
   def process_mdsn_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict):
+                         postprocess_dict, params = {}):
     '''
     #process_mdsn_class(mdf_train, mdf_test, column, category)
     #preprocess column with time classifications
@@ -8339,7 +8456,7 @@ class AutoMunge:
   
   
   def process_mdcs_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict):
+                         postprocess_dict, params = {}):
     '''
     #process_mdcs_class(mdf_train, mdf_test, column, category)
     #preprocess column with time classifications
@@ -8433,7 +8550,7 @@ class AutoMunge:
   
   
   def process_days_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict):
+                         postprocess_dict, params = {}):
     '''
     #process_days_class(mdf_train, mdf_test, column, category)
     #preprocess column with time classifications
@@ -8550,7 +8667,7 @@ class AutoMunge:
   
   
   def process_dysn_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict):
+                         postprocess_dict, params = {}):
     '''
     #process_dysn_class(mdf_train, mdf_test, column, category)
     #preprocess column with time classifications
@@ -8646,7 +8763,7 @@ class AutoMunge:
   
   
   def process_dycs_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict):
+                         postprocess_dict, params = {}):
     '''
     #process_dycs_class(mdf_train, mdf_test, column, category)
     #preprocess column with time classifications
@@ -8741,7 +8858,7 @@ class AutoMunge:
     return mdf_train, mdf_test, column_dict_list
   
   def process_dhms_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict):
+                         postprocess_dict, params = {}):
     '''
     #process_mdsn_class(mdf_train, mdf_test, column, category)
     #preprocess column with time classifications
@@ -8836,7 +8953,7 @@ class AutoMunge:
   
   
   def process_dhmc_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict):
+                         postprocess_dict, params = {}):
     '''
     #process_dhmc_class(mdf_train, mdf_test, column, category)
     #preprocess column with time classifications
@@ -8931,7 +9048,7 @@ class AutoMunge:
   
   
   def process_hour_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict):
+                         postprocess_dict, params = {}):
     '''
     #process_hour_class(mdf_train, mdf_test, column, category)
     #preprocess column with time classifications
@@ -9049,7 +9166,7 @@ class AutoMunge:
   
   
   def process_hrsn_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict):
+                         postprocess_dict, params = {}):
     '''
     #process_hrsn_class(mdf_train, mdf_test, column, category)
     #preprocess column with time classifications
@@ -9144,7 +9261,7 @@ class AutoMunge:
   
   
   def process_hrcs_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict):
+                         postprocess_dict, params = {}):
     '''
     #process_hrcs_class(mdf_train, mdf_test, column, category)
     #preprocess column with time classifications
@@ -9239,7 +9356,7 @@ class AutoMunge:
   
   
   def process_hmss_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict):
+                         postprocess_dict, params = {}):
     '''
     #process_hmss_class(mdf_train, mdf_test, column, category)
     #preprocess column with time classifications
@@ -9334,7 +9451,7 @@ class AutoMunge:
   
   
   def process_hmsc_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict):
+                         postprocess_dict, params = {}):
     '''
     #process_hmsc_class(mdf_train, mdf_test, column, category)
     #preprocess column with time classifications
@@ -9429,7 +9546,7 @@ class AutoMunge:
   
   
   def process_mint_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict):
+                         postprocess_dict, params = {}):
     '''
     #process_mint_class(mdf_train, mdf_test, column, category)
     #preprocess column with time classifications
@@ -9547,7 +9664,7 @@ class AutoMunge:
   
   
   def process_misn_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict):
+                         postprocess_dict, params = {}):
     '''
     #process_misn_class(mdf_train, mdf_test, column, category)
     #preprocess column with time classifications
@@ -9642,7 +9759,7 @@ class AutoMunge:
   
   
   def process_mics_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict):
+                         postprocess_dict, params = {}):
     '''
     #process_mics_class(mdf_train, mdf_test, column, category)
     #preprocess column with time classifications
@@ -9737,7 +9854,7 @@ class AutoMunge:
   
   
   def process_mssn_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict):
+                         postprocess_dict, params = {}):
     '''
     #process_mssn_class(mdf_train, mdf_test, column, category)
     #preprocess column with time classifications
@@ -9831,7 +9948,7 @@ class AutoMunge:
   
   
   def process_mscs_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict):
+                         postprocess_dict, params = {}):
     '''
     #process_mscs_class(mdf_train, mdf_test, column, category)
     #preprocess column with time classifications
@@ -9925,7 +10042,7 @@ class AutoMunge:
   
   
   def process_scnd_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict):
+                         postprocess_dict, params = {}):
     '''
     #process_scnd_class(mdf_train, mdf_test, column, category)
     #preprocess column with time classifications
@@ -10043,7 +10160,7 @@ class AutoMunge:
   
   
   def process_scsn_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict):
+                         postprocess_dict, params = {}):
     '''
     #process_scsn_class(mdf_train, mdf_test, column, category)
     #preprocess column with time classifications
@@ -10138,7 +10255,7 @@ class AutoMunge:
   
   
   def process_sccs_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict):
+                         postprocess_dict, params = {}):
     '''
     #process_sccs_class(mdf_train, mdf_test, column, category)
     #preprocess column with time classifications
@@ -10235,7 +10352,7 @@ class AutoMunge:
   
     
   def process_bxcx_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict):
+                         postprocess_dict, params = {}):
     '''
     Applies Box-Cox transform to an all-positive numerical set.
     '''
@@ -10374,7 +10491,7 @@ class AutoMunge:
 
 
   def process_log0_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict):
+                         postprocess_dict, params = {}):
     '''
     #process_log0_class(mdf_train, mdf_test, column, category)
     #function to apply logatrithmic transform
@@ -10457,7 +10574,7 @@ class AutoMunge:
     return mdf_train, mdf_test, column_dict_list
   
   def process_sqrt_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict):
+                         postprocess_dict, params = {}):
     '''
     #process_sqrt_class(mdf_train, mdf_test, column, category)
     #function to apply square root transform
@@ -10541,7 +10658,7 @@ class AutoMunge:
 
   
   def process_pwrs_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict):
+                         postprocess_dict, params = {}):
     '''
     #processes a numerical set by creating bins coresponding to powers
     #of ten in one hot encoded columns
@@ -10688,7 +10805,7 @@ class AutoMunge:
     
     return mdf_train, mdf_test, column_dict_list
   
-  def process_pwor_class(self, mdf_train, mdf_test, column, category, postprocess_dict):
+  def process_pwor_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
     '''
     #processes a numerical set by creating bins coresponding to powers
     #of ten in one hot encoded columns
@@ -10767,7 +10884,7 @@ class AutoMunge:
     
     return mdf_train, mdf_test, column_dict_list
   
-  def process_pwr2_class(self, mdf_train, mdf_test, column, category, postprocess_dict):
+  def process_pwr2_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
     '''
     #processes a numerical set by creating bins coresponding to powers
     #of ten in one hot encoded columns
@@ -10973,7 +11090,7 @@ class AutoMunge:
     
     return mdf_train, mdf_test, column_dict_list
   
-  def process_por2_class(self, mdf_train, mdf_test, column, category, postprocess_dict):
+  def process_por2_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
     '''
     #processes a numerical set by creating bins coresponding to powers
     #of ten in ordinal encoded columns
@@ -11166,7 +11283,7 @@ class AutoMunge:
   
   
   def process_bins_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict):
+                         postprocess_dict, params = {}):
     '''
     #processes a numerical set by creating bins coresponding to post z score
     #normalization of <-2, -2-1, -10, 01, 12, >2 in one hot encoded columns
@@ -11307,7 +11424,7 @@ class AutoMunge:
   
   
   def process_bint_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict):
+                         postprocess_dict, params = {}):
     '''
     #processes a numerical set by creating bins coresponding to post z score
     #normalization of <-2, -2-1, -10, 01, 12, >2 in one hot encoded columns
@@ -11435,7 +11552,7 @@ class AutoMunge:
     #return mdf_train, mdf_test, mean, std, nmbrcolumns, categorylist
     return mdf_train, mdf_test, column_dict_list
   
-  def process_bsor_class(self, mdf_train, mdf_test, column, category, postprocess_dict):
+  def process_bsor_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
     '''
     #processes a numerical set by creating bins coresponding to post z score
     #normalization of <-2, -2-1, -10, 01, 12, >2 in one hot encoded columns
@@ -11542,7 +11659,7 @@ class AutoMunge:
     return mdf_train, mdf_test, column_dict_list
   
   
-  def process_null_class(self, df, column, category, postprocess_dict):
+  def process_null_class(self, df, column, category, postprocess_dict, params = {}):
     '''
     #here we'll delete any columns that returned a 'null' category
     #note this is a. singleprocess transform
@@ -11570,7 +11687,7 @@ class AutoMunge:
 
     return df, column_dict_list
 
-  def process_excl_class(self, df, column, category, postprocess_dict):
+  def process_excl_class(self, df, column, category, postprocess_dict, params = {}):
     '''
     #here we'll address any columns that returned a 'excl' category
     #note this is a. singleprocess transform
@@ -11619,7 +11736,7 @@ class AutoMunge:
 
 
   def process_exc2_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict):
+                         postprocess_dict, params = {}):
     '''
     #here we'll address any columns that returned a 'excl' category
     #note this is a. singleprocess transform
@@ -12044,6 +12161,7 @@ class AutoMunge:
       NArows = pd.isna(df2[column])
       NArows = pd.DataFrame(NArows)
       NArows = NArows.rename(columns = {column:column+'_NArows'})
+      
     
     if NArowtype in ['positivenumeric']:
       
@@ -12085,6 +12203,7 @@ class AutoMunge:
       
       NArows = self.parsenumeric(df2, column)
       
+      
     if NArowtype in ['parsenumeric_commas']:
       
       NArows = self.parsenumeric_commas(df2, column)
@@ -12092,13 +12211,18 @@ class AutoMunge:
     if NArowtype in ['datetime']:
       
       NArows = self.parsedate(df2, column)
-
-
+      
     #if category in ['excl']:
     if NArowtype in ['exclude']:
       
-      NArows = pd.DataFrame(np.zeros((df2.shape[0], 1)), columns=[column+'_NArows'])
+#       NArows = pd.DataFrame(np.zeros((df2.shape[0], 1)), columns=[column+'_NArows'])
       #NArows = NArows.rename(columns = {column:column+'_NArows'})
+      
+      df2[column] = False
+      NArows = pd.DataFrame(df2[column])
+      NArows = NArows.rename(columns = {column:column+'_NArows'})
+#       NArows[column+'_NArows'] = False
+      
       
     del df2
     
@@ -12247,7 +12371,7 @@ class AutoMunge:
     
     df[column] = df[column].astype(str)
     df[column] = df[column].replace(overlap_dict)
-    df[column] = df[column].astype(np.int8)
+#     df[column] = df[column].astype(np.int8)
     
     NArows = pd.DataFrame(df[column].copy())
     
@@ -12333,7 +12457,7 @@ class AutoMunge:
     
     df[column] = df[column].astype(str)
     df[column] = df[column].replace(overlap_dict)
-    df[column] = df[column].astype(np.int8)
+#     df[column] = df[column].astype(np.int8)
     
     NArows = pd.DataFrame(df[column].copy())
     
@@ -14175,7 +14299,7 @@ class AutoMunge:
                     numbercategoryheuristic, assigncat, transformdict, \
                     processdict, featurepct, featuremetric, featuremethod, \
                     ML_cmnd, process_dict, valpercent1, valpercent2, printstatus, \
-                    NArw_marker):
+                    NArw_marker, assignparam):
     '''
     featureselect is a function called within automunge() that applies methods
     to evaluate predictive power of derived features towards a downstream model
@@ -14221,6 +14345,7 @@ class AutoMunge:
                   featuremethod = 'pct', ML_cmnd = FSML_cmnd, assigncat = assigncat, \
                   assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                                  'adjinfill':[], 'meaninfill':[], 'medianinfill':[]}, \
+                  assignparam = assignparam, \
                   transformdict = transformdict, processdict = processdict, printstatus=printstatus)
     
     
@@ -15660,6 +15785,21 @@ class AutoMunge:
       
     return result
   
+  def check_assignparam(self, assignparam):
+    """
+    #Here we'll do a quick check to validate the passed assign param.
+    #actually currently drawing a blank for what needs validation
+    #let's save building out this function for a future extension
+    
+    #reminder the format of assign_param is e.g.
+    #assignparam = {'splt' : {'column1' : {'minsplit' : 4}}, \
+    #               'spl2' : {'column2' : {'minsplit' : 3}}}
+    """
+    
+    result = False
+    
+    return result
+  
   
   def assigncat_str_convert(self, assigncat):
     """
@@ -15710,6 +15850,26 @@ class AutoMunge:
 
     return parameter
   
+  def assignparam_str_convert(self, assignparam):
+    """
+    #Converts all column entries to assignparam to string in case user passed integer
+    #such as for numpy arrays
+    #reminder the format of assign_param is e.g.
+    #assignparam = {'splt' : {'column1' : {'minsplit' : 4}}, \
+    #               'spl2' : {'column2' : {'minsplit' : 3}}}
+    """
+  
+    #ignore edge case where user passes empty dictionary
+    if assignparam != {}:
+      
+      for categorykey in assignparam:
+        
+        for columnkey in assignparam[categorykey]:
+          
+          assignparam[categorykey][str(columnkey)] = assignparam[categorykey].pop(columnkey)
+          
+    return assignparam
+  
   def floatprecision_transform(self, df, columnkeylist, floatprecision):
     """
     #floatprecision is a parameter user passed to automunge
@@ -15736,6 +15896,54 @@ class AutoMunge:
             df[columnkey] = df[columnkey].astype(np.float16)
     
     return df
+  
+  def assembleassignparam(self):
+    """
+    #just a placeholder function for consistency with other methods
+    """
+    
+    assign_param = {}
+    
+    return assign_param
+  
+  def grab_params(self, assign_param, category, column):
+    """
+    #takes as input the assign_param dictionary, category string and column identifier string
+    #checks if there are any entries in assign_param matching the category and column
+    #note that the column string may include suffix apeponders
+    #reminder the format of assign_param is e.g.
+    #assignparam = {'splt' : {'column1' : {'param1_splt' : 4}}, \
+    #               'spl2' : {'column2' : {'param1_spl2' : 3}}}
+    #returns either an empty dictionary or the associated parameters
+    """
+    
+    columnkeys = []
+    params = {}
+
+    #if assign_param is not empty
+    if bool(assign_param):
+
+      #category is the category being passed to process functions, let's see if it's in assign_param
+      if category in assign_param:
+
+        assign_param_cat = assign_param[category]
+
+        for key in assign_param_cat:
+
+          if column.startswith(key):
+
+            columnkeys.append(key)
+
+        if len(columnkeys) > 0:
+
+          #we'll take the columnkey with longeest length that matches column
+          #note this columnkey may include suffix appenders
+          columnkeys.sort(key = len, reverse = True)
+          columnkey = columnkeys[0]
+
+          params = assign_param_cat[columnkey]
+      
+    return params
   
 
   def automunge(self, df_train, df_test = False, labels_column = False, trainID_column = False, \
@@ -15771,7 +15979,7 @@ class AutoMunge:
                              'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'eval':[]}, \
                 assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                                 'adjinfill':[], 'meaninfill':[], 'medianinfill':[], 'modeinfill':[]}, \
-                transformdict = {}, processdict = {}, evalcat = False, \
+                assignparam = {}, transformdict = {}, processdict = {}, evalcat = False, \
                 printstatus = True):
 
     '''
@@ -15811,106 +16019,116 @@ class AutoMunge:
     #return errors - update vs 1.77, replaced with new assignable category 'excl'
     #An extension could be to test the input data here for non-dataframe format \
     #(such as csv) to convert it to pandas within the function. 
-    
+
     #update here with version 1.77 is to allow the passing of a custom category assignment
     #as assigncat = {'category1':['column1', etc], 'category2':['column2', etc]}
-    
+
     #also update with version 1.77 is to allow passing of a custom infill assignment
     #as assigninfill = {'stdrdinfill':['column1', etc], 'MLinfill':[], 'zeroinfill':[], 'adjinfill':[]}
-    
+
     #also update with version 1.77 is to. allow passing of a custom transform_dict
     #such as to allow a user to program the steps of feature engineering address
     #along with a custom process_dict such as to define and import new categories with
     #corresponding processing functions
     '''
-    
+
     #quick conversion of any assigncat and assigninfill entries to str (such as for cases if user passed integers)
     assigncat = self.assigncat_str_convert(assigncat)
     assigninfill = self.assigninfill_str_convert(assigninfill)
-    
+    assignparam = self.assignparam_str_convert(assignparam)
+
     #similarily, quick conversion of any passed column idenitfiers to str
     labels_column = self.parameter_str_convert(labels_column)
     trainID_column = self.parameter_str_convert(trainID_column)
     testID_column = self.parameter_str_convert(testID_column)
-    
+
     #quick check to ensure each column only assigned once in assigncat and assigninfill
     check_assigncat_result = self.check_assigncat(assigncat)
     check_assigninfill_result = self.check_assigninfill(assigninfill)
     check_ML_cmnd_result = self.check_ML_cmnd(ML_cmnd)
-    
+    check_assignparam = self.check_assignparam(assignparam)
+
     #quick check of floatprecision
     check_floatprecision_result = self.check_floatprecision(floatprecision)
-    
-#     #if we found any redundant column assignments
-#     if result1 == True or result2 = True:
-#       return
-    
-    
-#     #initialize processing dicitonaries
-#     if bool(transformdict) == False:
-#       transform_dict = \
-#       self.assembletransformdict(powertransform, binstransform)
-#     else:
-#       transform_dict = transformdict
-    
-#     if bool(processdict) == False:
-#       process_dict = \
-#       self.assembleprocessdict()
-#     else:
-#       process_dict = processdict
-    
+
+  #     #if we found any redundant column assignments
+  #     if result1 == True or result2 = True:
+  #       return
+
+
+  #     #initialize processing dicitonaries
+  #     if bool(transformdict) == False:
+  #       transform_dict = \
+  #       self.assembletransformdict(powertransform, binstransform)
+  #     else:
+  #       transform_dict = transformdict
+
+  #     if bool(processdict) == False:
+  #       process_dict = \
+  #       self.assembleprocessdict()
+  #     else:
+  #       process_dict = processdict
+
     #initialize processing dicitonaries
     transform_dict = self.assembletransformdict(powertransform, binstransform, NArw_marker)
-    
+
     if bool(transformdict) != False:
-        
+
       check_transformdict_result = self.check_transformdict(transformdict)
-      
-#       #first print a notification if we are overwriting anything
-#       for keytd in list(transformdict.keys()):
-#         #keytd = key
-#         if keytd in list(transform_dict.keys()):
-#           print("Note that a key in the user passed transformdict already exists in library")
-#           print("Overwriting entry for trasnformdict key ", keytd)
-      
+
+  #       #first print a notification if we are overwriting anything
+  #       for keytd in list(transformdict.keys()):
+  #         #keytd = key
+  #         if keytd in list(transform_dict.keys()):
+  #           print("Note that a key in the user passed transformdict already exists in library")
+  #           print("Overwriting entry for trasnformdict key ", keytd)
+
       #now update the trasnformdict
       transform_dict.update(transformdict)
-    
+
     #initialize process_dict
     process_dict = self.assembleprocessdict()
-    
+
     if bool(processdict) != False:
-      
-#       #first print a notification if we are overwriting anything
-#       for keypd in list(processdict.keys()):
-#         #keypd = key
-#         if keypd in list(processdict.keys()):
-#           print("Note that a key in the user passed processdict already exists in library")
-#           print("Overwriting entry for processdict key ", keypd)
-      
+
+  #       #first print a notification if we are overwriting anything
+  #       for keypd in list(processdict.keys()):
+  #         #keypd = key
+  #         if keypd in list(processdict.keys()):
+  #           print("Note that a key in the user passed processdict already exists in library")
+  #           print("Overwriting entry for processdict key ", keypd)
+
       #now update the processdict
       process_dict.update(processdict)
-    
-    
-    
+
+    #initialize the assign_param
+    assign_param = self.assembleassignparam()
+
+    if bool(assignparam) != False:
+
+      #now update the assign_param
+      assign_param.update(assignparam)
+
+
     #feature selection analysis performed here if elected
     if featureselection == True:
-        
+
       if labels_column == False:
         print("error: featureselection not available without labels_column in training set")
-        
+
       else:
         madethecut, FSmodel, FScolumn_dict = \
         self.featureselect(df_train, labels_column, trainID_column, \
                           powertransform, binstransform, randomseed, \
                           numbercategoryheuristic, assigncat, transformdict, \
                           processdict, featurepct, featuremetric, featuremethod, \
-                          ML_cmnd, process_dict, valpercent1, valpercent2, printstatus, NArw_marker)
-        
+                          ML_cmnd, process_dict, valpercent1, valpercent2, printstatus, NArw_marker, \
+                          assignparam)
+
       #if featuremethod is report then no further processing just return the results
       if featuremethod == 'report':
 
-        
+
         #printout display progress
         if printstatus == True:
           print("_______________")
@@ -15919,32 +16137,32 @@ class AutoMunge:
           print("_______________")
           print("Automunge Complete")
           print("")
-          
-                
+
+
         return [], [], [], \
         [], [], [], \
         [], [], [], \
         [], [], [], \
         [], [], [],  \
         FScolumn_dict, {}
-        
-        
 
-     
+
+
+
     else:
-    
+
       madethecut = []
       FSmodel = None
       FScolumn_dict = {}
-      
-    
+
+
     #printout display progress
     if printstatus == True:
       print("_______________")
       print("Begin Automunge processing")
       print("")
-    
-        
+
+
     #functionality to support passed numpy arrays
     #if passed object was a numpy array, convert to pandas dataframe
     checknp = np.array([])
@@ -15952,7 +16170,7 @@ class AutoMunge:
       df_train = pd.DataFrame(df_train)
     if isinstance(checknp, type(df_test)):
       df_test = pd.DataFrame(df_test)
-    
+
 
     #this converts any numeric columns labels, such as from a passed numpy array, to strings
     trainlabels=[]
@@ -15970,46 +16188,46 @@ class AutoMunge:
       test_plug_marker = True
       if labels_column != False:
         del df_test[labels_column]
-        
+
     #this converts any numeric columns labels, such as from a passed numpy array, to strings
     testlabels=[]
     for column in list(df_test):
       testlabels.append(str(column))
     df_test.columns = testlabels
-    
+
     #copy input dataframes to internal state so as not to edit exterior objects
     df_train = df_train.copy()
     df_test = df_test.copy()
-    
 
-    
-#     if type(df_train.index) != pd.RangeIndex:
-#       #if df_train.index.names == [None]:
-#       if None in df_train.index.names:
-#         print("error, non range index passed without column name")
-#       else:
-#         if trainID_column == False:
-#           trainID_column = []
-#         elif isinstance(trainID_column, str):
-#           trainID_column = [trainID_column]
-#         elif not isinstance(trainID_column, list):
-#           print("error, trainID_column allowable values are False, string, or list")
-#         trainID_column = trainID_column + list(df_train.index.names)
-#         df_train = df_train.reset_index(drop=False)
-        
-#     if type(df_test.index) != pd.RangeIndex:
-#       #if df_train.index.names == [None]:
-#       if None in df_test.index.names:
-#         print("error, non range index passed without column name")
-#       else:
-#         if testID_column == False:
-#           testID_column = []
-#         elif isinstance(testID_column, str):
-#           testID_column = [testID_column]
-#         elif not isinstance(testID_column, list):
-#           print("error, testID_column allowable values are False, string, or list")
-#         testID_column = testID_column + list(df_test.index.names)
-#         df_test = df_test.reset_index(drop=False)
+
+
+  #     if type(df_train.index) != pd.RangeIndex:
+  #       #if df_train.index.names == [None]:
+  #       if None in df_train.index.names:
+  #         print("error, non range index passed without column name")
+  #       else:
+  #         if trainID_column == False:
+  #           trainID_column = []
+  #         elif isinstance(trainID_column, str):
+  #           trainID_column = [trainID_column]
+  #         elif not isinstance(trainID_column, list):
+  #           print("error, trainID_column allowable values are False, string, or list")
+  #         trainID_column = trainID_column + list(df_train.index.names)
+  #         df_train = df_train.reset_index(drop=False)
+
+  #     if type(df_test.index) != pd.RangeIndex:
+  #       #if df_train.index.names == [None]:
+  #       if None in df_test.index.names:
+  #         print("error, non range index passed without column name")
+  #       else:
+  #         if testID_column == False:
+  #           testID_column = []
+  #         elif isinstance(testID_column, str):
+  #           testID_column = [testID_column]
+  #         elif not isinstance(testID_column, list):
+  #           print("error, testID_column allowable values are False, string, or list")
+  #         testID_column = testID_column + list(df_test.index.names)
+  #         df_test = df_test.reset_index(drop=False)
 
     if type(df_train.index) != pd.RangeIndex:
       #if df_train.index.names == [None]:
@@ -16029,7 +16247,7 @@ class AutoMunge:
           print("error, trainID_column allowable values are False, string, or list")
         trainID_column = trainID_column + list(df_train.index.names)
         df_train = df_train.reset_index(drop=False)
-        
+
     if type(df_test.index) != pd.RangeIndex:
       #if df_train.index.names == [None]:
       if None in df_test.index.names:
@@ -16048,8 +16266,8 @@ class AutoMunge:
           print("error, testID_column allowable values are False, string, or list")
         testID_column = testID_column + list(df_test.index.names)
         df_test = df_test.reset_index(drop=False)
-    
-        
+
+
     #my understanding is it is good practice to convert any None values into NaN \
     #so I'll just get that out of the way
     df_train.fillna(value=float('nan'), inplace=True)
@@ -16061,11 +16279,11 @@ class AutoMunge:
       if labels_column in list(df_test):
         df_test = df_test.dropna(subset=[labels_column])
 
-    
+
     #extract the ID columns from train and test set
     if trainID_column != False:
       df_trainID = pd.DataFrame(df_train[trainID_column])
-    
+
       if isinstance(trainID_column, str):
         tempIDlist = [trainID_column]
       elif isinstance(trainID_column, list):
@@ -16078,7 +16296,7 @@ class AutoMunge:
     else:
       df_trainID = pd.DataFrame()
 
-    
+
     if testID_column != False:
       if isinstance(testID_column, str):
         if testID_column in list(df_test):
@@ -16093,15 +16311,15 @@ class AutoMunge:
         df_testID = pd.DataFrame()
     else:
       df_testID = pd.DataFrame()
-    
-    
+
+
     #carve out the validation rows
-    
+
     #set randomness seed number
     answer = randomseed
 
     #first shuffle if that was selected
-    
+
     if shuffletrain == True:
       #shuffle training set and labels
       df_train = shuffle(df_train, random_state = answer)
@@ -16110,7 +16328,7 @@ class AutoMunge:
       if trainID_column != False:
         df_trainID = shuffle(df_trainID, random_state = answer)
 
-    
+
     #ok now carve out the validation rows. We'll process these later
     #(we're processing train data from validation data seperately to
     #ensure no leakage)
@@ -16118,7 +16336,7 @@ class AutoMunge:
     totalvalidationratio = valpercent1 + valpercent2
 
     if totalvalidationratio > 0.0:
-      
+
       val2ratio = valpercent2 / totalvalidationratio
 
       if labels_column != False:
@@ -16149,14 +16367,14 @@ class AutoMunge:
       df_validation1 = df_validation1.reset_index(drop=True)
       df_trainID = df_trainID.reset_index(drop=True)
       df_validationID1 = df_validationID1.reset_index(drop=True)
-      
+
     #else if total validation was <= 0.0
     else:
       df_validation1 = pd.DataFrame()
       df_validationID1 = pd.DataFrame()
-    
-    
-    
+
+
+
     #extract labels from train set
     #an extension to this function could be to delete the training set rows\
     #where the labels are missing or improperly formatted prior to performing\
@@ -16164,33 +16382,33 @@ class AutoMunge:
     #initialize a helper 
     labelspresenttrain = False
     labelspresenttest = False
-    
+
     #wasn't sure where to put this seems as a good place as any
     if labels_column == False:
       labelsencoding_dict = {}
-    
+
     if labels_column != False:
       df_labels = pd.DataFrame(df_train[labels_column])
 
 
       del df_train[labels_column]
       labelspresenttrain = True
-            
+
       #if the labels column is present in test set too
       if labels_column in list(df_test):
         df_testlabels = pd.DataFrame(df_test[labels_column])
         del df_test[labels_column]
         labelspresenttest = True
-            
-    
+
+
     if labelspresenttrain == False:
       df_labels = pd.DataFrame()
     if labelspresenttest == False:
-      
+
       #we'll introduce convention that if no df_testlabels we'll create
       #a dummy set derived from df_label's first 10 rows
       df_testlabels = df_labels[0:10].copy()
-      
+
 
     #confirm consistency of train an test sets
 
@@ -16207,13 +16425,13 @@ class AutoMunge:
       print("error, different column labels in the train and test set")
       print("(This assesment excludes labels and ID columns.)")
       return
-    
+
     column_labels_count = len(list(df_train))
     unique_column_labels_count = len(set(list(df_train)))
     if unique_column_labels_count < column_labels_count:
       print("error, redundant column labels found, each column requires unique label")
       return
-    
+
     columns_train = list(df_train)
     columns_test = list(df_test)
     if columns_train != columns_test:
@@ -16224,8 +16442,8 @@ class AutoMunge:
     #extract column lists again but this time as a list
     columns_train = list(df_train)
     columns_test = list(df_test)
-        
-        
+
+
     #create an empty dataframe to serve as a store for each column's NArows
     #the column id's for this df will follow convention from NArows of 
     #column+'_NArows' for each column in columns_train
@@ -16246,7 +16464,7 @@ class AutoMunge:
     #specific (i.e. nmbr, bnry, text, date) set of variable.
     postprocess_dict = {'column_dict' : {}, 'origcolumn' : {}, \
                         'process_dict' : process_dict}
-    
+
 
     #For each column, determine appropriate processing function
     #processing function will be based on evaluation of train set
@@ -16259,9 +16477,9 @@ class AutoMunge:
       #we're only going to process columns that weren't in our excluded set
       #if column not in excludetransformscolumns:
       if True == True:
-        
+
         categorycomplete = False
-        
+
         if bool(assigncat) == True:
 
           for key in assigncat:
@@ -16269,11 +16487,11 @@ class AutoMunge:
               category = key
               category_test = key
               categorycomplete = True
-                
+
               #printout display progress
               if printstatus == True:
                 print("evaluating column: ", column)
-                
+
               #special case, if user assigned column to 'eval' then we'll run evalcategory
               #passing a True for powertransform parameter
               if key in ['eval']:
@@ -16283,64 +16501,64 @@ class AutoMunge:
                   category = evalcat(df_train, column, numbercategoryheuristic, True, False)
                 else:
                   print("error: evalcat must be passed as either False or as a defined function per READ ME")
-                  
+
                 category_test = category
-            
+
         if categorycomplete == False:
-            
+
           #printout display progress
           if printstatus == True:
             print("evaluating column: ", column)
-            
+
           if evalcat == False:
             category = self.evalcategory(df_train, column, numbercategoryheuristic, powertransform, False)
           elif type(evalcat) == types.FunctionType:
             category = evalcat(df_train, column, numbercategoryheuristic, powertransform, False)
           else:
             print("error: evalcat must be passed as either False or as a defined function per READ ME")
-                
-          
-#           #let's make sure the category is consistent between train and test sets
-#           #we'll only evaluate if we didn't use a dummy set for df_set
-#           if test_plug_marker != True:
-#             category_test = self.evalcategory(df_test, column, numbercategoryheuristic, powertransform)
-            
-#           else:
-#             category_test = category
 
 
-        
-#           #for the special case of train category = bxcx and test category = nmbr
-#           #(meaning there were no negative values in train but there were in test)
-#           #we'll resolve by reseting the train category to nmbr
-#           if category == 'bxcx' and category_test == 'nmbr':
-#             category = 'nmbr'
+  #           #let's make sure the category is consistent between train and test sets
+  #           #we'll only evaluate if we didn't use a dummy set for df_set
+  #           if test_plug_marker != True:
+  #             category_test = self.evalcategory(df_test, column, numbercategoryheuristic, powertransform)
 
-#           #one more bxcx special case: if user elects not to apply boxcox transform
-#           #default to 'nmbr' category instead of 'bxcx'
-#           if category == 'bxcx' and powertransform == False:
-#             category = 'nmbr'
-#             category_test = 'nmbr'
+  #           else:
+  #             category_test = category
 
-#           #one more special case, if train was a numerical set to categorical based
-#           #on heuristic, let's force test to as well
-#           if category == 'text' and category_test == 'nmbr':
-#             category_test = 'text'
-        
-#           #special case for bug fix, need because these are part of the evalcategory outputs
-# #           if (category == 'text' or category == 'ordl') and category_test == 'bnry':
-# #               category_test = category
-#           if category in ['text', 'ordl', 'bnry'] and category_test in ['text', 'ordl', 'bnry']:
-#             category_test = category
-#           if category in ['nmbr', 'bxcx', 'mnmx', 'MAD3'] and category_test in ['nmbr', 'bxcx', 'mnmx', 'MAD3']:
-#             category_test = category
-#           if category == 'null':
-#             category_test = category
-        
-#         #otherwise if train category != test category return error
-#         if category != category_test:
-#           print('error - different category between train and test sets for column ',\
-#                column)
+
+
+  #           #for the special case of train category = bxcx and test category = nmbr
+  #           #(meaning there were no negative values in train but there were in test)
+  #           #we'll resolve by reseting the train category to nmbr
+  #           if category == 'bxcx' and category_test == 'nmbr':
+  #             category = 'nmbr'
+
+  #           #one more bxcx special case: if user elects not to apply boxcox transform
+  #           #default to 'nmbr' category instead of 'bxcx'
+  #           if category == 'bxcx' and powertransform == False:
+  #             category = 'nmbr'
+  #             category_test = 'nmbr'
+
+  #           #one more special case, if train was a numerical set to categorical based
+  #           #on heuristic, let's force test to as well
+  #           if category == 'text' and category_test == 'nmbr':
+  #             category_test = 'text'
+
+  #           #special case for bug fix, need because these are part of the evalcategory outputs
+  # #           if (category == 'text' or category == 'ordl') and category_test == 'bnry':
+  # #               category_test = category
+  #           if category in ['text', 'ordl', 'bnry'] and category_test in ['text', 'ordl', 'bnry']:
+  #             category_test = category
+  #           if category in ['nmbr', 'bxcx', 'mnmx', 'MAD3'] and category_test in ['nmbr', 'bxcx', 'mnmx', 'MAD3']:
+  #             category_test = category
+  #           if category == 'null':
+  #             category_test = category
+
+  #         #otherwise if train category != test category return error
+  #         if category != category_test:
+  #           print('error - different category between train and test sets for column ',\
+  #                column)
 
         #Previously had a few methods here to validate consistensy of data between train
         #and test sets. Found it was introducing too much complexity and was having trouble
@@ -16352,15 +16570,15 @@ class AutoMunge:
 
         #so if we didn't find discrepency let's proceed
         else:
-          
+
           #to support the postprocess_dict entry below, let's first create a temp
           #list of columns
           templist1 = list(df_train)
-          
+
           #create NArows (column of True/False where True coresponds to missing data)
           trainNArows = self.getNArows(df_train, column, category, postprocess_dict)
           testNArows = self.getNArows(df_test, column, category, postprocess_dict)
-            
+
           #now append that NArows onto a master NA rows df
           masterNArows_train = pd.concat([masterNArows_train, trainNArows], axis=1)
           masterNArows_test = pd.concat([masterNArows_test, testNArows], axis=1)
@@ -16369,35 +16587,35 @@ class AutoMunge:
           if printstatus == True:
             print("processing column: ", column)
             print("    root category: ", category)
-          
-#           #now process ancestors
-#           df_train, df_test, postprocess_dict = \
-#           self.processancestors(df_train, df_test, column, category, category, process_dict, \
-#                                 transform_dict, postprocess_dict)
-          
+
+  #           #now process ancestors
+  #           df_train, df_test, postprocess_dict = \
+  #           self.processancestors(df_train, df_test, column, category, category, process_dict, \
+  #                                 transform_dict, postprocess_dict)
+
           #now process family
           df_train, df_test, postprocess_dict = \
           self.processfamily(df_train, df_test, column, category, category, process_dict, \
-                            transform_dict, postprocess_dict)
-          
+                            transform_dict, postprocess_dict, assign_param)
+
           #now delete columns that were subject to replacement
           df_train, df_test, postprocess_dict = \
           self.circleoflife(df_train, df_test, column, category, category, process_dict, \
                             transform_dict, postprocess_dict)
-          
+
           #here's another templist to support the postprocess_dict entry below
           templist2 = list(df_train)
-          
+
           #ok now we're going to pick one of the new entries in templist2 to serve 
           #as a "columnkey" for pulling datas from the postprocess_dict down the road
           #columnkeylist = list(set(templist2) - set(templist1))[0]
           columnkeylist = list(set(templist2) - set(templist1))
-          
+
           #now we'll apply the floatprecision transformation
           df_train = self.floatprecision_transform(df_train, columnkeylist, floatprecision)
           df_test = self.floatprecision_transform(df_test, columnkeylist, floatprecision)
-          
-            
+
+
           #so last line I believe returns string if only one entry, so let's run a test
           if isinstance(columnkeylist, str):
             columnkey = columnkeylist
@@ -16413,7 +16631,7 @@ class AutoMunge:
                     columnkey = columnkeylist[1]
                   else:
                     columnkey = columnkey
-          
+
           #ok this is sort of a hack, originating in version 1.77,
           #we're going to create an entry to postprocess_dict to
           #store a columnkey for each of the original columns
@@ -16432,54 +16650,54 @@ class AutoMunge:
 
 
     #ok here's where we address labels
-    
+
     if labels_column != False:        
-        
+
       #for now we'll just assume consistent processing approach for labels as for data
       #a future extension may segregate this approach
-      
+
       #initialize processing dicitonaries (we'll use same as for train set)
       #a future extension may allow custom address for labels
       labelstransform_dict = transform_dict
-      
+
       labelsprocess_dict = process_dict
-      
+
       #we'll allow user to assign category to labels as well via assigncat call
       categorycomplete = False
-        
+
       if bool(assigncat) == True:
 
         for key in assigncat:
           if labels_column in assigncat[key]:
             labelscategory = key
             categorycomplete = True
-            
+
             #printout display progress
             if printstatus == True:
               print("evaluating label column: ", labels_column)
-            
+
       if categorycomplete == False:
-        
+
         #printout display progress
         if printstatus == True:
           print("evaluating label column: ", labels_column)
-        
+
         #determine labels category and apply appropriate function
         #labelscategory = self.evalcategory(df_labels, labels_column, numbercategoryheuristic, powertransform)
-      
+
         if evalcat == False:
           labelscategory = self.evalcategory(df_labels, labels_column, numbercategoryheuristic, powertransform, True)
         elif type(evalcat) == types.FunctionType:
           labelscategory = evalcat(df_labels, labels_column, numbercategoryheuristic, powertransform, True)
         else:
           print("error: evalcat must be passed as either False or as a defined function per READ ME")
-      
+
         #this now moved into evalcategory function:
-#         #we've previously introduced the convention that for default numeric label sets
-#         #we forgo z-score normalization, here let's make that distinction
-#         if labelscategory in ['nmbr']:
-#           labelscategory = 'exc3'
-      
+  #         #we've previously introduced the convention that for default numeric label sets
+  #         #we forgo z-score normalization, here let's make that distinction
+  #         if labelscategory in ['nmbr']:
+  #           labelscategory = 'exc3'
+
       #printout display progress
       if printstatus == True:
         print("processing label column: ", labels_column)
@@ -16491,20 +16709,20 @@ class AutoMunge:
       #initialize a dictionary to serve as the store between labels and their \
       #associated encoding
       labelsencoding_dict = {labelscategory:{}}
-            
+
       #to support the postprocess_dict entry below, let's first create a temp
       #list of columns
       templist1 = list(df_labels)
 
-#         #now process ancestors
-#         df_labels, df_testlabels, postprocess_dict = \
-#         self.processancestors(df_labels, df_testlabels, labels_column, labelscategory, labelscategory, \
-#                               labelsprocess_dict, labelstransform_dict, postprocess_dict)
+  #         #now process ancestors
+  #         df_labels, df_testlabels, postprocess_dict = \
+  #         self.processancestors(df_labels, df_testlabels, labels_column, labelscategory, labelscategory, \
+  #                               labelsprocess_dict, labelstransform_dict, postprocess_dict)
 
       #now process family
       df_labels, df_testlabels, postprocess_dict = \
       self.processfamily(df_labels, df_testlabels, labels_column, labelscategory, labelscategory, \
-                        labelsprocess_dict, labelstransform_dict, postprocess_dict)
+                        labelsprocess_dict, labelstransform_dict, postprocess_dict, assign_param)
 
       #now delete columns subject to replacement
       df_labels, df_testlabels, postprocess_dict = \
@@ -16531,8 +16749,8 @@ class AutoMunge:
             if columnkey[-5:] == '_NArw':
               columnkey = columnkeylist[1]
 
-#         df_labels, labelsdummy, _1 = \
-#         self.process_text_class(df_labels, labelsdummy, labels_column)
+  #         df_labels, labelsdummy, _1 = \
+  #         self.process_text_class(df_labels, labelsdummy, labels_column)
 
       #we have convention that NArw's aren't included in returned label sets since 
       #mssing label rows are deleted earlier in the automunge workflow
@@ -16552,9 +16770,9 @@ class AutoMunge:
       postprocess_dict['origcolumn'].update({labels_column : {'category' : labelscategory, \
                                                               'columnkeylist' : finalcolumns_labels, \
                                                               'columnkey' : columnkey}})
-      
+
       labelsencoding_dict[labelscategory] = labelsnormalization_dict
-      
+
       #remove any normnalization dictionary entries associated with NArw (by convention labels don't have infill)
       delkeylist = []
       for keys in labelsencoding_dict[labelscategory]:
@@ -16564,115 +16782,115 @@ class AutoMunge:
       #led
       for keys in delkeylist:
         del labelsencoding_dict[labelscategory][keys]
-        
-      
+
+
       #printout display progress
       if printstatus == True:
         print(" returned columns:")
         print(postprocess_dict['origcolumn'][labels_column]['columnkeylist'])
         print("")
 
-    
-    
+
+
     #now that we've pre-processed all of the columns, let's run through them again\
     #using infill to derive plug values for the previously missing cells
-    
+
     infillcolumns_list = list(df_train)
-    
-#     #Here is the list of columns for the stdrdinfill approach
-#     #(bassically using MLinfill if MLinfill elected for default, otherwise
-#     #using mean for numerical, most common for binary, and unique column for categorical)
-#     allstdrdinfill_list = self.stdrdinfilllist(assigninfill, infillcolumns_list)
-    
+
+  #     #Here is the list of columns for the stdrdinfill approach
+  #     #(bassically using MLinfill if MLinfill elected for default, otherwise
+  #     #using mean for numerical, most common for binary, and unique column for categorical)
+  #     allstdrdinfill_list = self.stdrdinfilllist(assigninfill, infillcolumns_list)
+
     #Here is the application of assemblepostprocess_assigninfill
     postprocess_assigninfill_dict = \
     self.assemblepostprocess_assigninfill(assigninfill, infillcolumns_list, \
                                           columns_train, postprocess_dict)
-    
-    
-#     #if a column was deleted as a 'null' category, we'll remove from postprocess_assigninfill_dict
-#     #asdfasdf
-#     for assigninfill_key in postprocess_assigninfill_dict:
-#       for assigninfill_entry in postprocess_assigninfill_dict[assigninfill_key]:
-    
+
+
+  #     #if a column was deleted as a 'null' category, we'll remove from postprocess_assigninfill_dict
+  #     #asdfasdf
+  #     for assigninfill_key in postprocess_assigninfill_dict:
+  #       for assigninfill_entry in postprocess_assigninfill_dict[assigninfill_key]:
+
     if 'stdrdinfill' not in postprocess_assigninfill_dict:
-    
+
       postprocess_assigninfill_dict.update({'stdrdinfill':[]})
-        
+
     if 'zeroinfill' in postprocess_assigninfill_dict:
-  
+
       columns_train_zero = postprocess_assigninfill_dict['zeroinfill']
-    
+
     if 'oneinfill' in postprocess_assigninfill_dict:
-  
+
       columns_train_one = postprocess_assigninfill_dict['oneinfill']
-    
+
     if 'adjinfill' in postprocess_assigninfill_dict:
-    
+
       columns_train_adj = postprocess_assigninfill_dict['adjinfill']
-    
+
     if 'medianinfill' in postprocess_assigninfill_dict: 
-    
+
       columns_train_median = postprocess_assigninfill_dict['medianinfill']
-    
+
     if 'meaninfill' in postprocess_assigninfill_dict: 
-    
+
       columns_train_mean = postprocess_assigninfill_dict['meaninfill']
-      
+
     if 'modeinfill' in postprocess_assigninfill_dict: 
-    
+
       columns_train_mode = postprocess_assigninfill_dict['modeinfill']
-        
+
     if MLinfill == True:
-      
+
       if 'MLinfill' in postprocess_assigninfill_dict:
-    
+
         columns_train_ML = list(set().union(postprocess_assigninfill_dict['stdrdinfill'], \
                                             postprocess_assigninfill_dict['MLinfill']))
-        
+
         postprocess_assigninfill_dict['stdrdinfill'] = []
-        
+
       else:
-        
+
         columns_train_ML = postprocess_assigninfill_dict['stdrdinfill']
-        
+
         postprocess_assigninfill_dict['stdrdinfill'] = []
-    
+
     else:
-    
+
       if 'MLinfill' in postprocess_assigninfill_dict:
         columns_train_ML = postprocess_assigninfill_dict['MLinfill']
-    
+
       else:
         columns_train_ML = []
-    
-    
-    
+
+
+
     for column in infillcolumns_list:
-      
+
       if column[-5:] != '_NArw':
-        
+
         if column in postprocess_assigninfill_dict['stdrdinfill']:
-        
+
           #printout display progress
           if printstatus == True:
             print("infill to column: ", column)
             print("     infill type: stdrdinfill")
             print("")
-            
+
         if 'zeroinfill' in postprocess_assigninfill_dict:
-      
+
           #for column in columns_train_zero:
           if column in columns_train_zero:
-            
+
             #printout display progress
             if printstatus == True:
               print("infill to column: ", column)
               print("     infill type: zeroinfill")
               print("")
-      
+
             categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
-      
+
             #if (column not in excludetransformscolumns) \
             #if (column not in postprocess_assigninfill_dict['stdrdinfill']) \
             #and (column[-5:] != '_NArw') \
@@ -16680,28 +16898,28 @@ class AutoMunge:
             if (column not in postprocess_assigninfill_dict['stdrdinfill']):
               #noting that currently we're only going to infill 0 for single column categorylists
               #some comparable address for multi-column categories is a future extension
-        
+
               df_train = \
               self.zeroinfillfunction(df_train, column, postprocess_dict, \
                                       masterNArows_train)
-        
+
               df_test = \
               self.zeroinfillfunction(df_test, column, postprocess_dict, \
                                       masterNArows_test)
-        
+
         if 'oneinfill' in postprocess_assigninfill_dict:
-      
+
           #for column in columns_train_zero:
           if column in columns_train_one:
-            
+
             #printout display progress
             if printstatus == True:
               print("infill to column: ", column)
               print("     infill type: oneinfill")
               print("")
-      
+
             categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
-      
+
             #if (column not in excludetransformscolumns) \
             #if (column not in postprocess_assigninfill_dict['stdrdinfill']) \
             #and (column[-5:] != '_NArw') \
@@ -16709,17 +16927,17 @@ class AutoMunge:
             if (column not in postprocess_assigninfill_dict['stdrdinfill']):
               #noting that currently we're only going to infill 0 for single column categorylists
               #some comparable address for multi-column categories is a future extension
-        
+
               df_train = \
               self.oneinfillfunction(df_train, column, postprocess_dict, \
                                      masterNArows_train)
-        
+
               df_test = \
               self.oneinfillfunction(df_test, column, postprocess_dict, \
                                      masterNArows_test)
 
         if 'adjinfill' in postprocess_assigninfill_dict:
-            
+
           #for column in columns_train_adj:
           if column in columns_train_adj:
 
@@ -16728,40 +16946,40 @@ class AutoMunge:
               print("infill to column: ", column)
               print("     infill type: adjinfill")
               print("")
-      
+
             #if column not in excludetransformscolumns \
             if column not in postprocess_assigninfill_dict['stdrdinfill'] \
             and column[-5:] != '_NArw':
-        
+
               df_train = \
               self.adjinfillfunction(df_train, column, postprocess_dict, \
                                      masterNArows_train)
-        
+
               df_test = \
               self.adjinfillfunction(df_test, column, postprocess_dict, \
                                      masterNArows_test)
-    
+
 
         if 'medianinfill' in postprocess_assigninfill_dict: 
 
           #for column in columns_train_median:
           if column in columns_train_median:
-            
+
             #printout display progress
             if printstatus == True:
               print("infill to column: ", column)
               print("     infill type: medianinfill")
               print("")
-      
+
             #check if column is boolean
             boolcolumn = False
             if set(df_train[column].unique()) == {0,1} \
             or set(df_train[column].unique()) == {0} \
             or set(df_train[column].unique()) == {1}:
               boolcolumn = True
-    
+
             categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
-      
+
             #if (column not in excludetransformscolumns) \
             if (column not in postprocess_assigninfill_dict['stdrdinfill']) \
             and (column[-5:] != '_NArw') \
@@ -16769,38 +16987,38 @@ class AutoMunge:
             and boolcolumn == False:
               #noting that currently we're only going to infill 0 for single column categorylists
               #some comparable address for multi-column categories is a future extension
-        
+
               df_train, infillvalue = \
               self.train_medianinfillfunction(df_train, column, postprocess_dict, \
                                               masterNArows_train)
-            
+
               postprocess_dict['column_dict'][column]['normalization_dict'][column].update({'infillvalue':infillvalue})
-          
+
               df_test = \
               self.test_medianinfillfunction(df_test, column, postprocess_dict, \
                                              masterNArows_test, infillvalue)
-        
+
 
         if 'meaninfill' in postprocess_assigninfill_dict: 
 
           #for column in columns_train_mean:
           if column in columns_train_mean:
-          
+
             #printout display progress
             if printstatus == True:
               print("infill to column: ", column)
               print("     infill type: meaninfill")
               print("")
-      
+
             #check if column is boolean
             boolcolumn = False
             if set(df_train[column].unique()) == {0,1} \
             or set(df_train[column].unique()) == {0} \
             or set(df_train[column].unique()) == {1}:
               boolcolumn = True
-    
+
             categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
-      
+
             #if (column not in excludetransformscolumns) \
             if (column not in postprocess_assigninfill_dict['stdrdinfill']) \
             and (column[-5:] != '_NArw') \
@@ -16808,37 +17026,37 @@ class AutoMunge:
             and boolcolumn == False:
               #noting that currently we're only going to infill 0 for single column categorylists
               #some comparable address for multi-column categories is a future extension
-        
+
               df_train, infillvalue = \
               self.train_meaninfillfunction(df_train, column, postprocess_dict, \
                                             masterNArows_train)
-              
+
               postprocess_dict['column_dict'][column]['normalization_dict'][column].update({'infillvalue':infillvalue})
-        
+
               df_test = \
               self.test_meaninfillfunction(df_test, column, postprocess_dict, \
                                            masterNArows_test, infillvalue)
-                
+
         if 'modeinfill' in postprocess_assigninfill_dict: 
 
           #for column in columns_train_mean:
           if column in columns_train_mode:
-          
+
             #printout display progress
             if printstatus == True:
               print("infill to column: ", column)
               print("     infill type: modeinfill")
               print("")
-      
+
             #check if column is boolean
             boolcolumn = False
             if set(df_train[column].unique()) == {0,1} \
             or set(df_train[column].unique()) == {0} \
             or set(df_train[column].unique()) == {1}:
               boolcolumn = True
-    
+
             categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
-      
+
             #if (column not in excludetransformscolumns) \
             if (column not in postprocess_assigninfill_dict['stdrdinfill']) \
             and (column[-5:] != '_NArw') \
@@ -16846,35 +17064,35 @@ class AutoMunge:
             and boolcolumn == False:
               #noting that currently we're only going to infill 0 for single column categorylists
               #some comparable address for multi-column categories is a future extension
-        
+
               df_train, infillvalue = \
               self.train_modeinfillfunction(df_train, column, postprocess_dict, \
                                             masterNArows_train)
-          
+
               postprocess_dict['column_dict'][column]['normalization_dict'][column].update({'infillvalue':infillvalue})
-        
+
               df_test = \
               self.test_modeinfillfunction(df_test, column, postprocess_dict, \
                                            masterNArows_test, infillvalue)
-          
+
             #if (column not in excludetransformscolumns) \
             if (column not in postprocess_assigninfill_dict['stdrdinfill']) \
             and (column[-5:] != '_NArw') \
             and (categorylistlength > 1) \
             and boolcolumn == True:
-              
+
               df_train, infillvalue = \
               self.train_catmodeinfillfunction(df_train, column, postprocess_dict, \
                                             masterNArows_train)
-          
+
               postprocess_dict['column_dict'][column]['normalization_dict'][column].update({'infillvalue':infillvalue})
-        
+
               df_test = \
               self.test_catmodeinfillfunction(df_test, column, postprocess_dict, \
                                            masterNArows_test, infillvalue)
-        
+
         if len(columns_train_ML) > 0:
-    
+
           iteration = 0
           while iteration < infilliterate:
 
@@ -16886,7 +17104,7 @@ class AutoMunge:
 
             #for column in columns_train_ML:
             if column in columns_train_ML:
-            
+
               #printout display progress
               if printstatus == True:
                 print("infill to column: ", column)
@@ -16906,16 +17124,16 @@ class AutoMunge:
 
             iteration += 1
 
-    
-    
-    
+
+
+
     #Here's where we'll trim the columns that were stricken as part of featureselection method
-    
+
     #copy postprocess_dict in current state (prior to feature selection updates)
     #for use in postmunge postprocessfamily functions
     #preFSpostprocess_dict = postprocess_dict.copy()
     preFSpostprocess_dict = deepcopy(postprocess_dict)
-    
+
     #trim branches here associated with featureselect
 
     if featureselection == True:
@@ -16934,8 +17152,8 @@ class AutoMunge:
           print("Begin feature importance dimensionality reduction")
           print("")
           print("   method: ", featuremethod)
-#           if featuremethod == 'default':
-#             print("no feature importance dimensionality reductions")          
+  #           if featuremethod == 'default':
+  #             print("no feature importance dimensionality reductions")          
           if featuremethod == 'pct':
             print("threshold: ", featurepct)
           if featuremethod == 'metric':
@@ -16952,45 +17170,45 @@ class AutoMunge:
 
       #trim columns using circle of life function
       for trimmee in trimcolumns:
-        
+
         df_train, df_test, postprocess_dict = \
         self.secondcircle(df_train, df_test, trimmee, postprocess_dict)
-    
-    
-    
+
+
+
 
     prePCAcolumns = list(df_train)
-    
+
     #if user passed anything to automunbge argument PCAn_components 
     #(either the number of columns integer or a float between 0-1)
-    
+
     #ok this isn't the cleanest implementation, fixing that we may want to 
     #assign a new n_components
-    
+
     n_components = PCAn_components
     if ML_cmnd['PCA_type'] == 'default':
-      
+
       _1, n_components = \
       self.evalPCA(df_train, PCAn_components, ML_cmnd)
-    
+
     #if PCAn_components != None:
     if n_components != None:
-      
+
       #this is for cases where automated PCA methods performed and we want to carry through 
       #results to postmunge through postprocess_dict
       PCAn_components = n_components
-      
+
       #If user passed bool_PCA_excl as True in ML_cmnd['PCA_cmnd']
       #Then add boolean columns to the PCAexcl list of columns
       #and bool_PCAexcl just tracks what columns were added
-        
+
       #PCAexcl, bool_PCAexcl = self.boolexcl(ML_cmnd, df_train, PCAexcl)
       if 'bool_PCA_excl' in ML_cmnd['PCA_cmnd'] \
       or 'bool_ordl_PCAexcl' in ML_cmnd['PCA_cmnd']:
         PCAexcl, bool_PCAexcl = self.boolexcl(ML_cmnd, df_train, PCAexcl)
       else:
         bool_PCAexcl = []
-      
+
       #only perform PCA if the specified/defrived number of columns < the number of
       #columns after removing the PCAexcl columns
       #if (n_components < len(list(df_train)) - len(PCAexcl) and n_components >= 1.0):
@@ -16998,7 +17216,7 @@ class AutoMunge:
       and (n_components != 0) \
       and (n_components != None) \
       and (n_components != False):
-        
+
         #printout display progress
         if printstatus == True:
           print("_______________")
@@ -17008,27 +17226,27 @@ class AutoMunge:
             print("columns excluded from PCA: ")
             print(bool_PCAexcl)
             print("")
-          
-      
+
+
         #this is to carve the excluded columns out from the set
         PCAset_train, PCAset_test, PCAexcl_posttransform = \
         self.createPCAsets(df_train, df_test, PCAexcl, postprocess_dict)
-      
+
         #this is to train the PCA model and perform transforms on train and test set
         PCAset_train, PCAset_test, postprocess_dict, PCActgy = \
         self.PCAfunction(PCAset_train, PCAset_test, PCAn_components, postprocess_dict, \
                          randomseed, ML_cmnd)
-        
+
         #printout display progress
         if printstatus == True:
           print("PCA model applied: ")
           print(PCActgy)
           print("")
-        
+
         #reattach the excluded columns to PCA set
         df_train = pd.concat([PCAset_train, df_train[PCAexcl_posttransform]], axis=1)
         df_test = pd.concat([PCAset_test, df_test[PCAexcl_posttransform]], axis=1)
-        
+
         #printout display progress
         if printstatus == True:
           print("returned PCA columns: ")
@@ -17043,7 +17261,7 @@ class AutoMunge:
       #else we'll just populate the PCAmodel slot in postprocess_dict with a placeholder
       postprocess_dict.update({'PCAmodel' : None})
 
-        
+
 
     #here is the process to levelize the frequency of label rows in train data
     #currently only label categories of 'bnry' or 'text' are considered
@@ -17052,7 +17270,7 @@ class AutoMunge:
     #e.g. such as quintiles for instance
     if TrainLabelFreqLevel == True \
     and labels_column != False:
-      
+
       #printout display progress
       if printstatus == True:
         print("_______________")
@@ -17062,30 +17280,30 @@ class AutoMunge:
         print(df_labels.shape[0])
         print("")
 
-#       train_df = pd.DataFrame(np_train, columns = finalcolumns_train)
-#       labels_df = pd.DataFrame(np_labels, columns = finalcolumns_labels)
+  #       train_df = pd.DataFrame(np_train, columns = finalcolumns_train)
+  #       labels_df = pd.DataFrame(np_labels, columns = finalcolumns_labels)
       if trainID_column != False:
-#         trainID_df = pd.DataFrame(np_trainID, columns = [trainID_column])
+  #         trainID_df = pd.DataFrame(np_trainID, columns = [trainID_column])
         #add trainID set to train set for consistent processing
-#         train_df = pd.concat([train_df, trainID_df], axis=1)                        
+  #         train_df = pd.concat([train_df, trainID_df], axis=1)                        
         df_train = pd.concat([df_train, df_trainID], axis=1)                        
-      
-      
+
+
       if postprocess_dict['process_dict'][labelscategory]['MLinfilltype'] \
       in ['numeric', 'singlct', 'multirt', 'multisp', 'label']:
-        
+
         #apply LabelFrequencyLevelizer defined function
         df_train, df_labels = \
         self.LabelFrequencyLevelizer(df_train, df_labels, labelsencoding_dict, \
                                      postprocess_dict, process_dict)
-      
 
-      
+
+
       #extract trainID
       if trainID_column != False:
-            
+
         df_trainID = pd.DataFrame(df_train[trainID_column])
-        
+
         if isinstance(trainID_column, str):
           tempIDlist = [trainID_column]
         elif isinstance(trainID_column, list):
@@ -17093,8 +17311,8 @@ class AutoMunge:
         for IDcolumn in tempIDlist:
           del df_train[IDcolumn]
         #del df_train[trainID_column]
-    
-        
+
+
       #shuffle one more time as part of levelized label frequency
       if shuffletrain == True:
         #shuffle training set and labels
@@ -17103,7 +17321,7 @@ class AutoMunge:
 
         if trainID_column != False:
           df_trainID = shuffle(df_trainID, random_state = answer)
-          
+
       #printout display progress
       if printstatus == True:
 
@@ -17111,39 +17329,39 @@ class AutoMunge:
         print("After rebalancing train set row count = ")
         print(df_labels.shape[0])
         print("")
-        
-        
-        
+
+
+
 
 
     #great the data is processed now let's do a few moore global training preps
-    
+
     #a special case, those columns that we completely excluded from processing via excl
     #we'll scrub the suffix appender
     df_train.columns = [column[:-5] if column[-5:] == '_excl' else column for column in df_train.columns]
     df_test.columns = [column[:-5] if column[-5:] == '_excl' else column for column in df_test.columns]
     if labels_column != False:
       df_labels.columns = [column[:-5] if column[-5:] == '_excl' else column for column in df_labels.columns]
-      
+
     if labelspresenttest == True:
       df_testlabels.columns = [column[:-5] if column[-5:] == '_excl' else column for column in df_testlabels.columns]
-      
+
     #this is admiuttedly kind of a weird spot to put this, we had introduced earlier
     #convention of a dummy testlabels set, here we'll delete if no labels in test set
     #(seems as good a place as any)
     elif labelspresenttest == False:
       df_testlabels = pd.DataFrame()
-    
+
 
     #here's a list of final column names saving here since the translation to \
     #numpy arrays scrubs the column names
     finalcolumns_train = list(df_train)
     finalcolumns_test = list(df_test)
 
-        
-        
+
+
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '2.93'
+    automungeversion = '2.94'
     application_number = random.randint(100000000000,999999999999)
     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -17190,6 +17408,8 @@ class AutoMunge:
                              'transform_dict' : transform_dict, \
                              'processdict' : processdict, \
                              'process_dict' : process_dict, \
+                             'assignparam' : assignparam, \
+                             'assign_param' : assign_param, \
                              'ML_cmnd' : ML_cmnd, \
                              'printstatus' : printstatus, \
                              'automungeversion' : automungeversion, \
@@ -17197,27 +17417,27 @@ class AutoMunge:
                              'application_timestamp' : application_timestamp, \
                              'version_combined' : version_combined})
 
-    
-    
+
+
     if totalvalidationratio > 0:
-        
+
       #printout display progress
       if printstatus == True:
         print("_______________")
         print("Begin Validation set processing with Postmunge")
         print("")
-    
+
       #process validation set consistent to train set with postmunge here
       #df_validation1, _2, _3, _4, _5 = \
       df_validation1, _2, df_validationlabels1, _4, _5 = \
       self.postmunge(postprocess_dict, df_validation1, testID_column = False, \
                     labelscolumn = labels_column, pandasoutput = True, printstatus = printstatus)
 
-    
-    
-    
+
+
+
     #ok now that validation is processed, carve out second validation set if one was elected
-    
+
     if totalvalidationratio > 0.0:
 
       if val2ratio > 0.0:
@@ -17273,7 +17493,7 @@ class AutoMunge:
       df_test = pd.DataFrame()
       df_testID = pd.DataFrame()    
 
-      
+
     #now we'll apply the floatprecision transformation
     if floatprecision != 64:
       df_train = self.floatprecision_transform(df_train, finalcolumns_train, floatprecision)
@@ -17284,10 +17504,10 @@ class AutoMunge:
         df_labels = self.floatprecision_transform(df_labels, finalcolumns_labels, floatprecision)
         if labelspresenttest == True:
           df_testlabels = self.floatprecision_transform(df_testlabels, finalcolumns_labels, floatprecision)
-    
+
     #set output format based on pandasoutput argument
     if pandasoutput == True:
-      
+
       np_train = df_train
       np_trainID = df_trainID
       np_labels = df_labels
@@ -17300,10 +17520,10 @@ class AutoMunge:
       np_validationlabels2 = df_validationlabels2
       np_test = df_test
       np_testID = df_testID
-    
+
     #else set output to numpy arrays
     else:
-      
+
       np_train = df_train.values
       np_trainID = df_trainID.values
       np_labels = df_labels.values
@@ -17316,7 +17536,7 @@ class AutoMunge:
       np_validationlabels2 = df_validationlabels2.values
       np_test = df_test.values
       np_testID = df_testID.values
-    
+
       #apply ravel to labels if appropriate - converts from eg [[1,2,3]] to [1,2,3]
       if np_labels.ndim == 2 and np_labels.shape[1] == 1:
         np_labels = np.ravel(np_labels)
@@ -17324,26 +17544,26 @@ class AutoMunge:
         np_validationlabels1 = np.ravel(np_validationlabels1)
       if np_validationlabels2.ndim == 2 and np_validationlabels2.shape[1] == 1:
         np_validationlabels2 = np.ravel(np_validationlabels2)
-      
-      
+
+
 
     #a reasonable extension would be to perform some validation functions on the\
     #sets here (or also prior to transofrm to numpuy arrays) and confirm things \
     #like consistency between format of columns and data between our train and \
     #test sets and if any issues return a coresponding error message to alert user
 
-    
+
     #printout display progress
     if printstatus == True:
-      
+
       print("versioning serial stamp:")
       print(version_combined)
       print("")
-      
+
       print("Automunge returned column set: ")
       print(list(df_train))
       print("")
-        
+
       if df_labels.empty == False:
         print("Automunge returned label column set: ")
         print(list(df_labels))
@@ -17402,159 +17622,198 @@ class AutoMunge:
   
 
   def postprocessfamily(self, df_test, column, category, origcategory, process_dict, \
-                        transform_dict, postprocess_dict, columnkey):
+                        transform_dict, postprocess_dict, columnkey, assign_param):
     '''
     #as automunge runs a for loop through each column in automunge, this is the  
     #processing function applied which runs through the family primitives
     #populated in the transform_dict by assembletransformdict.
     '''
-  
-#     print("postprocessfamily")
-#     print("column = ", column)
-#     print("category = ", category)
-    
+
+  #     print("postprocessfamily")
+  #     print("column = ", column)
+  #     print("category = ", category)
+
     #process the cousins (no downstream, supplemental)
     for cousin in transform_dict[category]['cousins']:
-      
-#       print("cousin = ", cousin)
+
+  #       print("cousin = ", cousin)
 
       if cousin != None:
         #note we use the processsibling function here
         df_test = \
         self.postprocesscousin(df_test, column, cousin, origcategory, process_dict, \
-                                transform_dict, postprocess_dict, columnkey)
+                                transform_dict, postprocess_dict, columnkey, assign_param)
 
     #process the siblings (with downstream, supplemental)
     for sibling in transform_dict[category]['siblings']:
-      
-#       print("sibling = ", sibling)
+
+  #       print("sibling = ", sibling)
 
       if sibling != None:
         #note we use the processparent function here
         df_test = \
         self.postprocessparent(df_test, column, sibling, origcategory, process_dict, \
-                              transform_dict, postprocess_dict, columnkey)
+                              transform_dict, postprocess_dict, columnkey, assign_param)
 
     #process the auntsuncles (no downstream, with replacement)
     for auntuncle in transform_dict[category]['auntsuncles']:
-      
-#       print("auntuncle = ", auntuncle)
+
+  #       print("auntuncle = ", auntuncle)
 
       if auntuncle != None:
         df_test = \
         self.postprocesscousin(df_test, column, auntuncle, origcategory, process_dict, \
-                                transform_dict, postprocess_dict, columnkey)
+                                transform_dict, postprocess_dict, columnkey, assign_param)
 
     #process the parents (with downstream, with replacement)
     for parent in transform_dict[category]['parents']:
 
-#       print("parent = ", parent)
+  #       print("parent = ", parent)
 
       if parent != None:
         df_test = \
         self.postprocessparent(df_test, column, parent, origcategory, process_dict, \
-                              transform_dict, postprocess_dict, columnkey)
+                              transform_dict, postprocess_dict, columnkey, assign_param)
 
 
-#     #if we had replacement transformations performed then delete the original column 
-#     #(circle of life)
-#     if len(transform_dict[category]['auntsuncles']) + len(transform_dict[category]['parents']) > 0:
-#       del df_test[column]
+  #     #if we had replacement transformations performed then delete the original column 
+  #     #(circle of life)
+  #     if len(transform_dict[category]['auntsuncles']) + len(transform_dict[category]['parents']) > 0:
+  #       del df_test[column]
 
     return df_test
-  
-  
+
+
   def postcircleoflife(self, df_test, column, category, origcategory, process_dict, \
                         transform_dict, postprocess_dict, columnkey):
     '''
     This functino deletes source columns for family primitives that included replacement.
     '''
-    
+
     #if we had replacement transformations performed on first generation \
     #then delete the original column
     if len(transform_dict[category]['auntsuncles']) \
     + len(transform_dict[category]['parents']) > 0:
       del df_test[column]
-      
+
     #if we had replacement transformations performed on downstream generation \
     #then delete the associated parent column 
     for columndict_column in postprocess_dict['column_dict']:
       if postprocess_dict['column_dict'][columndict_column]['deletecolumn'] == True:
-      
+
         #first we'll remove the column from columnslists 
         for columnslistcolumn in postprocess_dict['column_dict'][columndict_column]['columnslist']:
 
           if columndict_column in postprocess_dict['column_dict'][columnslistcolumn]['columnslist']:
-          
+
             postprocess_dict['column_dict'][columnslistcolumn]['columnslist'].remove(columndict_column)
 
-        
+
 
         #now we'll delete column
         #note this only worksa on single column  parents, need to incioroprate categorylist
         #for multicolumn parents (future extension)
         if columndict_column in list(df_test):
           del df_test[columndict_column]
-      
+
     return df_test
-  
-  
-  
+
+
+
   def postprocesscousin(self, df_test, column, cousin, origcategory, process_dict, \
-                       transform_dict, postprocess_dict, columnkey):
+                       transform_dict, postprocess_dict, columnkey, assign_param):
     
-    #if this is a dual process function
-    if process_dict[cousin]['postprocess'] != None:
-      df_test = \
-      process_dict[cousin]['postprocess'](df_test, column, postprocess_dict, \
-                                           columnkey)
+    params = self.grab_params(assign_param, cousin, column)
+    
+    if bool(params):
+      
+      #if this is a dual process function
+      if process_dict[cousin]['postprocess'] != None:
+        df_test = \
+        process_dict[cousin]['postprocess'](df_test, column, postprocess_dict, \
+                                             columnkey, params)
 
-    #else if this is a single process function
-    elif process_dict[cousin]['singleprocess'] != None:
+      #else if this is a single process function
+      elif process_dict[cousin]['singleprocess'] != None:
 
-      df_test, _1 = \
-      process_dict[cousin]['singleprocess'](df_test, column, origcategory, \
-                                            postprocess_dict)
+        df_test, _1 = \
+        process_dict[cousin]['singleprocess'](df_test, column, origcategory, \
+                                              postprocess_dict, params)
+      
+    else:
+    
+      #if this is a dual process function
+      if process_dict[cousin]['postprocess'] != None:
+        df_test = \
+        process_dict[cousin]['postprocess'](df_test, column, postprocess_dict, \
+                                             columnkey)
+
+      #else if this is a single process function
+      elif process_dict[cousin]['singleprocess'] != None:
+
+        df_test, _1 = \
+        process_dict[cousin]['singleprocess'](df_test, column, origcategory, \
+                                              postprocess_dict)
 
     return df_test
-  
-  
-  
-  
+
+
+
+
   def postprocessparent(self, df_test, column, parent, origcategory, process_dict, \
-                      transform_dict, postprocess_dict, columnkey):
-    
+                      transform_dict, postprocess_dict, columnkey, assign_param):
+
     #this is used to derive the new columns from the trasform
     origcolumnsset = set(list(df_test))
     
-    #if this is a dual process function
-    if process_dict[parent]['postprocess'] != None:
-
-      df_test = \
-      process_dict[parent]['postprocess'](df_test, column, postprocess_dict, \
-                                           columnkey)
-
-    #else if this is a single process function process train and test seperately
-    elif process_dict[parent]['singleprocess'] != None:
-
-      df_test, _1 = \
-      process_dict[parent]['singleprocess'](df_test, column, origcategory, \
-                                            postprocess_dict)
+    params = self.grab_params(assign_param, parent, column)
     
+    if bool(params):
+      
+      #if this is a dual process function
+      if process_dict[parent]['postprocess'] != None:
+
+        df_test = \
+        process_dict[parent]['postprocess'](df_test, column, postprocess_dict, \
+                                             columnkey, params)
+
+      #else if this is a single process function process train and test seperately
+      elif process_dict[parent]['singleprocess'] != None:
+
+        df_test, _1 = \
+        process_dict[parent]['singleprocess'](df_test, column, origcategory, \
+                                              postprocess_dict, params)
+      
+    else:
+
+      #if this is a dual process function
+      if process_dict[parent]['postprocess'] != None:
+
+        df_test = \
+        process_dict[parent]['postprocess'](df_test, column, postprocess_dict, \
+                                             columnkey)
+
+      #else if this is a single process function process train and test seperately
+      elif process_dict[parent]['singleprocess'] != None:
+
+        df_test, _1 = \
+        process_dict[parent]['singleprocess'](df_test, column, origcategory, \
+                                              postprocess_dict)
+
     #this is used to derive the new columns from the trasform
     newcolumnsset = set(list(df_test))
-    
+
     #derive the new columns from the trasform
     categorylist = list(origcolumnsset^newcolumnsset)
-    
-    
+
+
     if len(categorylist) > 1:
       #future extension
       pass
 
     elif len(categorylist) > 0:
       parentcolumn = categorylist[0]
-      
+
 
       #process any coworkers
       for coworker in transform_dict[parent]['coworkers']:
@@ -17565,7 +17824,7 @@ class AutoMunge:
           #note the function applied is processcousin
           df_test = \
           self.postprocesscousin(df_test, parentcolumn, coworker, origcategory, \
-                                 process_dict, transform_dict, postprocess_dict, columnkey)
+                                 process_dict, transform_dict, postprocess_dict, columnkey, assign_param)
 
       #process any friends
       for friend in transform_dict[parent]['friends']:
@@ -17576,7 +17835,7 @@ class AutoMunge:
           #note the function applied is processcousin
           df_test = \
           self.postprocesscousin(df_test, parentcolumn, friend, origcategory, \
-                                 process_dict, transform_dict, postprocess_dict, columnkey)
+                                 process_dict, transform_dict, postprocess_dict, columnkey, assign_param)
 
 
       #process any niecesnephews
@@ -17590,7 +17849,7 @@ class AutoMunge:
           #note the function applied is postprocessparent (using recursion)
           df_test = \
           self.postprocessparent(df_test, parentcolumn, niecenephew, origcategory, \
-                                 process_dict, transform_dict, postprocess_dict, columnkey)
+                                 process_dict, transform_dict, postprocess_dict, columnkey, assign_param)
   #         self.postprocessfamily(df_test, parentcolumn, niecenephew, origcategory, \
   #                                process_dict, transform_dict, postprocess_dict, columnkey)
 
@@ -17604,7 +17863,7 @@ class AutoMunge:
           #parent column
           df_test = \
           self.postprocessparent(df_test, parentcolumn, child, origcategory, process_dict, \
-                                 transform_dict, postprocess_dict, columnkey)
+                                 transform_dict, postprocess_dict, columnkey, assign_param)
   #         self.postprocessfamily(df_test, parentcolumn, child, origcategory, process_dict, \
   #                               transform_dict, postprocess_dict, columnkey)
 
@@ -17614,13 +17873,13 @@ class AutoMunge:
   #     if len(transform_dict[parent]['children']) \
   #     + len(transform_dict[parent]['coworkers']) > 0:
   #       del df_test[parentcolumn]
-      
+
 
     return df_test
   
   
   
-  def postprocess_numerical_class(self, mdf_test, column, postprocess_dict, columnkey):
+  def postprocess_numerical_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #postprocess_numerical_class(mdf_test, column, postprocess_dict, columnkey)
     #function to normalize data to mean of 0 and standard deviation of 1 from training distribution
@@ -17672,7 +17931,7 @@ class AutoMunge:
   
 
     
-  def postprocess_MADn_class(self, mdf_test, column, postprocess_dict, columnkey):
+  def postprocess_MADn_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #postprocess_MADn_class(mdf_test, column, postprocess_dict, columnkey)
     #function to normalize data to mean of 0 and mean absolute deviation of 1 from training distribution
@@ -17723,7 +17982,7 @@ class AutoMunge:
     return mdf_test
 
     
-  def postprocess_MAD3_class(self, mdf_test, column, postprocess_dict, columnkey):
+  def postprocess_MAD3_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #postprocess_MADn_class(mdf_test, column, postprocess_dict, columnkey)
     #function to normalize data by subtracting max and dividing by mean absolute deviation from training distribution
@@ -17776,7 +18035,7 @@ class AutoMunge:
     return mdf_test
     
     
-  def postprocess_mnmx_class(self, mdf_test, column, postprocess_dict, columnkey):
+  def postprocess_mnmx_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #postprocess_mnmx_class(mdf_test, column, postprocess_dict, columnkey)
     #function to scale data to minimum of 0 and maximum of 1 based on training distribution
@@ -17832,7 +18091,7 @@ class AutoMunge:
     return mdf_test
 
 
-  def postprocess_mnm3_class(self, mdf_test, column, postprocess_dict, columnkey):
+  def postprocess_mnm3_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #postprocess_mnmx_class(mdf_test, column, postprocess_dict, columnkey)
     #function to scale data to minimum of 0 and maximum of 1 based on training distribution
@@ -17895,7 +18154,7 @@ class AutoMunge:
     return mdf_test
 
 
-  def postprocess_mnm6_class(self, mdf_test, column, postprocess_dict, columnkey):
+  def postprocess_mnm6_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #postprocess_mnm6_class(mdf_test, column, postprocess_dict, columnkey)
     #function to scale data to minimum of 0 and maximum of 1 based on training distribution
@@ -17955,7 +18214,7 @@ class AutoMunge:
 
     return mdf_test
 
-  def postprocess_mean_class(self, mdf_test, column, postprocess_dict, columnkey):
+  def postprocess_mean_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #postprocess_mean_class(mdf_test, column, postprocess_dict, columnkey)
     #function to scale data to minimum of 0 and maximum of 1 based on training distribution
@@ -18011,7 +18270,7 @@ class AutoMunge:
     return mdf_test
 
   
-  def postprocess_binary_class(self, mdf_test, column, postprocess_dict, columnkey):
+  def postprocess_binary_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #postprocess_binary_class(mdf, column, postprocess_dict, columnkey)
     #converts binary classification values to 0 or 1
@@ -18077,7 +18336,7 @@ class AutoMunge:
     return mdf_test
   
   
-  def postprocess_text_class(self, mdf_test, column, postprocess_dict, columnkey):
+  def postprocess_text_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #postprocess_text_class(mdf_test, column, postprocess_dict, columnkey)
     #process column with text classifications
@@ -18235,7 +18494,7 @@ class AutoMunge:
     return mdf_test
   
   
-  def postprocess_textsupport_class(self, mdf_test, column, postprocess_dict, columnkey):
+  def postprocess_textsupport_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #just like the postprocess_text_class function but uses different approach for
     #normalizaation key (uses passed columnkey). This function supports some of the
@@ -18347,7 +18606,7 @@ class AutoMunge:
     
     return mdf_test
   
-  def postprocess_splt_class(self, mdf_test, column, postprocess_dict, columnkey):
+  def postprocess_splt_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #postprocess_splt_class(mdf_test, column, postprocess_dict, category)
     #preprocess column with categorical entries as strings
@@ -18452,7 +18711,7 @@ class AutoMunge:
     return mdf_test
   
   
-  def postprocess_spl2_class(self, mdf_test, column, postprocess_dict, columnkey):
+  def postprocess_spl2_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #postprocess_spl2_class(mdf_test, column, postprocess_dict, category)
     #preprocess column with categorical entries as strings
@@ -18580,7 +18839,7 @@ class AutoMunge:
     return mdf_test
   
   
-  def postprocess_spl5_class(self, mdf_test, column, postprocess_dict, columnkey):
+  def postprocess_spl5_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #postprocess_spl5_class(mdf_test, column, postprocess_dict, category)
     #preprocess column with categorical entries as strings
@@ -18713,7 +18972,7 @@ class AutoMunge:
     
     return mdf_test
   
-  def postprocess_spl7_class(self, mdf_test, column, postprocess_dict, columnkey):
+  def postprocess_spl7_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #(spl7 is same as spl5 but uses min overlap character legnth of 1 instead of 5)
     #postprocess_spl5_class(mdf_test, column, postprocess_dict, category)
@@ -18847,7 +19106,7 @@ class AutoMunge:
     
     return mdf_test
 
-  def postprocess_spl8_class(self, mdf_test, column, postprocess_dict, columnkey):
+  def postprocess_spl8_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #postprocess_splt_class(mdf_test, column, postprocess_dict, category)
     #preprocess column with categorical entries as strings
@@ -18959,7 +19218,7 @@ class AutoMunge:
     
     return mdf_test
   
-  def postprocess_spl9_class(self, mdf_test, column, postprocess_dict, columnkey):
+  def postprocess_spl9_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #postprocess_spl2_class(mdf_test, column, postprocess_dict, category)
     #preprocess column with categorical entries as strings
@@ -19115,7 +19374,7 @@ class AutoMunge:
     
     return mdf_test
   
-  def postprocess_sp10_class(self, mdf_test, column, postprocess_dict, columnkey):
+  def postprocess_sp10_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #postprocess_spl5_class(mdf_test, column, postprocess_dict, category)
     #preprocess column with categorical entries as strings
@@ -19278,7 +19537,7 @@ class AutoMunge:
     
     return mdf_test
   
-  def postprocess_nmr4_class(self, mdf_test, column, postprocess_dict, columnkey):
+  def postprocess_nmr4_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     """
     #process_nmr4_class(df, column, category, postprocess_dict)
     #parses string entries and if any numbers present returns numbers
@@ -19324,7 +19583,7 @@ class AutoMunge:
         
     return mdf_test
   
-  def postprocess_nmr7_class(self, mdf_test, column, postprocess_dict, columnkey):
+  def postprocess_nmr7_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     """
     #process_nmr4_class(df, column, category, postprocess_dict)
     #parses string entries and if any numbers present returns numbers
@@ -19445,7 +19704,7 @@ class AutoMunge:
         
     return mdf_test
   
-  def postprocess_nmc4_class(self, mdf_test, column, postprocess_dict, columnkey):
+  def postprocess_nmc4_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     """
     #process_nmr4_class(df, column, category, postprocess_dict)
     #parses string entries and if any numbers present returns numbers
@@ -19491,7 +19750,7 @@ class AutoMunge:
         
     return mdf_test
   
-  def postprocess_nmc7_class(self, mdf_test, column, postprocess_dict, columnkey):
+  def postprocess_nmc7_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     """
     #process_nmr7_class(df, column, category, postprocess_dict)
     #parses string entries and if any numbers present returns numbers
@@ -19609,7 +19868,7 @@ class AutoMunge:
     return mdf_test
   
   
-  def postprocess_ordl_class(self, mdf_test, column, postprocess_dict, columnkey):
+  def postprocess_ordl_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #postprocess_ordl_class(mdf_test, column, postprocess_dict, columnkey)
     #preprocess column with categories into ordinal (sequentuial integer) sets
@@ -19688,7 +19947,7 @@ class AutoMunge:
     
     return mdf_test
   
-  def postprocess_ord3_class(self, mdf_test, column, postprocess_dict, columnkey):
+  def postprocess_ord3_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #postprocess_ord3_class(mdf_test, column, postprocess_dict, columnkey)
     #preprocess column with categories into ordinal (sequentuial integer) sets
@@ -19768,7 +20027,7 @@ class AutoMunge:
     return mdf_test
   
   
-  def postprocess_1010_class(self, mdf_test, column, postprocess_dict, columnkey):
+  def postprocess_1010_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #postprocess_1010_class(mdf_test, column, postprocess_dict, columnkey)
     #preprocess column with categories into binary encoded sets
@@ -20090,7 +20349,7 @@ class AutoMunge:
 #     return mdf_test
 
 
-  def postprocess_year_class(self, mdf_test, column, postprocess_dict, columnkey):
+  def postprocess_year_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
 
     '''
     #postprocess_year_class(mdf_test, column, postprocess_dict, columnkey)
@@ -20148,7 +20407,7 @@ class AutoMunge:
     return mdf_test
 
 
-  def postprocess_mnth_class(self, mdf_test, column, postprocess_dict, columnkey):
+  def postprocess_mnth_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
 
     '''
     #postprocess_mnth_class(mdf_test, column, postprocess_dict, columnkey)
@@ -20206,7 +20465,7 @@ class AutoMunge:
 
 
 
-  def postprocess_mnsn_class(self, mdf_test, column, postprocess_dict, columnkey):
+  def postprocess_mnsn_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
 
     '''
     #postprocess_mnsn_class(mdf_test, column, postprocess_dict, columnkey)
@@ -20253,7 +20512,7 @@ class AutoMunge:
     return mdf_test
   
   
-  def postprocess_mncs_class(self, mdf_test, column, postprocess_dict, columnkey):
+  def postprocess_mncs_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
 
     '''
     #postprocess_mncs_class(mdf_test, column, postprocess_dict, columnkey)
@@ -20299,7 +20558,7 @@ class AutoMunge:
     
     return mdf_test
   
-  def postprocess_mdsn_class(self, mdf_test, column, postprocess_dict, columnkey):
+  def postprocess_mdsn_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
 
     '''
     #postprocess_mdsn_class(mdf_test, column, postprocess_dict, columnkey)
@@ -20346,7 +20605,7 @@ class AutoMunge:
     return mdf_test
   
   
-  def postprocess_mdcs_class(self, mdf_test, column, postprocess_dict, columnkey):
+  def postprocess_mdcs_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
 
     '''
     #postprocess_mdsn_class(mdf_test, column, postprocess_dict, columnkey)
@@ -20393,7 +20652,7 @@ class AutoMunge:
     return mdf_test
   
   
-  def postprocess_days_class(self, mdf_test, column, postprocess_dict, columnkey):
+  def postprocess_days_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
 
     '''
     #postprocess_days_class(mdf_test, column, postprocess_dict, columnkey)
@@ -20451,7 +20710,7 @@ class AutoMunge:
 
 
 
-  def postprocess_dysn_class(self, mdf_test, column, postprocess_dict, columnkey):
+  def postprocess_dysn_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
 
     '''
     #postprocess_dysn_class(mdf_test, column, postprocess_dict, columnkey)
@@ -20500,7 +20759,7 @@ class AutoMunge:
     return mdf_test
   
   
-  def postprocess_dycs_class(self, mdf_test, column, postprocess_dict, columnkey):
+  def postprocess_dycs_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
 
     '''
     #postprocess_dycs_class(mdf_test, column, postprocess_dict, columnkey)
@@ -20549,7 +20808,7 @@ class AutoMunge:
     return mdf_test
   
   
-  def postprocess_dhms_class(self, mdf_test, column, postprocess_dict, columnkey):
+  def postprocess_dhms_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
 
     '''
     #postprocess_dhms_class(mdf_test, column, postprocess_dict, columnkey)
@@ -20598,7 +20857,7 @@ class AutoMunge:
     return mdf_test
   
   
-  def postprocess_dhmc_class(self, mdf_test, column, postprocess_dict, columnkey):
+  def postprocess_dhmc_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
 
     '''
     #postprocess_dhmc_class(mdf_test, column, postprocess_dict, columnkey)
@@ -20647,7 +20906,7 @@ class AutoMunge:
     return mdf_test
   
   
-  def postprocess_hour_class(self, mdf_test, column, postprocess_dict, columnkey):
+  def postprocess_hour_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
 
     '''
     #postprocess_hour_class(mdf_test, column, postprocess_dict, columnkey)
@@ -20705,7 +20964,7 @@ class AutoMunge:
 
 
 
-  def postprocess_hrsn_class(self, mdf_test, column, postprocess_dict, columnkey):
+  def postprocess_hrsn_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
 
     '''
     #postprocess_dysn_class(mdf_test, column, postprocess_dict, columnkey)
@@ -20753,7 +21012,7 @@ class AutoMunge:
     return mdf_test
   
   
-  def postprocess_hrcs_class(self, mdf_test, column, postprocess_dict, columnkey):
+  def postprocess_hrcs_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
 
     '''
     #postprocess_hrcs_class(mdf_test, column, postprocess_dict, columnkey)
@@ -20801,7 +21060,7 @@ class AutoMunge:
     return mdf_test
   
   
-  def postprocess_hmss_class(self, mdf_test, column, postprocess_dict, columnkey):
+  def postprocess_hmss_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
 
     '''
     #postprocess_hmss_class(mdf_test, column, postprocess_dict, columnkey)
@@ -20850,7 +21109,7 @@ class AutoMunge:
     return mdf_test
   
   
-  def postprocess_hmsc_class(self, mdf_test, column, postprocess_dict, columnkey):
+  def postprocess_hmsc_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
 
     '''
     #postprocess_hmsc_class(mdf_test, column, postprocess_dict, columnkey)
@@ -20899,7 +21158,7 @@ class AutoMunge:
     return mdf_test
   
   
-  def postprocess_mint_class(self, mdf_test, column, postprocess_dict, columnkey):
+  def postprocess_mint_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
 
     '''
     #postprocess_mint_class(mdf_test, column, postprocess_dict, columnkey)
@@ -20957,7 +21216,7 @@ class AutoMunge:
 
 
 
-  def postprocess_misn_class(self, mdf_test, column, postprocess_dict, columnkey):
+  def postprocess_misn_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
 
     '''
     #postprocess_misn_class(mdf_test, column, postprocess_dict, columnkey)
@@ -21005,7 +21264,7 @@ class AutoMunge:
     return mdf_test
   
   
-  def postprocess_mics_class(self, mdf_test, column, postprocess_dict, columnkey):
+  def postprocess_mics_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
 
     '''
     #postprocess_mics_class(mdf_test, column, postprocess_dict, columnkey)
@@ -21053,7 +21312,7 @@ class AutoMunge:
     return mdf_test
   
   
-  def postprocess_mssn_class(self, mdf_test, column, postprocess_dict, columnkey):
+  def postprocess_mssn_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
 
     '''
     #postprocess_mssn_class(mdf_test, column, postprocess_dict, columnkey)
@@ -21101,7 +21360,7 @@ class AutoMunge:
     return mdf_test
   
   
-  def postprocess_mscs_class(self, mdf_test, column, postprocess_dict, columnkey):
+  def postprocess_mscs_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
 
     '''
     #postprocess_mscs_class(mdf_test, column, postprocess_dict, columnkey)
@@ -21149,7 +21408,7 @@ class AutoMunge:
     return mdf_test
   
   
-  def postprocess_scnd_class(self, mdf_test, column, postprocess_dict, columnkey):
+  def postprocess_scnd_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
 
     '''
     #postprocess_scnd_class(mdf_test, column, postprocess_dict, columnkey)
@@ -21208,7 +21467,7 @@ class AutoMunge:
 
 
 
-  def postprocess_scsn_class(self, mdf_test, column, postprocess_dict, columnkey):
+  def postprocess_scsn_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
 
     '''
     #postprocess_scsn_class(mdf_test, column, postprocess_dict, columnkey)
@@ -21256,7 +21515,7 @@ class AutoMunge:
     return mdf_test
   
   
-  def postprocess_sccs_class(self, mdf_test, column, postprocess_dict, columnkey):
+  def postprocess_sccs_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
 
     '''
     #postprocess_sccs_class(mdf_test, column, postprocess_dict, columnkey)
@@ -21307,7 +21566,7 @@ class AutoMunge:
   
   
   
-  def postprocess_bxcx_class(self, mdf_test, column, postprocess_dict, columnkey):
+  def postprocess_bxcx_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     Applies box-cox method within postmunge function.
     '''
@@ -21344,7 +21603,7 @@ class AutoMunge:
 
 
 
-  def postprocess_log0_class(self, mdf_test, column, postprocess_dict, columnkey):
+  def postprocess_log0_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
         
     '''
     #function to apply logatrithmic transform
@@ -21392,7 +21651,7 @@ class AutoMunge:
     return mdf_test
     
   
-  def postprocess_pwrs_class(self, mdf_test, column, postprocess_dict, columnkey):
+  def postprocess_pwrs_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #processes a numerical set by creating bins coresponding to powers
     #of ten in one hot encoded columns
@@ -21499,7 +21758,7 @@ class AutoMunge:
     
     return mdf_test
   
-  def postprocess_pwor_class(self, mdf_test, column, postprocess_dict, columnkey):
+  def postprocess_pwor_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #processes a numerical set by creating bins coresponding to powers
     #of ten in one hot encoded columns
@@ -21541,7 +21800,7 @@ class AutoMunge:
     
     return mdf_test
   
-  def postprocess_pwr2_class(self, mdf_test, column, postprocess_dict, columnkey):
+  def postprocess_pwr2_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #processes a numerical set by creating bins coresponding to powers
     #of ten in one hot encoded columns
@@ -21679,7 +21938,7 @@ class AutoMunge:
     
     return mdf_test
   
-  def postprocess_por2_class(self, mdf_test, column, postprocess_dict, columnkey):
+  def postprocess_por2_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #processes a numerical set by creating bins coresponding to powers
     #of ten in ordinal encoded columns
@@ -21802,7 +22061,7 @@ class AutoMunge:
     
     return mdf_test
 
-  def postprocess_sqrt_class(self, mdf_test, column, postprocess_dict, columnkey):
+  def postprocess_sqrt_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
         
     '''
     #function to apply square root transform
@@ -21849,7 +22108,7 @@ class AutoMunge:
 
     return mdf_test
   
-  def postprocess_bins_class(self, mdf_test, column, postprocess_dict, columnkey):
+  def postprocess_bins_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #note that bins is intended for raw data that has not yet been nromalized
     #bint is intended for values that have already recieved z-score normalization
@@ -21955,7 +22214,7 @@ class AutoMunge:
     return mdf_test
   
   
-  def postprocess_bint_class(self, mdf_test, column, postprocess_dict, columnkey):
+  def postprocess_bint_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #note that bins is intended for raw data that has not yet been nromalized
     #bint is intended for values that have already recieved z-score normalization
@@ -22061,7 +22320,7 @@ class AutoMunge:
     
     return mdf_test
   
-  def postprocess_bsor_class(self, mdf_test, column, postprocess_dict, columnkey):
+  def postprocess_bsor_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #note that bins is intended for raw data that has not yet been nromalized
     #bint is intended for values that have already recieved z-score normalization
@@ -22122,7 +22381,7 @@ class AutoMunge:
     return mdf_test
   
 
-  def postprocess_exc2_class(self, mdf_test, column, postprocess_dict, columnkey):
+  def postprocess_exc2_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #here we'll address any columns that returned a 'excl' category
     #note this is a. singleprocess transform
@@ -23026,8 +23285,14 @@ class AutoMunge:
         print("")
         
       
-      drift_category = \
-      postprocess_dict['column_dict'][postprocess_dict['origcolumn'][drift_column]['columnkey']]['origcategory']
+      if len(returnedcolumns) > 0:
+
+        drift_category = \
+        postprocess_dict['column_dict'][postprocess_dict['origcolumn'][drift_column]['columnkey']]['origcategory']
+        
+      else:
+        
+        drift_category = 'null'
       
       #update driftreport with this column
       drift_report.update({drift_column : {'origreturnedcolumns_list':returnedcolumns, \
@@ -23041,6 +23306,9 @@ class AutoMunge:
       
       drift_transform_dict = \
       postprocess_dict['transform_dict']
+      
+      drift_assign_param = \
+      postprocess_dict['assign_param']
       
       #we're only going to copy one source column at a time, as should be 
       #more memory efficient than copying the entire set
@@ -23057,7 +23325,7 @@ class AutoMunge:
       df_test2_temp, df_test3_temp, drift_ppd = \
       self.processfamily(df_test2_temp, df_test3_temp, drift_column, drift_category, \
                          drift_category, drift_process_dict, drift_transform_dict, \
-                         drift_ppd)
+                         drift_ppd, drift_assign_param)
 
       #here's a second templist to support the columnkey entry below
       templist2 = list(df_test2_temp)
@@ -23186,80 +23454,86 @@ class AutoMunge:
     #from original automunge, a potential future extension is to allow for additional \
     #columns to be excluded from processing.
     '''
-    
-        
+
+
     #printout display progress
     if printstatus == True:
       print("_______________")
       print("Begin Postmunge processing")
       print("")
-      
-      
+
+
     #quick conversion of any passed column idenitfiers to str
     labelscolumn = self.parameter_str_convert(labelscolumn)
     testID_column = self.parameter_str_convert(testID_column)
-    
+
     #feature selection analysis performed here if elected
     if featureeval == True:
-        
+
       if labelscolumn == False:
         print("error: featureeval not available without labels_column in training set")
-        
+
       else:
         FSmodel, FScolumn_dict = \
         self.postfeatureselect(df_test, labelscolumn, testID_column, \
                                postprocess_dict, printstatus)
-     
+
     else:
-    
+
       madethecut = []
       FSmodel = None
       FScolumn_dict = {}
-      
+
     #initialize postreports_dict
     postreports_dict = {'featureimportance':FScolumn_dict, \
                         'finalcolumns_test':[], \
                         'driftreport':{}}
-    
-    
+
+
     #functionality to support passed numpy arrays
     #if passed object was a numpy array, convert to pandas dataframe
     checknp = np.array([])
     if isinstance(checknp, type(df_test)):
       df_test = pd.DataFrame(df_test)
-    
+
     #this converts any numeric columns labels, such as from a passed numpy array, to strings
     testlabels=[]
     for column in list(df_test):
       testlabels.append(str(column))
     df_test.columns = testlabels
-    
+
     #initialize processing dicitonaries
-    
+
     powertransform = postprocess_dict['powertransform']
     binstransform = postprocess_dict['binstransform']
     NArw_marker = postprocess_dict['NArw_marker']
     floatprecision = postprocess_dict['floatprecision']
-    
+
     transform_dict = self.assembletransformdict(powertransform, binstransform, NArw_marker)
-    
+
     if bool(postprocess_dict['transformdict']) != False:
       transform_dict.update(postprocess_dict['transformdict'])
-    
+
     process_dict = self.assembleprocessdict()
-    
+
     if bool(postprocess_dict['processdict']) != False:
       process_dict.update(postprocess_dict['processdict'])
-      
+
+    assign_param = self.assembleassignparam()
+
+    if bool(postprocess_dict['assignparam']) != False:
+      assign_param.update(postprocess_dict['assignparam'])
+
+
     #initialize the preFS postprocess_dict for use here
     preFSpostprocess_dict = deepcopy(postprocess_dict['preFSpostprocess_dict'])
-    
+
     #postprocess_dict.update({'preFSpostprocess_dict' : preFSpostprocess_dict})
-    
+
     #copy input dataframes to internal state so as not to edit exterior objects
     df_test = df_test.copy()
 
-        
+
     if type(df_test.index) != pd.RangeIndex:
       #if df_train.index.names == [None]:
       if None in df_test.index.names:
@@ -23278,7 +23552,7 @@ class AutoMunge:
           print("error, testID_column allowable values are False, string, or list")
         testID_column = testID_column + list(df_test.index.names)
         df_test = df_test.reset_index(drop=False)
-        
+
 
     #my understanding is it is good practice to convert any None values into NaN \
     #so I'll just get that out of the way
@@ -23286,27 +23560,27 @@ class AutoMunge:
 
     #we'll delete any rows from training set missing values in the labels column
     if labelscolumn != False:
-#       df_train = df_train.dropna(subset=[labelscolumn])
+  #       df_train = df_train.dropna(subset=[labelscolumn])
       if labelscolumn in list(df_test):
         df_test = df_test.dropna(subset=[labelscolumn])
-      
-      
-    
+
+
+
     if labelscolumn != False:
       labels_column = postprocess_dict['labels_column']
       if labels_column in list(df_test):
         df_test = df_test.dropna(subset=[labels_column])
-      
+
       if labelscolumn != True:
         if labelscolumn != labels_column:
           print("error, labelscolumn in test set passed to postmunge must have same column")
           print("labeling convention, labels column from automunge was: ", labels_column)
-        
-      
+
+
       df_testlabels = pd.DataFrame(df_test[labels_column])
       del df_test[labels_column]
 
-    
+
     #extract the ID columns from test set
     if testID_column != False:
       testIDcolumn = postprocess_dict['testID_column']
@@ -23317,9 +23591,9 @@ class AutoMunge:
           print("please note the ID column(s) passed to postmunge is different than the ID column(s)")
           print("that was originally passed to automunge. That's ok as long as the test set columns")
           print("remaining are the same, just wanted to give you a heads up in case wasn't intentional.")
-#           print("error, testID_column in test set passed to postmunge must have same column")
-#           print("labeling convention, testID_column from automunge was: ", testIDcolumn)
-       
+  #           print("error, testID_column in test set passed to postmunge must have same column")
+  #           print("labeling convention, testID_column from automunge was: ", testIDcolumn)
+
       if isinstance(testID_column, str): 
         if testID_column in list(df_test):
           df_testID = pd.DataFrame(df_test[testID_column])
@@ -23333,18 +23607,18 @@ class AutoMunge:
         df_testID = pd.DataFrame()
     else:
       df_testID = pd.DataFrame()
-    
-    
-#     if labelscolumn != False:
-#       labels_column = postprocess_dict['labels_column']
-#       if labelscolumn != True:
-#         if labelscolumn != labels_column:
-#           print("error, labelscolumn in test set passed to postmunge must have same column")
-#           print("labeling convention, labels column from automunge was: ", labels_column)
-        
-      
-#       df_testlabels = pd.DataFrame(df_test[labels_column])
-#       del df_test[labels_column]
+
+
+  #     if labelscolumn != False:
+  #       labels_column = postprocess_dict['labels_column']
+  #       if labelscolumn != True:
+  #         if labelscolumn != labels_column:
+  #           print("error, labelscolumn in test set passed to postmunge must have same column")
+  #           print("labeling convention, labels column from automunge was: ", labels_column)
+
+
+  #       df_testlabels = pd.DataFrame(df_test[labels_column])
+  #       del df_test[labels_column]
 
     #confirm consistency of train an test sets
 
@@ -23366,19 +23640,19 @@ class AutoMunge:
     if columns_train != columns_test:
       print("error, different order of column labels in the train and test set")
       return
-    
-    
+
+
     #here we'll perform drift report if elected
     if driftreport == True:
-      
+
       #returns a new partially populated postpr4ocess_dict containing
       #column_dict entries populated with newly calculated normalizaiton parameters
       #for now we'll just print the results in the function, a future expansion may
       #return these to the user somehow, need to put some thought into that
       drift_ppd, drift_report = self.prepare_driftreport(df_test, postprocess_dict, printstatus)
-      
+
       postreports_dict['driftreport'] = drift_report
-    
+
     #create an empty dataframe to serve as a store for each column's NArows
     #the column id's for this df will follow convention from NArows of 
     #column+'_NArows' for each column in columns_train
@@ -23386,7 +23660,7 @@ class AutoMunge:
     #masterNArows_train = pd.DataFrame()
     masterNArows_test = pd.DataFrame()
 
-    
+
     #For each column, determine appropriate processing function
     #processing function will be based on evaluation of train set
     for column in columns_train:
@@ -23398,135 +23672,135 @@ class AutoMunge:
       #additional excluded columns as future extensionl
       #if column not in postprocess_dict['excludetransformscolumns']:
       if True == True:
-        
+
         #ok this replaces some methods from 1.76 and earlier for finding a column key
         #troubleshoot "find traincategory"
         columnkey = postprocess_dict['origcolumn'][column]['columnkey']        
         #traincategory = postprocess_dict['column_dict'][columnkey]['origcategory']
         traincategory = postprocess_dict['origcolumn'][column]['category']
-        
+
         #originally I seperately used evalcategory to check the actual category of
         #the test set, but now that we are allowing assigned categories that could
         #get too complex, this type of functionality could be a future extension
         #for now let's just make explicit assumption that test set has same 
         #properties as train set
-        
+
         category = traincategory
-        
-#         #ok postprocess_dict stores column data by the key of column names after\
-#         #they have gone through our pre-processing functions, which means the act \
-#         #of processing will have \
-#         #created new columns and deleted the original column - so since we are \
-#         #currently walking through the original column names we'll need to \
-#         #pull a post-process column name for the associated columns to serve as \
-#         #a key for our postprocess_dict which we'll call columnkey. Also the  \
-#         #original category from train set (traincategory) will be accessed to \
-#         #serve as a check for consistency between train and test sets.
-#         traincategory = False
 
-#         #for postprocesscolumn in postprocess_dict['finalcolumns_train']:
-#         for postprocesscolumn in list(preFSpostprocess_dict['column_dict']):
-        
-#           #if postprocess_dict['column_dict'][postprocesscolumn]['category'] == 'text':
-#           if preFSpostprocess_dict['column_dict'][postprocesscolumn]['origcategory'] == 'text':
-#             if column == preFSpostprocess_dict['column_dict'][postprocesscolumn]['origcolumn'] \
-#             and postprocesscolumn[-5:] != '_NArw':
-#             #and postprocesscolumn in postprocess_dict['column_dict'][postprocesscolumn]['categorylist']:
-#               traincategory = 'text'
-#               columnkey = postprocesscolumn
-#               #break
+  #         #ok postprocess_dict stores column data by the key of column names after\
+  #         #they have gone through our pre-processing functions, which means the act \
+  #         #of processing will have \
+  #         #created new columns and deleted the original column - so since we are \
+  #         #currently walking through the original column names we'll need to \
+  #         #pull a post-process column name for the associated columns to serve as \
+  #         #a key for our postprocess_dict which we'll call columnkey. Also the  \
+  #         #original category from train set (traincategory) will be accessed to \
+  #         #serve as a check for consistency between train and test sets.
+  #         traincategory = False
 
-#           #elif postprocess_dict['column_dict'][postprocesscolumn]['category'] == 'date':
-#           elif preFSpostprocess_dict['column_dict'][postprocesscolumn]['origcategory'] == 'date':
-#             if column == preFSpostprocess_dict['column_dict'][postprocesscolumn]['origcolumn'] \
-#             and postprocesscolumn[-5:] != '_NArw':
-#               traincategory = 'date'
-#               columnkey = postprocesscolumn
-#               #break
+  #         #for postprocesscolumn in postprocess_dict['finalcolumns_train']:
+  #         for postprocesscolumn in list(preFSpostprocess_dict['column_dict']):
 
-# #           #elif postprocess_dict['column_dict'][postprocesscolumn]['category'] == 'bxcx':
-# #           elif postprocess_dict['column_dict'][postprocesscolumn]['origcategory'] == 'bxcx':
-# #             if postprocess_dict['column_dict'][postprocesscolumn]['category'] == 'bxcx':
-# #               if column == postprocess_dict['column_dict'][postprocesscolumn]['origcolumn'] \
-# #               and postprocesscolumn[-5:] != '_NArw':
-# #                 traincategory = 'bxcx'
-# #                 columnkey = postprocesscolumn
-# #                 #break
-# #             #this is kind of a hack, will have to put some thought into if there is a \
-# #             #better way to generalize this, as long as we maintain the column naming\
-# #             #convention this works
-# #             if postprocess_dict['column_dict'][postprocesscolumn]['category'] == 'nmbr':
-# #               if column == postprocess_dict['column_dict'][postprocesscolumn]['origcolumn'] \
-# #               and postprocesscolumn[-5:] != '_NArw':
-# #                 traincategory = 'bxcx'
-# #                 columnkey = postprocesscolumn[:-5]+'_bxcx'
-# #                 #break
-                
-#           elif preFSpostprocess_dict['column_dict'][postprocesscolumn]['origcategory'] == 'bxcx':
-#             if column == preFSpostprocess_dict['column_dict'][postprocesscolumn]['origcolumn']:
-#               traincategory = 'bxcx'
-#               columnkey = column + '_bxcx'
+  #           #if postprocess_dict['column_dict'][postprocesscolumn]['category'] == 'text':
+  #           if preFSpostprocess_dict['column_dict'][postprocesscolumn]['origcategory'] == 'text':
+  #             if column == preFSpostprocess_dict['column_dict'][postprocesscolumn]['origcolumn'] \
+  #             and postprocesscolumn[-5:] != '_NArw':
+  #             #and postprocesscolumn in postprocess_dict['column_dict'][postprocesscolumn]['categorylist']:
+  #               traincategory = 'text'
+  #               columnkey = postprocesscolumn
+  #               #break
 
+  #           #elif postprocess_dict['column_dict'][postprocesscolumn]['category'] == 'date':
+  #           elif preFSpostprocess_dict['column_dict'][postprocesscolumn]['origcategory'] == 'date':
+  #             if column == preFSpostprocess_dict['column_dict'][postprocesscolumn]['origcolumn'] \
+  #             and postprocesscolumn[-5:] != '_NArw':
+  #               traincategory = 'date'
+  #               columnkey = postprocesscolumn
+  #               #break
 
-#           #elif postprocess_dict['column_dict'][postprocesscolumn]['category'] == 'bnry':
-#           elif preFSpostprocess_dict['column_dict'][postprocesscolumn]['origcategory'] == 'bnry':
-#             if column == preFSpostprocess_dict['column_dict'][postprocesscolumn]['origcolumn'] \
-#             and postprocesscolumn[-5:] != '_NArw':
-#               traincategory = 'bnry'
-#               columnkey = postprocesscolumn
-#               #break
+  # #           #elif postprocess_dict['column_dict'][postprocesscolumn]['category'] == 'bxcx':
+  # #           elif postprocess_dict['column_dict'][postprocesscolumn]['origcategory'] == 'bxcx':
+  # #             if postprocess_dict['column_dict'][postprocesscolumn]['category'] == 'bxcx':
+  # #               if column == postprocess_dict['column_dict'][postprocesscolumn]['origcolumn'] \
+  # #               and postprocesscolumn[-5:] != '_NArw':
+  # #                 traincategory = 'bxcx'
+  # #                 columnkey = postprocesscolumn
+  # #                 #break
+  # #             #this is kind of a hack, will have to put some thought into if there is a \
+  # #             #better way to generalize this, as long as we maintain the column naming\
+  # #             #convention this works
+  # #             if postprocess_dict['column_dict'][postprocesscolumn]['category'] == 'nmbr':
+  # #               if column == postprocess_dict['column_dict'][postprocesscolumn]['origcolumn'] \
+  # #               and postprocesscolumn[-5:] != '_NArw':
+  # #                 traincategory = 'bxcx'
+  # #                 columnkey = postprocesscolumn[:-5]+'_bxcx'
+  # #                 #break
 
-#           #elif postprocess_dict['column_dict'][postprocesscolumn]['category'] == 'nmbr':
-#           elif preFSpostprocess_dict['column_dict'][postprocesscolumn]['origcategory'] == 'nmbr':
-#             if column == preFSpostprocess_dict['column_dict'][postprocesscolumn]['origcolumn'] \
-#             and postprocesscolumn[-5:] != '_NArw':
-#               traincategory = 'nmbr'
-#               columnkey = postprocesscolumn
-#               #break
-
-#           elif traincategory == False:
-#             traincategory = 'null'
-#             #break
+  #           elif preFSpostprocess_dict['column_dict'][postprocesscolumn]['origcategory'] == 'bxcx':
+  #             if column == preFSpostprocess_dict['column_dict'][postprocesscolumn]['origcolumn']:
+  #               traincategory = 'bxcx'
+  #               columnkey = column + '_bxcx'
 
 
+  #           #elif postprocess_dict['column_dict'][postprocesscolumn]['category'] == 'bnry':
+  #           elif preFSpostprocess_dict['column_dict'][postprocesscolumn]['origcategory'] == 'bnry':
+  #             if column == preFSpostprocess_dict['column_dict'][postprocesscolumn]['origcolumn'] \
+  #             and postprocesscolumn[-5:] != '_NArw':
+  #               traincategory = 'bnry'
+  #               columnkey = postprocesscolumn
+  #               #break
 
- 
-        
+  #           #elif postprocess_dict['column_dict'][postprocesscolumn]['category'] == 'nmbr':
+  #           elif preFSpostprocess_dict['column_dict'][postprocesscolumn]['origcategory'] == 'nmbr':
+  #             if column == preFSpostprocess_dict['column_dict'][postprocesscolumn]['origcolumn'] \
+  #             and postprocesscolumn[-5:] != '_NArw':
+  #               traincategory = 'nmbr'
+  #               columnkey = postprocesscolumn
+  #               #break
 
-#         #for the special case of train category = bxcx and test category = nmbr
-#         #(meaning there were no negative values in train but there were in test)
-#         #we'll resolve by clipping all test values that were <0.1 and setting to 
-#         #NaN then resetting the test category to bxcx to be consistent with train
-#         if traincategory == 'bxcx' and category == 'nmbr':
-
-#           #convert all values to either numeric or NaN
-#           df_test[column] = pd.to_numeric(df_test[column], errors='coerce')
+  #           elif traincategory == False:
+  #             traincategory = 'null'
+  #             #break
 
 
-#           df_test[column] = df_test[column].mask(df_test[column] < 0.1)
-#           category = 'bxcx'
-#           print('Note that values < 0.1 found in test set were reset to NaN')
-#           print('to allow consistent box-cox transform as train set.')
 
-#         #another special case, if train category is nmbr and test category is bxcx
-#         #default test category to nmbr
-#         if traincategory == 'nmbr' and category == 'bxcx':
-#           category = 'nmbr'
 
-#         #one more special case, if train was a numerical set to categorical based
-#         #on heuristic, let's force test to as well
-#         if traincategory == 'text' and category == 'nmbr':
-#           category = 'text'
-        
-#         #one more one more special case, this is certainly an edge case for
-#         #very small sets, let's say:
-#         if traincategory == 'text' and category == 'bnry':
-#           category = 'text'
 
-#         #let's make sure the category is consistent between train and test sets
-#         if category != traincategory:
-#           print('error - different category between train and test sets for column ',\
-#                 column)
+
+  #         #for the special case of train category = bxcx and test category = nmbr
+  #         #(meaning there were no negative values in train but there were in test)
+  #         #we'll resolve by clipping all test values that were <0.1 and setting to 
+  #         #NaN then resetting the test category to bxcx to be consistent with train
+  #         if traincategory == 'bxcx' and category == 'nmbr':
+
+  #           #convert all values to either numeric or NaN
+  #           df_test[column] = pd.to_numeric(df_test[column], errors='coerce')
+
+
+  #           df_test[column] = df_test[column].mask(df_test[column] < 0.1)
+  #           category = 'bxcx'
+  #           print('Note that values < 0.1 found in test set were reset to NaN')
+  #           print('to allow consistent box-cox transform as train set.')
+
+  #         #another special case, if train category is nmbr and test category is bxcx
+  #         #default test category to nmbr
+  #         if traincategory == 'nmbr' and category == 'bxcx':
+  #           category = 'nmbr'
+
+  #         #one more special case, if train was a numerical set to categorical based
+  #         #on heuristic, let's force test to as well
+  #         if traincategory == 'text' and category == 'nmbr':
+  #           category = 'text'
+
+  #         #one more one more special case, this is certainly an edge case for
+  #         #very small sets, let's say:
+  #         if traincategory == 'text' and category == 'bnry':
+  #           category = 'text'
+
+  #         #let's make sure the category is consistent between train and test sets
+  #         if category != traincategory:
+  #           print('error - different category between train and test sets for column ',\
+  #                 column)
 
 
         #here we'll delete any columns that returned a 'null' category
@@ -23548,97 +23822,97 @@ class AutoMunge:
             print("processing column: ", column)
             print("    root category: ", category)
             #print("")
-          
-#           #process ancestors
-#           df_test = \
-#           self.postprocessancestors(df_test, column, category, category, process_dict, \
-#                                     transform_dict, preFSpostprocess_dict, columnkey)
-          
+
+  #           #process ancestors
+  #           df_test = \
+  #           self.postprocessancestors(df_test, column, category, category, process_dict, \
+  #                                     transform_dict, preFSpostprocess_dict, columnkey)
+
           #process family
           df_test = \
           self.postprocessfamily(df_test, column, category, category, process_dict, \
-                                transform_dict, preFSpostprocess_dict, columnkey)
-         
-          
+                                transform_dict, preFSpostprocess_dict, columnkey, assign_param)
+
+
           #delete columns subject to replacement
           df_test = \
           self.postcircleoflife(df_test, column, category, category, process_dict, \
                                 transform_dict, preFSpostprocess_dict, columnkey)
 
-          
+
           #now we'll apply the floatprecision transformation
           columnkeylist = postprocess_dict['origcolumn'][column]['columnkeylist']
           df_test = self.floatprecision_transform(df_test, columnkeylist, floatprecision)
-          
+
           #printout display progress
           if printstatus == True:
             print(" returned columns:")
             print(postprocess_dict['origcolumn'][column]['columnkeylist'])
             print("")
-    
+
 
 
     #ok here we'll introduct the new functionality to process labels consistent to the train 
     #set if any are included in the postmunge test set
-    
+
     #first let's get the name of the labels column from postprocess_dict
     labels_column = postprocess_dict['labels_column']
-    
+
     #ok now let's check if that labels column is present in the test set
     if labelscolumn != False:
       if labelscolumn != True:
         if labelscolumn != labels_column:
           print("error, labelscolumn in test set passed to postmunge must have same column")
           print("labeling convention, labels column from automunge was: ", labels_column)
-    
+
       #ok 
       #initialize processing dicitonaries (we'll use same as for train set)
       #a future extension may allow custom address for labels
       labelstransform_dict = transform_dict
       labelsprocess_dict = process_dict
-        
-      
+
+
       #ok this replaces some methods from 1.76 and earlier for finding a column key
       #troubleshoot "find labels category"
       columnkey = postprocess_dict['origcolumn'][labels_column]['columnkey']        
       #traincategory = postprocess_dict['column_dict'][columnkey]['origcategory']
       labelscategory = postprocess_dict['origcolumn'][labels_column]['category']
-        
+
       if printstatus == True:
         #printout display progress
         print("processing label column: ", labels_column)
         print("    root label category: ", labelscategory)
         print("")
-    
 
-#       #if category in ['nmbr', 'bxcx', 'excl']:
-#       #process ancestors
-#       df_testlabels = \
-#       self.postprocessancestors(df_testlabels, labels_column, category, category, process_dict, \
-#                                 transform_dict, preFSpostprocess_dict, columnkey)
-          
+
+  #       #if category in ['nmbr', 'bxcx', 'excl']:
+  #       #process ancestors
+  #       df_testlabels = \
+  #       self.postprocessancestors(df_testlabels, labels_column, category, category, process_dict, \
+  #                                 transform_dict, preFSpostprocess_dict, columnkey)
+
       #process family
       df_testlabels = \
       self.postprocessfamily(df_testlabels, labels_column, labelscategory, labelscategory, process_dict, \
-                             transform_dict, preFSpostprocess_dict, columnkey)
-         
-          
+                             transform_dict, preFSpostprocess_dict, columnkey, assign_param)
+
+
       #delete columns subject to replacement
       df_testlabels = \
       self.postcircleoflife(df_testlabels, labels_column, labelscategory, labelscategory, process_dict, \
                             transform_dict, preFSpostprocess_dict, columnkey)
-      
+
       #per our convention that NArw's aren't included in labels output 
       if labels_column + '_NArw' in list(df_testlabels):
         del df_testlabels[labels_column + '_NArw']
-    
+
       #printout display progress
       if printstatus == True:
         print(" returned columns:")
         print(postprocess_dict['origcolumn'][labels_column]['columnkeylist'])
         print("")
-    
-    
+
+
     labelsencoding_dict = postprocess_dict['labelsencoding_dict']
 
 
@@ -23647,57 +23921,57 @@ class AutoMunge:
 
     #now that we've pre-processed all of the columns, let's run through them again\
     #using infill to derive plug values for the previously missing cells
-    
+
     infillcolumns_list = list(df_test)
-    
+
     #excludetransformscolumns = postprocess_dict['excludetransformscolumns']
-    
+
     #Here is the list of columns for the stdrdinfill approach
     #(bassically using MLinfill if MLinfill elected for default, otherwise
     #using mean for numerical, most common for binary, and unique column for categorical)
     assigninfill = postprocess_dict['assigninfill']
-    
-    
+
+
     #allstdrdinfill_list = self.stdrdinfilllist(assigninfill, infillcolumns_list)
-    
+
     #Here is the application of assemblepostprocess_assigninfill
     postprocess_assigninfill_dict = \
     self.assemblepostprocess_assigninfill(assigninfill, infillcolumns_list, \
                                           columns_test, preFSpostprocess_dict)
-    
+
 
 
     if 'stdrdinfill' not in postprocess_assigninfill_dict:
       postprocess_assigninfill_dict.update({'stdrdinfill':[]})
-    
+
     if 'zeroinfill' in postprocess_assigninfill_dict:
       columns_train_zero = postprocess_assigninfill_dict['zeroinfill']
-    
+
     if 'oneinfill' in postprocess_assigninfill_dict:
       columns_train_one = postprocess_assigninfill_dict['oneinfill']
-    
+
     if 'adjinfill' in postprocess_assigninfill_dict:
       columns_train_adj = postprocess_assigninfill_dict['adjinfill']
-    
+
     if 'medianinfill' in postprocess_assigninfill_dict: 
       columns_train_median = postprocess_assigninfill_dict['medianinfill']
-    
+
     if 'meaninfill' in postprocess_assigninfill_dict: 
       columns_train_mean = postprocess_assigninfill_dict['meaninfill']
-      
+
     if 'modeinfill' in postprocess_assigninfill_dict: 
       columns_train_mode = postprocess_assigninfill_dict['modeinfill']
-    
+
     if postprocess_dict['MLinfill'] == True:
       if 'MLinfill' in postprocess_assigninfill_dict:
         columns_test_ML = list(set().union(postprocess_assigninfill_dict['stdrdinfill'], \
                                            postprocess_assigninfill_dict['MLinfill']))
-        
+
         postprocess_assigninfill_dict['stdrdinfill'] = []
 
       else:
         columns_train_ML = postprocess_assigninfill_dict['stdrdinfill']
-        
+
         postprocess_assigninfill_dict['stdrdinfill'] = []
 
 
@@ -23706,20 +23980,20 @@ class AutoMunge:
         columns_test_ML = postprocess_assigninfill_dict['MLinfill']
       else:
         columns_test_ML = []
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
 
 
     for column in infillcolumns_list:
-      
+
       if column[-5:] != '_NArw':
-        
+
         if column in postprocess_assigninfill_dict['stdrdinfill']:
-        
+
           #printout display progress
           if printstatus == True:
             print("infill to column: ", column)
@@ -23731,7 +24005,7 @@ class AutoMunge:
 
           #for column in columns_train_zero:
           if column in columns_train_zero:
-            
+
             #printout display progress
             if printstatus == True:
               print("infill to column: ", column)
@@ -23740,10 +24014,10 @@ class AutoMunge:
 
             categorylistlength = len(preFSpostprocess_dict['column_dict'][column]['categorylist'])
 
-#             #if (column not in excludetransformscolumns) \
-#             if (column not in postprocess_assigninfill_dict['stdrdinfill']) \
-#             and (column[-5:] != '_NArw') \
-#             and (categorylistlength == 1):
+  #             #if (column not in excludetransformscolumns) \
+  #             if (column not in postprocess_assigninfill_dict['stdrdinfill']) \
+  #             and (column[-5:] != '_NArw') \
+  #             and (categorylistlength == 1):
             if (column not in postprocess_assigninfill_dict['stdrdinfill']):
               #noting that currently we're only going to infill 0 for single column categorylists
               #some comparable address for multi-column categories is a future extension
@@ -23756,7 +24030,7 @@ class AutoMunge:
 
           #for column in columns_train_zero:
           if column in columns_train_one:
-            
+
             #printout display progress
             if printstatus == True:
               print("infill to column: ", column)
@@ -23765,10 +24039,10 @@ class AutoMunge:
 
             categorylistlength = len(preFSpostprocess_dict['column_dict'][column]['categorylist'])
 
-#             #if (column not in excludetransformscolumns) \
-#             if (column not in postprocess_assigninfill_dict['stdrdinfill']) \
-#             and (column[-5:] != '_NArw') \
-#             and (categorylistlength == 1):
+  #             #if (column not in excludetransformscolumns) \
+  #             if (column not in postprocess_assigninfill_dict['stdrdinfill']) \
+  #             and (column[-5:] != '_NArw') \
+  #             and (categorylistlength == 1):
             if (column not in postprocess_assigninfill_dict['stdrdinfill']):
               #noting that currently we're only going to infill 0 for single column categorylists
               #some comparable address for multi-column categories is a future extension
@@ -23778,10 +24052,10 @@ class AutoMunge:
                                      masterNArows_test)
 
         if 'adjinfill' in postprocess_assigninfill_dict:
-        
+
           #for column in columns_train_adj:
           if column in columns_train_adj:
-            
+
             #printout display progress
             if printstatus == True:
               print("infill to column: ", column)
@@ -23802,7 +24076,7 @@ class AutoMunge:
 
           #for column in columns_train_median:
           if column in columns_train_median:
-            
+
             #printout display progress
             if printstatus == True:
               print("infill to column: ", column)
@@ -23839,7 +24113,7 @@ class AutoMunge:
 
           #for column in columns_train_mean:
           if column in columns_train_mean:
-            
+
             #printout display progress
             if printstatus == True:
               print("infill to column: ", column)
@@ -23873,7 +24147,7 @@ class AutoMunge:
 
           #for column in columns_train_median:
           if column in columns_train_mode:
-            
+
             #printout display progress
             if printstatus == True:
               print("infill to column: ", column)
@@ -23903,15 +24177,15 @@ class AutoMunge:
               df_test = \
               self.test_modeinfillfunction(df_test, column, postprocess_dict, \
                                              masterNArows_test, infillvalue)
-              
+
             #if (column not in excludetransformscolumns) \
             if (column not in postprocess_assigninfill_dict['stdrdinfill']) \
             and (column[-5:] != '_NArw') \
             and (categorylistlength > 1) \
             and boolcolumn == True:
-              
+
               infillvalue = postprocess_dict['column_dict'][column]['normalization_dict']['infillvalue']
-              
+
               df_test = \
               self.test_catmodeinfillfunction(df_test, column, postprocess_dict, \
                                              masterNArows_test, infillvalue)
@@ -23939,7 +24213,7 @@ class AutoMunge:
 
             #for column in columns_test_ML:
             if column in columns_test_ML:
-                
+
               #printout display progress
               if printstatus == True:
                 print("infill to column: ", column)
@@ -23964,20 +24238,20 @@ class AutoMunge:
 
 
             iteration += 1
-    
+
 
 
     #trim branches associated with feature selection
     if postprocess_dict['featureselection'] == True:
-      
-      
+
+
       #get list of columns currently included
       currentcolumns = list(df_test)
-      
+
       #get list of columns to trim
       madethecutset = set(postprocess_dict['madethecut'])
       trimcolumns = [b for b in currentcolumns if b not in madethecutset]
-        
+
       if len(trimcolumns) > 0:
         #printout display progress
         if printstatus == True:
@@ -23996,13 +24270,13 @@ class AutoMunge:
           print("returned columns: ")
           print(postprocess_dict['madethecut'])
           print("")
-      
+
       #trim columns manually
       for trimmee in trimcolumns:
         del df_test[trimmee]
-    
-    
-    
+
+
+
     #first this check allows for backward compatibility with published demonstrations
     if 'PCAn_components' in postprocess_dict:
       #grab parameters from postprocess_dict
@@ -24015,7 +24289,7 @@ class AutoMunge:
 
         PCAset_test, PCAexcl_posttransform = \
         self.postcreatePCAsets(df_test, postprocess_dict)
-        
+
         #printout display progress
         if printstatus == True:
           print("_______________")
@@ -24028,18 +24302,18 @@ class AutoMunge:
 
         PCAset_test, postprocess_dict = \
         self.postPCAfunction(PCAset_test, postprocess_dict)
-        
+
         #reattach the excluded columns to PCA set
         df_test = pd.concat([PCAset_test, df_test[PCAexcl_posttransform]], axis=1)
-        
+
         #printout display progress
         if printstatus == True:
           print("returned PCA columns: ")
           print(list(PCAset_test))
           print("")
-    
-   
-    
+
+
+
     #here is the process to levelize the frequency of label rows in train data
     #currently only label categories of 'bnry' or 'text' are considered
     #a future extension will include numerical labels by adding supplemental 
@@ -24047,7 +24321,7 @@ class AutoMunge:
     #e.g. such as quintiles for instance
     if TrainLabelFreqLevel == True \
     and labelscolumn != False:
-      
+
       #printout display progress
       if printstatus == True:
         print("_______________")
@@ -24058,30 +24332,30 @@ class AutoMunge:
         print("")
 
 
-#       train_df = pd.DataFrame(np_train, columns = finalcolumns_train)
-#       labels_df = pd.DataFrame(np_labels, columns = finalcolumns_labels)
+  #       train_df = pd.DataFrame(np_train, columns = finalcolumns_train)
+  #       labels_df = pd.DataFrame(np_labels, columns = finalcolumns_labels)
       if testID_column != False:
-#         trainID_df = pd.DataFrame(np_trainID, columns = [trainID_column])
+  #         trainID_df = pd.DataFrame(np_trainID, columns = [trainID_column])
         #add trainID set to train set for consistent processing
-#         train_df = pd.concat([train_df, trainID_df], axis=1)                        
+  #         train_df = pd.concat([train_df, trainID_df], axis=1)                        
         df_test = pd.concat([df_test, df_testID], axis=1)                        
-      
-      
+
+
       if postprocess_dict['process_dict'][labelscategory]['MLinfilltype'] \
       in ['numeric', 'singlct', 'multirt', 'multisp', 'label']:
-        
+
         #apply LabelFrequencyLevelizer defined function
         df_test, df_testlabels = \
         self.LabelFrequencyLevelizer(df_test, df_testlabels, labelsencoding_dict, \
                                      postprocess_dict, process_dict)
-      
 
-      
+
+
       #extract trainID
       if testID_column != False:
-            
+
         df_testID = pd.DataFrame(df_test[testID_column])
-        
+
         if isinstance(testID_column, str):
           tempIDlist = [testID_column]
         elif isinstance(testID_column, list):
@@ -24089,95 +24363,95 @@ class AutoMunge:
         for IDcolumn in tempIDlist:
           del df_test[IDcolumn]
         #del df_train[trainID_column]
-    
+
       #printout display progress
       if printstatus == True:
         print("After rebalancing row count = ")
         print(df_testlabels.shape[0])
         print("")
-    
-            
-#     #ok here we'll introduct the new functionality to process labels consistent to the train 
-#     #set if any are included in the postmunge test set
-    
-#     #first let's get the name of the labels column from postprocess_dict
-#     labels_column = postprocess_dict['labels_column']
-    
-#     #ok now let's check if that labels column is present in the test set
-#     if labelscolumn != False:
-#       if labelscolumn != True:
-#         if labelscolumn != labels_column:
-#           print("error, labelscolumn in test set passed to postmunge must have same column")
-#           print("labeling convention, labels column from automunge was: ", labels_column)
-    
-#       #ok 
-#       #initialize processing dicitonaries (we'll use same as for train set)
-#       #a future extension may allow custom address for labels
-#       labelstransform_dict = transform_dict
-#       labelsprocess_dict = process_dict
-        
-      
-#       #ok this replaces some methods from 1.76 and earlier for finding a column key
-#       #troubleshoot "find labels category"
-#       columnkey = postprocess_dict['origcolumn'][labels_column]['columnkey']        
-#       #traincategory = postprocess_dict['column_dict'][columnkey]['origcategory']
-#       category = postprocess_dict['origcolumn'][labels_column]['category']
-        
-#       if printstatus == True:
-#         #printout display progress
-#         print("processing label column: ", labels_column)
-#         print("    root label category: ", category)
-#         print("")
-    
 
-# #       #if category in ['nmbr', 'bxcx', 'excl']:
-# #       #process ancestors
-# #       df_testlabels = \
-# #       self.postprocessancestors(df_testlabels, labels_column, category, category, process_dict, \
-# #                                 transform_dict, preFSpostprocess_dict, columnkey)
-          
-#       #process family
-#       df_testlabels = \
-#       self.postprocessfamily(df_testlabels, labels_column, category, category, process_dict, \
-#                              transform_dict, preFSpostprocess_dict, columnkey)
-         
-          
-#       #delete columns subject to replacement
-#       df_testlabels = \
-#       self.postcircleoflife(df_testlabels, labels_column, category, category, process_dict, \
-#                             transform_dict, preFSpostprocess_dict, columnkey)
-      
-#       #per our convention that NArw's aren't included in labels output 
-#       if labels_column + '_NArw' in list(df_testlabels):
-#         del df_testlabels[labels_column + '_NArw']
-    
-    
-    
-    
-    
-#     labelsencoding_dict = postprocess_dict['labelsencoding_dict']
-    
+
+  #     #ok here we'll introduct the new functionality to process labels consistent to the train 
+  #     #set if any are included in the postmunge test set
+
+  #     #first let's get the name of the labels column from postprocess_dict
+  #     labels_column = postprocess_dict['labels_column']
+
+  #     #ok now let's check if that labels column is present in the test set
+  #     if labelscolumn != False:
+  #       if labelscolumn != True:
+  #         if labelscolumn != labels_column:
+  #           print("error, labelscolumn in test set passed to postmunge must have same column")
+  #           print("labeling convention, labels column from automunge was: ", labels_column)
+
+  #       #ok 
+  #       #initialize processing dicitonaries (we'll use same as for train set)
+  #       #a future extension may allow custom address for labels
+  #       labelstransform_dict = transform_dict
+  #       labelsprocess_dict = process_dict
+
+
+  #       #ok this replaces some methods from 1.76 and earlier for finding a column key
+  #       #troubleshoot "find labels category"
+  #       columnkey = postprocess_dict['origcolumn'][labels_column]['columnkey']        
+  #       #traincategory = postprocess_dict['column_dict'][columnkey]['origcategory']
+  #       category = postprocess_dict['origcolumn'][labels_column]['category']
+
+  #       if printstatus == True:
+  #         #printout display progress
+  #         print("processing label column: ", labels_column)
+  #         print("    root label category: ", category)
+  #         print("")
+
+
+  # #       #if category in ['nmbr', 'bxcx', 'excl']:
+  # #       #process ancestors
+  # #       df_testlabels = \
+  # #       self.postprocessancestors(df_testlabels, labels_column, category, category, process_dict, \
+  # #                                 transform_dict, preFSpostprocess_dict, columnkey)
+
+  #       #process family
+  #       df_testlabels = \
+  #       self.postprocessfamily(df_testlabels, labels_column, category, category, process_dict, \
+  #                              transform_dict, preFSpostprocess_dict, columnkey)
+
+
+  #       #delete columns subject to replacement
+  #       df_testlabels = \
+  #       self.postcircleoflife(df_testlabels, labels_column, category, category, process_dict, \
+  #                             transform_dict, preFSpostprocess_dict, columnkey)
+
+  #       #per our convention that NArw's aren't included in labels output 
+  #       if labels_column + '_NArw' in list(df_testlabels):
+  #         del df_testlabels[labels_column + '_NArw']
+
+
+
+
+
+  #     labelsencoding_dict = postprocess_dict['labelsencoding_dict']
+
     #a special case, those columns that we completely excluded from processing via excl
     #we'll scrub the suffix appender
     df_test.columns = [column[:-5] if column[-5:] == '_excl' else column for column in df_test.columns]
     if labelscolumn != False:
       df_testlabels.columns = [column[:-5] if column[-5:] == '_excl' else column for column in df_testlabels.columns]
-    
+
     #here's a list of final column names saving here since the translation to \
     #numpy arrays scrubs the column names
     finalcolumns_test = list(df_test)
-    
+
     postreports_dict['finalcolumns_test'] = finalcolumns_test
-    
-    
-            
+
+
+
     #printout display progress
     if printstatus == True:
-      
+
       print("Postmunge returned column set: ")
       print(list(df_test))
       print("")
-        
+
       if labelscolumn != False:
         print("Postmunge returned label column set: ")
         print(list(df_testlabels))
@@ -24189,8 +24463,8 @@ class AutoMunge:
       if labelscolumn != False:
         finalcolumns_labels = list(df_testlabels)
         df_testlabels = self.floatprecision_transform(df_testlabels, finalcolumns_labels, floatprecision)
-    
-    
+
+
     #determine output type based on pandasoutput argument
     if pandasoutput == True:
       #global processing to test set including conversion to numpy array
@@ -24200,12 +24474,12 @@ class AutoMunge:
         testID = df_testID
       else:
         testID = pd.DataFrame()
-       
+
       if labelscolumn != False:
         testlabels = df_testlabels
       else:
         testlabels = pd.DataFrame()
-    
+
     #else output numpy arrays
     else:
       #global processing to test set including conversion to numpy array
@@ -24215,22 +24489,22 @@ class AutoMunge:
         testID = df_testID.values
       else:
         testID = []
-        
-      
+
+
       if labelscolumn != False:
         testlabels = df_testlabels.values
-        
+
         #apply ravel to labels if appropriate - converts from eg [[1,2,3]] to [1,2,3]
         if testlabels.ndim == 2 and testlabels.shape[1] == 1:
           testlabels = np.ravel(testlabels)
-        
+
       else:
         testlabels = []
 
-        
+
     #printout display progress
     if printstatus == True:
-        
+
       print("_______________")
       print("Postmunge Complete")
       print("")
