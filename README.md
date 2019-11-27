@@ -3154,15 +3154,17 @@ processdict = {'mnm8' : {'dualprocess' : process_mnm8_class, \
 
 #define the function
 def process_mnm8_class(mdf_train, mdf_test, column, category, \
-                       postprocess_dict):
+                       postprocess_dict, params = {}):
   #where
   #mdf_train is the train data set (pandas dataframe)
   #mdf_test is the consistently formatted test dataset (if no test data 
   #set is passed to automunge a small dummy set will be passed in it's place)
   #column is the string identifying the column header
   #category is the (traditionally 4 character) string category identifier, here is 
-  #will be 'mnm8', postprocess_dict is an object we pass to share data between 
-  #functions and later returned from automunge.
+  #will be 'mnm8', 
+  #postprocess_dict is an object we pass to share data between 
+  #functions and later returned from automunge
+  #and params are any column specific parameters to be passed by user in assignparam
 
   #create thee new column, using the category key as a suffix identifier
   
@@ -3303,7 +3305,7 @@ def process_mnm8_class(mdf_train, mdf_test, column, category, \
 #and test sets, we'll need to define a corresponding "postprocess" function
 #intended for use on just the test set
 
-def postprocess_mnm3_class(mdf_test, column, postprocess_dict, columnkey):
+def postprocess_mnm3_class(mdf_test, column, postprocess_dict, columnkey, params={}):
   #where mdf_test is a dataframe of the test set
   #column is the string of the column header
   #postprocess_dict is how we carry packets of data between the 
@@ -3311,6 +3313,7 @@ def postprocess_mnm3_class(mdf_test, column, postprocess_dict, columnkey):
   #columnkey is a key used to access stuff in postprocess_dict if needed
   #(columnkey is only valid for initial root categories, if you want to use function
   #as a downstream category we have to recreate a columnkey such as follows for normkey)
+  #and params are any column specific parameters to be passed by user in assignparam
 
   #retrieve normalization parameters from postprocess_dict
   normkey = column + '_mnm8'
