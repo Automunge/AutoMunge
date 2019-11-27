@@ -143,7 +143,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
 		         'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'eval':[]}, \
             assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                             'adjinfill':[], 'meaninfill':[], 'medianinfill':[], 'modeinfill':[]}, \
-            transformdict = {}, processdict = {}, evalcat = False, \
+            assignparam = {}, transformdict = {}, processdict = {}, evalcat = False, \
             printstatus = True)
 ```
 
@@ -333,7 +333,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
 		         'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'eval':[]}, \
             assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                             'adjinfill':[], 'meaninfill':[], 'medianinfill':[], 'modeinfill':[]}, \
-            transformdict = {}, processdict = {}, evalcat = False, \
+            assignparam = {}, transformdict = {}, processdict = {}, evalcat = False, \
             printstatus = True)
 ```
 
@@ -497,7 +497,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
 		         'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'eval':[]}, \
             assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                             'adjinfill':[], 'meaninfill':[], 'medianinfill':[], 'modeinfill':[]}, \
-            transformdict = {}, processdict = {}, evalcat = False, \
+            assignparam = {}, transformdict = {}, processdict = {}, evalcat = False, \
             printstatus = True)
 ```
 
@@ -796,6 +796,32 @@ set to numeric columns. (Note currently boolean columns derived from
 numeric are not supported for mean/median and for those cases default to 
 those infill from stdrdinfill.) modeinfill means inserting the most common
 value for a set, note that modeinfill supports one-hot encoded sets.
+
+* assigninfill
+A user may pass column-specific parameters to those transformation functions
+that accept parameters. assignparam is a dictionary that should be formatted
+per following example:
+```
+assignparam = {'category1' : {'column1' : {'param1' : 123}, 'column2' : {'param1' : 456}}, \
+               'cateogry2' : {'column3' : {'param2' : 'abc', 'param3' : 'def'}}}
+
+#In other words:
+#The first layer keys are the transformation category for which parameters are intended
+#The second layer keys are string identifiers for the columns for which the parameters are intended
+#The third layer keys are the parameters whose values are to be passed.
+
+#As an example with actual parameters, consider the trasnformation category 'splt' intended for 'column1',
+#which accepts parameter 'minsplit' for minimum character length of detected overlaps. If we wanted to
+pass 4 instead of the default of 5:
+assignparam = {'splt' : {'column1' : {'minsplit' : 4}}
+
+#Note that column string identifiers may just be the source column string or may include the
+#suffix appenders such as if multiple versiuons of transformations are applied within same family tree
+#If more than one column identifier matches a column, the longest character length key which matches
+#will be applied (such as may include suffixc appenders).
+```
+See the Library of Transformations section below for those trasnformations that accept parameters.
+
 
 * transformdict: allows a user to pass a custom tree of transformations.
 Note that a user may define their own (traditionally 4 character) string "root"
@@ -1266,28 +1292,34 @@ infill.
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '_nmbr'
+  - assignparam parameters accepted: none
 * dxdt/d2dt/d3dt: rate of change (row value minus value in preceding row)
   - default infill: adjacent cells
   - default NArowtype: numeric
   - suffix appender: '_dxdt'
+  - assignparam parameters accepted: none
 * dxd2/d2d2/d3d2: denoised rate of change (average of last two rows minus average
 of preceding two rows)
   - default infill: adjacent cells
   - default NArowtype: numeric
   - suffix appender: '_dxd2'
+  - assignparam parameters accepted: none
 * MADn/MAD2: mean absolute deviation normalization, subtract set mean
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '_MADn'
+  - assignparam parameters accepted: none
 * MAD3: mean absolute deviation normalization, subtract set maximum
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '_MAD3'
+  - assignparam parameters accepted: none
 * mnmx/mnm2/mnm5/mmdx/mmd2/mmd3: vanilla min-max scaling
 (x - min) / (max - min)
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '_mnmx'
+  - assignparam parameters accepted: none
 * mean/mea2/mea3: mean normalization (like z-score in the numerator and min-max in the denominator)
 (x - mean) / (max - mean)
 Note this is what Andrew Ng suggested as default in his MOOC. My intuition says z-score has some 
@@ -1296,11 +1328,13 @@ benefits but really up to the user which they prefer.
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '_mnm3'
+  - assignparam parameters accepted: none
 * mnm6: min-max scaling with test floor set capped at min of train set (ensures
 test set returned values >= 0, such as might be useful for kernel PCA for instance)
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '_mnm6'
+  - assignparam parameters accepted: none
 * bnry: converts sets with two values to boolean identifiers. Defaults to assiging
 1 to most common value and 0 to second most common, unless 1 or 0 is already included
 in most common of the set then defaults to maintaining those designations. If applied 
@@ -1308,24 +1342,29 @@ to set with >2 entries applies infill to those entries beyond two most common.
   - default infill: most common value
   - default NArowtype: justNaN
   - suffix appender: '_bnry'
+  - assignparam parameters accepted: none
 * text/txt2: converts categorical sets to one-hot encoded set of boolean identifiers
   - default infill: all entries zero
   - default NArowtype: justNaN
   - suffix appender: '_(category)' where category is the target of the column
+  - assignparam parameters accepted: none
 * ordl/ord2: converts categorical sets to ordinally encoded set of integer identifiers
   - default infill: plug value 'zzzinfill'
   - default NArowtype: justNaN
   - suffix appender: '_ordl'
+  - assignparam parameters accepted: none
 * ord3/ord4: converts categorical sets to ordinally encoded set of integer identifiers
 sorted by frequency of category occurance
   - default infill: plug value 'zzzinfill'
   - default NArowtype: justNaN
   - suffix appender: '_ord3'
+  - assignparam parameters accepted: none
 * 1010: converts categorical sets of >2 unique values to binary encoding (more memory 
 efficent than one-hot encoding)
   - default infill: plug value 'zzzinfill'
   - default NArowtype: justNaN
   - suffix appender: '_1010_#' where # is integer indicating order of 1010 columns
+  - assignparam parameters accepted: none
   (for example if 1010 encoded to three columns based on number of categories <8,
   it would retuyrn three columns with suffix appenders 1010_1, 1010_2, 1010_3)
 * bxcx/bxc2/bxc3/bxc4: performs Box-Cox power law transformation. Applies infill to values 
@@ -1333,14 +1372,17 @@ efficent than one-hot encoding)
   - default infill: mean
   - default NArowtype: positivenumeric
   - suffix appender: '_bxcx'
+  - assignparam parameters accepted: none
 * log0/log1: performs logarithmic transform (base 10). Applies infill to values <= 0.
   - default infill: mean
   - default NArowtype: positivenumeric
   - suffix appender: '_log0'
+  - assignparam parameters accepted: none
 * sqrt: performs square root transform. Applies infill to values < 0.
   - default infill: mean
   - default NArowtype: nonnegativenumeric
   - suffix appender: '_sqrt'
+  - assignparam parameters accepted: none
 * pwrs: bins groupings by powers of 10
   - default infill: mean (ie log(mean))
   - default NArowtype: positivenumeric
@@ -1349,6 +1391,7 @@ efficent than one-hot encoding)
   - default infill: no activation
   - default NArowtype: nonzeronumeric
   - suffix appender: '_10^#' or '_-10^#' where # is integer indicating target powers of 10 for column
+  - assignparam parameters accepted: none
 * pwor: for numerical sets, outputs an ordinal encoding indicating where a
 value fell with respect to powers of 10
   - default infill: zero
@@ -1359,6 +1402,7 @@ value fell with respect to powers of 10
   - default infill: zero (a distinct encoding)
   - default NArowtype: nonzeronumeric
   - suffix appender: '_por2'
+  - assignparam parameters accepted: none
 * bins: for numerical sets, outputs a set of 6 columns indicating where a
 value fell with respect to number of standard deviations from the mean of the
 set (i.e. <-2, -2-1, -10, 01, 12, >2)
@@ -1366,35 +1410,42 @@ set (i.e. <-2, -2-1, -10, 01, 12, >2)
   - default NArowtype: numeric
   - suffix appender: '_bins_####' where #### is one of set (s<-2, s-21, s-10, s+01, s+12, s>+2)
   which indicate column target for number of standard deviations from the mean
+  - assignparam parameters accepted: none
 * bint: comparable to bins but assumes data has already been z-score normalized
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '_bint_####' where #### is one of set (t<-2, t-21, t-10, t+01, t+12, t>+2)
   which indicate column target for number of standard deviations from the mean
+  - assignparam parameters accepted: none
 * bsor: for numerical sets, outputs an ordinal encoding indicating where a
 value fell with respect to number of standard deviations from the mean of the
 set (i.e. <-2:0, -2-1:1, -10:2, 01:3, 12:4, >2:5)
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '_bsor'
+  - assignparam parameters accepted: none
 * date/dat2: for datetime formatted data, segregates data by time scale to multiple
 columns (year/month/day/hour/minute/second) and then performs z-score normalization
   - default infill: mean
   - default NArowtype: datetime
   - suffix appender: includes appenders for (_year, _mnth, _days, _hour, _mint, _scnd)
+  - assignparam parameters accepted: none
 * wkdy: boolean identifier indicating whether a datetime object is a weekday
   - default infill: none
   - default NArowtype: datetime
   - suffix appender: '_wkdy'
+  - assignparam parameters accepted: none
 * bshr: boolean identifier indicating whether a datetime object falls within business
 hours (9-5, time zone unaware)
   - default infill: datetime
   - default NArowtype: justNaN
+  - assignparam parameters accepted: none
 * hldy: boolean identifier indicating whether a datetime object is a US Federal
 holiday
   - default infill: none
   - default NArowtype: datetime
   - suffix appender: '_hldy'
+  - assignparam parameters accepted: none
 * year/mnth/days/hour/mint/scnd: segregated by time scale and z-score normalization
   - default infill: mean
   - default NArowtype: datetime
@@ -1404,36 +1455,44 @@ dual columns with sin and cos transformations for time scale period (eg 12 month
   - default infill: mean
   - default NArowtype: datetime
   - suffix appender: includes appenders for (mnsn/mncs/dysn/dycs/hrsn/hrcs/misn/mics/scsn/sccs)
+  - assignparam parameters accepted: none
 * mdsn/mdcs: similar sin/cos treatment, but for combined month/day
   - default infill: mean
   - default NArowtype: datetime
   - suffix appender: includes appenders for (mdsn/mdcs)
+  - assignparam parameters accepted: none
 * hmss/hmsc: similar sin/cos treatment, but for combined hour/minute/second
   - default infill: mean
   - default NArowtype: datetime
   - suffix appender: includes appenders for (hmss/hmsc)
+  - assignparam parameters accepted: none
 * dat6: default transformation set for time series data, returns:
 'year', 'mdsn', 'mdcs', 'hmss', 'hmsc', 'bshr', 'wkdy', 'hldy'
   - default infill: mean
   - default NArowtype: datetime
   - suffix appender: includes appenders for ('year', 'mdsn', 'mdcs', 'hmss', 'hmsc', 'bshr', 'wkdy', 'hldy')
+  - assignparam parameters accepted: none
 * null: deletes source column
   - default infill: none
   - default NArowtype: exclude
   - no suffix appender, column deleted
+  - assignparam parameters accepted: none
 * excl: passes source column un-altered
   - default infill: none
   - default NArowtype: exclude
   - suffix appender: '_excl'
+  - assignparam parameters accepted: none
 * exc2/exc3: passes source column unaltered other than force to numeric, mode infill applied
   - default infill: mode
   - default NArowtype: numeric
   - suffix appender: '_exc2'
+  - assignparam parameters accepted: none
 * eval: performs distribution property evaluation consistent with the automunge
 'powertransform' parameter activated to designated column
   - default infill: based on evaluation
   - default NArowtype: based on evaluation
   - suffix appender: based on evlauation
+  - assignparam parameters accepted: none
 * NArw: produces a column of boolean identifiers for rows in the source
 column with missing or improperly formatted values. Note that when NArw
 is assigned in a family tree it bases NArowtype on the root category, 
@@ -1441,16 +1500,19 @@ when NArw is passed as the root category it bases NArowtype on default.
   - default infill: not applicable
   - default NArowtype: justNaN
   - suffix appender: '_NArw'
+  - assignparam parameters accepted: none
 * NAr2: produces a column of boolean identifiers for rows in the source
 column with missing or improperly formatted values.
   - default infill: not applicable
   - default NArowtype: numeric
   - suffix appender: '_NArw'
+  - assignparam parameters accepted: none
 * NAr3: produces a column of boolean identifiers for rows in the source
 column with missing or improperly formatted values.
   - default infill: not applicable
   - default NArowtype: positivenumeric
   - suffix appender: '_NArw'
+  - assignparam parameters accepted: none
 
 Please note I recommend caution on using splt/spl2/spl5/spl6 transforms on categorical
 sets that may include scientific units for instance, as prefixes will not be noted
@@ -1463,26 +1525,30 @@ start at 20 character length and go down to 5 character length.
   - default infill: none
   - default NArowtype: justNaN
   - suffix appender: '_splt_##*##' where ##*## is target idenbtified string overlap 
+  - assignparam parameters accepted: 'minsplit': indicating lowest character length for recognized overlaps 
 * spl2/spl3/spl4/ors2/txt3: similar to splt, but instead of creating new column identifier it replaces categorical 
 entries with the abbreviated string overlap
   - default infill: none
   - default NArowtype: justNaN
   - suffix appender: '_spl2'
+  - assignparam parameters accepted: 'minsplit': indicating lowest character length for recognized overlaps 
 * spl5/spl6/ors5/ors6: similar to spl2, but those entries without idenitified string overlap are set to 0,
 (used in ors5 in conjunction with ord3)
   - default infill: none
   - default NArowtype: justNaN
   - suffix appender: '_spl5'
+  - assignparam parameters accepted: 'minsplit': indicating lowest character length for recognized overlaps 
 * spl6: similar to spl5, but with a splt performed downstream for identification of overlaps
 within the overlaps
   - default infill: none
   - default NArowtype: justNaN
   - suffix appender: '_spl5'
+  - assignparam parameters accepted: 'minsplit': indicating lowest character length for recognized overlaps 
 * spl7: similar to spl5, but recognizes string character overlaps down to minimum 2 instead of 5
   - default infill: none
   - default NArowtype: justNaN
   - suffix appender: '_spl5'
-  
+  - assignparam parameters accepted: 'minsplit': indicating lowest character length for recognized overlaps 
 * nmrc/nmr2/nmr3: parses strings and returns any number groupings, prioritized by longest length
   - default infill: mean
   - default NArowtype: parsenumeric
@@ -1491,6 +1557,7 @@ within the overlaps
   - default infill: mean
   - default NArowtype: parsenumeric_commas
   - suffix appender: '_nmcm'
+  - assignparam parameters accepted: none
   
 * new processing functions nmr4/nmr5/nmr6/nmc4/nmc5/nmc6/spl8/spl9/sp10 (spelled sp"ten"):
   - comparable to functions nmrc/nmr2/nmr3/nmcm/nmc2/nmc3/splt/spl2/spl5
@@ -1499,6 +1566,7 @@ within the overlaps
   - default infill: comparable
   - default NArowtype: comparable
   - suffix appender: same format, updated per the new category
+  - assignparam parameters accepted: none
 
 * new processing functions nmr7/nmr8/nmr9/nmc7/nmc8/nmc9:
   - comparable to functions nmrc/nmr2/nmr3/nmcm/nmc2/nmc3
@@ -1508,6 +1576,7 @@ within the overlaps
   - default infill: comparable
   - default NArowtype: comparable
   - suffix appender: same format, updated per the new category
+  - assignparam parameters accepted: none
 
 * new processing functions Utxt / Utx2 / Utx3 / Uord / Uor2 / Uor3 / Uor6 / U101
   - comparable to functions text / txt2 / txt3 / ordl / ord2 / ord3 / ors6 / 1010
@@ -1517,6 +1586,7 @@ within the overlaps
   - and may be assigned other 9infill methods in assigninfill
   - default NArowtype: 'justNaN'
   - suffix appender: '_UPCS'
+  - assignparam parameters accepted: none
   
 * new processing root categories or11 / or12 / or13 / or14 / or15 / or16 / or17 / or18 / or19 / or20
   - or11 / or13 intended for categorical sets that may include multiple tiers of overlaps 
@@ -1532,6 +1602,8 @@ within the overlaps
   - or19 / or20 comparable to or16 / or18 but replace the 'nmrc' string parsing for numeric entries
   with nmc8 which allows comma characters in numbers and makes use of consistent assumption to
   spl9/sp10 that set of unique values in test set is same or subset of train for efficient psotmunge
+  - assignparam parameters accepted: 'minsplit': indicating lowest character length for recognized overlaps 
+  (note that parameter has to be assigned to specific categories such as spl2/spl5 etc)
 
 
 And here are the series of family trees currently built into the internal library.
