@@ -15897,13 +15897,113 @@ class AutoMunge:
     
     return df
   
-  def assembleassignparam(self):
-    """
-    #just a placeholder function for consistency with other methods
-    """
+#   def assembleassignparam(self):
+#     """
+#     #just a placeholder function for consistency with other methods
+#     """
     
+#     assign_param = {}
+    
+#     return assign_param
+  
+  def assemble_assign_param(self, assignparam, list_df_train):
+    """
+    #assignparam is the user passed dictionary
+    #list_df_train is a list of source columns passed to automunge
+    #returns an assign_param popuated to extract any default_assignparm parameters
+    #and populated in the format for accesing using traditional assign_partam format
+    """
+    #assignparam is the dictionary passed to automunge
+    #we'll convert it to assign_param (with underscore) based on any default_assignparam entries
+    
+    #assignparam follows form
+#     assignparam = {'category1' : {'column1' : {'param1' : 123}, 'column2' : {'param1' : 456}}, \
+#                    'cateogry2' : {'column3' : {'param2' : 'abc', 'param3' : 'def'}}}
+    
+    #if any default_assignparam entries they follow form
+#     assignparam = {'category1' : {'column1' : {'param1' : 123}, 'column2' : {'param1' : 456}}, \
+#                    'category2' : {'column3' : {'param2' : 'abc'}}, \
+#                    'default_assignparam' : {'category2' : {'param2' : 'ghi', 'param3' : 'def'}}}
+
+    #such that the default_assignparam entries would be populated as new default parameters
+    #for all columns that were not otherwise specified 
+    #e.g. in this example, because category2 has column3 specified for param2
+    #the population with defaults wioll defer to that specification, however because
+    #the default_assignparam for category2 includes another parameter param3, that 
+    #param3 will now be included in the assign_param[category2][column3] entry
+  
+    #initialize assign_param
     assign_param = {}
     
+    if 'default_assignparam' in assignparam:
+      
+      #key1 are category entries passed in assignparam['default_assignparam']
+      for key1 in assignparam['default_assignparam']:
+        
+        if key1 not in list(assignparam):
+          
+          #for column passed in df_train
+          for sourcecolumn in list_df_train:
+            
+            if key1 not in assign_param:
+            
+              assign_param.update({key1 : {sourcecolumn : assignparam['default_assignparam'][key1]}})
+            
+            else:
+              
+              assign_param[key1][sourcecolumn] = assignparam['default_assignparam'][key1]
+            
+        else:
+          
+          for sourcecolumn in list_df_train:
+            
+            if sourcecolumn in assignparam[key1]:
+              
+              #key2 are the column identifiers embedded as subkey to the assignparam categories
+              for key2 in assignparam[key1]:
+
+                if key2 in list_df_train:
+                  
+                  #key3_set is a set of parameters specified to specifric columns in assignparam
+                  key3_set = set(list(assignparam[key1][key2]))
+                  
+                  #key4_set is a set of default parameters specified in assignparam['default_assignparam']
+                  #for each category
+                  key4_set = set(list(assignparam['default_assignparam'][key1]))
+
+                  notyetspecifiedparams = key4_set - key3_set
+                  
+                  #key5 are the parameters not yet specified for this column in this category
+                  for key5 in notyetspecifiedparams:
+
+                    assignparam[key1][key2].update({key5 : assignparam['default_assignparam'][key1][key5]})
+                    
+                    if key1 not in assign_param:
+      
+                      assign_param.update({key1 : {key2 : assignparam[key1][key2]}})
+        
+                    else:
+            
+                      assign_param[key1] = {key2 : {key5 : assignparam[key1][key2]}}
+            
+            else:
+              
+              if key1 not in assign_param:
+            
+                assign_param.update({key1 : {sourcecolumn : assignparam['default_assignparam'][key1]}})
+
+              else:
+
+                assign_param[key1][sourcecolumn] = assignparam['default_assignparam'][key1]
+
+    #else for those assignparam entries not affected by default_assignparam
+    #we'll just pass through to assign_param
+    for key6 in assignparam:
+    
+      if key6 not in assign_param and key6 != 'default_assignparam':
+        
+        assign_param[key6] = assignparam[key6]
+        
     return assign_param
   
   def grab_params(self, assign_param, category, column):
@@ -16101,13 +16201,11 @@ class AutoMunge:
       #now update the processdict
       process_dict.update(processdict)
 
-    #initialize the assign_param
-    assign_param = self.assembleassignparam()
+    #move this after a few preprocessing steps on column labels such as convert to strings
+#     if bool(assignparam) != False:
 
-    if bool(assignparam) != False:
-
-      #now update the assign_param
-      assign_param.update(assignparam)
+#       #assemble the assign_param
+#       assign_param = self.assemble_assign_param(assignparam, list(df_train))
 
 
     #feature selection analysis performed here if elected
@@ -16177,6 +16275,13 @@ class AutoMunge:
     for column in list(df_train):
       trainlabels.append(str(column))
     df_train.columns = trainlabels
+    
+    #populate the assign_param now that we've coverted column labels to strings
+    if bool(assignparam) != False:
+
+      #assemble the assign_param
+      assign_param = self.assemble_assign_param(assignparam, trainlabels)
+
 
     #we'll introduce convention that if df_test provided as False then we'll create
     #a dummy set derived from df_train's first 10 rows
@@ -17361,7 +17466,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '2.94'
+    automungeversion = '2.95'
     application_number = random.randint(100000000000,999999999999)
     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -23519,10 +23624,12 @@ class AutoMunge:
     if bool(postprocess_dict['processdict']) != False:
       process_dict.update(postprocess_dict['processdict'])
 
-    assign_param = self.assembleassignparam()
+#     assign_param = self.assembleassignparam()
 
-    if bool(postprocess_dict['assignparam']) != False:
-      assign_param.update(postprocess_dict['assignparam'])
+#     if bool(postprocess_dict['assignparam']) != False:
+#       assign_param.update(postprocess_dict['assignparam'])
+      
+    assign_param = postprocess_dict['assign_param']
 
 
     #initialize the preFS postprocess_dict for use here
