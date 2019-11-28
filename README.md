@@ -797,7 +797,7 @@ numeric are not supported for mean/median and for those cases default to
 those infill from stdrdinfill.) modeinfill means inserting the most common
 value for a set, note that modeinfill supports one-hot encoded sets.
 
-* assigninfill
+* assignparam
 A user may pass column-specific parameters to those transformation functions
 that accept parameters. assignparam is a dictionary that should be formatted
 per following example:
@@ -819,6 +819,14 @@ assignparam = {'splt' : {'column1' : {'minsplit' : 4}}
 #suffix appenders such as if multiple versiuons of transformations are applied within same family tree
 #If more than one column identifier matches a column, the longest character length key which matches
 #will be applied (such as may include suffixc appenders).
+
+#Note that if a user wishes to overwrite the default parameters for all columns without specifying
+#them individually they can pass a 'default_assignparam' entry as follows (this only overwirtes those 
+#parameters that are not otherwise specified in assignparam)
+assignparam = {'category1' : {'column1' : {'param1' : 123}, 'column2' : {'param1' : 456}}, \
+               'cateogry2' : {'column3' : {'param2' : 'abc', 'param3' : 'def'}}, \
+	       'default_assignparam' : {'category3' : {'param4' : 789}
+
 ```
 See the Library of Transformations section below for those trasnformations that accept parameters.
 
