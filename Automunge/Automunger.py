@@ -4578,7 +4578,6 @@ class AutoMunge:
     if len(newcolumns) == 0:
       
       column_dict_list = []
-
     
     return mdf_train, mdf_test, column_dict_list
   
@@ -14325,6 +14324,8 @@ class AutoMunge:
     FSML_cmnd = deepcopy(ML_cmnd)
     FSML_cmnd['PCA_type'] = 'off'
     
+    FS_assignparam = deepcopy(assignparam)
+    
     totalvalidation = valpercent1 + valpercent2
     
     if totalvalidation == 0:
@@ -14345,7 +14346,7 @@ class AutoMunge:
                   featuremethod = 'pct', ML_cmnd = FSML_cmnd, assigncat = assigncat, \
                   assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                                  'adjinfill':[], 'meaninfill':[], 'medianinfill':[]}, \
-                  assignparam = assignparam, \
+                  assignparam = FS_assignparam, \
                   transformdict = transformdict, processdict = processdict, printstatus=printstatus)
     
     
@@ -15925,10 +15926,10 @@ class AutoMunge:
 #                    'category2' : {'column3' : {'param2' : 'abc'}}, \
 #                    'default_assignparam' : {'category2' : {'param2' : 'ghi', 'param3' : 'def'}}}
 
-    #such that the default_assignparam entries would be populated as new default parameters
+    #such that the default_assignparam entries would be populated as new assigned parameters
     #for all columns that were not otherwise specified 
     #e.g. in this example, because category2 has column3 specified for param2
-    #the population with defaults wioll defer to that specification, however because
+    #the population with defaults will defer to that specification, however because
     #the default_assignparam for category2 includes another parameter param3, that 
     #param3 will now be included in the assign_param[category2][column3] entry
   
@@ -15944,57 +15945,72 @@ class AutoMunge:
           
           #for column passed in df_train
           for sourcecolumn in list_df_train:
-            
+
             if key1 not in assign_param:
-            
+
               assign_param.update({key1 : {sourcecolumn : assignparam['default_assignparam'][key1]}})
-            
+
             else:
-              
+
               assign_param[key1][sourcecolumn] = assignparam['default_assignparam'][key1]
-            
+        
+        #else if category entry from default_assignparam key1 not a category key in assignparam
         else:
-          
+
           for sourcecolumn in list_df_train:
-            
+
             if sourcecolumn in assignparam[key1]:
-              
+
               #key2 are the column identifiers embedded as subkey to the assignparam categories
               for key2 in assignparam[key1]:
 
-                if key2 in list_df_train:
-                  
+                #if key2 in list_df_train:
+                if key2 == sourcecolumn:
+
                   #key3_set is a set of parameters specified to specifric columns in assignparam
                   key3_set = set(list(assignparam[key1][key2]))
-                  
+
                   #key4_set is a set of default parameters specified in assignparam['default_assignparam']
                   #for each category
                   key4_set = set(list(assignparam['default_assignparam'][key1]))
 
                   notyetspecifiedparams = key4_set - key3_set
-                  
+
                   #key5 are the parameters not yet specified for this column in this category
                   for key5 in notyetspecifiedparams:
 
                     assignparam[key1][key2].update({key5 : assignparam['default_assignparam'][key1][key5]})
-                    
+
                     if key1 not in assign_param:
-      
-                      assign_param.update({key1 : {key2 : assignparam[key1][key2]}})
-        
+
+                      assign_param.update({key1 : {sourcecolumn : assignparam[key1][key2]}})
+
                     else:
-            
-                      assign_param[key1] = {key2 : {key5 : assignparam[key1][key2]}}
-            
+
+                      if key2 in assign_param[key1]:
+
+                        assign_param[key1][key2].update(assignparam[key1][key2])
+
+                      else:
+                        
+                        assign_param[key1].update({key2 : assignparam[key1][key2]})
+
             else:
               
               if key1 not in assign_param:
-            
+                
                 assign_param.update({key1 : {sourcecolumn : assignparam['default_assignparam'][key1]}})
 
               else:
-
-                assign_param[key1][sourcecolumn] = assignparam['default_assignparam'][key1]
+                
+                if sourcecolumn in assign_param[key1]:
+                  
+                  assign_param[key1][sourcecolumn].update(assignparam['default_assignparam'][key1])
+                  
+                else:
+                  
+                  assign_param[key1].update({sourcecolumn : assignparam['default_assignparam'][key1]})
+                  
 
     #else for those assignparam entries not affected by default_assignparam
     #we'll just pass through to assign_param
@@ -17466,7 +17482,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '2.95'
+    automungeversion = '2.96'
     application_number = random.randint(100000000000,999999999999)
     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -23447,7 +23463,7 @@ class AutoMunge:
       else:
         #if list is empty
         if len(columnkeylist) == 0:
-          columnkey = column
+          columnkey = drift_column
         else:
           columnkey = columnkeylist[0]
           if len(columnkey) >= 5:
@@ -23511,6 +23527,12 @@ class AutoMunge:
         if returnedcolumn in returnedcolumns:
           if printstatus == True:
             print("original automunge normalization parameters:")
+            
+#             #troubleshoot
+#             print("postprocess_dict['column_dict'][returnedcolumn]['normalization_dict'][returnedcolumn]")
+#             print(postprocess_dict['column_dict'][returnedcolumn]['normalization_dict'][returnedcolumn])
+#             print("end troubleshoot")
+            
             print(postprocess_dict['column_dict'][returnedcolumn]['normalization_dict'][returnedcolumn])
             print("")
             
