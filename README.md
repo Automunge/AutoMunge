@@ -816,7 +816,7 @@ pass 4 instead of the default of 5:
 assignparam = {'splt' : {'column1' : {'minsplit' : 4}}
 
 #Note that column string identifiers may just be the source column string or may include the
-#suffix appenders such as if multiple versiuons of transformations are applied within same family tree
+#suffix appenders such as if multiple versiuons of transformations are applied within the same family tree
 #If more than one column identifier matches a column, the longest character length key which matches
 #will be applied (such as may include suffixc appenders).
 
