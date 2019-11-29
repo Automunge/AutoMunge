@@ -799,8 +799,9 @@ value for a set, note that modeinfill supports one-hot encoded sets.
 
 * assignparam
 A user may pass column-specific parameters to those transformation functions
-that accept parameters. assignparam is a dictionary that should be formatted
-per following example:
+that accept parameters. Any parameters passed to automunge(.) will be saved in
+the postprocess_dict and consistently applied in postmunge(.). assignparam is 
+a dictionary that should be formatted per following example:
 ```
 assignparam = {'category1' : {'column1' : {'param1' : 123}, 'column2' : {'param1' : 456}}, \
                'cateogry2' : {'column3' : {'param2' : 'abc', 'param3' : 'def'}}}
@@ -3173,6 +3174,13 @@ def process_mnm8_class(mdf_train, mdf_test, column, category, \
   #postprocess_dict is an object we pass to share data between 
   #functions and later returned from automunge
   #and params are any column specific parameters to be passed by user in assignparam
+  
+  #first, if this function accepts any parameters (it doesn't but just to demonstrate)
+  #we'll access those parameters from params, otherwise assign default values
+  #if 'parameter1' in params:
+  #  mnm8_parameter = params['parameter1']
+  #else:
+  #  mnm8_parameter = (some default value)
 
   #create thee new column, using the category key as a suffix identifier
   
