@@ -114,6 +114,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
             testID_column = False, valpercent1=0.0, valpercent2 = 0.0, floatprecision = 32, \
             shuffletrain = False, TrainLabelFreqLevel = False, powertransform = False, \
             binstransform = False, MLinfill = False, infilliterate=1, randomseed = 42, \
+	    LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, \
             numbercategoryheuristic = 63, pandasoutput = True, NArw_marker = True, \
             featureselection = False, featurepct = 1.0, featuremetric = .02, \
             featuremethod = 'default', PCAn_components = None, PCAexcl = [], \
@@ -175,7 +176,8 @@ test, testID, testlabels, \
 labelsencoding_dict, postreports_dict = \
 am.postmunge(postprocess_dict, df_test, testID_column = False, \
              labelscolumn = False, pandasoutput=True, printstatus = True, \
-             TrainLabelFreqLevel = False, featureeval = False, driftreport = False)
+             TrainLabelFreqLevel = False, featureeval = False, driftreport = False, ]\
+	     LabelSmoothing = False)
 ```
 
 
@@ -304,6 +306,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
             testID_column = False, valpercent1=0.0, valpercent2 = 0.0, floatprecision = 32, \
             shuffletrain = False, TrainLabelFreqLevel = False, powertransform = False, \
             binstransform = False, MLinfill = False, infilliterate=1, randomseed = 42, \
+	    LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, \
             numbercategoryheuristic = 63, pandasoutput = True, NArw_marker = True, \
             featureselection = False, featurepct = 1.0, featuremetric = .02, \
             featuremethod = 'default', PCAn_components = None, PCAexcl = [], \
@@ -352,7 +355,8 @@ With the full set of arguments available to be passed as:
 ```
 am.postmunge(postprocess_dict, df_test, testID_column = False, \
              labelscolumn = False, pandasoutput=True, printstatus = True, \
-             TrainLabelFreqLevel = False, featureeval = False, driftreport = False):
+             TrainLabelFreqLevel = False, featureeval = False, driftreport = False, ]\
+	     LabelSmoothing = False):
 ```
 
 Note that the only required argument to the automunge function is the
@@ -468,6 +472,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
             testID_column = False, valpercent1=0.0, valpercent2 = 0.0, floatprecision = 32, \
             shuffletrain = False, TrainLabelFreqLevel = False, powertransform = False, \
             binstransform = False, MLinfill = False, infilliterate=1, randomseed = 42, \
+	    LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, \
             numbercategoryheuristic = 63, pandasoutput = True, NArw_marker = True, \
             featureselection = False, featurepct = 1.0, featuremetric = .02, \
             featuremethod = 'default', PCAn_components = None, PCAexcl = [], \
@@ -625,6 +630,19 @@ note this is not an extensively tested hypothesis. This defaults to 1.
 * randomseed: a postitive integer used as a seed for randomness throughout 
 such as for data set shuffling, ML infill, and feature importance  algorithms. 
 This defaults to 42, a nice round number.
+
+* LabelSmoothing_train / LabelSmoothing_test / LabelSmoothing_val: each of these
+parameters accept float values in range 0.0-1.0 or the default value of False to 
+turn off. train is for the train set labels, test is for the test set labels, and
+val is for the validation set labels. Label Smoothing refers to the regularaization
+tactic of transforming boolean encoded labels from 1/0 designations to some mix of
+reduced/increased threshold - for example passing the float 0.9 would result in the
+conversion from 1/0 to 0.9/#, where # is a function of the number of cateogries in 
+the label set - for example for a boolean label it would convert 1/0 to 0.9/0.1, or 
+for the one-hot encoding of a three label set it would be convert 1/0 to 0.9/0.05.
+Hat tip for the concept to "Rethinking the Inception Architecture for Computer Vision"
+by Szegedy et al. Note that I believe not all predictive classifigation libraries 
+uniformily accept smoothed labels, but when available the method can at times be useful.
 
 * numbercategoryheuristic: an integer used as a heuristic. When a 
 categorical set has more unique values than this heuristic, it defaults 
@@ -1017,7 +1035,8 @@ test, testID, testlabels, \
 labelsencoding_dict, postreports_dict = \
 am.postmunge(postprocess_dict, df_test, testID_column = False, \
              labelscolumn = False, pandasoutput=True, printstatus = True, \
-             TrainLabelFreqLevel = False, featureeval = False, driftreport = False)
+             TrainLabelFreqLevel = False, featureeval = False, driftreport = False, \
+	     LabelSmoothing = False)
 ```
              
 
@@ -1081,7 +1100,8 @@ test, testID, testlabels, \
 labelsencoding_dict, finalcolumns_test = \
 am.postmunge(postprocess_dict, df_test, testID_column = False, \
              labelscolumn = False, pandasoutput=True, printstatus = True, \
-             TrainLabelFreqLevel = False, featureeval = False, driftreport = False)
+             TrainLabelFreqLevel = False, featureeval = False, driftreport = False, \
+	     LabelSmoothing = False)
 ```
 
 * postprocess_dict: this is the dictionary returned from the initial
@@ -1150,6 +1170,18 @@ normalization parameters derived from the coresponding columns of the
 automunge train data set. The results are returned in the
 postreports_dict object returned from postmunge as postreports_dict['driftreport']. 
 The results will also be printed out if printstatus is activated.
+
+* LabelSmoothing: accepts float values in range 0.0-1.0 or the default value of False
+to turn off. train is for the train set labels, test is for the test set labels, and
+val is for the validation set labels. Label Smoothing refers to the regularaization
+tactic of transforming boolean encoded labels from 1/0 designations to some mix of
+reduced/increased threshold - for example passing the float 0.9 would result in the
+conversion from 1/0 to 0.9/#, where # is a function of the number of cateogries in 
+the label set - for example for a boolean label it would convert 1/0 to 0.9/0.1, or 
+for the one-hot encoding of a three label set it would be convert 1/0 to 0.9/0.05.
+Hat tip for the concept to "Rethinking the Inception Architecture for Computer Vision"
+by Szegedy et al. Note that I believe not all predictive classifigation libraries 
+uniformily accept smoothed labels, but when available the method can at times be useful.
 
 ...
 
