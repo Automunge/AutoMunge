@@ -1207,6 +1207,12 @@ set default to bnry.
 in next section)
 - null: for columns with single entry column is deleted
 
+Note that for columns designated for label sets as a special case categorical data will
+default to 'text' (one-hot encoding) instead of '1010'. Also, numerical data will default
+to 'excl2' (pass-through) instead of 'nmbr'. Also, if label smoothing is applied, label 
+columns evaluated as 'bnry' (two iunique values) will default to 'text' instead of 'bnry'
+as label smoothing requires one-hot encoding.
+
 - PCA: if the number of features exceeds 0.5 the number of rows (an arbitrary heuristic)
 a default PCA transform is applied defaulting to kernel if all positive or sparse Otherwise
 using scikit library. Note that this heuristic ratio can be changed or PCA turned off
