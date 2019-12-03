@@ -16122,7 +16122,8 @@ class AutoMunge:
     if (set(df[column].unique()) == {0,1} \
     or set(df[column].unique()) == {0} \
     or set(df[column].unique()) == {1}) \
-    and label_category != '1010':
+    and label_category != '1010' \
+    and len(label_categorylist) > 1:
 
       Smoothing_K = len(label_categorylist)
       
@@ -16874,6 +16875,14 @@ class AutoMunge:
               print("evaluating label column: ", labels_column)
 
       if categorycomplete == False:
+        
+        #ok this isnt; exactly elegant, but going to add a special case for LabelSmoothing
+        #first we[ll determine if labelsmoothing present
+        labelsmoothingpresent = False
+        if (LabelSmoothing_train > 0.0 and LabelSmoothing_train < 1.0 and str(LabelSmoothing_train) != 'False') \
+        or (LabelSmoothing_test > 0.0 and LabelSmoothing_test < 1.0 and str(LabelSmoothing_test) != 'False') \
+        or (LabelSmoothing_val > 0.0 and LabelSmoothing_val < 1.0 and str(LabelSmoothing_val) != 'False'):
+          labelsmoothingpresent = True
 
         #printout display progress
         if printstatus == True:
@@ -16888,6 +16897,12 @@ class AutoMunge:
           labelscategory = evalcat(df_labels, labels_column, numbercategoryheuristic, powertransform, True)
         else:
           print("error: evalcat must be passed as either False or as a defined function per READ ME")
+          
+        #special case for label smoothing we'll replace evaluated category bnry with text
+        #label smoothing doesn't work with bnry, needs one hot encoding
+        if labelsmoothingpresent and labelscategory == 'bnry':
+          labelscategory = 'text'
+        
 
         #this now moved into evalcategory function:
   #         #we've previously introduced the convention that for default numeric label sets
@@ -17609,7 +17624,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '2.97'
+    automungeversion = '2.98'
     application_number = random.randint(100000000000,999999999999)
     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -24266,12 +24281,6 @@ class AutoMunge:
         columns_test_ML = postprocess_assigninfill_dict['MLinfill']
       else:
         columns_test_ML = []
-
-
-
-
-
-
 
 
     for column in infillcolumns_list:
