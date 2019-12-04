@@ -642,7 +642,9 @@ the label set - for example for a boolean label it would convert 1/0 to 0.9/0.1,
 for the one-hot encoding of a three label set it would be convert 1/0 to 0.9/0.05.
 Hat tip for the concept to "Rethinking the Inception Architecture for Computer Vision"
 by Szegedy et al. Note that I believe not all predictive classifigation libraries 
-uniformily accept smoothed labels, but when available the method can at times be useful.
+uniformily accept smoothed labels, but when available the method can at times be useful. 
+Note that a user can pass True to either of LabelSmoothing_test / LabelSmoothing_val 
+which will consistently encode to LabelSmoothing_train.
 
 * numbercategoryheuristic: an integer used as a heuristic. When a 
 categorical set has more unique values than this heuristic, it defaults 
@@ -1182,6 +1184,8 @@ for the one-hot encoding of a three label set it would be convert 1/0 to 0.9/0.0
 Hat tip for the concept to "Rethinking the Inception Architecture for Computer Vision"
 by Szegedy et al. Note that I believe not all predictive classifigation libraries 
 uniformily accept smoothed labels, but when available the method can at times be useful.
+Note that a user can pass True to LabelSmoothing which will consistently encode to 
+LabelSmoothing_train from the corresponding automunge(.) call.
 
 ...
 
