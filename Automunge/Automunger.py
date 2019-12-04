@@ -17016,6 +17016,9 @@ class AutoMunge:
           
           
       #apply label smoothing to test set if elected
+      if str(LabelSmoothing_test) == 'True':
+        LabelSmoothing_test = LabelSmoothing_train
+      
       if LabelSmoothing_test > 0.0 and LabelSmoothing_test < 1.0 and str(LabelSmoothing_test) != 'False':
         
         testsmoothing = True
@@ -17624,7 +17627,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '2.98'
+    automungeversion = '2.99'
     application_number = random.randint(100000000000,999999999999)
     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -24184,6 +24187,11 @@ class AutoMunge:
 
       #marker for printouts
       pmsmoothing = False
+      
+      #special case for postmunge label smoothing, 
+      #if user passes True grab LabelSmoothing_train from postprocess_dict to apply consistently as automunge
+      if str(LabelSmoothing) == 'True':
+        LabelSmoothing = postprocess_dict['LabelSmoothing_train']
       
       #apply label smoothing to test set if elected
       if LabelSmoothing > 0.0 and LabelSmoothing < 1.0 and str(LabelSmoothing) != 'False':
