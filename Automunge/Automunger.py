@@ -12891,6 +12891,10 @@ class AutoMunge:
 #           #but intended for numpy arrays, making use of fact that #columns = len(categorylist) for MLinfill
 #           np_traininfill = self.apply_LabelSmoothing_numpy(np_traininfill, epsilon)
 
+        #muiltirt sets as edge case may sometimes be returned with one column
+        if np_train_filllabel.shape[1] == 1:
+          np_train_filllabel = np.ravel(np_train_filllabel)
+
         #train logistic regression model using scikit-learn for binary classifier
         #with multi_class argument activated
         #model = LogisticRegression()
@@ -14074,6 +14078,10 @@ class AutoMunge:
       
     #if labelscategory in ['text']:
     if MLinfilltype in ['multirt', 'multisp']:
+      
+      #muiltirt sets as edge case may sometimes be returned with one column
+      if np_labels.shape[1] == 1:
+        np_labels = np.ravel(np_labels)
 
       #train logistic regression model using scikit-learn for binary classifier
       #with multi_class argument activated
@@ -14215,6 +14223,10 @@ class AutoMunge:
       
     #if labelscategory in ['text']:
     if MLinfilltype in ['multirt', 'multisp']:
+      
+      #muiltirt sets as edge case may sometimes be returned with one column
+      if np_labels.shape[1] == 1:
+        np_labels = np.ravel(np_labels)
       
       #generate predictions
       np_predictions = FSmodel.predict(np_shuffleset)
@@ -16105,12 +16117,55 @@ class AutoMunge:
     return params
   
   
-  def apply_LabelSmoothing(self, df, column, epsilon, label_categorylist, label_category):
+#   def apply_LabelSmoothing(self, df, column, epsilon, label_categorylist, label_category):
+#     """
+#     #applies label smoothing based on user passed epsilon 
+#     #based on method described in "Rethinking the Inception Architecture for Computer Vision" by Szegedy et al
+#     #hat tip to Stack Overflow user lejlot for some implementaiton suggestions
+#     # https://stackoverflow.com/questions/39335535/label-smoothing-soft-targets-in-pandas
+    
+#     #Note that categorylist is the list of columns originating from same transformation
+#     #and we currently exlcude '1010' binary encoded sets from the method
+#     #a future extension will address 1010 for MLinfill by smoothing after conversion to one-hot encoding 
+#     #such as for MLinfill
+#     """
+    
+#     #if labelsmoothingcolumn is boolean and not binary encoded via 1010
+#     if (set(df[column].unique()) == {0,1} \
+#     or set(df[column].unique()) == {0} \
+#     or set(df[column].unique()) == {1}) \
+#     and label_category != '1010' \
+#     and len(label_categorylist) > 1:
+
+#       Smoothing_K = len(label_categorylist)
+      
+#       #==1 value corresponds to 'bnry' encoding, >1 corresonds to one-hot encodings eg 'text'
+#       if Smoothing_K > 1:
+#         Smoothing_K -= 1
+
+#       df[column] = \
+#       df[column] * (epsilon) + \
+#       (1 - df[column]) * (1 - epsilon) / Smoothing_K
+      
+#     return df
+  
+  def apply_LabelSmoothing(self, df, targetcolumn, epsilon, label_categorylist, label_category, categorycomplete_dict, LSfit):
     """
     #applies label smoothing based on user passed epsilon 
+    
+    #if LSfit == False
     #based on method described in "Rethinking the Inception Architecture for Computer Vision" by Szegedy et al
     #hat tip to Stack Overflow user lejlot for some implementaiton suggestions
     # https://stackoverflow.com/questions/39335535/label-smoothing-soft-targets-in-pandas
+    
+    #if LSfit == True
+    #based on extension wherein the Smoothing factor K for each column is fit to the
+    #distribution of the set is is a function of the activation column and target column
+    
+    #we'll follow convention that if LSfit == False we'll only apply LS to current column
+    #and if LSfit == True we'll apply to all columns in categorylist
+    #and return a diciotnary indicating which columns have recieved
+    #(dicitonary categorycomplete_dict initialized external to function)
     
     #Note that categorylist is the list of columns originating from same transformation
     #and we currently exlcude '1010' binary encoded sets from the method
@@ -16118,24 +16173,117 @@ class AutoMunge:
     #such as for MLinfill
     """
     
-    #if labelsmoothingcolumn is boolean and not binary encoded via 1010
-    if (set(df[column].unique()) == {0,1} \
-    or set(df[column].unique()) == {0} \
-    or set(df[column].unique()) == {1}) \
-    and label_category != '1010' \
-    and len(label_categorylist) > 1:
+#     unique_set = set(pd.unique(df[label_categorylist].values.ravel('K')))
+    
+  
+#     if (unique_set == {0,1} \
+#     or unique_set == {0} \
+#     or unique_set == {1}) \
+#     and label_category != '1010' \
+#     and len(label_categorylist) > 1:
 
-      Smoothing_K = len(label_categorylist)
       
-      #==1 value corresponds to 'bnry' encoding, >1 corresonds to one-hot encodings eg 'text'
-      if Smoothing_K > 1:
-        Smoothing_K -= 1
+    if LSfit == True:
+      
+      unique_set = set(pd.unique(df[label_categorylist].values.ravel('K')))
+      
+      #plus let's check if this is one-hot encoded (vs like binary encoded or something)
+      #this is a proxy for testing if category is '1010'
+      onehot = True
+      if df[label_categorylist].sum().sum() != df.shape[0]:
+        onehot = False
 
-      df[column] = \
-      df[column] * (epsilon) + \
-      (1 - df[column]) * (1 - epsilon) / Smoothing_K
+      if (unique_set == {0,1} \
+      or unique_set == {0} \
+      or unique_set == {1}) \
+      and onehot == True \
+      and len(label_categorylist) > 1:
+        
+        #if LSfit == True we'll apply LS to all columns in categorylist
+
+        #activation_dcit will track the count of activations for each column in the categorylist
+        activation_dict = {}
+
+        for column1 in label_categorylist:
+
+          activations = df[column1].sum()
+
+          activation_dict.update({column1 : activations})
+
+        #LS_dict will be where we keep track of the activation distributions associated with each column
+        #note we'll need activation ratios for each column as a function of activated column for a row
+        LS_dict = {}
+        for column1 in label_categorylist:
+
+          LS_dict.update({column1 : {}})
+
+          total_activations = 0
+
+          for column2 in label_categorylist:
+
+            if column1 != column2:
+
+              total_activations += activation_dict[column2]
+
+          for column2 in label_categorylist:
+
+            if column1 != column2:
+
+              LS_dict[column1].update({column2 : activation_dict[column2] / total_activations})
+
+
+        for column1 in label_categorylist:
+
+          for column2 in label_categorylist:
+
+            if column2 != column1:
+              
+              Smoothing_K = LS_dict[column2][column1]
+
+              df[column1] = \
+              np.where(df[column2] == 1, (1 - epsilon) * Smoothing_K, df[column1].values)
+
+        for column1 in label_categorylist:
+
+          df[column1] = \
+          np.where(df[column1]==1, df[column1] * (epsilon), df[column1].values)
+
+          categorycomplete_dict[column1] = True
+    
+    
+    #if LSfit != True:
+    #else we'll only apply LS to the passed column with assumption of level distribution for K
+    else:
       
-    return df
+      unique_set = set(pd.unique(df[targetcolumn]))
+      
+      #plus let's check if this is one-hot encoded (vs like binary encoded or something)
+      #this is a proxy for testing if category is '1010'
+      onehot = True
+      if df[label_categorylist].sum().sum() != df.shape[0]:
+        onehot = False
+
+      if (unique_set == {0,1} \
+      or unique_set == {0} \
+      or unique_set == {1}) \
+      and onehot == True \
+      and len(label_categorylist) > 1:
+        
+        for column1 in label_categorylist:
+        
+          Smoothing_K = len(label_categorylist)
+
+          #==1 value corresponds to 'bnry' encoding, >1 corresonds to one-hot encodings eg 'text'
+          if Smoothing_K > 1:
+            Smoothing_K -= 1
+
+          df[column1] = \
+          df[column1] * (epsilon) + (1 - df[column1]) * (1 - epsilon) / Smoothing_K
+
+          categorycomplete_dict[column1] = True
+
+    
+    return df, categorycomplete_dict
   
 
   def automunge(self, df_train, df_test = False, labels_column = False, trainID_column = False, \
@@ -16143,7 +16291,7 @@ class AutoMunge:
                 shuffletrain = False, TrainLabelFreqLevel = False, powertransform = False, \
                 binstransform = False, MLinfill = False, infilliterate=1, randomseed = 42, \
                 LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, \
-                numbercategoryheuristic = 63, pandasoutput = False, NArw_marker = True, \
+                LSfit = False, numbercategoryheuristic = 63, pandasoutput = False, NArw_marker = True, \
                 featureselection = False, featurepct = 1.0, featuremetric = 0.0, \
                 featuremethod = 'default', PCAn_components = None, PCAexcl = [], \
                 ML_cmnd = {'MLinfill_type':'default', \
@@ -17005,14 +17153,19 @@ class AutoMunge:
         
         trainsmoothing = True
         
+        #this will be our marker to indicate if labelsmoothing is already conducted
+        categorycomplete_dict = dict(zip(postprocess_dict['origcolumn'][labels_column]['columnkeylist'], [False]*len(postprocess_dict['origcolumn'][labels_column]['columnkeylist'])))
+        
         #for column in label columns
         for labelsmoothingcolumn in postprocess_dict['origcolumn'][labels_column]['columnkeylist']:
           
-          label_categorylist = postprocess_dict['column_dict'][labelsmoothingcolumn]['categorylist']
-          label_category = postprocess_dict['column_dict'][labelsmoothingcolumn]['category']
-          
-          df_labels = \
-          self.apply_LabelSmoothing(df_labels, labelsmoothingcolumn, LabelSmoothing_train, label_categorylist, label_category)
+          if categorycomplete_dict[labelsmoothingcolumn] == False:
+
+            label_categorylist = postprocess_dict['column_dict'][labelsmoothingcolumn]['categorylist']
+            label_category = postprocess_dict['column_dict'][labelsmoothingcolumn]['category']
+            
+            df_labels, categorycomplete_dict = \
+            self.apply_LabelSmoothing(df_labels, labelsmoothingcolumn, LabelSmoothing_train, label_categorylist, label_category, categorycomplete_dict, LSfit)
           
           
       #apply label smoothing to test set if elected
@@ -17023,14 +17176,19 @@ class AutoMunge:
         
         testsmoothing = True
         
+        #this will be our marker to indicate if labelsmoothing is already conducted
+        categorycomplete_dict = dict(zip(postprocess_dict['origcolumn'][labels_column]['columnkeylist'], [False]*len(postprocess_dict['origcolumn'][labels_column]['columnkeylist'])))                                   
+        
         #for column in label columns
         for labelsmoothingcolumn in postprocess_dict['origcolumn'][labels_column]['columnkeylist']:
           
-          label_categorylist = postprocess_dict['column_dict'][labelsmoothingcolumn]['categorylist']
-          label_category = postprocess_dict['column_dict'][labelsmoothingcolumn]['category']
-          
-          df_testlabels = \
-          self.apply_LabelSmoothing(df_testlabels, labelsmoothingcolumn, LabelSmoothing_test, label_categorylist, label_category)
+          if categorycomplete_dict[labelsmoothingcolumn] == False:
+                                     
+            label_categorylist = postprocess_dict['column_dict'][labelsmoothingcolumn]['categorylist']
+            label_category = postprocess_dict['column_dict'][labelsmoothingcolumn]['category']
+
+            df_testlabels, categorycomplete_dict = \
+            self.apply_LabelSmoothing(df_testlabels, labelsmoothingcolumn, LabelSmoothing_test, label_categorylist, label_category, categorycomplete_dict, LSfit)
 
 
       #printout display progress
@@ -17627,7 +17785,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '2.99'
+    automungeversion = '3.00'
     application_number = random.randint(100000000000,999999999999)
     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -17656,6 +17814,7 @@ class AutoMunge:
                              'LabelSmoothing_train' : LabelSmoothing_train, \
                              'LabelSmoothing_test' : LabelSmoothing_test, \
                              'LabelSmoothing_val' : LabelSmoothing_val, \
+                             'LSfit' : LSfit, \
                              'numbercategoryheuristic' : numbercategoryheuristic, \
                              'pandasoutput' : pandasoutput, \
                              'NArw_marker' : NArw_marker, \
@@ -17701,7 +17860,7 @@ class AutoMunge:
       df_validation1, _2, df_validationlabels1, _4, _5 = \
       self.postmunge(postprocess_dict, df_validation1, testID_column = False, \
                     labelscolumn = labels_column, pandasoutput = True, printstatus = printstatus, \
-                    LabelSmoothing = LabelSmoothing_val)
+                    LabelSmoothing = LabelSmoothing_val, LSfit = LSfit)
 
 
 
@@ -23714,7 +23873,7 @@ class AutoMunge:
   def postmunge(self, postprocess_dict, df_test, testID_column = False, \
                 labelscolumn = False, pandasoutput = False, printstatus = True, \
                 TrainLabelFreqLevel = False, featureeval = False, driftreport = False, \
-                LabelSmoothing = False):
+                LabelSmoothing = False, LSfit = False):
     '''
     #postmunge(df_test, testID_column, postprocess_dict) Function that when fed a \
     #test data set coresponding to a previously processed train data set which was \
@@ -24192,6 +24351,7 @@ class AutoMunge:
       #if user passes True grab LabelSmoothing_train from postprocess_dict to apply consistently as automunge
       if str(LabelSmoothing) == 'True':
         LabelSmoothing = postprocess_dict['LabelSmoothing_train']
+        LSfit = postprocess_dict['LSfit']
       
       #apply label smoothing to test set if elected
       if LabelSmoothing > 0.0 and LabelSmoothing < 1.0 and str(LabelSmoothing) != 'False':
@@ -24200,15 +24360,20 @@ class AutoMunge:
         
         testsmoothing = True
         
+        #this will be our marker to indicate if labelsmoothing is already conducted
+        categorycomplete_dict = dict(zip(postprocess_dict['origcolumn'][labels_column]['columnkeylist'], [False]*len(postprocess_dict['origcolumn'][labels_column]['columnkeylist'])))
+
+        
         #for column in label columns
         for labelsmoothingcolumn in postprocess_dict['origcolumn'][labels_column]['columnkeylist']:
           
-          label_categorylist = postprocess_dict['column_dict'][labelsmoothingcolumn]['categorylist']
-          label_category = postprocess_dict['column_dict'][labelsmoothingcolumn]['category']
-          
-          df_testlabels = \
-          self.apply_LabelSmoothing(df_testlabels, labelsmoothingcolumn, LabelSmoothing, label_categorylist, label_category)
-        
+          if categorycomplete_dict[labelsmoothingcolumn] == False:
+                                     
+            label_categorylist = postprocess_dict['column_dict'][labelsmoothingcolumn]['categorylist']
+            label_category = postprocess_dict['column_dict'][labelsmoothingcolumn]['category']
+
+            df_testlabels, categorycomplete_dict = \
+            self.apply_LabelSmoothing(df_testlabels, labelsmoothingcolumn, LabelSmoothing, label_categorylist, label_category, categorycomplete_dict, LSfit)
         
 
       #printout display progress
