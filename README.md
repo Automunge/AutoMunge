@@ -77,7 +77,7 @@ from Automunge import Automunger
 am = Automunger.AutoMunge()
 ```
 
-Where eg for train/test set processing run:
+Where eg for train set processing  with default parameters run:
 
 ```
 train, trainID, labels, \
@@ -86,7 +86,7 @@ validation2, validationID2, validationlabels2, \
 test, testID, testlabels, \
 testlabelsencoding_dict, finalcolumns_train, finalcolumns_test, \
 featureimportance, postprocess_dict \
-= am.automunge(df_train, df_test, etc)
+= am.automunge(df_train)
 ```
 
 or for subsequent consistant processing of test data, using the
@@ -115,7 +115,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
             shuffletrain = False, TrainLabelFreqLevel = False, powertransform = False, \
             binstransform = False, MLinfill = False, infilliterate=1, randomseed = 42, \
 	    LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, \
-            numbercategoryheuristic = 63, pandasoutput = True, NArw_marker = True, \
+            LSfit = False, numbercategoryheuristic = 63, pandasoutput = True, NArw_marker = True, \
             featureselection = False, featurepct = 1.0, featuremetric = .02, \
             featuremethod = 'default', PCAn_components = None, PCAexcl = [], \
             ML_cmnd = {'MLinfill_type':'default', \
@@ -177,7 +177,7 @@ labelsencoding_dict, postreports_dict = \
 am.postmunge(postprocess_dict, df_test, testID_column = False, \
              labelscolumn = False, pandasoutput=True, printstatus = True, \
              TrainLabelFreqLevel = False, featureeval = False, driftreport = False, ]\
-	     LabelSmoothing = False)
+	     LabelSmoothing = False, LSfit = False)
 ```
 
 
@@ -289,7 +289,7 @@ validation2, validationID2, validationlabels2, \
 test, testID, testlabels, \
 labelsencoding_dict, finalcolumns_train, finalcolumns_test, \
 featureimportance, postprocess_dict \
-= am.automunge(df_train, ...)
+= am.automunge(df_train)
 ```
 
 The full set of arguments available to be passed are given here, with
@@ -307,7 +307,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
             shuffletrain = False, TrainLabelFreqLevel = False, powertransform = False, \
             binstransform = False, MLinfill = False, infilliterate=1, randomseed = 42, \
 	    LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, \
-            numbercategoryheuristic = 63, pandasoutput = True, NArw_marker = True, \
+            LSfit = False, numbercategoryheuristic = 63, pandasoutput = True, NArw_marker = True, \
             featureselection = False, featurepct = 1.0, featuremetric = .02, \
             featuremethod = 'default', PCAn_components = None, PCAexcl = [], \
             ML_cmnd = {'MLinfill_type':'default', \
@@ -348,6 +348,7 @@ Or for the postmunge function:
 
 test, testID, testlabels, \
 labelsencoding_dict, postreports_dict = \
+am.postmunge(postprocess_dict, df_test)
 ```
 
 With the full set of arguments available to be passed as:
@@ -356,7 +357,7 @@ With the full set of arguments available to be passed as:
 am.postmunge(postprocess_dict, df_test, testID_column = False, \
              labelscolumn = False, pandasoutput=True, printstatus = True, \
              TrainLabelFreqLevel = False, featureeval = False, driftreport = False, ]\
-	     LabelSmoothing = False):
+	     LabelSmoothing = False, LSfit = False):
 ```
 
 Note that the only required argument to the automunge function is the
@@ -473,7 +474,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
             shuffletrain = False, TrainLabelFreqLevel = False, powertransform = False, \
             binstransform = False, MLinfill = False, infilliterate=1, randomseed = 42, \
 	    LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, \
-            numbercategoryheuristic = 63, pandasoutput = True, NArw_marker = True, \
+            LSfit = False, numbercategoryheuristic = 63, pandasoutput = True, NArw_marker = True, \
             featureselection = False, featurepct = 1.0, featuremetric = .02, \
             featuremethod = 'default', PCAn_components = None, PCAexcl = [], \
             ML_cmnd = {'MLinfill_type':'default', \
@@ -645,6 +646,11 @@ by Szegedy et al. Note that I believe not all predictive classifigation librarie
 uniformily accept smoothed labels, but when available the method can at times be useful. 
 Note that a user can pass True to either of LabelSmoothing_test / LabelSmoothing_val 
 which will consistently encode to LabelSmoothing_train.
+
+* LSfit: a True/False indication for basis of label smoothing parameter K. The default
+of False means the assumption will be for level distribution of labels, passing True
+means any label smoothing will evluate distribution fo label activations such as to fit
+the smoothing factor K to specific cells based on the activated column and target column.
 
 * numbercategoryheuristic: an integer used as a heuristic. When a 
 categorical set has more unique values than this heuristic, it defaults 
@@ -1038,7 +1044,7 @@ labelsencoding_dict, postreports_dict = \
 am.postmunge(postprocess_dict, df_test, testID_column = False, \
              labelscolumn = False, pandasoutput=True, printstatus = True, \
              TrainLabelFreqLevel = False, featureeval = False, driftreport = False, \
-	     LabelSmoothing = False)
+	     LabelSmoothing = False, LSfit = False)
 ```
              
 
@@ -1103,7 +1109,7 @@ labelsencoding_dict, finalcolumns_test = \
 am.postmunge(postprocess_dict, df_test, testID_column = False, \
              labelscolumn = False, pandasoutput=True, printstatus = True, \
              TrainLabelFreqLevel = False, featureeval = False, driftreport = False, \
-	     LabelSmoothing = False)
+	     LabelSmoothing = False, LSfit = False)
 ```
 
 * postprocess_dict: this is the dictionary returned from the initial
@@ -1186,6 +1192,13 @@ by Szegedy et al. Note that I believe not all predictive classifigation librarie
 uniformily accept smoothed labels, but when available the method can at times be useful.
 Note that a user can pass True to LabelSmoothing which will consistently encode to 
 LabelSmoothing_train from the corresponding automunge(.) call.
+
+* LSfit: a True/False indication for basis of label smoothing parameter K. The default
+of False means the assumption will be for level distribution of labels, passing True
+means any label smoothing will evluate distribution fo label activations such as to fit
+the smoothing factor K to specific cells based on the activated column and target column.
+Note that if LabelSmoothing passed as True the LSfit will be based on the basis from
+the correspondign automunge(.) call.
 
 ...
 
