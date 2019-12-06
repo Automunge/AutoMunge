@@ -651,6 +651,11 @@ which will consistently encode to LabelSmoothing_train.
 of False means the assumption will be for level distribution of labels, passing True
 means any label smoothing will evluate distribution fo label activations such as to fit
 the smoothing factor K to specific cells based on the activated column and target column.
+Please note as currently implenmeted as of v3.0 the label smoothing factor K fitting is 
+independently conducted to each of the segments of labels (train/test/validation/etc). 
+The next extension will be to carry through the fit parameters based on properties 
+evaluated from training set labels to consistently transform the other segments. 
+(coming soon)
 
 * numbercategoryheuristic: an integer used as a heuristic. When a 
 categorical set has more unique values than this heuristic, it defaults 
