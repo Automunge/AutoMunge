@@ -535,7 +535,9 @@ test sets.
 df_train set intended for use as labels in training a downstream machine
 learning model. The function defaults to False for cases where the
 training set does not include a label column. An integer column index may 
-also be passed such as if the source dataset was numpy array.
+also be passed such as if the source dataset was numpy array. If the df_train
+set passed to automunge is a single column intended for a label set, a user
+can pass True here instead of the column name.
 
 * trainID_column: a string of the column title for the column from the
 df_train set intended for use as a row identifier value (such as could
@@ -651,11 +653,8 @@ which will consistently encode to LabelSmoothing_train.
 of False means the assumption will be for level distribution of labels, passing True
 means any label smoothing will evluate distribution fo label activations such as to fit
 the smoothing factor K to specific cells based on the activated column and target column.
-Please note as currently implenmeted as of v3.0 the label smoothing factor K fitting is 
-independently conducted to each of the segments of labels (train/test/validation/etc). 
-The next extension will be to carry through the fit parameters based on properties 
-evaluated from training set labels to consistently transform the other segments. 
-(coming soon)
+The LSfit parameters of transformations will be based on properteis dervied from the
+train set labels, such as for consistent encoding to the other sets (test and validaiton).
 
 * numbercategoryheuristic: an integer used as a heuristic. When a 
 categorical set has more unique values than this heuristic, it defaults 
@@ -1185,25 +1184,17 @@ postreports_dict object returned from postmunge as postreports_dict['driftreport
 The results will also be printed out if printstatus is activated.
 
 * LabelSmoothing: accepts float values in range 0.0-1.0 or the default value of False
-to turn off. train is for the train set labels, test is for the test set labels, and
-val is for the validation set labels. Label Smoothing refers to the regularaization
-tactic of transforming boolean encoded labels from 1/0 designations to some mix of
-reduced/increased threshold - for example passing the float 0.9 would result in the
-conversion from 1/0 to 0.9/#, where # is a function of the number of cateogries in 
-the label set - for example for a boolean label it would convert 1/0 to 0.9/0.1, or 
-for the one-hot encoding of a three label set it would be convert 1/0 to 0.9/0.05.
-Hat tip for the concept to "Rethinking the Inception Architecture for Computer Vision"
-by Szegedy et al. Note that I believe not all predictive classifigation libraries 
-uniformily accept smoothed labels, but when available the method can at times be useful.
-Note that a user can pass True to LabelSmoothing which will consistently encode to 
-LabelSmoothing_train from the corresponding automunge(.) call.
+to turn off Label Smoothing. Note that a user can pass True to LabelSmoothing which 
+will consistently encode to LabelSmoothing_train from the corresponding automunge(.) 
+call, including any application of LSfit based on parameters of transformations 
+derived from the train set labels.
 
 * LSfit: a True/False indication for basis of label smoothing parameter K. The default
 of False means the assumption will be for level distribution of labels, passing True
 means any label smoothing will evluate distribution fo label activations such as to fit
 the smoothing factor K to specific cells based on the activated column and target column.
 Note that if LabelSmoothing passed as True the LSfit will be based on the basis from
-the correspondign automunge(.) call.
+the correspondign automunge(.) call (will override this one passed to postmunge).
 
 ...
 
