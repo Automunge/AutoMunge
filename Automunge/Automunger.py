@@ -16286,7 +16286,7 @@ class AutoMunge:
 #     return df, categorycomplete_dict
 
 
-  def apply_LabelSmoothing(self, df, targetcolumn, epsilon, label_categorylist, label_category, categorycomplete_dict, LSfit):
+  def apply_LabelSmoothing(self, df, targetcolumn, epsilon, label_categorylist, label_category, categorycomplete_dict, LSfit, LSfitparams_dict):
     """
     #applies label smoothing based on user passed epsilon 
     
@@ -16321,7 +16321,7 @@ class AutoMunge:
 #     and label_category != '1010' \
 #     and len(label_categorylist) > 1:
     
-    LSfitparams_dict = {}
+#     LSfitparams_dict = {}
   
     #initialize store of derived parameters
     for column1 in label_categorylist:
@@ -17496,6 +17496,8 @@ class AutoMunge:
         
         trainsmoothing = True
         
+        LSfitparams_dict = {}
+        
         #this will be our marker to indicate if labelsmoothing is already conducted
         categorycomplete_dict = dict(zip(postprocess_dict['origcolumn'][labels_column]['columnkeylist'], [False]*len(postprocess_dict['origcolumn'][labels_column]['columnkeylist'])))
         
@@ -17508,7 +17510,7 @@ class AutoMunge:
             label_category = postprocess_dict['column_dict'][labelsmoothingcolumn]['category']
             
             df_labels, categorycomplete_dict, LSfitparams_dict = \
-            self.apply_LabelSmoothing(df_labels, labelsmoothingcolumn, LabelSmoothing_train, label_categorylist, label_category, categorycomplete_dict, LSfit)
+            self.apply_LabelSmoothing(df_labels, labelsmoothingcolumn, LabelSmoothing_train, label_categorylist, label_category, categorycomplete_dict, LSfit, LSfitparams_dict)
       
       #else prepare empty LSfitparams_dict
       else:
@@ -17548,7 +17550,7 @@ class AutoMunge:
               label_category = postprocess_dict['column_dict'][labelsmoothingcolumn]['category']
 
               df_testlabels, categorycomplete_dict, _1 = \
-              self.apply_LabelSmoothing(df_testlabels, labelsmoothingcolumn, LabelSmoothing_test, label_categorylist, label_category, categorycomplete_dict, LSfit)
+              self.apply_LabelSmoothing(df_testlabels, labelsmoothingcolumn, LabelSmoothing_test, label_categorylist, label_category, categorycomplete_dict, LSfit, {})
               
               del _1
               
@@ -18152,7 +18154,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.1'
+    automungeversion = '3.2'
     application_number = random.randint(100000000000,999999999999)
     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -24763,7 +24765,7 @@ class AutoMunge:
               label_category = postprocess_dict['column_dict'][labelsmoothingcolumn]['category']
 
               df_testlabels, categorycomplete_dict, _1 = \
-              self.apply_LabelSmoothing(df_testlabels, labelsmoothingcolumn, LabelSmoothing, label_categorylist, label_category, categorycomplete_dict, LSfit)
+              self.apply_LabelSmoothing(df_testlabels, labelsmoothingcolumn, LabelSmoothing, label_categorylist, label_category, categorycomplete_dict, LSfit, {})
               
               del _1
               
