@@ -647,7 +647,9 @@ Hat tip for the concept to "Rethinking the Inception Architecture for Computer V
 by Szegedy et al. Note that I believe not all predictive classifigation libraries 
 uniformily accept smoothed labels, but when available the method can at times be useful. 
 Note that a user can pass True to either of LabelSmoothing_test / LabelSmoothing_val 
-which will consistently encode to LabelSmoothing_train.
+which will consistently encode to LabelSmoothing_train. Please note that if multiple
+one-hot encoded transformations originate from the same labels source column, the
+application of Label Smoothing will be applied to each set individually.
 
 * LSfit: a True/False indication for basis of label smoothing parameter K. The default
 of False means the assumption will be for level distribution of labels, passing True
