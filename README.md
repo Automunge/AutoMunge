@@ -1359,7 +1359,7 @@ infill.
   - default infill: adjacent cells
   - default NArowtype: numeric
   - suffix appender: '_dxdt'
-  - assignparam parameters accepted: none
+  - assignparam parameters accepted: 'periods' sets number of time steps offset to evaluate
 * dxd2/d2d2/d3d2: denoised rate of change (average of last two rows minus average
 of preceding two rows)
   - default infill: adjacent cells
