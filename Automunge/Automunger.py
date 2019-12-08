@@ -3253,6 +3253,15 @@ class AutoMunge:
     #for missing values, uses adjacent cell infill as default
     '''
     
+    #initialize parameters
+    if 'periods' in params:
+        
+      periods = params['periods']
+    
+    else:
+      
+      periods = 1
+    
     #copy source column into new column
     df[column + '_dxdt'] = df[column].copy()
     
@@ -3270,7 +3279,7 @@ class AutoMunge:
     df[column + '_dxdt'] = df[column + '_dxdt'].fillna(method='ffill')   
     
     #subtract preceding row
-    df[column + '_dxdt'] = df[column + '_dxdt'] - df[column + '_dxdt'].shift()
+    df[column + '_dxdt'] = df[column + '_dxdt'] - df[column + '_dxdt'].shift(periods = periods)
     
     #first row will have a nan so just one more backfill
     df[column + '_dxdt'] = df[column + '_dxdt'].fillna(method='bfill')
@@ -3311,6 +3320,7 @@ class AutoMunge:
 
         
     return df, column_dict_list
+  
   
   def process_dxd2_class(self, df, column, category, postprocess_dict, params = {}):
     '''
@@ -18154,7 +18164,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.2'
+    automungeversion = '3.3'
     application_number = random.randint(100000000000,999999999999)
     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
