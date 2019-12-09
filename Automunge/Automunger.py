@@ -3321,7 +3321,8 @@ class AutoMunge:
         
     return df, column_dict_list
   
-  
+
+
   def process_dxd2_class(self, df, column, category, postprocess_dict, params = {}):
     '''
     #process_dxd2_class(df, column, category, postprocess_dict)
@@ -3334,6 +3335,15 @@ class AutoMunge:
     
     #for missing values, uses adjacent cell infill as default
     '''
+    
+    #initialize parameters
+    if 'periods' in params:
+        
+      periods = params['periods']
+    
+    else:
+      
+      periods = 2
     
     #copy source column into new column
     df[column + '_dxd2'] = df[column].copy()
@@ -3351,12 +3361,31 @@ class AutoMunge:
     #apply ffill to replace NArows with value from adjacent cell in pre4ceding row
     df[column + '_dxd2'] = df[column + '_dxd2'].fillna(method='ffill')   
     
-    #we're going to take difference of average of last two rows with two rows preceding
-    df[column + '_dxd2'] = (df[column + '_dxd2'] + df[column + '_dxd2'].shift()) / 2 \
-                           - ((df[column + '_dxd2'].shift(periods=2) + df[column + '_dxd2'].shift(periods=3)) / 2)
+#     #we're going to take difference of average of last two rows with two rows preceding
+#     df[column + '_dxd2'] = (df[column + '_dxd2'] + df[column + '_dxd2'].shift()) / 2 \
+#                            - ((df[column + '_dxd2'].shift(periods=2) + df[column + '_dxd2'].shift(periods=3)) / 2)
+    
+
+    df[column + '_temp1'] = df[column + '_dxd2'].copy()
+    df[column + '_temp2'] = df[column + '_dxd2'].copy()
+    # df_train['number7_temp3'] = df_train['number7'].copy()
+
+    for i in range(periods):
+      df[column + '_temp1'] = df[column + '_temp1'] + df[column + '_temp1'].shift(periods=1)
+
+    df[column + '_temp1'] = df[column + '_temp1'].shift(periods=-periods)
+
+    for i in range(0,periods):
+      df[column + '_temp2'] = df[column + '_temp2'] + df[column + '_temp2'].shift(periods=1)
+
+    # df_train['number7_temp2'] = df_train['number7'].copy()
+
+    df[column + '_dxd2'] = (df[column + '_temp1'] - df[column + '_temp2'])/2
+    
     
     #first row will have a nan so just one more backfill
     df[column + '_dxd2'] = df[column + '_dxd2'].fillna(method='bfill')
+    df[column + '_dxd2'] = df[column + '_dxd2'].fillna(method='ffill')
     
     #then one more infill with to address scenario when data wasn't numeric
     #get arbitrary cell value, if one is nan then all will be
@@ -3366,6 +3395,8 @@ class AutoMunge:
 
       df[column + '_dxd2'] = df[column + '_dxd2'].fillna(value)
     
+    del df[column + '_temp1']
+    del df[column + '_temp2']
     
     #create list of columns
     nmbrcolumns = [column + '_dxd2']
@@ -18164,7 +18195,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.3'
+    automungeversion = '3.4'
     application_number = random.randint(100000000000,999999999999)
     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
