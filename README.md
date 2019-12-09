@@ -1360,12 +1360,14 @@ infill.
   - default NArowtype: numeric
   - suffix appender: '_dxdt'
   - assignparam parameters accepted: 'periods' sets number of time steps offset to evaluate
+  defaults to 1
 * dxd2/d2d2/d3d2: denoised rate of change (average of last two rows minus average
 of preceding two rows)
   - default infill: adjacent cells
   - default NArowtype: numeric
   - suffix appender: '_dxd2'
-  - assignparam parameters accepted: none
+  - assignparam parameters accepted: 'periods' sets number of time steps offset to evaluate
+  defaults to 2
 * MADn/MAD2: mean absolute deviation normalization, subtract set mean
   - default infill: mean
   - default NArowtype: numeric
