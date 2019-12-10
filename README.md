@@ -116,8 +116,8 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
             binstransform = False, MLinfill = False, infilliterate=1, randomseed = 42, \
 	    LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, \
             LSfit = False, numbercategoryheuristic = 63, pandasoutput = True, NArw_marker = True, \
-            featureselection = False, featurepct = 1.0, featuremetric = .02, \
-            featuremethod = 'default', PCAn_components = None, PCAexcl = [], \
+            featureselection = False, featurepct = 1.0, featuremetric = .02, featuremethod = 'default', \
+            Binary = True, PCAn_components = None, PCAexcl = [], \
             ML_cmnd = {'MLinfill_type':'default', \
                        'MLinfill_cmnd':{'RandomForestClassifier':{}, 'RandomForestRegressor':{}}, \
                        'PCA_type':'default', \
@@ -278,6 +278,10 @@ Alternately, the user can pass a desired number of features and their
 preference of type and parameters between linear PCA, Sparse PCA, or Kernel 
 PCA - all currently implemented in Scikit-Learn.
 
+The function also can perform dimesnionality reduction of the sets via
+the Binary option which takes the set of columns with boolean {1/0} encodings
+and applies a binary transform to reduce the number of columns.
+
 The application of the automunge and postmunge functions requires the
 assignment of the function to a series of named sets. We suggest using
 consistent naming convention as follows:
@@ -308,8 +312,8 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
             binstransform = False, MLinfill = False, infilliterate=1, randomseed = 42, \
 	    LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, \
             LSfit = False, numbercategoryheuristic = 63, pandasoutput = True, NArw_marker = True, \
-            featureselection = False, featurepct = 1.0, featuremetric = .02, \
-            featuremethod = 'default', PCAn_components = None, PCAexcl = [], \
+            featureselection = False, featurepct = 1.0, featuremetric = .02, featuremethod = 'default', \
+            Binary = True, PCAn_components = None, PCAexcl = [], \
             ML_cmnd = {'MLinfill_type':'default', \
                        'MLinfill_cmnd':{'RandomForestClassifier':{}, 'RandomForestRegressor':{}}, \
                        'PCA_type':'default', \
@@ -475,8 +479,8 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
             binstransform = False, MLinfill = False, infilliterate=1, randomseed = 42, \
 	    LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, \
             LSfit = False, numbercategoryheuristic = 63, pandasoutput = True, NArw_marker = True, \
-            featureselection = False, featurepct = 1.0, featuremetric = .02, \
-            featuremethod = 'default', PCAn_components = None, PCAexcl = [], \
+            featureselection = False, featurepct = 1.0, featuremetric = .02, featuremethod = 'default', \
+            Binary = True, PCAn_components = None, PCAexcl = [], \
             ML_cmnd = {'MLinfill_type':'default', \
                        'MLinfill_cmnd':{'RandomForestClassifier':{}, 'RandomForestRegressor':{}}, \
                        'PCA_type':'default', \
@@ -698,6 +702,14 @@ feature importance method is used for trimming the derived sets. Or can pass
 as 'default' for ignoring the featurepct/featuremetric parameters or can 
 pass as 'report' to return the featureimportance results with no further
 processing (other returned sets are empty).
+
+* Binary: a dimensionality reductiopn technique whereby the set of columns
+with binary encodings are collectively encoded with binary e3ncoding such
+as may drastically reduce the column count. This has many benefits such as
+memory bandwidth and energy cost for inference I suspect, howeverf there 
+may be tradeoffs associated with ability of the model to handle outliers,
+as for any new combination of boolean set in the test data the collection
+will be subject to the infill.
 
 * PCAn_components: a user can pass an integer to define the number of PCA
 derived features for purposes of dimensionality reduction, such integer to 
