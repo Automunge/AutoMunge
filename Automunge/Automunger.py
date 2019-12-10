@@ -16635,6 +16635,82 @@ class AutoMunge:
     
     return df, categorycomplete_dict
   
+  def Binary_convert(self, df_train, df_test, bool_column_list):
+    """
+    #Binary_convert takes as input a processed dataframe and a list of boolean encoded columns
+    #and applies a dimensionality reduction on the boolean set as a binary encodiong
+    
+    #returns the set wtih a reduced number of columns and a dictionary containing the
+    #parameters of conversion
+    
+    #note that infill has already been applied on these columns so no need for infill
+    #on train set (but yes on test set)
+    """
+    
+    df_train['Binary'] = ''
+    df_test['Binary'] = ''
+  
+    for column in bool_column_list:
+  
+      df_train['Binary'] = df_train['Binary'] + df_train[column].astype(str)
+      df_test['Binary'] = df_test['Binary'] + df_test[column].astype(str)
+    
+    
+    #now we'll apply process_1010_class
+    df_train, df_test, Binary_column_dict_list = \
+    self.process_1010_class(df_train, df_test, 'Binary', '1010', {}, {})
+    
+    Binary_dict = {'column_dict' : {}}
+    
+    for column_dict in Binary_column_dict_list:
+      
+      Binary_dict['column_dict'].update(column_dict)
+      
+    Binary_dict.update({'bool_column_list' : bool_column_list})
+    
+    del df_train['Binary']
+    del df_test['Binary']
+    
+    for column in bool_column_list:
+      
+      del df_train[column]
+      del df_test[column]
+    
+    
+    return df_train, df_test, Binary_dict
+  
+  
+  def postBinary_convert(self, df_test, Binary_dict):
+    """
+    #Binary_convert takes as input a processed dataframe and a list of boolean encoded columns
+    #and applies a dimensionality reduction on the boolean set as a binary encodiong
+    
+    #returns the set wtih a reduced number of columns and a dictionary containing the
+    #parameters of conversion
+    
+    #note that infill has already been applied on these columns so no need for infill
+    #on train set (but yes on test set)
+    """
+    
+    bool_column_list = Binary_dict['bool_column_list']    
+    
+    df_test['Binary'] = ''
+    
+    for column in bool_column_list:
+  
+      df_test['Binary'] = df_test['Binary'] + df_test[column].astype(str)
+    
+    #now we'll apply postprocess_1010_class
+    df_test = self.postprocess_1010_class(df_test, 'Binary', Binary_dict, 'columnkey', {})
+    
+    del df_test['Binary']
+    
+    for column in bool_column_list:
+      
+      del df_test[column]
+    
+    return df_test
+  
 
   def automunge(self, df_train, df_test = False, labels_column = False, trainID_column = False, \
                 testID_column = False, valpercent1=0.0, valpercent2 = 0.0, floatprecision = 32, \
@@ -16642,8 +16718,8 @@ class AutoMunge:
                 binstransform = False, MLinfill = False, infilliterate=1, randomseed = 42, \
                 LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, \
                 LSfit = False, numbercategoryheuristic = 63, pandasoutput = False, NArw_marker = True, \
-                featureselection = False, featurepct = 1.0, featuremetric = 0.0, \
-                featuremethod = 'default', PCAn_components = None, PCAexcl = [], \
+                featureselection = False, featurepct = 1.0, featuremetric = 0.0, featuremethod = 'default', \
+                Binary = False, PCAn_components = None, PCAexcl = [],\
                 ML_cmnd = {'MLinfill_type':'default', \
                            'MLinfill_cmnd':{'RandomForestClassifier':{}, 'RandomForestRegressor':{}}, \
                            'PCA_type':'default', \
@@ -16780,6 +16856,21 @@ class AutoMunge:
 
     #initialize process_dict
     process_dict = self.assembleprocessdict()
+    
+    #Special case if we are running Binary dimensionality reduction for boolean sets
+    #we can replace all '1010' with 'text'
+    #I think this may have efficiency improvements but not positive, 
+    #(need to run some tests to validate though, pending)
+    if Binary is True:
+      transform_dict['1010'] = transform_dict['text']
+      
+      #we'll also have default that if running Binary transform boolean columns 
+      #excluded from any PCA unless otherwise specified
+      if 'PCA_cmnd' not in ML_cmnd:
+        ML_cmnd.update({'PCA_cmnd':{'bool_PCA_excl':True}})
+      else:
+        if 'bool_PCA_excl' not in ML_cmnd['PCA_cmnd']:
+          ML_cmnd['PCA_cmnd'].update({'bool_PCA_excl':True})
 
     if bool(processdict) != False:
 
@@ -18095,7 +18186,45 @@ class AutoMunge:
       #else we'll just populate the PCAmodel slot in postprocess_dict with a placeholder
       postprocess_dict.update({'PCAmodel' : None})
 
-
+    #Binary dimensionality reduction goes here
+    
+    #we'll only apply to training and test data not labels
+    #making an executive decvision for now that ordinal encoded columns will be excluded
+    if Binary is True:
+      
+      #printout display progress
+      if printstatus == True:
+        print("_______________")
+        print("Begin Binary dimensionality reduction")
+        print("")
+        print("Before transform train set column count = ")
+        print(df_train.shape[1])
+        print("")
+      
+      bool_column_list = []
+      
+      for column in list(df_train):
+        
+        column_category = postprocess_dict['column_dict'][column]['category']
+        
+        if process_dict[column_category]['MLinfilltype'] in \
+        ['singlect', 'multirt', 'multisp', 'binary', '1010']:
+          
+          bool_column_list.append(column)
+          
+      df_train, df_test, Binary_dict = self.Binary_convert(df_train, df_test, bool_column_list)
+      
+      
+      if printstatus == True:
+        print("")
+        print("After transform train set column count = ")
+        print(df_train.shape[1])
+        print("")
+      
+    else:
+      
+      Binary_dict = {'bool_column_list' : [], 'column_dict' : {}}
+    
 
     #here is the process to levelize the frequency of label rows in train data
     #currently only label categories of 'bnry' or 'text' are considered
@@ -18195,7 +18324,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.4'
+    automungeversion = '3.5'
     application_number = random.randint(100000000000,999999999999)
     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -18237,6 +18366,8 @@ class AutoMunge:
                              'featuremethod' : featuremethod, \
                              'FSmodel' : FSmodel, \
                              'FScolumn_dict' : FScolumn_dict, \
+                             'Binary' : Binary, \
+                             'Binary_dict' : Binary_dict, \
                              'PCAn_components' : PCAn_components, \
                              'PCAexcl' : PCAexcl, \
                              'prePCAcolumns' : prePCAcolumns, \
@@ -24368,15 +24499,15 @@ class AutoMunge:
     NArw_marker = postprocess_dict['NArw_marker']
     floatprecision = postprocess_dict['floatprecision']
 
-    transform_dict = self.assembletransformdict(powertransform, binstransform, NArw_marker)
+#     transform_dict = self.assembletransformdict(powertransform, binstransform, NArw_marker)
 
-    if bool(postprocess_dict['transformdict']) != False:
-      transform_dict.update(postprocess_dict['transformdict'])
+#     if bool(postprocess_dict['transformdict']) != False:
+#       transform_dict.update(postprocess_dict['transformdict'])
 
-    process_dict = self.assembleprocessdict()
+#     process_dict = self.assembleprocessdict()
 
-    if bool(postprocess_dict['processdict']) != False:
-      process_dict.update(postprocess_dict['processdict'])
+    transform_dict = postprocess_dict['transform_dict']
+    process_dict = postprocess_dict['process_dict']
 
 #     assign_param = self.assembleassignparam()
 
@@ -25220,7 +25351,33 @@ class AutoMunge:
           print(list(PCAset_test))
           print("")
 
-
+    #Binary dimensionality reduction goes here
+    #we'll only apply to test data not labels
+    #making an executive decvision for now that ordinal encoded columns will be excluded
+    if postprocess_dict['Binary'] is True:
+      
+      #printout display progress
+      if printstatus == True:
+        print("_______________")
+        print("Begin Binary dimensionality reduction")
+        print("")
+        print("Before transform test set column count = ")
+        print(df_test.shape[1])
+        print("")
+      
+      Binary_dict = postprocess_dict['Binary_dict']
+      
+      Binary_dict = postprocess_dict['Binary_dict']
+          
+      df_test = self.postBinary_convert(df_test, Binary_dict)
+      
+      #printout display progress
+      if printstatus == True:
+        print("After transform test set column count = ")
+        print(df_test.shape[1])
+        print("")
+    
+    
 
     #here is the process to levelize the frequency of label rows in train data
     #currently only label categories of 'bnry' or 'text' are considered
