@@ -1655,6 +1655,7 @@ class AutoMunge:
     #multiple entries in the same row (not currently used, future extension)
     # - 'exclude' for columns which will be excluded from ML infill
     # - '1010' for binary encoded columns, will be converted to onehot for ML
+    # - 'boolexclude' boolean set suitable for Binary transform but exluded from MLinfill
     '''
     
     process_dict = {}
@@ -2622,25 +2623,25 @@ class AutoMunge:
                                   'singleprocess' : self.process_NArw_class, \
                                   'postprocess' : None, \
                                   'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'exclude', \
+                                  'MLinfilltype' : 'boolexclude', \
                                   'labelctgy' : 'NArw'}})
     process_dict.update({'NAr2' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_NArw_class, \
                                   'postprocess' : None, \
                                   'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'exclude', \
+                                  'MLinfilltype' : 'boolexclude', \
                                   'labelctgy' : 'NArw'}})
     process_dict.update({'NAr3' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_NArw_class, \
                                   'postprocess' : None, \
                                   'NArowtype' : 'positivenumeric', \
-                                  'MLinfilltype' : 'exclude', \
+                                  'MLinfilltype' : 'boolexclude', \
                                   'labelctgy' : 'NArw'}})
     process_dict.update({'NAr4' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_NArw_class, \
                                   'postprocess' : None, \
                                   'NArowtype' : 'nonnegativenumeric', \
-                                  'MLinfilltype' : 'exclude', \
+                                  'MLinfilltype' : 'boolexclude', \
                                   'labelctgy' : 'NArw'}})
     process_dict.update({'null' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_null_class, \
@@ -12253,7 +12254,7 @@ class AutoMunge:
       NArows = self.parsedate(df2, column)
       
     #if category in ['excl']:
-    if NArowtype in ['exclude']:
+    if NArowtype in ['exclude', 'boolexclude']:
       
 #       NArows = pd.DataFrame(np.zeros((df2.shape[0], 1)), columns=[column+'_NArows'])
       #NArows = NArows.rename(columns = {column:column+'_NArows'})
@@ -13059,7 +13060,7 @@ class AutoMunge:
         
 
       #if category in ['date', 'NArw', 'null']:
-      if MLinfilltype in ['exclude', 'label']:
+      if MLinfilltype in ['exclude', 'label', 'boolexclude']:
 
         #create empty sets for now
         #an extension of this method would be to implement a comparable infill \
@@ -13400,7 +13401,7 @@ class AutoMunge:
 
 
     #if category == 'date':
-    if MLinfilltype in ['exclude', 'label']:
+    if MLinfilltype in ['exclude', 'label', 'boolexclude']:
       #this spot reserved for future update to incorporate address of datetime\
       #category data
       df = df
@@ -13765,7 +13766,7 @@ class AutoMunge:
 
 
       #if labelscategory in ['nmbr', 'bxcx']:
-      if MLinfilltype in ['label', 'numeric', 'exclude', 'multisp', '1010']:
+      if MLinfilltype in ['label', 'numeric', 'exclude', 'multisp', '1010', 'boolexclude']:
 
         columns_labels = []
         for label in list(labels_df):
@@ -13786,7 +13787,7 @@ class AutoMunge:
             
             
       #if labelscategory in ['text', 'nmbr', 'bxcx']:
-      if MLinfilltype in ['label', 'multirt', 'multisp', 'numeric', 'exclude', '1010']:
+      if MLinfilltype in ['label', 'multirt', 'multisp', 'numeric', 'exclude', '1010', 'boolexclude']:
         if columns_labels != []:
           
           #note for. label smoothing activation values won't be 1
@@ -16654,6 +16655,10 @@ class AutoMunge:
   
       df_train['Binary'] = df_train['Binary'] + df_train[column].astype(str)
       df_test['Binary'] = df_test['Binary'] + df_test[column].astype(str)
+      
+    #this step ensures thqt infill is all zeros since we rely on sort
+    df_train['Binary'] = 'B_' + df_train['Binary']
+    df_test['Binary'] = 'B_' + df_test['Binary']
     
     
     #now we'll apply process_1010_class
@@ -16700,6 +16705,9 @@ class AutoMunge:
   
       df_test['Binary'] = df_test['Binary'] + df_test[column].astype(str)
     
+    #this step ensures thqt infill is all zeros since we rely on sort
+    df_test['Binary'] = 'B_' + df_test['Binary']
+    
     #now we'll apply postprocess_1010_class
     df_test = self.postprocess_1010_class(df_test, 'Binary', Binary_dict, 'columnkey', {})
     
@@ -16719,7 +16727,7 @@ class AutoMunge:
                 LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, \
                 LSfit = False, numbercategoryheuristic = 63, pandasoutput = False, NArw_marker = True, \
                 featureselection = False, featurepct = 1.0, featuremetric = 0.0, featuremethod = 'default', \
-                Binary = False, PCAn_components = None, PCAexcl = [],\
+                Binary = False, PCAn_components = None, PCAexcl = [], \
                 ML_cmnd = {'MLinfill_type':'default', \
                            'MLinfill_cmnd':{'RandomForestClassifier':{}, 'RandomForestRegressor':{}}, \
                            'PCA_type':'default', \
@@ -16942,6 +16950,12 @@ class AutoMunge:
       print("_______________")
       print("Begin Automunge processing")
       print("")
+      
+#     #copy input dataframes to internal state so as not to edit exterior objects
+#     if inplace is False:
+#       df_train = df_train.copy()
+#       df_test = df_test.copy()
+
 
 
     #functionality to support passed numpy arrays
@@ -16988,7 +17002,8 @@ class AutoMunge:
     #test_plug_marker used to identify that this step was taken
     test_plug_marker = False
     if not isinstance(df_test, pd.DataFrame):
-      df_test = df_train[0:10].copy()
+#       df_test = df_train[0:10].copy()
+      df_test = df_train[0:1].copy()
       testID_column = trainID_column
       test_plug_marker = True
       if labels_column != False:
@@ -17000,9 +17015,10 @@ class AutoMunge:
       testlabels.append(str(column))
     df_test.columns = testlabels
 
-    #copy input dataframes to internal state so as not to edit exterior objects
-    df_train = df_train.copy()
-    df_test = df_test.copy()
+#     #copy input dataframes to internal state so as not to edit exterior objects
+#     if inplace is False:
+#       df_train = df_train.copy()
+#       df_test = df_test.copy()
 
 
 
@@ -17201,7 +17217,8 @@ class AutoMunge:
       
       #if we only had one (label) column to begin with we'll create a dummy train set
       if df_train.shape[1] == 0:
-        df_train = df_labels[0:10].copy()
+#         df_train = df_labels[0:10].copy()
+        df_train = df_labels[0:1].copy()
 
       #if the labels column is present in test set too
       if labels_column in list(df_test):
@@ -17220,12 +17237,14 @@ class AutoMunge:
 
       #we'll introduce convention that if no df_testlabels we'll create
       #a dummy set derived from df_label's first 10 rows
-      df_testlabels = df_labels[0:10].copy()
+#       df_testlabels = df_labels[0:10].copy()
+      df_testlabels = df_labels[0:1].copy()
       
         
     #if we only had one (label) column to begin with we'll create a dummy test set
     if df_test.shape[1] == 0:
-      df_test = df_testlabels[0:10].copy()
+#       df_test = df_testlabels[0:10].copy()
+      df_test = df_testlabels[0:1].copy()
 
 
     #confirm consistency of train an test sets
@@ -18167,10 +18186,13 @@ class AutoMunge:
           print("PCA model applied: ")
           print(PCActgy)
           print("")
+          
 
         #reattach the excluded columns to PCA set
-        df_train = pd.concat([PCAset_train, df_train[PCAexcl_posttransform]], axis=1)
-        df_test = pd.concat([PCAset_test, df_test[PCAexcl_posttransform]], axis=1)
+#         df_train = pd.concat([PCAset_train, df_train[PCAexcl_posttransform]], axis=1)
+#         df_test = pd.concat([PCAset_test, df_test[PCAexcl_posttransform]], axis=1)
+        df_train = pd.concat([PCAset_train.set_index(df_train.index), df_train[PCAexcl_posttransform]], axis=1)
+        df_test = pd.concat([PCAset_test.set_index(df_test.index), df_test[PCAexcl_posttransform]], axis=1)
 
         #printout display progress
         if printstatus == True:
@@ -18205,17 +18227,21 @@ class AutoMunge:
       
       for column in list(df_train):
         
-        column_category = postprocess_dict['column_dict'][column]['category']
-        
-        if process_dict[column_category]['MLinfilltype'] in \
-        ['singlect', 'multirt', 'multisp', 'binary', '1010']:
-          
-          bool_column_list.append(column)
+        if column in postprocess_dict['column_dict']:
+
+          column_category = postprocess_dict['column_dict'][column]['category']
+
+          if process_dict[column_category]['MLinfilltype'] in \
+          ['singlect', 'multirt', 'multisp', 'binary', '1010', 'boolexclude']:
+
+            bool_column_list.append(column)
           
       df_train, df_test, Binary_dict = self.Binary_convert(df_train, df_test, bool_column_list)
       
       
       if printstatus == True:
+        print("Boolean column count = ")
+        print(len(bool_column_list))
         print("")
         print("After transform train set column count = ")
         print(df_train.shape[1])
@@ -18324,7 +18350,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.5'
+    automungeversion = '3.6'
     application_number = random.randint(100000000000,999999999999)
     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -23710,7 +23736,7 @@ class AutoMunge:
   #       print(df_traininfill)
 
       #if category == 'date':
-      if MLinfilltype in ['exclude', 'label']:
+      if MLinfilltype in ['exclude', 'label', 'boolexclude']:
 
         #create empty sets for now
         #an extension of this method would be to implement a comparable infill \
@@ -24293,7 +24319,8 @@ class AutoMunge:
       
       #then a second copy set, here of just a few rows, to follow convention of 
       #automunge processfamily calls
-      df_test3_temp = df_test2_temp[0:10].copy()
+#       df_test3_temp = df_test2_temp[0:10].copy()
+      df_test3_temp = df_test2_temp[0:1].copy()
       
       #here's a templist to support the columnkey entry below
       templist1 = list(df_test2_temp)
@@ -24522,8 +24549,9 @@ class AutoMunge:
 
     #postprocess_dict.update({'preFSpostprocess_dict' : preFSpostprocess_dict})
 
-    #copy input dataframes to internal state so as not to edit exterior objects
-    df_test = df_test.copy()
+#     #copy input dataframes to internal state so as not to edit exterior objects
+#     if inplace is False:
+#       df_test = df_test.copy()
 
 
     if type(df_test.index) != pd.RangeIndex:
@@ -24574,7 +24602,8 @@ class AutoMunge:
       
       #if we only had one (label) column to begin with we'll create a dummy test set
       if df_test.shape[1] == 0:
-        df_test = df_testlabels[0:10].copy()
+#         df_test = df_testlabels[0:10].copy()
+        df_test = df_testlabels[0:1].copy()
 
 
     #extract the ID columns from test set
@@ -25341,9 +25370,13 @@ class AutoMunge:
 
         PCAset_test, postprocess_dict = \
         self.postPCAfunction(PCAset_test, postprocess_dict)
+        
+        #we want the indexes to match
+#         PCAset_test.set_index(df_test.index)
 
         #reattach the excluded columns to PCA set
-        df_test = pd.concat([PCAset_test, df_test[PCAexcl_posttransform]], axis=1)
+        #df_test = pd.concat([PCAset_test, df_test[PCAexcl_posttransform]], axis=1)
+        df_test = pd.concat([PCAset_test.set_index(df_test.index), df_test[PCAexcl_posttransform]], axis=1)
 
         #printout display progress
         if printstatus == True:
@@ -25373,6 +25406,8 @@ class AutoMunge:
       
       #printout display progress
       if printstatus == True:
+        print("Boolean column count = ")
+        print(len(Binary_dict['bool_column_list']))
         print("After transform test set column count = ")
         print(df_test.shape[1])
         print("")
