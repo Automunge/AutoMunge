@@ -128,6 +128,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
 		         'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
 		         'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
 		         'bins':[], 'bint':[], 'bsor':[], 'pwr2':[], 'por2':[], \
+			 'bnwd':[], 'bnwK':[], 'bnwM':[], 'bnwo':[], 'bnKo':[], 'bnMo':[], \
 		         'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
 		         'log0':[], 'log1':[], 'sqrt':[], \
 		         'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
@@ -324,6 +325,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
 		         'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
 		         'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
 		         'bins':[], 'bint':[], 'bsor':[], 'pwr2':[], 'por2':[], \
+			 'bnwd':[], 'bnwK':[], 'bnwM':[], 'bnwo':[], 'bnKo':[], 'bnMo':[], \
 		         'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
 		         'log0':[], 'log1':[], 'sqrt':[], \
 		         'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
@@ -491,6 +493,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
 		         'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
 		         'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
 		         'bins':[], 'bint':[], 'bsor':[], 'pwr2':[], 'por2':[], \
+			 'bnwd':[], 'bnwK':[], 'bnwM':[], 'bnwo':[], 'bnKo':[], 'bnMo':[], \
 		         'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
 		         'log0':[], 'log1':[], 'sqrt':[], \
 		         'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
@@ -788,6 +791,7 @@ such as could potentially result in memory savings.
 		 'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
 		 'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
 		 'bins':[], 'bint':[], 'bsor':[], 'pwr2':[], 'por2':[], \
+		 'bnwd':[], 'bnwK':[], 'bnwM':[], 'bnwo':[], 'bnKo':[], 'bnMo':[], \
 		 'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
 		 'log0':[], 'log1':[], 'sqrt':[], \
 		 'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
@@ -1500,6 +1504,20 @@ set (i.e. <-2:0, -2-1:1, -10:2, 01:3, 12:4, >2:5)
   - default NArowtype: numeric
   - suffix appender: '_bsor'
   - assignparam parameters accepted: none
+* bnwd/bnwK/bnwM: for numerical set graining to fixed width bins for one-hot encoded bins 
+(columns without activations in train set excluded in train and test data)
+bins default to width of 1/1000/1000000 eg for bnwd/bnwK/bnwM
+  - default infill: mean
+  - default NArowtype: numeric
+  - suffix appender: '_bswd_#1_#2' where #1 is the width and #2 is the bin identifier (# from min)
+  - assignparam parameters accepted: 'width' to set bin width
+* bnwo/bnKo/bnMo: for numerical set graining to fixed width bins for ordinal encoded bins 
+(integers without train set activations still included in test set)
+bins default to width of 1/1000/1000000 eg for bnwd/bnwK/bnwM
+  - default infill: mean
+  - default NArowtype: numeric
+  - suffix appender: '_bnwo' (or '_bnKo', '_bnMo')
+  - assignparam parameters accepted: 'width' to set bin width
 * date/dat2: for datetime formatted data, segregates data by time scale to multiple
 columns (year/month/day/hour/minute/second) and then performs z-score normalization
   - default infill: mean
