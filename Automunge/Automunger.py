@@ -11841,7 +11841,7 @@ class AutoMunge:
       
     bins_cuts = [-float('inf'), float('inf')]
     for i in range(bn_count-1):
-      bins_cuts.insert(-1,i+1)
+      bins_cuts.insert(-1,(bn_min + (i+1) * bn_width))
       
     #create bins based on standard deviation increments
     binscolumn = column + '_bnwd'
@@ -11992,7 +11992,7 @@ class AutoMunge:
       
     bins_cuts = [-float('inf'), float('inf')]
     for i in range(bn_count-1):
-      bins_cuts.insert(-1,i+1)
+      bins_cuts.insert(-1,(bn_min + (i+1) * bn_width))
       
     #create bins based on standard deviation increments
     binscolumn = column + '_bnwK'
@@ -12146,7 +12146,7 @@ class AutoMunge:
       
     bins_cuts = [-float('inf'), float('inf')]
     for i in range(bn_count-1):
-      bins_cuts.insert(-1,i+1)
+      bins_cuts.insert(-1,(bn_min + (i+1) * bn_width))
       
     #create bins based on standard deviation increments
     binscolumn = column + '_bnwM'
@@ -12300,7 +12300,7 @@ class AutoMunge:
       
     bins_cuts = [-float('inf'), float('inf')]
     for i in range(bn_count-1):
-      bins_cuts.insert(-1,i+1)
+      bins_cuts.insert(-1,(bn_min + (i+1) * bn_width))
       
     #create bins based on standard deviation increments
     binscolumn = column + '_bnwo'
@@ -12416,7 +12416,7 @@ class AutoMunge:
       
     bins_cuts = [-float('inf'), float('inf')]
     for i in range(bn_count-1):
-      bins_cuts.insert(-1,i+1)
+      bins_cuts.insert(-1,(bn_min + (i+1) * bn_width))
       
     #create bins based on standard deviation increments
     binscolumn = column + '_bnKo'
@@ -12533,7 +12533,7 @@ class AutoMunge:
       
     bins_cuts = [-float('inf'), float('inf')]
     for i in range(bn_count-1):
-      bins_cuts.insert(-1,i+1)
+      bins_cuts.insert(-1,(bn_min + (i+1) * bn_width))
       
     #create bins based on standard deviation increments
     binscolumn = column + '_bnMo'
@@ -19283,7 +19283,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.7'
+    automungeversion = '3.8'
     application_number = random.randint(100000000000,999999999999)
     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
