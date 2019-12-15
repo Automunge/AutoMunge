@@ -1641,6 +1641,15 @@ class AutoMunge:
                                      'coworkers' : [], \
                                      'friends' : []}})
     
+    transform_dict.update({'copy' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['copy'], \
+                                     'cousins' : [], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
     transform_dict.update({'excl' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['excl'], \
@@ -2739,6 +2748,12 @@ class AutoMunge:
                                   'NArowtype' : 'exclude', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : None}})
+    process_dict.update({'copy' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_copy_class, \
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'exclude', \
+                                  'MLinfilltype' : 'exclude', \
+                                  'labelctgy' : 'copy'}})
     process_dict.update({'excl' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_excl_class, \
                                   'postprocess' : None, \
@@ -12624,6 +12639,45 @@ class AutoMunge:
 
 
     return df, column_dict_list
+  
+  def process_copy_class(self, df, column, category, postprocess_dict, params = {}):
+    '''
+    #copy function
+    #accepts parameter 'suffix' for suffix appender
+    #useful if want to apply same function more than once with different parameters
+    '''
+    
+    
+    if 'suffix' in params:
+        
+      copy_column = column + params['suffix']
+    
+    else:
+      
+      copy_column = column + '_copy'
+
+    
+    df[copy_column] = df[column].copy()
+
+    
+    column_dict_list = []
+
+    column_dict = {copy_column : {'category' : 'copy', \
+                                 'origcategory' : category, \
+                                 'normalization_dict' : {copy_column:{}}, \
+                                 'origcolumn' : column, \
+                                 'columnslist' : [copy_column], \
+                                 'categorylist' : [copy_column], \
+                                 'infillmodel' : False, \
+                                 'infillcomplete' : False, \
+                                 'deletecolumn' : False}}
+    
+    #now append column_dict onto postprocess_dict
+    column_dict_list.append(column_dict.copy())
+
+
+
+    return df, column_dict_list
 
   def process_excl_class(self, df, column, category, postprocess_dict, params = {}):
     '''
@@ -17684,7 +17738,7 @@ class AutoMunge:
                              'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
                              'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
                              'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
-                             'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'eval':[]}, \
+                             'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'eval':[], 'copy':[]}, \
                 assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                                 'adjinfill':[], 'meaninfill':[], 'medianinfill':[], 'modeinfill':[]}, \
                 assignparam = {}, transformdict = {}, processdict = {}, evalcat = False, \
@@ -19283,7 +19337,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.8'
+    automungeversion = '3.9'
     application_number = random.randint(100000000000,999999999999)
     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
