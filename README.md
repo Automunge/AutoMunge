@@ -1587,6 +1587,12 @@ dual columns with sin and cos transformations for time scale period (eg 12 month
   - default NArowtype: based on evaluation
   - suffix appender: based on evlauation
   - assignparam parameters accepted: none
+* copy: create new copy of column, useful when applying the same transform to same column more
+than once with different parameters. Does not prepare column for ML on it's own.
+  - default infill: exclude
+  - default NArowtype: exclude
+  - suffix appender: '_copy'
+  - assignparam parameters accepted: 'suffix' for custom suffix appender
 * NArw: produces a column of boolean identifiers for rows in the source
 column with missing or improperly formatted values. Note that when NArw
 is assigned in a family tree it bases NArowtype on the root category, 
