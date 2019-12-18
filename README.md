@@ -117,7 +117,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
 	    LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, \
             LSfit = False, numbercategoryheuristic = 63, pandasoutput = True, NArw_marker = True, \
             featureselection = False, featurepct = 1.0, featuremetric = .02, featuremethod = 'default', \
-            Binary = True, PCAn_components = None, PCAexcl = [], \
+            Binary = False, PCAn_components = None, PCAexcl = [], \
             ML_cmnd = {'MLinfill_type':'default', \
                        'MLinfill_cmnd':{'RandomForestClassifier':{}, 'RandomForestRegressor':{}}, \
                        'PCA_type':'default', \
@@ -314,7 +314,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
 	    LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, \
             LSfit = False, numbercategoryheuristic = 63, pandasoutput = True, NArw_marker = True, \
             featureselection = False, featurepct = 1.0, featuremetric = .02, featuremethod = 'default', \
-            Binary = True, PCAn_components = None, PCAexcl = [], \
+            Binary = False, PCAn_components = None, PCAexcl = [], \
             ML_cmnd = {'MLinfill_type':'default', \
                        'MLinfill_cmnd':{'RandomForestClassifier':{}, 'RandomForestRegressor':{}}, \
                        'PCA_type':'default', \
@@ -482,7 +482,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
 	    LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, \
             LSfit = False, numbercategoryheuristic = 63, pandasoutput = True, NArw_marker = True, \
             featureselection = False, featurepct = 1.0, featuremetric = .02, featuremethod = 'default', \
-            Binary = True, PCAn_components = None, PCAexcl = [], \
+            Binary = False, PCAn_components = None, PCAexcl = [], \
             ML_cmnd = {'MLinfill_type':'default', \
                        'MLinfill_cmnd':{'RandomForestClassifier':{}, 'RandomForestRegressor':{}}, \
                        'PCA_type':'default', \
@@ -706,13 +706,13 @@ as 'default' for ignoring the featurepct/featuremetric parameters or can
 pass as 'report' to return the featureimportance results with no further
 processing (other returned sets are empty).
 
-* Binary: a dimensionality reductiopn technique whereby the set of columns
-with binary encodings are collectively encoded with binary e3ncoding such
+* Binary: a dimensionality reduction technique whereby the set of columns
+with binary encodings are collectively encoded with binary encoding such
 as may drastically reduce the column count. This has many benefits such as
-memory bandwidth and energy cost for inference I suspect, howeverf there 
+memory bandwidth and energy cost for inference I suspect, however, there 
 may be tradeoffs associated with ability of the model to handle outliers,
 as for any new combination of boolean set in the test data the collection
-will be subject to the infill.
+will be subject to the infill. Pass True to activate, defaults to False.
 
 * PCAn_components: a user can pass an integer to define the number of PCA
 derived features for purposes of dimensionality reduction, such integer to 
