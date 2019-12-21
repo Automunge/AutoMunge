@@ -4320,9 +4320,9 @@ class AutoMunge:
     #return mdf, bnrycolumns, categorylist, column_dict_list
     return mdf_train, mdf_test, column_dict_list
   
-  
-  def process_text_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict, params = {}):
+
+
+  def process_text_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
     '''
     #process_text_class(mdf_train, mdf_test, column, category)
     #preprocess column with text categories
@@ -4343,39 +4343,43 @@ class AutoMunge:
     #if only have training but not test data handy, use same training data for both dataframe inputs
     '''
     
+    tempcolumn = column + '_:;:_temp'
+    
     #store original column for later retrieval
-    mdf_train[column + '_temp'] = mdf_train[column].copy()
-    mdf_test[column + '_temp'] = mdf_test[column].copy()
+    mdf_train[tempcolumn] = mdf_train[column].copy()
+    mdf_test[tempcolumn] = mdf_test[column].copy()
 
     #convert column to category
-    mdf_train[column] = mdf_train[column].astype('category')
-    mdf_test[column] = mdf_test[column].astype('category')
+    mdf_train[tempcolumn] = mdf_train[tempcolumn].astype('category')
+    mdf_test[tempcolumn] = mdf_test[tempcolumn].astype('category')
 
     #if set is categorical we'll need the plug value for missing values included
-    mdf_train[column] = mdf_train[column].cat.add_categories(['NAr2'])
-    mdf_test[column] = mdf_test[column].cat.add_categories(['NAr2'])
+    if ':;:NAr2' not in mdf_train[tempcolumn].cat.categories:
+      mdf_train[tempcolumn] = mdf_train[tempcolumn].cat.add_categories([':;:NAr2'])
+    if ':;:NAr2' not in mdf_test[tempcolumn].cat.categories:
+      mdf_test[tempcolumn] = mdf_test[tempcolumn].cat.add_categories([':;:NAr2'])
 
     #replace NA with a dummy variable
-    mdf_train[column] = mdf_train[column].fillna('NAr2')
-    mdf_test[column] = mdf_test[column].fillna('NAr2')
+    mdf_train[tempcolumn] = mdf_train[tempcolumn].fillna(':;:NAr2')
+    mdf_test[tempcolumn] = mdf_test[tempcolumn].fillna(':;:NAr2')
 
     #replace numerical with string equivalent
-    mdf_train[column] = mdf_train[column].astype(str)
-    mdf_test[column] = mdf_test[column].astype(str)
+    mdf_train[tempcolumn] = mdf_train[tempcolumn].astype(str)
+    mdf_test[tempcolumn] = mdf_test[tempcolumn].astype(str)
 
 
     #extract categories for column labels
     #note that .unique() extracts the labels as a numpy array
-    labels_train = mdf_train[column].unique()
+    labels_train = mdf_train[tempcolumn].unique()
     labels_train.sort(axis=0)
     orig_labels_train = list(labels_train.copy())
-    labels_test = mdf_test[column].unique()
+    labels_test = mdf_test[tempcolumn].unique()
     labels_test.sort(axis=0)
 
 
     #pandas one hot encoder
-    df_train_cat = pd.get_dummies(mdf_train[column])
-    df_test_cat = pd.get_dummies(mdf_test[column])
+    df_train_cat = pd.get_dummies(mdf_train[tempcolumn])
+    df_test_cat = pd.get_dummies(mdf_test[tempcolumn])
 
     #append column header name to each category listing
     #note the iteration is over a numpy array hence the [...] approach
@@ -4402,26 +4406,19 @@ class AutoMunge:
     mdf_test = pd.concat([df_test_cat, mdf_test], axis=1)
 
 
-    #replace original column from training data
-    del mdf_train[column]
-    del mdf_test[column]
-
-    mdf_train[column] = mdf_train[column + '_temp'].copy()
-    mdf_test[column] = mdf_test[column + '_temp'].copy()
-
-    del mdf_train[column + '_temp']    
-    del mdf_test[column + '_temp']
+    del mdf_train[tempcolumn]    
+    del mdf_test[tempcolumn]
     
     #delete _NArw column, this will be processed seperately in the processfamily function
     #delete support NArw2 column
-    columnNArw = column + '_NArw'
-    columnNAr2 = column + '_NAr2'
+#     columnNArw = column + '_NArw'
+    columnNAr2 = column + '_:;:NAr2'
     if columnNAr2 in list(mdf_train):
       del mdf_train[columnNAr2]
     if columnNAr2 in list(mdf_test):
       del mdf_test[columnNAr2]
-    if 'NAr2' in orig_labels_train:
-      orig_labels_train.remove('NAr2')
+    if ':;:NAr2' in orig_labels_train:
+      orig_labels_train.remove(':;:NAr2')
 
     
 #     del mdf_train[column + '_NAr2']    
@@ -4487,6 +4484,8 @@ class AutoMunge:
 
     
     return mdf_train, mdf_test, column_dict_list
+
+
   
   def process_UPCS_class(self, df, column, category, postprocess_dict, params = {}):
     '''
@@ -10524,8 +10523,7 @@ class AutoMunge:
   
 
 
-  def process_bxcx_support(self, df, column, category, bxcxerrorcorrect, \
-                          bxcx_lmbda = None, trnsfrm_mean = None):
+  def process_bxcx_support(self, df, column, category, bxcxerrorcorrect, bxcx_lmbda = None, trnsfrm_mean = None):
     '''                      
     #process_bxcx_class(df, column, bxcx_lmbda = None, trnsfrm_mean = None, trnsfrm_std = None)
     #function that takes as input a dataframe with numnerical column for purposes
@@ -10540,62 +10538,64 @@ class AutoMunge:
     #distribution is less thin tailed
     '''
     
+    bxcxcolumn = column + '_bxcx'
+    
     #store original column for later reversion
-    df[column + '_temp'] = df[column].copy()
+    df[bxcxcolumn] = df[column].copy()
 
     #convert all values to either numeric or NaN
-    df[column] = pd.to_numeric(df[column], errors='coerce')
+    df[bxcxcolumn] = pd.to_numeric(df[bxcxcolumn], errors='coerce')
     #convert non-positive values to nan
-    df.loc[df[column] <= 0, (column)] = np.nan
+    df.loc[df[bxcxcolumn] <= 0, (bxcxcolumn)] = np.nan
 
     #get the mean value to apply to infill
     if trnsfrm_mean == None:
       #get mean of training data
-      mean = df[column].mean()  
+      mean = df[bxcxcolumn].mean()  
 
     else:
       mean = trnsfrm_mean
 
     #replace missing data with training set mean
-    df[column] = df[column].fillna(mean)
+    df[bxcxcolumn] = df[bxcxcolumn].fillna(mean)
 
     #apply box-cox transformation to generate a new column
     #note the returns are different based on whether we passed a lmbda value
 
     if bxcx_lmbda == None:
 
-      df[column + '_bxcx'], bxcx_lmbda = stats.boxcox(df[column])
-      df[column + '_bxcx'] *= bxcxerrorcorrect
+      df[bxcxcolumn], bxcx_lmbda = stats.boxcox(df[bxcxcolumn])
+      df[bxcxcolumn] *= bxcxerrorcorrect
 
     else:
 
-      df[column + '_bxcx'] = stats.boxcox(df[column], lmbda = bxcx_lmbda)
-      df[column + '_bxcx'] *= bxcxerrorcorrect
+      df[bxcxcolumn] = stats.boxcox(df[bxcxcolumn], lmbda = bxcx_lmbda)
+      df[bxcxcolumn] *= bxcxerrorcorrect
 
     #this is to address an error when bxcx transofrm produces overflow
     #I'm not sure of cause, showed up in the housing set)
     bxcxerrorcorrect = 1
-    if max(df[column + '_bxcx']) > (2 ** 31 - 1):
+    if max(df[bxcxcolumn]) > (2 ** 31 - 1):
       bxcxerrorcorrect = 0
-      df[column + '_bxcx'] = 0
-      bxcxcolumn = column + '_bxcx'
+      df[bxcxcolumn] = 0
+      bxcxcolumn = bxcxcolumn
       print("overflow condition found in boxcox transofrm, column set to 0: ", bxcxcolumn)
 
 
 
-    #replace original column
-    del df[column]
+#     #replace original column
+#     del df[column]
 
-    df[column] = df[column + '_temp'].copy()
+#     df[column] = df[column + '_temp'].copy()
 
-    del df[column + '_temp']
+#     del df[column + '_temp']
 
 #     #change data type for memory savings
 #     df[column + '_bxcx'] = df[column + '_bxcx'].astype(np.float32)
 
     #output of a list of the created column names
     #nmbrcolumns = [column + '_nmbr', column + '_bxcx', column + '_NArw']
-    nmbrcolumns = [column + '_bxcx']
+    nmbrcolumns = [bxcxcolumn]
 
     #create list of columns associated with categorical transform (blank for now)
     categorylist = []
@@ -10633,7 +10633,6 @@ class AutoMunge:
 
     #return df, nmbrcolumns, nmbrnormalization_dict, categorylist
     return df, column_dict_list
-
 
 
   def process_log0_class(self, mdf_train, mdf_test, column, category, \
@@ -10813,61 +10812,63 @@ class AutoMunge:
     
     #we'll use an initial plug value of 0
     '''
+    
+    tempcolumn = column + '_:;:_temp'
 
     #store original column for later reversion
-    mdf_train[column + '_temp'] = mdf_train[column].copy()
-    mdf_test[column + '_temp'] = mdf_test[column].copy()
+    mdf_train[tempcolumn] = mdf_train[column].copy()
+    mdf_test[tempcolumn] = mdf_test[column].copy()
 
     #convert all values to either numeric or NaN
-    mdf_train[column] = pd.to_numeric(mdf_train[column], errors='coerce')
-    mdf_test[column] = pd.to_numeric(mdf_test[column], errors='coerce')
+    mdf_train[tempcolumn] = pd.to_numeric(mdf_train[tempcolumn], errors='coerce')
+    mdf_test[tempcolumn] = pd.to_numeric(mdf_test[tempcolumn], errors='coerce')
     
     #convert all values <= 0 to Nan
-    mdf_train[column] = \
-    np.where(mdf_train[column] <= 0, np.nan, mdf_train[column].values)
-    mdf_test[column] = \
-    np.where(mdf_test[column] <= 0, np.nan, mdf_test[column].values)
+    mdf_train[tempcolumn] = \
+    np.where(mdf_train[tempcolumn] <= 0, np.nan, mdf_train[tempcolumn].values)
+    mdf_test[tempcolumn] = \
+    np.where(mdf_test[tempcolumn] <= 0, np.nan, mdf_test[tempcolumn].values)
     
     #log transform column
     #note that this replaces negative values with nan which we will infill with meanlog
 #     mdf_train[column] = np.floor(np.log10(mdf_train[column]))
 #     mdf_test[column] = np.floor(np.log10(mdf_test[column]))
-    mdf_train[column] = \
-    np.where(mdf_train[column] != np.nan, np.floor(np.log10(mdf_train[column])), mdf_train[column].values)
-    mdf_test[column] = \
-    np.where(mdf_test[column] != np.nan, np.floor(np.log10(mdf_test[column])), mdf_test[column].values)
+    mdf_train[tempcolumn] = \
+    np.where(mdf_train[tempcolumn] != np.nan, np.floor(np.log10(mdf_train[tempcolumn])), mdf_train[tempcolumn].values)
+    mdf_test[tempcolumn] = \
+    np.where(mdf_test[tempcolumn] != np.nan, np.floor(np.log10(mdf_test[tempcolumn])), mdf_test[tempcolumn].values)
 
 
     
     #get mean of train set
-    meanlog = np.floor(mdf_train[column].mean())
+    meanlog = np.floor(mdf_train[tempcolumn].mean())
     
     #get max of train set
-    maxlog = max(mdf_train[column])
+    maxlog = max(mdf_train[tempcolumn])
     
 #     #replace missing data with training set mean
 #     mdf_train[column + '_log0'] = mdf_train[column + '_log0'].fillna(meanlog)
 #     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].fillna(meanlog)
 
     #replace missing data with 0
-    mdf_train[column] = mdf_train[column].fillna(0)
-    mdf_test[column] = mdf_test[column].fillna(0)
+    mdf_train[tempcolumn] = mdf_train[tempcolumn].fillna(0)
+    mdf_test[tempcolumn] = mdf_test[tempcolumn].fillna(0)
     
     
     #replace numerical with string equivalent
-    mdf_train[column] = mdf_train[column].astype(int).astype(str)
-    mdf_test[column] = mdf_test[column].astype(int).astype(str)
+    mdf_train[tempcolumn] = mdf_train[tempcolumn].astype(int).astype(str)
+    mdf_test[tempcolumn] = mdf_test[tempcolumn].astype(int).astype(str)
     
     #extract categories for column labels
     #note that .unique() extracts the labels as a numpy array
-    labels_train = mdf_train[column].unique()
+    labels_train = mdf_train[tempcolumn].unique()
     labels_train.sort(axis=0)
-    labels_test = mdf_test[column].unique()
+    labels_test = mdf_test[tempcolumn].unique()
     labels_test.sort(axis=0)
     
     #pandas one hot encoder
-    df_train_cat = pd.get_dummies(mdf_train[column])
-    df_test_cat = pd.get_dummies(mdf_test[column])
+    df_train_cat = pd.get_dummies(mdf_train[tempcolumn])
+    df_test_cat = pd.get_dummies(mdf_test[tempcolumn])
     
     #append column header name to each category listing
     labels_train[...] = column + '_10^' + labels_train[...]
@@ -10891,15 +10892,9 @@ class AutoMunge:
     mdf_train = pd.concat([df_train_cat, mdf_train], axis=1)
     mdf_test = pd.concat([df_test_cat, mdf_test], axis=1)
     
-    #replace original column from training data
-    del mdf_train[column]    
-    del mdf_test[column]
-    
-    mdf_train[column] = mdf_train[column + '_temp'].copy()
-    mdf_test[column] = mdf_test[column + '_temp'].copy()
 
-    del mdf_train[column + '_temp']    
-    del mdf_test[column + '_temp']
+    del mdf_train[tempcolumn]    
+    del mdf_test[tempcolumn]
     
     #create output of a list of the created column names
 #     NAcolumn = columnNAr2
@@ -10951,6 +10946,7 @@ class AutoMunge:
     
     return mdf_train, mdf_test, column_dict_list
   
+  
   def process_pwor_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
     '''
     #processes a numerical set by creating bins coresponding to powers
@@ -10960,54 +10956,45 @@ class AutoMunge:
     
     #we'll use an initial plug value of 0
     '''
+    
+    pworcolumn = column + '_pwor'
 
     #store original column for later reversion
-    mdf_train[column + '_temp'] = mdf_train[column].copy()
-    mdf_test[column + '_temp'] = mdf_test[column].copy()
+    mdf_train[pworcolumn] = mdf_train[column].copy()
+    mdf_test[pworcolumn] = mdf_test[column].copy()
 
     #convert all values to either numeric or NaN
-    mdf_train[column] = pd.to_numeric(mdf_train[column], errors='coerce')
-    mdf_test[column] = pd.to_numeric(mdf_test[column], errors='coerce')
+    mdf_train[pworcolumn] = pd.to_numeric(mdf_train[pworcolumn], errors='coerce')
+    mdf_test[pworcolumn] = pd.to_numeric(mdf_test[pworcolumn], errors='coerce')
     
     #convert all values <= 0 to Nan
-    mdf_train[column] = \
-    np.where(mdf_train[column] <= 0, np.nan, mdf_train[column].values)
-    mdf_test[column] = \
-    np.where(mdf_test[column] <= 0, np.nan, mdf_test[column].values)
-
-
-    pworcolumn = column + '_pwor'
     mdf_train[pworcolumn] = \
-    np.where(mdf_train[column] != np.nan, np.floor(np.log10(mdf_train[column])), mdf_train[column].values)
+    np.where(mdf_train[pworcolumn] <= 0, np.nan, mdf_train[pworcolumn].values)
     mdf_test[pworcolumn] = \
-    np.where(mdf_test[column] != np.nan, np.floor(np.log10(mdf_test[column])), mdf_test[column].values)
-    
+    np.where(mdf_test[pworcolumn] <= 0, np.nan, mdf_test[pworcolumn].values)
+
     
     #get mean of train set
-    meanlog = np.floor(mdf_train[column].mean())
+    meanlog = np.floor(mdf_train[pworcolumn].mean())
     
     #get max of train set
-    maxlog = max(mdf_train[column])
+    maxlog = max(mdf_train[pworcolumn])
 
 
+    mdf_train[pworcolumn] = \
+    np.where(mdf_train[pworcolumn] != np.nan, np.floor(np.log10(mdf_train[pworcolumn])), mdf_train[pworcolumn].values)
+    mdf_test[pworcolumn] = \
+    np.where(mdf_test[pworcolumn] != np.nan, np.floor(np.log10(mdf_test[pworcolumn])), mdf_test[pworcolumn].values)
+    
     #replace missing data with 0
     mdf_train[pworcolumn] = mdf_train[pworcolumn].fillna(0)
     mdf_test[pworcolumn] = mdf_test[pworcolumn].fillna(0)
     
-    #replace original column from training data
-    del mdf_train[column]    
-    del mdf_test[column]
-    
-    mdf_train[column] = mdf_train[column + '_temp'].copy()
-    mdf_test[column] = mdf_test[column + '_temp'].copy()
-
-    del mdf_train[column + '_temp']    
-    del mdf_test[column + '_temp']
         
     #store some values in the text_dict{} for use later in ML infill methods
     column_dict_list = []
     
-    powercolumns = [column + '_pwor']
+    powercolumns = [pworcolumn]
     
     categorylist = powercolumns.copy()
     
@@ -11044,19 +11031,21 @@ class AutoMunge:
     
     #if all values are infill no columns returned
     '''
+    
+    tempcolumn = column + '_:;:_temp'
 
     #store original column for later reversion
-    mdf_train[column + '_temp'] = mdf_train[column].copy()
-    mdf_test[column + '_temp'] = mdf_test[column].copy()
+    mdf_train[tempcolumn] = mdf_train[column].copy()
+    mdf_test[tempcolumn] = mdf_test[column].copy()
 
     #convert all values to either numeric or NaN
-    mdf_train[column] = pd.to_numeric(mdf_train[column], errors='coerce')
-    mdf_test[column] = pd.to_numeric(mdf_test[column], errors='coerce')
+    mdf_train[tempcolumn] = pd.to_numeric(mdf_train[tempcolumn], errors='coerce')
+    mdf_test[tempcolumn] = pd.to_numeric(mdf_test[tempcolumn], errors='coerce')
     
     #create copy with negative values
     negtempcolumn = column + '_negtemp'
-    mdf_train[negtempcolumn] = mdf_train[column].copy()
-    mdf_test[negtempcolumn] = mdf_test[column].copy()
+    mdf_train[negtempcolumn] = mdf_train[tempcolumn].copy()
+    mdf_test[negtempcolumn] = mdf_test[tempcolumn].copy()
     
     #convert all values in negtempcolumn >= 0 to Nan
     mdf_train[negtempcolumn] = \
@@ -11065,10 +11054,10 @@ class AutoMunge:
     np.where(mdf_test[negtempcolumn] >= 0, np.nan, mdf_test[negtempcolumn].values)
     
     #convert all values <= 0 to Nan
-    mdf_train[column] = \
-    np.where(mdf_train[column] <= 0, np.nan, mdf_train[column].values)
-    mdf_test[column] = \
-    np.where(mdf_test[column] <= 0, np.nan, mdf_test[column].values)
+    mdf_train[tempcolumn] = \
+    np.where(mdf_train[tempcolumn] <= 0, np.nan, mdf_train[tempcolumn].values)
+    mdf_test[tempcolumn] = \
+    np.where(mdf_test[tempcolumn] <= 0, np.nan, mdf_test[tempcolumn].values)
     
     #log transform column
     
@@ -11110,15 +11099,15 @@ class AutoMunge:
     
     #now log trasnform positive values in column column 
 
-    mdf_train[column] = \
-    np.where(mdf_train[column] != np.nan, np.floor(np.log10(mdf_train[column])), mdf_train[column].values)
-    mdf_test[column] = \
-    np.where(mdf_test[column] != np.nan, np.floor(np.log10(mdf_test[column])), mdf_test[column].values)
+    mdf_train[tempcolumn] = \
+    np.where(mdf_train[tempcolumn] != np.nan, np.floor(np.log10(mdf_train[tempcolumn])), mdf_train[tempcolumn].values)
+    mdf_test[tempcolumn] = \
+    np.where(mdf_test[tempcolumn] != np.nan, np.floor(np.log10(mdf_test[tempcolumn])), mdf_test[tempcolumn].values)
 
     
     train_pos_dict = {}
     newposunique_list = []
-    posunique = mdf_train[column].unique()
+    posunique = mdf_train[tempcolumn].unique()
     for unique in posunique:
       if unique != unique:
         newunique = np.nan
@@ -11128,7 +11117,7 @@ class AutoMunge:
       newposunique_list.append(newunique)
       
     test_pos_dict = {}
-    posunique = mdf_test[column].unique()
+    posunique = mdf_test[tempcolumn].unique()
     for unique in posunique:
       if unique != unique:
         newunique = np.nan
@@ -11140,20 +11129,20 @@ class AutoMunge:
         test_pos_dict.update({unique : np.nan})
     
     
-    mdf_train[column] = mdf_train[column].replace(train_pos_dict)
-    mdf_test[column] = mdf_test[column].replace(test_pos_dict)
+    mdf_train[tempcolumn] = mdf_train[tempcolumn].replace(train_pos_dict)
+    mdf_test[tempcolumn] = mdf_test[tempcolumn].replace(test_pos_dict)
 
     
     
     #combine the two columns
-    mdf_train[column] = mdf_train[negtempcolumn].where(mdf_train[negtempcolumn] == mdf_train[negtempcolumn], mdf_train[column])
-    mdf_test[column] = mdf_test[negtempcolumn].where(mdf_test[negtempcolumn] == mdf_test[negtempcolumn], mdf_test[column])
+    mdf_train[tempcolumn] = mdf_train[negtempcolumn].where(mdf_train[negtempcolumn] == mdf_train[negtempcolumn], mdf_train[tempcolumn])
+    mdf_test[tempcolumn] = mdf_test[negtempcolumn].where(mdf_test[negtempcolumn] == mdf_test[negtempcolumn], mdf_test[tempcolumn])
     
 
     
     #pandas one hot encoder
-    df_train_cat = pd.get_dummies(mdf_train[column])
-    df_test_cat = pd.get_dummies(mdf_test[column])
+    df_train_cat = pd.get_dummies(mdf_train[tempcolumn])
+    df_test_cat = pd.get_dummies(mdf_test[tempcolumn])
 
     
     labels_train = list(df_train_cat)
@@ -11179,14 +11168,9 @@ class AutoMunge:
     del mdf_train[negtempcolumn]    
     del mdf_test[negtempcolumn]
     
-    del mdf_train[column]    
-    del mdf_test[column]
+    del mdf_train[tempcolumn]    
+    del mdf_test[tempcolumn]
     
-    mdf_train[column] = mdf_train[column + '_temp'].copy()
-    mdf_test[column] = mdf_test[column + '_temp'].copy()
-
-    del mdf_train[column + '_temp']    
-    del mdf_test[column + '_temp']
     
     #create output of a list of the created column names
 #     NAcolumn = columnNAr2
@@ -11247,21 +11231,23 @@ class AutoMunge:
     
     #negative values allows, comparable to pwr2
     '''
+    
+    pworcolumn = column + '_por2'
 
     #store original column for later reversion
-    mdf_train[column + '_temp'] = mdf_train[column].copy()
-    mdf_test[column + '_temp'] = mdf_test[column].copy()
+    mdf_train[pworcolumn] = mdf_train[column].copy()
+    mdf_test[pworcolumn] = mdf_test[column].copy()
 
     #convert all values to either numeric or NaN
-    mdf_train[column] = pd.to_numeric(mdf_train[column], errors='coerce')
-    mdf_test[column] = pd.to_numeric(mdf_test[column], errors='coerce')
+    mdf_train[pworcolumn] = pd.to_numeric(mdf_train[pworcolumn], errors='coerce')
+    mdf_test[pworcolumn] = pd.to_numeric(mdf_test[pworcolumn], errors='coerce')
     
     
     #copy set for negative values
     negtempcolumn = column + '_negtempcolumn'
     
-    mdf_train[negtempcolumn] = mdf_train[column].copy()
-    mdf_test[negtempcolumn] = mdf_test[column].copy()
+    mdf_train[negtempcolumn] = mdf_train[pworcolumn].copy()
+    mdf_test[negtempcolumn] = mdf_test[pworcolumn].copy()
     
     #convert all values >= 0 to Nan
     mdf_train[negtempcolumn] = \
@@ -11275,16 +11261,16 @@ class AutoMunge:
     
     
     #convert all values <= 0 in column to Nan
-    mdf_train[column] = \
-    np.where(mdf_train[column] <= 0, np.nan, mdf_train[column].values)
-    mdf_test[column] = \
-    np.where(mdf_test[column] <= 0, np.nan, mdf_test[column].values)
+    mdf_train[pworcolumn] = \
+    np.where(mdf_train[pworcolumn] <= 0, np.nan, mdf_train[pworcolumn].values)
+    mdf_test[pworcolumn] = \
+    np.where(mdf_test[pworcolumn] <= 0, np.nan, mdf_test[pworcolumn].values)
 
 
-    mdf_train[column] = \
-    np.where(mdf_train[column] != np.nan, np.floor(np.log10(mdf_train[column])), mdf_train[column].values)
-    mdf_test[column] = \
-    np.where(mdf_test[column] != np.nan, np.floor(np.log10(mdf_test[column])), mdf_test[column].values)
+    mdf_train[pworcolumn] = \
+    np.where(mdf_train[pworcolumn] != np.nan, np.floor(np.log10(mdf_train[pworcolumn])), mdf_train[pworcolumn].values)
+    mdf_test[pworcolumn] = \
+    np.where(mdf_test[pworcolumn] != np.nan, np.floor(np.log10(mdf_test[pworcolumn])), mdf_test[pworcolumn].values)
     
     #do same for negtempcolumn
     mdf_train[negtempcolumn] = \
@@ -11324,7 +11310,7 @@ class AutoMunge:
     #now do same for column
     train_pos_dict = {}
     newposunique_list = []
-    posunique = mdf_train[column].unique()
+    posunique = mdf_train[pworcolumn].unique()
     for unique in posunique:
       if unique != unique:
         newunique = np.nan
@@ -11334,7 +11320,7 @@ class AutoMunge:
       newposunique_list.append(newunique)
       
     test_pos_dict = {}
-    posunique = mdf_test[column].unique()
+    posunique = mdf_test[pworcolumn].unique()
     for unique in posunique:
       if unique != unique:
         newunique = np.nan
@@ -11346,16 +11332,16 @@ class AutoMunge:
         test_pos_dict.update({unique : np.nan})
     
     
-    mdf_train[column] = mdf_train[column].replace(train_pos_dict)
-    mdf_test[column] = mdf_test[column].replace(test_pos_dict)
+    mdf_train[pworcolumn] = mdf_train[pworcolumn].replace(train_pos_dict)
+    mdf_test[pworcolumn] = mdf_test[pworcolumn].replace(test_pos_dict)
     
     
     #combine the two columns
-    mdf_train[column] = mdf_train[negtempcolumn].where(mdf_train[negtempcolumn] == mdf_train[negtempcolumn], mdf_train[column])
-    mdf_test[column] = mdf_test[negtempcolumn].where(mdf_test[negtempcolumn] == mdf_test[negtempcolumn], mdf_test[column])
+    mdf_train[pworcolumn] = mdf_train[negtempcolumn].where(mdf_train[negtempcolumn] == mdf_train[negtempcolumn], mdf_train[pworcolumn])
+    mdf_test[pworcolumn] = mdf_test[negtempcolumn].where(mdf_test[negtempcolumn] == mdf_test[negtempcolumn], mdf_test[pworcolumn])
     
-    train_unique = mdf_train[column].unique()
-    test_unique = mdf_test[column].unique()
+    train_unique = mdf_train[pworcolumn].unique()
+    test_unique = mdf_test[pworcolumn].unique()
   
     #Get missing entries in test set that are present in training set
     missing_cols = set( list(train_unique) ) - set( list(test_unique) )
@@ -11379,9 +11365,9 @@ class AutoMunge:
         
         
     
-    pworcolumn = column + '_por2'
-    mdf_train[pworcolumn] = mdf_train[column].copy()
-    mdf_test[pworcolumn] = mdf_test[column].copy()
+#     pworcolumn = column + '_por2'
+#     mdf_train[pworcolumn] = mdf_train[column].copy()
+#     mdf_test[pworcolumn] = mdf_test[column].copy()
     
     
     mdf_train[pworcolumn] = mdf_train[pworcolumn].replace(train_replace_dict)
@@ -11392,19 +11378,19 @@ class AutoMunge:
     del mdf_train[negtempcolumn]    
     del mdf_test[negtempcolumn]    
     
-    del mdf_train[column]    
-    del mdf_test[column]
+#     del mdf_train[column]    
+#     del mdf_test[column]
     
-    mdf_train[column] = mdf_train[column + '_temp'].copy()
-    mdf_test[column] = mdf_test[column + '_temp'].copy()
+#     mdf_train[column] = mdf_train[column + '_temp'].copy()
+#     mdf_test[column] = mdf_test[column + '_temp'].copy()
 
-    del mdf_train[column + '_temp']    
-    del mdf_test[column + '_temp']
+#     del mdf_train[column + '_temp']    
+#     del mdf_test[column + '_temp']
         
     #store some values in the text_dict{} for use later in ML infill methods
     column_dict_list = []
     
-    powercolumns = [column + '_por2']
+    powercolumns = [pworcolumn]
     
     categorylist = powercolumns.copy()
     
@@ -11437,48 +11423,50 @@ class AutoMunge:
     #bins will be intended for a raw set that is not normalized
     #bint will be intended for a previously normalized set
     '''
+    
+    binscolumn = column + '_bins'
 
     #store original column for later reversion
-    mdf_train[column + '_temp'] = mdf_train[column].copy()
-    mdf_test[column + '_temp'] = mdf_test[column].copy()
+    mdf_train[binscolumn] = mdf_train[column].copy()
+    mdf_test[binscolumn] = mdf_test[column].copy()
 
     #convert all values to either numeric or NaN
-    mdf_train[column] = pd.to_numeric(mdf_train[column], errors='coerce')
-    mdf_test[column] = pd.to_numeric(mdf_test[column], errors='coerce')
+    mdf_train[binscolumn] = pd.to_numeric(mdf_train[binscolumn], errors='coerce')
+    mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
 
     #get mean of training data
-    mean = mdf_train[column].mean()
+    mean = mdf_train[binscolumn].mean()
     
     if mean != mean:
       mean = 0
 
     #replace missing data with training set mean
-    mdf_train[column] = mdf_train[column].fillna(mean)
-    mdf_test[column] = mdf_test[column].fillna(mean)
+    mdf_train[binscolumn] = mdf_train[binscolumn].fillna(mean)
+    mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
 
     #subtract mean from column for both train and test
-    mdf_train[column] = mdf_train[column] - mean
-    mdf_test[column] = mdf_test[column] - mean
+    mdf_train[binscolumn] = mdf_train[binscolumn] - mean
+    mdf_test[binscolumn] = mdf_test[binscolumn] - mean
 
     #get standard deviation of training data
-    std = mdf_train[column].std()
+    std = mdf_train[binscolumn].std()
     
     #special case, if standard deviation is 0 we'll set it to 1 to avoid division by 0
     if std == 0:
       std = 1
 
     #divide column values by std for both training and test data
-    mdf_train[column] = mdf_train[column] / std
-    mdf_test[column] = mdf_test[column] / std
+    mdf_train[binscolumn] = mdf_train[binscolumn] / std
+    mdf_test[binscolumn] = mdf_test[binscolumn] / std
 
 
     #create bins based on standard deviation increments
-    binscolumn = column + '_bins'
+#     binscolumn = column + '_bins'
     mdf_train[binscolumn] = \
-    pd.cut( mdf_train[column], bins = [-float('inf'),-2,-1,0,1,2,float('inf')],  \
+    pd.cut( mdf_train[binscolumn], bins = [-float('inf'),-2,-1,0,1,2,float('inf')],  \
            labels = ['s<-2','s-21','s-10','s+01','s+12','s>+2'], precision=4)
     mdf_test[binscolumn] = \
-    pd.cut( mdf_test[column], bins = [-float('inf'), -2, -1, 0, 1, 2, float('inf')],  \
+    pd.cut( mdf_test[binscolumn], bins = [-float('inf'), -2, -1, 0, 1, 2, float('inf')],  \
            labels = ['s<-2','s-21','s-10','s+01','s+12','s>+2'], precision=4)
 
 
@@ -11522,15 +11510,6 @@ class AutoMunge:
     #delete the support column
     del mdf_train[binscolumn]
     del mdf_test[binscolumn]
-
-    #replace original column
-    del mdf_train[column]
-    del mdf_test[column]
-    mdf_train[column] = mdf_train[column + '_temp'].copy()
-    mdf_test[column] = mdf_test[column + '_temp'].copy()
-    del mdf_train[column + '_temp']
-    del mdf_test[column + '_temp']
-
 
 
     #create list of columns
@@ -11579,22 +11558,24 @@ class AutoMunge:
     #bint will be intended for a previously z-score normalized set
     #with mean 0 and std 1
     '''
+    
+    binscolumn = column + '_bint'
 
     #store original column for later reversion
-    mdf_train[column + '_temp'] = mdf_train[column].copy()
-    mdf_test[column + '_temp'] = mdf_test[column].copy()
+    mdf_train[binscolumn] = mdf_train[column].copy()
+    mdf_test[binscolumn] = mdf_test[column].copy()
 
     #convert all values to either numeric or NaN
-    mdf_train[column] = pd.to_numeric(mdf_train[column], errors='coerce')
-    mdf_test[column] = pd.to_numeric(mdf_test[column], errors='coerce')
+    mdf_train[binscolumn] = pd.to_numeric(mdf_train[binscolumn], errors='coerce')
+    mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
 
     #get mean of training data
     #mean = mdf_train[column].mean()
     mean = 0
 
     #replace missing data with training set mean
-    mdf_train[column] = mdf_train[column].fillna(mean)
-    mdf_test[column] = mdf_test[column].fillna(mean)
+    mdf_train[binscolumn] = mdf_train[binscolumn].fillna(mean)
+    mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
 
 #     #subtract mean from column for both train and test
 #     mdf_train[column] = mdf_train[column] - mean
@@ -11609,12 +11590,12 @@ class AutoMunge:
 
 
     #create bins based on standard deviation increments
-    binscolumn = column + '_bint'
+#     binscolumn = column + '_bint'
     mdf_train[binscolumn] = \
-    pd.cut( mdf_train[column], bins = [-float('inf'),-2,-1,0,1,2,float('inf')],  \
+    pd.cut( mdf_train[binscolumn], bins = [-float('inf'),-2,-1,0,1,2,float('inf')],  \
            labels = ['t<-2','t-21','t-10','t+01','t+12','t>+2'], precision=4)
     mdf_test[binscolumn] = \
-    pd.cut( mdf_test[column], bins = [-float('inf'), -2, -1, 0, 1, 2, float('inf')],  \
+    pd.cut( mdf_test[binscolumn], bins = [-float('inf'), -2, -1, 0, 1, 2, float('inf')],  \
            labels = ['t<-2','t-21','t-10','t+01','t+12','t>+2'], precision=4)
 
 
@@ -11654,15 +11635,6 @@ class AutoMunge:
     #delete the support column
     del mdf_train[binscolumn]
     del mdf_test[binscolumn]
-
-    #replace original column
-    del mdf_train[column]
-    del mdf_test[column]
-    mdf_train[column] = mdf_train[column + '_temp'].copy()
-    mdf_test[column] = mdf_test[column + '_temp'].copy()
-    del mdf_train[column + '_temp']
-    del mdf_test[column + '_temp']
-
 
 
     #create list of columns
@@ -11706,47 +11678,49 @@ class AutoMunge:
     #bins will be intended for a raw set that is not normalized
     #bint will be intended for a previously normalized set
     '''
+    
+    binscolumn = column + '_bsor'
 
     #store original column for later reversion
-    mdf_train[column + '_temp'] = mdf_train[column].copy()
-    mdf_test[column + '_temp'] = mdf_test[column].copy()
+    mdf_train[binscolumn] = mdf_train[column].copy()
+    mdf_test[binscolumn] = mdf_test[column].copy()
 
     #convert all values to either numeric or NaN
-    mdf_train[column] = pd.to_numeric(mdf_train[column], errors='coerce')
-    mdf_test[column] = pd.to_numeric(mdf_test[column], errors='coerce')
+    mdf_train[binscolumn] = pd.to_numeric(mdf_train[binscolumn], errors='coerce')
+    mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
 
     #get mean of training data
-    mean = mdf_train[column].mean()
+    mean = mdf_train[binscolumn].mean()
     
     if mean != mean:
       mean = 0
 
     #replace missing data with training set mean
-    mdf_train[column] = mdf_train[column].fillna(mean)
-    mdf_test[column] = mdf_test[column].fillna(mean)
+    mdf_train[binscolumn] = mdf_train[binscolumn].fillna(mean)
+    mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
 
     #subtract mean from column for both train and test
-    mdf_train[column] = mdf_train[column] - mean
-    mdf_test[column] = mdf_test[column] - mean
+    mdf_train[binscolumn] = mdf_train[binscolumn] - mean
+    mdf_test[binscolumn] = mdf_test[binscolumn] - mean
 
     #get standard deviation of training data
-    std = mdf_train[column].std()
+    std = mdf_train[binscolumn].std()
     
     #special case, if standard deviation is 0 we'll set it to 1 to avoid division by 0
     if std == 0:
       std = 1
 
     #divide column values by std for both training and test data
-    mdf_train[column] = mdf_train[column] / std
-    mdf_test[column] = mdf_test[column] / std
+    mdf_train[binscolumn] = mdf_train[binscolumn] / std
+    mdf_test[binscolumn] = mdf_test[binscolumn] / std
 
 
-    binscolumn = column + '_bsor'
+#     binscolumn = column + '_bsor'
     mdf_train[binscolumn] = \
-    pd.cut( mdf_train[column], bins = [-float('inf'),-2,-1,0,1,2,float('inf')],  \
+    pd.cut( mdf_train[binscolumn], bins = [-float('inf'),-2,-1,0,1,2,float('inf')],  \
            labels = [0,1,2,3,4,5], precision=4)
     mdf_test[binscolumn] = \
-    pd.cut( mdf_test[column], bins = [-float('inf'), -2, -1, 0, 1, 2, float('inf')],  \
+    pd.cut( mdf_test[binscolumn], bins = [-float('inf'), -2, -1, 0, 1, 2, float('inf')],  \
            labels = [0,1,2,3,4,5], precision=4)
     
     
@@ -11759,18 +11733,9 @@ class AutoMunge:
       ratio = sumcalc / mdf_train[binscolumn].shape[0]
       ordl_activations_dict.update({key:ratio})
 
-    #replace original column
-    del mdf_train[column]
-    del mdf_test[column]
-    mdf_train[column] = mdf_train[column + '_temp'].copy()
-    mdf_test[column] = mdf_test[column + '_temp'].copy()
-    del mdf_train[column + '_temp']
-    del mdf_test[column + '_temp']
-
 
     #create list of columns
-    nmbrcolumns = [column + '_bsor']
-
+    nmbrcolumns = [binscolumn]
 
 
     #nmbrnormalization_dict = {'mean' : mean, 'std' : std}
@@ -11823,28 +11788,30 @@ class AutoMunge:
     else:
       
       bn_width = 1
+      
+    binscolumn = column + '_bnwd'
 
     #store original column for later reversion
-    mdf_train[column + '_temp'] = mdf_train[column].copy()
-    mdf_test[column + '_temp'] = mdf_test[column].copy()
+    mdf_train[binscolumn] = mdf_train[column].copy()
+    mdf_test[binscolumn] = mdf_test[column].copy()
 
     #convert all values to either numeric or NaN
-    mdf_train[column] = pd.to_numeric(mdf_train[column], errors='coerce')
-    mdf_test[column] = pd.to_numeric(mdf_test[column], errors='coerce')
+    mdf_train[binscolumn] = pd.to_numeric(mdf_train[binscolumn], errors='coerce')
+    mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
 
     #get mean of training data
-    mean = mdf_train[column].mean()
+    mean = mdf_train[binscolumn].mean()
     
     if mean != mean:
       mean = 0
 
     #replace missing data with training set mean
-    mdf_train[column] = mdf_train[column].fillna(mean)
-    mdf_test[column] = mdf_test[column].fillna(mean)
+    mdf_train[binscolumn] = mdf_train[binscolumn].fillna(mean)
+    mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
 
     #evaluate train set for transformation parameters
-    bn_min = mdf_train[column].min()
-    bn_max = mdf_train[column].max()
+    bn_min = mdf_train[binscolumn].min()
+    bn_max = mdf_train[binscolumn].max()
     bn_delta = bn_max - bn_min
     if bn_delta == 0:
       bn_delta = 1
@@ -11859,12 +11826,12 @@ class AutoMunge:
       bins_cuts.insert(-1,(bn_min + (i+1) * bn_width))
       
     #create bins based on standard deviation increments
-    binscolumn = column + '_bnwd'
+#     binscolumn = column + '_bnwd'
     mdf_train[binscolumn] = \
-    pd.cut(mdf_train[column], bins = bins_cuts,  \
+    pd.cut(mdf_train[binscolumn], bins = bins_cuts,  \
            labels = bins_id, precision=len(str(bn_count)))
     mdf_test[binscolumn] = \
-    pd.cut(mdf_test[column], bins = bins_cuts,  \
+    pd.cut(mdf_test[binscolumn], bins = bins_cuts,  \
            labels = bins_id, precision=len(str(bn_count)))
 
     foundinset = mdf_train[binscolumn].unique()
@@ -11905,16 +11872,6 @@ class AutoMunge:
     #delete the support column
     del mdf_train[binscolumn]
     del mdf_test[binscolumn]
-
-    #replace original column
-    del mdf_train[column]
-    del mdf_test[column]
-    mdf_train[column] = mdf_train[column + '_temp'].copy()
-    mdf_test[column] = mdf_test[column + '_temp'].copy()
-    del mdf_train[column + '_temp']
-    del mdf_test[column + '_temp']
-
-
 
     #create list of columns
     nmbrcolumns = textcolumns
@@ -11975,27 +11932,29 @@ class AutoMunge:
       
       bn_width = 1000
 
+    binscolumn = column + '_bnwK'
+
     #store original column for later reversion
-    mdf_train[column + '_temp'] = mdf_train[column].copy()
-    mdf_test[column + '_temp'] = mdf_test[column].copy()
+    mdf_train[binscolumn] = mdf_train[column].copy()
+    mdf_test[binscolumn] = mdf_test[column].copy()
 
     #convert all values to either numeric or NaN
-    mdf_train[column] = pd.to_numeric(mdf_train[column], errors='coerce')
-    mdf_test[column] = pd.to_numeric(mdf_test[column], errors='coerce')
+    mdf_train[binscolumn] = pd.to_numeric(mdf_train[binscolumn], errors='coerce')
+    mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
 
     #get mean of training data
-    mean = mdf_train[column].mean()
+    mean = mdf_train[binscolumn].mean()
     
     if mean != mean:
       mean = 0
 
     #replace missing data with training set mean
-    mdf_train[column] = mdf_train[column].fillna(mean)
-    mdf_test[column] = mdf_test[column].fillna(mean)
+    mdf_train[binscolumn] = mdf_train[binscolumn].fillna(mean)
+    mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
 
     #evaluate train set for transformation parameters
-    bn_min = mdf_train[column].min()
-    bn_max = mdf_train[column].max()
+    bn_min = mdf_train[binscolumn].min()
+    bn_max = mdf_train[binscolumn].max()
     bn_delta = bn_max - bn_min
     if bn_delta == 0:
       bn_delta = 1
@@ -12010,12 +11969,12 @@ class AutoMunge:
       bins_cuts.insert(-1,(bn_min + (i+1) * bn_width))
       
     #create bins based on standard deviation increments
-    binscolumn = column + '_bnwK'
+#     binscolumn = column + '_bnwd'
     mdf_train[binscolumn] = \
-    pd.cut(mdf_train[column], bins = bins_cuts,  \
+    pd.cut(mdf_train[binscolumn], bins = bins_cuts,  \
            labels = bins_id, precision=len(str(bn_count)))
     mdf_test[binscolumn] = \
-    pd.cut(mdf_test[column], bins = bins_cuts,  \
+    pd.cut(mdf_test[binscolumn], bins = bins_cuts,  \
            labels = bins_id, precision=len(str(bn_count)))
 
     foundinset = mdf_train[binscolumn].unique()
@@ -12057,16 +12016,6 @@ class AutoMunge:
     del mdf_train[binscolumn]
     del mdf_test[binscolumn]
 
-    #replace original column
-    del mdf_train[column]
-    del mdf_test[column]
-    mdf_train[column] = mdf_train[column + '_temp'].copy()
-    mdf_test[column] = mdf_test[column + '_temp'].copy()
-    del mdf_train[column + '_temp']
-    del mdf_test[column + '_temp']
-
-
-
     #create list of columns
     nmbrcolumns = textcolumns
 
@@ -12091,7 +12040,7 @@ class AutoMunge:
 
       if nc in textcolumns:
 
-        column_dict = { nc : {'category' : 'bnwK', \
+        column_dict = { nc : {'category' : 'bnwd', \
                              'origcategory' : category, \
                              'normalization_dict' : nmbrnormalization_dict, \
                              'origcolumn' : column, \
@@ -12102,8 +12051,7 @@ class AutoMunge:
                              'deletecolumn' : False}}
 
         column_dict_list.append(column_dict.copy())
-
-
+       
     return mdf_train, mdf_test, column_dict_list
   
   
@@ -12129,27 +12077,29 @@ class AutoMunge:
       
       bn_width = 1000000
 
+    binscolumn = column + '_bnwM'
+
     #store original column for later reversion
-    mdf_train[column + '_temp'] = mdf_train[column].copy()
-    mdf_test[column + '_temp'] = mdf_test[column].copy()
+    mdf_train[binscolumn] = mdf_train[column].copy()
+    mdf_test[binscolumn] = mdf_test[column].copy()
 
     #convert all values to either numeric or NaN
-    mdf_train[column] = pd.to_numeric(mdf_train[column], errors='coerce')
-    mdf_test[column] = pd.to_numeric(mdf_test[column], errors='coerce')
+    mdf_train[binscolumn] = pd.to_numeric(mdf_train[binscolumn], errors='coerce')
+    mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
 
     #get mean of training data
-    mean = mdf_train[column].mean()
+    mean = mdf_train[binscolumn].mean()
     
     if mean != mean:
       mean = 0
 
     #replace missing data with training set mean
-    mdf_train[column] = mdf_train[column].fillna(mean)
-    mdf_test[column] = mdf_test[column].fillna(mean)
+    mdf_train[binscolumn] = mdf_train[binscolumn].fillna(mean)
+    mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
 
     #evaluate train set for transformation parameters
-    bn_min = mdf_train[column].min()
-    bn_max = mdf_train[column].max()
+    bn_min = mdf_train[binscolumn].min()
+    bn_max = mdf_train[binscolumn].max()
     bn_delta = bn_max - bn_min
     if bn_delta == 0:
       bn_delta = 1
@@ -12164,12 +12114,12 @@ class AutoMunge:
       bins_cuts.insert(-1,(bn_min + (i+1) * bn_width))
       
     #create bins based on standard deviation increments
-    binscolumn = column + '_bnwM'
+#     binscolumn = column + '_bnwd'
     mdf_train[binscolumn] = \
-    pd.cut(mdf_train[column], bins = bins_cuts,  \
+    pd.cut(mdf_train[binscolumn], bins = bins_cuts,  \
            labels = bins_id, precision=len(str(bn_count)))
     mdf_test[binscolumn] = \
-    pd.cut(mdf_test[column], bins = bins_cuts,  \
+    pd.cut(mdf_test[binscolumn], bins = bins_cuts,  \
            labels = bins_id, precision=len(str(bn_count)))
 
     foundinset = mdf_train[binscolumn].unique()
@@ -12211,16 +12161,6 @@ class AutoMunge:
     del mdf_train[binscolumn]
     del mdf_test[binscolumn]
 
-    #replace original column
-    del mdf_train[column]
-    del mdf_test[column]
-    mdf_train[column] = mdf_train[column + '_temp'].copy()
-    mdf_test[column] = mdf_test[column + '_temp'].copy()
-    del mdf_train[column + '_temp']
-    del mdf_test[column + '_temp']
-
-
-
     #create list of columns
     nmbrcolumns = textcolumns
 
@@ -12245,7 +12185,7 @@ class AutoMunge:
 
       if nc in textcolumns:
 
-        column_dict = { nc : {'category' : 'bnwM', \
+        column_dict = { nc : {'category' : 'bnwd', \
                              'origcategory' : category, \
                              'normalization_dict' : nmbrnormalization_dict, \
                              'origcolumn' : column, \
@@ -12256,8 +12196,7 @@ class AutoMunge:
                              'deletecolumn' : False}}
 
         column_dict_list.append(column_dict.copy())
-
-
+       
     return mdf_train, mdf_test, column_dict_list
   
   
@@ -12281,29 +12220,31 @@ class AutoMunge:
     else:
       
       bn_width = 1
+      
+    binscolumn = column + '_bnwo'
 
     #store original column for later reversion
-    mdf_train[column + '_temp'] = mdf_train[column].copy()
-    mdf_test[column + '_temp'] = mdf_test[column].copy()
+    mdf_train[binscolumn] = mdf_train[column].copy()
+    mdf_test[binscolumn] = mdf_test[column].copy()
 
     #convert all values to either numeric or NaN
-    mdf_train[column] = pd.to_numeric(mdf_train[column], errors='coerce')
-    mdf_test[column] = pd.to_numeric(mdf_test[column], errors='coerce')
+    mdf_train[binscolumn] = pd.to_numeric(mdf_train[binscolumn], errors='coerce')
+    mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
 
     #get mean of training data
-    mean = mdf_train[column].mean()
+    mean = mdf_train[binscolumn].mean()
     
     if mean != mean:
       mean = 0
 
     #replace missing data with training set mean
-    mdf_train[column] = mdf_train[column].fillna(mean)
-    mdf_test[column] = mdf_test[column].fillna(mean)
+    mdf_train[binscolumn] = mdf_train[binscolumn].fillna(mean)
+    mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
 
 
     #evaluate train set for transformation parameters
-    bn_min = mdf_train[column].min()
-    bn_max = mdf_train[column].max()
+    bn_min = mdf_train[binscolumn].min()
+    bn_max = mdf_train[binscolumn].max()
     bn_delta = bn_max - bn_min
     if bn_delta == 0:
       bn_delta = 1
@@ -12318,29 +12259,22 @@ class AutoMunge:
       bins_cuts.insert(-1,(bn_min + (i+1) * bn_width))
       
     #create bins based on standard deviation increments
-    binscolumn = column + '_bnwo'
+#     binscolumn = column + '_bnwo'
     mdf_train[binscolumn] = \
-    pd.cut(mdf_train[column], bins = bins_cuts,  \
+    pd.cut(mdf_train[binscolumn], bins = bins_cuts,  \
            labels = bins_id, precision=len(str(bn_count)))
     mdf_test[binscolumn] = \
-    pd.cut(mdf_test[column], bins = bins_cuts,  \
+    pd.cut(mdf_test[binscolumn], bins = bins_cuts,  \
            labels = bins_id, precision=len(str(bn_count)))
     
     #change column dtype
     mdf_train[binscolumn] = mdf_train[binscolumn].astype(int)
     mdf_test[binscolumn] = mdf_test[binscolumn].astype(int)
-    
-    #replace original column
-    del mdf_train[column]
-    del mdf_test[column]
-    mdf_train[column] = mdf_train[column + '_temp'].copy()
-    mdf_test[column] = mdf_test[column + '_temp'].copy()
-    del mdf_train[column + '_temp']
-    del mdf_test[column + '_temp']
+
 
 
     #create list of columns
-    nmbrcolumns = [column + '_bnwo']
+    nmbrcolumns = [binscolumn]
 
 
 
@@ -12398,28 +12332,30 @@ class AutoMunge:
       
       bn_width = 1000
 
+    binscolumn = column + '_bnKo'
+
     #store original column for later reversion
-    mdf_train[column + '_temp'] = mdf_train[column].copy()
-    mdf_test[column + '_temp'] = mdf_test[column].copy()
+    mdf_train[binscolumn] = mdf_train[column].copy()
+    mdf_test[binscolumn] = mdf_test[column].copy()
 
     #convert all values to either numeric or NaN
-    mdf_train[column] = pd.to_numeric(mdf_train[column], errors='coerce')
-    mdf_test[column] = pd.to_numeric(mdf_test[column], errors='coerce')
+    mdf_train[binscolumn] = pd.to_numeric(mdf_train[binscolumn], errors='coerce')
+    mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
 
     #get mean of training data
-    mean = mdf_train[column].mean()
+    mean = mdf_train[binscolumn].mean()
     
     if mean != mean:
       mean = 0
 
     #replace missing data with training set mean
-    mdf_train[column] = mdf_train[column].fillna(mean)
-    mdf_test[column] = mdf_test[column].fillna(mean)
+    mdf_train[binscolumn] = mdf_train[binscolumn].fillna(mean)
+    mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
 
 
     #evaluate train set for transformation parameters
-    bn_min = mdf_train[column].min()
-    bn_max = mdf_train[column].max()
+    bn_min = mdf_train[binscolumn].min()
+    bn_max = mdf_train[binscolumn].max()
     bn_delta = bn_max - bn_min
     if bn_delta == 0:
       bn_delta = 1
@@ -12434,30 +12370,22 @@ class AutoMunge:
       bins_cuts.insert(-1,(bn_min + (i+1) * bn_width))
       
     #create bins based on standard deviation increments
-    binscolumn = column + '_bnKo'
+#     binscolumn = column + '_bnwo'
     mdf_train[binscolumn] = \
-    pd.cut(mdf_train[column], bins = bins_cuts,  \
+    pd.cut(mdf_train[binscolumn], bins = bins_cuts,  \
            labels = bins_id, precision=len(str(bn_count)))
     mdf_test[binscolumn] = \
-    pd.cut(mdf_test[column], bins = bins_cuts,  \
+    pd.cut(mdf_test[binscolumn], bins = bins_cuts,  \
            labels = bins_id, precision=len(str(bn_count)))
     
     #change column dtype
     mdf_train[binscolumn] = mdf_train[binscolumn].astype(int)
     mdf_test[binscolumn] = mdf_test[binscolumn].astype(int)
-    
-    
-    #replace original column
-    del mdf_train[column]
-    del mdf_test[column]
-    mdf_train[column] = mdf_train[column + '_temp'].copy()
-    mdf_test[column] = mdf_test[column + '_temp'].copy()
-    del mdf_train[column + '_temp']
-    del mdf_test[column + '_temp']
+
 
 
     #create list of columns
-    nmbrcolumns = [column + '_bnKo']
+    nmbrcolumns = [binscolumn]
 
 
 
@@ -12479,7 +12407,7 @@ class AutoMunge:
 
       if nc in nmbrcolumns:
 
-        column_dict = { nc : {'category' : 'bnKo', \
+        column_dict = { nc : {'category' : 'bnwo', \
                              'origcategory' : category, \
                              'normalization_dict' : nmbrnormalization_dict, \
                              'origcolumn' : column, \
@@ -12515,28 +12443,30 @@ class AutoMunge:
       
       bn_width = 1000000
 
+    binscolumn = column + '_bnMo'
+
     #store original column for later reversion
-    mdf_train[column + '_temp'] = mdf_train[column].copy()
-    mdf_test[column + '_temp'] = mdf_test[column].copy()
+    mdf_train[binscolumn] = mdf_train[column].copy()
+    mdf_test[binscolumn] = mdf_test[column].copy()
 
     #convert all values to either numeric or NaN
-    mdf_train[column] = pd.to_numeric(mdf_train[column], errors='coerce')
-    mdf_test[column] = pd.to_numeric(mdf_test[column], errors='coerce')
+    mdf_train[binscolumn] = pd.to_numeric(mdf_train[binscolumn], errors='coerce')
+    mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
 
     #get mean of training data
-    mean = mdf_train[column].mean()
+    mean = mdf_train[binscolumn].mean()
     
     if mean != mean:
       mean = 0
 
     #replace missing data with training set mean
-    mdf_train[column] = mdf_train[column].fillna(mean)
-    mdf_test[column] = mdf_test[column].fillna(mean)
+    mdf_train[binscolumn] = mdf_train[binscolumn].fillna(mean)
+    mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
 
 
     #evaluate train set for transformation parameters
-    bn_min = mdf_train[column].min()
-    bn_max = mdf_train[column].max()
+    bn_min = mdf_train[binscolumn].min()
+    bn_max = mdf_train[binscolumn].max()
     bn_delta = bn_max - bn_min
     if bn_delta == 0:
       bn_delta = 1
@@ -12551,30 +12481,22 @@ class AutoMunge:
       bins_cuts.insert(-1,(bn_min + (i+1) * bn_width))
       
     #create bins based on standard deviation increments
-    binscolumn = column + '_bnMo'
+#     binscolumn = column + '_bnwo'
     mdf_train[binscolumn] = \
-    pd.cut(mdf_train[column], bins = bins_cuts,  \
+    pd.cut(mdf_train[binscolumn], bins = bins_cuts,  \
            labels = bins_id, precision=len(str(bn_count)))
     mdf_test[binscolumn] = \
-    pd.cut(mdf_test[column], bins = bins_cuts,  \
+    pd.cut(mdf_test[binscolumn], bins = bins_cuts,  \
            labels = bins_id, precision=len(str(bn_count)))
     
     #change column dtype
     mdf_train[binscolumn] = mdf_train[binscolumn].astype(int)
     mdf_test[binscolumn] = mdf_test[binscolumn].astype(int)
-    
-    
-    #replace original column
-    del mdf_train[column]
-    del mdf_test[column]
-    mdf_train[column] = mdf_train[column + '_temp'].copy()
-    mdf_test[column] = mdf_test[column + '_temp'].copy()
-    del mdf_train[column + '_temp']
-    del mdf_test[column + '_temp']
+
 
 
     #create list of columns
-    nmbrcolumns = [column + '_bnMo']
+    nmbrcolumns = [binscolumn]
 
 
 
@@ -12596,7 +12518,7 @@ class AutoMunge:
 
       if nc in nmbrcolumns:
 
-        column_dict = { nc : {'category' : 'bnMo', \
+        column_dict = { nc : {'category' : 'bnwo', \
                              'origcategory' : category, \
                              'normalization_dict' : nmbrnormalization_dict, \
                              'origcolumn' : column, \
@@ -17938,10 +17860,13 @@ class AutoMunge:
       print("Begin Automunge processing")
       print("")
       
-#     #copy input dataframes to internal state so as not to edit exterior objects
+    #copy input dataframes to internal state so as not to edit exterior objects
 #     if inplace is False:
-#       df_train = df_train.copy()
-#       df_test = df_test.copy()
+    df_train = df_train.copy()
+    df_test = df_test.copy()
+
+#     elif inplace is True:
+#       pass
 
 
 
@@ -19337,7 +19262,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.9'
+    automungeversion = '3.10'
     application_number = random.randint(100000000000,999999999999)
     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -20357,13 +20282,14 @@ class AutoMunge:
     #downstream transforms are performed on multicolumn parents 
     #by pulling the categorylist instead of columnslist (noting that will require
     #a more exact evaluation for columnkey somehow)
-
+    
+    tempcolumn = column + '_:;:_temp'
     
     #create copy of original column for later retrieval
-    mdf_test[column + '_temp'] = mdf_test[column].copy()
+    mdf_test[tempcolumn] = mdf_test[column].copy()
 
     #convert column to category
-    mdf_test[column] = mdf_test[column].astype('category')
+    mdf_test[tempcolumn] = mdf_test[tempcolumn].astype('category')
 
 #     #if set is categorical we'll need the plug value for missing values included
 #     mdf_test[column] = mdf_test[column].cat.add_categories(['NArw'])
@@ -20372,19 +20298,19 @@ class AutoMunge:
 #     mdf_test[column] = mdf_test[column].fillna('NArw')
     
     #if set is categorical we'll need the plug value for missing values included
-    mdf_test[column] = mdf_test[column].cat.add_categories(['NAr2'])
+    mdf_test[tempcolumn] = mdf_test[tempcolumn].cat.add_categories([':;:NAr2'])
 
     #replace NA with a dummy variable
-    mdf_test[column] = mdf_test[column].fillna('NAr2')
+    mdf_test[tempcolumn] = mdf_test[tempcolumn].fillna(':;:NAr2')
 
     #replace numerical with string equivalent
     #mdf_train[column] = mdf_train[column].astype(str)
-    mdf_test[column] = mdf_test[column].astype(str)
+    mdf_test[tempcolumn] = mdf_test[tempcolumn].astype(str)
     
     #moved this to after the initial infill
     #new method for retrieving a columnkey
     normkey = False
-    for unique in mdf_test[column].unique():
+    for unique in mdf_test[tempcolumn].unique():
       if column + '_' + str(unique) in postprocess_dict['column_dict']:
         normkey = column + '_' + str(unique)
         break
@@ -20427,12 +20353,12 @@ class AutoMunge:
       textcolumn = textcolumn[prefixlength :]
     #labels_train.sort(axis=0)
     labels_train.sort()
-    labels_test = mdf_test[column].unique()
+    labels_test = mdf_test[tempcolumn].unique()
     labels_test.sort(axis=0)
 
 
     #apply onehotencoding
-    df_test_cat = pd.get_dummies(mdf_test[column])
+    df_test_cat = pd.get_dummies(mdf_test[tempcolumn])
     
     #append column header name to each category listing
     #note the iteration is over a numpy array hence the [...] approach
@@ -20459,13 +20385,10 @@ class AutoMunge:
     mdf_test = pd.concat([df_test_cat, mdf_test], axis=1)
     
 
-    #replace original column
-    del mdf_test[column]
-    mdf_test[column] = mdf_test[column + '_temp'].copy()
-    del mdf_test[column + '_temp']
+    del mdf_test[tempcolumn]
     
     #delete support NArw2 column
-    columnNAr2 = column + '_NAr2'
+    columnNAr2 = column + '_:;:NAr2'
     if columnNAr2 in list(mdf_test):
       del mdf_test[columnNAr2]
     
@@ -20506,11 +20429,13 @@ class AutoMunge:
     #textcolumns = postprocess_dict['column_dict'][columnkey]['columnslist']
     textcolumns = postprocess_dict['column_dict'][columnkey]['categorylist']
     
+    tempcolumn = column + '_:;:_temp'
+    
     #create copy of original column for later retrieval
-    mdf_test[column + '_temp'] = mdf_test[column].copy()
+    mdf_test[tempcolumn] = mdf_test[column].copy()
 
     #convert column to category
-    mdf_test[column] = mdf_test[column].astype('category')
+    mdf_test[tempcolumn] = mdf_test[tempcolumn].astype('category')
 
 #     #if set is categorical we'll need the plug value for missing values included
 #     mdf_test[column] = mdf_test[column].cat.add_categories(['NArw'])
@@ -20519,14 +20444,14 @@ class AutoMunge:
 #     mdf_test[column] = mdf_test[column].fillna('NArw')
     
     #if set is categorical we'll need the plug value for missing values included
-    mdf_test[column] = mdf_test[column].cat.add_categories(['NAr2'])
+    mdf_test[tempcolumn] = mdf_test[tempcolumn].cat.add_categories([':;:NAr2'])
 
     #replace NA with a dummy variable
-    mdf_test[column] = mdf_test[column].fillna('NAr2')
+    mdf_test[tempcolumn] = mdf_test[tempcolumn].fillna(':;:NAr2')
 
     #replace numerical with string equivalent
     #mdf_train[column] = mdf_train[column].astype(str)
-    mdf_test[column] = mdf_test[column].astype(str)
+    mdf_test[tempcolumn] = mdf_test[tempcolumn].astype(str)
 
 
     #extract categories for column labels
@@ -20540,12 +20465,12 @@ class AutoMunge:
       textcolumn = textcolumn[prefixlength :]
     #labels_train.sort(axis=0)
     labels_train.sort()
-    labels_test = mdf_test[column].unique()
+    labels_test = mdf_test[tempcolumn].unique()
     labels_test.sort(axis=0)
 
 
     #apply onehotencoding
-    df_test_cat = pd.get_dummies(mdf_test[column])
+    df_test_cat = pd.get_dummies(mdf_test[tempcolumn])
     
     #append column header name to each category listing
     #note the iteration is over a numpy array hence the [...] approach
@@ -20572,13 +20497,10 @@ class AutoMunge:
     mdf_test = pd.concat([df_test_cat, mdf_test], axis=1)
     
 
-    #replace original column
-    del mdf_test[column]
-    mdf_test[column] = mdf_test[column + '_temp'].copy()
-    del mdf_test[column + '_temp']
+    del mdf_test[tempcolumn]
     
     #delete support NArw2 column
-    columnNAr2 = column + '_NAr2'
+    columnNAr2 = column + '_:;:NAr2'
     if columnNAr2 in list(mdf_test):
       del mdf_test[columnNAr2]
     
@@ -23660,30 +23582,32 @@ class AutoMunge:
     
     textcolumns = postprocess_dict['column_dict'][normkey]['categorylist']
     
+    tempcolumn = column + '_:;:_temp'
+    
     #store original column for later reversion
-    mdf_test[column + '_temp'] = mdf_test[column].copy()
+    mdf_test[tempcolumn] = mdf_test[column].copy()
     
     #convert all values to either numeric or NaN
-    mdf_test[column] = pd.to_numeric(mdf_test[column], errors='coerce')
+    mdf_test[tempcolumn] = pd.to_numeric(mdf_test[tempcolumn], errors='coerce')
     
     #convert all values <= 0 to Nan
-    mdf_test[column] = \
-    np.where(mdf_test[column] <= 0, np.nan, mdf_test[column].values)
+    mdf_test[tempcolumn] = \
+    np.where(mdf_test[tempcolumn] <= 0, np.nan, mdf_test[tempcolumn].values)
     
     #log transform column
     #note that this replaces negative values with nan which we will infill with meanlog
 #     mdf_test[column] = np.floor(np.log10(mdf_test[column]))
-    mdf_test[column] = \
-    np.where(mdf_test[column] != np.nan, np.floor(np.log10(mdf_test[column])), mdf_test[column].values)
+    mdf_test[tempcolumn] = \
+    np.where(mdf_test[tempcolumn] != np.nan, np.floor(np.log10(mdf_test[tempcolumn])), mdf_test[tempcolumn].values)
     
 #     #replace missing data with training set mean
 #     mdf_test[column] = mdf_test[column].fillna(meanlog)
 
     #replace missing data with 0
-    mdf_test[column] = mdf_test[column].fillna(0)
+    mdf_test[tempcolumn] = mdf_test[tempcolumn].fillna(0)
     
     #replace numerical with string equivalent
-    mdf_test[column] = mdf_test[column].astype(int).astype(str)
+    mdf_test[tempcolumn] = mdf_test[tempcolumn].astype(int).astype(str)
     
     #extract categories for column labels
     #note that .unique() extracts the labels as a numpy array
@@ -23696,11 +23620,11 @@ class AutoMunge:
       textcolumn = textcolumn[prefixlength :]
     #labels_train.sort(axis=0)
     labels_train.sort()
-    labels_test = mdf_test[column].unique()
+    labels_test = mdf_test[tempcolumn].unique()
     labels_test.sort(axis=0)
     
     #apply onehotencoding
-    df_test_cat = pd.get_dummies(mdf_test[column])
+    df_test_cat = pd.get_dummies(mdf_test[tempcolumn])
     
     #append column header name to each category listing
     #note the iteration is over a numpy array hence the [...] approach
@@ -23724,10 +23648,8 @@ class AutoMunge:
     #concatinate the sparse set with the rest of our training data
     mdf_test = pd.concat([df_test_cat, mdf_test], axis=1)
     
-    #replace original column
-    del mdf_test[column]
-    mdf_test[column] = mdf_test[column + '_temp'].copy()
-    del mdf_test[column + '_temp']
+
+    del mdf_test[tempcolumn]
     
 #     #delete support NArw2 column
 #     columnNAr2 = column + '_NAr2'
@@ -23759,27 +23681,24 @@ class AutoMunge:
     meanlog = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['meanlog']
     maxlog = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['maxlog']
     
+    pworcolumn = column + '_pwor'
+    
     #store original column for later reversion
-    mdf_test[column + '_temp'] = mdf_test[column].copy()
+    mdf_test[pworcolumn] = mdf_test[column].copy()
     
     #convert all values to either numeric or NaN
-    mdf_test[column] = pd.to_numeric(mdf_test[column], errors='coerce')
+    mdf_test[pworcolumn] = pd.to_numeric(mdf_test[pworcolumn], errors='coerce')
     
     #convert all values <= 0 to Nan
-    mdf_test[column] = \
-    np.where(mdf_test[column] <= 0, np.nan, mdf_test[column].values)
+    mdf_test[pworcolumn] = \
+    np.where(mdf_test[pworcolumn] <= 0, np.nan, mdf_test[pworcolumn].values)
     
     #log transform column
-    mdf_test[normkey] = \
-    np.where(mdf_test[column] != np.nan, np.floor(np.log10(mdf_test[column])), mdf_test[column].values)
+    mdf_test[pworcolumn] = \
+    np.where(mdf_test[pworcolumn] != np.nan, np.floor(np.log10(mdf_test[pworcolumn])), mdf_test[pworcolumn].values)
 
     #replace missing data with 0
-    mdf_test[normkey] = mdf_test[normkey].fillna(0)
-    
-    #replace original column
-    del mdf_test[column]
-    mdf_test[column] = mdf_test[column + '_temp'].copy()
-    del mdf_test[column + '_temp']
+    mdf_test[pworcolumn] = mdf_test[pworcolumn].fillna(0)
 
     
     return mdf_test
@@ -23823,24 +23742,26 @@ class AutoMunge:
 
       textcolumns = postprocess_dict['column_dict'][normkey]['categorylist']
 
+      tempcolumn = column + '_:;:_temp'
+      
       #store original column for later reversion
-      mdf_test[column + '_temp'] = mdf_test[column].copy()
+      mdf_test[tempcolumn] = mdf_test[column].copy()
 
       #convert all values to either numeric or NaN
-      mdf_test[column] = pd.to_numeric(mdf_test[column], errors='coerce')
+      mdf_test[tempcolumn] = pd.to_numeric(mdf_test[tempcolumn], errors='coerce')
 
 
       #create copy with negative values
       negtempcolumn = column + '_negtemp'
-      mdf_test[negtempcolumn] = mdf_test[column].copy()
+      mdf_test[negtempcolumn] = mdf_test[tempcolumn].copy()
 
       #convert all values in negtempcolumn >= 0 to Nan
       mdf_test[negtempcolumn] = \
       np.where(mdf_test[negtempcolumn] >= 0, np.nan, mdf_test[negtempcolumn].values)
 
       #convert all values <= 0 to Nan
-      mdf_test[column] = \
-      np.where(mdf_test[column] <= 0, np.nan, mdf_test[column].values)
+      mdf_test[tempcolumn] = \
+      np.where(mdf_test[tempcolumn] <= 0, np.nan, mdf_test[tempcolumn].values)
 
       #log transform column
 
@@ -23866,12 +23787,12 @@ class AutoMunge:
       mdf_test[negtempcolumn] = mdf_test[negtempcolumn].replace(test_neg_dict)
 
       #now log trasnform positive values in column column 
-      mdf_test[column] = \
-      np.where(mdf_test[column] != np.nan, np.floor(np.log10(mdf_test[column])), mdf_test[column].values)
+      mdf_test[tempcolumn] = \
+      np.where(mdf_test[tempcolumn] != np.nan, np.floor(np.log10(mdf_test[tempcolumn])), mdf_test[tempcolumn].values)
 
 
       test_pos_dict = {}
-      posunique = mdf_test[column].unique()
+      posunique = mdf_test[tempcolumn].unique()
       for unique in posunique:
         if unique != unique:
           newunique = np.nan
@@ -23883,13 +23804,13 @@ class AutoMunge:
           test_pos_dict.update({unique : np.nan})
 
 
-      mdf_test[column] = mdf_test[column].replace(test_pos_dict)    
+      mdf_test[tempcolumn] = mdf_test[tempcolumn].replace(test_pos_dict)    
 
       #combine the two columns
-      mdf_test[column] = mdf_test[negtempcolumn].where(mdf_test[negtempcolumn] == mdf_test[negtempcolumn], mdf_test[column])
+      mdf_test[tempcolumn] = mdf_test[negtempcolumn].where(mdf_test[negtempcolumn] == mdf_test[negtempcolumn], mdf_test[tempcolumn])
 
       #apply onehotencoding
-      df_test_cat = pd.get_dummies(mdf_test[column])
+      df_test_cat = pd.get_dummies(mdf_test[tempcolumn])
 
       #Get missing columns in test set that are present in training set
       missing_cols = set( textcolumns ) - set( df_test_cat.columns )
@@ -23909,9 +23830,7 @@ class AutoMunge:
       #replace original column
       del mdf_test[negtempcolumn]
 
-      del mdf_test[column]
-      mdf_test[column] = mdf_test[column + '_temp'].copy()
-      del mdf_test[column + '_temp']
+      del mdf_test[tempcolumn]
 
 
       #change data types to 8-bit (1 byte) integers for memory savings
@@ -23940,18 +23859,19 @@ class AutoMunge:
     #retrieve stuff from normalization dictionary
     train_replace_dict = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['train_replace_dict']
     
+    pworcolumn = column + '_por2'
 
     #store original column for later reversion
-    mdf_test[column + '_temp'] = mdf_test[column].copy()
+    mdf_test[pworcolumn] = mdf_test[column].copy()
 
     #convert all values to either numeric or NaN
-    mdf_test[column] = pd.to_numeric(mdf_test[column], errors='coerce')
+    mdf_test[pworcolumn] = pd.to_numeric(mdf_test[pworcolumn], errors='coerce')
     
     
     #copy set for negative values
     negtempcolumn = column + '_negtempcolumn'
     
-    mdf_test[negtempcolumn] = mdf_test[column].copy()
+    mdf_test[negtempcolumn] = mdf_test[pworcolumn].copy()
     
     #convert all values >= 0 to Nan
     mdf_test[negtempcolumn] = \
@@ -23962,12 +23882,12 @@ class AutoMunge:
     
     
     #convert all values <= 0 in column to Nan
-    mdf_test[column] = \
-    np.where(mdf_test[column] <= 0, np.nan, mdf_test[column].values)
+    mdf_test[pworcolumn] = \
+    np.where(mdf_test[pworcolumn] <= 0, np.nan, mdf_test[pworcolumn].values)
 
 
-    mdf_test[column] = \
-    np.where(mdf_test[column] != np.nan, np.floor(np.log10(mdf_test[column])), mdf_test[column].values)
+    mdf_test[pworcolumn] = \
+    np.where(mdf_test[pworcolumn] != np.nan, np.floor(np.log10(mdf_test[pworcolumn])), mdf_test[pworcolumn].values)
     
     #do same for negtempcolumn
     mdf_test[negtempcolumn] = \
@@ -23993,7 +23913,7 @@ class AutoMunge:
     #now do same for column
  
     test_pos_dict = {}
-    posunique = mdf_test[column].unique()
+    posunique = mdf_test[pworcolumn].unique()
     for unique in posunique:
       if unique != unique:
         newunique = np.nan
@@ -24005,13 +23925,13 @@ class AutoMunge:
         test_pos_dict.update({unique : np.nan})
     
     
-    mdf_test[column] = mdf_test[column].replace(test_pos_dict)
+    mdf_test[pworcolumn] = mdf_test[pworcolumn].replace(test_pos_dict)
     
     
     #combine the two columns
-    mdf_test[column] = mdf_test[negtempcolumn].where(mdf_test[negtempcolumn] == mdf_test[negtempcolumn], mdf_test[column])
+    mdf_test[pworcolumn] = mdf_test[negtempcolumn].where(mdf_test[negtempcolumn] == mdf_test[negtempcolumn], mdf_test[pworcolumn])
     
-    test_unique = mdf_test[column].unique()
+    test_unique = mdf_test[pworcolumn].unique()
   
     #Get missing entries in test set that are present in training set
     missing_cols = set( list(newunique_list) ) - set( list(test_unique) )
@@ -24026,8 +23946,8 @@ class AutoMunge:
       else:
         test_replace_dict.update({testunique : 0})
     
-    pworcolumn = column + '_por2'
-    mdf_test[pworcolumn] = mdf_test[column].copy()
+#     pworcolumn = column + '_por2'
+#     mdf_test[pworcolumn] = mdf_test[column].copy()
     
     
     mdf_test[pworcolumn] = mdf_test[pworcolumn].replace(test_replace_dict)
@@ -24035,12 +23955,6 @@ class AutoMunge:
     
     #replace original column from training data
     del mdf_test[negtempcolumn]    
-    
-    del mdf_test[column]
-    
-    mdf_test[column] = mdf_test[column + '_temp'].copy()
-
-    del mdf_test[column + '_temp']
         
     
     return mdf_test
@@ -24118,26 +24032,28 @@ class AutoMunge:
     mean = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binsmean']
     std = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binsstd']
 
+    binscolumn = column + '_bins'
+    
     #store original column for later reversion
-    mdf_test[column + '_temp'] = mdf_test[column].copy()
+    mdf_test[binscolumn] = mdf_test[column].copy()
 
     #convert all values to either numeric or NaN
-    mdf_test[column] = pd.to_numeric(mdf_test[column], errors='coerce')
+    mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
 
     #replace missing data with training set mean
-    mdf_test[column] = mdf_test[column].fillna(mean)
+    mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
 
     #subtract mean from column for test
-    mdf_test[column] = mdf_test[column] - mean
+    mdf_test[binscolumn] = mdf_test[binscolumn] - mean
 
     #divide column values by std for both training and test data
-    mdf_test[column] = mdf_test[column] / std
+    mdf_test[binscolumn] = mdf_test[binscolumn] / std
 
 
     #create bins based on standard deviation increments
-    binscolumn = column + '_bins'
+#     binscolumn = column + '_bins'
     mdf_test[binscolumn] = \
-    pd.cut( mdf_test[column], bins = [-float('inf'), -2, -1, 0, 1, 2, float('inf')],  \
+    pd.cut( mdf_test[binscolumn], bins = [-float('inf'), -2, -1, 0, 1, 2, float('inf')],  \
            labels = ['s<-2','s-21','s-10','s+01','s+12','s>+2'], precision=4)
 
 
@@ -24176,12 +24092,6 @@ class AutoMunge:
     
     #delete the support column
     del mdf_test[binscolumn]
-    
-    #replace original column
-    del mdf_test[column]
-    mdf_test[column] = mdf_test[column + '_temp'].copy()
-    del mdf_test[column + '_temp']
-
 
 
     #create list of columns
@@ -24224,14 +24134,16 @@ class AutoMunge:
     mean = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bintmean']
     std = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bintstd']
 
+    binscolumn = column + '_bint'
+    
     #store original column for later reversion
-    mdf_test[column + '_temp'] = mdf_test[column].copy()
+    mdf_test[binscolumn] = mdf_test[column].copy()
 
     #convert all values to either numeric or NaN
-    mdf_test[column] = pd.to_numeric(mdf_test[column], errors='coerce')
+    mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
 
     #replace missing data with training set mean
-    mdf_test[column] = mdf_test[column].fillna(mean)
+    mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
 
 #     #subtract mean from column for test
 #     mdf_test[column] = mdf_test[column] - mean
@@ -24241,9 +24153,9 @@ class AutoMunge:
 
 
     #create bins based on standard deviation increments
-    binscolumn = column + '_bint'
+#     binscolumn = column + '_bint'
     mdf_test[binscolumn] = \
-    pd.cut( mdf_test[column], bins = [-float('inf'), -2, -1, 0, 1, 2, float('inf')],  \
+    pd.cut( mdf_test[binscolumn], bins = [-float('inf'), -2, -1, 0, 1, 2, float('inf')],  \
            labels = ['t<-2','t-21','t-10','t+01','t+12','t>+2'], precision=4)
 
 
@@ -24283,13 +24195,6 @@ class AutoMunge:
     #delete the support column
     del mdf_test[binscolumn]
     
-
-    #replace original column
-    del mdf_test[column]
-    mdf_test[column] = mdf_test[column + '_temp'].copy()
-    del mdf_test[column + '_temp']
-
-
 
     #create list of columns
     #nmbrcolumns = [column + '_nmbr', column + '_NArw'] + textcolumns
@@ -24331,35 +24236,30 @@ class AutoMunge:
     std = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binsstd']
     ordinal_dict = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordinal_dict']
     
+    binscolumn = column + '_bsor'
 
     #store original column for later reversion
-    mdf_test[column + '_temp'] = mdf_test[column].copy()
+    mdf_test[binscolumn] = mdf_test[column].copy()
 
     #convert all values to either numeric or NaN
-    mdf_test[column] = pd.to_numeric(mdf_test[column], errors='coerce')
+    mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
 
     #replace missing data with training set mean
-    mdf_test[column] = mdf_test[column].fillna(mean)
+    mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
 
     #subtract mean from column for test
-    mdf_test[column] = mdf_test[column] - mean
+    mdf_test[binscolumn] = mdf_test[binscolumn] - mean
 
     #divide column values by std for both training and test data
-    mdf_test[column] = mdf_test[column] / std
+    mdf_test[binscolumn] = mdf_test[binscolumn] / std
 
 
     #create bins based on standard deviation increments
-    binscolumn = column + '_bsor'
+#     binscolumn = column + '_bsor'
     mdf_test[binscolumn] = \
-    pd.cut( mdf_test[column], bins = [-float('inf'), -2, -1, 0, 1, 2, float('inf')],  \
+    pd.cut( mdf_test[binscolumn], bins = [-float('inf'), -2, -1, 0, 1, 2, float('inf')],  \
            labels = [0,1,2,3,4,5], precision=4)
 
-
-    
-    #replace original column
-    del mdf_test[column]
-    mdf_test[column] = mdf_test[column + '_temp'].copy()
-    del mdf_test[column + '_temp']
 
     
     return mdf_test
@@ -24422,20 +24322,22 @@ class AutoMunge:
       bn_width = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_width']
       textcolumns = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['textcolumns']
       
+      binscolumn = column + '_bnwd'
+      
       #store original column for later reversion
-      mdf_test[column + '_temp'] = mdf_test[column].copy()
+      mdf_test[binscolumn] = mdf_test[column].copy()
 
       #convert all values to either numeric or NaN
-      mdf_test[column] = pd.to_numeric(mdf_test[column], errors='coerce')
+      mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
 
       #replace missing data with training set mean
-      mdf_test[column] = mdf_test[column].fillna(mean)
+      mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
       
       #create bins based on standard deviation increments
-      binscolumn = column + '_bnwd'
+#       binscolumn = column + '_bnwd'
 
       mdf_test[binscolumn] = \
-      pd.cut(mdf_test[column], bins = bins_cuts,  \
+      pd.cut(mdf_test[binscolumn], bins = bins_cuts,  \
              labels = bins_id, precision=len(str(bn_count)))
 
       tempkey = 'tempkey'
@@ -24452,11 +24354,6 @@ class AutoMunge:
 
       #delete the support column
       del mdf_test[binscolumn]
-
-      #replace original column
-      del mdf_test[column]
-      mdf_test[column] = mdf_test[column + '_temp'].copy()
-      del mdf_test[column + '_temp']
 
     
     return mdf_test
@@ -24519,20 +24416,22 @@ class AutoMunge:
       bn_width = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_width']
       textcolumns = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['textcolumns']
       
+      binscolumn = column + '_bnwK'
+      
       #store original column for later reversion
-      mdf_test[column + '_temp'] = mdf_test[column].copy()
+      mdf_test[binscolumn] = mdf_test[column].copy()
 
       #convert all values to either numeric or NaN
-      mdf_test[column] = pd.to_numeric(mdf_test[column], errors='coerce')
+      mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
 
       #replace missing data with training set mean
-      mdf_test[column] = mdf_test[column].fillna(mean)
+      mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
       
       #create bins based on standard deviation increments
-      binscolumn = column + '_bnwK'
+#       binscolumn = column + '_bnwd'
 
       mdf_test[binscolumn] = \
-      pd.cut(mdf_test[column], bins = bins_cuts,  \
+      pd.cut(mdf_test[binscolumn], bins = bins_cuts,  \
              labels = bins_id, precision=len(str(bn_count)))
 
       tempkey = 'tempkey'
@@ -24549,11 +24448,6 @@ class AutoMunge:
 
       #delete the support column
       del mdf_test[binscolumn]
-
-      #replace original column
-      del mdf_test[column]
-      mdf_test[column] = mdf_test[column + '_temp'].copy()
-      del mdf_test[column + '_temp']
 
     
     return mdf_test
@@ -24617,20 +24511,22 @@ class AutoMunge:
       bn_width = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_width']
       textcolumns = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['textcolumns']
       
+      binscolumn = column + '_bnwM'
+      
       #store original column for later reversion
-      mdf_test[column + '_temp'] = mdf_test[column].copy()
+      mdf_test[binscolumn] = mdf_test[column].copy()
 
       #convert all values to either numeric or NaN
-      mdf_test[column] = pd.to_numeric(mdf_test[column], errors='coerce')
+      mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
 
       #replace missing data with training set mean
-      mdf_test[column] = mdf_test[column].fillna(mean)
+      mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
       
       #create bins based on standard deviation increments
-      binscolumn = column + '_bnwM'
+#       binscolumn = column + '_bnwd'
 
       mdf_test[binscolumn] = \
-      pd.cut(mdf_test[column], bins = bins_cuts,  \
+      pd.cut(mdf_test[binscolumn], bins = bins_cuts,  \
              labels = bins_id, precision=len(str(bn_count)))
 
       tempkey = 'tempkey'
@@ -24647,11 +24543,6 @@ class AutoMunge:
 
       #delete the support column
       del mdf_test[binscolumn]
-
-      #replace original column
-      del mdf_test[column]
-      mdf_test[column] = mdf_test[column + '_temp'].copy()
-      del mdf_test[column + '_temp']
 
     
     return mdf_test
@@ -24684,31 +24575,29 @@ class AutoMunge:
     bn_width = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_width']
       
 
+    binscolumn = column + '_bnwo'
+    
     #store original column for later reversion
-    mdf_test[column + '_temp'] = mdf_test[column].copy()
+    mdf_test[binscolumn] = mdf_test[column].copy()
 
     #convert all values to either numeric or NaN
-    mdf_test[column] = pd.to_numeric(mdf_test[column], errors='coerce')
+    mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
 
     #replace missing data with training set mean
-    mdf_test[column] = mdf_test[column].fillna(mean)
+    mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
 
 
 
     #create bins based on standard deviation increments
-    binscolumn = column + '_bnwo'
+#     binscolumn = column + '_bnwo'
     mdf_test[binscolumn] = \
-    pd.cut(mdf_test[column], bins = bins_cuts,  \
+    pd.cut(mdf_test[binscolumn], bins = bins_cuts,  \
            labels = bins_id, precision=len(str(bn_count)))
     
     #change column dtype
     mdf_test[binscolumn] = mdf_test[binscolumn].astype(int)
 
-    
-    #replace original column
-    del mdf_test[column]
-    mdf_test[column] = mdf_test[column + '_temp'].copy()
-    del mdf_test[column + '_temp']
+
 
     
     return mdf_test
@@ -24741,32 +24630,29 @@ class AutoMunge:
     bn_width = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_width']
       
 
+    binscolumn = column + '_bnKo'
+    
     #store original column for later reversion
-    mdf_test[column + '_temp'] = mdf_test[column].copy()
+    mdf_test[binscolumn] = mdf_test[column].copy()
 
     #convert all values to either numeric or NaN
-    mdf_test[column] = pd.to_numeric(mdf_test[column], errors='coerce')
+    mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
 
     #replace missing data with training set mean
-    mdf_test[column] = mdf_test[column].fillna(mean)
+    mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
 
 
 
     #create bins based on standard deviation increments
-    binscolumn = column + '_bnKo'
+#     binscolumn = column + '_bnwo'
     mdf_test[binscolumn] = \
-    pd.cut(mdf_test[column], bins = bins_cuts,  \
+    pd.cut(mdf_test[binscolumn], bins = bins_cuts,  \
            labels = bins_id, precision=len(str(bn_count)))
     
     #change column dtype
     mdf_test[binscolumn] = mdf_test[binscolumn].astype(int)
 
 
-    
-    #replace original column
-    del mdf_test[column]
-    mdf_test[column] = mdf_test[column + '_temp'].copy()
-    del mdf_test[column + '_temp']
 
     
     return mdf_test
@@ -24798,32 +24684,29 @@ class AutoMunge:
     bn_width = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_width']
       
 
+    binscolumn = column + '_bnMo'
+    
     #store original column for later reversion
-    mdf_test[column + '_temp'] = mdf_test[column].copy()
+    mdf_test[binscolumn] = mdf_test[column].copy()
 
     #convert all values to either numeric or NaN
-    mdf_test[column] = pd.to_numeric(mdf_test[column], errors='coerce')
+    mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
 
     #replace missing data with training set mean
-    mdf_test[column] = mdf_test[column].fillna(mean)
+    mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
 
 
 
     #create bins based on standard deviation increments
-    binscolumn = column + '_bnMo'
+#     binscolumn = column + '_bnwo'
     mdf_test[binscolumn] = \
-    pd.cut(mdf_test[column], bins = bins_cuts,  \
+    pd.cut(mdf_test[binscolumn], bins = bins_cuts,  \
            labels = bins_id, precision=len(str(bn_count)))
     
     #change column dtype
     mdf_test[binscolumn] = mdf_test[binscolumn].astype(int)
 
 
-    
-    #replace original column
-    del mdf_test[column]
-    mdf_test[column] = mdf_test[column + '_temp'].copy()
-    del mdf_test[column + '_temp']
 
     
     return mdf_test
@@ -26000,9 +25883,11 @@ class AutoMunge:
 
     #postprocess_dict.update({'preFSpostprocess_dict' : preFSpostprocess_dict})
 
-#     #copy input dataframes to internal state so as not to edit exterior objects
+    #copy input dataframes to internal state so as not to edit exterior objects
 #     if inplace is False:
-#       df_test = df_test.copy()
+    df_test = df_test.copy()
+#     elif inplace is True:
+#       pass
 
 
     if type(df_test.index) != pd.RangeIndex:
