@@ -27,8 +27,8 @@ series of transformed numpy arrays or pandas dataframes (per selection) which
 are numerically encoded and suitable for the direct application of machine 
 learning algorithms. A user has an option between default feature engineering 
 based on inferred properties of the data with feature transformations such as 
-z score normalization, standard deviation bins for numerical sets, box-cox 
-power law transform for all positive numerical sets, one-hot encoding for 
+z-score normalization, standard deviation bins for numerical sets, box-cox 
+power law transform for all positive numerical sets, binary encoding for 
 categorical sets, time series agregation to sin and cos transforms (with bins
 for business hours, weekdays, and holidays), and more (full documentation 
 below); assigning specific column feature engineering methods using a built-in 
