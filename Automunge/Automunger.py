@@ -1572,7 +1572,7 @@ class AutoMunge:
     transform_dict.update({'bnwd' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['bnwd'], \
-                                     'cousins' : [], \
+                                     'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
@@ -1581,7 +1581,7 @@ class AutoMunge:
     transform_dict.update({'bnwK' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['bnwK'], \
-                                     'cousins' : [], \
+                                     'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
@@ -1590,7 +1590,7 @@ class AutoMunge:
     transform_dict.update({'bnwM' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['bnwM'], \
-                                     'cousins' : [], \
+                                     'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
@@ -1621,8 +1621,62 @@ class AutoMunge:
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
+                                     'friends' : []}})    
+    
+    transform_dict.update({'bnep' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['bnep'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
                                      'friends' : []}})
-  
+    
+    transform_dict.update({'bne7' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['bne7'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'bne9' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['bne9'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'bneo' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['bneo'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'bn7o' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['bn7o'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+
+    transform_dict.update({'bn9o' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['bn9o'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
     transform_dict.update({'pwor' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['pwor'], \
@@ -2706,6 +2760,42 @@ class AutoMunge:
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'bnwM'}})
+    process_dict.update({'bnep' : {'dualprocess' : self.process_bnep_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_bnep_class, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'multisp', \
+                                  'labelctgy' : 'bnep'}})
+    process_dict.update({'bne7' : {'dualprocess' : self.process_bne7_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_bne7_class, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'multisp', \
+                                  'labelctgy' : 'bne7'}})
+    process_dict.update({'bne9' : {'dualprocess' : self.process_bne9_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_bne9_class, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'multisp', \
+                                  'labelctgy' : 'bne9'}})
+    process_dict.update({'bneo' : {'dualprocess' : self.process_bneo_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_bneo_class, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'singlct', \
+                                  'labelctgy' : 'bneo'}})
+    process_dict.update({'bn7o' : {'dualprocess' : self.process_bn7o_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_bn7o_class, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'singlct', \
+                                  'labelctgy' : 'bn7o'}})
+    process_dict.update({'bn9o' : {'dualprocess' : self.process_bn9o_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_bn9o_class, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'singlct', \
+                                  'labelctgy' : 'bn9o'}})
     process_dict.update({'pwor' : {'dualprocess' : self.process_pwor_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_pwor_class, \
@@ -12533,6 +12623,1110 @@ class AutoMunge:
 
     return mdf_train, mdf_test, column_dict_list
   
+  def process_bnep_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
+    '''
+    #processes a numerical set by creating equal population bins coresponding to 
+    #parameter 'bincount' which defaults to 5
+    #and returning in one-hot encoded set
+    
+    #default infill is to have no activations in a row
+    
+    #can be applied top either a raw set not yet normalized or after normalization
+    #such as after z-score normalization)
+    '''
+    
+    if 'bincount' in params:
+        
+      bincount = params['bincount'] + 1
+    
+    else:
+      
+      bincount = 5 + 1
+      
+    binscolumn = column + '_bnep'
+
+    #copy original column
+    mdf_train[binscolumn] = mdf_train[column].copy()
+    mdf_test[binscolumn] = mdf_test[column].copy()
+
+    #convert all values to either numeric or NaN
+    mdf_train[binscolumn] = pd.to_numeric(mdf_train[binscolumn], errors='coerce')
+    mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
+
+    #get mean of training data
+    mean = mdf_train[binscolumn].mean()
+    
+    if mean != mean:
+      mean = 0
+
+#     #replace missing data with training set mean
+#     mdf_train[binscolumn] = mdf_train[binscolumn].fillna(mean)
+#     mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
+
+    #evaluate train set for transformation parameters
+    bn_min = mdf_train[binscolumn].min()
+    bn_max = mdf_train[binscolumn].max()
+    bn_delta = bn_max - bn_min
+#     if bn_delta == 0:
+#       bn_delta = 1
+#     bn_count = int(np.ceil(bn_delta / bn_width))
+
+#     if bn_delta > 0 and bn_min == bn_min:
+
+    if bn_delta > 0 and bn_min == bn_min:
+
+      #grab the intervals using qcut based on equal population in train set
+      intervalset = pd.qcut(mdf_train[binscolumn].values, bincount, duplicates='drop').unique()
+
+      #note we're sorting here, and scrubbing any nan
+      intervalset = sorted([interval for interval in intervalset if interval == interval])
+
+      #we'll make the bottom interval open-ended at negative end
+      firstinterval = pd.Interval(-np.inf, intervalset[0].right, closed='right')
+
+      #and the last interval open-ended at positive end
+      lastinterval = pd.Interval(intervalset[-1].left, np.inf, closed='right')
+
+      #now create a list to apply in cut operatoin
+      newinterval_list = []
+
+      #now we'll assemble a list of intervals to prepare for the cut operation, 
+      #replacing first and last with the open-ended
+      for i in range(len(intervalset)):
+        if i == 0:
+          newinterval_list.append(firstinterval)
+        elif i == len(intervalset)-1:
+          newinterval_list.append(lastinterval)
+        else:
+          newinterval_list.append(intervalset[i])
+
+      #now translate intervals to the list of boundaries for cut operatoin
+      cutintervals = []
+
+      for interval in newinterval_list:
+
+        cutintervals.append(interval.left)
+
+      cutintervals.append(np.inf)
+
+
+
+      bn_count = len(newinterval_list)
+
+
+
+
+      bins_id = []
+      for i in range(bn_count):
+        bins_id.append('_' + str(i))
+
+      bins_cuts = cutintervals
+
+      #create bins based on standard deviation increments
+  #     binscolumn = column + '_bnwd'
+      mdf_train[binscolumn] = \
+      pd.cut(mdf_train[binscolumn], bins = bins_cuts,  \
+             labels = bins_id, precision=len(str(bn_count)), duplicates='drop')
+      mdf_test[binscolumn] = \
+      pd.cut(mdf_test[binscolumn], bins = bins_cuts,  \
+             labels = bins_id, precision=len(str(bn_count)), duplicates='drop')
+
+      foundinset = mdf_train[binscolumn].unique()
+
+      textcolumns = []
+      for i in foundinset:
+        if i == i:
+          textcolumns.append(binscolumn + '_' + str(i))
+
+      #postprocess_textsupport_class will return columns in alphabetical order
+      textcolumns.sort()
+
+      #we're going to use the postprocess_text_class function here since it 
+      #allows us to force the columns even if no values present in the set
+      #however to do so we're going to have to construct a fake postprocess_dict
+
+      #a future extension should probnably build this capacity into a new distinct function
+
+      #here are some data structures for reference to create the below
+  #     def postprocess_text_class(self, mdf_test, column, postprocess_dict, columnkey):
+  #     textcolumns = postprocess_dict['column_dict'][columnkey]['columnslist']
+
+      tempkey = 'tempkey'
+      tempbins_postprocess_dict = {'column_dict' : {tempkey : {'columnslist' : textcolumns,\
+                                                               'categorylist' : textcolumns}}}
+
+      #process bins as a categorical set
+      mdf_train = \
+      self.postprocess_textsupport_class(mdf_train, binscolumn, tempbins_postprocess_dict, tempkey)
+      mdf_test = \
+      self.postprocess_textsupport_class(mdf_test, binscolumn, tempbins_postprocess_dict, tempkey)
+
+      #change data type for memory savings
+      for textcolumn in textcolumns:
+        mdf_train[textcolumn] = mdf_train[textcolumn].astype(np.int8)
+        mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.int8)
+
+
+      #delete the support column
+      del mdf_train[binscolumn]
+      del mdf_test[binscolumn]
+      
+      
+    else:
+      mdf_train[binscolumn] = 0
+      mdf_test[binscolumn] = 0
+      
+      textcolumns = [binscolumn]
+      
+      bn_count = bincount
+      bins_id = False
+      bins_cuts = False
+      
+      
+
+    #create list of columns
+    nmbrcolumns = textcolumns
+
+
+
+    #nmbrnormalization_dict = {'mean' : mean, 'std' : std}
+
+    #store some values in the nmbr_dict{} for use later in ML infill methods
+    column_dict_list = []
+
+    for nc in nmbrcolumns:
+
+      nmbrnormalization_dict = {nc : {'binsmean' : mean, \
+                                      'bn_min' : bn_min, \
+                                      'bn_max' : bn_max, \
+                                      'bn_delta' : bn_delta, \
+                                      'bn_count' : bn_count, \
+                                      'bins_id' : bins_id, \
+                                      'bins_cuts' : bins_cuts, \
+                                      'bincount' : bincount, \
+                                      'textcolumns' : textcolumns}}
+
+      if nc in textcolumns:
+
+        column_dict = { nc : {'category' : 'bnep', \
+                             'origcategory' : category, \
+                             'normalization_dict' : nmbrnormalization_dict, \
+                             'origcolumn' : column, \
+                             'columnslist' : nmbrcolumns, \
+                             'categorylist' : textcolumns, \
+                             'infillmodel' : False, \
+                             'infillcomplete' : False, \
+                             'deletecolumn' : False}}
+
+        column_dict_list.append(column_dict.copy())
+       
+    return mdf_train, mdf_test, column_dict_list
+  
+  def process_bne7_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
+    '''
+    #processes a numerical set by creating equal population bins coresponding to 
+    #parameter 'bincount' which defaults to 7
+    #and returning in one-hot encoded set
+    
+    #default infill is to have no activations in a row
+    
+    #can be applied top either a raw set not yet normalized or after normalization
+    #such as after z-score normalization)
+    '''
+    
+    if 'bincount' in params:
+        
+      bincount = params['bincount'] + 1
+    
+    else:
+      
+      bincount = 7 + 1
+      
+    binscolumn = column + '_bne7'
+
+    #copy original column
+    mdf_train[binscolumn] = mdf_train[column].copy()
+    mdf_test[binscolumn] = mdf_test[column].copy()
+
+    #convert all values to either numeric or NaN
+    mdf_train[binscolumn] = pd.to_numeric(mdf_train[binscolumn], errors='coerce')
+    mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
+
+    #get mean of training data
+    mean = mdf_train[binscolumn].mean()
+    
+    if mean != mean:
+      mean = 0
+
+#     #replace missing data with training set mean
+#     mdf_train[binscolumn] = mdf_train[binscolumn].fillna(mean)
+#     mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
+
+    #evaluate train set for transformation parameters
+    bn_min = mdf_train[binscolumn].min()
+    bn_max = mdf_train[binscolumn].max()
+    bn_delta = bn_max - bn_min
+#     if bn_delta == 0:
+#       bn_delta = 1
+#     bn_count = int(np.ceil(bn_delta / bn_width))
+
+    if bn_delta > 0 and bn_min == bn_min:
+
+      #grab the intervals using qcut based on equal population in train set
+      intervalset = pd.qcut(mdf_train[binscolumn].values, bincount, duplicates='drop').unique()
+
+      #note we're sorting here, and scrubbing any nan
+      intervalset = sorted([interval for interval in intervalset if interval == interval])
+
+      #we'll make the bottom interval open-ended at negative end
+      firstinterval = pd.Interval(-np.inf, intervalset[0].right, closed='right')
+
+      #and the last interval open-ended at positive end
+      lastinterval = pd.Interval(intervalset[-1].left, np.inf, closed='right')
+
+      #now create a list to apply in cut operatoin
+      newinterval_list = []
+
+      #now we'll assemble a list of intervals to prepare for the cut operation, 
+      #replacing first and last with the open-ended
+      for i in range(len(intervalset)):
+        if i == 0:
+          newinterval_list.append(firstinterval)
+        elif i == len(intervalset)-1:
+          newinterval_list.append(lastinterval)
+        else:
+          newinterval_list.append(intervalset[i])
+
+      #now translate intervals to the list of boundaries for cut operatoin
+      cutintervals = []
+
+      for interval in newinterval_list:
+
+        cutintervals.append(interval.left)
+
+      cutintervals.append(np.inf)
+
+
+
+      bn_count = len(newinterval_list)
+
+
+
+
+      bins_id = []
+      for i in range(bn_count):
+        bins_id.append('_' + str(i))
+
+      bins_cuts = cutintervals
+
+      #create bins based on standard deviation increments
+  #     binscolumn = column + '_bnwd'
+      mdf_train[binscolumn] = \
+      pd.cut(mdf_train[binscolumn], bins = bins_cuts,  \
+             labels = bins_id, precision=len(str(bn_count)), duplicates='drop')
+      mdf_test[binscolumn] = \
+      pd.cut(mdf_test[binscolumn], bins = bins_cuts,  \
+             labels = bins_id, precision=len(str(bn_count)), duplicates='drop')
+
+      foundinset = mdf_train[binscolumn].unique()
+
+      textcolumns = []
+      for i in foundinset:
+        if i == i:
+          textcolumns.append(binscolumn + '_' + str(i))
+
+      #postprocess_textsupport_class will return columns in alphabetical order
+      textcolumns.sort()
+
+      #we're going to use the postprocess_text_class function here since it 
+      #allows us to force the columns even if no values present in the set
+      #however to do so we're going to have to construct a fake postprocess_dict
+
+      #a future extension should probnably build this capacity into a new distinct function
+
+      #here are some data structures for reference to create the below
+  #     def postprocess_text_class(self, mdf_test, column, postprocess_dict, columnkey):
+  #     textcolumns = postprocess_dict['column_dict'][columnkey]['columnslist']
+
+      tempkey = 'tempkey'
+      tempbins_postprocess_dict = {'column_dict' : {tempkey : {'columnslist' : textcolumns,\
+                                                               'categorylist' : textcolumns}}}
+
+      #process bins as a categorical set
+      mdf_train = \
+      self.postprocess_textsupport_class(mdf_train, binscolumn, tempbins_postprocess_dict, tempkey)
+      mdf_test = \
+      self.postprocess_textsupport_class(mdf_test, binscolumn, tempbins_postprocess_dict, tempkey)
+
+      #change data type for memory savings
+      for textcolumn in textcolumns:
+        mdf_train[textcolumn] = mdf_train[textcolumn].astype(np.int8)
+        mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.int8)
+
+
+      #delete the support column
+      del mdf_train[binscolumn]
+      del mdf_test[binscolumn]
+      
+      
+    else:
+      mdf_train[binscolumn] = 0
+      mdf_test[binscolumn] = 0
+      
+      textcolumns = [binscolumn]
+      
+      bn_count = bincount
+      bins_id = False
+      bins_cuts = False
+
+    #create list of columns
+    nmbrcolumns = textcolumns
+
+
+
+    #nmbrnormalization_dict = {'mean' : mean, 'std' : std}
+
+    #store some values in the nmbr_dict{} for use later in ML infill methods
+    column_dict_list = []
+
+    for nc in nmbrcolumns:
+
+      nmbrnormalization_dict = {nc : {'binsmean' : mean, \
+                                      'bn_min' : bn_min, \
+                                      'bn_max' : bn_max, \
+                                      'bn_delta' : bn_delta, \
+                                      'bn_count' : bn_count, \
+                                      'bins_id' : bins_id, \
+                                      'bins_cuts' : bins_cuts, \
+                                      'bincount' : bincount, \
+                                      'textcolumns' : textcolumns}}
+
+      if nc in textcolumns:
+
+        column_dict = { nc : {'category' : 'bne7', \
+                             'origcategory' : category, \
+                             'normalization_dict' : nmbrnormalization_dict, \
+                             'origcolumn' : column, \
+                             'columnslist' : nmbrcolumns, \
+                             'categorylist' : textcolumns, \
+                             'infillmodel' : False, \
+                             'infillcomplete' : False, \
+                             'deletecolumn' : False}}
+
+        column_dict_list.append(column_dict.copy())
+       
+    return mdf_train, mdf_test, column_dict_list
+  
+  
+  def process_bne9_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
+    '''
+    #processes a numerical set by creating equal population bins coresponding to 
+    #parameter 'bincount' which defaults to 9
+    #and returning in one-hot encoded set
+    
+    #default infill is to have no activations in a row
+    
+    #can be applied top either a raw set not yet normalized or after normalization
+    #such as after z-score normalization)
+    '''
+    
+    if 'bincount' in params:
+        
+      bincount = params['bincount'] + 1
+    
+    else:
+      
+      bincount = 9 + 1
+      
+    binscolumn = column + '_bne9'
+
+    #copy original column
+    mdf_train[binscolumn] = mdf_train[column].copy()
+    mdf_test[binscolumn] = mdf_test[column].copy()
+
+    #convert all values to either numeric or NaN
+    mdf_train[binscolumn] = pd.to_numeric(mdf_train[binscolumn], errors='coerce')
+    mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
+
+    #get mean of training data
+    mean = mdf_train[binscolumn].mean()
+    
+    if mean != mean:
+      mean = 0
+
+#     #replace missing data with training set mean
+#     mdf_train[binscolumn] = mdf_train[binscolumn].fillna(mean)
+#     mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
+
+    #evaluate train set for transformation parameters
+    bn_min = mdf_train[binscolumn].min()
+    bn_max = mdf_train[binscolumn].max()
+    bn_delta = bn_max - bn_min
+#     if bn_delta == 0:
+#       bn_delta = 1
+#     bn_count = int(np.ceil(bn_delta / bn_width))
+
+    if bn_delta > 0 and bn_min == bn_min:
+
+      #grab the intervals using qcut based on equal population in train set
+      intervalset = pd.qcut(mdf_train[binscolumn].values, bincount, duplicates='drop').unique()
+
+      #note we're sorting here, and scrubbing any nan
+      intervalset = sorted([interval for interval in intervalset if interval == interval])
+
+      #we'll make the bottom interval open-ended at negative end
+      firstinterval = pd.Interval(-np.inf, intervalset[0].right, closed='right')
+
+      #and the last interval open-ended at positive end
+      lastinterval = pd.Interval(intervalset[-1].left, np.inf, closed='right')
+
+      #now create a list to apply in cut operatoin
+      newinterval_list = []
+
+      #now we'll assemble a list of intervals to prepare for the cut operation, 
+      #replacing first and last with the open-ended
+      for i in range(len(intervalset)):
+        if i == 0:
+          newinterval_list.append(firstinterval)
+        elif i == len(intervalset)-1:
+          newinterval_list.append(lastinterval)
+        else:
+          newinterval_list.append(intervalset[i])
+
+      #now translate intervals to the list of boundaries for cut operatoin
+      cutintervals = []
+
+      for interval in newinterval_list:
+
+        cutintervals.append(interval.left)
+
+      cutintervals.append(np.inf)
+
+
+
+      bn_count = len(newinterval_list)
+
+
+
+
+      bins_id = []
+      for i in range(bn_count):
+        bins_id.append('_' + str(i))
+
+      bins_cuts = cutintervals
+
+      #create bins based on standard deviation increments
+  #     binscolumn = column + '_bnwd'
+      mdf_train[binscolumn] = \
+      pd.cut(mdf_train[binscolumn], bins = bins_cuts,  \
+             labels = bins_id, precision=len(str(bn_count)), duplicates='drop')
+      mdf_test[binscolumn] = \
+      pd.cut(mdf_test[binscolumn], bins = bins_cuts,  \
+             labels = bins_id, precision=len(str(bn_count)), duplicates='drop')
+
+      foundinset = mdf_train[binscolumn].unique()
+
+      textcolumns = []
+      for i in foundinset:
+        if i == i:
+          textcolumns.append(binscolumn + '_' + str(i))
+
+      #postprocess_textsupport_class will return columns in alphabetical order
+      textcolumns.sort()
+
+      #we're going to use the postprocess_text_class function here since it 
+      #allows us to force the columns even if no values present in the set
+      #however to do so we're going to have to construct a fake postprocess_dict
+
+      #a future extension should probnably build this capacity into a new distinct function
+
+      #here are some data structures for reference to create the below
+  #     def postprocess_text_class(self, mdf_test, column, postprocess_dict, columnkey):
+  #     textcolumns = postprocess_dict['column_dict'][columnkey]['columnslist']
+
+      tempkey = 'tempkey'
+      tempbins_postprocess_dict = {'column_dict' : {tempkey : {'columnslist' : textcolumns,\
+                                                               'categorylist' : textcolumns}}}
+
+      #process bins as a categorical set
+      mdf_train = \
+      self.postprocess_textsupport_class(mdf_train, binscolumn, tempbins_postprocess_dict, tempkey)
+      mdf_test = \
+      self.postprocess_textsupport_class(mdf_test, binscolumn, tempbins_postprocess_dict, tempkey)
+
+      #change data type for memory savings
+      for textcolumn in textcolumns:
+        mdf_train[textcolumn] = mdf_train[textcolumn].astype(np.int8)
+        mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.int8)
+
+
+      #delete the support column
+      del mdf_train[binscolumn]
+      del mdf_test[binscolumn]
+      
+      
+    else:
+      mdf_train[binscolumn] = 0
+      mdf_test[binscolumn] = 0
+      
+      textcolumns = [binscolumn]
+      
+      bn_count = bincount
+      bins_id = False
+      bins_cuts = False
+
+    #create list of columns
+    nmbrcolumns = textcolumns
+
+
+
+    #nmbrnormalization_dict = {'mean' : mean, 'std' : std}
+
+    #store some values in the nmbr_dict{} for use later in ML infill methods
+    column_dict_list = []
+
+    for nc in nmbrcolumns:
+
+      nmbrnormalization_dict = {nc : {'binsmean' : mean, \
+                                      'bn_min' : bn_min, \
+                                      'bn_max' : bn_max, \
+                                      'bn_delta' : bn_delta, \
+                                      'bn_count' : bn_count, \
+                                      'bins_id' : bins_id, \
+                                      'bins_cuts' : bins_cuts, \
+                                      'bincount' : bincount, \
+                                      'textcolumns' : textcolumns}}
+
+      if nc in textcolumns:
+
+        column_dict = { nc : {'category' : 'bne9', \
+                             'origcategory' : category, \
+                             'normalization_dict' : nmbrnormalization_dict, \
+                             'origcolumn' : column, \
+                             'columnslist' : nmbrcolumns, \
+                             'categorylist' : textcolumns, \
+                             'infillmodel' : False, \
+                             'infillcomplete' : False, \
+                             'deletecolumn' : False}}
+
+        column_dict_list.append(column_dict.copy())
+       
+    return mdf_train, mdf_test, column_dict_list
+  
+  
+  def process_bneo_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
+    '''
+    #processes a numerical set by creating equal population bins coresponding to 
+    #parameter 'bincount' which defaults to 5
+    #and returning in ordinal encoded set
+    
+    #default infill is adjacent cell infill
+    
+    #can be applied top either a raw set not yet normalized or after normalization
+    #such as after z-score normalization)
+    '''
+    
+    if 'bincount' in params:
+        
+      bincount = params['bincount'] + 1
+    
+    else:
+      
+      bincount = 5 + 1
+      
+    binscolumn = column + '_bneo'
+
+    #copy original column
+    mdf_train[binscolumn] = mdf_train[column].copy()
+    mdf_test[binscolumn] = mdf_test[column].copy()
+
+    #convert all values to either numeric or NaN
+    mdf_train[binscolumn] = pd.to_numeric(mdf_train[binscolumn], errors='coerce')
+    mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
+
+    #get mean of training data
+    mean = mdf_train[binscolumn].mean()
+    
+    if mean != mean:
+      mean = 0
+
+#     #replace missing data with training set mean
+#     mdf_train[binscolumn] = mdf_train[binscolumn].fillna(mean)
+#     mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
+
+
+    #evaluate train set for transformation parameters
+    bn_min = mdf_train[binscolumn].min()
+    bn_max = mdf_train[binscolumn].max()
+    bn_delta = bn_max - bn_min
+#     if bn_delta == 0:
+#       bn_delta = 1
+#     bn_count = int(np.ceil(bn_delta / bn_width))
+
+    if bn_delta > 0 and bn_min == bn_min:
+
+
+      #grab the intervals using qcut based on equal population in train set
+      intervalset = pd.qcut(mdf_train[binscolumn].values, bincount, duplicates='drop').unique()
+
+      #note we're sorting here, and scrubbing any nan
+      intervalset = sorted([interval for interval in intervalset if interval == interval])
+
+      #we'll make the bottom interval open-ended at negative end
+      firstinterval = pd.Interval(-np.inf, intervalset[0].right, closed='right')
+
+      #and the last interval open-ended at positive end
+      lastinterval = pd.Interval(intervalset[-1].left, np.inf, closed='right')
+
+      #now create a list to apply in cut operation
+      newinterval_list = []
+
+      #now we'll assemble a list of intervals to prepare for the cut operation, 
+      #replacing first and last with the open-ended
+      for i in range(len(intervalset)):
+        if i == 0:
+          newinterval_list.append(firstinterval)
+        elif i == len(intervalset)-1:
+          newinterval_list.append(lastinterval)
+        else:
+          newinterval_list.append(intervalset[i])
+
+      #now translate intervals to the list of boundaries for cut operatoin
+      cutintervals = []
+
+      for interval in newinterval_list:
+
+        cutintervals.append(interval.left)
+
+      cutintervals.append(np.inf)
+
+
+
+      bn_count = len(newinterval_list)
+
+
+      bins_id = []
+      for i in range(bn_count):
+        bins_id.append(i)
+
+      bins_cuts = cutintervals
+
+      #create bins based on prepared increments
+      mdf_train[binscolumn] = \
+      pd.cut(mdf_train[binscolumn], bins = bins_cuts,  \
+             labels = bins_id, precision=len(str(bn_count)), duplicates='drop')
+      mdf_test[binscolumn] = \
+      pd.cut(mdf_test[binscolumn], bins = bins_cuts,  \
+             labels = bins_id, precision=len(str(bn_count)), duplicates='drop')
+
+      #apply ffill to replace NArows with value from adjacent cell in pre4ceding row
+      mdf_train[binscolumn] = mdf_train[binscolumn].fillna(method='ffill')
+      mdf_test[binscolumn] = mdf_test[binscolumn].fillna(method='ffill')
+
+      #we'll follow with a bfill just in case first row had a nan
+      mdf_train[binscolumn] = mdf_train[binscolumn].fillna(method='bfill')
+      mdf_test[binscolumn] = mdf_test[binscolumn].fillna(method='bfill')
+
+      #and if the entire set was nan we'll infill with a 0 plug
+      mdf_train[binscolumn] = mdf_train[binscolumn].fillna(0)
+      mdf_test[binscolumn] = mdf_test[binscolumn].fillna(0)
+
+
+
+      #change column dtype
+      mdf_train[binscolumn] = mdf_train[binscolumn].astype(int)
+      mdf_test[binscolumn] = mdf_test[binscolumn].astype(int)
+      
+    else:
+      
+      mdf_train[binscolumn] = 0
+      mdf_test[binscolumn] = 0
+      
+      bn_count = bincount
+      bins_id = False
+      bins_cuts = False
+      
+
+    #create list of columns
+    nmbrcolumns = [binscolumn]
+
+
+
+    #nmbrnormalization_dict = {'mean' : mean, 'std' : std}
+
+    #store some values in the nmbr_dict{} for use later in ML infill methods
+    column_dict_list = []
+
+    for nc in nmbrcolumns:
+
+      nmbrnormalization_dict = {nc : {'binsmean' : mean, \
+                                      'bn_min' : bn_min, \
+                                      'bn_max' : bn_max, \
+                                      'bn_delta' : bn_delta, \
+                                      'bn_count' : bn_count, \
+                                      'bins_id' : bins_id, \
+                                      'bins_cuts' : bins_cuts, \
+                                      'bincount' : bincount}}
+
+      if nc in nmbrcolumns:
+
+        column_dict = { nc : {'category' : 'bneo', \
+                             'origcategory' : category, \
+                             'normalization_dict' : nmbrnormalization_dict, \
+                             'origcolumn' : column, \
+                             'columnslist' : nmbrcolumns, \
+                             'categorylist' : nmbrcolumns, \
+                             'infillmodel' : False, \
+                             'infillcomplete' : False, \
+                             'deletecolumn' : False}}
+
+        column_dict_list.append(column_dict.copy())
+
+
+    return mdf_train, mdf_test, column_dict_list
+  
+  def process_bn7o_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
+    '''
+    #processes a numerical set by creating equal population bins coresponding to 
+    #parameter 'bincount' which defaults to 7
+    #and returning in ordinal encoded set
+    
+    #default infill is adjacent cell infill
+    
+    #can be applied top either a raw set not yet normalized or after normalization
+    #such as after z-score normalization)
+    '''
+    
+    if 'bincount' in params:
+        
+      bincount = params['bincount'] + 1
+    
+    else:
+      
+      bincount = 7 + 1
+      
+    binscolumn = column + '_bn7o'
+
+    #copy original column
+    mdf_train[binscolumn] = mdf_train[column].copy()
+    mdf_test[binscolumn] = mdf_test[column].copy()
+
+    #convert all values to either numeric or NaN
+    mdf_train[binscolumn] = pd.to_numeric(mdf_train[binscolumn], errors='coerce')
+    mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
+
+    #get mean of training data
+    mean = mdf_train[binscolumn].mean()
+    
+    if mean != mean:
+      mean = 0
+
+#     #replace missing data with training set mean
+#     mdf_train[binscolumn] = mdf_train[binscolumn].fillna(mean)
+#     mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
+
+
+    #evaluate train set for transformation parameters
+    bn_min = mdf_train[binscolumn].min()
+    bn_max = mdf_train[binscolumn].max()
+    bn_delta = bn_max - bn_min
+#     if bn_delta == 0:
+#       bn_delta = 1
+#     bn_count = int(np.ceil(bn_delta / bn_width))
+
+    if bn_delta > 0 and bn_min == bn_min:
+
+
+      #grab the intervals using qcut based on equal population in train set
+      intervalset = pd.qcut(mdf_train[binscolumn].values, bincount, duplicates='drop').unique()
+
+      #note we're sorting here, and scrubbing any nan
+      intervalset = sorted([interval for interval in intervalset if interval == interval])
+
+      #we'll make the bottom interval open-ended at negative end
+      firstinterval = pd.Interval(-np.inf, intervalset[0].right, closed='right')
+
+      #and the last interval open-ended at positive end
+      lastinterval = pd.Interval(intervalset[-1].left, np.inf, closed='right')
+
+      #now create a list to apply in cut operation
+      newinterval_list = []
+
+      #now we'll assemble a list of intervals to prepare for the cut operation, 
+      #replacing first and last with the open-ended
+      for i in range(len(intervalset)):
+        if i == 0:
+          newinterval_list.append(firstinterval)
+        elif i == len(intervalset)-1:
+          newinterval_list.append(lastinterval)
+        else:
+          newinterval_list.append(intervalset[i])
+
+      #now translate intervals to the list of boundaries for cut operatoin
+      cutintervals = []
+
+      for interval in newinterval_list:
+
+        cutintervals.append(interval.left)
+
+      cutintervals.append(np.inf)
+
+
+
+      bn_count = len(newinterval_list)
+
+
+      bins_id = []
+      for i in range(bn_count):
+        bins_id.append(i)
+
+      bins_cuts = cutintervals
+
+      #create bins based on prepared increments
+      mdf_train[binscolumn] = \
+      pd.cut(mdf_train[binscolumn], bins = bins_cuts,  \
+             labels = bins_id, precision=len(str(bn_count)), duplicates='drop')
+      mdf_test[binscolumn] = \
+      pd.cut(mdf_test[binscolumn], bins = bins_cuts,  \
+             labels = bins_id, precision=len(str(bn_count)), duplicates='drop')
+
+      #apply ffill to replace NArows with value from adjacent cell in pre4ceding row
+      mdf_train[binscolumn] = mdf_train[binscolumn].fillna(method='ffill')
+      mdf_test[binscolumn] = mdf_test[binscolumn].fillna(method='ffill')
+
+      #we'll follow with a bfill just in case first row had a nan
+      mdf_train[binscolumn] = mdf_train[binscolumn].fillna(method='bfill')
+      mdf_test[binscolumn] = mdf_test[binscolumn].fillna(method='bfill')
+
+      #and if the entire set was nan we'll infill with a 0 plug
+      mdf_train[binscolumn] = mdf_train[binscolumn].fillna(0)
+      mdf_test[binscolumn] = mdf_test[binscolumn].fillna(0)
+
+
+
+      #change column dtype
+      mdf_train[binscolumn] = mdf_train[binscolumn].astype(int)
+      mdf_test[binscolumn] = mdf_test[binscolumn].astype(int)
+      
+    else:
+      
+      mdf_train[binscolumn] = 0
+      mdf_test[binscolumn] = 0
+      
+      bn_count = bincount
+      bins_id = False
+      bins_cuts = False
+
+    #create list of columns
+    nmbrcolumns = [binscolumn]
+
+
+
+    #nmbrnormalization_dict = {'mean' : mean, 'std' : std}
+
+    #store some values in the nmbr_dict{} for use later in ML infill methods
+    column_dict_list = []
+
+    for nc in nmbrcolumns:
+
+      nmbrnormalization_dict = {nc : {'binsmean' : mean, \
+                                      'bn_min' : bn_min, \
+                                      'bn_max' : bn_max, \
+                                      'bn_delta' : bn_delta, \
+                                      'bn_count' : bn_count, \
+                                      'bins_id' : bins_id, \
+                                      'bins_cuts' : bins_cuts, \
+                                      'bincount' : bincount}}
+
+      if nc in nmbrcolumns:
+
+        column_dict = { nc : {'category' : 'bn7o', \
+                             'origcategory' : category, \
+                             'normalization_dict' : nmbrnormalization_dict, \
+                             'origcolumn' : column, \
+                             'columnslist' : nmbrcolumns, \
+                             'categorylist' : nmbrcolumns, \
+                             'infillmodel' : False, \
+                             'infillcomplete' : False, \
+                             'deletecolumn' : False}}
+
+        column_dict_list.append(column_dict.copy())
+
+
+    return mdf_train, mdf_test, column_dict_list
+  
+  
+  def process_bn9o_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
+    '''
+    #processes a numerical set by creating equal population bins coresponding to 
+    #parameter 'bincount' which defaults to 9
+    #and returning in ordinal encoded set
+    
+    #default infill is adjacent cell infill
+    
+    #can be applied top either a raw set not yet normalized or after normalization
+    #such as after z-score normalization)
+    '''
+    
+    if 'bincount' in params:
+        
+      bincount = params['bincount'] + 1
+    
+    else:
+      
+      bincount = 9 + 1
+      
+    binscolumn = column + '_bn9o'
+
+    #copy original column
+    mdf_train[binscolumn] = mdf_train[column].copy()
+    mdf_test[binscolumn] = mdf_test[column].copy()
+
+    #convert all values to either numeric or NaN
+    mdf_train[binscolumn] = pd.to_numeric(mdf_train[binscolumn], errors='coerce')
+    mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
+
+    #get mean of training data
+    mean = mdf_train[binscolumn].mean()
+    
+    if mean != mean:
+      mean = 0
+
+#     #replace missing data with training set mean
+#     mdf_train[binscolumn] = mdf_train[binscolumn].fillna(mean)
+#     mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
+
+
+    #evaluate train set for transformation parameters
+    bn_min = mdf_train[binscolumn].min()
+    bn_max = mdf_train[binscolumn].max()
+    bn_delta = bn_max - bn_min
+#     if bn_delta == 0:
+#       bn_delta = 1
+#     bn_count = int(np.ceil(bn_delta / bn_width))
+
+
+    if bn_delta > 0 and bn_min == bn_min:
+
+
+      #grab the intervals using qcut based on equal population in train set
+      intervalset = pd.qcut(mdf_train[binscolumn].values, bincount, duplicates='drop').unique()
+
+      #note we're sorting here, and scrubbing any nan
+      intervalset = sorted([interval for interval in intervalset if interval == interval])
+
+      #we'll make the bottom interval open-ended at negative end
+      firstinterval = pd.Interval(-np.inf, intervalset[0].right, closed='right')
+
+      #and the last interval open-ended at positive end
+      lastinterval = pd.Interval(intervalset[-1].left, np.inf, closed='right')
+
+      #now create a list to apply in cut operation
+      newinterval_list = []
+
+      #now we'll assemble a list of intervals to prepare for the cut operation, 
+      #replacing first and last with the open-ended
+      for i in range(len(intervalset)):
+        if i == 0:
+          newinterval_list.append(firstinterval)
+        elif i == len(intervalset)-1:
+          newinterval_list.append(lastinterval)
+        else:
+          newinterval_list.append(intervalset[i])
+
+      #now translate intervals to the list of boundaries for cut operatoin
+      cutintervals = []
+
+      for interval in newinterval_list:
+
+        cutintervals.append(interval.left)
+
+      cutintervals.append(np.inf)
+
+
+
+      bn_count = len(newinterval_list)
+
+
+      bins_id = []
+      for i in range(bn_count):
+        bins_id.append(i)
+
+      bins_cuts = cutintervals
+
+      #create bins based on prepared increments
+      mdf_train[binscolumn] = \
+      pd.cut(mdf_train[binscolumn], bins = bins_cuts,  \
+             labels = bins_id, precision=len(str(bn_count)), duplicates='drop')
+      mdf_test[binscolumn] = \
+      pd.cut(mdf_test[binscolumn], bins = bins_cuts,  \
+             labels = bins_id, precision=len(str(bn_count)), duplicates='drop')
+
+      #apply ffill to replace NArows with value from adjacent cell in pre4ceding row
+      mdf_train[binscolumn] = mdf_train[binscolumn].fillna(method='ffill')
+      mdf_test[binscolumn] = mdf_test[binscolumn].fillna(method='ffill')
+
+      #we'll follow with a bfill just in case first row had a nan
+      mdf_train[binscolumn] = mdf_train[binscolumn].fillna(method='bfill')
+      mdf_test[binscolumn] = mdf_test[binscolumn].fillna(method='bfill')
+
+      #and if the entire set was nan we'll infill with a 0 plug
+      mdf_train[binscolumn] = mdf_train[binscolumn].fillna(0)
+      mdf_test[binscolumn] = mdf_test[binscolumn].fillna(0)
+
+
+
+      #change column dtype
+      mdf_train[binscolumn] = mdf_train[binscolumn].astype(int)
+      mdf_test[binscolumn] = mdf_test[binscolumn].astype(int)
+      
+    else:
+      
+      mdf_train[binscolumn] = 0
+      mdf_test[binscolumn] = 0
+      
+      bn_count = bincount
+      bins_id = False
+      bins_cuts = False
+
+    #create list of columns
+    nmbrcolumns = [binscolumn]
+
+
+
+    #nmbrnormalization_dict = {'mean' : mean, 'std' : std}
+
+    #store some values in the nmbr_dict{} for use later in ML infill methods
+    column_dict_list = []
+
+    for nc in nmbrcolumns:
+
+      nmbrnormalization_dict = {nc : {'binsmean' : mean, \
+                                      'bn_min' : bn_min, \
+                                      'bn_max' : bn_max, \
+                                      'bn_delta' : bn_delta, \
+                                      'bn_count' : bn_count, \
+                                      'bins_id' : bins_id, \
+                                      'bins_cuts' : bins_cuts, \
+                                      'bincount' : bincount}}
+
+      if nc in nmbrcolumns:
+
+        column_dict = { nc : {'category' : 'bn9o', \
+                             'origcategory' : category, \
+                             'normalization_dict' : nmbrnormalization_dict, \
+                             'origcolumn' : column, \
+                             'columnslist' : nmbrcolumns, \
+                             'categorylist' : nmbrcolumns, \
+                             'infillmodel' : False, \
+                             'infillcomplete' : False, \
+                             'deletecolumn' : False}}
+
+        column_dict_list.append(column_dict.copy())
+
+
+    return mdf_train, mdf_test, column_dict_list
+  
   
   def process_null_class(self, df, column, category, postprocess_dict, params = {}):
     '''
@@ -17647,6 +18841,7 @@ class AutoMunge:
                              'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
                              'bins':[], 'bint':[], 'bsor':[], 'pwr2':[], 'por2':[], \
                              'bnwd':[], 'bnwK':[], 'bnwM':[], 'bnwo':[], 'bnKo':[], 'bnMo':[], \
+                             'bnep':[], 'bne7':[], 'bne9':[], 'bneo':[], 'bn7o':[], 'bn9o':[], \
                              'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
                              'log0':[], 'log1':[], 'sqrt':[], \
                              'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
@@ -19262,7 +20457,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.10'
+    automungeversion = '3.11'
     application_number = random.randint(100000000000,999999999999)
     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -24707,6 +25902,506 @@ class AutoMunge:
     mdf_test[binscolumn] = mdf_test[binscolumn].astype(int)
 
 
+
+    
+    return mdf_test
+  
+  def postprocess_bnep_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+    '''
+    #processes a numerical set by creating equal population bins coresponding to 
+    #parameter 'bincount' which defaults to 5
+    #and returning in one-hot encoded set
+    
+    #default infill is to have no activations in a row
+    
+    #can be applied top either a raw set not yet normalized or after normalization
+    #such as after z-score normalization)
+    '''
+    
+    if 'bincount' in params:
+        
+      bincount = params['bincount'] + 1
+    
+    else:
+      
+      bincount = 5 + 1
+    
+    #to retrieve the normalization dictionary we're going to use new method since we don't yet 
+    #know what the returned columns titles are yet
+    
+    normkey = False
+    
+    if column in postprocess_dict['origcolumn']:
+      
+      columnkeylist = postprocess_dict['origcolumn'][column]['columnkeylist']
+      
+    else:
+      
+      origcolumn = postprocess_dict['column_dict'][column]['origcolumn']
+      
+      columnkeylist = postprocess_dict['origcolumn'][origcolumn]['columnkeylist']
+    
+    for columnkey in columnkeylist:
+      
+      normalization_dict = postprocess_dict['column_dict'][columnkey]['normalization_dict']
+    
+      if 'bincount' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
+        
+        if postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]['bincount'] == bincount:
+        
+          normkey = columnkey
+        
+    if normkey != False:
+      
+      mean = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binsmean']
+      bn_min = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_min']
+      bn_max = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_max']
+      bn_delta = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_delta']
+      bn_count = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_count']
+      bins_id = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_id']
+      bins_cuts = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_cuts']
+      bincount = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bincount']
+      textcolumns = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['textcolumns']
+      
+      binscolumn = column + '_bnep'
+      
+      #copy original column
+      mdf_test[binscolumn] = mdf_test[column].copy()
+
+      #convert all values to either numeric or NaN
+      mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
+
+#       #replace missing data with training set mean
+#       mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
+      
+      #create bins based on standard deviation increments
+#       binscolumn = column + '_bnwd'
+
+      if bn_delta > 0 and bn_min == bn_min:
+
+        mdf_test[binscolumn] = \
+        pd.cut(mdf_test[binscolumn], bins = bins_cuts,  \
+               labels = bins_id, precision=len(str(bn_count)), duplicates='drop')
+
+        tempkey = 'tempkey'
+        tempbins_postprocess_dict = {'column_dict' : {tempkey : {'columnslist' : textcolumns,\
+                                                                 'categorylist' : textcolumns}}}
+
+        mdf_test = \
+        self.postprocess_textsupport_class(mdf_test, binscolumn, tempbins_postprocess_dict, tempkey)
+
+
+        #change data type for memory savings
+        for textcolumn in textcolumns:
+          mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.int8)
+
+        #delete the support column
+        del mdf_test[binscolumn]
+        
+      else:
+        
+        mdf_test[binscolumn] = 0
+
+    
+    return mdf_test
+  
+  def postprocess_bne7_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+    '''
+    #processes a numerical set by creating equal population bins coresponding to 
+    #parameter 'bincount' which defaults to 7
+    #and returning in one-hot encoded set
+    
+    #default infill is to have no activations in a row
+    
+    #can be applied top either a raw set not yet normalized or after normalization
+    #such as after z-score normalization)
+    '''
+    
+    if 'bincount' in params:
+        
+      bincount = params['bincount'] + 1
+    
+    else:
+      
+      bincount = 7 + 1
+    
+    #to retrieve the normalization dictionary we're going to use new method since we don't yet 
+    #know what the returned columns titles are yet
+    
+    normkey = False
+    
+    if column in postprocess_dict['origcolumn']:
+      
+      columnkeylist = postprocess_dict['origcolumn'][column]['columnkeylist']
+      
+    else:
+      
+      origcolumn = postprocess_dict['column_dict'][column]['origcolumn']
+      
+      columnkeylist = postprocess_dict['origcolumn'][origcolumn]['columnkeylist']
+    
+    for columnkey in columnkeylist:
+      
+      normalization_dict = postprocess_dict['column_dict'][columnkey]['normalization_dict']
+    
+      if 'bincount' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
+        
+        if postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]['bincount'] == bincount:
+        
+          normkey = columnkey
+        
+    if normkey != False:
+      
+      mean = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binsmean']
+      bn_min = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_min']
+      bn_max = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_max']
+      bn_delta = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_delta']
+      bn_count = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_count']
+      bins_id = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_id']
+      bins_cuts = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_cuts']
+      bincount = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bincount']
+      textcolumns = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['textcolumns']
+      
+      binscolumn = column + '_bne7'
+      
+      #copy original column
+      mdf_test[binscolumn] = mdf_test[column].copy()
+
+      #convert all values to either numeric or NaN
+      mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
+
+#       #replace missing data with training set mean
+#       mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
+      
+      #create bins based on standard deviation increments
+#       binscolumn = column + '_bnwd'
+
+      if bn_delta > 0 and bn_min == bn_min:
+
+        mdf_test[binscolumn] = \
+        pd.cut(mdf_test[binscolumn], bins = bins_cuts,  \
+               labels = bins_id, precision=len(str(bn_count)), duplicates='drop')
+
+        tempkey = 'tempkey'
+        tempbins_postprocess_dict = {'column_dict' : {tempkey : {'columnslist' : textcolumns,\
+                                                                 'categorylist' : textcolumns}}}
+
+        mdf_test = \
+        self.postprocess_textsupport_class(mdf_test, binscolumn, tempbins_postprocess_dict, tempkey)
+
+
+        #change data type for memory savings
+        for textcolumn in textcolumns:
+          mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.int8)
+
+        #delete the support column
+        del mdf_test[binscolumn]
+        
+      else:
+        
+        mdf_test[binscolumn] = 0
+
+    
+    return mdf_test
+  
+  
+  def postprocess_bne9_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+    '''
+    #processes a numerical set by creating equal population bins coresponding to 
+    #parameter 'bincount' which defaults to 9
+    #and returning in one-hot encoded set
+    
+    #default infill is to have no activations in a row
+    
+    #can be applied top either a raw set not yet normalized or after normalization
+    #such as after z-score normalization)
+    '''
+    
+    if 'bincount' in params:
+        
+      bincount = params['bincount'] + 1
+    
+    else:
+      
+      bincount = 9 + 1
+    
+    #to retrieve the normalization dictionary we're going to use new method since we don't yet 
+    #know what the returned columns titles are yet
+    
+    normkey = False
+    
+    if column in postprocess_dict['origcolumn']:
+      
+      columnkeylist = postprocess_dict['origcolumn'][column]['columnkeylist']
+      
+    else:
+      
+      origcolumn = postprocess_dict['column_dict'][column]['origcolumn']
+      
+      columnkeylist = postprocess_dict['origcolumn'][origcolumn]['columnkeylist']
+    
+    for columnkey in columnkeylist:
+      
+      normalization_dict = postprocess_dict['column_dict'][columnkey]['normalization_dict']
+    
+      if 'bincount' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
+        
+        if postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]['bincount'] == bincount:
+        
+          normkey = columnkey
+        
+    if normkey != False:
+      
+      mean = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binsmean']
+      bn_min = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_min']
+      bn_max = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_max']
+      bn_delta = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_delta']
+      bn_count = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_count']
+      bins_id = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_id']
+      bins_cuts = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_cuts']
+      bincount = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bincount']
+      textcolumns = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['textcolumns']
+      
+      binscolumn = column + '_bne9'
+      
+      #copy original column
+      mdf_test[binscolumn] = mdf_test[column].copy()
+
+      #convert all values to either numeric or NaN
+      mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
+
+#       #replace missing data with training set mean
+#       mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
+      
+      #create bins based on standard deviation increments
+#       binscolumn = column + '_bnwd'
+
+      if bn_delta > 0 and bn_min == bn_min:
+
+        mdf_test[binscolumn] = \
+        pd.cut(mdf_test[binscolumn], bins = bins_cuts,  \
+               labels = bins_id, precision=len(str(bn_count)), duplicates='drop')
+
+        tempkey = 'tempkey'
+        tempbins_postprocess_dict = {'column_dict' : {tempkey : {'columnslist' : textcolumns,\
+                                                                 'categorylist' : textcolumns}}}
+
+        mdf_test = \
+        self.postprocess_textsupport_class(mdf_test, binscolumn, tempbins_postprocess_dict, tempkey)
+
+
+        #change data type for memory savings
+        for textcolumn in textcolumns:
+          mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.int8)
+
+        #delete the support column
+        del mdf_test[binscolumn]
+        
+      else:
+        
+        mdf_test[binscolumn] = 0
+
+    
+    return mdf_test
+  
+  def postprocess_bneo_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+    '''
+    #processes a numerical set by creating equal population bins coresponding to 
+    #parameter 'bincount' which defaults to 5
+    #and returning in ordinal encoded set
+    
+    #default infill is adjacent cell infill
+    
+    #can be applied top either a raw set not yet normalized or after normalization
+    #such as after z-score normalization)
+    '''
+    
+    #retrieve normalization parameters from postprocess_dict
+    normkey = column +'_bneo'
+    
+    
+    mean = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binsmean']
+    bn_min = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_min']
+    bn_max = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_max']
+    bn_delta = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_delta']
+    bn_count = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_count']
+    bins_id = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_id']
+    bins_cuts = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_cuts']
+    bincount = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bincount']
+      
+
+    binscolumn = column + '_bneo'
+    
+    #copy original column
+    mdf_test[binscolumn] = mdf_test[column].copy()
+
+    #convert all values to either numeric or NaN
+    mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
+
+#     #replace missing data with training set mean
+#     mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
+
+    if bn_delta > 0 and bn_min == bn_min:
+
+      #create bins based on prepared increments
+  #     binscolumn = column + '_bnwo'
+      mdf_test[binscolumn] = \
+      pd.cut(mdf_test[binscolumn], bins = bins_cuts,  \
+             labels = bins_id, precision=len(str(bn_count)), duplicates='drop')
+
+
+      #apply ffill to replace NArows with value from adjacent cell in pre4ceding row
+      mdf_test[binscolumn] = mdf_test[binscolumn].fillna(method='ffill')
+
+      #we'll follow with a bfill just in case first row had a nan
+      mdf_test[binscolumn] = mdf_test[binscolumn].fillna(method='bfill')
+
+      #and if the entire set was nan we'll infill with a 0 plug
+      mdf_test[binscolumn] = mdf_test[binscolumn].fillna(0)
+
+
+      #change column dtype
+      mdf_test[binscolumn] = mdf_test[binscolumn].astype(int)
+      
+    else:
+      
+      mdf_test[binscolumn] = 0
+
+    
+    return mdf_test
+  
+  def postprocess_bn7o_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+    '''
+    #processes a numerical set by creating equal population bins coresponding to 
+    #parameter 'bincount' which defaults to 7
+    #and returning in ordinal encoded set
+    
+    #default infill is adjacent cell infill
+    
+    #can be applied top either a raw set not yet normalized or after normalization
+    #such as after z-score normalization)
+    '''
+    
+    #retrieve normalization parameters from postprocess_dict
+    normkey = column +'_bn7o'
+    
+    
+    mean = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binsmean']
+    bn_min = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_min']
+    bn_max = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_max']
+    bn_delta = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_delta']
+    bn_count = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_count']
+    bins_id = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_id']
+    bins_cuts = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_cuts']
+    bincount = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bincount']
+      
+
+    binscolumn = column + '_bn7o'
+    
+    #copy original column
+    mdf_test[binscolumn] = mdf_test[column].copy()
+
+    #convert all values to either numeric or NaN
+    mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
+
+#     #replace missing data with training set mean
+#     mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
+
+
+    if bn_delta > 0 and bn_min == bn_min:
+
+      #create bins based on prepared increments
+  #     binscolumn = column + '_bnwo'
+      mdf_test[binscolumn] = \
+      pd.cut(mdf_test[binscolumn], bins = bins_cuts,  \
+             labels = bins_id, precision=len(str(bn_count)), duplicates='drop')
+
+
+      #apply ffill to replace NArows with value from adjacent cell in pre4ceding row
+      mdf_test[binscolumn] = mdf_test[binscolumn].fillna(method='ffill')
+
+      #we'll follow with a bfill just in case first row had a nan
+      mdf_test[binscolumn] = mdf_test[binscolumn].fillna(method='bfill')
+
+      #and if the entire set was nan we'll infill with a 0 plug
+      mdf_test[binscolumn] = mdf_test[binscolumn].fillna(0)
+
+
+      #change column dtype
+      mdf_test[binscolumn] = mdf_test[binscolumn].astype(int)
+      
+    else:
+      
+      mdf_test[binscolumn] = 0
+
+    
+    return mdf_test
+  
+  
+  
+  def postprocess_bn9o_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+    '''
+    #processes a numerical set by creating equal population bins coresponding to 
+    #parameter 'bincount' which defaults to 9
+    #and returning in ordinal encoded set
+    
+    #default infill is adjacent cell infill
+    
+    #can be applied top either a raw set not yet normalized or after normalization
+    #such as after z-score normalization)
+    '''
+    
+    #retrieve normalization parameters from postprocess_dict
+    normkey = column +'_bn9o'
+    
+    
+    mean = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binsmean']
+    bn_min = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_min']
+    bn_max = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_max']
+    bn_delta = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_delta']
+    bn_count = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_count']
+    bins_id = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_id']
+    bins_cuts = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_cuts']
+    bincount = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bincount']
+      
+
+    binscolumn = column + '_bn9o'
+    
+    #copy original column
+    mdf_test[binscolumn] = mdf_test[column].copy()
+
+    #convert all values to either numeric or NaN
+    mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
+
+#     #replace missing data with training set mean
+#     mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
+
+
+    if bn_delta > 0 and bn_min == bn_min:
+
+      #create bins based on prepared increments
+  #     binscolumn = column + '_bnwo'
+      mdf_test[binscolumn] = \
+      pd.cut(mdf_test[binscolumn], bins = bins_cuts,  \
+             labels = bins_id, precision=len(str(bn_count)), duplicates='drop')
+
+
+      #apply ffill to replace NArows with value from adjacent cell in pre4ceding row
+      mdf_test[binscolumn] = mdf_test[binscolumn].fillna(method='ffill')
+
+      #we'll follow with a bfill just in case first row had a nan
+      mdf_test[binscolumn] = mdf_test[binscolumn].fillna(method='bfill')
+
+      #and if the entire set was nan we'll infill with a 0 plug
+      mdf_test[binscolumn] = mdf_test[binscolumn].fillna(0)
+
+
+      #change column dtype
+      mdf_test[binscolumn] = mdf_test[binscolumn].astype(int)
+      
+    else:
+      
+      mdf_test[binscolumn] = 0
 
     
     return mdf_test
