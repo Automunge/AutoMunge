@@ -129,6 +129,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
 		         'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
 		         'bins':[], 'bint':[], 'bsor':[], 'pwr2':[], 'por2':[], \
 			 'bnwd':[], 'bnwK':[], 'bnwM':[], 'bnwo':[], 'bnKo':[], 'bnMo':[], \
+			 'bnep':[], 'bne7':[], 'bne9':[], 'bneo':[], 'bn7o':[], 'bn9o':[], \
 		         'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
 		         'log0':[], 'log1':[], 'sqrt':[], \
 		         'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
@@ -326,6 +327,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
 		         'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
 		         'bins':[], 'bint':[], 'bsor':[], 'pwr2':[], 'por2':[], \
 			 'bnwd':[], 'bnwK':[], 'bnwM':[], 'bnwo':[], 'bnKo':[], 'bnMo':[], \
+			 'bnep':[], 'bne7':[], 'bne9':[], 'bneo':[], 'bn7o':[], 'bn9o':[], \
 		         'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
 		         'log0':[], 'log1':[], 'sqrt':[], \
 		         'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
@@ -494,6 +496,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
 		         'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
 		         'bins':[], 'bint':[], 'bsor':[], 'pwr2':[], 'por2':[], \
 			 'bnwd':[], 'bnwK':[], 'bnwM':[], 'bnwo':[], 'bnKo':[], 'bnMo':[], \
+			 'bnep':[], 'bne7':[], 'bne9':[], 'bneo':[], 'bn7o':[], 'bn9o':[], \
 		         'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
 		         'log0':[], 'log1':[], 'sqrt':[], \
 		         'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
@@ -792,6 +795,7 @@ such as could potentially result in memory savings.
 		 'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
 		 'bins':[], 'bint':[], 'bsor':[], 'pwr2':[], 'por2':[], \
 		 'bnwd':[], 'bnwK':[], 'bnwM':[], 'bnwo':[], 'bnKo':[], 'bnMo':[], \
+		 'bnep':[], 'bne7':[], 'bne9':[], 'bneo':[], 'bn7o':[], 'bn9o':[], \
 		 'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
 		 'log0':[], 'log1':[], 'sqrt':[], \
 		 'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
@@ -1518,6 +1522,18 @@ bins default to width of 1/1000/1000000 eg for bnwd/bnwK/bnwM
   - default NArowtype: numeric
   - suffix appender: '_bnwo' (or '_bnKo', '_bnMo')
   - assignparam parameters accepted: 'width' to set bin width
+* bnep/bne7/bne9: for numerical set graining to equal population bins for one-hot encoded bins 
+bin count defaults to 5/7/9 eg for bnep/bne7/bne9
+  - default infill: no activation
+  - default NArowtype: numeric
+  - suffix appender: '_bnep_#1' where #1 is the bin identifier (# from min) (or bne7/bne9)
+  - assignparam parameters accepted: 'bincount' to set number of bins
+* bneo/bn7o/bn9o: for numerical set graining to equal population bins for ordinal encoded bins 
+bin count defaults to 5/7/9 eg for bne0/bn7o/bn9o
+  - default infill: adjacent cell
+  - default NArowtype: numeric
+  - suffix appender: '_bnep_#1' where #1 is the bin identifier (# from min) (or bn7o/bn9o)
+  - assignparam parameters accepted: 'bincount' to set number of bins
 * date/dat2: for datetime formatted data, segregates data by time scale to multiple
 columns (year/month/day/hour/minute/second) and then performs z-score normalization
   - default infill: mean
@@ -3170,7 +3186,7 @@ And here are the series of family trees currently built into the internal librar
     transform_dict.update({'bnwd' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['bnwd'], \
-                                     'cousins' : [], \
+                                     'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
@@ -3179,7 +3195,7 @@ And here are the series of family trees currently built into the internal librar
     transform_dict.update({'bnwK' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['bnwK'], \
-                                     'cousins' : [], \
+                                     'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
@@ -3188,7 +3204,7 @@ And here are the series of family trees currently built into the internal librar
     transform_dict.update({'bnwM' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['bnwM'], \
-                                     'cousins' : [], \
+                                     'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
@@ -3219,8 +3235,62 @@ And here are the series of family trees currently built into the internal librar
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
+                                     'friends' : []}})    
+    
+    transform_dict.update({'bnep' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['bnep'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
                                      'friends' : []}})
-  
+    
+    transform_dict.update({'bne7' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['bne7'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'bne9' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['bne9'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'bneo' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['bneo'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'bn7o' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['bn7o'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+
+    transform_dict.update({'bn9o' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['bn9o'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
     transform_dict.update({'pwor' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['pwor'], \
