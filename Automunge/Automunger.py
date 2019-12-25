@@ -11017,10 +11017,15 @@ class AutoMunge:
     categorylist = powercolumns.copy()
     
     for pc in powercolumns:
+      
+      #new parameter collected for driftreport
+      tc_ratio = pc + '_ratio'
+      tcratio = mdf_train[pc].sum() / mdf_train[pc].shape[0]
 
       powernormalization_dict = {pc : {'powerlabelsdict' : powerlabelsdict, \
                                        'meanlog' : meanlog, \
-                                       'maxlog' : maxlog}}
+                                       'maxlog' : maxlog, \
+                                       tc_ratio : tcratio}}
     
       column_dict = {pc : {'category' : 'pwrs', \
                            'origcategory' : category, \
@@ -11088,10 +11093,18 @@ class AutoMunge:
     
     categorylist = powercolumns.copy()
     
+    #new driftreport metric ordl_activations_dict
+    ordl_activations_dict = {}
+    for unique in mdf_train[pworcolumn].unique():
+      sumcalc = (mdf_train[pworcolumn] == unique).sum() 
+      ratio = sumcalc / mdf_train[pworcolumn].shape[0]
+      ordl_activations_dict.update({unique:ratio})
+    
     for pc in powercolumns:
 
       powernormalization_dict = {pc : {'meanlog' : meanlog, \
-                                       'maxlog' : maxlog}}
+                                       'maxlog' : maxlog, \
+                                       'ordl_activations_dict' : ordl_activations_dict}}
     
       column_dict = {pc : {'category' : 'pwor', \
                            'origcategory' : category, \
@@ -11107,6 +11120,7 @@ class AutoMunge:
     
     return mdf_train, mdf_test, column_dict_list
   
+
   def process_pwr2_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
     '''
     #processes a numerical set by creating bins coresponding to powers
@@ -11289,10 +11303,15 @@ class AutoMunge:
     categorylist = powercolumns.copy()
     
     for pc in powercolumns:
+      
+      #new parameter collected for driftreport
+      tc_ratio = pc + '_ratio'
+      tcratio = mdf_train[pc].sum() / mdf_train[pc].shape[0]
 
       powernormalization_dict = {pc : {'powerlabelsdict' : powerlabelsdict, \
                                        'labels_train' : labels_train, \
-                                       'missing_cols' : missing_cols}}
+                                       'missing_cols' : missing_cols, \
+                                       tc_ratio : tcratio}}
 #                                        'meanlog' : meanlog, \
 #                                        'maxlog' : maxlog}}
     
@@ -11484,10 +11503,18 @@ class AutoMunge:
     
     categorylist = powercolumns.copy()
     
+    #new driftreport metric ordl_activations_dict
+    ordl_activations_dict = {}
+    for unique in mdf_train[pworcolumn].unique():
+      sumcalc = (mdf_train[pworcolumn] == unique).sum() 
+      ratio = sumcalc / mdf_train[pworcolumn].shape[0]
+      ordl_activations_dict.update({unique:ratio})
+    
     for pc in powercolumns:
 
       powernormalization_dict = {pc : {'train_replace_dict' : train_replace_dict, \
-                                       'test_replace_dict' : test_replace_dict}}
+                                       'test_replace_dict' : test_replace_dict, \
+                                       'ordl_activations_dict' : ordl_activations_dict}}
     
       column_dict = {pc : {'category' : 'por2', \
                            'origcategory' : category, \
@@ -11613,8 +11640,14 @@ class AutoMunge:
     column_dict_list = []
 
     for nc in nmbrcolumns:
+      
+      #new parameter collected for driftreport
+      tc_ratio = nc + '_ratio'
+      tcratio = mdf_train[nc].sum() / mdf_train[nc].shape[0]
 
-      nmbrnormalization_dict = {nc : {'binsmean' : mean, 'binsstd' : std}}
+      nmbrnormalization_dict = {nc : {'binsmean' : mean, \
+                                      'binsstd' : std, \
+                                      tc_ratio : tcratio}}
 
       if nc in textcolumns:
 
@@ -11739,7 +11772,14 @@ class AutoMunge:
 
     for nc in nmbrcolumns:
 
-      nmbrnormalization_dict = {nc : {'bintmean' : 0, 'bintstd' : 1}}
+      
+      #new parameter collected for driftreport
+      tc_ratio = nc + '_ratio'
+      tcratio = mdf_train[nc].sum() / mdf_train[nc].shape[0]
+      
+      nmbrnormalization_dict = {nc : {'bintmean' : 0, \
+                                      'bintstd' : 1, \
+                                      tc_ratio : tcratio}}
 
       if nc in textcolumns:
 
@@ -11833,6 +11873,7 @@ class AutoMunge:
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
 
+
     for nc in nmbrcolumns:
 
       nmbrnormalization_dict = {nc : {'ordinal_dict' : ordinal_dict, \
@@ -11858,6 +11899,8 @@ class AutoMunge:
 
     #return mdf_train, mdf_test, mean, std, nmbrcolumns, categorylist
     return mdf_train, mdf_test, column_dict_list
+  
+
   
   def process_bnwd_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
     '''
@@ -11974,6 +12017,10 @@ class AutoMunge:
     column_dict_list = []
 
     for nc in nmbrcolumns:
+      
+      #new parameter collected for driftreport
+      tc_ratio = nc + '_ratio'
+      tcratio = mdf_train[nc].sum() / mdf_train[nc].shape[0]
 
       nmbrnormalization_dict = {nc : {'binsmean' : mean, \
                                       'bn_min' : bn_min, \
@@ -11983,7 +12030,8 @@ class AutoMunge:
                                       'bins_id' : bins_id, \
                                       'bins_cuts' : bins_cuts, \
                                       'bn_width' : bn_width, \
-                                      'textcolumns' : textcolumns}}
+                                      'textcolumns' : textcolumns, \
+                                      tc_ratio : tcratio}}
 
       if nc in textcolumns:
 
@@ -12118,6 +12166,10 @@ class AutoMunge:
 
     for nc in nmbrcolumns:
 
+      #new parameter collected for driftreport
+      tc_ratio = nc + '_ratio'
+      tcratio = mdf_train[nc].sum() / mdf_train[nc].shape[0]
+
       nmbrnormalization_dict = {nc : {'binsmean' : mean, \
                                       'bn_min' : bn_min, \
                                       'bn_max' : bn_max, \
@@ -12126,7 +12178,8 @@ class AutoMunge:
                                       'bins_id' : bins_id, \
                                       'bins_cuts' : bins_cuts, \
                                       'bn_width' : bn_width, \
-                                      'textcolumns' : textcolumns}}
+                                      'textcolumns' : textcolumns, \
+                                      tc_ratio : tcratio}}
 
       if nc in textcolumns:
 
@@ -12263,6 +12316,10 @@ class AutoMunge:
 
     for nc in nmbrcolumns:
 
+      #new parameter collected for driftreport
+      tc_ratio = nc + '_ratio'
+      tcratio = mdf_train[nc].sum() / mdf_train[nc].shape[0]
+
       nmbrnormalization_dict = {nc : {'binsmean' : mean, \
                                       'bn_min' : bn_min, \
                                       'bn_max' : bn_max, \
@@ -12271,7 +12328,8 @@ class AutoMunge:
                                       'bins_id' : bins_id, \
                                       'bins_cuts' : bins_cuts, \
                                       'bn_width' : bn_width, \
-                                      'textcolumns' : textcolumns}}
+                                      'textcolumns' : textcolumns, \
+                                      tc_ratio : tcratio}}
 
       if nc in textcolumns:
 
@@ -12365,7 +12423,13 @@ class AutoMunge:
 
     #create list of columns
     nmbrcolumns = [binscolumn]
-
+    
+    #new driftreport metric ordl_activations_dict
+    ordl_activations_dict = {}
+    for unique in mdf_train[binscolumn].unique():
+      sumcalc = (mdf_train[binscolumn] == unique).sum() 
+      ratio = sumcalc / mdf_train[binscolumn].shape[0]
+      ordl_activations_dict.update({unique:ratio})
 
 
     #nmbrnormalization_dict = {'mean' : mean, 'std' : std}
@@ -12382,7 +12446,8 @@ class AutoMunge:
                                       'bn_count' : bn_count, \
                                       'bins_id' : bins_id, \
                                       'bins_cuts' : bins_cuts, \
-                                      'bn_width' : bn_width}}
+                                      'bn_width' : bn_width, \
+                                      'ordl_activations_dict' : ordl_activations_dict}}
 
       if nc in nmbrcolumns:
 
@@ -12477,6 +12542,12 @@ class AutoMunge:
     #create list of columns
     nmbrcolumns = [binscolumn]
 
+    #new driftreport metric ordl_activations_dict
+    ordl_activations_dict = {}
+    for unique in mdf_train[binscolumn].unique():
+      sumcalc = (mdf_train[binscolumn] == unique).sum() 
+      ratio = sumcalc / mdf_train[binscolumn].shape[0]
+      ordl_activations_dict.update({unique:ratio})
 
 
     #nmbrnormalization_dict = {'mean' : mean, 'std' : std}
@@ -12493,7 +12564,8 @@ class AutoMunge:
                                       'bn_count' : bn_count, \
                                       'bins_id' : bins_id, \
                                       'bins_cuts' : bins_cuts, \
-                                      'bn_width' : bn_width}}
+                                      'bn_width' : bn_width, \
+                                      'ordl_activations_dict' : ordl_activations_dict}}
 
       if nc in nmbrcolumns:
 
@@ -12589,6 +12661,13 @@ class AutoMunge:
     nmbrcolumns = [binscolumn]
 
 
+    #new driftreport metric ordl_activations_dict
+    ordl_activations_dict = {}
+    for unique in mdf_train[binscolumn].unique():
+      sumcalc = (mdf_train[binscolumn] == unique).sum() 
+      ratio = sumcalc / mdf_train[binscolumn].shape[0]
+      ordl_activations_dict.update({unique:ratio})
+
 
     #nmbrnormalization_dict = {'mean' : mean, 'std' : std}
 
@@ -12604,7 +12683,8 @@ class AutoMunge:
                                       'bn_count' : bn_count, \
                                       'bins_id' : bins_id, \
                                       'bins_cuts' : bins_cuts, \
-                                      'bn_width' : bn_width}}
+                                      'bn_width' : bn_width, \
+                                      'ordl_activations_dict' : ordl_activations_dict}}
 
       if nc in nmbrcolumns:
 
@@ -12622,6 +12702,7 @@ class AutoMunge:
 
 
     return mdf_train, mdf_test, column_dict_list
+  
   
   def process_bnep_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
     '''
@@ -12795,6 +12876,10 @@ class AutoMunge:
     column_dict_list = []
 
     for nc in nmbrcolumns:
+      
+      #new parameter collected for driftreport
+      tc_ratio = nc + '_ratio'
+      tcratio = mdf_train[nc].sum() / mdf_train[nc].shape[0]
 
       nmbrnormalization_dict = {nc : {'binsmean' : mean, \
                                       'bn_min' : bn_min, \
@@ -12804,7 +12889,8 @@ class AutoMunge:
                                       'bins_id' : bins_id, \
                                       'bins_cuts' : bins_cuts, \
                                       'bincount' : bincount, \
-                                      'textcolumns' : textcolumns}}
+                                      'textcolumns' : textcolumns, \
+                                      tc_ratio : tcratio}}
 
       if nc in textcolumns:
 
@@ -12991,6 +13077,10 @@ class AutoMunge:
 
     for nc in nmbrcolumns:
 
+      #new parameter collected for driftreport
+      tc_ratio = nc + '_ratio'
+      tcratio = mdf_train[nc].sum() / mdf_train[nc].shape[0]
+
       nmbrnormalization_dict = {nc : {'binsmean' : mean, \
                                       'bn_min' : bn_min, \
                                       'bn_max' : bn_max, \
@@ -12999,7 +13089,8 @@ class AutoMunge:
                                       'bins_id' : bins_id, \
                                       'bins_cuts' : bins_cuts, \
                                       'bincount' : bincount, \
-                                      'textcolumns' : textcolumns}}
+                                      'textcolumns' : textcolumns, \
+                                      tc_ratio : tcratio}}
 
       if nc in textcolumns:
 
@@ -13187,6 +13278,10 @@ class AutoMunge:
 
     for nc in nmbrcolumns:
 
+      #new parameter collected for driftreport
+      tc_ratio = nc + '_ratio'
+      tcratio = mdf_train[nc].sum() / mdf_train[nc].shape[0]
+
       nmbrnormalization_dict = {nc : {'binsmean' : mean, \
                                       'bn_min' : bn_min, \
                                       'bn_max' : bn_max, \
@@ -13195,7 +13290,8 @@ class AutoMunge:
                                       'bins_id' : bins_id, \
                                       'bins_cuts' : bins_cuts, \
                                       'bincount' : bincount, \
-                                      'textcolumns' : textcolumns}}
+                                      'textcolumns' : textcolumns, \
+                                      tc_ratio : tcratio}}
 
       if nc in textcolumns:
 
@@ -13212,6 +13308,7 @@ class AutoMunge:
         column_dict_list.append(column_dict.copy())
        
     return mdf_train, mdf_test, column_dict_list
+
   
   
   def process_bneo_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
@@ -13350,7 +13447,12 @@ class AutoMunge:
     #create list of columns
     nmbrcolumns = [binscolumn]
 
-
+    #new driftreport metric ordl_activations_dict
+    ordl_activations_dict = {}
+    for unique in mdf_train[binscolumn].unique():
+      sumcalc = (mdf_train[binscolumn] == unique).sum() 
+      ratio = sumcalc / mdf_train[binscolumn].shape[0]
+      ordl_activations_dict.update({unique:ratio})
 
     #nmbrnormalization_dict = {'mean' : mean, 'std' : std}
 
@@ -13366,7 +13468,8 @@ class AutoMunge:
                                       'bn_count' : bn_count, \
                                       'bins_id' : bins_id, \
                                       'bins_cuts' : bins_cuts, \
-                                      'bincount' : bincount}}
+                                      'bincount' : bincount, \
+                                      'ordl_activations_dict' : ordl_activations_dict}}
 
       if nc in nmbrcolumns:
 
@@ -13520,7 +13623,12 @@ class AutoMunge:
     #create list of columns
     nmbrcolumns = [binscolumn]
 
-
+    #new driftreport metric ordl_activations_dict
+    ordl_activations_dict = {}
+    for unique in mdf_train[binscolumn].unique():
+      sumcalc = (mdf_train[binscolumn] == unique).sum() 
+      ratio = sumcalc / mdf_train[binscolumn].shape[0]
+      ordl_activations_dict.update({unique:ratio})
 
     #nmbrnormalization_dict = {'mean' : mean, 'std' : std}
 
@@ -13536,7 +13644,8 @@ class AutoMunge:
                                       'bn_count' : bn_count, \
                                       'bins_id' : bins_id, \
                                       'bins_cuts' : bins_cuts, \
-                                      'bincount' : bincount}}
+                                      'bincount' : bincount, \
+                                      'ordl_activations_dict' : ordl_activations_dict}}
 
       if nc in nmbrcolumns:
 
@@ -13692,7 +13801,12 @@ class AutoMunge:
     #create list of columns
     nmbrcolumns = [binscolumn]
 
-
+    #new driftreport metric ordl_activations_dict
+    ordl_activations_dict = {}
+    for unique in mdf_train[binscolumn].unique():
+      sumcalc = (mdf_train[binscolumn] == unique).sum() 
+      ratio = sumcalc / mdf_train[binscolumn].shape[0]
+      ordl_activations_dict.update({unique:ratio})
 
     #nmbrnormalization_dict = {'mean' : mean, 'std' : std}
 
@@ -13708,7 +13822,8 @@ class AutoMunge:
                                       'bn_count' : bn_count, \
                                       'bins_id' : bins_id, \
                                       'bins_cuts' : bins_cuts, \
-                                      'bincount' : bincount}}
+                                      'bincount' : bincount, \
+                                      'ordl_activations_dict' : ordl_activations_dict}}
 
       if nc in nmbrcolumns:
 
@@ -20457,7 +20572,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.11'
+    automungeversion = '3.12'
     application_number = random.randint(100000000000,999999999999)
     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
