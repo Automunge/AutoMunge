@@ -1203,7 +1203,8 @@ columns of the test data passed to postmunge for comparison to the original
 normalization parameters derived from the coresponding columns of the 
 automunge train data set. The results are returned in the
 postreports_dict object returned from postmunge as postreports_dict['driftreport']. 
-The results will also be printed out if printstatus is activated.
+The results will also be printed out if printstatus is activated. Documentation of
+the various metrics tracked in driftreport assembly is forthcoming.
 
 * LabelSmoothing: accepts float values in range 0.0-1.0 or the default value of False
 to turn off Label Smoothing. Note that a user can pass True to LabelSmoothing which 
