@@ -178,7 +178,7 @@ test, testID, testlabels, \
 labelsencoding_dict, postreports_dict = \
 am.postmunge(postprocess_dict, df_test, testID_column = False, \
              labelscolumn = False, pandasoutput=True, printstatus = True, \
-             TrainLabelFreqLevel = False, featureeval = False, driftreport = False, ]\
+             TrainLabelFreqLevel = False, featureeval = False, driftreport = False, \
 	     LabelSmoothing = False, LSfit = False)
 ```
 
@@ -364,7 +364,7 @@ With the full set of arguments available to be passed as:
 ```
 am.postmunge(postprocess_dict, df_test, testID_column = False, \
              labelscolumn = False, pandasoutput=True, printstatus = True, \
-             TrainLabelFreqLevel = False, featureeval = False, driftreport = False, ]\
+             TrainLabelFreqLevel = False, featureeval = False, driftreport = False, \
 	     LabelSmoothing = False, LSfit = False):
 ```
 
