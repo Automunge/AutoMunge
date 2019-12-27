@@ -987,6 +987,7 @@ processdict =  {'newt' : {'dualprocess' : None, \
 # - 'parsenumeric' marks for infill strings that don't contain any numeric character entries
 # - 'parsenumeric_commas' marks for infill strings that don't contain any numeric character entries, recognizes commas
 # - 'datetime' marks for infill cells that arent' recognized as datetime objects
+# ** Note that NArowtype also is used as basis for metrics evaluated in drift assessment of source columns
 
 #MLinfilltype: can be entries of 'numeric', 'singlct', 'multirt', 'exclude'
 #              'multisp', 'exclude', or 'label' where
@@ -1197,13 +1198,38 @@ on the test set passed to postmunge. The results are returned in the
 postreports_dict object returned from postmunge as postreports_dict['featureimportance']. 
 The results will also be printed out if printstatus is activated.
 
-* driftreport: a boolean identifier (True/False) to activate a drift report 
-evaluation, in which the normalization parameters are recalculated for the 
-columns of the test data passed to postmunge for comparison to the original 
-normalization parameters derived from the coresponding columns of the 
-automunge train data set. The results are returned in the
+* driftreport: activates a drift report evaluation, in which the normalization 
+parameters are recalculated for the columns of the test data passed to postmunge 
+for comparison to the original normalization parameters derived from the corresponding 
+columns of the automunge train data set. The results are returned in the
 postreports_dict object returned from postmunge as postreports_dict['driftreport']. 
-The results will also be printed out if printstatus is activated.
+The results will also be printed out if printstatus is activated. Defaults to False, and:
+  - False means no postmunge drift assessment is performed
+  - True means an assessment is performed for both the source column and derived column 
+  stats
+  - 'efficient' means that a postmunge drift assessment is only performed on the source 
+  columns (less information but much more energy efficient)
+  - 'report_effic' means that the efficient assessment is performed and returned with 
+  no processing of data
+  - 'report_full' means that the full assessment is performed and returned with no 
+  processing of data
+  
+```
+#the results of a postmunge driftreport assessment are returned in the postreports_dict 
+#object returned from a postmunge call, as follows:
+
+postreports_dict = \
+'featureimportance':{(not shown here for brevity)},
+'finalcolumns_test':[columns],
+'driftreport': {(column) : {'origreturnedcolumns_list':[(columns)], 
+                           'newreturnedcolumns_list':[(columns)],
+                           'drift_category':(category),
+                           'orignotinnew': {(column):{'orignormparam':{(stats)}},
+                           'newreturnedcolumn':{(column):{'orignormparam':{(stats)},
+                                                          'newnormparam':{(stats)}}}},
+'sourcecolumn_drift': {'orig_driftstats': {(column) : (stats)}, 
+                      'new_driftstats' : {(column) : (stats)}}}
+```
 
 * LabelSmoothing: accepts float values in range 0.0-1.0 or the default value of False
 to turn off Label Smoothing. Note that a user can pass True to LabelSmoothing which 
