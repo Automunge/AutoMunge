@@ -28,7 +28,7 @@ from scipy import stats
 #imports for process_hldy_class
 from pandas.tseries.holiday import USFederalHolidayCalendar
 
-#imports for evalcategory
+#imports for evalcategory, getNArows
 import collections
 import datetime as dt
 from scipy.stats import shapiro
@@ -14341,7 +14341,8 @@ class AutoMunge:
     return category
 
 
-  def getNArows(self, df, column, category, postprocess_dict):
+  def getNArows(self, df, column, category, postprocess_dict, \
+                drift_dict = {}, driftassess = False):
     '''
     #NArows(df, column), function that when fed a dataframe, \
     #column id, and category label outputs a single column dataframe composed of \
@@ -14349,6 +14350,10 @@ class AutoMunge:
     #coresponding to those rows of the input that had missing or NaN data. This \
     #output can later be used to identify which rows for a column to infill with ML\
     # derived plug data
+    
+    #also accepts a dictionary to store results of a drfit assessment available
+    #by passing driftassess = True
+    #if drift assessment performed returns an updated dictionary withj results
     '''
     
     NArowtype = postprocess_dict['process_dict'][category]['NArowtype']
@@ -14357,7 +14362,12 @@ class AutoMunge:
     
     #if category == 'text':
     if NArowtype in ['justNaN']:
-
+      
+      if driftassess is True:
+        drift_dict.update({column : {'unique' : df2[column].unique(), \
+                                     'nunique' : df2[column].nunique(), \
+                                     'nanratio' : pd.isna(df2[column]).sum() / df2[column].shape[0]}})
+      
       #returns dataframe of True and False, where True coresponds to the NaN's
       #renames column name to column + '_NArows'
       NArows = pd.isna(df2[column])
@@ -14378,6 +14388,27 @@ class AutoMunge:
 
       #convert all values to either numeric or NaN
       df2[column] = pd.to_numeric(df2[column], errors='coerce')
+      
+      if driftassess is True:
+        
+#         W, p = shapiro(df2[df2[column].notnull()][column].astype(float))
+#                                      'shapiro_W' : W, \
+#                                      'shapiro_p' : p, \
+#                                      'skew' : skew(df2[df2[column].notnull()][column].astype(float)), \
+        
+        drift_dict.update({column : {'max' : df2[column].max(), \
+                                     'quantile_99' : df2[column].quantile(0.99), \
+                                     'quantile_90' : df2[column].quantile(0.90), \
+                                     'quantile_66' : df2[column].quantile(0.66), \
+                                     'median' : df2[column].median(), \
+                                     'quantile_33' : df2[column].quantile(0.33), \
+                                     'quantile_10' : df2[column].quantile(0.10), \
+                                     'quantile_01' : df2[column].quantile(0.01), \
+                                     'min' : df2[column].min(), \
+                                     'mean' : df2[column].mean(), \
+                                     'std' : df2[column].std(), \
+                                     'MAD' : df2[column].mad(), \
+                                     'nan_ratio' : pd.isna(df2[column]).sum() / df2[column].shape[0]}})
 
       #returns dataframe of True and False, where True coresponds to the NaN's
       #renames column name to column + '_NArows'
@@ -14392,6 +14423,27 @@ class AutoMunge:
       df2[column] = pd.to_numeric(df2[column], errors='coerce')
       df2.loc[df2[column] <= 0, (column)] = np.nan
       
+      if driftassess is True:
+        
+#         W, p = shapiro(df2[df2[column].notnull()][column].astype(float))
+#                                      'shapiro_W' : W, \
+#                                      'shapiro_p' : p, \
+#                                      'skew' : skew(df2[df2[column].notnull()][column].astype(float)), \
+        
+        drift_dict.update({column : {'max' : df2[column].max(), \
+                                     'quantile_99' : df2[column].quantile(0.99), \
+                                     'quantile_90' : df2[column].quantile(0.90), \
+                                     'quantile_66' : df2[column].quantile(0.66), \
+                                     'median' : df2[column].median(), \
+                                     'quantile_33' : df2[column].quantile(0.33), \
+                                     'quantile_10' : df2[column].quantile(0.10), \
+                                     'quantile_01' : df2[column].quantile(0.01), \
+                                     'min' : df2[column].min(), \
+                                     'mean' : df2[column].mean(), \
+                                     'std' : df2[column].std(), \
+                                     'MAD' : df2[column].mad(), \
+                                     'nan_ratio' : pd.isna(df2[column]).sum() / df2[column].shape[0]}})
+    
       #returns dataframe of True and False, where True coresponds to the NaN's
       #renames column name to column + '_NArows'
       NArows = pd.isna(df2[column])
@@ -14404,6 +14456,27 @@ class AutoMunge:
       df2[column] = pd.to_numeric(df2[column], errors='coerce')
       df2.loc[df2[column] < 0, (column)] = np.nan
       
+      if driftassess is True:
+        
+#         W, p = shapiro(df2[df2[column].notnull()][column].astype(float))
+#                                      'shapiro_W' : W, \
+#                                      'shapiro_p' : p, \
+#                                      'skew' : skew(df2[df2[column].notnull()][column].astype(float)), \
+        
+        drift_dict.update({column : {'max' : df2[column].max(), \
+                                     'quantile_99' : df2[column].quantile(0.99), \
+                                     'quantile_90' : df2[column].quantile(0.90), \
+                                     'quantile_66' : df2[column].quantile(0.66), \
+                                     'median' : df2[column].median(), \
+                                     'quantile_33' : df2[column].quantile(0.33), \
+                                     'quantile_10' : df2[column].quantile(0.10), \
+                                     'quantile_01' : df2[column].quantile(0.01), \
+                                     'min' : df2[column].min(), \
+                                     'mean' : df2[column].mean(), \
+                                     'std' : df2[column].std(), \
+                                     'MAD' : df2[column].mad(), \
+                                     'nan_ratio' : pd.isna(df2[column]).sum() / df2[column].shape[0]}})
+
       #returns dataframe of True and False, where True coresponds to the NaN's
       #renames column name to column + '_NArows'
       NArows = pd.isna(df2[column])
@@ -14411,10 +14484,32 @@ class AutoMunge:
       NArows = NArows.rename(columns = {column:column+'_NArows'})
       
     if NArowtype in ['nonzeronumeric']:
-      
+
       #convert all values to either numeric or NaN
       df2[column] = pd.to_numeric(df2[column], errors='coerce')
       df2.loc[df2[column] == 0, (column)] = np.nan
+      
+      if driftassess is True:
+        
+#         W, p = shapiro(df2[df2[column].notnull()][column].astype(float))
+#                                      'shapiro_W' : W, \
+#                                      'shapiro_p' : p, \
+#                                      'skew' : skew(df2[df2[column].notnull()][column].astype(float)), \
+        
+        drift_dict.update({column : {'max' : df2[column].max(), \
+                                     'quantile_99' : df2[column].quantile(0.99), \
+                                     'quantile_90' : df2[column].quantile(0.90), \
+                                     'quantile_66' : df2[column].quantile(0.66), \
+                                     'median' : df2[column].median(), \
+                                     'quantile_33' : df2[column].quantile(0.33), \
+                                     'quantile_10' : df2[column].quantile(0.10), \
+                                     'quantile_01' : df2[column].quantile(0.01), \
+                                     'min' : df2[column].min(), \
+                                     'mean' : df2[column].mean(), \
+                                     'std' : df2[column].std(), \
+                                     'MAD' : df2[column].mad(), \
+                                     'nan_ratio' : pd.isna(df2[column]).sum() / df2[column].shape[0]}})
+
       
       #returns dataframe of True and False, where True coresponds to the NaN's
       #renames column name to column + '_NArows'
@@ -14433,7 +14528,16 @@ class AutoMunge:
       
     if NArowtype in ['datetime']:
       
-      NArows = self.parsedate(df2, column)
+      df2[column] = pd.to_datetime(df2[column], errors = 'coerce')
+
+      if driftassess is True:
+        drift_dict.update({column : {'nanratio' : pd.isna(df2[column]).sum() / df2[column].shape[0]}})
+      
+      NArows = pd.isna(df2[column])
+      NArows = pd.DataFrame(NArows)
+      NArows = NArows.rename(columns = {column:column+'_NArows'})
+      
+#       NArows = self.parsedate(df2, column)
       
     #if category in ['excl']:
     if NArowtype in ['exclude', 'boolexclude']:
@@ -14446,11 +14550,15 @@ class AutoMunge:
       NArows = NArows.rename(columns = {column:column+'_NArows'})
 #       NArows[column+'_NArows'] = False
       
-      
     del df2
     
-
-    return NArows
+    if driftassess is False:
+      
+      return NArows
+    
+    else:
+      
+      return NArows, drift_dict
   
   
   def parsedate(self, df, column):
@@ -19170,13 +19278,13 @@ class AutoMunge:
       print("Begin Automunge processing")
       print("")
       
-    #copy input dataframes to internal state so as not to edit exterior objects
-#     if inplace is False:
-    df_train = df_train.copy()
-    df_test = df_test.copy()
+#     #copy input dataframes to internal state so as not to edit exterior objects
+# #     if inplace is False:
+#     df_train = df_train.copy()
+#     df_test = df_test.copy()
 
-#     elif inplace is True:
-#       pass
+# #     elif inplace is True:
+# #       pass
 
 
 
@@ -19237,10 +19345,13 @@ class AutoMunge:
       testlabels.append(str(column))
     df_test.columns = testlabels
 
-#     #copy input dataframes to internal state so as not to edit exterior objects
+    #copy input dataframes to internal state so as not to edit exterior objects
 #     if inplace is False:
-#       df_train = df_train.copy()
-#       df_test = df_test.copy()
+    df_train = df_train.copy()
+    df_test = df_test.copy()
+
+#     elif inplace is True:
+#       pass
 
 
 
@@ -19526,7 +19637,11 @@ class AutoMunge:
     #specific (i.e. nmbr, bnry, text, date) set of variable.
     postprocess_dict = {'column_dict' : {}, 'origcolumn' : {}, \
                         'process_dict' : process_dict}
-
+    
+    
+    #create empty dictionary to serve as store for drift metrics
+    drift_dict = {}
+    
 
     #For each column, determine appropriate processing function
     #processing function will be based on evaluation of train set
@@ -19638,7 +19753,7 @@ class AutoMunge:
           templist1 = list(df_train)
 
           #create NArows (column of True/False where True coresponds to missing data)
-          trainNArows = self.getNArows(df_train, column, category, postprocess_dict)
+          trainNArows, drift_dict = self.getNArows(df_train, column, category, postprocess_dict, drift_dict=drift_dict, driftassess=True)
           testNArows = self.getNArows(df_test, column, category, postprocess_dict)
 
           #now append that NArows onto a master NA rows df
@@ -19776,9 +19891,11 @@ class AutoMunge:
 
       #printout display progress
       if printstatus == True:
+        print("______")
+        print("")
         print("processing label column: ", labels_column)
         print("    root label category: ", labelscategory)
-        #print("")
+        print("")
 
 
 
@@ -20572,7 +20689,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.12'
+    automungeversion = '3.13'
     application_number = random.randint(100000000000,999999999999)
     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -20614,6 +20731,7 @@ class AutoMunge:
                              'featuremethod' : featuremethod, \
                              'FSmodel' : FSmodel, \
                              'FScolumn_dict' : FScolumn_dict, \
+                             'drift_dict' : drift_dict, \
                              'Binary' : Binary, \
                              'Binary_dict' : Binary_dict, \
                              'PCAn_components' : PCAn_components, \
@@ -27568,7 +27686,7 @@ class AutoMunge:
           print("")
           
         #add to driftreport
-        drift_report[drift_column]['newreturnedcolumn'][returnedcolumn]['orignormparam'] \
+        drift_report[drift_column]['newreturnedcolumn'][returnedcolumn]['newnormparam'] \
         = drift_ppd['column_dict'][returnedcolumn]['normalization_dict'][returnedcolumn]
       
       #free up some memory
@@ -27814,7 +27932,8 @@ class AutoMunge:
 
 
     #here we'll perform drift report if elected
-    if driftreport == True:
+    #if driftreport == True:
+    if driftreport in [True, 'report_full']:
 
       #returns a new partially populated postpr4ocess_dict containing
       #column_dict entries populated with newly calculated normalizaiton parameters
@@ -27823,6 +27942,47 @@ class AutoMunge:
       drift_ppd, drift_report = self.prepare_driftreport(df_test, postprocess_dict, printstatus)
 
       postreports_dict['driftreport'] = drift_report
+      
+    if driftreport in ['report_full', 'report_effic']:
+      
+      postdrift_dict = {}
+
+      if printstatus == True:
+        print("_______________")
+        print("Preparing Source Column Drift Report:")
+        print("")
+      
+      for column in df_test:
+
+        if column in postprocess_dict['drift_dict']:
+
+          if printstatus == True:
+            print("______")
+            print("Preparing source column drift report for column: ", column)
+            print("")
+            print("original drift stats:")
+            print(postprocess_dict['drift_dict'][column])
+            print("")
+
+          category = postprocess_dict['origcolumn'][column]['category']
+
+          _1, postdrift_dict = \
+          self.getNArows(df_test, column, category, postprocess_dict, postdrift_dict, True)
+
+          if printstatus == True:
+            print("new drift stats:")
+            print(postdrift_dict[column])
+            print("")
+          
+      postreports_dict.update({'sourcecolumn_drift' : {'orig_driftstats' : postprocess_dict['drift_dict'], \
+                                                       'new_driftstats' : postdrift_dict}})
+
+      if printstatus == True:
+        print("_______________")
+        print("Source Column Drift Report Complete")
+        print("")
+      
+      return [], [], [], [], postreports_dict
 
     #create an empty dataframe to serve as a store for each column's NArows
     #the column id's for this df will follow convention from NArows of 
@@ -27830,6 +27990,10 @@ class AutoMunge:
     #these are used in the ML infill methods
     #masterNArows_train = pd.DataFrame()
     masterNArows_test = pd.DataFrame()
+    
+    
+    #initialize postdrift_dict
+    postdrift_dict = {}
 
 
     #For each column, determine appropriate processing function
@@ -27857,6 +28021,14 @@ class AutoMunge:
         #properties as train set
 
         category = traincategory
+        
+        #printout display progress
+        if printstatus == True:
+          print("______")
+          print("")
+          print("processing column: ", column)
+          print("    root category: ", category)
+          print("")
 
   #         #ok postprocess_dict stores column data by the key of column names after\
   #         #they have gone through our pre-processing functions, which means the act \
@@ -27981,17 +28153,33 @@ class AutoMunge:
         #so if we didn't delete the column let's proceed
         else:
 
+#           #create NArows (column of True/False where True coresponds to missing data)
+#           testNArows = self.getNArows(df_test, column, category, postprocess_dict)
+
           #create NArows (column of True/False where True coresponds to missing data)
-          testNArows = self.getNArows(df_test, column, category, postprocess_dict)
+          if driftreport in ['efficient', True]:
+            testNArows, postdrift_dict = \
+            self.getNArows(df_test, column, category, postprocess_dict, postdrift_dict, True)
+          
+            if printstatus == True:
+              print("original source column drift stats:")
+              print(postprocess_dict['drift_dict'][column])
+              print("")
+              print("new source column drift stats:")
+              print(postdrift_dict[column])
+              print("")
+          
+          else:
+            testNArows = self.getNArows(df_test, column, category, postprocess_dict)
 
           #now append that NArows onto a master NA rows df
           masterNArows_test = pd.concat([masterNArows_test, testNArows], axis=1)
 
           #now process using postprocessfamily functions
-          #printout display progress
-          if printstatus == True:
-            print("processing column: ", column)
-            print("    root category: ", category)
+#           #printout display progress
+#           if printstatus == True:
+#             print("processing column: ", column)
+#             print("    root category: ", category)
             #print("")
 
   #           #process ancestors
@@ -28629,6 +28817,9 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     postreports_dict['finalcolumns_test'] = finalcolumns_test
+    
+    postreports_dict.update({'sourcecolumn_drift' : {'orig_driftstats' : postprocess_dict['drift_dict'], \
+                                                     'new_driftstats' : postdrift_dict}})
 
 
 
