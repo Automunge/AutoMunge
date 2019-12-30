@@ -4232,152 +4232,166 @@ class AutoMunge:
     #create plug value for missing cells as most common value
     valuecounts = mdf_train[column + '_bnry'].value_counts().index.tolist()
     
-    if len(valuecounts) > 1:
-      binary_missing_plug = valuecounts[0]
-    else:
-      #making an executive decision here to deviate from standardinfill of most common value
-      #for this edge case where a column evaluated as binary has only single value and NaN's
-      binary_missing_plug = 'plug'
-      
+    if len(valuecounts) > 0:
 
-    #test for nan
-    if binary_missing_plug != binary_missing_plug:
-      binary_missing_plug = valuecounts[1]
-    
-    #edge case when applying this transform to set with >2 values
-    #this only comes up when caluclating driftreport in postmunge
-    extravalues = []
-    if len(valuecounts) > 2:
-      i=0
-      for value in valuecounts:
-        if i>1:
-          extravalues.append(value)
-        i+=1
-        
+      if len(valuecounts) > 1:
+        binary_missing_plug = valuecounts[0]
+      else:
+        #making an executive decision here to deviate from standardinfill of most common value
+        #for this edge case where a column evaluated as binary has only single value and NaN's
+        binary_missing_plug = 'plug'
 
-    #replace nan in valuecounts with binary_missing_plug so we can sort
-    valuecounts = [x if x == x else binary_missing_plug for x in valuecounts]
-#     #convert everything to string for sort
-#     valuecounts = [str(x) for x in valuecounts]
-    
-    #note LabelBinarizer encodes alphabetically, with 1 assigned to first and 0 to second
-    #we'll take different approach of going by most common value to 1 unless 0 or 1
-    #are already in the set then we'll defer to keeping those designations in place
-    #there's some added complexity here to deal with edge case of passing this function
-    #to a set with >2 values as we might run into when caluclating drift in postmunge
-    
-#     valuecounts.sort()
-#     valuecounts = sorted(valuecounts)
-    #in case this includes both strings and integers for instance we'll sort this way
-#     valuecounts = sorted(valuecounts, key=lambda p: str(p))
-  
-    #we'll save these in the normalization dictionary for future reference
-    onevalue = valuecounts[0]
-    if len(valuecounts) > 1:
-      zerovalue = valuecounts[1]
-    else:
-      zerovalue = 'plug'
-    
-    #special case for when the source column is already encoded as 0/1
-    
-    if len(valuecounts) <= 2:
-    
-      if 0 in valuecounts:
-        zerovalue = 0
+
+      #test for nan
+      if binary_missing_plug != binary_missing_plug:
+        binary_missing_plug = valuecounts[1]
+
+      #edge case when applying this transform to set with >2 values
+      #this only comes up when caluclating driftreport in postmunge
+      extravalues = []
+      if len(valuecounts) > 2:
+        i=0
+        for value in valuecounts:
+          if i>1:
+            extravalues.append(value)
+          i+=1
+
+
+      #replace nan in valuecounts with binary_missing_plug so we can sort
+      valuecounts = [x if x == x else binary_missing_plug for x in valuecounts]
+  #     #convert everything to string for sort
+  #     valuecounts = [str(x) for x in valuecounts]
+
+      #note LabelBinarizer encodes alphabetically, with 1 assigned to first and 0 to second
+      #we'll take different approach of going by most common value to 1 unless 0 or 1
+      #are already in the set then we'll defer to keeping those designations in place
+      #there's some added complexity here to deal with edge case of passing this function
+      #to a set with >2 values as we might run into when caluclating drift in postmunge
+
+  #     valuecounts.sort()
+  #     valuecounts = sorted(valuecounts)
+      #in case this includes both strings and integers for instance we'll sort this way
+  #     valuecounts = sorted(valuecounts, key=lambda p: str(p))
+
+      #we'll save these in the normalization dictionary for future reference
+      onevalue = valuecounts[0]
+      if len(valuecounts) > 1:
+        zerovalue = valuecounts[1]
+      else:
+        zerovalue = 'plug'
+
+      #special case for when the source column is already encoded as 0/1
+
+      if len(valuecounts) <= 2:
+
+        if 0 in valuecounts:
+          zerovalue = 0
+          if 1 in valuecounts:
+            onevalue = 1
+          else:
+            if valuecounts[0] == 0:
+              if len(valuecounts) > 1:
+                onevalue = valuecounts[1]
+              else:
+                onevalue = 'plug'
+
         if 1 in valuecounts:
-          onevalue = 1
-        else:
-          if valuecounts[0] == 0:
-            if len(valuecounts) > 1:
-              onevalue = valuecounts[1]
-            else:
-              onevalue = 'plug'
+          if 0 not in valuecounts:
+            if valuecounts[0] != 1:
+              onevalue = 1
+              zerovalue = valuecounts[0]
 
-      if 1 in valuecounts:
-        if 0 not in valuecounts:
-          if valuecounts[0] != 1:
+
+      #edge case same as above but when values of 0 or 1. are in set and 
+      #len(valuecounts) > 2
+      if len(valuecounts) > 2:
+        valuecounts2 = valuecounts[:2]
+
+        if 0 in valuecounts2:
+          zerovalue = 0
+          if 1 in valuecounts2:
             onevalue = 1
-            zerovalue = valuecounts[0]
+          else:
+            if valuecounts2[0] == 0:
+              if len(valuecounts) > 1:
+                onevalue = valuecounts2[1]
+              else:
+                onevalue = 'plug'
 
-    
-    #edge case same as above but when values of 0 or 1. are in set and 
-    #len(valuecounts) > 2
-    if len(valuecounts) > 2:
-      valuecounts2 = valuecounts[:2]
-      
-      if 0 in valuecounts2:
-        zerovalue = 0
         if 1 in valuecounts2:
-          onevalue = 1
-        else:
-          if valuecounts2[0] == 0:
-            if len(valuecounts) > 1:
-              onevalue = valuecounts2[1]
-            else:
-              onevalue = 'plug'
+          if 0 not in valuecounts2:
+            if valuecounts2[0] != 1:
+              onevalue = 1
+              zerovalue = valuecounts2[0]
 
-      if 1 in valuecounts2:
-        if 0 not in valuecounts2:
-          if valuecounts2[0] != 1:
-            onevalue = 1
-            zerovalue = valuecounts2[0]
 
-          
-    #edge case that might come up in drift report
-    if binary_missing_plug not in [onevalue, zerovalue]:
-      binary_missing_plug = onevalue
+      #edge case that might come up in drift report
+      if binary_missing_plug not in [onevalue, zerovalue]:
+        binary_missing_plug = onevalue
+
+      #edge case when applying this transform to set with >2 values
+      #this only comes up when caluclating driftreport in postmunge
+      if len(valuecounts) > 2:
+        for value in extravalues:
+          mdf_train.loc[mdf_train[column + '_bnry'].isin([value]), column + '_bnry'] = binary_missing_plug
+          mdf_test.loc[mdf_test[column + '_bnry'].isin([value]), column + '_bnry'] = binary_missing_plug
+
+
+      #replace missing data with specified classification
+      mdf_train[column + '_bnry'] = mdf_train[column + '_bnry'].fillna(binary_missing_plug)
+      mdf_test[column + '_bnry'] = mdf_test[column + '_bnry'].fillna(binary_missing_plug)
+
+
+      #this addressess issue where nunique for mdftest > than that for mdf_train
+      #note is currently an oportunity for improvement that NArows won't identify these poinsts as candiadates
+      #for user specified infill, and as currently addressed will default to infill with most common value
+      #in the mean time a workaround could be for user to manually replace extra values with nan prior to
+      #postmunge application such as if they want to apply ML infill
+      #this will only be an issue when nunique for df_train == 2, and nunique for df_test > 2
+      #if len(mdf_test[column + '_bnry'].unique()) > 2:
+      uniqueintest = mdf_test[column + '_bnry'].unique()
+      for unique in uniqueintest:
+        if unique not in [onevalue, zerovalue]:
+          mdf_test.loc[~mdf_test[column + '_bnry'].isin([onevalue, zerovalue]), column + '_bnry'] = binary_missing_plug
+
+
+      #convert column to binary 0/1 classification (replaces scikit LabelBinarizer)
+      mdf_train.loc[mdf_train[column + '_bnry'].isin([onevalue]), column + '_bnry'] = 1
+      mdf_train.loc[mdf_train[column + '_bnry'].isin([zerovalue]), column + '_bnry'] = 0
+
+      mdf_test.loc[mdf_test[column + '_bnry'].isin([onevalue]), column + '_bnry'] = 1
+      mdf_test.loc[mdf_test[column + '_bnry'].isin([zerovalue]), column + '_bnry'] = 0
+
+      #create list of columns
+      bnrycolumns = [column + '_bnry']
+
+      #change data types to 8-bit (1 byte) integers for memory savings
+      mdf_train[column + '_bnry'] = mdf_train[column + '_bnry'].astype(np.int8)
+      mdf_test[column + '_bnry'] = mdf_test[column + '_bnry'].astype(np.int8)
+
+      #a few more metrics collected for driftreport
+      oneratio = mdf_train[column + '_bnry'].sum() / mdf_train[column + '_bnry'].shape[0]
+      zeroratio = (mdf_train[column + '_bnry'].shape[0] - mdf_train[column + '_bnry'].sum() )\
+                  / mdf_train[column + '_bnry'].shape[0]
+
+      #create list of columns associated with categorical transform (blank for now)
+      categorylist = []
+    
+    else:
+      mdf_train[column + '_bnry'] = 0
+      mdf_test[column + '_bnry'] = 0
       
-    #edge case when applying this transform to set with >2 values
-    #this only comes up when caluclating driftreport in postmunge
-    if len(valuecounts) > 2:
-      for value in extravalues:
-        mdf_train.loc[mdf_train[column + '_bnry'].isin([value]), column + '_bnry'] = binary_missing_plug
-        mdf_test.loc[mdf_test[column + '_bnry'].isin([value]), column + '_bnry'] = binary_missing_plug
+      binary_missing_plug = 0
+      onevalue = 1
+      zerovalue = 0
+      extravalues = 0
+      oneratio = 0
+      zeroratio = 0
+      bnrycolumns = [column + '_bnry']
 
-
-    #replace missing data with specified classification
-    mdf_train[column + '_bnry'] = mdf_train[column + '_bnry'].fillna(binary_missing_plug)
-    mdf_test[column + '_bnry'] = mdf_test[column + '_bnry'].fillna(binary_missing_plug)
-
-    
-    #this addressess issue where nunique for mdftest > than that for mdf_train
-    #note is currently an oportunity for improvement that NArows won't identify these poinsts as candiadates
-    #for user specified infill, and as currently addressed will default to infill with most common value
-    #in the mean time a workaround could be for user to manually replace extra values with nan prior to
-    #postmunge application such as if they want to apply ML infill
-    #this will only be an issue when nunique for df_train == 2, and nunique for df_test > 2
-    #if len(mdf_test[column + '_bnry'].unique()) > 2:
-    uniqueintest = mdf_test[column + '_bnry'].unique()
-    for unique in uniqueintest:
-      if unique not in [onevalue, zerovalue]:
-        mdf_test.loc[~mdf_test[column + '_bnry'].isin([onevalue, zerovalue]), column + '_bnry'] = binary_missing_plug
-    
-    
-    #convert column to binary 0/1 classification (replaces scikit LabelBinarizer)
-    mdf_train.loc[mdf_train[column + '_bnry'].isin([onevalue]), column + '_bnry'] = 1
-    mdf_train.loc[mdf_train[column + '_bnry'].isin([zerovalue]), column + '_bnry'] = 0
-    
-    mdf_test.loc[mdf_test[column + '_bnry'].isin([onevalue]), column + '_bnry'] = 1
-    mdf_test.loc[mdf_test[column + '_bnry'].isin([zerovalue]), column + '_bnry'] = 0
-
-    #create list of columns
-    bnrycolumns = [column + '_bnry']
-
-    #change data types to 8-bit (1 byte) integers for memory savings
-    mdf_train[column + '_bnry'] = mdf_train[column + '_bnry'].astype(np.int8)
-    mdf_test[column + '_bnry'] = mdf_test[column + '_bnry'].astype(np.int8)
-    
-    #a few more metrics collected for driftreport
-    oneratio = mdf_train[column + '_bnry'].sum() / mdf_train[column + '_bnry'].shape[0]
-    zeroratio = (mdf_train[column + '_bnry'].shape[0] - mdf_train[column + '_bnry'].sum() )\
-                / mdf_train[column + '_bnry'].shape[0]
-
-    #create list of columns associated with categorical transform (blank for now)
-    categorylist = []
-
-#     bnrynormalization_dict = {column + '_bnry' : {'missing' : binary_missing_plug, \
-#                                                   'onevalue' : onevalue, \
-#                                                   'zerovalue' : zerovalue}}
+  #     bnrynormalization_dict = {column + '_bnry' : {'missing' : binary_missing_plug, \
+  #                                                   'onevalue' : onevalue, \
+  #                                                   'zerovalue' : zerovalue}}
     
     bnrynormalization_dict = {column + '_bnry' : {'missing' : binary_missing_plug, \
                                                   1 : onevalue, \
@@ -20689,7 +20703,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.14'
+    automungeversion = '3.15'
     application_number = random.randint(100000000000,999999999999)
     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -23377,81 +23391,83 @@ class AutoMunge:
     
     normkey = column + '_1010_0'
     
-    #grab normalization parameters from postprocess_dict
-    binary_encoding_dict = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['_1010_binary_encoding_dict']
+    if normkey in postprocess_dict['column_dict']:
     
-    overlap_replace = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['_1010_overlap_replace']
-    
-    binary_column_count = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['_1010_binary_column_count']
-    
-    
-    #create new column for trasnformation
-    mdf_test[column + '_1010'] = mdf_test[column].copy()    
-    
-    #convert column to category
-    mdf_test[column + '_1010'] = mdf_test[column + '_1010'].astype('category')
+      #grab normalization parameters from postprocess_dict
+      binary_encoding_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['_1010_binary_encoding_dict']
 
-    #if set is categorical we'll need the plug value for missing values included
-    mdf_test[column + '_1010'] = mdf_test[column + '_1010'].cat.add_categories(['000000000_infill'])
+      overlap_replace = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['_1010_overlap_replace']
 
-    #replace NA with a dummy variable
-    mdf_test[column + '_1010'] = mdf_test[column + '_1010'].fillna('000000000_infill')
+      binary_column_count = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['_1010_binary_column_count']
 
-    #replace numerical with string equivalent
-    mdf_test[column + '_1010'] = mdf_test[column + '_1010'].astype(str)
-    
-    #extract categories for column labels
-    #note that .unique() extracts the labels as a numpy array
-    #train categories are in the ordinal_dict we p[ulled from normalization_dict
-    labels_train = list(binary_encoding_dict.keys())
-    labels_train.sort()
-    labels_test = list(mdf_test[column + '_1010'].unique())
-    labels_test.sort()
-    
-    #if infill not present in train set, insert
-    if '000000000_infill' not in labels_train:
-      labels_train = labels_train + ['000000000_infill']
+
+      #create new column for trasnformation
+      mdf_test[column + '_1010'] = mdf_test[column].copy()    
+
+      #convert column to category
+      mdf_test[column + '_1010'] = mdf_test[column + '_1010'].astype('category')
+
+      #if set is categorical we'll need the plug value for missing values included
+      mdf_test[column + '_1010'] = mdf_test[column + '_1010'].cat.add_categories(['000000000_infill'])
+
+      #replace NA with a dummy variable
+      mdf_test[column + '_1010'] = mdf_test[column + '_1010'].fillna('000000000_infill')
+
+      #replace numerical with string equivalent
+      mdf_test[column + '_1010'] = mdf_test[column + '_1010'].astype(str)
+
+      #extract categories for column labels
+      #note that .unique() extracts the labels as a numpy array
+      #train categories are in the ordinal_dict we p[ulled from normalization_dict
+      labels_train = list(binary_encoding_dict.keys())
       labels_train.sort()
-    if '000000000_infill' not in labels_test:
-      labels_test = labels_test + ['000000000_infill']
-      labels_test.sort()    
-   
-    #here we replace the overlaps with version with jibberish suffix
-    if len(overlap_replace) > 0:
-      mdf_test[column + '_1010'] = mdf_test[column + '_1010'].replace(overlap_replace)
-    
-    #in test set, we'll need to strike any categories that weren't present in train
-    #first let'/s identify what applies
-    testspecificcategories = list(set(labels_test)-set(labels_train))
-    
-    #so we'll just replace those items with our plug value
-    testplug_dict = dict(zip(testspecificcategories, ['000000000_infill'] * len(testspecificcategories)))
-    mdf_test[column + '_1010'] = mdf_test[column + '_1010'].replace(testplug_dict)    
-    
-    #now we'll apply the 1010 transformation to the test set
-    mdf_test[column + '_1010'] = mdf_test[column + '_1010'].replace(binary_encoding_dict)   
-    
-    #ok let's create a list of columns to store each entry of the binary encoding
-    _1010_columnlist = []
-    
-    for i in range(binary_column_count):
-      
-      _1010_columnlist.append(column + '_1010_' + str(i))
-      
-    #now let's store the encoding
-    i=0
-    for _1010_column in _1010_columnlist:
-      
-      mdf_test[_1010_column] = mdf_test[column + '_1010'].str.slice(i,i+1).astype(np.int8)
-      
-      i+=1
+      labels_test = list(mdf_test[column + '_1010'].unique())
+      labels_test.sort()
 
-      
-    #now delete the support column
-    del mdf_test[column + '_1010']
+      #if infill not present in train set, insert
+      if '000000000_infill' not in labels_train:
+        labels_train = labels_train + ['000000000_infill']
+        labels_train.sort()
+      if '000000000_infill' not in labels_test:
+        labels_test = labels_test + ['000000000_infill']
+        labels_test.sort()    
+
+      #here we replace the overlaps with version with jibberish suffix
+      if len(overlap_replace) > 0:
+        mdf_test[column + '_1010'] = mdf_test[column + '_1010'].replace(overlap_replace)
+
+      #in test set, we'll need to strike any categories that weren't present in train
+      #first let'/s identify what applies
+      testspecificcategories = list(set(labels_test)-set(labels_train))
+
+      #so we'll just replace those items with our plug value
+      testplug_dict = dict(zip(testspecificcategories, ['000000000_infill'] * len(testspecificcategories)))
+      mdf_test[column + '_1010'] = mdf_test[column + '_1010'].replace(testplug_dict)    
+
+      #now we'll apply the 1010 transformation to the test set
+      mdf_test[column + '_1010'] = mdf_test[column + '_1010'].replace(binary_encoding_dict)   
+
+      #ok let's create a list of columns to store each entry of the binary encoding
+      _1010_columnlist = []
+
+      for i in range(binary_column_count):
+
+        _1010_columnlist.append(column + '_1010_' + str(i))
+
+      #now let's store the encoding
+      i=0
+      for _1010_column in _1010_columnlist:
+
+        mdf_test[_1010_column] = mdf_test[column + '_1010'].str.slice(i,i+1).astype(np.int8)
+
+        i+=1
+
+
+      #now delete the support column
+      del mdf_test[column + '_1010']
     
     
     return mdf_test
@@ -27568,6 +27584,7 @@ class AutoMunge:
                                            'newreturnedcolumns_list':[], \
                                            'drift_category' : drift_category, \
                                            'orignotinnew' : {}, \
+                                           'newnotinorig' : {}, \
                                            'newreturnedcolumn':{}}})
       
       drift_process_dict = \
@@ -27683,6 +27700,14 @@ class AutoMunge:
           #add to driftreport
           drift_report[drift_column]['newreturnedcolumn'][returnedcolumn]['orignormparam'] \
           = postprocess_dict['column_dict'][returnedcolumn]['normalization_dict'][returnedcolumn]
+          
+        else:
+          if printstatus == True:
+            print("new derived column not in original returned columns: ", returnedcolumn)
+            print("")
+            
+          drift_report[drift_column]['newnotinorig'].update({returnedcolumn:{'newnormparam':\
+          drift_ppd['column_dict'][returnedcolumn]['normalization_dict'][returnedcolumn]}})
           
         if printstatus == True:
           print("new postmunge normalization parameters:")
