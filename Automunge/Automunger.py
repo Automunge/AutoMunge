@@ -20689,7 +20689,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.13'
+    automungeversion = '3.14'
     application_number = random.randint(100000000000,999999999999)
     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -21764,67 +21764,71 @@ class AutoMunge:
         if 'textlabelsdict' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
 
           normkey = columnkey
+          
+    if normkey != False:
+
+      #textcolumns = postprocess_dict['column_dict'][columnkey]['columnslist']
+      textcolumns = postprocess_dict['column_dict'][normkey]['categorylist']
+
+
+      #extract categories for column labels
+      #note that .unique() extracts the labels as a numpy array
+
+      #we'll get the category names from the textcolumns array by stripping the \
+      #prefixes of column name + '_'
+      prefixlength = len(column)+1
+      labels_train = textcolumns[:]
+      for textcolumn in labels_train:
+        textcolumn = textcolumn[prefixlength :]
+      #labels_train.sort(axis=0)
+      labels_train.sort()
+      labels_test = mdf_test[tempcolumn].unique()
+      labels_test.sort(axis=0)
+
+
+      #apply onehotencoding
+      df_test_cat = pd.get_dummies(mdf_test[tempcolumn])
+
+      #append column header name to each category listing
+      #note the iteration is over a numpy array hence the [...] approach
+      labels_test[...] = column + '_' + labels_test[...]
+
+      #convert sparse array to pandas dataframe with column labels
+      df_test_cat.columns = labels_test
+
+
+
+      #Get missing columns in test set that are present in training set
+      missing_cols = set( textcolumns ) - set( df_test_cat.columns )
+
+      #Add a missing column in test set with default value equal to 0
+      for c in missing_cols:
+          df_test_cat[c] = 0
+
+      #Ensure the order of column in the test set is in the same order than in train set
+      #Note this also removes categories in test set that aren't present in training set
+      df_test_cat = df_test_cat[textcolumns]
+
+
+      #concatinate the sparse set with the rest of our training data
+      mdf_test = pd.concat([df_test_cat, mdf_test], axis=1)
+
+
+      del mdf_test[tempcolumn]
+
+      #delete support NArw2 column
+      columnNAr2 = column + '_:;:NAr2'
+      if columnNAr2 in list(mdf_test):
+        del mdf_test[columnNAr2]
+
+      #change data types to 8-bit (1 byte) integers for memory savings
+      for textcolumn in textcolumns:
+
+        mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.int8)
+
+    else:
       
-      
-    #textcolumns = postprocess_dict['column_dict'][columnkey]['columnslist']
-    textcolumns = postprocess_dict['column_dict'][normkey]['categorylist']
-
-
-    #extract categories for column labels
-    #note that .unique() extracts the labels as a numpy array
-
-    #we'll get the category names from the textcolumns array by stripping the \
-    #prefixes of column name + '_'
-    prefixlength = len(column)+1
-    labels_train = textcolumns[:]
-    for textcolumn in labels_train:
-      textcolumn = textcolumn[prefixlength :]
-    #labels_train.sort(axis=0)
-    labels_train.sort()
-    labels_test = mdf_test[tempcolumn].unique()
-    labels_test.sort(axis=0)
-
-
-    #apply onehotencoding
-    df_test_cat = pd.get_dummies(mdf_test[tempcolumn])
-    
-    #append column header name to each category listing
-    #note the iteration is over a numpy array hence the [...] approach
-    labels_test[...] = column + '_' + labels_test[...]
-    
-    #convert sparse array to pandas dataframe with column labels
-    df_test_cat.columns = labels_test
-    
-
-
-    #Get missing columns in test set that are present in training set
-    missing_cols = set( textcolumns ) - set( df_test_cat.columns )
-
-    #Add a missing column in test set with default value equal to 0
-    for c in missing_cols:
-        df_test_cat[c] = 0
-
-    #Ensure the order of column in the test set is in the same order than in train set
-    #Note this also removes categories in test set that aren't present in training set
-    df_test_cat = df_test_cat[textcolumns]
-
-
-    #concatinate the sparse set with the rest of our training data
-    mdf_test = pd.concat([df_test_cat, mdf_test], axis=1)
-    
-
-    del mdf_test[tempcolumn]
-    
-    #delete support NArw2 column
-    columnNAr2 = column + '_:;:NAr2'
-    if columnNAr2 in list(mdf_test):
-      del mdf_test[columnNAr2]
-    
-    #change data types to 8-bit (1 byte) integers for memory savings
-    for textcolumn in textcolumns:
-      
-      mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.int8)
-
+      del mdf_test[tempcolumn]
     
     return mdf_test
   
