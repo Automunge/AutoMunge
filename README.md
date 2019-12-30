@@ -1103,6 +1103,8 @@ column. Note that this list should match the one from automunge.
 * postreports_dict: a dictionary containing entries for following:
 - postreports_dict['featureimportance']: results of optional feature 
 importance evaluation based on parameter featureeval
+- postreports_dict['finalcolumns_test']: list of columns returned from 
+postmunge
 - postreports_dict['driftreport']: results of optional drift report 
 evaluation tracking properties of psotmunge data in comparision to the 
 original data from automunge call associated with the postprocess_dict 
@@ -1111,8 +1113,27 @@ original (pre-transform) list of columns, and include the normailzaiton
 parameters from the automunge call saved in postprocess_dict as well
 as the corresponding parameters from the new data consistently derived 
 in postmunge
-- postreports_dict['finalcolumns_test']: list of columns returned from 
-postmunge
+- postreports_dict['sourcecolumn_drift']: results of optional drift report
+evaluation tracking properties of postmunge data dervied form source 
+columns in comparision to the original data from automunge call associated 
+with the postprocess_dict presumably used to train a model. 
+  
+```
+#the results of a postmunge driftreport assessment are returned in the postreports_dict 
+#object returned from a postmunge call, as follows:
+
+postreports_dict = \
+{'featureimportance':{(not shown here for brevity)},
+'finalcolumns_test':[(derivedcolumns)],
+'driftreport': {(derivedcolumn) : {'origreturnedcolumns_list':[(derivedcolumns)], 
+                           'newreturnedcolumns_list':[(derivedcolumns)],
+                           'drift_category':(category),
+                           'orignotinnew': {(derivedcolumn):{'orignormparam':{(stats)}},
+                           'newreturnedcolumn':{(derivedcolumn):{'orignormparam':{(stats)},
+                                                                 'newnormparam':{(stats)}}}},
+'sourcecolumn_drift': {'orig_driftstats': {(sourcecolumn) : (stats)}, 
+                       'new_driftstats' : {(sourcecolumn) : (stats)}}}
+```
 
 ...
 
@@ -1213,23 +1234,6 @@ The results will also be printed out if printstatus is activated. Defaults to Fa
   no processing of data
   - 'report_full' means that the full assessment is performed and returned with no 
   processing of data
-  
-```
-#the results of a postmunge driftreport assessment are returned in the postreports_dict 
-#object returned from a postmunge call, as follows:
-
-postreports_dict = \
-'featureimportance':{(not shown here for brevity)},
-'finalcolumns_test':[columns],
-'driftreport': {(column) : {'origreturnedcolumns_list':[(columns)], 
-                           'newreturnedcolumns_list':[(columns)],
-                           'drift_category':(category),
-                           'orignotinnew': {(column):{'orignormparam':{(stats)}},
-                           'newreturnedcolumn':{(column):{'orignormparam':{(stats)},
-                                                          'newnormparam':{(stats)}}}},
-'sourcecolumn_drift': {'orig_driftstats': {(column) : (stats)}, 
-                      'new_driftstats' : {(column) : (stats)}}}
-```
 
 * LabelSmoothing: accepts float values in range 0.0-1.0 or the default value of False
 to turn off Label Smoothing. Note that a user can pass True to LabelSmoothing which 
