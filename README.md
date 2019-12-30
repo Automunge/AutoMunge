@@ -1125,7 +1125,7 @@ with the postprocess_dict presumably used to train a model.
 postreports_dict = \
 {'featureimportance':{(not shown here for brevity)},
 'finalcolumns_test':[(derivedcolumns)],
-'driftreport': {(derivedcolumn) : {'origreturnedcolumns_list':[(derivedcolumns)], 
+'driftreport': {(sourcecolumn) : {'origreturnedcolumns_list':[(derivedcolumns)], 
                            'newreturnedcolumns_list':[(derivedcolumns)],
                            'drift_category':(category),
                            'orignotinnew': {(derivedcolumn):{'orignormparam':{(stats)}},
