@@ -1130,6 +1130,7 @@ postreports_dict = \
                            'newreturnedcolumns_list':[(derivedcolumns)],
                            'drift_category':(category),
                            'orignotinnew': {(derivedcolumn):{'orignormparam':{(stats)}},
+			   'newnotinorig': {(derivedcolumn):{'newnormparam':{(stats)}},
                            'newreturnedcolumn':{(derivedcolumn):{'orignormparam':{(stats)},
                                                                  'newnormparam':{(stats)}}}},
 'sourcecolumn_drift': {'orig_driftstats': {(sourcecolumn) : (stats)}, 
