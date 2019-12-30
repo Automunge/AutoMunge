@@ -1102,7 +1102,8 @@ column. Note that this list should match the one from automunge.
 
 * postreports_dict: a dictionary containing entries for following:
 - postreports_dict['featureimportance']: results of optional feature 
-importance evaluation based on parameter featureeval
+importance evaluation based on parameter featureeval. (See automunge(.)
+notes above for feature importance printout methods.)
 - postreports_dict['finalcolumns_test']: list of columns returned from 
 postmunge
 - postreports_dict['driftreport']: results of optional drift report 
