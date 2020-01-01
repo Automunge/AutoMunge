@@ -1135,6 +1135,29 @@ postreports_dict = \
                                                                  'newnormparam':{(stats)}}}},
 'sourcecolumn_drift': {'orig_driftstats': {(sourcecolumn) : (stats)}, 
                        'new_driftstats' : {(sourcecolumn) : (stats)}}}
+		       
+#the driftreport stats for dervied columns are based on the normalization_dict entries from the
+#correspoding processing function associated with that column's derivation
+
+#here is an example of source column drift assessment statistics for a positive numeric root category:
+postreports_dict['sourcecolumn_drift']['new_driftstats'] = \
+{(sourcecolumn) : {'max'         : (stat),
+		   'quantile_99' : (stat),
+		   'quantile_90' : (stat),
+		   'quantile_66' : (stat),
+		   'median'      : (stat),
+		   'quantile_33' : (stat),
+		   'quantile_10' : (stat),
+		   'quantile_01' : (stat),
+		   'min'         : (stat),
+		   'mean'        : (stat),
+		   'std'         : (stat),
+		   'MAD'         : (stat),
+		   'skew'        : (stat),
+		   'shapiro_W'   : (stat),
+		   'shapiro_p'   : (stat),
+		   'nonpositive_ratio' : (stat),
+		   'nan_ratio'   : (stat)}} 
 ```
 
 ...
