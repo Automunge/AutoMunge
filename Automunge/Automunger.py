@@ -14405,10 +14405,16 @@ class AutoMunge:
       
       if driftassess is True:
         
+        if df2[column].notnull().nunique() > 1:
+          W, p = shapiro(df2[df2[column].notnull()][column].astype(float))
+          skew_stat = skew(df2[df2[column].notnull()][column].astype(float))
+        else:
+          W = np.nan
+          p = np.nan
+          skew_stat = np.nan
+          
 #         W, p = shapiro(df2[df2[column].notnull()][column].astype(float))
-#                                      'shapiro_W' : W, \
-#                                      'shapiro_p' : p, \
-#                                      'skew' : skew(df2[df2[column].notnull()][column].astype(float)), \
+#         skew_stat = skew(df2[df2[column].notnull()][column].astype(float))
         
         drift_dict.update({column : {'max' : df2[column].max(), \
                                      'quantile_99' : df2[column].quantile(0.99), \
@@ -14422,6 +14428,9 @@ class AutoMunge:
                                      'mean' : df2[column].mean(), \
                                      'std' : df2[column].std(), \
                                      'MAD' : df2[column].mad(), \
+                                     'skew' : skew_stat, \
+                                     'shapiro_W' : W, \
+                                     'shapiro_p' : p, \
                                      'nan_ratio' : pd.isna(df2[column]).sum() / df2[column].shape[0]}})
 
       #returns dataframe of True and False, where True coresponds to the NaN's
@@ -14435,14 +14444,19 @@ class AutoMunge:
       
       #convert all values to either numeric or NaN
       df2[column] = pd.to_numeric(df2[column], errors='coerce')
+      nonpositive_ratio = df2[df2[column] <= 0].sum()[0] / df2[column].shape[0]
+      
       df2.loc[df2[column] <= 0, (column)] = np.nan
       
       if driftassess is True:
         
-#         W, p = shapiro(df2[df2[column].notnull()][column].astype(float))
-#                                      'shapiro_W' : W, \
-#                                      'shapiro_p' : p, \
-#                                      'skew' : skew(df2[df2[column].notnull()][column].astype(float)), \
+        if df2[column].notnull().nunique() > 1:
+          W, p = shapiro(df2[df2[column].notnull()][column].astype(float))
+          skew_stat = skew(df2[df2[column].notnull()][column].astype(float))
+        else:
+          W = np.nan
+          p = np.nan
+          skew_stat = np.nan
         
         drift_dict.update({column : {'max' : df2[column].max(), \
                                      'quantile_99' : df2[column].quantile(0.99), \
@@ -14456,6 +14470,10 @@ class AutoMunge:
                                      'mean' : df2[column].mean(), \
                                      'std' : df2[column].std(), \
                                      'MAD' : df2[column].mad(), \
+                                     'skew' : skew_stat, \
+                                     'shapiro_W' : W, \
+                                     'shapiro_p' : p, \
+                                     'nonpositive_ratio' : nonpositive_ratio, \
                                      'nan_ratio' : pd.isna(df2[column]).sum() / df2[column].shape[0]}})
     
       #returns dataframe of True and False, where True coresponds to the NaN's
@@ -14468,14 +14486,19 @@ class AutoMunge:
       
       #convert all values to either numeric or NaN
       df2[column] = pd.to_numeric(df2[column], errors='coerce')
+      negative_ratio = df2[df2[column] < 0].sum()[0] / df2[column].shape[0]
+      
       df2.loc[df2[column] < 0, (column)] = np.nan
       
       if driftassess is True:
         
-#         W, p = shapiro(df2[df2[column].notnull()][column].astype(float))
-#                                      'shapiro_W' : W, \
-#                                      'shapiro_p' : p, \
-#                                      'skew' : skew(df2[df2[column].notnull()][column].astype(float)), \
+        if df2[column].notnull().nunique() > 1:
+          W, p = shapiro(df2[df2[column].notnull()][column].astype(float))
+          skew_stat = skew(df2[df2[column].notnull()][column].astype(float))
+        else:
+          W = np.nan
+          p = np.nan
+          skew_stat = np.nan
         
         drift_dict.update({column : {'max' : df2[column].max(), \
                                      'quantile_99' : df2[column].quantile(0.99), \
@@ -14489,6 +14512,10 @@ class AutoMunge:
                                      'mean' : df2[column].mean(), \
                                      'std' : df2[column].std(), \
                                      'MAD' : df2[column].mad(), \
+                                     'skew' : skew_stat, \
+                                     'shapiro_W' : W, \
+                                     'shapiro_p' : p, \
+                                     'negative_ratio' : negative_ratio, \
                                      'nan_ratio' : pd.isna(df2[column]).sum() / df2[column].shape[0]}})
 
       #returns dataframe of True and False, where True coresponds to the NaN's
@@ -14501,14 +14528,19 @@ class AutoMunge:
 
       #convert all values to either numeric or NaN
       df2[column] = pd.to_numeric(df2[column], errors='coerce')
+      zero_ratio = df2[df2[column] == 0].sum()[0] / df2[column].shape[0]
+      
       df2.loc[df2[column] == 0, (column)] = np.nan
       
       if driftassess is True:
         
-#         W, p = shapiro(df2[df2[column].notnull()][column].astype(float))
-#                                      'shapiro_W' : W, \
-#                                      'shapiro_p' : p, \
-#                                      'skew' : skew(df2[df2[column].notnull()][column].astype(float)), \
+        if df2[column].notnull().nunique() > 1:
+          W, p = shapiro(df2[df2[column].notnull()][column].astype(float))
+          skew_stat = skew(df2[df2[column].notnull()][column].astype(float))
+        else:
+          W = np.nan
+          p = np.nan
+          skew_stat = np.nan
         
         drift_dict.update({column : {'max' : df2[column].max(), \
                                      'quantile_99' : df2[column].quantile(0.99), \
@@ -14522,6 +14554,10 @@ class AutoMunge:
                                      'mean' : df2[column].mean(), \
                                      'std' : df2[column].std(), \
                                      'MAD' : df2[column].mad(), \
+                                     'skew' : skew_stat, \
+                                     'shapiro_W' : W, \
+                                     'shapiro_p' : p, \
+                                     'zero_ratio' : zero_ratio, \
                                      'nan_ratio' : pd.isna(df2[column]).sum() / df2[column].shape[0]}})
 
       
@@ -20703,7 +20739,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.15'
+    automungeversion = '3.16'
     application_number = random.randint(100000000000,999999999999)
     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
