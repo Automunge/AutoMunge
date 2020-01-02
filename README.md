@@ -1,5 +1,7 @@
 # Automunge
 # 
+
+## Introduction
 Automunge is a platform for preparing tabular data for machine learning. A user
 has options between automated inference of column properties for application of
 appropriate simple feature engineering methods, or may also assign to distinct 
