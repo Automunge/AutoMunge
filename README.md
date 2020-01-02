@@ -71,6 +71,8 @@ via principle component analysis (a type of entity embedding via unsupervised
 learning) of the data sets with the automunge(.) function or consistently for 
 subsequently available data with the postmunge(.) function.
 
+## Install, Initialize, and Basics
+
 AutoMunge is now available for free pip install for your open source
 python data-wrangling
 
@@ -296,6 +298,8 @@ PCA - all currently implemented in Scikit-Learn.
 The function also can perform dimesnionality reduction of the sets via
 the Binary option which takes the set of columns with boolean {1/0} encodings
 and applies a binary transform to reduce the number of columns.
+
+## automunge(.)
 
 The application of the automunge and postmunge functions requires the
 assignment of the function to a series of named sets. We suggest using
@@ -3772,6 +3776,8 @@ def process_mnm8_class(df, column, category, postprocess_dict):
 
 
 ```
+
+## Conclusion
 
 And there you have it, you now have all you need to wrangle data on the 
 Automunge platform. Feedback is welcome.
