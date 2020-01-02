@@ -1,6 +1,17 @@
 # Automunge
 # 
 
+## Table of Contents
+* [Introduction](https://github.com/Automunge/AutoMunge#introduction)
+* [automunge(.) returned sets](https://github.com/Automunge/AutoMunge#automunge-returned-sets)
+* [automunge(.) passed arguments](https://github.com/Automunge/AutoMunge#automunge-passed-arguments)
+* [postmunge](https://github.com/Automunge/AutoMunge#postmunge)
+* [postmunge(.) returned sets](https://github.com/Automunge/AutoMunge#postmunge-returned-sets)
+* [postmunge(.) passed arguments](https://github.com/Automunge/AutoMunge#postmunge-passed-arguments)
+* [Default Transformations](https://github.com/Automunge/AutoMunge#default-transformations)
+* [Library of Transformations](https://github.com/Automunge/AutoMunge#library-of-transformations)
+* [Custom Transformation Functions](https://github.com/Automunge/AutoMunge#custom-transformation-functions)
+
 ## Introduction
 Automunge is a platform for preparing tabular data for machine learning. A user
 has options between automated inference of column properties for application of
