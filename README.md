@@ -314,6 +314,11 @@ assignment of the function to a series of named sets. We suggest using
 consistent naming convention as follows:
 
 ```
+#first you'll need to initialize
+from Automunge import Automunger
+am = Automunger.AutoMunge()
+
+#then to run with default parameters
 train, trainID, labels, \
 validation1, validationID1, validationlabels1, \
 validation2, validationID2, validationlabels2, \ 
@@ -327,6 +332,13 @@ The full set of arguments available to be passed are given here, with
 explanations provided below: 
 
 ```
+#first you'll need to initialize
+from Automunge import Automunger
+am = Automunger.AutoMunge()
+
+#then if you want you can copy paste following to view all of parameter options
+#where df_train is the target training data set to be prepared
+
 train, trainID, labels, \
 validation1, validationID1, validationlabels1, \
 validation2, validationID2, validationlabels2, \
@@ -379,6 +391,11 @@ Or for the postmunge function:
 #for postmunge(.) function on additional or subsequently available train or test data
 #using the postprocess_dict object returned from original automunge(.) application
 
+#first you'll need to initialize
+from Automunge import Automunger
+am = Automunger.AutoMunge()
+
+#then to run with default parameters
 test, testID, testlabels, \
 labelsencoding_dict, postreports_dict = \
 am.postmunge(postprocess_dict, df_test)
@@ -387,6 +404,14 @@ am.postmunge(postprocess_dict, df_test)
 With the full set of arguments available to be passed as:
 
 ```
+#first you'll need to initialize
+from Automunge import Automunger
+am = Automunger.AutoMunge()
+
+#then if you want you can copy paste following to view all of parameter options
+#here postprocess_dict was returned from corresponding automunge(.) call
+#and df_test is the target data set to be prepared
+
 am.postmunge(postprocess_dict, df_test, testID_column = False, \
              labelscolumn = False, pandasoutput=True, printstatus = True, \
              TrainLabelFreqLevel = False, featureeval = False, driftreport = False, \
