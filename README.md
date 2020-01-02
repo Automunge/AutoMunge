@@ -4,15 +4,19 @@
 ## Table of Contents
 * [Introduction](https://github.com/Automunge/AutoMunge#introduction)
 * [Install, Initialize, and Basics](https://github.com/Automunge/AutoMunge#install-initialize-and-basics)
+
 * [automunge(.)](https://github.com/Automunge/AutoMunge#automunge-1)
 * [automunge(.) returned sets](https://github.com/Automunge/AutoMunge#automunge-returned-sets)
 * [automunge(.) passed arguments](https://github.com/Automunge/AutoMunge#automunge-passed-arguments)
-* [postmunge](https://github.com/Automunge/AutoMunge#postmunge)
+
+* [postmunge(.)](https://github.com/Automunge/AutoMunge#postmunge)
 * [postmunge(.) returned sets](https://github.com/Automunge/AutoMunge#postmunge-returned-sets)
 * [postmunge(.) passed arguments](https://github.com/Automunge/AutoMunge#postmunge-passed-arguments)
+
 * [Default Transformations](https://github.com/Automunge/AutoMunge#default-transformations)
 * [Library of Transformations](https://github.com/Automunge/AutoMunge#library-of-transformations)
 * [Custom Transformation Functions](https://github.com/Automunge/AutoMunge#custom-transformation-functions)
+
 * [Conclusion](https://github.com/Automunge/AutoMunge#conclusion)
 
 ## Introduction
