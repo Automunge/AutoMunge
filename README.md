@@ -803,6 +803,26 @@ ML_cmnd = {'MLinfill_type':'default', \
            
 #(note that currently unable to pass RF parameters to criterion and n_jobs)
 ```
+A user can also perform hyperparameter tuning of the parameters passed to the
+predictive algorithms by instead of passing distinct values passing lists or
+range of values. The hyperparameter tuning defaults to grid search for cases 
+where user passes parameters as lists or ranges, for example:
+```
+ML_cmnd = {'MLinfill_type':'default', \
+           'hyperparam_tuner':'gridCV', \
+           'MLinfill_cmnd':{'RandomForestClassifier':{'max_depth':range(4,6)}, \
+                            'RandomForestRegressor' :{'max_depth':[3,6,12]}}}
+```
+A user can also perform randomized search via ML_cmnd, and pass parameters as 
+distributions via scipy stats module such as:
+```
+ML_cmnd = {'MLinfill_type'    : 'default', \
+           'hyperparam_tuner' : 'randomCV', \
+           'randomCV_n_iter'  : 15, \
+           'MLinfill_cmnd':{'RandomForestClassifier':{'max_depth':stats.randint(3,6)}, \
+                            'RandomForestRegressor' :{'max_depth':[3,6,12]}}}
+```
+
 A user can also assign specific methods for PCA transforms. Current PCA_types
 supported include 'PCA', 'SparsePCA', and 'KernelPCA', all via Scikit-Learn.
 Note that the n_components are passed seperately with the PCAn_components 
@@ -830,7 +850,6 @@ boolean (0/1) columns from any PCA application by passing
 or exclude returned boolean and ordinal columns from PCA application by
 'PCA_cmnd':{'bool_ordl_PCAexcl':True}
 such as could potentially result in memory savings.
-
 
 * assigncat:
 
