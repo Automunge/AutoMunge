@@ -37,6 +37,13 @@ from scipy.stats import skew
 #imports for predictinfill, predictpostinfill, trainFSmodel
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import RandomizedSearchCV
+from sklearn.metrics import mean_squared_error
+# from sklearn.metrics import roc_auc_score
+from sklearn.metrics import accuracy_score
+#stats may be used for cases where user elects RandomSearchCV hyperparameter tuning
+# from scipy import stats
 
 #imports for shuffleaccuracy
 from sklearn.metrics import accuracy_score
@@ -14902,90 +14909,97 @@ class AutoMunge:
     function that assigns appropriate parameters based on defaults and user inputs
     and then initializes a RandomForestClassifier model
     '''
+    
+    #populate ML_cmnd if stuff not already present
+    if 'MLinfill_cmnd' not in ML_cmnd:
+      ML_cmnd.update({'MLinfill_cmnd':{}})
+    if 'RandomForestClassifier' not in ML_cmnd['MLinfill_cmnd']:
+      ML_cmnd['MLinfill_cmnd'].update({'RandomForestClassifier':{}})
+      
 
     #MLinfilldefaults['RandomForestClassifier']
-    if 'n_estimators' in ML_cmnd['MLinfill_cmnd']:
-      n_estimators = ML_cmnd['MLinfill_cmnd']['n_estimators']
+    if 'n_estimators' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
+      n_estimators = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['n_estimators']
     else:
       n_estimators = MLinfilldefaults['RandomForestClassifier']['n_estimators']
 
-    if 'criterion' in ML_cmnd['MLinfill_cmnd']:
-      criterion = ML_cmnd['MLinfill_cmnd']['criterion']
+    if 'criterion' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
+      criterion = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['criterion']
     else:
       criterion = MLinfilldefaults['RandomForestClassifier']['criterion']
 
-    if 'max_depth' in ML_cmnd['MLinfill_cmnd']:
-      max_depth = ML_cmnd['MLinfill_cmnd']['max_depth']
+    if 'max_depth' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
+      max_depth = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['max_depth']
     else:
       max_depth = MLinfilldefaults['RandomForestClassifier']['max_depth']
 
-    if 'min_samples_split' in ML_cmnd['MLinfill_cmnd']:
-      min_samples_split = ML_cmnd['MLinfill_cmnd']['min_samples_split']
+    if 'min_samples_split' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
+      min_samples_split = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['min_samples_split']
     else:
       min_samples_split = MLinfilldefaults['RandomForestClassifier']['min_samples_split']
 
-    if 'min_samples_leaf' in ML_cmnd['MLinfill_cmnd']:
-      min_samples_leaf = ML_cmnd['MLinfill_cmnd']['min_samples_leaf']
+    if 'min_samples_leaf' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
+      min_samples_leaf = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['min_samples_leaf']
     else:
       min_samples_leaf = MLinfilldefaults['RandomForestClassifier']['min_samples_leaf']
 
-    if 'min_weight_fraction_leaf' in ML_cmnd['MLinfill_cmnd']:
-      min_weight_fraction_leaf = ML_cmnd['MLinfill_cmnd']['min_weight_fraction_leaf']
+    if 'min_weight_fraction_leaf' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
+      min_weight_fraction_leaf = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['min_weight_fraction_leaf']
     else:
       min_weight_fraction_leaf = MLinfilldefaults['RandomForestClassifier']['min_weight_fraction_leaf']
 
-    if 'max_features' in ML_cmnd['MLinfill_cmnd']:
-      max_features = ML_cmnd['MLinfill_cmnd']['max_features']
+    if 'max_features' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
+      max_features = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['max_features']
     else:
       max_features = MLinfilldefaults['RandomForestClassifier']['max_features']
 
-    if 'max_leaf_nodes' in ML_cmnd['MLinfill_cmnd']:
-      max_leaf_nodes = ML_cmnd['MLinfill_cmnd']['max_leaf_nodes']
+    if 'max_leaf_nodes' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
+      max_leaf_nodes = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['max_leaf_nodes']
     else:
       max_leaf_nodes = MLinfilldefaults['RandomForestClassifier']['max_leaf_nodes']
 
-    if 'min_impurity_decrease' in ML_cmnd['MLinfill_cmnd']:
-      min_impurity_decrease = ML_cmnd['MLinfill_cmnd']['min_impurity_decrease']
+    if 'min_impurity_decrease' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
+      min_impurity_decrease = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['min_impurity_decrease']
     else:
       min_impurity_decrease = MLinfilldefaults['RandomForestClassifier']['min_impurity_decrease']
 
-    if 'min_impurity_split' in ML_cmnd['MLinfill_cmnd']:
-      min_impurity_split = ML_cmnd['MLinfill_cmnd']['min_impurity_split']
+    if 'min_impurity_split' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
+      min_impurity_split = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['min_impurity_split']
     else:
       min_impurity_split = MLinfilldefaults['RandomForestClassifier']['min_impurity_split']
 
-    if 'bootstrap' in ML_cmnd['MLinfill_cmnd']:
-      bootstrap = ML_cmnd['MLinfill_cmnd']['bootstrap']
+    if 'bootstrap' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
+      bootstrap = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['bootstrap']
     else:
       bootstrap = MLinfilldefaults['RandomForestClassifier']['bootstrap']
 
-    if 'oob_score' in ML_cmnd['MLinfill_cmnd']:
-      oob_score = ML_cmnd['MLinfill_cmnd']['oob_score']
+    if 'oob_score' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
+      oob_score = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['oob_score']
     else:
       oob_score = MLinfilldefaults['RandomForestClassifier']['oob_score']
 
-    if 'n_jobs' in ML_cmnd['MLinfill_cmnd']:
-      n_jobs = ML_cmnd['MLinfill_cmnd']['n_jobs']
+    if 'n_jobs' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
+      n_jobs = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['n_jobs']
     else:
       n_jobs = MLinfilldefaults['RandomForestClassifier']['n_jobs']
 
-    if 'random_state' in ML_cmnd['MLinfill_cmnd']:
-      random_state = ML_cmnd['MLinfill_cmnd']['random_state']
+    if 'random_state' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
+      random_state = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['random_state']
     else:
       random_state = MLinfilldefaults['RandomForestClassifier']['random_state']
 
-    if 'verbose' in ML_cmnd['MLinfill_cmnd']:
-      verbose = ML_cmnd['MLinfill_cmnd']['verbose']
+    if 'verbose' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
+      verbose = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['verbose']
     else:
       verbose = MLinfilldefaults['RandomForestClassifier']['verbose']
 
-    if 'warm_start' in ML_cmnd['MLinfill_cmnd']:
-      warm_start = ML_cmnd['MLinfill_cmnd']['warm_start']
+    if 'warm_start' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
+      warm_start = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['warm_start']
     else:
       warm_start = MLinfilldefaults['RandomForestClassifier']['warm_start']
 
-    if 'class_weight' in ML_cmnd['MLinfill_cmnd']:
-      class_weight = ML_cmnd['MLinfill_cmnd']['class_weight']
+    if 'class_weight' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
+      class_weight = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['class_weight']
     else:
       class_weight = MLinfilldefaults['RandomForestClassifier']['class_weight']
 
@@ -15018,85 +15032,92 @@ class AutoMunge:
     function that assigns appropriate parameters based on defaults and user inputs
     and then initializes a RandomForestRegressor model
     '''
+    
+    #populate ML_cmnd if stuff not already present
+    if 'MLinfill_cmnd' not in ML_cmnd:
+      ML_cmnd.update({'MLinfill_cmnd':{}})
+    if 'RandomForestRegressor' not in ML_cmnd['MLinfill_cmnd']:
+      ML_cmnd['MLinfill_cmnd'].update({'RandomForestRegressor':{}})
+      
 
     #MLinfilldefaults['RandomForestRegressor']
-    if 'n_estimators' in ML_cmnd['MLinfill_cmnd']:
-      n_estimators = ML_cmnd['MLinfill_cmnd']['n_estimators']
+    if 'n_estimators' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
+      n_estimators = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['n_estimators']
     else:
       n_estimators = MLinfilldefaults['RandomForestRegressor']['n_estimators']
 
-    if 'criterion' in ML_cmnd['MLinfill_cmnd']:
-      criterion = ML_cmnd['MLinfill_cmnd']['criterion']
+    if 'criterion' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
+      criterion = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['criterion']
     else:
       criterion = MLinfilldefaults['RandomForestRegressor']['criterion']
 
-    if 'max_depth' in ML_cmnd['MLinfill_cmnd']:
-      max_depth = ML_cmnd['MLinfill_cmnd']['max_depth']
+    if 'max_depth' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
+      max_depth = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['max_depth']
     else:
       max_depth = MLinfilldefaults['RandomForestRegressor']['max_depth']
 
-    if 'min_samples_split' in ML_cmnd['MLinfill_cmnd']:
-      min_samples_split = ML_cmnd['MLinfill_cmnd']['min_samples_split']
+    if 'min_samples_split' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
+      min_samples_split = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['min_samples_split']
     else:
       min_samples_split = MLinfilldefaults['RandomForestRegressor']['min_samples_split']
 
-    if 'min_samples_leaf' in ML_cmnd['MLinfill_cmnd']:
-      min_samples_leaf = ML_cmnd['MLinfill_cmnd']['min_samples_leaf']
+    if 'min_samples_leaf' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
+      min_samples_leaf = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['min_samples_leaf']
     else:
       min_samples_leaf = MLinfilldefaults['RandomForestRegressor']['min_samples_leaf']
 
-    if 'min_weight_fraction_leaf' in ML_cmnd['MLinfill_cmnd']:
-      min_weight_fraction_leaf = ML_cmnd['MLinfill_cmnd']['min_weight_fraction_leaf']
+    if 'min_weight_fraction_leaf' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
+      min_weight_fraction_leaf = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['min_weight_fraction_leaf']
     else:
       min_weight_fraction_leaf = MLinfilldefaults['RandomForestRegressor']['min_weight_fraction_leaf']
 
-    if 'max_features' in ML_cmnd['MLinfill_cmnd']:
-      max_features = ML_cmnd['MLinfill_cmnd']['max_features']
+    if 'max_features' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
+      max_features = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['max_features']
     else:
       max_features = MLinfilldefaults['RandomForestRegressor']['max_features']
 
-    if 'max_leaf_nodes' in ML_cmnd['MLinfill_cmnd']:
-      max_leaf_nodes = ML_cmnd['MLinfill_cmnd']['max_leaf_nodes']
+    if 'max_leaf_nodes' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
+      max_leaf_nodes = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['max_leaf_nodes']
     else:
       max_leaf_nodes = MLinfilldefaults['RandomForestRegressor']['max_leaf_nodes']
 
-    if 'min_impurity_decrease' in ML_cmnd['MLinfill_cmnd']:
-      min_impurity_decrease = ML_cmnd['MLinfill_cmnd']['min_impurity_decrease']
+    if 'min_impurity_decrease' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
+      min_impurity_decrease = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['min_impurity_decrease']
     else:
       min_impurity_decrease = MLinfilldefaults['RandomForestRegressor']['min_impurity_decrease']
 
-    if 'min_impurity_split' in ML_cmnd['MLinfill_cmnd']:
-      min_impurity_split = ML_cmnd['MLinfill_cmnd']['min_impurity_split']
+    if 'min_impurity_split' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
+      min_impurity_split = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['min_impurity_split']
     else:
       min_impurity_split = MLinfilldefaults['RandomForestRegressor']['min_impurity_split']
 
-    if 'bootstrap' in ML_cmnd['MLinfill_cmnd']:
-      bootstrap = ML_cmnd['MLinfill_cmnd']['bootstrap']
+    if 'bootstrap' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
+      bootstrap = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['bootstrap']
     else:
       bootstrap = MLinfilldefaults['RandomForestRegressor']['bootstrap']
 
-    if 'oob_score' in ML_cmnd['MLinfill_cmnd']:
-      oob_score = ML_cmnd['MLinfill_cmnd']['oob_score']
+    if 'oob_score' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
+      oob_score = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['oob_score']
     else:
       oob_score = MLinfilldefaults['RandomForestRegressor']['oob_score']
 
-    if 'n_jobs' in ML_cmnd['MLinfill_cmnd']:
-      n_jobs = ML_cmnd['MLinfill_cmnd']['n_jobs']
+    if 'n_jobs' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
+      n_jobs = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['n_jobs']
     else:
       n_jobs = MLinfilldefaults['RandomForestClassifier']['n_jobs']
 
-    if 'random_state' in ML_cmnd['MLinfill_cmnd']:
-      random_state = ML_cmnd['MLinfill_cmnd']['random_state']
+    if 'random_state' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
+      random_state = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['random_state']
     else:
       random_state = MLinfilldefaults['RandomForestRegressor']['random_state']
 
-    if 'verbose' in ML_cmnd['MLinfill_cmnd']:
-      verbose = ML_cmnd['MLinfill_cmnd']['verbose']
+    if 'verbose' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
+      verbose = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['verbose']
     else:
       verbose = MLinfilldefaults['RandomForestRegressor']['verbose']
 
-    if 'warm_start' in ML_cmnd['MLinfill_cmnd']:
-      warm_start = ML_cmnd['MLinfill_cmnd']['warm_start']
+    if 'warm_start' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
+      warm_start = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['warm_start']
     else:
       warm_start = MLinfilldefaults['RandomForestRegressor']['warm_start']
 
@@ -15121,6 +15142,93 @@ class AutoMunge:
                                   warm_start = warm_start)
 
     return model
+  
+  def inspect_ML_cmnd(self, ML_cmnd, MLinfill_type, MLinfill_alg):
+    """
+    #Inspects ML_cmnd to determine if any of the parameters passed
+    #for regressor or classifier are passed as lists instead of distinct
+    #values, in which case they will be evaluated via grid search
+    #or in a future extension random search or other hyperparameter tuning methods
+    
+    #takes as input user-passed ML_cmnd, returns tune_marker
+    #where tune_marker = True indicates sets were passed, else False
+    
+    #MLinfill_type refers to type of predcitive algorithm applied,
+    #currently only support for scikit Random Forest via 'default'
+    #intent is to build in additional options
+    
+    #MLinfill_alg refers to the target algorithm for passed parameters
+    #currently supports 'RandomForestRegressor' & 'RandomForestClassifier'
+    """
+    
+    #initialize tune_marker to default
+    tune_marker = False
+    
+    if MLinfill_type == 'default':
+    
+      if 'MLinfill_cmnd' in ML_cmnd:
+
+        if MLinfill_alg in ML_cmnd['MLinfill_cmnd']:
+
+          for key in ML_cmnd['MLinfill_cmnd'][MLinfill_alg]:
+
+            #if passed parameter is a set
+            if type(ML_cmnd['MLinfill_cmnd'][MLinfill_alg][key]) \
+            in [type([1]), type(range(1)), type(stats.expon(1))]:
+
+              tune_marker = True
+    
+            
+    return tune_marker
+  
+  
+  def assemble_param_sets(self, ML_cmnd, MLinfill_type, MLinfill_alg):
+    """
+    #assembles ML_cmnd passed parameters into two sets
+    #for hyoeroparameter tuning operation
+    
+    #those parameters that were passed as sets 
+    #will be saved in tune_params dictionary
+    
+    #those parameters that were otherwise passed
+    #will be saved in static_params dictionary
+    
+    #returns those two dictionaries tune_params & static_params
+    
+    #MLinfill_type refers to type of predcitive algorithm applied,
+    #currently only support for scikit Random Forest via 'default'
+    #intent is to build in additional options
+    
+    #MLinfill_alg refers to the target algorithm for passed parameters
+    #currently supports 'RandomForestRegressor' & 'RandomForestClassifier'
+    """
+    
+    #initialize returned dictionaries
+    static_params = {}
+    tune_params = {}
+    
+    if MLinfill_type == 'default':
+      
+      if 'MLinfill_cmnd' in ML_cmnd:
+        
+        if MLinfill_alg in ML_cmnd['MLinfill_cmnd']:
+          
+          for key in ML_cmnd['MLinfill_cmnd'][MLinfill_alg]:
+            
+            #if passed parameter is a set
+            if type(ML_cmnd['MLinfill_cmnd'][MLinfill_alg][key]) \
+            in [type([1]), type(range(1)), type(stats.expon(1))]:
+              
+              #add set to tune_params which will be targeted for grid search
+              tune_params.update({key : ML_cmnd['MLinfill_cmnd'][MLinfill_alg][key]})
+              
+            else:
+              
+              #else add to static_params which will overwrite defaults
+              static_params.update({key : ML_cmnd['MLinfill_cmnd'][MLinfill_alg][key]})
+        
+        
+    return static_params, tune_params
 
 
   def predictinfill(self, category, df_train_filltrain, df_train_filllabel, \
@@ -15147,8 +15255,30 @@ class AutoMunge:
     #initialize ML_cmnd
     #ML_cmnd = postprocess_dict['ML_cmnd']
     ML_cmnd = ML_cmnd
-
     
+    #currenlty we only have support for MLinfill_type of 'default'
+    #this is what tell's us to use scikit Random Forest Regressor / Classifier
+    #let's make sure it's populated in ML_cmnd if set was passed as empty
+    if 'MLinfill_type' not in ML_cmnd:
+      ML_cmnd.update({'MLinfill_type' : 'default'})
+      
+    #currenlty we only have support for hyperparam_tuner of 'grid'
+    #this is what tell's us to use scikit gridsearchCV
+    #let's make sure it's populated in ML_cmnd if set was passed as empty
+    if 'hyperparam_tuner' not in ML_cmnd:
+      ML_cmnd.update({'hyperparam_tuner' : 'gridCV'})
+    
+    #new hyperparameter tuning support for RandomSearchCV
+    #if user passes ML_cmnd['hyperparam_tuner'] = 'randomCV'
+    #a user may assign number of iterations via ML_cmnd['randomCV_n_iter']
+    #otherwise defaults to randomCV_n_iter = 10
+    if ML_cmnd['hyperparam_tuner'] == 'randomCV':
+      if 'randomCV_n_iter' not in ML_cmnd:
+        ML_cmnd.update({'randomCV_n_iter' : 10})
+      randomCV_n_iter = ML_cmnd['randomCV_n_iter']
+
+    #this is a different MLinfilltype, specific to the category's process_dict entry
+    #check out the assembleprocessdict fucntion definition notes for the potential values
     MLinfilltype = postprocess_dict['process_dict'][category]['MLinfilltype']
     
     #convert dataframes to numpy arrays
@@ -15163,19 +15293,6 @@ class AutoMunge:
       #if a numerical set
       #if category in ['nmbr', 'nbr2', 'bxcx']:
       if MLinfilltype in ['numeric']:
-
-        #this is to address a weird error message suggesting I reshape the y with ravel()
-        np_train_filllabel = np.ravel(np_train_filllabel)
-
-        #train linear regression model using scikit-learn for numerical prediction
-        #model = LinearRegression()
-        #model = PassiveAggressiveRegressor(random_state = randomseed)
-        #model = Ridge(random_state = randomseed)
-        #model = RidgeCV()
-        #note that SVR doesn't have an argument for random_state
-        #model = SVR()
-        #model = RandomForestRegressor(n_estimators=100, random_state = randomseed, verbose=0)
-        model = self.initRandomForestRegressor(ML_cmnd, MLinfilldefaults)
         
         if np_train_filltrain.shape[0] == 0:
           np_traininfill = np.zeros(shape=(1,len(columnslist)))
@@ -15184,6 +15301,104 @@ class AutoMunge:
           model = False
           
         else:
+
+          #this is to address a not weird error message suggesting I reshape the y with ravel()
+          np_train_filllabel = np.ravel(np_train_filllabel)
+          
+          #currently this only supports MLinfill_type of 'default'
+          if 'MLinfill_type' in ML_cmnd:
+            MLinfill_type = ML_cmnd['MLinfill_type']
+            
+          if 'hyperparam_tuner' in ML_cmnd:
+            MLinfill_tuner = ML_cmnd['hyperparam_tuner']
+          
+          if MLinfill_type == 'default':
+            #'numeric' MLinfilltype uses regressor
+            MLinfill_alg = 'RandomForestRegressor'
+          else:
+            #future extension for other options
+            MLinfill_alg = 'RandomForestRegressor'
+            
+          
+          
+          #tune marker tells us if user passed some parameters as a list for hyperparameter tuning
+          tune_marker = self.inspect_ML_cmnd(ML_cmnd, MLinfill_type, MLinfill_alg)
+          
+          if tune_marker is True:
+            
+            #static_params are user passed parameters that won't be tuned, 
+            #tune_params are user passed params (passed as list or range) that will be tuned
+            static_params, tune_params = self.assemble_param_sets(ML_cmnd, MLinfill_type, MLinfill_alg)
+            
+            #we'll create a temp ML_cmnd to initialize a tuning model
+            temp_ML_cmnd = {'MLinfill_cmnd':{MLinfill_alg : static_params}}
+            
+            #then we'll initialize a tuning model
+            #note that this populates the parameters to be tuned with defaults
+            #my understanding is that scikit gridsearch still allows tuning for parameters
+            #that were previously initialized in the model
+            if MLinfill_alg == 'RandomForestRegressor':
+              tuning_model = self.initRandomForestRegressor(temp_ML_cmnd, MLinfilldefaults)
+            else:
+              #future extension
+              print("error: MLinfill_type currently only supports 'default'.")
+              tuning_model = False
+            
+            #for now we'll default to grid scoring of ‘neg_mean_squared_error’
+            #I'm not positive this is the best default choice for regressor, 
+            #seem to remember seeing this used somewher
+            #worth some further research
+            grid_scoring = 'neg_mean_squared_error'
+            
+            #now we'll initialize a grid search
+            if MLinfill_tuner == 'gridCV':
+              tune_search = GridSearchCV(tuning_model, cv=5, iid='deprecated', \
+                                         param_grid = tune_params, scoring = grid_scoring)
+            elif MLinfill_tuner == 'randomCV':
+              tune_search = RandomizedSearchCV(tuning_model, cv=5, iid='deprecated', \
+                                           param_distributions = tune_params, scoring = grid_scoring, \
+                                           n_iter = randomCV_n_iter)
+            else:
+              print("error: hyperparam_tuner currently only supports 'gridCV' or 'randomCV'.")
+              
+              
+            #now we'll run a fit on the grid search
+            #for now won't pass any fit parameters
+            fit_params = {}
+            tune_search.fit(np_train_filltrain, np_train_filllabel, **fit_params)
+            
+            #acess the tuned parameters based on the tuning operation
+            tuned_params = tune_search.best_params_
+            
+            if postprocess_dict['printstatus'] is True:
+              
+              #print("")
+              print("tuned parameters:")
+              print(tuned_params)
+              print("")
+            
+            #now assemble final static params by incorporating the tuned params
+            static_params.update(tuned_params)
+            
+            #now initialize our tuned model
+            #first create another temp_ML_cmnd for the tuned set
+            temp_ML_cmnd_two = {'MLinfill_cmnd':{MLinfill_alg : static_params}}
+            
+            model = self.initRandomForestRegressor(temp_ML_cmnd_two, MLinfilldefaults)
+
+            
+          else:
+
+            #train linear regression model using scikit-learn for numerical prediction
+            #model = LinearRegression()
+            #model = PassiveAggressiveRegressor(random_state = randomseed)
+            #model = Ridge(random_state = randomseed)
+            #model = RidgeCV()
+            #note that SVR doesn't have an argument for random_state
+            #model = SVR()
+            #model = RandomForestRegressor(n_estimators=100, random_state = randomseed, verbose=0)
+            model = self.initRandomForestRegressor(ML_cmnd, MLinfilldefaults)
+
 
           model.fit(np_train_filltrain, np_train_filllabel)    
 
@@ -15230,18 +15445,7 @@ class AutoMunge:
 
       #if category == 'bnry':
       if MLinfilltype in ['singlct']:
-
-        #this is to address a weird error message suggesting I reshape the y with ravel()
-        np_train_filllabel = np.ravel(np_train_filllabel)
-
-        #train logistic regression model using scikit-learn for binary classifier
-        #model = LogisticRegression()
-        #model = LogisticRegression(random_state = randomseed)
-        #model = SGDClassifier(random_state = randomseed)
-        #model = SVC(random_state = randomseed)
-        #model = RandomForestClassifier(n_estimators=100, random_state = randomseed, verbose=0)
-        model = self.initRandomForestClassifier(ML_cmnd, MLinfilldefaults)
-        
+      
         if np_train_filltrain.shape[0] == 0:
           np_traininfill = np.zeros(shape=(1,len(columnslist)))
           np_testinfill = np.zeros(shape=(1,len(columnslist)))
@@ -15249,8 +15453,109 @@ class AutoMunge:
           model = False
           
         else:
+          
+          #this is to address a not weird error message suggesting I reshape the y with ravel()
+          np_train_filllabel = np.ravel(np_train_filllabel)
+          
+          #currently this only supports MLinfill_type of 'default'
+          if 'MLinfill_type' in ML_cmnd:
+            MLinfill_type = ML_cmnd['MLinfill_type']
+            
+          if 'hyperparam_tuner' in ML_cmnd:
+            MLinfill_tuner = ML_cmnd['hyperparam_tuner']
+          
+          if MLinfill_type == 'default':
+            #'numeric' MLinfilltype uses regressor
+            MLinfill_alg = 'RandomForestClassifier'
+          else:
+            #future extension for other options
+            MLinfill_alg = 'RandomForestClassifier'
+          
+          #tune marker tells us if user passed some parameters as a list for hyperparameter tuning
+          tune_marker = self.inspect_ML_cmnd(ML_cmnd, MLinfill_type, MLinfill_alg)
+          
+          if tune_marker is True:
+            
+            #static_params are user passed parameters that won't be tuned, 
+            #tune_params are user passed params (passed as list or range) that will be tuned
+            static_params, tune_params = self.assemble_param_sets(ML_cmnd, MLinfill_type, MLinfill_alg)
+            
+            #we'll create a temp ML_cmnd to initialize a tuning model
+            temp_ML_cmnd = {'MLinfill_cmnd':{MLinfill_alg : static_params}}
+            
+            #then we'll initialize a tuning model
+            #note that this populates the parameters to be tuned with defaults
+            #my understanding is that scikit gridsearch still allows tuning for parameters
+            #that were previously initialized in the model
+            if MLinfill_alg == 'RandomForestClassifier':
+              tuning_model = self.initRandomForestClassifier(temp_ML_cmnd, MLinfilldefaults)
+            else:
+              #future extension
+              tuning_model = False
+              
+            #for now we'll default to grid scoring of ‘roc_auc’
+            #I'm not positive this is the best default choice for classifier, 
+            #seem to remember seeing this used somewher
+            #worth some further research
+            #grid_scoring = 'roc_auc'
+            #on second thought I think accuracy more generalizable for edge cases
+            grid_scoring = 'accuracy'
+            
+            #now we'll initialize a grid search
+            if MLinfill_tuner == 'gridCV':
+              tune_search = GridSearchCV(tuning_model, cv=5, iid='deprecated', \
+                                         param_grid = tune_params, scoring = grid_scoring)
+            elif MLinfill_tuner == 'randomCV':
+              tune_search = RandomizedSearchCV(tuning_model, cv=5, iid='deprecated', \
+                                           param_distributions = tune_params, scoring = grid_scoring, \
+                                           n_iter = randomCV_n_iter)
+            else:
+              print("error: hyperparam_tuner currently only supports 'gridCV' or 'randomCV'.")
+            
+            #now we'll run a fit on the grid search
+            #for now won't pass any fit parameters
+            fit_params = {}
+            tune_search.fit(np_train_filltrain, np_train_filllabel, **fit_params)
+            
+            #acess the tuned parameters based on the tuning operation
+            tuned_params = tune_search.best_params_
+            
+            if postprocess_dict['printstatus'] is True:
+              
+              #print("")
+              print("tuned parameters:")
+              print(tuned_params)
+              print("")
+              
+            #now assemble final static params by incorporating the tuned params
+            static_params.update(tuned_params)
+            
+            #now initialize our tuned model
+            #first create another temp_ML_cmnd for the tuned set
+            temp_ML_cmnd_two = {'MLinfill_cmnd':{MLinfill_alg : static_params}}
+            
+            if MLinfill_alg == 'RandomForestClassifier':
+              model = self.initRandomForestClassifier(temp_ML_cmnd_two, MLinfilldefaults)
+            else:
+              #future extension
+              model = False
+              
+          else:
 
-        
+            #train logistic regression model using scikit-learn for binary classifier
+            #model = LogisticRegression()
+            #model = LogisticRegression(random_state = randomseed)
+            #model = SGDClassifier(random_state = randomseed)
+            #model = SVC(random_state = randomseed)
+            #model = RandomForestClassifier(n_estimators=100, random_state = randomseed, verbose=0)
+            
+            if MLinfill_alg == 'RandomForestClassifier':
+              model = self.initRandomForestClassifier(ML_cmnd, MLinfilldefaults)
+            else:
+              #future extension
+              model = False
+            
+
           model.fit(np_train_filltrain, np_train_filllabel)
 
           #predict infill values
@@ -15272,13 +15577,15 @@ class AutoMunge:
 
       #if category in ['text', 'bins', 'bint']:
       if MLinfilltype in ['multirt', 'multisp']:
-        
-#         #troubleshoot
-#         print("np_train_filllabel before text fit")
-#         print("")
-#         print(np_train_filllabel)
-#         print("")
-
+      
+        if np_train_filltrain.shape[0] == 0:
+          np_traininfill = np.zeros(shape=(1,len(columnslist)))
+          np_testinfill = np.zeros(shape=(1,len(columnslist)))
+          
+          model = False
+          
+        else:
+          
 #         #FUTURE EXTENSION - Label Smoothing for ML infill
 #         if ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['LabelSmoothing'] >0.0 and
 #         ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['LabelSmoothing'] < 1.0 and
@@ -15290,69 +15597,147 @@ class AutoMunge:
 #           #but intended for numpy arrays, making use of fact that #columns = len(categorylist) for MLinfill
 #           np_traininfill = self.apply_LabelSmoothing_numpy(np_traininfill, epsilon)
 
-        #muiltirt sets as edge case may sometimes be returned with one column
-        if np_train_filllabel.shape[1] == 1:
-          np_train_filllabel = np.ravel(np_train_filllabel)
-
-        #train logistic regression model using scikit-learn for binary classifier
-        #with multi_class argument activated
-        #model = LogisticRegression()
-        #model = SGDClassifier(random_state = randomseed)
-        #model = SVC(random_state = randomseed)
-        #model = RandomForestClassifier(n_estimators=100, random_state = randomseed, verbose=0)
-        model = self.initRandomForestClassifier(ML_cmnd, MLinfilldefaults)
-        
-        if np_train_filltrain.shape[0] == 0:
-          np_traininfill = np.zeros(shape=(1,len(columnslist)))
-          np_testinfill = np.zeros(shape=(1,len(columnslist)))
           
-          model = False
+          #muiltirt sets as edge case may sometimes be returned with one column
+          if np_train_filllabel.shape[1] == 1:
+            np_train_filllabel = np.ravel(np_train_filllabel)
+            
+          #currently this only supports MLinfill_type of 'default'
+          if 'MLinfill_type' in ML_cmnd:
+            MLinfill_type = ML_cmnd['MLinfill_type']
+            
+          if 'hyperparam_tuner' in ML_cmnd:
+            MLinfill_tuner = ML_cmnd['hyperparam_tuner']
           
-        else:
+          if MLinfill_type == 'default':
+            #'numeric' MLinfilltype uses regressor
+            MLinfill_alg = 'RandomForestClassifier'
+          else:
+            #future extension for other options
+            MLinfill_alg = 'RandomForestClassifier'
+            
+            
+          #tune marker tells us if user passed some parameters as a list for hyperparameter tuning
+          tune_marker = self.inspect_ML_cmnd(ML_cmnd, MLinfill_type, MLinfill_alg)
+          
+          if tune_marker is True:
+            
+            #static_params are user passed parameters that won't be tuned, 
+            #tune_params are user passed params (passed as list or range) that will be tuned
+            static_params, tune_params = self.assemble_param_sets(ML_cmnd, MLinfill_type, MLinfill_alg)
+            
+            #we'll create a temp ML_cmnd to initialize a tuning model
+            temp_ML_cmnd = {'MLinfill_cmnd':{MLinfill_alg : static_params}}
+            
+            #then we'll initialize a tuning model
+            #note that this populates the parameters to be tuned with defaults
+            #my understanding is that scikit gridsearch still allows tuning for parameters
+            #that were previously initialized in the model
+            if MLinfill_alg == 'RandomForestClassifier':
+              tuning_model = self.initRandomForestClassifier(temp_ML_cmnd, MLinfilldefaults)
+            else:
+              #future extension
+              tuning_model = False
+              
+              
+            #for now we'll default to grid scoring of ‘roc_auc’
+            #I'm not positive this is the best default choice for classifier, 
+            #seem to remember seeing this used somewher
+            #worth some further research
+            #grid_scoring = 'roc_auc'
+            #on second thought I think accuracy more generalizable for edge cases
+            grid_scoring = 'accuracy'
 
-
+            
+            #now we'll initialize a grid search
+            if MLinfill_tuner == 'gridCV':
+              tune_search = GridSearchCV(tuning_model, cv=5, iid='deprecated', \
+                                         param_grid = tune_params, scoring = grid_scoring)
+            elif MLinfill_tuner == 'randomCV':
+              tune_search = RandomizedSearchCV(tuning_model, cv=5, iid='deprecated', \
+                                           param_distributions = tune_params, scoring = grid_scoring, \
+                                           n_iter = randomCV_n_iter)
+            else:
+              print("error: hyperparam_tuner currently only supports 'gridCV' or 'randomCV'.")
+              
+          
+            #now we'll run a fit on the grid search
+            #for now won't pass any fit parameters
+            fit_params = {}
+            tune_search.fit(np_train_filltrain, np_train_filllabel, **fit_params)
+            
+            #acess the tuned parameters based on the tuning operation
+            tuned_params = tune_search.best_params_
+            
+            if postprocess_dict['printstatus'] is True:
+              
+              #print("")
+              print("tuned parameters:")
+              print(tuned_params)
+              print("")
+              
+            #now assemble final static params by incorporating the tuned params
+            static_params.update(tuned_params)
+            
+            #now initialize our tuned model
+            #first create another temp_ML_cmnd for the tuned set
+            temp_ML_cmnd_two = {'MLinfill_cmnd':{MLinfill_alg : static_params}}
+            
+            if MLinfill_alg == 'RandomForestClassifier':
+              model = self.initRandomForestClassifier(temp_ML_cmnd_two, MLinfilldefaults)
+            else:
+              #future extension
+              model = False
+              
+          else:
+            
+            #train logistic regression model using scikit-learn for binary classifier
+            #model = LogisticRegression()
+            #model = LogisticRegression(random_state = randomseed)
+            #model = SGDClassifier(random_state = randomseed)
+            #model = SVC(random_state = randomseed)
+            #model = RandomForestClassifier(n_estimators=100, random_state = randomseed, verbose=0)
+            
+            if MLinfill_alg == 'RandomForestClassifier':
+              model = self.initRandomForestClassifier(ML_cmnd, MLinfilldefaults)
+            else:
+              #future extension
+              model = False
+              
+              
           model.fit(np_train_filltrain, np_train_filllabel)
-
-
+          
           #predict infill values
           np_traininfill = model.predict(np_train_fillfeatures)
-
-  #         #troubleshoot
-  #         print("np_traininfill after predict")
-  #         print("")
-  #         print(np_traininfill)
-  #         print("")
-
+          
           #only run following if we have any test rows needing infill
           if df_test_fillfeatures.shape[0] > 0:
             np_testinfill = model.predict(np_test_fillfeatures)
           else:
             #this needs to have same number of columns as text category
             np_testinfill = np.zeros(shape=(1,len(columnslist)))
-
-
+            
+          
         #convert infill values to dataframe
         df_traininfill = pd.DataFrame(np_traininfill, columns = columnslist)
         df_testinfill = pd.DataFrame(np_testinfill, columns = columnslist)
 
-
-  #       print('category is text, df_traininfill is')
-  #       print(df_traininfill)
   
+
       if MLinfilltype in ['1010']:
       
-#         #troubleshoot
-#         print("np_train_filllabel before convert to onehot")
-#         print("")
-#         print(np_train_filllabel)
-#         print("")
-
-        labelcolumncount = np_train_filllabel.shape[1]
-      
-        np_train_filllabel = \
-        self.convert_1010_to_onehot(np_train_filllabel)
-      
-      
+        if np_train_filltrain.shape[0] == 0:
+          np_traininfill = np.zeros(shape=(1,len(columnslist)))
+          np_testinfill = np.zeros(shape=(1,len(columnslist)))
+          
+          model = False
+          
+        else:
+          
+          #convert from binary to one-hot encoding
+          np_train_filllabel = \
+          self.convert_1010_to_onehot(np_train_filllabel)
+          
 #         #FUTURE EXTENSION - Label Smoothing for ML infill
 #         if ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['LabelSmoothing'] >0.0 and
 #         ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['LabelSmoothing'] < 1.0 and
@@ -15363,75 +15748,139 @@ class AutoMunge:
 #           #apply_LabelSmoothing_numpy will be comparable to apply_LabelSmoothing
 #           #but intended for numpy arrays, making use of fact that #columns = len(categorylist) for MLinfill
 #           np_traininfill = self.apply_LabelSmoothing_numpy(np_traininfill, epsilon)
-        
-#         #troubleshoot
-#         print("np_train_filllabel after convert to onehot")
-#         print("")
-#         print(np_train_filllabel)
-#         print("")
 
-        #train logistic regression model using scikit-learn for binary classifier
-        #with multi_class argument activated
-        #model = LogisticRegression()
-        #model = SGDClassifier(random_state = randomseed)
-        #model = SVC(random_state = randomseed)
-        #model = RandomForestClassifier(n_estimators=100, random_state = randomseed, verbose=0)
-        model = self.initRandomForestClassifier(ML_cmnd, MLinfilldefaults)
-        
-        if np_train_filltrain.shape[0] == 0:
-          np_traininfill = np.zeros(shape=(1,len(columnslist)))
-          np_testinfill = np.zeros(shape=(1,len(columnslist)))
           
-          model = False
+          #muiltirt sets as edge case may sometimes be returned with one column
+          if np_train_filllabel.shape[1] == 1:
+            np_train_filllabel = np.ravel(np_train_filllabel)
+            
+          #currently this only supports MLinfill_type of 'default'
+          if 'MLinfill_type' in ML_cmnd:
+            MLinfill_type = ML_cmnd['MLinfill_type']
+            
+          if 'hyperparam_tuner' in ML_cmnd:
+            MLinfill_tuner = ML_cmnd['hyperparam_tuner']
           
-        else:
+          if MLinfill_type == 'default':
+            #'numeric' MLinfilltype uses regressor
+            MLinfill_alg = 'RandomForestClassifier'
+          else:
+            #future extension for other options
+            MLinfill_alg = 'RandomForestClassifier'
+            
+            
+          #tune marker tells us if user passed some parameters as a list for hyperparameter tuning
+          tune_marker = self.inspect_ML_cmnd(ML_cmnd, MLinfill_type, MLinfill_alg)
+          
+          if tune_marker is True:
+            
+            #static_params are user passed parameters that won't be tuned, 
+            #tune_params are user passed params (passed as list or range) that will be tuned
+            static_params, tune_params = self.assemble_param_sets(ML_cmnd, MLinfill_type, MLinfill_alg)
+            
+            #we'll create a temp ML_cmnd to initialize a tuning model
+            temp_ML_cmnd = {'MLinfill_cmnd':{MLinfill_alg : static_params}}
+            
+            #then we'll initialize a tuning model
+            #note that this populates the parameters to be tuned with defaults
+            #my understanding is that scikit gridsearch still allows tuning for parameters
+            #that were previously initialized in the model
+            if MLinfill_alg == 'RandomForestClassifier':
+              tuning_model = self.initRandomForestClassifier(temp_ML_cmnd, MLinfilldefaults)
+            else:
+              #future extension
+              tuning_model = False
+              
+              
+            #for now we'll default to grid scoring of ‘roc_auc’
+            #I'm not positive this is the best default choice for classifier, 
+            #seem to remember seeing this used somewher
+            #worth some further research
+            #grid_scoring = 'roc_auc'
+            #on second thought I think accuracy more generalizable for edge cases
+            grid_scoring = 'accuracy'
 
-
+            
+            #now we'll initialize a grid search
+            if MLinfill_tuner == 'gridCV':
+              tune_search = GridSearchCV(tuning_model, cv=5, iid='deprecated', \
+                                         param_grid = tune_params, scoring = grid_scoring)
+            elif MLinfill_tuner == 'randomCV':
+              tune_search = RandomizedSearchCV(tuning_model, cv=5, iid='deprecated', \
+                                           param_distributions = tune_params, scoring = grid_scoring, \
+                                           n_iter = randomCV_n_iter)
+            else:
+              print("error: hyperparam_tuner currently only supports 'gridCV' or 'randomCV'.")
+          
+            #now we'll run a fit on the grid search
+            #for now won't pass any fit parameters
+            fit_params = {}
+            tune_search.fit(np_train_filltrain, np_train_filllabel, **fit_params)
+            
+            #acess the tuned parameters based on the tuning operation
+            tuned_params = tune_search.best_params_
+            
+            if postprocess_dict['printstatus'] is True:
+              
+              #print("")
+              print("tuned parameters:")
+              print(tuned_params)
+              print("")
+              
+            #now assemble final static params by incorporating the tuned params
+            static_params.update(tuned_params)
+            
+            #now initialize our tuned model
+            #first create another temp_ML_cmnd for the tuned set
+            temp_ML_cmnd_two = {'MLinfill_cmnd':{MLinfill_alg : static_params}}
+            
+            if MLinfill_alg == 'RandomForestClassifier':
+              model = self.initRandomForestClassifier(temp_ML_cmnd_two, MLinfilldefaults)
+            else:
+              #future extension
+              model = False
+              
+          else:
+            
+            #train logistic regression model using scikit-learn for binary classifier
+            #model = LogisticRegression()
+            #model = LogisticRegression(random_state = randomseed)
+            #model = SGDClassifier(random_state = randomseed)
+            #model = SVC(random_state = randomseed)
+            #model = RandomForestClassifier(n_estimators=100, random_state = randomseed, verbose=0)
+            
+            if MLinfill_alg == 'RandomForestClassifier':
+              model = self.initRandomForestClassifier(ML_cmnd, MLinfilldefaults)
+            else:
+              #future extension
+              model = False
+              
+              
           model.fit(np_train_filltrain, np_train_filllabel)
-
-
+          
           #predict infill values
           np_traininfill = model.predict(np_train_fillfeatures)
-
-  #         #troubleshoot
-  #         print("np_traininfill before convert to 1010")
-  #         print("")
-  #         print(np_traininfill)
-  #         print("")
-
-  #         #if not all zeros (edge case)
-  #         if np_traininfill.any():
-
+          
+          #convert from one-hot to binary encoding
           np_traininfill = \
           self.convert_onehot_to_1010(np_traininfill)
-
-  #         else:
-
-  #           np_traininfill = \
-  #           np.zeros((np_traininfill.shape[0], labelcolumncount))
-
-  #         #troubleshoot
-  #         print("np_traininfill after convert to 1010")
-  #         print("")
-  #         print(np_traininfill)
-  #         print("")
-
+          
           #only run following if we have any test rows needing infill
           if df_test_fillfeatures.shape[0] > 0:
             np_testinfill = model.predict(np_test_fillfeatures)
-
+            
             np_testinfill = \
             self.convert_onehot_to_1010(np_testinfill)
-
+            
           else:
             #this needs to have same number of columns as text category
             np_testinfill = np.zeros(shape=(1,len(columnslist)))
-
-
+            
+          
         #convert infill values to dataframe
         df_traininfill = pd.DataFrame(np_traininfill, columns = columnslist)
         df_testinfill = pd.DataFrame(np_testinfill, columns = columnslist)
-        
+      
         
 
       #if category in ['date', 'NArw', 'null']:
@@ -15470,10 +15919,6 @@ class AutoMunge:
     
     
     return df_traininfill, df_testinfill, model
-
-
-
-
 
 
   def createMLinfillsets(self, df_train, df_test, column, trainNArows, testNArows, \
@@ -19686,7 +20131,8 @@ class AutoMunge:
     #column post processing, and will contain a column specific and category \
     #specific (i.e. nmbr, bnry, text, date) set of variable.
     postprocess_dict = {'column_dict' : {}, 'origcolumn' : {}, \
-                        'process_dict' : process_dict}
+                        'process_dict' : process_dict, \
+                        'printstatus' : printstatus}
     
     
     #create empty dictionary to serve as store for drift metrics
@@ -20739,7 +21185,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.16'
+    automungeversion = '3.17'
     application_number = random.randint(100000000000,999999999999)
     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
