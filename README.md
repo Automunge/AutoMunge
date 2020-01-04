@@ -1115,7 +1115,7 @@ the built in sets in the library.
 
 ...
 
-# postmunge
+# postmunge(.)
 
 The postmunge(.) function is intended to consistently process subsequently available
 and consistently formatted test data with just a single function call. It requires 
