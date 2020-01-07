@@ -1424,19 +1424,36 @@ am.automunge(df_train, \
 
 ## Library of Transformations
 
+### Library of Transformations Subheadings:
+* Intro
+* Numerical Set Normalizations
+* Numerical Set Transformations
+* Numercial Set Bins and Grainings
+* Sequential Numerical Set Transformations
+* Categorical Set Encodings
+* Date-Time Data Normalizations
+* Date-Time Data Bins
+* Misc. Functions
+* String Parsing
+* More Efficient String Parsing
+* Multi-tier String Parsing
+* Root Category Family Tree Definitions
+ ___ 
+### Intro
 Automunge has a built in library of transformations that can be passed for
 specific columns with assigncat. (A column if left unassigned will defer to
 the automated default methods to evaluate properties of the data to infer 
 appropriate methods of numerical encoding.)  For example, a user can pass a 
-min-max scaling method to a specific column 'col1' with: 
+min-max scaling method to a list of specific columns with headers 'column1',
+'column2' with: 
 ```
-assigncat = {'mnmx':['col1']}
+assigncat = {'mnmx':['column1', 'column2']}
 ```
 When a user assigns a column to a specific category, that category is treated
 as the root category for the tree of transformations. Each key has an 
-associated transformation function, and that transformation function is only
-applied if the root key is also found in the tree of family primitives. The
-tree of family primitives, as introduced earlier, applies first the keys found 
+associated transformation function (where the root category transformation function 
+is only applied if the root key is also found in the tree of family primitives). 
+The tree of family primitives, as introduced earlier, applies first the keys found 
 in upstream primitives i.e. parents/siblings/auntsuncles/cousins. If a transform 
 is applied for a primitive that includes downstream offspring, such as parents/
 siblings, then the family tree for that key with offspring is inspected to determine
@@ -1444,12 +1461,7 @@ downstream offspring categories, for example if we have a parents key of 'mnmx',
 then any children/niecesnephews/coworkers/friends in the 'mnmx' family tree will
 be applied as parents/siblings/auntsuncles/cousins, respectively. Note that the
 designation for supplements/replaces refers purely to the question of whether the
-column to which the transform is being applied is kept in place or removed. Please
-note that it is a quirck of the function that no original column can be left in 
-place without the application of some transformation such as to allow the building
-of the apppropriate data structures, thus at least one replacement primitive must
-always be included. If a user does wish to leave a column in place unaltered, they 
-can simply assign that column to the 'excl' root category.
+column to which the transform is being applied is kept in place or removed.
 
 Now we'll start here by listing again the family tree primitives for those root 
 categories built into the automunge library. After that we'll give a quick 
@@ -1483,8 +1495,8 @@ downstream cousins / offspring generations / supplements column / no offspring
 ```
 
 Here is a quick description of the transformation functions associated 
-with each key which can be assigned to a primitive (and not just used as 
-a root key). We're continuing to build out this library of transformations.
+with each key which can either be assigned to a family tree primitive (or used 
+as a root key). We're continuing to build out this library of transformations.
 
 Note the design philosophy is that any transform can be applied to any type 
 of data and if the data is not suited (such as applying a numeric transform
@@ -1493,6 +1505,7 @@ default infill refers to the infill applied under 'standardinfill'. Note the
 default NArowtype refers to the categories of data that won't be subject to 
 infill.
 
+### Numerical Set Normalizations
 * nmbr/nbr2/nbr3/nmdx/nmd2/nmd3: z-score normalization
 (x - mean) / (standard deviation)
   - default infill: mean
@@ -1500,40 +1513,6 @@ infill.
   - suffix appender: '_nmbr'
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: mean / std / max / min
-* dxdt/d2dt/d3dt: rate of change (row value minus value in preceding row)
-  - default infill: adjacent cells
-  - default NArowtype: numeric
-  - suffix appender: '_dxdt'
-  - assignparam parameters accepted: 'periods' sets number of time steps offset to evaluate
-  defaults to 1
-  - driftreport postmunge metrics: (pending)
-* dxd2/d2d2/d3d2: denoised rate of change (average of last two rows minus average
-of preceding two rows)
-  - default infill: adjacent cells
-  - default NArowtype: numeric
-  - suffix appender: '_dxd2'
-  - assignparam parameters accepted: 'periods' sets number of time steps offset to evaluate
-  defaults to 2
-  - driftreport postmunge metrics: (pending)
-* MADn/MAD2: mean absolute deviation normalization, subtract set mean
-  - default infill: mean
-  - default NArowtype: numeric
-  - suffix appender: '_MADn'
-  - assignparam parameters accepted: none
-  - driftreport postmunge metrics: mean / MAD / maximum / minimum
-* MAD3: mean absolute deviation normalization, subtract set maximum
-  - default infill: mean
-  - default NArowtype: numeric
-  - suffix appender: '_MAD3'
-  - assignparam parameters accepted: none
-  - driftreport postmunge metrics: mean / MAD / datamax / maximum / minimum
-* mnmx/mnm2/mnm5/mmdx/mmd2/mmd3: vanilla min-max scaling
-(x - min) / (max - min)
-  - default infill: mean
-  - default NArowtype: numeric
-  - suffix appender: '_mnmx'
-  - assignparam parameters accepted: none
-  - driftreport postmunge metrics: minimum / maximum / mean / std
 * mean/mea2/mea3: mean normalization (like z-score in the numerator and min-max in the denominator)
 (x - mean) / (max - mean)
 Note this is what Andrew Ng suggested as default in his MOOC. My intuition says z-score has some 
@@ -1541,6 +1520,13 @@ benefits but really up to the user which they prefer.
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '_mean'
+  - assignparam parameters accepted: none
+  - driftreport postmunge metrics: minimum / maximum / mean / std
+* mnmx/mnm2/mnm5/mmdx/mmd2/mmd3: vanilla min-max scaling
+(x - min) / (max - min)
+  - default infill: mean
+  - default NArowtype: numeric
+  - suffix appender: '_mnmx'
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: minimum / maximum / mean / std
 * mnm3/mnm4: min-max scaling with outliers capped at 0.01 and 0.99 quantiles
@@ -1556,44 +1542,21 @@ test set returned values >= 0, such as might be useful for kernel PCA for instan
   - suffix appender: '_mnm6'
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: minimum / maximum / mean / std
-* bnry: converts sets with two values to boolean identifiers. Defaults to assiging
-1 to most common value and 0 to second most common, unless 1 or 0 is already included
-in most common of the set then defaults to maintaining those designations. If applied 
-to set with >2 entries applies infill to those entries beyond two most common. 
-  - default infill: most common value
-  - default NArowtype: justNaN
-  - suffix appender: '_bnry'
+* MADn/MAD2: mean absolute deviation normalization, subtract set mean 
+(x - mean) / (mean absolute deviation)
+  - default infill: mean
+  - default NArowtype: numeric
+  - suffix appender: '_MADn'
   - assignparam parameters accepted: none
-  - driftreport postmunge metrics: missing / 1 / 0 / extravalues / oneratio / zeroratio
-* text/txt2: converts categorical sets to one-hot encoded set of boolean identifiers
-  - default infill: all entries zero
-  - default NArowtype: justNaN
-  - suffix appender: '_(category)' where category is the target of the column
+  - driftreport postmunge metrics: mean / MAD / maximum / minimum
+* MAD3: mean absolute deviation normalization, subtract set maximum
+(x - maximum) / (mean absolute deviation)
+  - default infill: mean
+  - default NArowtype: numeric
+  - suffix appender: '_MAD3'
   - assignparam parameters accepted: none
-  - driftreport postmunge metrics: textlabelsdict / <column> + '_ratio' (column specific)
-* ordl/ord2: converts categorical sets to ordinally encoded set of integer identifiers
-  - default infill: plug value 'zzzinfill'
-  - default NArowtype: justNaN
-  - suffix appender: '_ordl'
-  - assignparam parameters accepted: none
-  - driftreport postmunge metrics: ordinal_dict / ordinal_overlap_replace / ordinal_activations_dict
-* ord3/ord4: converts categorical sets to ordinally encoded set of integer identifiers
-sorted by frequency of category occurance
-  - default infill: plug value 'zzzinfill'
-  - default NArowtype: justNaN
-  - suffix appender: '_ord3'
-  - assignparam parameters accepted: none
-  - driftreport postmunge metrics: ordinal_dict / ordinal_overlap_replace / ordinal_activations_dict
-* 1010: converts categorical sets of >2 unique values to binary encoding (more memory 
-efficent than one-hot encoding)
-  - default infill: plug value 'zzzinfill'
-  - default NArowtype: justNaN
-  - suffix appender: '_1010_#' where # is integer indicating order of 1010 columns
-  - assignparam parameters accepted: none
-  - driftreport postmunge metrics: _1010_binary_encoding_dict / _1010_overlap_replace / 
-	                           _1010_binary_column_count / _1010_activations_dict
-  (for example if 1010 encoded to three columns based on number of categories <8,
-  it would retuyrn three columns with suffix appenders 1010_1, 1010_2, 1010_3)
+  - driftreport postmunge metrics: mean / MAD / datamax / maximum / minimum
+### Numerical Set Transformations
 * bxcx/bxc2/bxc3/bxc4: performs Box-Cox power law transformation. Applies infill to values 
 <= 0. Note we currently have a test for overflow in returned results and if found set to 0.
   - default infill: mean
@@ -1613,6 +1576,7 @@ efficent than one-hot encoding)
   - suffix appender: '_sqrt'
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: meansqrt
+### Numercial Set Bins and Grainings
 * pwrs: bins groupings by powers of 10
   - default infill: mean (ie log(mean))
   - default NArowtype: positivenumeric
@@ -1697,6 +1661,72 @@ bin count defaults to 5/7/9 eg for bne0/bn7o/bn9o
   - assignparam parameters accepted: 'bincount' to set number of bins
   - driftreport postmunge metrics: binsmean / bn_min / bn_max / bn_delta / bn_count / bins_id / 
 			           bins_cuts / bincount / ordl_activations_dict
+### Sequential Numerical Set Transformations
+* dxdt/d2dt/d3dt: rate of change (row value minus value in preceding row)
+  - default infill: adjacent cells
+  - default NArowtype: numeric
+  - suffix appender: '_dxdt'
+  - assignparam parameters accepted: 'periods' sets number of time steps offset to evaluate
+  defaults to 1
+  - driftreport postmunge metrics: (pending)
+* dxd2/d2d2/d3d2: denoised rate of change (average of last two rows minus average
+of preceding two rows)
+  - default infill: adjacent cells
+  - default NArowtype: numeric
+  - suffix appender: '_dxd2'
+  - assignparam parameters accepted: 'periods' sets number of time steps offset to evaluate
+  defaults to 2
+  - driftreport postmunge metrics: (pending)
+### Categorical Set Encodings
+* bnry: converts sets with two values to boolean identifiers. Defaults to assiging
+1 to most common value and 0 to second most common, unless 1 or 0 is already included
+in most common of the set then defaults to maintaining those designations. If applied 
+to set with >2 entries applies infill to those entries beyond two most common. 
+  - default infill: most common value
+  - default NArowtype: justNaN
+  - suffix appender: '_bnry'
+  - assignparam parameters accepted: none
+  - driftreport postmunge metrics: missing / 1 / 0 / extravalues / oneratio / zeroratio
+* text/txt2: converts categorical sets to one-hot encoded set of boolean identifiers
+  - default infill: all entries zero
+  - default NArowtype: justNaN
+  - suffix appender: '_(category)' where category is the target of the column
+  - assignparam parameters accepted: none
+  - driftreport postmunge metrics: textlabelsdict / <column> + '_ratio' (column specific)
+* ordl/ord2: converts categorical sets to ordinally encoded set of integer identifiers
+  - default infill: plug value 'zzzinfill'
+  - default NArowtype: justNaN
+  - suffix appender: '_ordl'
+  - assignparam parameters accepted: none
+  - driftreport postmunge metrics: ordinal_dict / ordinal_overlap_replace / ordinal_activations_dict
+* ord3/ord4: converts categorical sets to ordinally encoded set of integer identifiers
+sorted by frequency of category occurance
+  - default infill: plug value 'zzzinfill'
+  - default NArowtype: justNaN
+  - suffix appender: '_ord3'
+  - assignparam parameters accepted: none
+  - driftreport postmunge metrics: ordinal_dict / ordinal_overlap_replace / ordinal_activations_dict
+* 1010: converts categorical sets of >2 unique values to binary encoding (more memory 
+efficent than one-hot encoding)
+  - default infill: plug value 'zzzinfill'
+  - default NArowtype: justNaN
+  - suffix appender: '_1010_#' where # is integer indicating order of 1010 columns
+  - assignparam parameters accepted: none
+  - driftreport postmunge metrics: _1010_binary_encoding_dict / _1010_overlap_replace / 
+	                           _1010_binary_column_count / _1010_activations_dict
+  (for example if 1010 encoded to three columns based on number of categories <8,
+  it would retuyrn three columns with suffix appenders 1010_1, 1010_2, 1010_3)
+* new processing functions Utxt / Utx2 / Utx3 / Uord / Uor2 / Uor3 / Uor6 / U101
+  - comparable to functions text / txt2 / txt3 / ordl / ord2 / ord3 / ors6 / 1010
+  - but upstream conversion of all strings to uppercase characters prior to encoding
+  - (e.g. 'USA' and 'usa' would be consistently encoded)
+  - default infill: in uppercase conversion NaN's are assigned distinct encoding 'NAN'
+  - and may be assigned other 9infill methods in assigninfill
+  - default NArowtype: 'justNaN'
+  - suffix appender: '_UPCS'
+  - assignparam parameters accepted: none
+  - driftreport postmunge metrics: comparable to functions text / txt2 / txt3 / ordl / ord2 / ord3 / ors6 / 1010
+### Date-Time Data Normalizations
 * date/dat2: for datetime formatted data, segregates data by time scale to multiple
 columns (year/month/day/hour/minute/second) and then performs z-score normalization
   - default infill: mean
@@ -1705,25 +1735,6 @@ columns (year/month/day/hour/minute/second) and then performs z-score normalizat
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: meanyear / stdyear / meanmonth / stdmonth / meanday / stdday / 
 			           meanhour / stdhour / meanmint / stdmint / meanscnd / stdscnd
-* wkdy: boolean identifier indicating whether a datetime object is a weekday
-  - default infill: none
-  - default NArowtype: datetime
-  - suffix appender: '_wkdy'
-  - assignparam parameters accepted: none
-  - driftreport postmunge metrics: (pending)
-* bshr: boolean identifier indicating whether a datetime object falls within business
-hours (9-5, time zone unaware)
-  - default infill: datetime
-  - default NArowtype: justNaN
-  - assignparam parameters accepted: none
-  - driftreport postmunge metrics: (pending)
-* hldy: boolean identifier indicating whether a datetime object is a US Federal
-holiday
-  - default infill: none
-  - default NArowtype: datetime
-  - suffix appender: '_hldy'
-  - assignparam parameters accepted: none
-  - driftreport postmunge metrics: (pending)
 * year/mnth/days/hour/mint/scnd: segregated by time scale and z-score normalization
   - default infill: mean
   - default NArowtype: datetime
@@ -1757,6 +1768,27 @@ dual columns with sin and cos transformations for time scale period (eg 12 month
   - suffix appender: includes appenders for ('year', 'mdsn', 'mdcs', 'hmss', 'hmsc', 'bshr', 'wkdy', 'hldy')
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: meanyear / stdyear / mean_mdsn / mean_mdcs / mean_hmss / mean_hmsc
+### Date-Time Data Bins
+* wkdy: boolean identifier indicating whether a datetime object is a weekday
+  - default infill: none
+  - default NArowtype: datetime
+  - suffix appender: '_wkdy'
+  - assignparam parameters accepted: none
+  - driftreport postmunge metrics: (pending)
+* bshr: boolean identifier indicating whether a datetime object falls within business
+hours (9-5, time zone unaware)
+  - default infill: datetime
+  - default NArowtype: justNaN
+  - assignparam parameters accepted: none
+  - driftreport postmunge metrics: (pending)
+* hldy: boolean identifier indicating whether a datetime object is a US Federal
+holiday
+  - default infill: none
+  - default NArowtype: datetime
+  - suffix appender: '_hldy'
+  - assignparam parameters accepted: none
+  - driftreport postmunge metrics: (pending)
+### Misc. Functions
 * null: deletes source column
   - default infill: none
   - default NArowtype: exclude
@@ -1812,7 +1844,7 @@ column with missing or improperly formatted values.
   - suffix appender: '_NArw'
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: pct_NArw
-
+### String Parsing
 Please note I recommend caution on using splt/spl2/spl5/spl6 transforms on categorical
 sets that may include scientific units for instance, as prefixes will not be noted
 for overlaps, e.g. this wouldn't distinguish between kilometer and meter for instance.
@@ -1868,7 +1900,7 @@ within the overlaps
   - suffix appender: '_nmcm'
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: overlap_dict / mean / maximum / minimum
-  
+### More Efficient String Parsing
 * new processing functions nmr4/nmr5/nmr6/nmc4/nmc5/nmc6/spl8/spl9/sp10 (spelled sp"ten"):
   - comparable to functions nmrc/nmr2/nmr3/nmcm/nmc2/nmc3/splt/spl2/spl5
   - but make use of new assumption that set of unique values in test set is same or a subset of those values 
@@ -1878,7 +1910,6 @@ within the overlaps
   - suffix appender: same format, updated per the new category
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: overlap_dict / mean / maximum / minimum / unique_list
-
 * new processing functions nmr7/nmr8/nmr9/nmc7/nmc8/nmc9:
   - comparable to functions nmrc/nmr2/nmr3/nmcm/nmc2/nmc3
   - but implements string parsing only for unique test set entries not found in train set
@@ -1889,18 +1920,7 @@ within the overlaps
   - suffix appender: same format, updated per the new category
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: overlap_dict / mean / maximum / minimum / unique_list / maxlength
-
-* new processing functions Utxt / Utx2 / Utx3 / Uord / Uor2 / Uor3 / Uor6 / U101
-  - comparable to functions text / txt2 / txt3 / ordl / ord2 / ord3 / ors6 / 1010
-  - but upstream conversion of all strings to uppercase characters prior to encoding
-  - (e.g. 'USA' and 'usa' would be consistently encoded)
-  - default infill: in uppercase conversion NaN's are assigned distinct encoding 'NAN'
-  - and may be assigned other 9infill methods in assigninfill
-  - default NArowtype: 'justNaN'
-  - suffix appender: '_UPCS'
-  - assignparam parameters accepted: none
-  - driftreport postmunge metrics: comparable to functions text / txt2 / txt3 / ordl / ord2 / ord3 / ors6 / 1010
-  
+### Multi-tier String Parsing
 * new processing root categories or11 / or12 / or13 / or14 / or15 / or16 / or17 / or18 / or19 / or20
   - or11 / or13 intended for categorical sets that may include multiple tiers of overlaps 
   and include base binary encoding via 1010 suppplemented by tiers of string parsing for 
@@ -1919,7 +1939,11 @@ within the overlaps
   (note that parameter has to be assigned to specific categories such as spl2/spl5 etc)
   - driftreport postmunge metrics: comparable to constituent functions
 
-And here are the series of family trees currently built into the internal library.
+ ___ 
+And here are the of family tree definitions for root categories currently built into the internal 
+library. Basically providing this as a reference, not really expecting anyone to read this line 
+by line or anything. (Note that the NArw transforamtion without quotation marks (eg NArw vs 'NArw') will only be activated when user passes NArw_marker=True.)
+If you want to skip to the next section you can click here: [Conclusion](https://github.com/Automunge/AutoMunge#conclusion)
 
 ```
     transform_dict.update({'nmbr' : {'parents' : ['nmbr'], \
