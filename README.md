@@ -1425,19 +1425,19 @@ am.automunge(df_train, \
 ## Library of Transformations
 
 ### Library of Transformations Subheadings:
-* Intro
-* Numerical Set Normalizations
-* Numerical Set Transformations
-* Numercial Set Bins and Grainings
-* Sequential Numerical Set Transformations
-* Categorical Set Encodings
-* Date-Time Data Normalizations
-* Date-Time Data Bins
-* Misc. Functions
-* String Parsing
-* More Efficient String Parsing
-* Multi-tier String Parsing
-* Root Category Family Tree Definitions
+* [Intro](https://github.com/Automunge/AutoMunge/blob/master/README.md#intro)
+* [Numerical Set Normalizations](https://github.com/Automunge/AutoMunge/blob/master/README.md#numerical-set-normalizations)
+* [Numerical Set Transformations](https://github.com/Automunge/AutoMunge/blob/master/README.md#numerical-set-transformations)
+* [Numercial Set Bins and Grainings](https://github.com/Automunge/AutoMunge/blob/master/README.md#numercial-set-bins-and-grainings)
+* [Sequential Numerical Set Transformations](https://github.com/Automunge/AutoMunge/blob/master/README.md#sequential-numerical-set-transformations)
+* [Categorical Set Encodings](https://github.com/Automunge/AutoMunge/blob/master/README.md#categorical-set-encodings)
+* [Date-Time Data Normalizations](https://github.com/Automunge/AutoMunge/blob/master/README.md#date-time-data-normalizations)
+* [Date-Time Data Bins](https://github.com/Automunge/AutoMunge/blob/master/README.md#date-time-data-bins)
+* [Misc. Functions](https://github.com/Automunge/AutoMunge/blob/master/README.md#misc-functions)
+* [String Parsing](https://github.com/Automunge/AutoMunge/blob/master/README.md#string-parsing)
+* [More Efficient String Parsing](https://github.com/Automunge/AutoMunge/blob/master/README.md#more-efficient-string-parsing)
+* [Multi-tier String Parsing](https://github.com/Automunge/AutoMunge/blob/master/README.md#multi-tier-string-parsing)
+* [Root Category Family Tree Definitions](https://github.com/Automunge/AutoMunge/blob/master/README.md#root-category-family-tree-definitions)
  ___ 
 ### Intro
 Automunge has a built in library of transformations that can be passed for
@@ -1940,6 +1940,7 @@ within the overlaps
   - driftreport postmunge metrics: comparable to constituent functions
 
  ___ 
+### Root Category Family Tree Definitions
 And here are the of family tree definitions for root categories currently built into the internal 
 library. Basically providing this as a reference, not really expecting anyone to read this line 
 by line or anything. (Note that the NArw transforamtion without quotation marks (eg NArw vs 'NArw') will only be activated when user passes NArw_marker=True.)
