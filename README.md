@@ -1944,7 +1944,7 @@ within the overlaps
 And here are the of family tree definitions for root categories currently built into the internal 
 library. Basically providing this as a reference, not really expecting anyone to read this line 
 by line or anything. (Note that the NArw transforamtion without quotation marks (eg NArw vs 'NArw') will only be activated when user passes NArw_marker=True.)
-If you want to skip to the next section you can click here: [Conclusion](https://github.com/Automunge/AutoMunge#conclusion)
+If you want to skip to the next section you can click here: [Custom Transformation Functions](https://github.com/Automunge/AutoMunge#custom-transformation-functions)
 
 ```
     transform_dict.update({'nmbr' : {'parents' : ['nmbr'], \
