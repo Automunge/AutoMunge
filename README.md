@@ -1385,10 +1385,10 @@ to 'excl2' (pass-through) instead of 'nmbr'. Also, if label smoothing is applied
 columns evaluated as 'bnry' (two iunique values) will default to 'text' instead of 'bnry'
 as label smoothing requires one-hot encoding.
 
-- PCA: if the number of features exceeds 0.5 the number of rows (an arbitrary heuristic)
-a default PCA transform is applied defaulting to kernel if all positive or sparse Otherwise
-using scikit library. Note that this heuristic ratio can be changed or PCA turned off
-in the ML_cmnd.
+- PCA: if the number of features exceeds 0.5 times the number of rows (an arbitrary heuristic)
+a default PCA transform is applied defaulting to kernel PCA if all positive or otherwise 
+sparse PCA (using scikit library). Note that this heuristic ratio can be changed or PCA 
+turned off in the ML_cmnd, reference the ML_cmnd section under automunge(.) passed parameters.
 
 - powertransform: if the powertransform parameter is activated, a statistical evaluation
 will be performed on numerical sets to distinguish between columns to be subject to
