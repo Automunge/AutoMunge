@@ -32,12 +32,12 @@ be user defined with minimal requirements of simple data structures for
 incorporation into the platform. The tool includes options for automated 
 feature importance evaluation, automated derivation of infill predictions
 using machine learning models trained on the set in a fully generalized and
-automated fashion, automated preparation for oversampling for class imbalance, 
-automated dimensionality reductions such as based on feature importance or 
-principle component analysis, automated evaluation of data property drift 
-between training data and subsequent data, and perhaps most importantly the 
-simplest means for consistent processing of additional data with just a single 
-function call. In short, we make machine learning easy.
+automated fashion, automated preparation for oversampling for class imbalance 
+in labels, automated dimensionality reductions such as based on feature 
+importance or principle component analysis, automated evaluation of data 
+property drift between training data and subsequent data, and perhaps most 
+importantly the simplest means for consistent processing of additional data 
+with just a single function call. In short, we make machine learning easy.
 
 The automunge(.) function takes as input structured training data intended 
 to train a machine learning model with any corresponding labels if available 
@@ -303,7 +303,7 @@ Alternately, the user can pass a desired number of features and their
 preference of type and parameters between linear PCA, Sparse PCA, or Kernel 
 PCA - all currently implemented in Scikit-Learn.
 
-The function also can perform dimesnionality reduction of the sets via
+The function also can perform dimensionality reduction of the sets via
 the Binary option which takes the set of columns with boolean {1/0} encodings
 and applies a binary transform to reduce the number of columns.
 
@@ -1369,6 +1369,15 @@ set default to bnry.
 'year', 'mdsn', 'mdcs', 'hmss', 'hmsc', 'bshr', 'wkdy', 'hldy' (these are defined 
 in next section)
 - null: for columns with single entry column is deleted
+
+Note that if a user wishes to avoid the automated assignment of default transformations,
+such as to leave those columns not specifically assigned to transformation categories in 
+assigncat as unchanged, the powertransform parameter may be passed as values 'excl' or 
+'exc2', where for 'excl' columns not explicitly assigned to a root category in assigncat 
+will be left untouched, or for 'exc2' columns not explicitly assigned to a root category 
+in assigncat will be forced to numeric and subject to default modeinfill. (These two excl
+arguments may be useful if a user wants to experiment with specific transforms on a 
+subset of the columns without incurring processing time of an entire set.)
 
 Note that for columns designated for label sets as a special case categorical data will
 default to 'text' (one-hot encoding) instead of '1010'. Also, numerical data will default
