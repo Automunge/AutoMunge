@@ -18724,6 +18724,9 @@ class AutoMunge:
   def assigncat_str_convert(self, assigncat):
     """
     #Converts all assigncat entries to string (just in case user passed integer)
+    #
+    #also converts any single string/integer entries passed without list brackets 
+    #into a single entry list
     """
     
     #ignore edge case where user passes empty dictionary
@@ -18731,6 +18734,13 @@ class AutoMunge:
     
       for assigncatkey in sorted(assigncat):
         current_list = assigncat[assigncatkey]
+        
+        #check if current_list is a list, if not populate it as single entry in a list
+        if type(current_list) != type([]):
+          assigncat[assigncatkey] = [current_list]
+          current_list = assigncat[assigncatkey]
+        
+        #then convert any entries in the list to string type
         assigncat[assigncatkey] = [str(i) for i in current_list]
 
       del current_list
@@ -18741,6 +18751,9 @@ class AutoMunge:
   def assigninfill_str_convert(self, assigninfill):
     """
     #Converts all assigninfill entries to string (just in case user passed integer)
+    #
+    #also converts any single string/integer entries passed without list brackets 
+    #into a single entry list
     """
     
     #ignore edge case where user passes empty dictionary
@@ -18748,6 +18761,13 @@ class AutoMunge:
 
       for assigninfillkey in sorted(assigninfill):
         current_list = assigninfill[assigninfillkey]
+          
+        #check if current_list is a list, if not populate it as single entry in a list
+        if type(current_list) != type([]):
+          assigninfill[assigninfillkey] = [current_list]
+          current_list = assigninfill[assigninfillkey]
+        
+        #then convert any entries in the list to string type
         assigninfill[assigninfillkey] = [str(i) for i in current_list]
 
       del current_list
@@ -21199,7 +21219,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.18'
+    automungeversion = '3.19'
     application_number = random.randint(100000000000,999999999999)
     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
