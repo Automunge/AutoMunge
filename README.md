@@ -112,7 +112,7 @@ featureimportance, postprocess_dict \
 = am.automunge(df_train)
 ```
 
-or for subsequent consistant processing of test data, using the
+or for subsequent consistant processing of train or test data, using the
 dictionary returned from original application of automunge(.), run:
 
 ```
@@ -270,8 +270,11 @@ The column's trained model is included in the outputted dictionary for
 application of the same model in the postmunge function. Alternately, a
 user can pass column headers to assign different infill methods to distinct 
 columns. The method currently makes use of Scikit Random Forest models by 
-default. Extension into more sophisticated methods such as that may employ 
-automated hyperparameter tuning for instance is intended for a future extension.
+default. A user may defer to default hyperparameters or alternatively pass
+hyperparameters via the "ML_cmnd" object, and may also make user of grid 
+or randomized CV hyperparameter tuning by passing the hyperparameters as
+lists, ranges, or distributions of candidate parameters instead of distinct 
+values.
 
 The automunge(.) function also includes a method for feature importance 
 evaluation, in which metrics are derived to measure the impact to predictive 
@@ -280,20 +283,21 @@ derived columns using a permutation importance method. Permutation importance
 method was inspired by a fast.ai lecture and more information can be found in 
 the paper "Beware Default Random Forest Importances" by Terrence Parr, Kerem 
 Turgutlu, Christopher Csiszar, and Jeremy Howard. This method currently makes 
-use of Scikit-Learns Random Forest predictors. I believe the metric we refer to
+use of Scikit-Learn's Random Forest predictors. I believe the metric we refer to
 as metric2 which evaluates relative importance between features derived from the 
 same source column is a unique approach.
 
-The function also includes a method we call 'LabelFreqLevel' which
+The function also includes a method we call 'TrainLabelFreqLevel' which
 if elected applies multiples of the feature sets associated with each
 label category in the returned training data so as to enable
 oversampling of those labels which may be underrepresented in the
 training data. This method is available for categorical labels or also
-for numerical labels when the label processing includes standard deviation
-bins. This method is expected to improve downstream model
-accuracy for training data with uneven distribution of labels. For more
-on the class imbalance problem see "A systematic study of the class imbalance 
-problem in convolutional neural networks" - Buda, Maki, Mazurowski.
+for numerical labels when the label processing includes binned agregations
+such as standard deviation bins or powers of ten bins. This method is 
+expected to improve downstream model accuracy for training data with uneven 
+distribution of labels. For more on the class imbalance problem see "A 
+systematic study of the class imbalance problem in convolutional neural 
+networks" - Buda, Maki, Mazurowski.
 
 The function also can perform dimensionality reduction of the sets via 
 principle component analysis (PCA). The function automatically performs a 
@@ -441,7 +445,9 @@ downstream machine learning model in the framework of a user's choice
 
 * trainID: the set of ID values corresponding to the train set if a ID
 column(s) was passed to the function. This set may be useful if the shuffle
-option was applied.
+option was applied. Note that an ID column may serve multiple purposes such
+as row identifiers or for pairing tabular data rows with a corresponding
+image file for instance.
 
 * labels: a set of numerically encoded labels corresponding to the
 train set if a label column was passed. Note that the function
@@ -483,6 +489,11 @@ assumes the label column is originally included in the train set.
 * labelsencoding_dict: a dictionary that can be used to reverse encode
 predictions that were generated from a downstream model (such as to
 convert a one-hot encoded set back to a single categorical set).
+```
+#Note that the labelsencoding_dict follows format:
+labelsencoding_dict = \
+{'(label root category)' : {'(label column header)' : {(normalization parameters)}}
+```
 
 * finalcolumns_train: a list of the column headers corresponding to the
 training data. Note that the inclusion of suffix appenders is used to
@@ -492,7 +503,7 @@ column.
 * finalcolumns_test: a list of the column headers corresponding to the
 test data. Note that the inclusion of suffix appenders is used to
 identify which feature engineering transformations were applied to each
-column. Note that this list should match the one preceeding.
+column. Note that this list will match the one preceeding.
 
 * featureimportance: a dictionary containing summary of feature importance
 ranking and metrics for each of the derived sets. Note that the metric
@@ -572,7 +583,7 @@ dataset intended for use to subsequently train a machine learning model.
 The set at a minimum should be 'tidy' meaning a single column per feature 
 and a single row per observation. If desired the set may include one are more
 "ID" columns (intended to be carved out and consitently shuffled or partitioned
-such as an index column) and one or more columns intended to be used as labels 
+such as an index column) and zero or one column intended to be used as labels 
 for a downstream training operation. The tool supports the inclusion of 
 non-index-range column as index or multicolumn index (requires named index 
 columns). Such index types are added to the returned "ID" sets which are 
@@ -635,7 +646,9 @@ size sets.)
 
 * floatprecision: an integer with acceptable values of 16/32/64 designating
 the memory precision for returned float values. (A tradeoff between memory
-usage and floating point precision, smaller for smaller footprint.)
+usage and floating point precision, smaller for smaller footprint.) 
+This currently defaults to 32 for 32-bit precision of float values. Note
+that there may be energy efficiency benefits at scale to basing this to 16.
 
 * shuffletrain: a boolean identifier (True/False) which indicates if the
 rows in df_train will be shuffled prior to carving out the validation
@@ -670,13 +683,11 @@ to numeric and subject to default modeinfill. (These two excl arguments may be
 useful if a user wants to experiment with specific transforms on a subset of
 the columns without incurring processing time of an entire set.)
 
-* binstransform: a boolean identifier (True/False) which indicates if the
-numerical sets will receive bin processing such as to generate child
+* binstransform: a boolean identifier (True/False) which indicates if all
+default numerical sets will receive bin processing such as to generate child
 columns with boolean identifiers for number of standard deviations from
-the mean, with groups for values <-2, -2-1, -10, 01, 12, and >2 . Note
-that the bins and bint transformations are the same, only difference is
-that the bint transform assumes the column has already been normalized
-while the bins transform does not. This value defaults to False.
+the mean, with groups for values <-2, -2-1, -10, 01, 12, and >2. This value 
+defaults to False.
 
 * MLinfill: a boolean identifier (True/False) which indicates if the ML
 infill method will be applied as a default to predict infill for missing 
@@ -704,19 +715,19 @@ conversion from 1/0 to 0.9/#, where # is a function of the number of cateogries 
 the label set - for example for a boolean label it would convert 1/0 to 0.9/0.1, or 
 for the one-hot encoding of a three label set it would be convert 1/0 to 0.9/0.05.
 Hat tip for the concept to "Rethinking the Inception Architecture for Computer Vision"
-by Szegedy et al. Note that I believe not all predictive classifigation libraries 
+by Szegedy et al. Note that I believe not all predictive library cklassifiers 
 uniformily accept smoothed labels, but when available the method can at times be useful. 
 Note that a user can pass True to either of LabelSmoothing_test / LabelSmoothing_val 
 which will consistently encode to LabelSmoothing_train. Please note that if multiple
 one-hot encoded transformations originate from the same labels source column, the
 application of Label Smoothing will be applied to each set individually.
 
-* LSfit: a True/False indication for basis of label smoothing parameter K. The default
+* LSfit: a True/False indication for basis of label smoothing parameters. The default
 of False means the assumption will be for level distribution of labels, passing True
-means any label smoothing will evluate distribution fo label activations such as to fit
-the smoothing factor K to specific cells based on the activated column and target column.
-The LSfit parameters of transformations will be based on properteis dervied from the
-train set labels, such as for consistent encoding to the other sets (test and validaiton).
+means any label smoothing will evaluate distribution of label activations such as to fit
+the smoothing factor to specific cells based on the activated column and target column.
+The LSfit parameters of transformations will be based on properties derived from the
+train set labels, such as for consistent encoding to the other sets (test or validation).
 
 * numbercategoryheuristic: an integer used as a heuristic. When a 
 categorical set has more unique values than this heuristic, it defaults 
@@ -771,7 +782,7 @@ will be subject to the infill. Pass True to activate, defaults to False.
 derived features for purposes of dimensionality reduction, such integer to 
 be less than the otherwise returned number of sets. Function will default 
 to kernel PCA for all non-negative sets or otherwise Sparse PCA. Also if
-this values passed as a float <1.0 then linear PCA will be applied such 
+this value is passed as a float <1.0 then linear PCA will be applied such 
 that the returned number of sets are the minimum number that can reproduce
 that percent of the variance. Note this can also be passed in conjunction 
 with assigned PCA type or parameters in the ML_cmnd object.
@@ -938,29 +949,29 @@ assignparam = {'category1' : {'column1' : {'param1' : 123}, 'column2' : {'param1
 
 #As an example with actual parameters, consider the trasnformation category 'splt' intended for 'column1',
 #which accepts parameter 'minsplit' for minimum character length of detected overlaps. If we wanted to
-pass 4 instead of the default of 5:
+#pass 4 instead of the default of 5:
 assignparam = {'splt' : {'column1' : {'minsplit' : 4}}
 
 #Note that column string identifiers may just be the source column string or may include the
-#suffix appenders such as if multiple versiuons of transformations are applied within the same family tree
+#suffix appenders such as if multiple versions of transformations are applied within the same family tree
 #If more than one column identifier matches a column, the longest character length key which matches
 #will be applied (such as may include suffixc appenders).
 
 #Note that if a user wishes to overwrite the default parameters for all columns without specifying
-#them individually they can pass a 'default_assignparam' entry as follows (this only overwirtes those 
+#them individually they can pass a 'default_assignparam' entry as follows (this only overwrites those 
 #parameters that are not otherwise specified in assignparam)
 assignparam = {'category1' : {'column1' : {'param1' : 123}, 'column2' : {'param1' : 456}}, \
                'cateogry2' : {'column3' : {'param2' : 'abc', 'param3' : 'def'}}, \
 	       'default_assignparam' : {'category3' : {'param4' : 789}
 
 ```
-See the Library of Transformations section below for those trasnformations that accept parameters.
+See the Library of Transformations section below for those transformations that accept parameters.
 
 
 * transformdict: allows a user to pass a custom tree of transformations.
 Note that a user may define their own (traditionally 4 character) string "root"
 identifiers for a series of processing steps using the categories of processing 
-already defibned in our library and then assign columns in assigncat, or for 
+already defined in our library and then assign columns in assigncat, or for 
 custom processing functions this method should be combined with processdict 
 which is only slightly more complex. For example, a user wishing to define a 
 new set of transformations for numerical series 'newt' that combines NArows, 
@@ -1034,8 +1045,8 @@ processdict =  {'newt' : {'dualprocess' : None, \
 #function to singleprocess, and pass None to those not used.
 #For now, if just using the category as a root key and not as a family primitive, 
 #can simply pass None to all the processing slots. We'll demonstrate their 
-#composition and data structures for custom processing functions later in this 
-#document.
+#composition and data structures for custom processing functions later in the
+#section of this document "Custom Processing Functions".
 
 #dualprocess: for passing a processing function in which normalization 
 #             parameters are derived from properties of the training set
@@ -1063,7 +1074,7 @@ processdict =  {'newt' : {'dualprocess' : None, \
 # ** Note that NArowtype also is used as basis for metrics evaluated in drift assessment of source columns
 
 #MLinfilltype: can be entries of 'numeric', 'singlct', 'multirt', 'exclude'
-#              'multisp', 'exclude', or 'label' where
+#              'multisp', 'exclude', 'label', 'binary' or '1010' where
 #	       'numeric' refers to columns where predictive algorithms treat
 #			 as a regression for numeric sets
 #	       'singlect' refers to columns where category gives a single column
@@ -1121,15 +1132,17 @@ the built in sets in the library.
 
 # postmunge(.)
 
-The postmunge(.) function is intended to consistently process subsequently available
-and consistently formatted test data with just a single function call. It requires 
-passing the postprocess_dict object returned from the original application of automunge 
-and that the passed test data have consistent column header labeling as the original 
-train set (or for Numpy arrays consistent order of columns).
+The postmunge(.) function is intended to consistently prepare subsequently available
+and consistently formatted train or test data with just a single function call. It 
+requires passing the postprocess_dict object returned from the original application 
+of automunge and that the passed test data have consistent column header labeling as 
+the original train set (or for Numpy arrays consistent order of columns). Processing
+data with postmunge is considerable more efficient than automunge since it does not
+require the overhead of the evaluation methods and/or training of models for ML infill.
 
 ```
 
-#for postmunge(.) function on subsequently available test data
+#for postmunge(.) function to prepare subsequently available data
 #using the postprocess_dict object returned from original automunge(.) application
 
 #Remember to initialize automunge
@@ -1146,7 +1159,16 @@ am.postmunge(postprocess_dict, df_test, testID_column = False, \
              TrainLabelFreqLevel = False, featureeval = False, driftreport = False, \
 	     LabelSmoothing = False, LSfit = False)
 ```
-             
+
+Or to run postmunge(.) with default parameters we simply need the postprocess_dict
+object returned from the corresponding auytomunge(.) call and a consistently formatted
+additional data set.
+
+```
+test, testID, testlabels, \
+labelsencoding_dict, postreports_dict \
+= am.postmunge(postprocess_dict, df_test)
+```          
 
 ## postmunge(.) returned sets:
 Here now are descriptions for the returned sets from postmunge, which
@@ -1155,7 +1177,7 @@ the function.
 
 * test: the set of features, consistently encoded and normalized as the
 training data, that can be used to generate predictions from a model
-trained with the np_train set from automunge.
+trained with the train set from automunge.
 
 * testID: the set of ID values coresponding to the test set.
 
@@ -1174,23 +1196,23 @@ identify which feature engineering transformations were applied to each
 column. Note that this list should match the one from automunge.
 
 * postreports_dict: a dictionary containing entries for following:
-- postreports_dict['featureimportance']: results of optional feature 
-importance evaluation based on parameter featureeval. (See automunge(.)
-notes above for feature importance printout methods.)
-- postreports_dict['finalcolumns_test']: list of columns returned from 
-postmunge
-- postreports_dict['driftreport']: results of optional drift report 
-evaluation tracking properties of psotmunge data in comparision to the 
-original data from automunge call associated with the postprocess_dict 
-presumably used to train a model. Results aggregated by entries for the
-original (pre-transform) list of columns, and include the normailzaiton
-parameters from the automunge call saved in postprocess_dict as well
-as the corresponding parameters from the new data consistently derived 
-in postmunge
-- postreports_dict['sourcecolumn_drift']: results of optional drift report
-evaluation tracking properties of postmunge data dervied form source 
-columns in comparision to the original data from automunge call associated 
-with the postprocess_dict presumably used to train a model. 
+  - postreports_dict['featureimportance']: results of optional feature 
+  importance evaluation based on parameter featureeval. (See automunge(.) 
+  notes above for feature importance printout methods.)
+  - postreports_dict['finalcolumns_test']: list of columns returned from 
+  postmunge
+  - postreports_dict['driftreport']: results of optional drift report 
+  evaluation tracking properties of psotmunge data in comparision to the 
+  original data from automunge call associated with the postprocess_dict 
+  presumably used to train a model. Results aggregated by entries for the
+  original (pre-transform) list of columns, and include the normailzaiton
+  parameters from the automunge call saved in postprocess_dict as well
+  as the corresponding parameters from the new data consistently derived 
+  in postmunge
+  - postreports_dict['sourcecolumn_drift']: results of optional drift report
+  evaluation tracking properties of postmunge data dervied form source 
+  columns in comparision to the original data from automunge call associated 
+  with the postprocess_dict presumably used to train a model. 
   
 ```
 #the results of a postmunge driftreport assessment are returned in the postreports_dict 
@@ -1259,13 +1281,13 @@ am.postmunge(postprocess_dict, df_test, testID_column = False, \
 ```
 
 * postprocess_dict: this is the dictionary returned from the initial
-application of automunge which included normalization parameters to
-facilitate consistent processing of test data to the original processing
-of the train set. This requires a user to remember to download the
-dictionary at the original application of automunge, otherwise if this
-dictionary is not available a user can feed this subsequent test data to
-the automunge along with the original train data exactly as was used in
-the original automunge call.
+application of automunge(.) which included normalization parameters to
+facilitate consistent processing of additional train or test data to the 
+original processing of the train set. This requires a user to remember 
+to download the dictionary at the original application of automunge, 
+otherwise if this dictionary is not available a user can feed this 
+subsequent test data to the automunge along with the original train data 
+exactly as was used in the original automunge(.) call.
 
 * df_test: a pandas dataframe or numpy array containing a structured 
 dataset intended for use to generate predictions from a machine learning 
@@ -1341,10 +1363,10 @@ derived from the train set labels.
 
 * LSfit: a True/False indication for basis of label smoothing parameter K. The default
 of False means the assumption will be for level distribution of labels, passing True
-means any label smoothing will evluate distribution fo label activations such as to fit
-the smoothing factor K to specific cells based on the activated column and target column.
+means any label smoothing will evaluate distribution of label activations such as to fit
+the smoothing factor to specific cells based on the activated column and target column.
 Note that if LabelSmoothing passed as True the LSfit will be based on the basis from
-the correspondign automunge(.) call (will override this one passed to postmunge).
+the corresponding automunge(.) call (will override the one passed to postmunge).
 
 ...
 
@@ -1861,7 +1883,8 @@ column with missing or improperly formatted values.
 Please note I recommend caution on using splt/spl2/spl5/spl6 transforms on categorical
 sets that may include scientific units for instance, as prefixes will not be noted
 for overlaps, e.g. this wouldn't distinguish between kilometer and meter for instance.
-Note that overlap lengths below 5 characters are ignored.
+Note that overlap lengths below 5 characters are ignored unless that value is overrided
+by passing a parameter through assignparam.
 * splt: searches categorical sets for overlaps between strings and returns new boolean column
 for identified overlap categories. Note this treats numeric values as strings eg 1.3 = '1.3'.
 Note that priority is given to overlaps of higher length, and by default overlap searches
@@ -1956,7 +1979,8 @@ within the overlaps
 ### Root Category Family Tree Definitions
 And here are the of family tree definitions for root categories currently built into the internal 
 library. Basically providing this as a reference, not really expecting anyone to read this line 
-by line or anything. (Note that the NArw transforamtion without quotation marks (eg NArw vs 'NArw') will only be activated when user passes NArw_marker=True.)
+by line or anything. (Note that the NArw transformation without quotation marks (eg NArw 
+vs 'NArw') will not be activated if user passes the automunge(.) parameter as NArw_marker=False.)
 If you want to skip to the next section you can click here: [Custom Transformation Functions](https://github.com/Automunge/AutoMunge#custom-transformation-functions)
 
 ```
@@ -3593,7 +3617,7 @@ as infill methods including ML infill, feature importance, dimensionality reduct
 preparation for class imbalance oversampling, and perhaps most importantly the 
 simplest possible way for consistent processing of additional data with just a single 
 function call. The transformation functions will need to be channeled through pandas 
-and incorproate a handful of simple data structures, which we'll demonstrate below.
+and incorporate a handful of simple data structures, which we'll demonstrate below.
 
 Let's say we want to recreate the mm3 category which caps outliers at 0.01 and 0.99
 quantiles, but instead make it the 0.001 and 0.999 quantiles. Well we'll call this 
@@ -3617,7 +3641,7 @@ transformdict = {'mnm8' : {'parents' : [], \
 
 #Note that since this mnm8 requires passing normalization parameters derived
 #from the train set to process the test set, we'll need to create two seperate 
-#trasnformation functions, the first a "dualprocess" function that processes
+#transformation functions, the first a "dualprocess" function that processes
 #both the train and if available a test set simultaneously, and the second
 #a "postprocess" that only processes the test set on it's own.
 
@@ -3635,8 +3659,8 @@ processdict = {'mnm8' : {'dualprocess' : process_mnm8_class, \
 #the processdict to automunge.
 
 #Here we'll define a "dualprocess" function intended to process both a train and
-#test set simulateously. We'll also need to create a seperate "postprocess"
-#function intended to just process the test set.
+#test set simultaneously. We'll also need to create a seperate "postprocess"
+#function intended to just process a subsequent test set.
 
 #define the function
 def process_mnm8_class(mdf_train, mdf_test, column, category, \
@@ -3659,7 +3683,7 @@ def process_mnm8_class(mdf_train, mdf_test, column, category, \
   #else:
   #  mnm8_parameter = (some default value)
 
-  #create thee new column, using the category key as a suffix identifier
+  #create the new column, using the category key as a suffix identifier
   
   #copy source column into new column
   mdf_train[column + '_mnm8'] = mdf_train[column].copy()
