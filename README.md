@@ -1137,8 +1137,9 @@ and consistently formatted train or test data with just a single function call. 
 requires passing the postprocess_dict object returned from the original application 
 of automunge and that the passed test data have consistent column header labeling as 
 the original train set (or for Numpy arrays consistent order of columns). Processing
-data with postmunge is considerable more efficient than automunge since it does not
-require the overhead of the evaluation methods and/or training of models for ML infill.
+data with postmunge(.) is considerably more efficient than automunge(.) since it does 
+not require the overhead of the evaluation methods, the derivation of transformation 
+normalization parameters, and/or the training of models for ML infill.
 
 ```
 
