@@ -43,7 +43,7 @@ In other words, put simply:<br/>
   - automunge(.) prepares tabular data for machine learning.<br/>
   - postmunge(.) consistently prepares additional data very effficiently.<br/>
   
-In short, we make machine learning easy.
+We make machine learning easy.
 
 The automunge(.) function takes as input structured training data intended 
 to train a machine learning model with any corresponding labels if available 
