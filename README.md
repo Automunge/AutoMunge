@@ -37,7 +37,12 @@ in labels, automated dimensionality reductions such as based on feature
 importance or principle component analysis, automated evaluation of data 
 property drift between training data and subsequent data, and perhaps most 
 importantly the simplest means for consistent processing of additional data 
-with just a single function call. In short, we make machine learning easy.
+with just a single function call. 
+
+In other words, put simply:
+- automunge(.) prepares tabular data for machine learning.
+- postmunge(.) consistently prepares additional data very effficiently.
+In short, we make machine learning easy.
 
 The automunge(.) function takes as input structured training data intended 
 to train a machine learning model with any corresponding labels if available 
