@@ -40,8 +40,8 @@ importantly the simplest means for consistent processing of additional data
 with just a single function call. 
 
 In other words, put simply:
-- automunge(.) prepares tabular data for machine learning.
-- postmunge(.) consistently prepares additional data very effficiently.
+automunge(.) prepares tabular data for machine learning.
+postmunge(.) consistently prepares additional data very effficiently.
 In short, we make machine learning easy.
 
 The automunge(.) function takes as input structured training data intended 
