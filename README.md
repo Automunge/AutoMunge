@@ -1168,7 +1168,7 @@ am.postmunge(postprocess_dict, df_test, testID_column = False, \
 ```
 
 Or to run postmunge(.) with default parameters we simply need the postprocess_dict
-object returned from the corresponding auytomunge(.) call and a consistently formatted
+object returned from the corresponding automunge(.) call and a consistently formatted
 additional data set.
 
 ```
@@ -1411,7 +1411,7 @@ subset of the columns without incurring processing time of an entire set.)
 Note that for columns designated for label sets as a special case categorical data will
 default to 'text' (one-hot encoding) instead of '1010'. Also, numerical data will default
 to 'excl2' (pass-through) instead of 'nmbr'. Also, if label smoothing is applied, label 
-columns evaluated as 'bnry' (two iunique values) will default to 'text' instead of 'bnry'
+columns evaluated as 'bnry' (two unique values) will default to 'text' instead of 'bnry'
 as label smoothing requires one-hot encoding.
 
 - PCA: if the number of features exceeds 0.5 times the number of rows (an arbitrary heuristic)
@@ -1438,7 +1438,7 @@ numerical columns with a default mean scaling ('mean') instead of z-score
 normalization ('nmbr'), the user may copy the transform_dict entries from the code-base 
 for mean root category and assign as a definition of the nmbr root category, and then 
 pass that defined transformdict in the automunge call. (Note that we don't need to 
-overwrite the processdict for nnmbr if we don't intend to overwrite it's use as an entry 
+overwrite the processdict for nmbr if we don't intend to overwrite it's use as an entry 
 in other root category family trees. Also it's good practice to retain any downstream 
 entries such as in case the default for nmbr is used as an entry in some other root 
 category's family tree.) Here's a demonstration.
@@ -1548,14 +1548,14 @@ default NArowtype refers to the categories of data that won't be subject to
 infill.
 
 ### Numerical Set Normalizations
-* nmbr/nbr2/nbr3/nmdx/nmd2/nmd3: z-score normalization
+* nmbr/nbr2/nbr3/nmdx/nmd2/nmd3: z-score normalization<br/>
 (x - mean) / (standard deviation)
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '_nmbr'
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: mean / std / max / min
-* mean/mea2/mea3: mean normalization (like z-score in the numerator and min-max in the denominator)
+* mean/mea2/mea3: mean normalization (like z-score in the numerator and min-max in the denominator)<br/>
 (x - mean) / (max - mean)
 Note this is what Andrew Ng suggested as default in his MOOC. My intuition says z-score has some 
 benefits but really up to the user which they prefer.
@@ -1564,7 +1564,7 @@ benefits but really up to the user which they prefer.
   - suffix appender: '_mean'
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: minimum / maximum / mean / std
-* mnmx/mnm2/mnm5/mmdx/mmd2/mmd3: vanilla min-max scaling
+* mnmx/mnm2/mnm5/mmdx/mmd2/mmd3: vanilla min-max scaling<br/>
 (x - min) / (max - min)
   - default infill: mean
   - default NArowtype: numeric
@@ -1584,14 +1584,14 @@ test set returned values >= 0, such as might be useful for kernel PCA for instan
   - suffix appender: '_mnm6'
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: minimum / maximum / mean / std
-* MADn/MAD2: mean absolute deviation normalization, subtract set mean 
+* MADn/MAD2: mean absolute deviation normalization, subtract set mean <br/>
 (x - mean) / (mean absolute deviation)
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '_MADn'
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: mean / MAD / maximum / minimum
-* MAD3: mean absolute deviation normalization, subtract set maximum
+* MAD3: mean absolute deviation normalization, subtract set maximum<br/>
 (x - maximum) / (mean absolute deviation)
   - default infill: mean
   - default NArowtype: numeric
@@ -1670,7 +1670,7 @@ set (i.e. <-2:0, -2-1:1, -10:2, 01:3, 12:4, >2:5)
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: ordinal_dict / ordl_activations_dict / binsmean / binsstd
 * bnwd/bnwK/bnwM: for numerical set graining to fixed width bins for one-hot encoded bins 
-(columns without activations in train set excluded in train and test data)
+(columns without activations in train set excluded in train and test data). 
 bins default to width of 1/1000/1000000 eg for bnwd/bnwK/bnwM
   - default infill: mean
   - default NArowtype: numeric
@@ -1679,7 +1679,7 @@ bins default to width of 1/1000/1000000 eg for bnwd/bnwK/bnwM
   - driftreport postmunge metrics: binsmean / bn_min / bn_max / bn_delta / bn_count / bins_id / 
 			           bins_cuts / bn_width / textcolumns / <column> + '_ratio' (column specific)
 * bnwo/bnKo/bnMo: for numerical set graining to fixed width bins for ordinal encoded bins 
-(integers without train set activations still included in test set)
+(integers without train set activations still included in test set). 
 bins default to width of 1/1000/1000000 eg for bnwd/bnwK/bnwM
   - default infill: mean
   - default NArowtype: numeric
@@ -1687,7 +1687,7 @@ bins default to width of 1/1000/1000000 eg for bnwd/bnwK/bnwM
   - assignparam parameters accepted: 'width' to set bin width
   - driftreport postmunge metrics: binsmean / bn_min / bn_max / bn_delta / bn_count / bins_id / 
 			           bins_cuts / bn_width / ordl_activations_dict
-* bnep/bne7/bne9: for numerical set graining to equal population bins for one-hot encoded bins 
+* bnep/bne7/bne9: for numerical set graining to equal population bins for one-hot encoded bins. 
 bin count defaults to 5/7/9 eg for bnep/bne7/bne9
   - default infill: no activation
   - default NArowtype: numeric
@@ -1695,7 +1695,7 @@ bin count defaults to 5/7/9 eg for bnep/bne7/bne9
   - assignparam parameters accepted: 'bincount' to set number of bins
   - driftreport postmunge metrics: binsmean / bn_min / bn_max / bn_delta / bn_count / bins_id / 
 			           bins_cuts / bincount / textcolumns / <column> + '_ratio' (column specific)
-* bneo/bn7o/bn9o: for numerical set graining to equal population bins for ordinal encoded bins 
+* bneo/bn7o/bn9o: for numerical set graining to equal population bins for ordinal encoded bins. 
 bin count defaults to 5/7/9 eg for bne0/bn7o/bn9o
   - default infill: adjacent cell
   - default NArowtype: numeric
