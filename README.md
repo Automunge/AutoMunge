@@ -1618,6 +1618,42 @@ test set returned values >= 0, such as might be useful for kernel PCA for instan
   - suffix appender: '_sqrt'
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: meansqrt
+* addd: performs addition of an integer or float to a set
+  - default infill: mean
+  - default NArowtype: numeric
+  - suffix appender: '_addd'
+  - assignparam parameters accepted: 'add' for value added (default to 1)
+  - driftreport postmunge metrics: mean, add
+* sbtr: performs subtraction of an integer or float to a set
+  - default infill: mean
+  - default NArowtype: numeric
+  - suffix appender: '_sbtr'
+  - assignparam parameters accepted: 'subtract' for value subtracted (default to 1)
+  - driftreport postmunge metrics: mean, subtract
+* mltp: performs multiplication of an integer or float to a set
+  - default infill: mean
+  - default NArowtype: numeric
+  - suffix appender: '_mltp'
+  - assignparam parameters accepted: 'multiply' for value multiplied (default to 2)
+  - driftreport postmunge metrics: mean, multiply
+* divd: performs division of an integer or float to a set
+  - default infill: mean
+  - default NArowtype: numeric
+  - suffix appender: '_divd'
+  - assignparam parameters accepted: 'divide' for value subtracted (default to 2)
+  - driftreport postmunge metrics: mean, divide
+* rais: performs raising to a power of an integer or float to a set
+  - default infill: mean
+  - default NArowtype: numeric
+  - suffix appender: '_rais'
+  - assignparam parameters accepted: 'raiser' for value raised (default to 2)
+  - driftreport postmunge metrics: mean, raiser
+* absl: performs absolute value transform to a set
+  - default infill: mean
+  - default NArowtype: numeric
+  - suffix appender: '_absl'
+  - assignparam parameters accepted: (none)
+  - driftreport postmunge metrics: mean
 ### Numercial Set Bins and Grainings
 * pwrs: bins groupings by powers of 10
   - default infill: mean (ie log(mean))
@@ -1703,6 +1739,36 @@ bin count defaults to 5/7/9 eg for bne0/bn7o/bn9o
   - assignparam parameters accepted: 'bincount' to set number of bins
   - driftreport postmunge metrics: binsmean / bn_min / bn_max / bn_delta / bn_count / bins_id / 
 			           bins_cuts / bincount / ordl_activations_dict
+* bkt1: for numerical set graining to user specified encoded bins. First and last bins unconstrained.
+  - default infill: mean
+  - default NArowtype: numeric
+  - suffix appender: '_bkt1_#1' where #1 is the bin identifier (# from min)
+  - assignparam parameters accepted: 'buckets', a list of numbers, to set bucket boundaries (leave out +/-'inf')
+					   defaults to [0,1,2] (arbitrary plug values)
+  - driftreport postmunge metrics: binsmean / buckets / bins_cuts / bins_id / textcolumns / 
+					   <column> + '_ratio' (column specific)
+* bkt2: for numerical set graining to user specified encoded bins. First and last bins bounded.
+  - default infill: mean
+  - default NArowtype: numeric
+  - suffix appender: '_bkt2_#1' where #1 is the bin identifier (# from min)
+  - assignparam parameters accepted: 'buckets', a list of numbers, to set bucket boundaries
+					   defaults to [0,1,2] (arbitrary plug values)
+  - driftreport postmunge metrics: binsmean / buckets / bins_cuts / bins_id / textcolumns / 
+					   <column> + '_ratio' (column specific)
+* bkt3: for numerical set graining to user specified ordinal encoded bins. First and last bins unconstrained.
+  - default infill: mean
+  - default NArowtype: numeric
+  - suffix appender: '_bkt3'
+  - assignparam parameters accepted: 'buckets', a list of numbers, to set bucket boundaries (leave out +/-'inf')
+					   defaults to [0,1,2] (arbitrary plug values)
+  - driftreport postmunge metrics: binsmean / buckets / bins_cuts / bins_id / ordl_activations_dict
+* bkt4: for numerical set graining to user specified ordinal encoded bins. First and last bins bounded.
+  - default infill: mean
+  - default NArowtype: numeric
+  - suffix appender: '_bkt4'
+  - assignparam parameters accepted: 'buckets', a list of numbers, to set bucket boundaries
+					   defaults to [0,1,2] (arbitrary plug values)
+  - driftreport postmunge metrics: binsmean / buckets / bins_cuts / bins_id / ordl_activations_dict
 ### Sequential Numerical Set Transformations
 * dxdt/d2dt/d3dt: rate of change (row value minus value in preceding row)
   - default infill: adjacent cells
