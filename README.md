@@ -159,8 +159,10 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
 		         'bins':[], 'bint':[], 'bsor':[], 'pwr2':[], 'por2':[], \
 			 'bnwd':[], 'bnwK':[], 'bnwM':[], 'bnwo':[], 'bnKo':[], 'bnMo':[], \
 			 'bnep':[], 'bne7':[], 'bne9':[], 'bneo':[], 'bn7o':[], 'bn9o':[], \
-		         'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
-		         'log0':[], 'log1':[], 'sqrt':[], \
+                         'bkt1':[], 'bkt2':[], 'bkt3':[], 'bkt4':[], \
+                         'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
+                         'addd':[], 'sbtr':[], 'mltp':[], 'divd':[], \
+                         'log0':[], 'log1':[], 'sqrt':[], 'rais':[], 'absl':[], \
 		         'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
 		         'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
 			 'Utxt':[], 'Utx2':[], 'Utx3':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
@@ -375,8 +377,10 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
 		         'bins':[], 'bint':[], 'bsor':[], 'pwr2':[], 'por2':[], \
 			 'bnwd':[], 'bnwK':[], 'bnwM':[], 'bnwo':[], 'bnKo':[], 'bnMo':[], \
 			 'bnep':[], 'bne7':[], 'bne9':[], 'bneo':[], 'bn7o':[], 'bn9o':[], \
-		         'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
-		         'log0':[], 'log1':[], 'sqrt':[], \
+                         'bkt1':[], 'bkt2':[], 'bkt3':[], 'bkt4':[], \
+                         'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
+                         'addd':[], 'sbtr':[], 'mltp':[], 'divd':[], \
+                         'log0':[], 'log1':[], 'sqrt':[], 'rais':[], 'absl':[], \
 		         'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
 		         'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
 			 'Utxt':[], 'Utx2':[], 'Utx3':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
@@ -564,8 +568,10 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
 		         'bins':[], 'bint':[], 'bsor':[], 'pwr2':[], 'por2':[], \
 			 'bnwd':[], 'bnwK':[], 'bnwM':[], 'bnwo':[], 'bnKo':[], 'bnMo':[], \
 			 'bnep':[], 'bne7':[], 'bne9':[], 'bneo':[], 'bn7o':[], 'bn9o':[], \
-		         'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
-		         'log0':[], 'log1':[], 'sqrt':[], \
+                         'bkt1':[], 'bkt2':[], 'bkt3':[], 'bkt4':[], \
+                         'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
+                         'addd':[], 'sbtr':[], 'mltp':[], 'divd':[], \
+                         'log0':[], 'log1':[], 'sqrt':[], 'rais':[], 'absl':[], \
 		         'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
 		         'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
 			 'Utxt':[], 'Utx2':[], 'Utx3':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
@@ -882,8 +888,10 @@ such as could potentially result in memory savings.
 		 'bins':[], 'bint':[], 'bsor':[], 'pwr2':[], 'por2':[], \
 		 'bnwd':[], 'bnwK':[], 'bnwM':[], 'bnwo':[], 'bnKo':[], 'bnMo':[], \
 		 'bnep':[], 'bne7':[], 'bne9':[], 'bneo':[], 'bn7o':[], 'bn9o':[], \
-		 'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
-		 'log0':[], 'log1':[], 'sqrt':[], \
+                 'bkt1':[], 'bkt2':[], 'bkt3':[], 'bkt4':[], \
+                 'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
+                 'addd':[], 'sbtr':[], 'mltp':[], 'divd':[], \
+                 'log0':[], 'log1':[], 'sqrt':[], 'rais':[], 'absl':[], \
 		 'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
 		 'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
 		 'Utxt':[], 'Utx2':[], 'Utx3':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
@@ -3455,6 +3463,96 @@ If you want to skip to the next section you can click here: [Custom Transformati
     transform_dict.update({'sqrt' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['sqrt'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'addd' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['addd'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+  
+    transform_dict.update({'sbtr' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['sbtr'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'mltp' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['mltp'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'divd' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['divd'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'rais' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['rais'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'absl' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['absl'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'bkt1' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['bkt1'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'bkt2' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['bkt2'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'bkt3' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['bkt3'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'bkt4' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['bkt4'], \
                                      'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
