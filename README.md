@@ -4004,6 +4004,7 @@ def postprocess_mnm3_class(mdf_test, column, postprocess_dict, columnkey, params
   #and params are any column specific parameters to be passed by user in assignparam
 
   #retrieve normalization parameters from postprocess_dict
+  #normkey is the column returned from original transformation, a key used to access parameters
   normkey = column + '_mnm8'
 
   mean = \
@@ -4014,6 +4015,10 @@ def postprocess_mnm3_class(mdf_test, column, postprocess_dict, columnkey, params
 
   quantilemax = \
   postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['quantilemax']
+  
+  #(note that for cases where you might not know the suffix that was appended in advance,
+  #I have a few methods to retrieve a normkey using properties of data structures, contact
+  #the author and I can point you to them.)
 
   #copy original column for implementation
   mdf_test[column + '_mnm8'] = mdf_test[column].copy()
