@@ -1522,6 +1522,96 @@ class AutoMunge:
                                      'coworkers' : [], \
                                      'friends' : []}})
     
+    transform_dict.update({'addd' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['addd'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+  
+    transform_dict.update({'sbtr' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['sbtr'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'mltp' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['mltp'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'divd' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['divd'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'rais' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['rais'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'absl' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['absl'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'bkt1' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['bkt1'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'bkt2' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['bkt2'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'bkt3' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['bkt3'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'bkt4' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['bkt4'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
     transform_dict.update({'wkdy' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['wkdy'], \
@@ -2695,6 +2785,66 @@ class AutoMunge:
                                   'NArowtype' : 'nonnegativenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'sqrt'}})
+    process_dict.update({'addd' : {'dualprocess' : self.process_addd_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_addd_class, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'addd'}})
+    process_dict.update({'sbtr' : {'dualprocess' : self.process_sbtr_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_sbtr_class, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'sbtr'}})
+    process_dict.update({'mltp' : {'dualprocess' : self.process_mltp_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_mltp_class, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'mltp'}})
+    process_dict.update({'divd' : {'dualprocess' : self.process_divd_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_divd_class, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'divd'}})
+    process_dict.update({'rais' : {'dualprocess' : self.process_rais_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_rais_class, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'rais'}})
+    process_dict.update({'absl' : {'dualprocess' : self.process_absl_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_absl_class, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'absl'}})
+    process_dict.update({'bkt1' : {'dualprocess' : self.process_bkt1_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_bkt1_class, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'bkt1'}})
+    process_dict.update({'bkt2' : {'dualprocess' : self.process_bkt2_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_bkt2_class, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'bkt2'}})
+    process_dict.update({'bkt3' : {'dualprocess' : self.process_bkt3_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_bkt3_class, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'bkt3'}})
+    process_dict.update({'bkt4' : {'dualprocess' : self.process_bkt4_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_bkt4_class, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'bkt4'}})
     process_dict.update({'wkdy' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_wkdy_class, \
                                   'postprocess' : None, \
@@ -10911,6 +11061,450 @@ class AutoMunge:
 
         
     return mdf_train, mdf_test, column_dict_list
+  
+  def process_addd_class(self, mdf_train, mdf_test, column, category, \
+                         postprocess_dict, params = {}):
+    '''
+    #process_addd_class(.)
+    #function to apply addition transform
+    #takes as arguement pandas dataframe of training and test data (mdf_train), (mdf_test)\
+    #and the name of the column string ('column') and parent category (category)
+    #accepts parameter 'add' for amount of addition, otherwise defaults to adding 1
+    #applies an addition transform
+    #replaces non-numeric entries with set mean after addition
+    #returns same dataframes with new column of name column + '_addd'
+    '''
+    
+    if 'add' in params:
+        
+      add = params['add']
+    
+    else:
+      
+      add = 1
+    
+    #copy source column into new column
+    mdf_train[column + '_addd'] = mdf_train[column].copy()
+    mdf_test[column + '_addd'] = mdf_test[column].copy()
+
+    #convert all values to either numeric or NaN
+    mdf_train[column + '_addd'] = pd.to_numeric(mdf_train[column + '_addd'], errors='coerce')
+    mdf_test[column + '_addd'] = pd.to_numeric(mdf_test[column + '_addd'], errors='coerce')
+    
+    
+    #apply addition
+    mdf_train[column + '_addd'] = mdf_train[column + '_addd'] + add
+    mdf_test[column + '_addd'] = mdf_test[column + '_addd'] + add
+    
+    #get mean of train set
+    mean = mdf_train[column + '_addd'].mean()
+    
+    if mean != mean:
+      mean = 0
+
+    #replace missing data with training set mean
+    mdf_train[column + '_addd'] = mdf_train[column + '_addd'].fillna(mean)
+    mdf_test[column + '_addd'] = mdf_test[column + '_addd'].fillna(mean)
+
+
+    #create list of columns
+    nmbrcolumns = [column + '_addd']
+
+
+    nmbrnormalization_dict = {column + '_addd' : {'mean' : mean, \
+                                                  'add' : add}}
+
+    #store some values in the nmbr_dict{} for use later in ML infill methods
+    column_dict_list = []
+
+    for nc in nmbrcolumns:
+
+      if nc[-5:] == '_addd':
+
+        column_dict = { nc : {'category' : 'addd', \
+                             'origcategory' : category, \
+                             'normalization_dict' : nmbrnormalization_dict, \
+                             'origcolumn' : column, \
+                             'columnslist' : nmbrcolumns, \
+                             'categorylist' : nmbrcolumns, \
+                             'infillmodel' : False, \
+                             'infillcomplete' : False, \
+                             'deletecolumn' : False}}
+
+        column_dict_list.append(column_dict.copy())
+    
+
+        
+    return mdf_train, mdf_test, column_dict_list
+  
+  
+  def process_sbtr_class(self, mdf_train, mdf_test, column, category, \
+                         postprocess_dict, params = {}):
+    '''
+    #process_sbtr_class(.)
+    #function to apply subtraction transform
+    #takes as arguement pandas dataframe of training and test data (mdf_train), (mdf_test)\
+    #and the name of the column string ('column') and parent category (category)
+    #accepts parameter 'subtract' for amount of subtraction, otherwise defaults to subtracting 1
+    #applies a subtraction transform
+    #replaces non-numeric entries with set mean after subtraction
+    #returns same dataframes with new column of name column + '_sbtr'
+    '''
+    
+    if 'subtract' in params:
+        
+      subtract = params['subtract']
+    
+    else:
+      
+      subtract = 1
+    
+    #copy source column into new column
+    mdf_train[column + '_sbtr'] = mdf_train[column].copy()
+    mdf_test[column + '_sbtr'] = mdf_test[column].copy()
+
+    #convert all values to either numeric or NaN
+    mdf_train[column + '_sbtr'] = pd.to_numeric(mdf_train[column + '_sbtr'], errors='coerce')
+    mdf_test[column + '_sbtr'] = pd.to_numeric(mdf_test[column + '_sbtr'], errors='coerce')
+    
+    
+    #apply subtraction
+    mdf_train[column + '_sbtr'] = mdf_train[column + '_sbtr'] - subtract
+    mdf_test[column + '_sbtr'] = mdf_test[column + '_sbtr'] - subtract
+    
+    #get mean of train set
+    mean = mdf_train[column + '_sbtr'].mean()
+    
+    if mean != mean:
+      mean = 0
+
+    #replace missing data with training set mean
+    mdf_train[column + '_sbtr'] = mdf_train[column + '_sbtr'].fillna(mean)
+    mdf_test[column + '_sbtr'] = mdf_test[column + '_sbtr'].fillna(mean)
+
+
+    #create list of columns
+    nmbrcolumns = [column + '_sbtr']
+
+
+    nmbrnormalization_dict = {column + '_sbtr' : {'mean' : mean, \
+                                                  'subtract' : subtract}}
+
+    #store some values in the nmbr_dict{} for use later in ML infill methods
+    column_dict_list = []
+
+    for nc in nmbrcolumns:
+
+      if nc[-5:] == '_sbtr':
+
+        column_dict = { nc : {'category' : 'sbtr', \
+                             'origcategory' : category, \
+                             'normalization_dict' : nmbrnormalization_dict, \
+                             'origcolumn' : column, \
+                             'columnslist' : nmbrcolumns, \
+                             'categorylist' : nmbrcolumns, \
+                             'infillmodel' : False, \
+                             'infillcomplete' : False, \
+                             'deletecolumn' : False}}
+
+        column_dict_list.append(column_dict.copy())
+    
+
+        
+    return mdf_train, mdf_test, column_dict_list
+  
+  
+  def process_mltp_class(self, mdf_train, mdf_test, column, category, \
+                         postprocess_dict, params = {}):
+    '''
+    #process_mltp_class(.)
+    #function to apply multiplication transform
+    #takes as arguement pandas dataframe of training and test data (mdf_train), (mdf_test)\
+    #and the name of the column string ('column') and parent category (category)
+    #accepts parameter 'multiply' for amount of addition, otherwise defaults to multiplying 2
+    #applies an multiplication transform
+    #replaces non-numeric entries with set mean after addition
+    #returns same dataframes with new column of name column + '_mltp'
+    '''
+    
+    if 'multiply' in params:
+        
+      multiply = params['multiply']
+    
+    else:
+      
+      multiply = 2
+    
+    #copy source column into new column
+    mdf_train[column + '_mltp'] = mdf_train[column].copy()
+    mdf_test[column + '_mltp'] = mdf_test[column].copy()
+
+    #convert all values to either numeric or NaN
+    mdf_train[column + '_mltp'] = pd.to_numeric(mdf_train[column + '_mltp'], errors='coerce')
+    mdf_test[column + '_mltp'] = pd.to_numeric(mdf_test[column + '_mltp'], errors='coerce')
+    
+    
+    #apply multiplication
+    mdf_train[column + '_mltp'] = mdf_train[column + '_mltp'] * multiply
+    mdf_test[column + '_mltp'] = mdf_test[column + '_mltp'] * multiply
+    
+    #get mean of train set
+    mean = mdf_train[column + '_mltp'].mean()
+    
+    if mean != mean:
+      mean = 0
+
+    #replace missing data with training set mean
+    mdf_train[column + '_mltp'] = mdf_train[column + '_mltp'].fillna(mean)
+    mdf_test[column + '_mltp'] = mdf_test[column + '_mltp'].fillna(mean)
+
+
+    #create list of columns
+    nmbrcolumns = [column + '_mltp']
+
+
+    nmbrnormalization_dict = {column + '_mltp' : {'mean' : mean, \
+                                                  'multiply' : multiply}}
+
+    #store some values in the nmbr_dict{} for use later in ML infill methods
+    column_dict_list = []
+
+    for nc in nmbrcolumns:
+
+      if nc[-5:] == '_mltp':
+
+        column_dict = { nc : {'category' : 'mltp', \
+                             'origcategory' : category, \
+                             'normalization_dict' : nmbrnormalization_dict, \
+                             'origcolumn' : column, \
+                             'columnslist' : nmbrcolumns, \
+                             'categorylist' : nmbrcolumns, \
+                             'infillmodel' : False, \
+                             'infillcomplete' : False, \
+                             'deletecolumn' : False}}
+
+        column_dict_list.append(column_dict.copy())
+    
+
+        
+    return mdf_train, mdf_test, column_dict_list
+  
+  
+  def process_divd_class(self, mdf_train, mdf_test, column, category, \
+                         postprocess_dict, params = {}):
+    '''
+    #process_divd_class(.)
+    #function to apply division transform
+    #accepts parameter 'divide' for amount of division, otherwise defaults to dividing by 2
+    #applies an division transform
+    #replaces non-numeric entries with set mean after division
+    #returns same dataframes with new column of name column + '_divd'
+    '''
+    
+    if 'divide' in params:
+        
+      divide = params['divide']
+    
+    else:
+      
+      divide = 2
+      
+    #special case override to avoid div by 0
+    if divide == 0:
+      divide = 1
+    
+    #copy source column into new column
+    mdf_train[column + '_divd'] = mdf_train[column].copy()
+    mdf_test[column + '_divd'] = mdf_test[column].copy()
+
+    #convert all values to either numeric or NaN
+    mdf_train[column + '_divd'] = pd.to_numeric(mdf_train[column + '_divd'], errors='coerce')
+    mdf_test[column + '_divd'] = pd.to_numeric(mdf_test[column + '_divd'], errors='coerce')
+    
+    
+    #apply multiplication
+    mdf_train[column + '_divd'] = mdf_train[column + '_divd'] / divide
+    mdf_test[column + '_divd'] = mdf_test[column + '_divd'] / divide
+    
+    #get mean of train set
+    mean = mdf_train[column + '_divd'].mean()
+    
+    if mean != mean:
+      mean = 0
+
+    #replace missing data with training set mean
+    mdf_train[column + '_divd'] = mdf_train[column + '_divd'].fillna(mean)
+    mdf_test[column + '_divd'] = mdf_test[column + '_divd'].fillna(mean)
+
+
+    #create list of columns
+    nmbrcolumns = [column + '_divd']
+
+
+    nmbrnormalization_dict = {column + '_divd' : {'mean' : mean, \
+                                                  'divide' : divide}}
+
+    #store some values in the nmbr_dict{} for use later in ML infill methods
+    column_dict_list = []
+
+    for nc in nmbrcolumns:
+
+      if nc[-5:] == '_divd':
+
+        column_dict = { nc : {'category' : 'divd', \
+                             'origcategory' : category, \
+                             'normalization_dict' : nmbrnormalization_dict, \
+                             'origcolumn' : column, \
+                             'columnslist' : nmbrcolumns, \
+                             'categorylist' : nmbrcolumns, \
+                             'infillmodel' : False, \
+                             'infillcomplete' : False, \
+                             'deletecolumn' : False}}
+
+        column_dict_list.append(column_dict.copy())
+    
+
+        
+    return mdf_train, mdf_test, column_dict_list
+  
+  
+  def process_rais_class(self, mdf_train, mdf_test, column, category, \
+                         postprocess_dict, params = {}):
+    '''
+    #process_rais_class(.)
+    #function to apply raise to a power transform
+    #accepts parameter 'raiser' for amount of power, otherwise defaults to square (raise by 2)
+    #applies an raise transform
+    #replaces non-numeric entries with set mean after raise
+    #returns same dataframes with new column of name column + '_rais'
+    '''
+    
+    if 'raiser' in params:
+        
+      raiser = params['raiser']
+    
+    else:
+      
+      raiser = 2
+    
+    #copy source column into new column
+    mdf_train[column + '_rais'] = mdf_train[column].copy()
+    mdf_test[column + '_rais'] = mdf_test[column].copy()
+
+    #convert all values to either numeric or NaN
+    mdf_train[column + '_rais'] = pd.to_numeric(mdf_train[column + '_rais'], errors='coerce')
+    mdf_test[column + '_rais'] = pd.to_numeric(mdf_test[column + '_rais'], errors='coerce')
+    
+    
+    #apply addition
+    mdf_train[column + '_rais'] = mdf_train[column + '_rais'] ** raiser
+    mdf_test[column + '_rais'] = mdf_test[column + '_rais'] ** raiser
+    
+    #get mean of train set
+    mean = mdf_train[column + '_rais'].mean()
+    
+    if mean != mean:
+      mean = 0
+
+    #replace missing data with training set mean
+    mdf_train[column + '_rais'] = mdf_train[column + '_rais'].fillna(mean)
+    mdf_test[column + '_rais'] = mdf_test[column + '_rais'].fillna(mean)
+
+
+    #create list of columns
+    nmbrcolumns = [column + '_rais']
+
+
+    nmbrnormalization_dict = {column + '_rais' : {'mean' : mean, \
+                                                  'raiser' : raiser}}
+
+    #store some values in the nmbr_dict{} for use later in ML infill methods
+    column_dict_list = []
+
+    for nc in nmbrcolumns:
+
+      if nc[-5:] == '_rais':
+
+        column_dict = { nc : {'category' : 'rais', \
+                             'origcategory' : category, \
+                             'normalization_dict' : nmbrnormalization_dict, \
+                             'origcolumn' : column, \
+                             'columnslist' : nmbrcolumns, \
+                             'categorylist' : nmbrcolumns, \
+                             'infillmodel' : False, \
+                             'infillcomplete' : False, \
+                             'deletecolumn' : False}}
+
+        column_dict_list.append(column_dict.copy())
+    
+
+        
+    return mdf_train, mdf_test, column_dict_list
+  
+  
+  def process_absl_class(self, mdf_train, mdf_test, column, category, \
+                         postprocess_dict, params = {}):
+    '''
+    #process_absl_class(.)
+    #function to apply absolute transform
+    #does not accept paraemters
+    #applies an absolute transform
+    #replaces non-numeric entries with set mean after transform
+    #returns same dataframes with new column of name column + '_absl'
+    '''
+    
+    #copy source column into new column
+    mdf_train[column + '_absl'] = mdf_train[column].copy()
+    mdf_test[column + '_absl'] = mdf_test[column].copy()
+
+    #convert all values to either numeric or NaN
+    mdf_train[column + '_absl'] = pd.to_numeric(mdf_train[column + '_absl'], errors='coerce')
+    mdf_test[column + '_absl'] = pd.to_numeric(mdf_test[column + '_absl'], errors='coerce')
+    
+    
+    #apply addition
+    mdf_train[column + '_absl'] = mdf_train[column + '_absl'].abs()
+    mdf_test[column + '_absl'] = mdf_test[column + '_absl'].abs()
+    
+    #get mean of train set
+    mean = mdf_train[column + '_absl'].mean()
+    
+    if mean != mean:
+      mean = 0
+
+    #replace missing data with training set mean
+    mdf_train[column + '_absl'] = mdf_train[column + '_absl'].fillna(mean)
+    mdf_test[column + '_absl'] = mdf_test[column + '_absl'].fillna(mean)
+
+
+    #create list of columns
+    nmbrcolumns = [column + '_absl']
+
+
+    nmbrnormalization_dict = {column + '_absl' : {'mean' : mean}}
+
+    #store some values in the nmbr_dict{} for use later in ML infill methods
+    column_dict_list = []
+
+    for nc in nmbrcolumns:
+
+      if nc[-5:] == '_absl':
+
+        column_dict = { nc : {'category' : 'absl', \
+                             'origcategory' : category, \
+                             'normalization_dict' : nmbrnormalization_dict, \
+                             'origcolumn' : column, \
+                             'columnslist' : nmbrcolumns, \
+                             'categorylist' : nmbrcolumns, \
+                             'infillmodel' : False, \
+                             'infillcomplete' : False, \
+                             'deletecolumn' : False}}
+
+        column_dict_list.append(column_dict.copy())
+    
+
+        
+    return mdf_train, mdf_test, column_dict_list
 
   
   def process_pwrs_class(self, mdf_train, mdf_test, column, category, \
@@ -13849,6 +14443,504 @@ class AutoMunge:
       if nc in nmbrcolumns:
 
         column_dict = { nc : {'category' : 'bn9o', \
+                             'origcategory' : category, \
+                             'normalization_dict' : nmbrnormalization_dict, \
+                             'origcolumn' : column, \
+                             'columnslist' : nmbrcolumns, \
+                             'categorylist' : nmbrcolumns, \
+                             'infillmodel' : False, \
+                             'infillcomplete' : False, \
+                             'deletecolumn' : False}}
+
+        column_dict_list.append(column_dict.copy())
+
+
+    return mdf_train, mdf_test, column_dict_list
+  
+  def process_bkt1_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
+    '''
+    #processes a numerical set by creating custom bins coresponding to 
+    #parameter 'buckets' which defaults to [0,1]
+    #first and last buckets unconstrained
+    #and returning in one-hot encoded set
+    
+    #removes buckets without activations in train set
+    '''
+    
+    if 'buckets' in params:
+        
+      buckets = params['buckets']
+    
+    else:
+      
+      buckets = [0,1,2]
+      
+      
+    binscolumn = column + '_bkt1'
+
+    #store original column for later reversion
+    mdf_train[binscolumn] = mdf_train[column].copy()
+    mdf_test[binscolumn] = mdf_test[column].copy()
+
+    #convert all values to either numeric or NaN
+    mdf_train[binscolumn] = pd.to_numeric(mdf_train[binscolumn], errors='coerce')
+    mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
+
+    #get mean of training data
+    mean = mdf_train[binscolumn].mean()
+    
+    if mean != mean:
+      mean = 0
+
+    #replace missing data with training set mean
+    mdf_train[binscolumn] = mdf_train[binscolumn].fillna(mean)
+    mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
+
+    #assemble buckets  
+    bins_cuts = buckets.copy()
+    bins_cuts.insert(0, -np.inf)
+    bins_cuts.insert(len(bins_cuts), np.inf)
+    
+    #create labels for bins
+    bins_id = list(range(len(bins_cuts)-1))
+    
+    
+    #create bins based on increments
+#     binscolumn = column + '_bnwd'
+    mdf_train[binscolumn] = \
+    pd.cut(mdf_train[binscolumn], bins = bins_cuts,  \
+           labels = bins_id, precision=len(str(len(bins_id))))
+    mdf_test[binscolumn] = \
+    pd.cut(mdf_test[binscolumn], bins = bins_cuts,  \
+           labels = bins_id, precision=len(str(len(bins_id))))
+
+    foundinset = mdf_train[binscolumn].unique()
+    
+    textcolumns = []
+    for i in foundinset:
+      textcolumns.append(binscolumn + '_' + str(i))
+      
+    #postprocess_textsupport_class will return columns in alphabetical order
+    textcolumns.sort()
+    
+    #remove nan for cases where value did not fall within range
+    textcolumns = [x for x in textcolumns if x[-3:] != 'nan']
+    
+    #we're going to use the postprocess_text_class function here since it 
+    #allows us to force the columns even if no values present in the set
+    #however to do so we're going to have to construct a fake postprocess_dict
+    
+    #a future extension should probnably build this capacity into a new distinct function
+    
+    #here are some data structures for reference to create the below
+#     def postprocess_text_class(self, mdf_test, column, postprocess_dict, columnkey):
+#     textcolumns = postprocess_dict['column_dict'][columnkey]['columnslist']
+    
+    tempkey = 'tempkey'
+    tempbins_postprocess_dict = {'column_dict' : {tempkey : {'columnslist' : textcolumns,\
+                                                             'categorylist' : textcolumns}}}
+    
+    #process bins as a categorical set
+    mdf_train = \
+    self.postprocess_textsupport_class(mdf_train, binscolumn, tempbins_postprocess_dict, tempkey)
+    mdf_test = \
+    self.postprocess_textsupport_class(mdf_test, binscolumn, tempbins_postprocess_dict, tempkey)
+    
+    #change data type for memory savings
+    for textcolumn in textcolumns:
+      mdf_train[textcolumn] = mdf_train[textcolumn].astype(np.int8)
+      mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.int8)
+      
+    
+    #delete the support column
+    del mdf_train[binscolumn]
+    del mdf_test[binscolumn]
+
+    #create list of columns
+    nmbrcolumns = textcolumns
+
+
+
+    #nmbrnormalization_dict = {'mean' : mean, 'std' : std}
+
+    #store some values in the nmbr_dict{} for use later in ML infill methods
+    column_dict_list = []
+
+    for nc in nmbrcolumns:
+      
+      #new parameter collected for driftreport
+      tc_ratio = nc + '_ratio'
+      tcratio = mdf_train[nc].sum() / mdf_train[nc].shape[0]
+
+      nmbrnormalization_dict = {nc : {'binsmean' : mean, \
+                                      'buckets' : buckets, \
+                                      'bins_cuts' : bins_cuts, \
+                                      'bins_id' : bins_id, \
+                                      'textcolumns' : textcolumns, \
+                                       tc_ratio : tcratio}}
+
+      if nc in textcolumns:
+
+        column_dict = { nc : {'category' : 'bkt1', \
+                             'origcategory' : category, \
+                             'normalization_dict' : nmbrnormalization_dict, \
+                             'origcolumn' : column, \
+                             'columnslist' : nmbrcolumns, \
+                             'categorylist' : textcolumns, \
+                             'infillmodel' : False, \
+                             'infillcomplete' : False, \
+                             'deletecolumn' : False}}
+
+        column_dict_list.append(column_dict.copy())
+       
+    return mdf_train, mdf_test, column_dict_list
+  
+  
+  def process_bkt2_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
+    '''
+    #processes a numerical set by creating custom bins coresponding to 
+    #parameter 'buckets' which defaults to [0,1]
+    #first and last buckets bounded
+    #and returning in one-hot encoded set
+    
+    #removes buckets without activations in train set
+    '''
+    
+    if 'buckets' in params:
+        
+      buckets = params['buckets']
+    
+    else:
+      
+      buckets = [0,1,2]
+      
+    binscolumn = column + '_bkt2'
+
+    #store original column for later reversion
+    mdf_train[binscolumn] = mdf_train[column].copy()
+    mdf_test[binscolumn] = mdf_test[column].copy()
+
+    #convert all values to either numeric or NaN
+    mdf_train[binscolumn] = pd.to_numeric(mdf_train[binscolumn], errors='coerce')
+    mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
+
+    #get mean of training data
+    mean = mdf_train[binscolumn].mean()
+    
+    if mean != mean:
+      mean = 0
+
+    #replace missing data with training set mean
+    mdf_train[binscolumn] = mdf_train[binscolumn].fillna(mean)
+    mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
+
+    #assemble buckets  
+    bins_cuts = buckets.copy()
+#     bins_cuts.insert(0, -np.inf)
+#     bins_cuts.insert(len(bins_cuts), np.inf)
+
+    #create labels for bins
+    bins_id = list(range(len(bins_cuts)-1))
+    
+    #create bins based on increments
+#     binscolumn = column + '_bnwd'
+    mdf_train[binscolumn] = \
+    pd.cut(mdf_train[binscolumn], bins = bins_cuts,  \
+           labels = bins_id, precision=len(str(len(bins_id))))
+    mdf_test[binscolumn] = \
+    pd.cut(mdf_test[binscolumn], bins = bins_cuts,  \
+           labels = bins_id, precision=len(str(len(bins_id))))
+
+    foundinset = mdf_train[binscolumn].unique()
+    
+    textcolumns = []
+    for i in foundinset:
+      textcolumns.append(binscolumn + '_' + str(i))
+      
+    #postprocess_textsupport_class will return columns in alphabetical order
+    textcolumns.sort()
+    
+    #remove nan for cases where value did not fall within range
+    textcolumns = [x for x in textcolumns if x[-3:] != 'nan']
+    
+    #we're going to use the postprocess_text_class function here since it 
+    #allows us to force the columns even if no values present in the set
+    #however to do so we're going to have to construct a fake postprocess_dict
+    
+    #a future extension should probnably build this capacity into a new distinct function
+    
+    #here are some data structures for reference to create the below
+#     def postprocess_text_class(self, mdf_test, column, postprocess_dict, columnkey):
+#     textcolumns = postprocess_dict['column_dict'][columnkey]['columnslist']
+    
+    tempkey = 'tempkey'
+    tempbins_postprocess_dict = {'column_dict' : {tempkey : {'columnslist' : textcolumns,\
+                                                             'categorylist' : textcolumns}}}
+    
+    #process bins as a categorical set
+    mdf_train = \
+    self.postprocess_textsupport_class(mdf_train, binscolumn, tempbins_postprocess_dict, tempkey)
+    mdf_test = \
+    self.postprocess_textsupport_class(mdf_test, binscolumn, tempbins_postprocess_dict, tempkey)
+    
+    #change data type for memory savings
+    for textcolumn in textcolumns:
+      mdf_train[textcolumn] = mdf_train[textcolumn].astype(np.int8)
+      mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.int8)
+      
+    
+    #delete the support column
+    del mdf_train[binscolumn]
+    del mdf_test[binscolumn]
+
+    #create list of columns
+    nmbrcolumns = textcolumns
+
+
+
+    #nmbrnormalization_dict = {'mean' : mean, 'std' : std}
+
+    #store some values in the nmbr_dict{} for use later in ML infill methods
+    column_dict_list = []
+
+    for nc in nmbrcolumns:
+      
+      #new parameter collected for driftreport
+      tc_ratio = nc + '_ratio'
+      tcratio = mdf_train[nc].sum() / mdf_train[nc].shape[0]
+
+      nmbrnormalization_dict = {nc : {'binsmean' : mean, \
+                                      'buckets' : buckets, \
+                                      'bins_cuts' : bins_cuts, \
+                                      'bins_id' : bins_id, \
+                                      'textcolumns' : textcolumns, \
+                                       tc_ratio : tcratio}}
+
+      if nc in textcolumns:
+
+        column_dict = { nc : {'category' : 'bkt2', \
+                             'origcategory' : category, \
+                             'normalization_dict' : nmbrnormalization_dict, \
+                             'origcolumn' : column, \
+                             'columnslist' : nmbrcolumns, \
+                             'categorylist' : textcolumns, \
+                             'infillmodel' : False, \
+                             'infillcomplete' : False, \
+                             'deletecolumn' : False}}
+
+        column_dict_list.append(column_dict.copy())
+       
+    return mdf_train, mdf_test, column_dict_list
+  
+  
+  def process_bkt3_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
+    '''
+    #processes a numerical set by creating custom bins coresponding to 
+    #parameter 'buckets' which defaults to [0,1]
+    #first and last buckets unconstrained
+    #and returning in ordinal encoded set
+    
+    #segments without activations are included
+    
+    '''
+    
+    if 'buckets' in params:
+        
+      buckets = params['buckets']
+    
+    else:
+      
+      buckets = [0,1,2]
+      
+    binscolumn = column + '_bkt3'
+
+    #store original column for later reversion
+    mdf_train[binscolumn] = mdf_train[column].copy()
+    mdf_test[binscolumn] = mdf_test[column].copy()
+
+    #convert all values to either numeric or NaN
+    mdf_train[binscolumn] = pd.to_numeric(mdf_train[binscolumn], errors='coerce')
+    mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
+
+    #get mean of training data
+    mean = mdf_train[binscolumn].mean()
+    
+    if mean != mean:
+      mean = 0
+
+    #replace missing data with training set mean
+    mdf_train[binscolumn] = mdf_train[binscolumn].fillna(mean)
+    mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
+
+
+    #assemble buckets  
+    bins_cuts = buckets.copy()
+    bins_cuts.insert(0, -np.inf)
+    bins_cuts.insert(len(bins_cuts), np.inf)
+    
+    #create labels for bins
+    bins_id = list(range(len(bins_cuts)-1))
+      
+    #create bins based on standard deviation increments
+#     binscolumn = column + '_bnwo'
+    mdf_train[binscolumn] = \
+    pd.cut(mdf_train[binscolumn], bins = bins_cuts,  \
+           labels = bins_id, precision=len(str(len(bins_id))))
+    mdf_test[binscolumn] = \
+    pd.cut(mdf_test[binscolumn], bins = bins_cuts,  \
+           labels = bins_id, precision=len(str(len(bins_id))))
+    
+    #change column dtype
+    mdf_train[binscolumn] = mdf_train[binscolumn].astype(int)
+    mdf_test[binscolumn] = mdf_test[binscolumn].astype(int)
+
+
+
+    #create list of columns
+    nmbrcolumns = [binscolumn]
+    
+    #new driftreport metric ordl_activations_dict
+    ordl_activations_dict = {}
+    for unique in mdf_train[binscolumn].unique():
+      sumcalc = (mdf_train[binscolumn] == unique).sum() 
+      ratio = sumcalc / mdf_train[binscolumn].shape[0]
+      ordl_activations_dict.update({unique:ratio})
+
+
+    #nmbrnormalization_dict = {'mean' : mean, 'std' : std}
+
+    #store some values in the nmbr_dict{} for use later in ML infill methods
+    column_dict_list = []
+
+    for nc in nmbrcolumns:
+
+      nmbrnormalization_dict = {nc : {'binsmean' : mean, \
+                                      'buckets' : buckets, \
+                                      'bins_cuts' : bins_cuts, \
+                                      'bins_id' : bins_id, \
+                                      'ordl_activations_dict' : ordl_activations_dict}}
+
+      if nc in nmbrcolumns:
+
+        column_dict = { nc : {'category' : 'bkt3', \
+                             'origcategory' : category, \
+                             'normalization_dict' : nmbrnormalization_dict, \
+                             'origcolumn' : column, \
+                             'columnslist' : nmbrcolumns, \
+                             'categorylist' : nmbrcolumns, \
+                             'infillmodel' : False, \
+                             'infillcomplete' : False, \
+                             'deletecolumn' : False}}
+
+        column_dict_list.append(column_dict.copy())
+
+
+    return mdf_train, mdf_test, column_dict_list
+  
+  
+  def process_bkt4_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
+    '''
+    #processes a numerical set by creating custom bins coresponding to 
+    #parameter 'buckets' which defaults to [0,1]
+    #first and last buckets bounded
+    #and returning in ordinal encoded set
+    
+    #segments without activations are included
+    
+    '''
+    
+    if 'buckets' in params:
+        
+      buckets = params['buckets']
+    
+    else:
+      
+      buckets = [0,1,2]
+      
+    binscolumn = column + '_bkt4'
+
+    #store original column for later reversion
+    mdf_train[binscolumn] = mdf_train[column].copy()
+    mdf_test[binscolumn] = mdf_test[column].copy()
+
+    #convert all values to either numeric or NaN
+    mdf_train[binscolumn] = pd.to_numeric(mdf_train[binscolumn], errors='coerce')
+    mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
+    
+    #set all values that fall outside of bounded buckets to nan for replacement with mean
+    mdf_train.loc[mdf_train[binscolumn] < buckets[0], (binscolumn)] = np.nan
+    mdf_test.loc[mdf_test[binscolumn] < buckets[0], (binscolumn)] = np.nan
+    
+    mdf_train.loc[mdf_train[binscolumn] > buckets[-1], (binscolumn)] = np.nan
+    mdf_test.loc[mdf_test[binscolumn] > buckets[-1], (binscolumn)] = np.nan
+
+    #get mean of training data
+    mean = mdf_train[binscolumn].mean()
+    
+    if mean != mean:
+      mean = 0
+      
+    #edge case, if mean does nto fall within buckets range, we'll apply infill to bottom bucket
+    #this edge case specific to bkt4
+    #this assumes buckets was passed with sorted values
+    if mean < buckets[0] or mean > buckets[-1]:
+      mean = buckets[0]
+
+    #replace missing data with training set mean
+    mdf_train[binscolumn] = mdf_train[binscolumn].fillna(mean)
+    mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
+
+
+    #assemble buckets  
+    bins_cuts = buckets.copy()
+#     bins_cuts.insert(0, -np.inf)
+#     bins_cuts.insert(len(bins_cuts), np.inf)
+
+    #create labels for bins
+    bins_id = list(range(len(bins_cuts)-1))
+      
+    #create bins based on standard deviation increments
+#     binscolumn = column + '_bnwo'
+    mdf_train[binscolumn] = \
+    pd.cut(mdf_train[binscolumn], bins = bins_cuts,  \
+           labels = bins_id, precision=len(str(len(bins_id))))
+    mdf_test[binscolumn] = \
+    pd.cut(mdf_test[binscolumn], bins = bins_cuts,  \
+           labels = bins_id, precision=len(str(len(bins_id))))
+    
+    #change column dtype
+    mdf_train[binscolumn] = mdf_train[binscolumn].astype(int)
+    mdf_test[binscolumn] = mdf_test[binscolumn].astype(int)
+
+
+
+    #create list of columns
+    nmbrcolumns = [binscolumn]
+    
+    #new driftreport metric ordl_activations_dict
+    ordl_activations_dict = {}
+    for unique in mdf_train[binscolumn].unique():
+      sumcalc = (mdf_train[binscolumn] == unique).sum() 
+      ratio = sumcalc / mdf_train[binscolumn].shape[0]
+      ordl_activations_dict.update({unique:ratio})
+
+
+    #nmbrnormalization_dict = {'mean' : mean, 'std' : std}
+
+    #store some values in the nmbr_dict{} for use later in ML infill methods
+    column_dict_list = []
+
+    for nc in nmbrcolumns:
+
+      nmbrnormalization_dict = {nc : {'binsmean' : mean, \
+                                      'buckets' : buckets, \
+                                      'bins_cuts' : bins_cuts, \
+                                      'bins_id' : bins_id, \
+                                      'ordl_activations_dict' : ordl_activations_dict}}
+
+      if nc in nmbrcolumns:
+
+        column_dict = { nc : {'category' : 'bkt4', \
                              'origcategory' : category, \
                              'normalization_dict' : nmbrnormalization_dict, \
                              'origcolumn' : column, \
@@ -19582,8 +20674,10 @@ class AutoMunge:
                              'bins':[], 'bint':[], 'bsor':[], 'pwr2':[], 'por2':[], \
                              'bnwd':[], 'bnwK':[], 'bnwM':[], 'bnwo':[], 'bnKo':[], 'bnMo':[], \
                              'bnep':[], 'bne7':[], 'bne9':[], 'bneo':[], 'bn7o':[], 'bn9o':[], \
+                             'bkt1':[], 'bkt2':[], 'bkt3':[], 'bkt4':[], \
                              'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
-                             'log0':[], 'log1':[], 'sqrt':[], \
+                             'addd':[], 'sbtr':[], 'mltp':[], 'divd':[], \
+                             'log0':[], 'log1':[], 'sqrt':[], 'rais':[], 'absl':[], \
                              'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
                              'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
                              'Utxt':[], 'Utx2':[], 'Utx3':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
@@ -21219,7 +22313,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.19'
+    automungeversion = '3.20'
     application_number = random.randint(100000000000,999999999999)
     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -25969,6 +27063,235 @@ class AutoMunge:
 #     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].astype(np.float32)
 
     return mdf_test
+
+  def postprocess_addd_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+    '''
+    #postprocess_addd_class(.)
+    #function to apply addition transform
+    #takes as arguement pandas dataframe of training and test data (mdf_train), (mdf_test)\
+    #and the name of the column string ('column') and parent category (category)
+    #accepts parameter 'add' for amount of addition, otherwise defaults to adding 1
+    #applies an addition transform
+    #replaces non-numeric entries with set mean after addition
+    #returns same dataframes with new column of name column + '_addd'
+    '''
+    
+    
+    #retrieve normalizastion parameters from postprocess_dict
+    normkey = column + '_addd'
+    
+    mean = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
+    
+    add = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['add']
+
+    #copy original column for implementation
+    mdf_test[column + '_addd'] = mdf_test[column].copy()
+
+
+    #convert all values to either numeric or NaN
+    mdf_test[column + '_addd'] = pd.to_numeric(mdf_test[column + '_addd'], errors='coerce')
+    
+    #lperform addition
+    mdf_test[column + '_addd'] = mdf_test[column + '_addd'] + add
+    
+
+    #replace missing data with training set mean
+    mdf_test[column + '_addd'] = mdf_test[column + '_addd'].fillna(mean)
+
+
+    return mdf_test
+  
+  
+  def postprocess_sbtr_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+    '''
+    #postprocess_sbtr_class(.)
+    #function to apply subtraction transform
+    #takes as arguement pandas dataframe of training and test data (mdf_train), (mdf_test)\
+    #and the name of the column string ('column') and parent category (category)
+    #accepts parameter 'subtract' for amount of subtraction, otherwise defaults to subtracting 1
+    #applies a subtraction transform
+    #replaces non-numeric entries with set mean after subtraction
+    #returns same dataframes with new column of name column + '_sbtr'
+    '''
+    
+    
+    #retrieve normalizastion parameters from postprocess_dict
+    normkey = column + '_sbtr'
+    
+    mean = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
+    
+    subtract = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['subtract']
+
+    #copy original column for implementation
+    mdf_test[column + '_sbtr'] = mdf_test[column].copy()
+
+
+    #convert all values to either numeric or NaN
+    mdf_test[column + '_sbtr'] = pd.to_numeric(mdf_test[column + '_sbtr'], errors='coerce')
+    
+    #lperform subtraction
+    mdf_test[column + '_sbtr'] = mdf_test[column + '_sbtr'] - subtract
+    
+
+    #replace missing data with training set mean
+    mdf_test[column + '_sbtr'] = mdf_test[column + '_sbtr'].fillna(mean)
+
+
+    return mdf_test
+  
+  
+  def postprocess_mltp_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+    '''
+    #postprocess_mltp_class(.)
+    #function to apply multiplication transform
+    #takes as arguement pandas dataframe of training and test data (mdf_train), (mdf_test)\
+    #and the name of the column string ('column') and parent category (category)
+    #accepts parameter 'multiply' for amount of addition, otherwise defaults to multiplying 2
+    #applies an multiplication transform
+    #replaces non-numeric entries with set mean after addition
+    #returns same dataframes with new column of name column + '_mltp'
+    '''
+    
+    
+    #retrieve normalizastion parameters from postprocess_dict
+    normkey = column + '_mltp'
+    
+    mean = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
+    
+    multiply = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['multiply']
+
+    #copy original column for implementation
+    mdf_test[column + '_mltp'] = mdf_test[column].copy()
+
+
+    #convert all values to either numeric or NaN
+    mdf_test[column + '_mltp'] = pd.to_numeric(mdf_test[column + '_mltp'], errors='coerce')
+    
+    #lperform addition
+    mdf_test[column + '_mltp'] = mdf_test[column + '_mltp'] * multiply
+    
+
+    #replace missing data with training set mean
+    mdf_test[column + '_mltp'] = mdf_test[column + '_mltp'].fillna(mean)
+
+
+    return mdf_test
+  
+  
+  def postprocess_divd_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+    '''
+    #postprocess_divd_class(.)
+    #function to apply division transform
+    #accepts parameter 'divide' for amount of division, otherwise defaults to dividing by 2
+    #applies an division transform
+    #replaces non-numeric entries with set mean after division
+    #returns same dataframes with new column of name column + '_divd'
+    '''
+    
+    #retrieve normalizastion parameters from postprocess_dict
+    normkey = column + '_divd'
+    
+    mean = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
+    
+    divide = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['divide']
+
+    #copy original column for implementation
+    mdf_test[column + '_divd'] = mdf_test[column].copy()
+
+
+    #convert all values to either numeric or NaN
+    mdf_test[column + '_divd'] = pd.to_numeric(mdf_test[column + '_divd'], errors='coerce')
+    
+    #lperform addition
+    mdf_test[column + '_divd'] = mdf_test[column + '_divd'] / divide
+    
+
+    #replace missing data with training set mean
+    mdf_test[column + '_divd'] = mdf_test[column + '_divd'].fillna(mean)
+
+
+    return mdf_test
+  
+  
+  def postprocess_rais_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+    '''
+    #postprocess_rais_class(.)
+    #function to apply raise to a power transform
+    #accepts parameter 'raiser' for amount of power, otherwise defaults to square (raise by 2)
+    #applies an raise transform
+    #replaces non-numeric entries with set mean after raise
+    #returns same dataframes with new column of name column + '_rais'
+    '''
+    
+    
+    #retrieve normalizastion parameters from postprocess_dict
+    normkey = column + '_rais'
+    
+    mean = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
+    
+    raiser = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['raiser']
+
+    #copy original column for implementation
+    mdf_test[column + '_rais'] = mdf_test[column].copy()
+
+
+    #convert all values to either numeric or NaN
+    mdf_test[column + '_rais'] = pd.to_numeric(mdf_test[column + '_rais'], errors='coerce')
+    
+    #lperform addition
+    mdf_test[column + '_rais'] = mdf_test[column + '_rais'] ** raiser
+    
+
+    #replace missing data with training set mean
+    mdf_test[column + '_rais'] = mdf_test[column + '_rais'].fillna(mean)
+
+
+    return mdf_test
+  
+  
+  def postprocess_absl_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+    '''
+    #postprocess_absl_class(.)
+    #function to apply absolute transform
+    #does not accept paraemters
+    #applies an absolute transform
+    #replaces non-numeric entries with set mean after transform
+    #returns same dataframes with new column of name column + '_absl'
+    '''
+    
+    
+    #retrieve normalizastion parameters from postprocess_dict
+    normkey = column + '_absl'
+    
+    mean = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
+
+    #copy original column for implementation
+    mdf_test[column + '_absl'] = mdf_test[column].copy()
+
+
+    #convert all values to either numeric or NaN
+    mdf_test[column + '_absl'] = pd.to_numeric(mdf_test[column + '_absl'], errors='coerce')
+    
+    #lperform addition
+    mdf_test[column + '_absl'] = mdf_test[column + '_absl'].abs()
+    
+
+    #replace missing data with training set mean
+    mdf_test[column + '_absl'] = mdf_test[column + '_absl'].fillna(mean)
+
+
+    return mdf_test
   
   def postprocess_bins_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
@@ -27171,6 +28494,282 @@ class AutoMunge:
     else:
       
       mdf_test[binscolumn] = 0
+
+    
+    return mdf_test
+  
+  def postprocess_bkt1_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+    '''
+    #processes a numerical set by creating custom bins coresponding to 
+    #parameter 'buckets' which defaults to [0,1]
+    #first and last buckets unconstrained
+    #and returning in one-hot encoded set
+    
+    #removes buckets without activations in train set
+    '''
+    
+    if 'buckets' in params:
+        
+      buckets = params['buckets']
+    
+    else:
+      
+      buckets = [0,1,2]
+    
+    #to retrieve the normalization dictionary we're going to use new method since we don't yet 
+    #know what the returned columns titles are yet
+    
+    normkey = False
+    
+    if column in postprocess_dict['origcolumn']:
+      
+      columnkeylist = postprocess_dict['origcolumn'][column]['columnkeylist']
+      
+    else:
+      
+      origcolumn = postprocess_dict['column_dict'][column]['origcolumn']
+      
+      columnkeylist = postprocess_dict['origcolumn'][origcolumn]['columnkeylist']
+      
+    
+    for columnkey in columnkeylist:
+      
+      normalization_dict = postprocess_dict['column_dict'][columnkey]['normalization_dict']
+      
+      if 'buckets' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
+        
+        if postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]['buckets'] == buckets:
+        
+          normkey = columnkey
+          
+        
+    if normkey != False:
+      
+      mean = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binsmean']
+      buckets = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['buckets']
+      bins_cuts = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_cuts']
+      bins_id = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_id']
+      textcolumns = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['textcolumns']
+      
+      binscolumn = column + '_bkt1'
+      
+      #store original column for later reversion
+      mdf_test[binscolumn] = mdf_test[column].copy()
+
+      #convert all values to either numeric or NaN
+      mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
+
+      #replace missing data with training set mean
+      mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
+      
+      #create bins based on standard deviation increments
+#       binscolumn = column + '_bnwd'
+
+      mdf_test[binscolumn] = \
+      pd.cut(mdf_test[binscolumn], bins = bins_cuts,  \
+             labels = bins_id, precision=len(str(len(bins_id))))
+
+      tempkey = 'tempkey'
+      tempbins_postprocess_dict = {'column_dict' : {tempkey : {'columnslist' : textcolumns,\
+                                                               'categorylist' : textcolumns}}}
+
+      mdf_test = \
+      self.postprocess_textsupport_class(mdf_test, binscolumn, tempbins_postprocess_dict, tempkey)
+
+
+      #change data type for memory savings
+      for textcolumn in textcolumns:
+        mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.int8)
+
+      #delete the support column
+      del mdf_test[binscolumn]
+
+    
+    return mdf_test
+  
+  
+  def postprocess_bkt2_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+    '''
+    #processes a numerical set by creating custom bins coresponding to 
+    #parameter 'buckets' which defaults to [0,1]
+    #first and last buckets unconstrained
+    #and returning in one-hot encoded set
+    
+    #removes buckets without activations in train set
+    '''
+    
+    if 'buckets' in params:
+        
+      buckets = params['buckets']
+    
+    else:
+      
+      buckets = [0,1,2]
+    
+    #to retrieve the normalization dictionary we're going to use new method since we don't yet 
+    #know what the returned columns titles are yet
+    
+    normkey = False
+    
+    if column in postprocess_dict['origcolumn']:
+      
+      columnkeylist = postprocess_dict['origcolumn'][column]['columnkeylist']
+      
+    else:
+      
+      origcolumn = postprocess_dict['column_dict'][column]['origcolumn']
+      
+      columnkeylist = postprocess_dict['origcolumn'][origcolumn]['columnkeylist']
+    
+    for columnkey in columnkeylist:
+      
+      normalization_dict = postprocess_dict['column_dict'][columnkey]['normalization_dict']
+    
+      if 'buckets' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
+        
+        if postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]['buckets'] == buckets:
+        
+          normkey = columnkey
+        
+    if normkey != False:
+      
+      mean = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binsmean']
+      buckets = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['buckets']
+      bins_cuts = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_cuts']
+      bins_id = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_id']
+      textcolumns = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['textcolumns']
+      
+      binscolumn = column + '_bkt2'
+      
+      #store original column for later reversion
+      mdf_test[binscolumn] = mdf_test[column].copy()
+
+      #convert all values to either numeric or NaN
+      mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
+
+      #replace missing data with training set mean
+      mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
+      
+      #create bins based on standard deviation increments
+#       binscolumn = column + '_bnwd'
+
+      mdf_test[binscolumn] = \
+      pd.cut(mdf_test[binscolumn], bins = bins_cuts,  \
+             labels = bins_id, precision=len(str(len(bins_id))))
+
+      tempkey = 'tempkey'
+      tempbins_postprocess_dict = {'column_dict' : {tempkey : {'columnslist' : textcolumns,\
+                                                               'categorylist' : textcolumns}}}
+
+      mdf_test = \
+      self.postprocess_textsupport_class(mdf_test, binscolumn, tempbins_postprocess_dict, tempkey)
+
+
+      #change data type for memory savings
+      for textcolumn in textcolumns:
+        mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.int8)
+
+      #delete the support column
+      del mdf_test[binscolumn]
+
+    
+    return mdf_test
+  
+  
+  def postprocess_bkt3_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+    '''
+    #processes a numerical set by creating custom bins coresponding to 
+    #parameter 'buckets' which defaults to [0,1]
+    #first and last buckets unconstrained
+    #and returning in ordinal encoded set
+    
+    #segments without activations are included
+    '''
+    
+    #retrieve normalization parameters from postprocess_dict
+    normkey = column +'_bkt3'
+    
+    
+    mean = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binsmean']
+    buckets = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['buckets']
+    bins_cuts = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_cuts']
+    bins_id = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_id']
+    ordl_activations_dict = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordl_activations_dict']
+      
+
+    binscolumn = column + '_bkt3'
+    
+    #store original column for later reversion
+    mdf_test[binscolumn] = mdf_test[column].copy()
+
+    #convert all values to either numeric or NaN
+    mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
+
+    #replace missing data with training set mean
+    mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
+
+
+
+    #create bins based on standard deviation increments
+#     binscolumn = column + '_bnwo'
+    mdf_test[binscolumn] = \
+    pd.cut(mdf_test[binscolumn], bins = bins_cuts,  \
+           labels = bins_id, precision=len(str(len(bins_id))))
+    
+    #change column dtype
+    mdf_test[binscolumn] = mdf_test[binscolumn].astype(int)
+
+    
+    return mdf_test
+  
+  
+  def postprocess_bkt4_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+    '''
+    #processes a numerical set by creating custom bins coresponding to 
+    #parameter 'buckets' which defaults to [0,1]
+    #first and last buckets bounded
+    #and returning in ordinal encoded set
+    
+    #segments without activations are included
+    '''
+    
+    #retrieve normalization parameters from postprocess_dict
+    normkey = column +'_bkt4'
+    
+    
+    mean = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binsmean']
+    buckets = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['buckets']
+    bins_cuts = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_cuts']
+    bins_id = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_id']
+    ordl_activations_dict = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordl_activations_dict']
+      
+
+    binscolumn = column + '_bkt4'
+    
+    #store original column for later reversion
+    mdf_test[binscolumn] = mdf_test[column].copy()
+
+    #convert all values to either numeric or NaN
+    mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
+    
+    #set all values that fall outside of bounded buckets to nan for replacement with mean
+    mdf_test.loc[mdf_test[binscolumn] < buckets[0], (binscolumn)] = np.nan
+    
+    mdf_test.loc[mdf_test[binscolumn] > buckets[-1], (binscolumn)] = np.nan
+
+    #replace missing data with training set mean
+    mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
+
+
+
+    #create bins based on standard deviation increments
+#     binscolumn = column + '_bnwo'
+    mdf_test[binscolumn] = \
+    pd.cut(mdf_test[binscolumn], bins = bins_cuts,  \
+           labels = bins_id, precision=len(str(len(bins_id))))
+    
+    #change column dtype
+    mdf_test[binscolumn] = mdf_test[binscolumn].astype(int)
 
     
     return mdf_test
