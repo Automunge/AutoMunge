@@ -210,7 +210,7 @@ labelsencoding_dict, postreports_dict = \
 am.postmunge(postprocess_dict, df_test, testID_column = False, \
              labelscolumn = False, pandasoutput=True, printstatus = True, \
              TrainLabelFreqLevel = False, featureeval = False, driftreport = False, \
-	     LabelSmoothing = False, LSfit = False)
+	     LabelSmoothing = False, LSfit = False, returnedsets = True)
 ```
 
 
@@ -429,7 +429,7 @@ am = Automunger.AutoMunge()
 am.postmunge(postprocess_dict, df_test, testID_column = False, \
              labelscolumn = False, pandasoutput=True, printstatus = True, \
              TrainLabelFreqLevel = False, featureeval = False, driftreport = False, \
-	     LabelSmoothing = False, LSfit = False):
+	     LabelSmoothing = False, LSfit = False, returnedsets = True):
 ```
 
 Note that the only required argument to the automunge function is the
@@ -1172,7 +1172,7 @@ labelsencoding_dict, postreports_dict = \
 am.postmunge(postprocess_dict, df_test, testID_column = False, \
              labelscolumn = False, pandasoutput=True, printstatus = True, \
              TrainLabelFreqLevel = False, featureeval = False, driftreport = False, \
-	     LabelSmoothing = False, LSfit = False)
+	     LabelSmoothing = False, LSfit = False, returnedsets = True)
 ```
 
 Or to run postmunge(.) with default parameters we simply need the postprocess_dict
@@ -1292,7 +1292,7 @@ labelsencoding_dict, finalcolumns_test = \
 am.postmunge(postprocess_dict, df_test, testID_column = False, \
              labelscolumn = False, pandasoutput=True, printstatus = True, \
              TrainLabelFreqLevel = False, featureeval = False, driftreport = False, \
-	     LabelSmoothing = False, LSfit = False)
+	     LabelSmoothing = False, LSfit = False, returnedsets = True)
 ```
 
 * postprocess_dict: this is the dictionary returned from the initial
@@ -1383,6 +1383,28 @@ the smoothing factor to specific cells based on the activated column and target 
 Note that if LabelSmoothing passed as True the LSfit will be based on the basis from
 the corresponding automunge(.) call (will override the one passed to postmunge).
 
+* returnedsets: Can be passed as one of {True, False, 'test_ID', 
+'test_labels', 'test_ID_labels'}. Designates the composition of the sets returned
+from a postmunge(.) call. Defaults to True for the full composition of five returned sets.
+With other options postmunge(.) only returns a single set, where for False that set consists 
+of the test set, or for the other options returns the test set concatinated with the ID, 
+labels, or both. For example:
+
+```
+#in default of returnedsets=True, postmunge(.) returns five sets, such as this call:
+test, testID, testlabels, \
+labelsencoding_dict, finalcolumns_test = \
+am.postmunge(postprocess_dict, df_test, returnedsets = True)
+
+#for other returnedset options, postmunge(.) returns just a single set, the test set:
+test = \
+am.postmunge(postprocess_dict, df_test, returnedsets = False)
+
+#Note that if you want to access the column labels for an appended ID or labels set,
+#They can be accessed in the postprocess_dict under entries for 
+postprocess_dict['finalcolumns_labels']
+postprocess_dict['finalcolumns_trainID']
+```
 ...
 
 ## Default Transformations
