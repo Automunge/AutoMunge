@@ -22313,7 +22313,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.20'
+    automungeversion = '3.21'
     application_number = random.randint(100000000000,999999999999)
     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -29848,7 +29848,7 @@ class AutoMunge:
   def postmunge(self, postprocess_dict, df_test, testID_column = False, \
                 labelscolumn = False, pandasoutput = False, printstatus = True, \
                 TrainLabelFreqLevel = False, featureeval = False, driftreport = False, \
-                LabelSmoothing = False, LSfit = False):
+                LabelSmoothing = False, LSfit = False, returnedsets = True):
     '''
     #postmunge(df_test, testID_column, postprocess_dict) Function that when fed a \
     #test data set coresponding to a previously processed train data set which was \
@@ -30990,41 +30990,47 @@ class AutoMunge:
         df_testlabels = self.floatprecision_transform(df_testlabels, finalcolumns_labels, floatprecision)
 
 
-    #determine output type based on pandasoutput argument
-    if pandasoutput == True:
-      #global processing to test set including conversion to numpy array
-      test = df_test
+    if testID_column is not False:
+      #testID = df_testID
+      #pass
+      if returnedsets in ['test_ID', 'test_ID_labels']:
+        df_test = pd.concat([df_test, df_testID], axis=1)
+      
+    else:
+      df_testID = pd.DataFrame()
 
-      if testID_column != False:
-        testID = df_testID
-      else:
-        testID = pd.DataFrame()
-
-      if labelscolumn != False:
-        testlabels = df_testlabels
-      else:
-        testlabels = pd.DataFrame()
+    if labelscolumn is not False:
+      #testlabels = df_testlabels
+      #pass
+      if returnedsets in ['test_labels', 'test_ID_labels']:
+        df_test = pd.concat([df_test, df_testlabels], axis=1)
+      
+    else:
+      df_testlabels = pd.DataFrame()
 
     #else output numpy arrays
-    else:
+    #else:
+    if pandasoutput is False:
       #global processing to test set including conversion to numpy array
-      test = df_test.values
+      df_test = df_test.values
 
-      if testID_column != False:
-        testID = df_testID.values
+      if testID_column is not False \
+      and returnedsets not in [False, 'test_ID', 'test_labels', 'test_ID_labels']:
+        df_testID = df_testID.values
       else:
-        testID = []
+        df_testID = []
 
 
-      if labelscolumn != False:
-        testlabels = df_testlabels.values
+      if labelscolumn is not False \
+      and returnedsets not in [False, 'test_ID', 'test_labels', 'test_ID_labels']:
+        df_testlabels = df_testlabels.values
 
         #apply ravel to labels if appropriate - converts from eg [[1,2,3]] to [1,2,3]
-        if testlabels.ndim == 2 and testlabels.shape[1] == 1:
-          testlabels = np.ravel(testlabels)
+        if df_testlabels.ndim == 2 and df_testlabels.shape[1] == 1:
+          df_testlabels = np.ravel(df_testlabels)
 
       else:
-        testlabels = []
+        df_testlabels = []
 
 
     #printout display progress
@@ -31033,5 +31039,13 @@ class AutoMunge:
       print("_______________")
       print("Postmunge Complete")
       print("")
-
-    return test, testID, testlabels, labelsencoding_dict, postreports_dict
+    
+    if returnedsets is True:
+    
+      return df_test, df_testID, df_testlabels, labelsencoding_dict, postreports_dict
+    
+    else:
+      
+      return df_test
+    
+    
