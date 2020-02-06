@@ -1427,7 +1427,7 @@ set default to bnry.
 - dat6: for time-series data, a set of derivations are performed returning
 'year', 'mdsn', 'mdcs', 'hmss', 'hmsc', 'bshr', 'wkdy', 'hldy' (these are defined 
 in next section)
-- null: for columns with single entry column is deleted
+- null: for columns without any valid values (e.g. all NaN) column is deleted
 
 Note that if a user wishes to avoid the automated assignment of default transformations,
 such as to leave those columns not specifically assigned to transformation categories in 
