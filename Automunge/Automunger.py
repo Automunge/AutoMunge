@@ -87,17 +87,13 @@ class AutoMunge:
     #_children_: becomes downstream parent
     #_niecenephews_: treated like a downstream sibling
     #_coworkers_: becomes a downstream auntsuncles
-    #_friends_: become downstream cousins
-    
+    #_friends_: become downstream cousins    
     
     #for example, if we set 'bxcx' entry to have both 'bxcx' as parents and \
-    #'nmbr' as cousin, then the output would be column_nmbr, column_bxcx_nmbr, \
-    #column_bxcx_nmbr_bins
-    #however if we set 'bxcx' entry to have 'bxcx' as parent and 'nmbr' as sibling, then
-    #the outpuyt would be column_nmbr, column_nmbr_bins, column_bxcx_nmbr, \
-    #column_bxcx_nmbr_bins
+    #'nmbr' as cousin, then the output would be column_nmbr, column_bxcx_nmbr
+    #(because 'bxcx' has a downstream primitive entry of 'nmbr' as well 
     
-    #note a future extension will allow automubnge class to run experiements
+    #note a future extension will allow automunge class to run experiments
     #on different configurations of trasnform_dict to improve the feature selection
     '''
 
@@ -1828,6 +1824,69 @@ class AutoMunge:
                                      'coworkers' : [], \
                                      'friends' : ['bins']}})
 
+    transform_dict.update({'nmbd' : {'parents' : ['nmbr'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : [bint]}})
+
+    transform_dict.update({'101d' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['1010'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'ordd' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['ord3'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'texd' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['text'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'bnrd' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['bnry'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'datd' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['year', 'mdsn', 'mdcs', 'hmss', 'hmsc', 'bshr', 'wkdy', 'hldy'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'nuld' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['null'], \
+                                     'cousins' : [], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+
 
     return transform_dict
   
@@ -3019,6 +3078,48 @@ class AutoMunge:
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'label', \
                                   'labelctgy' : 'exc2'}})
+    process_dict.update({'nmbd' : {'dualprocess' : self.process_numerical_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_numerical_class, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'nmbr'}})
+    process_dict.update({'101d' : {'dualprocess' : self.process_1010_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_1010_class, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : '1010', \
+                                  'labelctgy' : '1010'}})
+    process_dict.update({'ordd' : {'dualprocess' : self.process_ord3_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_ord3_class, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'singlct', \
+                                  'labelctgy' : 'ordl'}})
+    process_dict.update({'texd' : {'dualprocess' : self.process_text_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_text_class, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'multirt', \
+                                  'labelctgy' : 'text'}})
+    process_dict.update({'bnrd' : {'dualprocess' : self.process_binary_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_binary_class, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'singlct', \
+                                  'labelctgy' : 'bnry'}})
+    process_dict.update({'datd' : {'dualprocess' : None, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'datetime', \
+                                  'MLinfilltype' : 'exclude', \
+                                  'labelctgy' : 'mdsn'}})
+    process_dict.update({'nuld' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_null_class, \
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'exclude', \
+                                  'MLinfilltype' : 'exclude', \
+                                  'labelctgy' : None}})
 
     return process_dict
 
@@ -3067,7 +3168,8 @@ class AutoMunge:
 
     #process the cousins (no downstream, supplemental)
     for cousin in transform_dict[category]['cousins']:
-
+      
+      #this if statement kind of a placeholder such as for validation of primitive entry
       if cousin != None:
 
         #note we use the processcousin function here
@@ -3120,7 +3222,7 @@ class AutoMunge:
                     transform_dict, postprocess_dict):
     '''
     #This function deletes source column for cases where family primitives 
-    #included replacement.
+    #included replacement, with maintenance of the associated data structures.
     '''
 
     #if we had replacement transformations performed on first generation \
@@ -7980,212 +8082,7 @@ class AutoMunge:
     
     return mdf_train, mdf_test, column_dict_list
   
-  
-#   def process_time_class(self, mdf_train, mdf_test, column, category, \
-#                          postprocess_dict):
-#     '''
-#     #process_time_class(mdf_train, mdf_test, column, category)
-#     #preprocess column with time classifications
-#     #takes as arguement two pandas dataframe containing training and test data respectively 
-#     #(mdf_train, mdf_test), and the name of the column string ('column') and the
-#     #category fo the source column (category)
-#     #note this trains both training and test data simultaneously due to unique treatment if any category
-#     #missing from training set but not from test set to ensure consistent formatting 
-    
-#     #creates distinct columns for year, month, day, hour, minute, second
-#     #each normalized to the mean and std, with missing values plugged with the mean
-#     #with columns named after column_ + time category
-#     #returns two transformed dataframe (mdf_train, mdf_test) and column_dict_list
-#     #if only have training but not test data handy, use same training data for both dataframe inputs
-#     '''
-    
-#     #store original column for later retrieval
-#     mdf_train[column + '_temp'] = mdf_train[column].copy()
-#     mdf_test[column + '_temp'] = mdf_test[column].copy()
 
-
-#     #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
-#     mdf_train[column] = pd.to_datetime(mdf_train[column], errors = 'coerce')
-#     mdf_test[column] = pd.to_datetime(mdf_test[column], errors = 'coerce')
-
-#     #mdf_train[column].replace(-np.Inf, np.nan)
-#     #mdf_test[column].replace(-np.Inf, np.nan)
-
-#     #get mean of various categories of datetime objects to use to plug in missing cells
-#     meanyear = mdf_train[column].dt.year.mean()    
-#     meanmonth = mdf_train[column].dt.month.mean()
-#     meanday = mdf_train[column].dt.day.mean()
-#     meanhour = mdf_train[column].dt.hour.mean()
-#     meanminute = mdf_train[column].dt.minute.mean()
-#     meansecond = mdf_train[column].dt.second.mean()
-
-#     #get standard deviation of training data
-#     stdyear = mdf_train[column].dt.year.std()  
-#     stdmonth = mdf_train[column].dt.month.std()
-#     stdday = mdf_train[column].dt.day.std()
-#     stdhour = mdf_train[column].dt.hour.std()
-#     stdminute = mdf_train[column].dt.minute.std()
-#     stdsecond = mdf_train[column].dt.second.std()
-
-
-#     #create new columns for each category in train set
-#     mdf_train[column + '_year'] = mdf_train[column].dt.year
-#     mdf_train[column + '_month'] = mdf_train[column].dt.month
-#     mdf_train[column + '_day'] = mdf_train[column].dt.day
-#     mdf_train[column + '_hour'] = mdf_train[column].dt.hour
-#     mdf_train[column + '_minute'] = mdf_train[column].dt.minute
-#     mdf_train[column + '_second'] = mdf_train[column].dt.second
-
-#     #do same for test set
-#     mdf_test[column + '_year'] = mdf_test[column].dt.year
-#     mdf_test[column + '_month'] = mdf_test[column].dt.month
-#     mdf_test[column + '_day'] = mdf_test[column].dt.day
-#     mdf_test[column + '_hour'] = mdf_test[column].dt.hour
-#     mdf_test[column + '_minute'] = mdf_test[column].dt.minute 
-#     mdf_test[column + '_second'] = mdf_test[column].dt.second
-
-
-#     #replace missing data with training set mean
-#     mdf_train[column + '_year'] = mdf_train[column + '_year'].fillna(meanyear)
-#     mdf_train[column + '_month'] = mdf_train[column + '_month'].fillna(meanmonth)
-#     mdf_train[column + '_day'] = mdf_train[column + '_day'].fillna(meanday)
-#     mdf_train[column + '_hour'] = mdf_train[column + '_hour'].fillna(meanhour)
-#     mdf_train[column + '_minute'] = mdf_train[column + '_minute'].fillna(meanminute)
-#     mdf_train[column + '_second'] = mdf_train[column + '_second'].fillna(meansecond)
-
-#     #do same for test set
-#     mdf_test[column + '_year'] = mdf_test[column + '_year'].fillna(meanyear)
-#     mdf_test[column + '_month'] = mdf_test[column + '_month'].fillna(meanmonth)
-#     mdf_test[column + '_day'] = mdf_test[column + '_day'].fillna(meanday)
-#     mdf_test[column + '_hour'] = mdf_test[column + '_hour'].fillna(meanhour)
-#     mdf_test[column + '_minute'] = mdf_test[column + '_minute'].fillna(meanminute)
-#     mdf_test[column + '_second'] = mdf_test[column + '_second'].fillna(meansecond)
-
-#     #subtract mean from column for both train and test
-#     mdf_train[column + '_year'] = mdf_train[column + '_year'] - meanyear
-#     mdf_train[column + '_month'] = mdf_train[column + '_month'] - meanmonth
-#     mdf_train[column + '_day'] = mdf_train[column + '_day'] - meanday
-#     mdf_train[column + '_hour'] = mdf_train[column + '_hour'] - meanhour
-#     mdf_train[column + '_minute'] = mdf_train[column + '_minute'] - meanminute
-#     mdf_train[column + '_second'] = mdf_train[column + '_second'] - meansecond
-
-#     mdf_test[column + '_year'] = mdf_test[column + '_year'] - meanyear
-#     mdf_test[column + '_month'] = mdf_test[column + '_month'] - meanmonth
-#     mdf_test[column + '_day'] = mdf_test[column + '_day'] - meanday
-#     mdf_test[column + '_hour'] = mdf_test[column + '_hour'] - meanhour
-#     mdf_test[column + '_minute'] = mdf_test[column + '_minute'] - meanminute
-#     mdf_test[column + '_second'] = mdf_test[column + '_second'] - meansecond
-
-
-#     #divide column values by std for both training and test data
-#     mdf_train[column + '_year'] = mdf_train[column + '_year'] / stdyear
-#     mdf_train[column + '_month'] = mdf_train[column + '_month'] / stdmonth
-#     mdf_train[column + '_day'] = mdf_train[column + '_day'] / stdday
-#     mdf_train[column + '_hour'] = mdf_train[column + '_hour'] / stdhour
-#     mdf_train[column + '_minute'] = mdf_train[column + '_minute'] / stdminute
-#     mdf_train[column + '_second'] = mdf_train[column + '_second'] / stdsecond
-
-#     mdf_test[column + '_year'] = mdf_test[column + '_year'] / stdyear
-#     mdf_test[column + '_month'] = mdf_test[column + '_month'] / stdmonth
-#     mdf_test[column + '_day'] = mdf_test[column + '_day'] / stdday
-#     mdf_test[column + '_hour'] = mdf_test[column + '_hour'] / stdhour
-#     mdf_test[column + '_minute'] = mdf_test[column + '_minute'] / stdminute
-#     mdf_test[column + '_second'] = mdf_test[column + '_second'] / stdsecond
-
-
-#     #now replace NaN with 0
-#     mdf_train[column + '_year'] = mdf_train[column + '_year'].fillna(0)
-#     mdf_train[column + '_month'] = mdf_train[column + '_month'].fillna(0)
-#     mdf_train[column + '_day'] = mdf_train[column + '_day'].fillna(0)
-#     mdf_train[column + '_hour'] = mdf_train[column + '_hour'].fillna(0)
-#     mdf_train[column + '_minute'] = mdf_train[column + '_minute'].fillna(0)
-#     mdf_train[column + '_second'] = mdf_train[column + '_second'].fillna(0)
-
-#     #do same for test set
-#     mdf_test[column + '_year'] = mdf_test[column + '_year'].fillna(0)
-#     mdf_test[column + '_month'] = mdf_test[column + '_month'].fillna(0)
-#     mdf_test[column + '_day'] = mdf_test[column + '_day'].fillna(0)
-#     mdf_test[column + '_hour'] = mdf_test[column + '_hour'].fillna(0)
-#     mdf_test[column + '_minute'] = mdf_test[column + '_minute'].fillna(0)
-#     mdf_test[column + '_second'] = mdf_test[column + '_second'].fillna(0)
-
-#     #output of a list of the created column names
-#     datecolumns = [column + '_year', column + '_month', column + '_day', \
-#                   column + '_hour', column + '_minute', column + '_second']
-
-#     #this is to address an issue I found when parsing columns with only time no date
-#     #which returned -inf vlaues, so if an issue will just delete the associated 
-#     #column along with the entry in datecolumns
-#     checkyear = np.isinf(mdf_train.iloc[0][column + '_year'])
-#     if checkyear:
-#       del mdf_train[column + '_year']
-#       datecolumns.remove(column + '_year')
-#       if column + '_year' in mdf_test.columns:
-#         del mdf_test[column + '_year']
-
-#     checkmonth = np.isinf(mdf_train.iloc[0][column + '_month'])
-#     if checkmonth:
-#       del mdf_train[column + '_month']
-#       datecolumns.remove(column + '_month')
-#       if column + '_month' in mdf_test.columns:
-#         del mdf_test[column + '_month']
-
-#     checkday = np.isinf(mdf_train.iloc[0][column + '_day'])
-#     if checkday:
-#       del mdf_train[column + '_day']
-#       datecolumns.remove(column + '_day')
-#       if column + '_day' in mdf_test.columns:
-#         del mdf_test[column + '_day']
-
-
-#     #replace original column from training data
-#     del mdf_train[column]    
-#     del mdf_test[column]
-
-#     mdf_train[column] = mdf_train[column + '_temp'].copy()
-#     mdf_test[column] = mdf_test[column + '_temp'].copy()
-
-#     del mdf_train[column + '_temp']    
-#     del mdf_test[column + '_temp']
-
-#     #create list of columns associated with categorical transform (blank for now)
-#     categorylist = []
-
-
-#     #store some values in the date_dict{} for use later in ML infill methods
-
-#     column_dict_list = []
-
-#     categorylist = datecolumns.copy()
-
-
-
-#     for dc in categorylist:
-
-#       #save a dictionary of the associated column mean and std
-#       timenormalization_dict = \
-#       {dc : {'meanyear' : meanyear, 'meanmonth' : meanmonth, \
-#             'meanday' : meanday, 'meanhour' : meanhour, \
-#             'meanminute' : meanminute, 'meansecond' : meansecond,\
-#             'stdyear' : stdyear, 'stdmonth' : stdmonth, \
-#             'stdday' : stdday, 'stdhour' : stdhour, \
-#             'stdminute' : stdminute, 'stdsecond' : stdsecond}}
-
-#       column_dict = {dc : {'category' : 'date', \
-#                            'origcategory' : category, \
-#                            'normalization_dict' : timenormalization_dict, \
-#                            'origcolumn' : column, \
-#                            'columnslist' : datecolumns, \
-#                            'categorylist' : categorylist, \
-#                            'infillmodel' : False, \
-#                            'infillcomplete' : False, \
-#                            'deletecolumn' : False}}
-
-#       column_dict_list.append(column_dict.copy())
-      
-      
-#     return mdf_train, mdf_test, column_dict_list
-  
 
   def process_bshr_class(self, df, column, category, postprocess_dict, params = {}):
     '''
@@ -22313,7 +22210,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.21'
+    automungeversion = '3.22'
     application_number = random.randint(100000000000,999999999999)
     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -25082,235 +24979,6 @@ class AutoMunge:
     
     return mdf_test
   
-  
-#   def postprocess_time_class(self, mdf_test, column, postprocess_dict, columnkey):
-
-#     '''
-#     #postprocess_time_class(mdf_test, column, postprocess_dict, columnkey)
-#     #postprocess test column with of date category
-#     #takes as arguement pandas dataframe containing test data 
-#     #(mdf_test), the name of the column string ('column'), and the timenormalization_dict 
-#     #from the original application of automunge to the associated date column from train set
-#     #(saved in the postprocess_dict)
-#     #retains the original column from master dataframe and
-#     #adds distinct columns for year, month, day, hour, minute, second
-#     #each normalized to the mean and std from original train set, 
-#     #with missing values plugged with the mean
-#     #with columns named after column_ + time category
-#     #returns two transformed dataframe (mdf_train, mdf_test)
-#     '''
-    
-#     #retrieve normalization parameters from postprocess_dict
-#     normkey1 = column+'_year'
-#     normkey2 = column+'_month'
-#     normkey3 = column+'_day'
-#     normkey4 = column+'_hour'
-#     normkey5 = column+'_minute'
-#     normkey6 = column+'_second'
-#     normkeylist = [normkey1, normkey2, normkey3, normkey4, normkey5, normkey6]
-    
-#     for normkeyiterate in normkeylist:
-#       if normkeyiterate in postprocess_dict['column_dict']:
-#         datekey = normkeyiterate
-    
-#     datecolumns = postprocess_dict['column_dict'][datekey]['categorylist']
-#     for normkeyiterate in normkeylist:
-#       if normkeyiterate in datecolumns:
-#         normkey = normkeyiterate
-#         break
-    
-#     timenormalization_dict = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]
-
-#     #create copy of original column for later retrieval
-#     mdf_test[column + '_temp'] = mdf_test[column].copy()
-
-#     #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
-#     mdf_test[column] = pd.to_datetime(mdf_test[column], errors = 'coerce')
-
-#     #mdf_train[column].replace(-np.Inf, np.nan)
-#     #mdf_test[column].replace(-np.Inf, np.nan)
-
-#     #get mean of various categories of datetime objects to use to plug in missing cells
-#   #   meanyear = mdf_train[column].dt.year.mean()    
-#   #   meanmonth = mdf_train[column].dt.month.mean()
-#   #   meanday = mdf_train[column].dt.day.mean()
-#   #   meanhour = mdf_train[column].dt.hour.mean()
-#   #   meanminute = mdf_train[column].dt.minute.mean()
-#   #   meansecond = mdf_train[column].dt.second.mean()
-
-#     meanyear = timenormalization_dict['meanyear']
-#     meanmonth = timenormalization_dict['meanmonth']
-#     meanday = timenormalization_dict['meanday']
-#     meanhour = timenormalization_dict['meanhour']
-#     meanminute = timenormalization_dict['meanminute']
-#     meansecond = timenormalization_dict['meansecond']
-
-
-#     #get standard deviation of training data
-#   #   stdyear = mdf_train[column].dt.year.std()  
-#   #   stdmonth = mdf_train[column].dt.month.std()
-#   #   stdday = mdf_train[column].dt.day.std()
-#   #   stdhour = mdf_train[column].dt.hour.std()
-#   #   stdminute = mdf_train[column].dt.minute.std()
-#   #   stdsecond = mdf_train[column].dt.second.std()
-
-#     stdyear = timenormalization_dict['stdyear']
-#     stdmonth = timenormalization_dict['stdmonth']
-#     stdday = timenormalization_dict['stdday']
-#     stdhour = timenormalization_dict['stdhour']
-#     stdminute = timenormalization_dict['stdminute']
-#     stdsecond = timenormalization_dict['stdsecond']
-
-
-#   #   #create new columns for each category in train set
-#   #   mdf_train[column + '_year'] = mdf_train[column].dt.year
-#   #   mdf_train[column + '_month'] = mdf_train[column].dt.month
-#   #   mdf_train[column + '_day'] = mdf_train[column].dt.day
-#   #   mdf_train[column + '_hour'] = mdf_train[column].dt.hour
-#   #   mdf_train[column + '_minute'] = mdf_train[column].dt.minute
-#   #   mdf_train[column + '_second'] = mdf_train[column].dt.second
-
-#     #create new columns for each category in test set
-#     mdf_test[column + '_year'] = mdf_test[column].dt.year
-#     mdf_test[column + '_month'] = mdf_test[column].dt.month
-#     mdf_test[column + '_day'] = mdf_test[column].dt.day
-#     mdf_test[column + '_hour'] = mdf_test[column].dt.hour
-#     mdf_test[column + '_minute'] = mdf_test[column].dt.minute 
-#     mdf_test[column + '_second'] = mdf_test[column].dt.second
-
-
-#   #   #replace missing data with training set mean
-#   #   mdf_train[column + '_year'] = mdf_train[column + '_year'].fillna(meanyear)
-#   #   mdf_train[column + '_month'] = mdf_train[column + '_month'].fillna(meanmonth)
-#   #   mdf_train[column + '_day'] = mdf_train[column + '_day'].fillna(meanday)
-#   #   mdf_train[column + '_hour'] = mdf_train[column + '_hour'].fillna(meanhour)
-#   #   mdf_train[column + '_minute'] = mdf_train[column + '_minute'].fillna(meanminute)
-#   #   mdf_train[column + '_second'] = mdf_train[column + '_second'].fillna(meansecond)
-
-#     #do same for test set (replace missing data with training set mean)
-#     mdf_test[column + '_year'] = mdf_test[column + '_year'].fillna(meanyear)
-#     mdf_test[column + '_month'] = mdf_test[column + '_month'].fillna(meanmonth)
-#     mdf_test[column + '_day'] = mdf_test[column + '_day'].fillna(meanday)
-#     mdf_test[column + '_hour'] = mdf_test[column + '_hour'].fillna(meanhour)
-#     mdf_test[column + '_minute'] = mdf_test[column + '_minute'].fillna(meanminute)
-#     mdf_test[column + '_second'] = mdf_test[column + '_second'].fillna(meansecond)
-
-#     #subtract mean from column for both train and test
-#   #   mdf_train[column + '_year'] = mdf_train[column + '_year'] - meanyear
-#   #   mdf_train[column + '_month'] = mdf_train[column + '_month'] - meanmonth
-#   #   mdf_train[column + '_day'] = mdf_train[column + '_day'] - meanday
-#   #   mdf_train[column + '_hour'] = mdf_train[column + '_hour'] - meanhour
-#   #   mdf_train[column + '_minute'] = mdf_train[column + '_minute'] - meanminute
-#   #   mdf_train[column + '_second'] = mdf_train[column + '_second'] - meansecond
-
-#     mdf_test[column + '_year'] = mdf_test[column + '_year'] - meanyear
-#     mdf_test[column + '_month'] = mdf_test[column + '_month'] - meanmonth
-#     mdf_test[column + '_day'] = mdf_test[column + '_day'] - meanday
-#     mdf_test[column + '_hour'] = mdf_test[column + '_hour'] - meanhour
-#     mdf_test[column + '_minute'] = mdf_test[column + '_minute'] - meanminute
-#     mdf_test[column + '_second'] = mdf_test[column + '_second'] - meansecond
-
-
-#     #divide column values by std for both training and test data
-#   #   mdf_train[column + '_year'] = mdf_train[column + '_year'] / stdyear
-#   #   mdf_train[column + '_month'] = mdf_train[column + '_month'] / stdmonth
-#   #   mdf_train[column + '_day'] = mdf_train[column + '_day'] / stdday
-#   #   mdf_train[column + '_hour'] = mdf_train[column + '_hour'] / stdhour
-#   #   mdf_train[column + '_minute'] = mdf_train[column + '_minute'] / stdminute
-#   #   mdf_train[column + '_second'] = mdf_train[column + '_second'] / stdsecond
-
-#     mdf_test[column + '_year'] = mdf_test[column + '_year'] / stdyear
-#     mdf_test[column + '_month'] = mdf_test[column + '_month'] / stdmonth
-#     mdf_test[column + '_day'] = mdf_test[column + '_day'] / stdday
-#     mdf_test[column + '_hour'] = mdf_test[column + '_hour'] / stdhour
-#     mdf_test[column + '_minute'] = mdf_test[column + '_minute'] / stdminute
-#     mdf_test[column + '_second'] = mdf_test[column + '_second'] / stdsecond
-
-
-#     #now replace NaN with 0
-#   #   mdf_train[column + '_year'] = mdf_train[column + '_year'].fillna(0)
-#   #   mdf_train[column + '_month'] = mdf_train[column + '_month'].fillna(0)
-#   #   mdf_train[column + '_day'] = mdf_train[column + '_day'].fillna(0)
-#   #   mdf_train[column + '_hour'] = mdf_train[column + '_hour'].fillna(0)
-#   #   mdf_train[column + '_minute'] = mdf_train[column + '_minute'].fillna(0)
-#   #   mdf_train[column + '_second'] = mdf_train[column + '_second'].fillna(0)
-
-#     #do same for test set
-#     mdf_test[column + '_year'] = mdf_test[column + '_year'].fillna(0)
-#     mdf_test[column + '_month'] = mdf_test[column + '_month'].fillna(0)
-#     mdf_test[column + '_day'] = mdf_test[column + '_day'].fillna(0)
-#     mdf_test[column + '_hour'] = mdf_test[column + '_hour'].fillna(0)
-#     mdf_test[column + '_minute'] = mdf_test[column + '_minute'].fillna(0)
-#     mdf_test[column + '_second'] = mdf_test[column + '_second'].fillna(0)
-
-
-#   #   #output of a list of the created column names
-#   #   datecolumns = [column + '_year', column + '_month', column + '_day', \
-#   #                 column + '_hour', column + '_minute', column + '_second']
-
-#     #this is to address an issue I found when parsing columns with only time no date
-#     #which returned -inf vlaues, so if an issue will just delete the associated 
-#     #column along with the entry in datecolumns
-#   #   checkyear = np.isinf(mdf_train.iloc[0][column + '_year'])
-#   #   if checkyear:
-#   #     del mdf_train[column + '_year']
-#   #     if column + '_year' in mdf_test.columns:
-#   #       del mdf_test[column + '_year']
-
-#   #   checkmonth = np.isinf(mdf_train.iloc[0][column + '_month'])
-#   #   if checkmonth:
-#   #     del mdf_train[column + '_month']
-#   #     if column + '_month' in mdf_test.columns:
-#   #       del mdf_test[column + '_month']
-
-#   #   checkday = np.isinf(mdf_train.iloc[0][column + '_day'])
-#   #   if checkmonth:
-#   #     del mdf_train[column + '_day']
-#   #     if column + '_day' in mdf_test.columns:
-#   #       del mdf_test[column + '_day']
-
-#     #instead we'll just delete a column from test set if not found in train set
-#     if column + '_year' not in datecolumns:
-#       del mdf_test[column + '_year']
-#   #     datecolumns.remove(column + '_year')
-#     if column + '_month' not in datecolumns:
-#       del mdf_test[column + '_month'] 
-#   #     datecolumns.remove(column + '_month')
-#     if column + '_day' not in datecolumns:
-#       del mdf_test[column + '_day']  
-#   #     datecolumns.remove(column + '_day')
-#     if column + '_hour' not in datecolumns:
-#       del mdf_test[column + '_hour']
-#   #     datecolumns.remove(column + '_hour')
-#     if column + '_minute' not in datecolumns:
-#       del mdf_test[column + '_minute'] 
-#   #     datecolumns.remove(column + '_minute')
-#     if column + '_second' not in datecolumns:
-#       del mdf_test[column + '_second'] 
-#   #     datecolumns.remove(column + '_second')
-
-
-#   #   #delete original column from training data
-#   #   if column in mdf_test.columns:
-#   #     del mdf_test[column]  
-
-#     #replace original column
-#     del mdf_test[column]
-#     mdf_test[column] = mdf_test[column + '_temp'].copy()
-#     del mdf_test[column + '_temp']
-
-
-#   #   #output a dictionary of the associated column mean and std
-
-#   #   timenormalization_dict = {'meanyear' : meanyear, 'meanmonth' : meanmonth, \
-#   #                             'meanday' : meanday, 'meanhour' : meanhour, \
-#   #                             'meanminute' : meanminute, 'meansecond' : meansecond,\
-#   #                             'stdyear' : stdyear, 'stdmonth' : stdmonth, \
-#   #                             'stdday' : stdday, 'stdhour' : stdhour, \
-#   #                             'stdminute' : stdminute, 'stdsecond' : stdsecond}
-
-
-#     return mdf_test
 
 
   def postprocess_year_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
@@ -25521,6 +25189,7 @@ class AutoMunge:
 #     mdf_test[column + '_mncs'] = mdf_test[column + '_mncs'].astype(np.float32)
     
     return mdf_test
+
   
   def postprocess_mdsn_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
 
