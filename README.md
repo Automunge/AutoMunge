@@ -174,7 +174,8 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
 		         'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
 		         'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
 		         'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
-		         'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'eval':[], 'copy':[]}, \
+		         'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'copy':[], 'shfl':[], \
+                         'eval':[]}, \
             assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                             'adjinfill':[], 'meaninfill':[], 'medianinfill':[], 'modeinfill':[]}, \
             assignparam = {}, transformdict = {}, processdict = {}, evalcat = False, \
@@ -392,7 +393,8 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
 		         'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
 		         'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
 		         'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
-		         'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'eval':[], 'copy':[]}, \
+		         'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'copy':[], 'shfl':[], \
+                         'eval':[]}, \
             assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                             'adjinfill':[], 'meaninfill':[], 'medianinfill':[], 'modeinfill':[]}, \
             assignparam = {}, transformdict = {}, processdict = {}, evalcat = False, \
@@ -583,7 +585,8 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
 		         'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
 		         'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
 		         'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
-		         'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'eval':[], 'copy':[]}, \
+		         'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'copy':[], 'shfl':[], \
+                         'eval':[]}, \
             assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                             'adjinfill':[], 'meaninfill':[], 'medianinfill':[], 'modeinfill':[]}, \
             assignparam = {}, transformdict = {}, processdict = {}, evalcat = False, \
@@ -903,7 +906,8 @@ such as could potentially result in memory savings.
 		 'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
 		 'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
 		 'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
-		 'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'eval':[], 'copy':[]}, \
+		 'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'copy':[], 'shfl':[], \
+                 'eval':[]}, \
 ```         
 
 Descriptions of these transformations are provided in document below (in section
@@ -1967,6 +1971,12 @@ than once with different parameters. Does not prepare column for ML on it's own.
   - default NArowtype: exclude
   - suffix appender: '_copy'
   - assignparam parameters accepted: 'suffix' for custom suffix appender
+  - driftreport postmunge metrics: none
+* shfl: shuffles the values of a column based on passed randomseed
+  - default infill: exclude
+  - default NArowtype: justNAN
+  - suffix appender: '_shfl'
+  - assignparam parameters accepted: none
   - driftreport postmunge metrics: none
 * NArw: produces a column of boolean identifiers for rows in the source
 column with missing or improperly formatted values. Note that when NArw
@@ -3805,6 +3815,15 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : ['bins']}})
+				     
+    transform_dict.update({'shfl' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['shfl'], \
+                                     'cousins' : [], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
 
     transform_dict.update({'nmbd' : {'parents' : ['nmbr'], \
                                      'siblings': [], \
