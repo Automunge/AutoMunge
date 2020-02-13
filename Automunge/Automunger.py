@@ -1823,6 +1823,15 @@ class AutoMunge:
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : ['bins']}})
+    
+    transform_dict.update({'shfl' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['shfl'], \
+                                     'cousins' : [], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
 
     transform_dict.update({'nmbd' : {'parents' : ['nmbr'], \
                                      'siblings': [], \
@@ -3078,6 +3087,12 @@ class AutoMunge:
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'label', \
                                   'labelctgy' : 'exc2'}})
+    process_dict.update({'shfl' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_shfl_class, \
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'exclude', \
+                                  'labelctgy' : 'shfl'}})
     process_dict.update({'nmbd' : {'dualprocess' : self.process_numerical_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_numerical_class, \
@@ -15021,8 +15036,64 @@ class AutoMunge:
 
 
     return mdf_train, mdf_test, column_dict_list
+  
+
+  def process_shfl_class(self, df, column, category, postprocess_dict, params = {}):
+    '''
+    #function to shuffle data in a column
+    #non-numeric entries allowed
+    #for missing values, uses adjacent cell infill as default
+    '''
+    
+    
+    #copy source column into new column
+    df[column + '_shfl'] = df[column].copy()
+    
+    
+    #we've introduced that randomseed is now accessible throughout in the postprocess_dict
+    random = postprocess_dict['randomseed']
+    
+    df[column + '_shfl'] = shuffle(df[column + '_shfl'].values, random_state = random)
+    
+    
+    #we'll do the adjacent cell infill after the shuffle operation
+    
+    #apply ffill to replace NArows with value from adjacent cell in preceding row
+    df[column + '_shfl'] = df[column + '_shfl'].fillna(method='ffill')
+    
+    #we'll follow with a bfill just in case first row had a nan
+    df[column + '_shfl'] = df[column + '_shfl'].fillna(method='bfill')
+    
+    
+    #create list of columns
+    nmbrcolumns = [column + '_shfl']
 
 
+    nmbrnormalization_dict = {column + '_shfl' : {}}
+
+    #store some values in the nmbr_dict{} for use later in ML infill methods
+    column_dict_list = []
+
+    for nc in nmbrcolumns:
+
+      if nc[-5:] == '_shfl':
+
+        column_dict = { nc : {'category' : 'shfl', \
+                             'origcategory' : category, \
+                             'normalization_dict' : nmbrnormalization_dict, \
+                             'origcolumn' : column, \
+                             'columnslist' : nmbrcolumns, \
+                             'categorylist' : [nc], \
+                             'infillmodel' : False, \
+                             'infillcomplete' : False, \
+                             'deletecolumn' : False}}
+
+        column_dict_list.append(column_dict.copy())
+    
+
+        
+    return df, column_dict_list
+  
 
 
   def evalcategory(self, df_source, column, numbercategoryheuristic, powertransform, labels = False):
@@ -20586,7 +20657,8 @@ class AutoMunge:
                              'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
                              'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
                              'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
-                             'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'eval':[], 'copy':[]}, \
+                             'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'copy':[], 'shfl':[], \
+                             'eval':[]}, \
                 assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                                 'adjinfill':[], 'meaninfill':[], 'medianinfill':[], 'modeinfill':[]}, \
                 assignparam = {}, transformdict = {}, processdict = {}, evalcat = False, \
@@ -21145,7 +21217,8 @@ class AutoMunge:
     #specific (i.e. nmbr, bnry, text, date) set of variable.
     postprocess_dict = {'column_dict' : {}, 'origcolumn' : {}, \
                         'process_dict' : process_dict, \
-                        'printstatus' : printstatus}
+                        'printstatus' : printstatus, \
+                        'randomseed' : randomseed}
     
     
     #create empty dictionary to serve as store for drift metrics
@@ -21665,6 +21738,12 @@ class AutoMunge:
     if infilliterate == 0:
       infilliterate = 1
       
+    #if we're uysing this method we'll have some extra printouts
+    if infilliterate > 1:
+      print_infilliterate = True
+    else:
+      print_infilliterate = False
+      
     while iteration < infilliterate:
       
       #resent MLinfill infillcomplete markers to False
@@ -21673,7 +21752,7 @@ class AutoMunge:
           postprocess_dict['column_dict'][key]['infillcomplete'] = False
       
       if printstatus is True:
-        if infilliterate > 0:
+        if infilliterate > 0 and print_infilliterate is True:
           print("______")
           print("MLinfill infilliterate iteration: ", iteration)
           print(" ")
@@ -22210,7 +22289,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.22'
+    automungeversion = '3.23'
     application_number = random.randint(100000000000,999999999999)
     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -22233,7 +22312,6 @@ class AutoMunge:
                              'TrainLabelFreqLevel' : TrainLabelFreqLevel, \
                              'MLinfill' : MLinfill, \
                              'infilliterate' : infilliterate, \
-                             'randomseed' : randomseed, \
                              'powertransform' : powertransform, \
                              'binstransform' : binstransform, \
                              'LabelSmoothing_train' : LabelSmoothing_train, \
