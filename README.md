@@ -680,7 +680,9 @@ training data associated with underrepresented labels (aka class imbalance).
 The method adds multiples to training data rows for those labels with lower 
 frequency resulting in an (approximately) levelized frequency. This defaults 
 to False. Note that this feature may be applied to numerical label sets if 
-the processing applied to the set includes standard deviation bins.
+the processing applied to the set includes aggregated bins, such as by passing
+a label column to the 'exc3' category in assigncat for inclusion of standard
+deviation bins.
 
 * powertransform: a boolean identifier (True/False) which indicates if an
 evaluation will be performed of distribution properties to select between
