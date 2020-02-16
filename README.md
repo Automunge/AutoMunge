@@ -144,7 +144,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
             shuffletrain = False, TrainLabelFreqLevel = False, powertransform = False, \
             binstransform = False, MLinfill = False, infilliterate=1, randomseed = 42, \
 	    LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, \
-            LSfit = False, numbercategoryheuristic = 63, pandasoutput = True, NArw_marker = True, \
+            LSfit = False, numbercategoryheuristic = 63, pandasoutput = True, NArw_marker = False, \
             featureselection = False, featurepct = 1.0, featuremetric = .02, featuremethod = 'default', \
             Binary = False, PCAn_components = None, PCAexcl = [], \
             ML_cmnd = {'MLinfill_type':'default', \
@@ -363,7 +363,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
             shuffletrain = False, TrainLabelFreqLevel = False, powertransform = False, \
             binstransform = False, MLinfill = False, infilliterate=1, randomseed = 42, \
 	    LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, \
-            LSfit = False, numbercategoryheuristic = 63, pandasoutput = True, NArw_marker = True, \
+            LSfit = False, numbercategoryheuristic = 63, pandasoutput = True, NArw_marker = False, \
             featureselection = False, featurepct = 1.0, featuremetric = .02, featuremethod = 'default', \
             Binary = False, PCAn_components = None, PCAexcl = [], \
             ML_cmnd = {'MLinfill_type':'default', \
@@ -555,7 +555,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
             shuffletrain = False, TrainLabelFreqLevel = False, powertransform = False, \
             binstransform = False, MLinfill = False, infilliterate=1, randomseed = 42, \
 	    LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, \
-            LSfit = False, numbercategoryheuristic = 63, pandasoutput = True, NArw_marker = True, \
+            LSfit = False, numbercategoryheuristic = 63, pandasoutput = True, NArw_marker = False, \
             featureselection = False, featurepct = 1.0, featuremetric = .02, featuremethod = 'default', \
             Binary = False, PCAn_components = None, PCAexcl = [], \
             ML_cmnd = {'MLinfill_type':'default', \
@@ -680,9 +680,10 @@ training data associated with underrepresented labels (aka class imbalance).
 The method adds multiples to training data rows for those labels with lower 
 frequency resulting in an (approximately) levelized frequency. This defaults 
 to False. Note that this feature may be applied to numerical label sets if 
-the processing applied to the set includes aggregated bins, such as by passing
-a label column to the 'exc3' category in assigncat for inclusion of standard
-deviation bins.
+the processing applied to the set includes aggregated bins, such as for example
+by passing a label column to the 'exc3' category in assigncat for pass-through
+force to numeric with inclusion of standard deviation bins or to 'exc4' for 
+inclusion of powers of ten bins.
 
 * powertransform: a boolean identifier (True/False) which indicates if an
 evaluation will be performed of distribution properties to select between
@@ -758,7 +759,7 @@ column may be passed for index identification).
 
 * NArw_marker: a boolean identifier (True/False) which indicates if the
 returned sets will include columns with markers for rows subject to 
-infill (columns with suffix 'NArw'). This value defaults to True.
+infill (columns with suffix 'NArw'). This value defaults to False.
 
 * featureselection: a boolean identifier telling the function whether to
 perform a feature importance evaluation. If selected automunge will
@@ -1840,6 +1841,16 @@ to set with >2 entries applies infill to those entries beyond two most common.
   - suffix appender: '_bnry'
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: missing / 1 / 0 / extravalues / oneratio / zeroratio
+* bnr2: converts sets with two values to boolean identifiers. Defaults to assiging
+1 to most common value and 0 to second most common, unless 1 or 0 is already included
+in most common of the set then defaults to maintaining those designations. If applied 
+to set with >2 entries applies infill to those entries beyond two most common. (Same
+as bnry except for default infill.)
+  - default infill: least common value
+  - default NArowtype: justNaN
+  - suffix appender: '_bnry'
+  - assignparam parameters accepted: none
+  - driftreport postmunge metrics: missing / 1 / 0 / extravalues / oneratio / zeroratio
 * text/txt2: converts categorical sets to one-hot encoded set of boolean identifiers
   - default infill: all entries zero
   - default NArowtype: justNaN
@@ -1954,7 +1965,7 @@ holiday
   - suffix appender: '_excl'
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: none
-* exc2/exc3: passes source column unaltered other than force to numeric, mode infill applied
+* exc2/exc3/exc4: passes source column unaltered other than force to numeric, mode infill applied
   - default infill: mode
   - default NArowtype: numeric
   - suffix appender: '_exc2'
@@ -3800,24 +3811,33 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'coworkers' : [], \
                                      'friends' : []}})
     
-    transform_dict.update({'exc2' : {'parents' : ['exc2'], \
-                                     'siblings': [], \
-                                     'auntsuncles' : [], \
-                                     'cousins' : [], \
-                                     'children' : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers' : [], \
-                                     'friends' : []}})
-    
-    transform_dict.update({'exc3' : {'parents' : [], \
+    transform_dict.update({'exc2' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['exc2'], \
                                      'cousins' : [], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'exc3' : {'parents' : ['exc3'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
                                      'friends' : ['bins']}})
-				     
+    
+    transform_dict.update({'exc4' : {'parents' : ['exc4'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : ['pwr2']}})
+
     transform_dict.update({'shfl' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['shfl'], \
