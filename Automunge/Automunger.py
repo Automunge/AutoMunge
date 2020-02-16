@@ -239,6 +239,15 @@ class AutoMunge:
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
+    
+    transform_dict.update({'bnr2' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['bnr2'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
 
     transform_dict.update({'text' : {'parents' : [], \
                                      'siblings': [], \
@@ -1806,23 +1815,32 @@ class AutoMunge:
                                      'coworkers' : [], \
                                      'friends' : []}})
     
-    transform_dict.update({'exc2' : {'parents' : ['exc2'], \
-                                     'siblings': [], \
-                                     'auntsuncles' : [], \
-                                     'cousins' : [], \
-                                     'children' : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers' : [], \
-                                     'friends' : []}})
-    
-    transform_dict.update({'exc3' : {'parents' : [], \
+    transform_dict.update({'exc2' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['exc2'], \
                                      'cousins' : [], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'exc3' : {'parents' : ['exc3'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
                                      'friends' : ['bins']}})
+    
+    transform_dict.update({'exc4' : {'parents' : ['exc4'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : ['pwr2']}})
     
     transform_dict.update({'shfl' : {'parents' : [], \
                                      'siblings': [], \
@@ -2121,6 +2139,12 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'bnry'}})
+    process_dict.update({'bnr2' : {'dualprocess' : self.process_binary2_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_binary2_class, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'singlct', \
+                                  'labelctgy' : 'bnr2'}})
     process_dict.update({'text' : {'dualprocess' : self.process_text_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_text_class, \
@@ -3082,6 +3106,12 @@ class AutoMunge:
                                   'MLinfilltype' : 'label', \
                                   'labelctgy' : 'exc2'}})
     process_dict.update({'exc3' : {'dualprocess' : self.process_exc2_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.process_exc2_class, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'label', \
+                                  'labelctgy' : 'exc2'}})
+    process_dict.update({'exc4' : {'dualprocess' : self.process_exc2_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.process_exc2_class, \
                                   'NArowtype' : 'numeric', \
@@ -4699,6 +4729,220 @@ class AutoMunge:
     return mdf_train, mdf_test, column_dict_list
   
 
+  def process_binary2_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
+    '''
+    #process_binary2_class(mdf, column, missing)
+    #converts binary classification values to 0 or 1
+    #takes as arguement a pandas dataframe (mdf_train, mdf_test), \
+    #the name of the column string ('column') \
+    #and the category from parent columkn (category)
+    #fills missing valules with least common value (different than bnry)
+    #returns same dataframes with new column of name column + '_bnry'
+    #note this is a "dualprocess" function since is applied to both dataframes
+    '''
+    
+    #copy column to column + '_bnry'
+    mdf_train[column + '_bnr2'] = mdf_train[column].copy()
+    mdf_test[column + '_bnr2'] = mdf_test[column].copy()
+
+    #create plug value for missing cells as most common value
+    valuecounts = mdf_train[column + '_bnr2'].value_counts().index.tolist()
+    
+    if len(valuecounts) > 0:
+
+      if len(valuecounts) > 1:
+        #binary_missing_plug = valuecounts[0]
+        binary_missing_plug = valuecounts[1]
+      else:
+        #making an executive decision here to deviate from standardinfill of most common value
+        #for this edge case where a column evaluated as binary has only single value and NaN's
+        binary_missing_plug = 'plug'
+
+
+      #test for nan
+      if binary_missing_plug != binary_missing_plug:
+        #binary_missing_plug = valuecounts[1]
+        binary_missing_plug = valuecounts[0]
+
+      #edge case when applying this transform to set with >2 values
+      #this only comes up when caluclating driftreport in postmunge
+      extravalues = []
+      if len(valuecounts) > 2:
+        i=0
+        for value in valuecounts:
+          if i>1:
+            extravalues.append(value)
+          i+=1
+
+
+      #replace nan in valuecounts with binary_missing_plug so we can sort
+      valuecounts = [x if x == x else binary_missing_plug for x in valuecounts]
+  #     #convert everything to string for sort
+  #     valuecounts = [str(x) for x in valuecounts]
+
+      #note LabelBinarizer encodes alphabetically, with 1 assigned to first and 0 to second
+      #we'll take different approach of going by most common value to 1 unless 0 or 1
+      #are already in the set then we'll defer to keeping those designations in place
+      #there's some added complexity here to deal with edge case of passing this function
+      #to a set with >2 values as we might run into when caluclating drift in postmunge
+
+  #     valuecounts.sort()
+  #     valuecounts = sorted(valuecounts)
+      #in case this includes both strings and integers for instance we'll sort this way
+  #     valuecounts = sorted(valuecounts, key=lambda p: str(p))
+
+      #we'll save these in the normalization dictionary for future reference
+      onevalue = valuecounts[0]
+      if len(valuecounts) > 1:
+        zerovalue = valuecounts[1]
+      else:
+        zerovalue = 'plug'
+
+      #special case for when the source column is already encoded as 0/1
+
+      if len(valuecounts) <= 2:
+
+        if 0 in valuecounts:
+          zerovalue = 0
+          if 1 in valuecounts:
+            onevalue = 1
+          else:
+            if valuecounts[0] == 0:
+              if len(valuecounts) > 1:
+                onevalue = valuecounts[1]
+              else:
+                onevalue = 'plug'
+
+        if 1 in valuecounts:
+          if 0 not in valuecounts:
+            if valuecounts[0] != 1:
+              onevalue = 1
+              zerovalue = valuecounts[0]
+
+
+      #edge case same as above but when values of 0 or 1. are in set and 
+      #len(valuecounts) > 2
+      if len(valuecounts) > 2:
+        valuecounts2 = valuecounts[:2]
+
+        if 0 in valuecounts2:
+          zerovalue = 0
+          if 1 in valuecounts2:
+            onevalue = 1
+          else:
+            if valuecounts2[0] == 0:
+              if len(valuecounts) > 1:
+                onevalue = valuecounts2[1]
+              else:
+                onevalue = 'plug'
+
+        if 1 in valuecounts2:
+          if 0 not in valuecounts2:
+            if valuecounts2[0] != 1:
+              onevalue = 1
+              zerovalue = valuecounts2[0]
+
+
+      #edge case that might come up in drift report
+      if binary_missing_plug not in [onevalue, zerovalue]:
+        #binary_missing_plug = onevalue
+        binary_missing_plug = zerovalue
+
+      #edge case when applying this transform to set with >2 values
+      #this only comes up when caluclating driftreport in postmunge
+      if len(valuecounts) > 2:
+        for value in extravalues:
+          mdf_train.loc[mdf_train[column + '_bnr2'].isin([value]), column + '_bnr2'] = binary_missing_plug
+          mdf_test.loc[mdf_test[column + '_bnr2'].isin([value]), column + '_bnr2'] = binary_missing_plug
+
+
+      #replace missing data with specified classification
+      mdf_train[column + '_bnr2'] = mdf_train[column + '_bnr2'].fillna(binary_missing_plug)
+      mdf_test[column + '_bnr2'] = mdf_test[column + '_bnr2'].fillna(binary_missing_plug)
+
+
+      #this addressess issue where nunique for mdftest > than that for mdf_train
+      #note is currently an oportunity for improvement that NArows won't identify these poinsts as candiadates
+      #for user specified infill, and as currently addressed will default to infill with most common value
+      #in the mean time a workaround could be for user to manually replace extra values with nan prior to
+      #postmunge application such as if they want to apply ML infill
+      #this will only be an issue when nunique for df_train == 2, and nunique for df_test > 2
+      #if len(mdf_test[column + '_bnry'].unique()) > 2:
+      uniqueintest = mdf_test[column + '_bnr2'].unique()
+      for unique in uniqueintest:
+        if unique not in [onevalue, zerovalue]:
+          mdf_test.loc[~mdf_test[column + '_bnr2'].isin([onevalue, zerovalue]), column + '_bnr2'] = binary_missing_plug
+
+
+      #convert column to binary 0/1 classification (replaces scikit LabelBinarizer)
+      mdf_train.loc[mdf_train[column + '_bnr2'].isin([onevalue]), column + '_bnr2'] = 1
+      mdf_train.loc[mdf_train[column + '_bnr2'].isin([zerovalue]), column + '_bnr2'] = 0
+
+      mdf_test.loc[mdf_test[column + '_bnr2'].isin([onevalue]), column + '_bnr2'] = 1
+      mdf_test.loc[mdf_test[column + '_bnr2'].isin([zerovalue]), column + '_bnr2'] = 0
+
+      #create list of columns
+      bnrycolumns = [column + '_bnr2']
+
+      #change data types to 8-bit (1 byte) integers for memory savings
+      mdf_train[column + '_bnr2'] = mdf_train[column + '_bnr2'].astype(np.int8)
+      mdf_test[column + '_bnr2'] = mdf_test[column + '_bnr2'].astype(np.int8)
+
+      #a few more metrics collected for driftreport
+      oneratio = mdf_train[column + '_bnr2'].sum() / mdf_train[column + '_bnr2'].shape[0]
+      zeroratio = (mdf_train[column + '_bnr2'].shape[0] - mdf_train[column + '_bnr2'].sum() )\
+                  / mdf_train[column + '_bnr2'].shape[0]
+
+      #create list of columns associated with categorical transform (blank for now)
+      categorylist = []
+    
+    else:
+      mdf_train[column + '_bnr2'] = 0
+      mdf_test[column + '_bnr2'] = 0
+      
+      binary_missing_plug = 0
+      onevalue = 1
+      zerovalue = 0
+      extravalues = 0
+      oneratio = 0
+      zeroratio = 0
+      bnrycolumns = [column + '_bnr2']
+
+  #     bnrynormalization_dict = {column + '_bnry' : {'missing' : binary_missing_plug, \
+  #                                                   'onevalue' : onevalue, \
+  #                                                   'zerovalue' : zerovalue}}
+    
+    bnrynormalization_dict = {column + '_bnr2' : {'missing' : binary_missing_plug, \
+                                                  1 : onevalue, \
+                                                  0 : zerovalue, \
+                                                  'extravalues' : extravalues, \
+                                                  'oneratio' : oneratio, \
+                                                  'zeroratio' : zeroratio}}
+
+    #store some values in the column_dict{} for use later in ML infill methods
+    column_dict_list = []
+
+    for bc in bnrycolumns:
+
+
+      if bc[-5:] == '_bnr2':
+
+        column_dict = { bc : {'category' : 'bnr2', \
+                             'origcategory' : category, \
+                             'normalization_dict' : bnrynormalization_dict, \
+                             'origcolumn' : column, \
+                             'columnslist' : bnrycolumns, \
+                             'categorylist' : [bc], \
+                             'infillmodel' : False, \
+                             'infillcomplete' : False, \
+                             'deletecolumn' : False}}
+
+        column_dict_list.append(column_dict.copy())
+
+
+    #return mdf, bnrycolumns, categorylist, column_dict_list
+    return mdf_train, mdf_test, column_dict_list
+  
 
   def process_text_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
     '''
@@ -17740,6 +17984,8 @@ class AutoMunge:
 
             i+=1
 
+          columns_labels = list(labels_df)
+            
           #now seperate the labels df from the train df
           labels_df = train_df[columns_labels]
           #now delete the labels column from train set
@@ -20627,7 +20873,7 @@ class AutoMunge:
                 shuffletrain = False, TrainLabelFreqLevel = False, powertransform = False, \
                 binstransform = False, MLinfill = False, infilliterate=1, randomseed = 42, \
                 LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, \
-                LSfit = False, numbercategoryheuristic = 63, pandasoutput = False, NArw_marker = True, \
+                LSfit = False, numbercategoryheuristic = 63, pandasoutput = False, NArw_marker = False, \
                 featureselection = False, featurepct = 1.0, featuremetric = 0.0, featuremethod = 'default', \
                 Binary = False, PCAn_components = None, PCAexcl = [], \
                 ML_cmnd = {'MLinfill_type':'default', \
@@ -21218,7 +21464,7 @@ class AutoMunge:
     postprocess_dict = {'column_dict' : {}, 'origcolumn' : {}, \
                         'process_dict' : process_dict, \
                         'printstatus' : printstatus, \
-                        'randomseed' : randomseed}
+                        'randomseed' : randomseed }
     
     
     #create empty dictionary to serve as store for drift metrics
@@ -21397,6 +21643,9 @@ class AutoMunge:
           postprocess_dict['origcolumn'].update({column : {'category' : category, \
                                                            'columnkeylist' : columnkeylist, \
                                                            'columnkey' : columnkey}})
+          
+#           for newcolumn in postprocess_dict['origcolumn'][column]['columnkeylist']:
+#             postprocess_dict['newcolumn'].update({newcolumn : {'origcolumn' : column}})
 
           #printout display progress
           if printstatus == True:
@@ -22289,7 +22538,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.23'
+    automungeversion = '3.24'
     application_number = random.randint(100000000000,999999999999)
     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -23267,6 +23516,71 @@ class AutoMunge:
 
     #change data types to 8-bit (1 byte) integers for memory savings
     mdf_test[column + '_bnry'] = mdf_test[column + '_bnry'].astype(np.int8)
+
+
+    return mdf_test
+  
+  def postprocess_binary2_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+    '''
+    #postprocess_binary_class(mdf, column, postprocess_dict, columnkey)
+    #converts binary classification values to 0 or 1
+    #takes as arguement a pandas dataframe (mdf_test), \
+    #the name of the column string ('column') \
+    #and the string classification to assign to missing data ('missing')
+    #saved in the postprocess_dict
+    #replaces original specified column in dataframe
+    #returns transformed dataframe
+    #missing category must be identical to one of the two existing categories
+    #returns error message if more than two categories remain
+    '''
+    
+    #retrieve normalization parameters
+    normkey = column + '_bnr2'
+    binary_missing_plug = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['missing']
+    
+#     onevalue = \
+#     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['onevalue']
+    
+#     zerovalue = \
+#     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['zerovalue']
+
+    onevalue = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey][1]
+    
+    zerovalue = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey][0]
+
+    #change column name to column + '_bnry'
+    mdf_test[column + '_bnr2'] = mdf_test[column].copy()
+
+
+    #replace missing data with specified classification
+    mdf_test[column + '_bnr2'] = mdf_test[column + '_bnr2'].fillna(binary_missing_plug)
+
+    #this addressess issue where nunique for mdftest > than that for mdf_train
+    #note is currently an oportunity for improvement that NArows won't identify these poinsts as candiadates
+    #for user specified infill, and as currently addressed will default to infill with most common value
+    #in the mean time a workaround could be for user to manually replace extra values with nan prior to
+    #postmunge application such as if they want to apply ML infill
+    #this will only be an issue when nunique for df_train == 2, and nunique for df_test > 2
+    #if len(mdf_test[column + '_bnry'].unique()) > 2:
+    uniqueintest = mdf_test[column + '_bnr2'].unique()
+    for unique in uniqueintest:
+      if unique not in [onevalue, zerovalue]:
+        mdf_test.loc[~mdf_test[column + '_bnr2'].isin([onevalue, zerovalue]), column + '_bnr2'] = binary_missing_plug
+   
+    
+    #convert column to binary 0/1 classification (replaces scikit LabelBinarizer)
+    mdf_test.loc[mdf_test[column + '_bnr2'].isin([onevalue]), column + '_bnr2'] = 1
+    mdf_test.loc[mdf_test[column + '_bnr2'].isin([zerovalue]), column + '_bnr2'] = 0
+
+    #create list of columns
+    bnrycolumns = [column + '_bnr2']
+    
+
+    #change data types to 8-bit (1 byte) integers for memory savings
+    mdf_test[column + '_bnr2'] = mdf_test[column + '_bnr2'].astype(np.int8)
 
 
     return mdf_test
