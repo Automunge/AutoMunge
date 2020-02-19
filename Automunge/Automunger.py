@@ -1481,6 +1481,15 @@ class AutoMunge:
                                      'niecesnephews' : [], \
                                      'coworkers' : ['nbr2'], \
                                      'friends' : []}})
+
+    transform_dict.update({'bxc5' : {'parents' : ['bxc5'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['mnmx'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : ['nbr2', 'bins'], \
+                                     'friends' : []}})
     
     transform_dict.update({'pwrs' : {'parents' : [], \
                                      'siblings': [], \
@@ -2546,7 +2555,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_bxcx_class, \
                                   'NArowtype' : 'positivenumeric', \
                                   'MLinfilltype' : 'numeric', \
-                                  'labelctgy' : 'bxcx_nmbr'}})
+                                  'labelctgy' : 'nmbr'}})
     process_dict.update({'date' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
@@ -2834,19 +2843,25 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_bxcx_class, \
                                   'NArowtype' : 'positivenumeric', \
                                   'MLinfilltype' : 'numeric', \
-                                  'labelctgy' : 'bxc2_nmbr'}})
+                                  'labelctgy' : 'nmbr'}})
     process_dict.update({'bxc3' : {'dualprocess' : self.process_bxcx_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_bxcx_class, \
                                   'NArowtype' : 'positivenumeric', \
                                   'MLinfilltype' : 'numeric', \
-                                  'labelctgy' : 'bxc3_nmbr'}})
+                                  'labelctgy' : 'nmbr'}})
     process_dict.update({'bxc4' : {'dualprocess' : self.process_bxcx_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_bxcx_class, \
                                   'NArowtype' : 'positivenumeric', \
                                   'MLinfilltype' : 'numeric', \
-                                  'labelctgy' : 'bxc4_nmbr'}})
+                                  'labelctgy' : 'nmbr'}})
+    process_dict.update({'bxc5' : {'dualprocess' : self.process_bxcx_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_bxcx_class, \
+                                  'NArowtype' : 'positivenumeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'nmbr'}})
     process_dict.update({'pwrs' : {'dualprocess' : self.process_pwrs_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_pwrs_class, \
@@ -3107,13 +3122,13 @@ class AutoMunge:
                                   'labelctgy' : 'exc2'}})
     process_dict.update({'exc3' : {'dualprocess' : self.process_exc2_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.process_exc2_class, \
+                                  'postprocess' : self.postprocess_exc2_class, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'label', \
                                   'labelctgy' : 'exc2'}})
     process_dict.update({'exc4' : {'dualprocess' : self.process_exc2_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.process_exc2_class, \
+                                  'postprocess' : self.postprocess_exc2_class, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'label', \
                                   'labelctgy' : 'exc2'}})
@@ -17794,7 +17809,6 @@ class AutoMunge:
     
     
     
-    
     MLinfilltype = postprocess_dict['process_dict'][labelscategory]['MLinfilltype']
     
     #labels = list(labelsencoding_dict[labelscategory].keys())
@@ -22538,7 +22552,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.24'
+    automungeversion = '3.25'
     application_number = random.randint(100000000000,999999999999)
     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -22678,7 +22692,6 @@ class AutoMunge:
       df_test = pd.DataFrame()
       df_testID = pd.DataFrame()    
 
-
     #now we'll apply the floatprecision transformation
     if floatprecision != 64:
       df_train = self.floatprecision_transform(df_train, finalcolumns_train, floatprecision)
@@ -22689,53 +22702,6 @@ class AutoMunge:
         df_labels = self.floatprecision_transform(df_labels, finalcolumns_labels, floatprecision)
         if labelspresenttest == True:
           df_testlabels = self.floatprecision_transform(df_testlabels, finalcolumns_labels, floatprecision)
-
-    #set output format based on pandasoutput argument
-    if pandasoutput == True:
-
-      np_train = df_train
-      np_trainID = df_trainID
-      np_labels = df_labels
-      np_testlabels = df_testlabels
-      np_validation1 = df_validation1
-      np_validationID1 = df_validationID1
-      np_validationlabels1 = df_validationlabels1
-      np_validation2 = df_validation2
-      np_validationID2 = df_validationID2
-      np_validationlabels2 = df_validationlabels2
-      np_test = df_test
-      np_testID = df_testID
-
-    #else set output to numpy arrays
-    else:
-
-      np_train = df_train.values
-      np_trainID = df_trainID.values
-      np_labels = df_labels.values
-      np_testlabels = df_testlabels.values
-      np_validation1 = df_validation1.values
-      np_validationID1 = df_validationID1.values
-      np_validationlabels1 = df_validationlabels1.values
-      np_validation2 = df_validation2.values
-      np_validationID2 = df_validationID2.values
-      np_validationlabels2 = df_validationlabels2.values
-      np_test = df_test.values
-      np_testID = df_testID.values
-
-      #apply ravel to labels if appropriate - converts from eg [[1,2,3]] to [1,2,3]
-      if np_labels.ndim == 2 and np_labels.shape[1] == 1:
-        np_labels = np.ravel(np_labels)
-      if np_validationlabels1.ndim == 2 and np_validationlabels1.shape[1] == 1:
-        np_validationlabels1 = np.ravel(np_validationlabels1)
-      if np_validationlabels2.ndim == 2 and np_validationlabels2.shape[1] == 1:
-        np_validationlabels2 = np.ravel(np_validationlabels2)
-
-
-
-    #a reasonable extension would be to perform some validation functions on the\
-    #sets here (or also prior to transofrm to numpuy arrays) and confirm things \
-    #like consistency between format of columns and data between our train and \
-    #test sets and if any issues return a coresponding error message to alert user
 
 
     #printout display progress
@@ -22753,15 +22719,50 @@ class AutoMunge:
         print("Automunge returned label column set: ")
         print(list(df_labels))
         print("")
+          
+    #else set output to numpy arrays
+    if pandasoutput is False:
+
+      df_train = df_train.values
+      df_trainID = df_trainID.values
+      df_labels = df_labels.values
+      df_testlabels = df_testlabels.values
+      df_validation1 = df_validation1.values
+      df_validationID1 = df_validationID1.values
+      df_validationlabels1 = df_validationlabels1.values
+      df_validation2 = df_validation2.values
+      df_validationID2 = df_validationID2.values
+      df_validationlabels2 = df_validationlabels2.values
+      df_test = df_test.values
+      df_testID = df_testID.values
+
+      #apply ravel to labels if appropriate - converts from eg [[1,2,3]] to [1,2,3]
+      if df_labels.ndim == 2 and df_labels.shape[1] == 1:
+        df_labels = np.ravel(df_labels)
+      if df_validationlabels1.ndim == 2 and df_validationlabels1.shape[1] == 1:
+        df_validationlabels1 = np.ravel(df_validationlabels1)
+      if df_validationlabels2.ndim == 2 and df_validationlabels2.shape[1] == 1:
+        df_validationlabels2 = np.ravel(df_validationlabels2)
+
+
+
+    #a reasonable extension would be to perform some validation functions on the\
+    #sets here (or also prior to transofrm to numpuy arrays) and confirm things \
+    #like consistency between format of columns and data between our train and \
+    #test sets and if any issues return a coresponding error message to alert user
+
+
+    #printout display progress
+    if printstatus == True:
 
       print("_______________")
       print("Automunge Complete")
       print("")
 
-    return np_train, np_trainID, np_labels, \
-    np_validation1, np_validationID1, np_validationlabels1, \
-    np_validation2, np_validationID2, np_validationlabels2, \
-    np_test, np_testID, np_testlabels, \
+    return df_train, df_trainID, df_labels, \
+    df_validation1, df_validationID1, df_validationlabels1, \
+    df_validation2, df_validationID2, df_validationlabels2, \
+    df_test, df_testID, df_testlabels, \
     labelsencoding_dict, finalcolumns_train, finalcolumns_test,  \
     FScolumn_dict, postprocess_dict
 
