@@ -1645,8 +1645,9 @@ test set returned values >= 0, such as might be useful for kernel PCA for instan
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: mean / MAD / datamax / maximum / minimum
 ### Numerical Set Transformations
-* bxcx/bxc2/bxc3/bxc4: performs Box-Cox power law transformation. Applies infill to values 
-<= 0. Note we currently have a test for overflow in returned results and if found set to 0.
+* bxcx/bxc2/bxc3/bxc4/bxc5: performs Box-Cox power law transformation. Applies infill to 
+values <= 0. Note we currently have a test for overflow in returned results and if found 
+set to 0.
   - default infill: mean
   - default NArowtype: positivenumeric
   - suffix appender: '_bxcx'
@@ -2239,6 +2240,15 @@ If you want to skip to the next section you can click here: [Custom Transformati
     transform_dict.update({'bnry' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['bnry'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'bnr2' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['bnr2'], \
                                      'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
@@ -3477,6 +3487,15 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'niecesnephews' : [], \
                                      'coworkers' : ['nbr2'], \
                                      'friends' : []}})
+
+    transform_dict.update({'bxc5' : {'parents' : ['bxc5'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['mnmx'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : ['nbr2', 'bins'], \
+                                     'friends' : []}})
     
     transform_dict.update({'pwrs' : {'parents' : [], \
                                      'siblings': [], \
@@ -3837,7 +3856,7 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : ['pwr2']}})
-
+    
     transform_dict.update({'shfl' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['shfl'], \
