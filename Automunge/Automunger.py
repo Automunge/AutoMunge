@@ -276,6 +276,24 @@ class AutoMunge:
                                      'coworkers' : ['text'], \
                                      'friends' : []}})
 
+    transform_dict.update({'lngt' : {'parents' : ['lngt'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : ['mnmx'], \
+                                     'friends' : []}})
+  
+    transform_dict.update({'lnlg' : {'parents' : ['lnlg'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : ['log0'], \
+                                     'friends' : []}})
+
     transform_dict.update({'UPCS' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['UPCS'], \
@@ -2172,6 +2190,18 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'text'}})
+    process_dict.update({'lngt' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_lngt_class, \
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'singlct', \
+                                  'labelctgy' : 'mnmx'}})
+    process_dict.update({'lnlg' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_lngt_class, \
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'singlct', \
+                                  'labelctgy' : 'log0'}})
     process_dict.update({'UPCS' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_UPCS_class, \
                                   'postprocess' : None, \
@@ -5121,6 +5151,47 @@ class AutoMunge:
 
     
     return mdf_train, mdf_test, column_dict_list
+
+  
+  def process_lngt_class(self, df, column, category, postprocess_dict, params = {}):
+    '''
+    #processing funciton that length of string for each entry
+    #such as a heuristic for information content
+    #default infill is len(str(np.nan)) = 3
+    #note this is a "singleprocess" function since is applied to single dataframe
+    '''
+    
+    #create new column
+    df[column + '_lngt'] = df[column].copy()
+    
+    df[column + '_lngt'] = df[column + '_lngt'].astype(str).apply(len)
+    
+
+    #create list of columns
+    columns = [column + '_lngt']
+
+    #create normalization dictionary
+    normalization_dict = {column + '_lngt' : {}}
+
+    #store some values in the nmbr_dict{} for use later in ML infill methods
+    column_dict_list = []
+    
+    for nc in columns:
+
+      column_dict = { nc : {'category' : 'lngt', \
+                           'origcategory' : category, \
+                           'normalization_dict' : normalization_dict, \
+                           'origcolumn' : column, \
+                           'columnslist' : columns, \
+                           'categorylist' : columns, \
+                           'infillmodel' : False, \
+                           'infillcomplete' : False, \
+                           'deletecolumn' : False}}
+
+      column_dict_list.append(column_dict.copy())
+
+    return df, column_dict_list
+  
 
 
   
@@ -20909,7 +20980,7 @@ class AutoMunge:
                              'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
                              'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
                              'Utxt':[], 'Utx2':[], 'Utx3':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
-                             'splt':[], 'spl2':[], 'spl3':[], 'spl4':[], 'spl5':[], \
+                             'splt':[], 'spl2':[], 'spl3':[], 'spl4':[], 'spl5':[], 'lngt':[], \
                              'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
                              'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
                              'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], \
@@ -22552,7 +22623,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.25'
+    automungeversion = '3.26'
     application_number = random.randint(100000000000,999999999999)
     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
