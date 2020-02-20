@@ -166,7 +166,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
 		         'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
 		         'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
 			 'Utxt':[], 'Utx2':[], 'Utx3':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
-                         'splt':[], 'spl2':[], 'spl3':[], 'spl4':[], 'spl5':[], \
+                         'splt':[], 'spl2':[], 'spl3':[], 'spl4':[], 'spl5':[], 'lngt':[], \
                          'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
 			 'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
                          'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], \
@@ -385,7 +385,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
 		         'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
 		         'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
 			 'Utxt':[], 'Utx2':[], 'Utx3':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
-                         'splt':[], 'spl2':[], 'spl3':[], 'spl4':[], 'spl5':[], \
+                         'splt':[], 'spl2':[], 'spl3':[], 'spl4':[], 'spl5':[], 'lngt':[], \
                          'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
 			 'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
                          'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], \
@@ -577,7 +577,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
 		         'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
 		         'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
 			 'Utxt':[], 'Utx2':[], 'Utx3':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
-                         'splt':[], 'spl2':[], 'spl3':[], 'spl4':[], 'spl5':[], \
+                         'splt':[], 'spl2':[], 'spl3':[], 'spl4':[], 'spl5':[], 'lngt':[], \
                          'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
 			 'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
                          'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], \
@@ -901,7 +901,7 @@ such as could potentially result in memory savings.
 		 'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
 		 'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
 		 'Utxt':[], 'Utx2':[], 'Utx3':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
-                 'splt':[], 'spl2':[], 'spl3':[], 'spl4':[], 'spl5':[], \
+                 'splt':[], 'spl2':[], 'spl3':[], 'spl4':[], 'spl5':[], 'lngt':[], \
                  'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
 		 'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
                  'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], \
@@ -1881,6 +1881,12 @@ efficent than one-hot encoding)
 	                           _1010_binary_column_count / _1010_activations_dict
   (for example if 1010 encoded to three columns based on number of categories <8,
   it would retuyrn three columns with suffix appenders 1010_1, 1010_2, 1010_3)
+* lngt, lnlg: returtns string length of categoric entries (lngt followed by min/max, lnlg by log)
+  - default infill: plug value of 3 (based on len(str(np.nan)) )
+  - default NArowtype: justNaN
+  - suffix appender: '_lngt'
+  - assignparam parameters accepted: none
+  - driftreport postmunge metrics: none
 * new processing functions Utxt / Utx2 / Utx3 / Uord / Uor2 / Uor3 / Uor6 / U101
   - comparable to functions text / txt2 / txt3 / ordl / ord2 / ord3 / ors6 / 1010
   - but upstream conversion of all strings to uppercase characters prior to encoding
@@ -2280,6 +2286,24 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : ['text'], \
+                                     'friends' : []}})
+
+    transform_dict.update({'lngt' : {'parents' : ['lngt'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : ['mnmx'], \
+                                     'friends' : []}})
+  
+    transform_dict.update({'lnlg' : {'parents' : ['lnlg'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : ['log0'], \
                                      'friends' : []}})
 
     transform_dict.update({'UPCS' : {'parents' : [], \
