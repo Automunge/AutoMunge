@@ -650,14 +650,24 @@ This value defaults to 0. (Previously the default here was set at 0.20 but
 that is fairly an arbitrary value and a user may wish to deviate for 
 different size sets.) Note that this value may be set to 0 if no validation 
 set is needed (such as may be the case for k-means validation). Please see 
-also the note below for the shuffletrain parameter.
+also the notes below for the shuffletrain parameter.  Note that if 
+shuffletrain parameter is set to False then any validation sets will be 
+pulled from the bottom x% sequential rows of the df_train dataframe. (Where 
+x% is the sum of validation ratios.) Note that if this value is set to 
+False although the validations will be pulled from sequential rows, the 
+split between validaiton1 and validation2 sets will be randomized. Note 
+that if desire is instead to pull validation rows from the top x% sequential
+rows one can first reverse the order of the rows such as via 
+df_train = df_train[::-1]
 
 * valpercent2: a float value between 0 and 1 which designates the percent
 of the training data which will be set aside for the second validation
 set (generally used for final validation of a model prior to release).
 This value defaults to 0. (Previously the default was set at 0.10 but that 
 is fairly an arbitrary value and a user may wish to deviate for different 
-size sets.)
+size sets.) Note that if shuffletrain is set to False although the validations 
+will be pulled from sequential rows, the split between validaiton1 and 
+validation2 sets will be randomized.
 
 * floatprecision: an integer with acceptable values of 16/32/64 designating
 the memory precision for returned float values. (A tradeoff between memory
@@ -667,12 +677,9 @@ that there may be energy efficiency benefits at scale to basing this to 16.
 
 * shuffletrain: a boolean identifier (True/False) which indicates if the
 rows in df_train will be shuffled prior to carving out the validation
-sets. Note that if this value is set to False then the validation sets
-will be pulled from the bottom x% sequential rows of the dataframe.
-(Where x% is the sum of validation ratios.) Note that if this value is
-set to False although the validations will be pulled from sequential
-rows, the split between validaiton1 and validation2 sets will be
-randomized. This value defaults to False.
+sets.  This value defaults to False. Note that if this value is set to 
+False then any validation sets will be pulled from the bottom x% sequential 
+rows of the df_train dataframe. (Where x% is the sum of validation ratios.) 
 
 * TrainLabelFreqLevel: a boolean identifier (True/False) which indicates
 if the TrainLabelFreqLevel method will be applied to prepare for oversampling 
