@@ -152,7 +152,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
                        'PCA_type':'default', \
                        'PCA_cmnd':{}}, \
             assigncat = {'mnmx':[], 'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[], \
-	                 'mean':[], 'mea2':[], 'mea3':[], \
+	                 'mean':[], 'mea2':[], 'mea3':[], 'retn':[], \
 		         'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'MAD3':[], \
 		         'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
 		         'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
@@ -371,7 +371,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
                        'PCA_type':'default', \
                        'PCA_cmnd':{}}, \
             assigncat = {'mnmx':[], 'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[], \
-	                 'mean':[], 'mea2':[], 'mea3':[], \
+	                 'mean':[], 'mea2':[], 'mea3':[], 'retn':[], \
 		         'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'MAD3':[], \
 		         'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
 		         'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
@@ -563,7 +563,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
                        'PCA_type':'default', \
                        'PCA_cmnd':{}}, \
             assigncat = {'mnmx':[], 'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[], \
-	                 'mean':[], 'mea2':[], 'mea3':[], \
+	                 'mean':[], 'mea2':[], 'mea3':[], 'retn':[], \
 		         'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'MAD3':[], \
 		         'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
 		         'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
@@ -894,7 +894,7 @@ such as could potentially result in memory savings.
 #we are continuing to build out. A user may also define their own.
 
     assigncat = {'mnmx':[], 'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[], \
-                 'mean':[], 'mea2':[], 'mea3':[], \
+                 'mean':[], 'mea2':[], 'mea3':[], 'retn':[], \
 		 'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'MAD3':[], \
 		 'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
 		 'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
@@ -1628,13 +1628,20 @@ benefits but really up to the user which they prefer.
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '_mnm3'
-  - assignparam parameters accepted: none
+  - assignparam parameters accepted: qmax or qmin to change the quantiles from 0.99/0.01
   - driftreport postmunge metrics: quantilemin / quantilemax / mean / std
 * mnm6: min-max scaling with test floor set capped at min of train set (ensures
 test set returned values >= 0, such as might be useful for kernel PCA for instance)
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '_mnm6'
+  - assignparam parameters accepted: none
+  - driftreport postmunge metrics: minimum / maximum / mean / std
+* retn: related to min/max scaling but retains +/- of values, based on conditions
+if max>0 and min<0, x=x/(max-min), else x=(x-min)/(max-min)
+  - default infill: mean
+  - default NArowtype: numeric
+  - suffix appender: '_retn'
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: minimum / maximum / mean / std
 * MADn/MAD2: mean absolute deviation normalization, subtract set mean <br/>
@@ -1824,7 +1831,8 @@ bin count defaults to 5/7/9 eg for bne0/bn7o/bn9o
 					   defaults to [0,1,2] (arbitrary plug values)
   - driftreport postmunge metrics: binsmean / buckets / bins_cuts / bins_id / ordl_activations_dict
 ### Sequential Numerical Set Transformations
-* dxdt/d2dt/d3dt: rate of change (row value minus value in preceding row)
+* dxdt/d2dt/d3dt: rate of change (row value minus value in preceding row), high orders return lower 
+orders (eg d2dt returns original set, dxdt, and d2dt), all returned sets include 'retn' normalization
   - default infill: adjacent cells
   - default NArowtype: numeric
   - suffix appender: '_dxdt'
@@ -1832,13 +1840,19 @@ bin count defaults to 5/7/9 eg for bne0/bn7o/bn9o
   defaults to 1
   - driftreport postmunge metrics: (pending)
 * dxd2/d2d2/d3d2: denoised rate of change (average of last two rows minus average
-of preceding two rows)
+of preceding two rows), high orders return lower orders (eg d2d2 returns original set, dxd2, 
+and d2d2), all returned sets include 'retn' normalization
   - default infill: adjacent cells
   - default NArowtype: numeric
   - suffix appender: '_dxd2'
   - assignparam parameters accepted: 'periods' sets number of time steps offset to evaluate
   defaults to 2
   - driftreport postmunge metrics: (pending)
+* nmdx/nmd2/nmd3: comparable to dxdt but includes upstream of sequential transforms a nmrc numeric
+string parsing top extract numbers from string sets
+* mmdx/mmd2/mmd3: comparable to dxdt but uses z-score normalizaitons via 'nbr2' instead of 'retn'
+* dddt/ddd2/ddd3: comparable to dxdt but no normalziations applied
+* dedt/ded2/ded3: comparable to dxd2 but no normalziations applied
 ### Categorical Set Encodings
 * bnry: converts sets with two values to boolean identifiers. Defaults to assiging
 1 to most common value and 0 to second most common, unless 1 or 0 is already included
@@ -1893,7 +1907,7 @@ efficent than one-hot encoding)
   - default NArowtype: justNaN
   - suffix appender: '_lngt'
   - assignparam parameters accepted: none
-  - driftreport postmunge metrics: none
+  - driftreport postmunge metrics: maximum, minimum, mean, std
 * new processing functions Utxt / Utx2 / Utx3 / Uord / Uor2 / Uor3 / Uor6 / U101
   - comparable to functions text / txt2 / txt3 / ordl / ord2 / ord3 / ors6 / 1010
   - but upstream conversion of all strings to uppercase characters prior to encoding
