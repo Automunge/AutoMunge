@@ -149,6 +149,33 @@ class AutoMunge:
                                      'niecesnephews' : ['d2dt'], \
                                      'coworkers' : ['retn'], \
                                      'friends' : []}})
+
+    transform_dict.update({'d4dt' : {'parents' : ['d4dt'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['retn'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : ['d3dt'], \
+                                     'coworkers' : ['retn'], \
+                                     'friends' : []}})
+
+    transform_dict.update({'d5dt' : {'parents' : ['d5dt'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['retn'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : ['d4dt'], \
+                                     'coworkers' : ['retn'], \
+                                     'friends' : []}})
+
+    transform_dict.update({'d6dt' : {'parents' : ['d6dt'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['retn'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : ['d5dt'], \
+                                     'coworkers' : ['retn'], \
+                                     'friends' : []}})
     
     transform_dict.update({'dxd2' : {'parents' : ['dxd2'], \
                                      'siblings': [], \
@@ -174,6 +201,33 @@ class AutoMunge:
                                      'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : ['d2d2'], \
+                                     'coworkers' : ['retn'], \
+                                     'friends' : []}})
+
+    transform_dict.update({'d4d2' : {'parents' : ['d4d2'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['retn'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : ['d3d2'], \
+                                     'coworkers' : ['retn'], \
+                                     'friends' : []}})
+
+    transform_dict.update({'d5d2' : {'parents' : ['d5d2'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['retn'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : ['d4d2'], \
+                                     'coworkers' : ['retn'], \
+                                     'friends' : []}})
+
+    transform_dict.update({'d6d2' : {'parents' : ['d6d2'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['retn'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : ['d5d2'], \
                                      'coworkers' : ['retn'], \
                                      'friends' : []}})
     
@@ -203,10 +257,37 @@ class AutoMunge:
                                      'niecesnephews' : [], \
                                      'coworkers' : ['retn'], \
                                      'friends' : []}})
+
+    transform_dict.update({'nmd4' : {'parents' : ['nmd4'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : ['d4dt'], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : ['retn'], \
+                                     'friends' : []}})
+
+    transform_dict.update({'nmd5' : {'parents' : ['nmd5'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : ['d5dt'], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : ['retn'], \
+                                     'friends' : []}})
+
+    transform_dict.update({'nmd6' : {'parents' : ['nmd6'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : ['d6dt'], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : ['retn'], \
+                                     'friends' : []}})
     
     transform_dict.update({'mmdx' : {'parents' : ['mmdx'], \
                                      'siblings': [], \
-                                     'auntsuncles' : ['mnmx'], \
+                                     'auntsuncles' : ['nbr2'], \
                                      'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
@@ -228,6 +309,33 @@ class AutoMunge:
                                      'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : ['mmd2'], \
+                                     'coworkers' : ['nbr2'], \
+                                     'friends' : []}})
+
+    transform_dict.update({'mmd4' : {'parents' : ['mmd4'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['nbr2'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : ['mmd3'], \
+                                     'coworkers' : ['nbr2'], \
+                                     'friends' : []}})
+
+    transform_dict.update({'mmd5' : {'parents' : ['mmd5'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['nbr2'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : ['mmd4'], \
+                                     'coworkers' : ['nbr2'], \
+                                     'friends' : []}})
+
+    transform_dict.update({'mmd6' : {'parents' : ['mmd6'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['nbr2'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : ['mmd5'], \
                                      'coworkers' : ['nbr2'], \
                                      'friends' : []}})
     
@@ -257,6 +365,33 @@ class AutoMunge:
                                      'niecesnephews' : ['ddd2'], \
                                      'coworkers' : [], \
                                      'friends' : []}})
+
+    transform_dict.update({'ddd4' : {'parents' : ['ddd4'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['exc2'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : ['ddd3'], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+
+    transform_dict.update({'ddd5' : {'parents' : ['ddd5'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['exc2'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : ['ddd4'], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+
+    transform_dict.update({'ddd6' : {'parents' : ['ddd6'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['exc2'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : ['ddd5'], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
     
     transform_dict.update({'dedt' : {'parents' : [], \
                                      'siblings': [], \
@@ -282,6 +417,33 @@ class AutoMunge:
                                      'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : ['ded2'], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+
+    transform_dict.update({'ded4' : {'parents' : ['ded4'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['exc2'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : ['ded3'], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+
+    transform_dict.update({'ded5' : {'parents' : ['ded5'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['exc2'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : ['ded4'], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+
+    transform_dict.update({'ded6' : {'parents' : ['ded6'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['exc2'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : ['ded5'], \
                                      'coworkers' : [], \
                                      'friends' : []}})
 
@@ -2066,55 +2228,109 @@ class AutoMunge:
                                   'postprocess' : None, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
-                                  'labelctgy' : 'dxdt'}})
+                                  'labelctgy' : 'retn'}})
     process_dict.update({'d2dt' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_dxdt_class, \
                                   'postprocess' : None, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
-                                  'labelctgy' : 'dxdt'}})
+                                  'labelctgy' : 'retn'}})
     process_dict.update({'d3dt' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_dxdt_class, \
                                   'postprocess' : None, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
-                                  'labelctgy' : 'dxdt'}})
+                                  'labelctgy' : 'retn'}})
+    process_dict.update({'d4dt' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_dxdt_class, \
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'retn'}})
+    process_dict.update({'d5dt' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_dxdt_class, \
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'retn'}})
+    process_dict.update({'d6dt' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_dxdt_class, \
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'retn'}})
     process_dict.update({'dxd2' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_dxd2_class, \
                                   'postprocess' : None, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
-                                  'labelctgy' : 'dxd2'}})
+                                  'labelctgy' : 'retn'}})
     process_dict.update({'d2d2' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_dxd2_class, \
                                   'postprocess' : None, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
-                                  'labelctgy' : 'dxd2'}})
+                                  'labelctgy' : 'retn'}})
     process_dict.update({'d3d2' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_dxd2_class, \
                                   'postprocess' : None, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
-                                  'labelctgy' : 'dxd2'}})
+                                  'labelctgy' : 'retn'}})
+    process_dict.update({'d4d2' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_dxd2_class, \
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'retn'}})
+    process_dict.update({'d5d2' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_dxd2_class, \
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'retn'}})
+    process_dict.update({'d6d2' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_dxd2_class, \
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'retn'}})
     process_dict.update({'nmdx' : {'dualprocess' : self.process_numerical_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_numerical_class, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
-                                  'labelctgy' : 'nmbr'}})
+                                  'labelctgy' : 'retn'}})
     process_dict.update({'nmd2' : {'dualprocess' : self.process_numerical_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_numerical_class, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
-                                  'labelctgy' : 'nmbr'}})
+                                  'labelctgy' : 'retn'}})
     process_dict.update({'nmd3' : {'dualprocess' : self.process_numerical_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_numerical_class, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
-                                  'labelctgy' : 'nmbr'}})
+                                  'labelctgy' : 'retn'}})
+    process_dict.update({'nmd4' : {'dualprocess' : self.process_numerical_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_numerical_class, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'retn'}})
+    process_dict.update({'nmd5' : {'dualprocess' : self.process_numerical_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_numerical_class, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'retn'}})
+    process_dict.update({'nmd6' : {'dualprocess' : self.process_numerical_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_numerical_class, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'retn'}})
     process_dict.update({'mmdx' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_dxdt_class, \
                                   'postprocess' : None, \
@@ -2128,6 +2344,24 @@ class AutoMunge:
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmbr'}})
     process_dict.update({'mmd3' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_dxdt_class, \
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'nmbr'}})
+    process_dict.update({'mmd4' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_dxdt_class, \
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'nmbr'}})
+    process_dict.update({'mmd5' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_dxdt_class, \
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'nmbr'}})
+    process_dict.update({'mmd6' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_dxdt_class, \
                                   'postprocess' : None, \
                                   'NArowtype' : 'numeric', \
@@ -2151,6 +2385,24 @@ class AutoMunge:
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'dxdt'}})
+    process_dict.update({'ddd4' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_dxdt_class, \
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'dxdt'}})
+    process_dict.update({'ddd5' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_dxdt_class, \
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'dxdt'}})
+    process_dict.update({'ddd6' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_dxdt_class, \
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'dxdt'}})
     process_dict.update({'dedt' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_dxd2_class, \
                                   'postprocess' : None, \
@@ -2164,6 +2416,24 @@ class AutoMunge:
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'dxd2'}})
     process_dict.update({'ded3' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_dxd2_class, \
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'dxd2'}})
+    process_dict.update({'ded4' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_dxd2_class, \
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'dxd2'}})
+    process_dict.update({'ded5' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_dxd2_class, \
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'dxd2'}})
+    process_dict.update({'ded6' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_dxd2_class, \
                                   'postprocess' : None, \
                                   'NArowtype' : 'numeric', \
@@ -3616,6 +3886,7 @@ class AutoMunge:
 
     
     params = self.grab_params(assign_param, parent, column)
+    
     
     if bool(params):
     
@@ -5946,6 +6217,8 @@ class AutoMunge:
     #to follow with an ordl encoding
     '''
     
+
+    
 #     overlap_lengths = [20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7 , 6, 5]
 
     if 'minsplit' in params:
@@ -6673,9 +6946,8 @@ class AutoMunge:
 #     overlap_lengths = [20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7 , 6, 5]
 
     if 'minsplit' in params:
-        
       minsplit = params['minsplit'] - 1
-    
+
     else:
       
       minsplit = 4
@@ -9251,8 +9523,7 @@ class AutoMunge:
     return mdf_train, mdf_test, column_dict_list
   
   
-  def process_mdsn_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict, params = {}):
+  def process_mdsn_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
     '''
     #process_mdsn_class(mdf_train, mdf_test, column, category)
     #preprocess column with time classifications
@@ -9283,11 +9554,69 @@ class AutoMunge:
 #     #grab month entries
 #     mdf_train[column + '_mdsn'] = mdf_train[column + '_mdsn'].dt.month
 #     mdf_test[column + '_mdsn'] = mdf_test[column + '_mdsn'].dt.month
+
+    #convert months to number of days in a temp column to support periodicity trasnform
+
+    mdf_train[column + '_mdsn' + '_temp'] = mdf_train[column + '_mdsn'].copy()
+    mdf_train[column + '_mdsn' + '_temp_leap'] = mdf_train[column + '_mdsn'].copy()
+
+    mdf_train[column + '_mdsn' + '_temp'] = mdf_train[column + '_mdsn' + '_temp'].dt.month
+    mdf_train[column + '_mdsn' + '_temp_leap'] = mdf_train[column + '_mdsn' + '_temp_leap'].dt.is_leap_year
+
+    mdf_train[column + '_mdsn' + '_temp_leap'] = \
+    np.where(mdf_train[column + '_mdsn' + '_temp_leap'], 29, 28)
     
+    mdf_train[column + '_mdsn' + '_temp'] = \
+    np.where(mdf_train[column + '_mdsn' + '_temp'].isin([1,3,5,7,8,10,12]), 31, mdf_train[column + '_mdsn' + '_temp'].values)
+
+    mdf_train[column + '_mdsn' + '_temp'] = \
+    np.where(mdf_train[column + '_mdsn' + '_temp'].isin([4,6,9,11]), 30, mdf_train[column + '_mdsn' + '_temp'].values)
+
+    mdf_train[column + '_mdsn' + '_temp'] = \
+    np.where(mdf_train[column + '_mdsn' + '_temp'].isin([2]), mdf_train[column + '_mdsn' + '_temp_leap'], \
+    mdf_train[column + '_mdsn' + '_temp'].values)
+
+    mdf_train[column + '_mdsn' + '_temp'] = \
+    np.where(mdf_train[column + '_mdsn' + '_temp'].isin([28,29,30,31]), mdf_train[column + '_mdsn' + '_temp'].values, 30.42)
+
+    #do same for test set
+
+    mdf_test[column + '_mdsn' + '_temp'] = mdf_test[column + '_mdsn'].copy()
+    mdf_test[column + '_mdsn' + '_temp_leap'] = mdf_test[column + '_mdsn'].copy()
+
+    mdf_test[column + '_mdsn' + '_temp'] = mdf_test[column + '_mdsn' + '_temp'].dt.month
+    mdf_test[column + '_mdsn' + '_temp_leap'] = mdf_test[column + '_mdsn' + '_temp_leap'].dt.is_leap_year
+
+    mdf_test[column + '_mdsn' + '_temp_leap'] = \
+    np.where(mdf_test[column + '_mdsn' + '_temp_leap'], 29, 28)
+    
+    mdf_test[column + '_mdsn' + '_temp'] = \
+    np.where(mdf_test[column + '_mdsn' + '_temp'].isin([1,3,5,7,8,10,12]), 31, mdf_test[column + '_mdsn' + '_temp'].values)
+
+    mdf_test[column + '_mdsn' + '_temp'] = \
+    np.where(mdf_test[column + '_mdsn' + '_temp'].isin([4,6,9,11]), 30, mdf_test[column + '_mdsn' + '_temp'].values)
+
+    mdf_test[column + '_mdsn' + '_temp'] = \
+    np.where(mdf_test[column + '_mdsn' + '_temp'].isin([2]), mdf_test[column + '_mdsn' + '_temp_leap'], \
+    mdf_test[column + '_mdsn' + '_temp'].values)
+
+    mdf_test[column + '_mdsn' + '_temp'] = \
+    np.where(mdf_test[column + '_mdsn' + '_temp'].isin([28,29,30,31]), mdf_test[column + '_mdsn' + '_temp'].values, 30.42)
+
+
+
     #apply sin transform to combined day and month, note aversage of 30.42 days in a month, 12 months in a year
-    mdf_train[column + '_mdsn'] = np.sin((mdf_train[column + '_mdsn'].dt.month + mdf_train[column + '_mdsn'].dt.day / 30.42) * 2 * np.pi / 12 )
-    mdf_test[column + '_mdsn'] = np.sin((mdf_test[column + '_mdsn'].dt.month + mdf_test[column + '_mdsn'].dt.day / 30.42) * 2 * np.pi / 12 )
-    
+    mdf_train[column + '_mdsn'] = np.sin((mdf_train[column + '_mdsn'].dt.month + mdf_train[column + '_mdsn'].dt.day / \
+    mdf_train[column + '_mdsn' + '_temp']) * 2 * np.pi / 12 )
+    mdf_test[column + '_mdsn'] = np.sin((mdf_test[column + '_mdsn'].dt.month + mdf_test[column + '_mdsn'].dt.day / \
+    mdf_test[column + '_mdsn' + '_temp']) * 2 * np.pi / 12 )
+
+    #delete the support columns 
+    del mdf_train[column + '_mdsn' + '_temp']
+    del mdf_test[column + '_mdsn' + '_temp']
+
+    del mdf_train[column + '_mdsn' + '_temp_leap']
+    del mdf_test[column + '_mdsn' + '_temp_leap']
     
     #get mean of various categories of datetime objects to use to plug in missing cells
     mean_mdsn = mdf_train[column + '_mdsn'].mean()
@@ -9345,8 +9674,7 @@ class AutoMunge:
     return mdf_train, mdf_test, column_dict_list
   
   
-  def process_mdcs_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict, params = {}):
+  def process_mdcs_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
     '''
     #process_mdcs_class(mdf_train, mdf_test, column, category)
     #preprocess column with time classifications
@@ -9377,10 +9705,67 @@ class AutoMunge:
 #     #grab month entries
 #     mdf_train[column + '_mdsn'] = mdf_train[column + '_mdsn'].dt.month
 #     mdf_test[column + '_mdsn'] = mdf_test[column + '_mdsn'].dt.month
+
+    #convert months to number of days in a temp column to support periodicity trasnform
+
+    mdf_train[column + '_mdcs' + '_temp'] = mdf_train[column + '_mdcs'].copy()
+    mdf_train[column + '_mdcs' + '_temp_leap'] = mdf_train[column + '_mdcs'].copy()
+
+    mdf_train[column + '_mdcs' + '_temp'] = mdf_train[column + '_mdcs' + '_temp'].dt.month
+    mdf_train[column + '_mdcs' + '_temp_leap'] = mdf_train[column + '_mdcs' + '_temp_leap'].dt.is_leap_year
+
+    mdf_train[column + '_mdcs' + '_temp_leap'] = \
+    np.where(mdf_train[column + '_mdcs' + '_temp_leap'], 29, 28)
+    
+    mdf_train[column + '_mdcs' + '_temp'] = \
+    np.where(mdf_train[column + '_mdcs' + '_temp'].isin([1,3,5,7,8,10,12]), 31, mdf_train[column + '_mdcs' + '_temp'].values)
+
+    mdf_train[column + '_mdcs' + '_temp'] = \
+    np.where(mdf_train[column + '_mdcs' + '_temp'].isin([4,6,9,11]), 30, mdf_train[column + '_mdcs' + '_temp'].values)
+
+    mdf_train[column + '_mdcs' + '_temp'] = \
+    np.where(mdf_train[column + '_mdcs' + '_temp'].isin([2]), mdf_train[column + '_mdcs' + '_temp_leap'], \
+    mdf_train[column + '_mdcs' + '_temp'].values)
+
+    mdf_train[column + '_mdcs' + '_temp'] = \
+    np.where(mdf_train[column + '_mdcs' + '_temp'].isin([28,29,30,31]), mdf_train[column + '_mdcs' + '_temp'].values, 30.42)
+
+    #do same for test set
+
+    mdf_test[column + '_mdcs' + '_temp'] = mdf_test[column + '_mdcs'].copy()
+    mdf_test[column + '_mdcs' + '_temp_leap'] = mdf_test[column + '_mdcs'].copy()
+
+    mdf_test[column + '_mdcs' + '_temp'] = mdf_test[column + '_mdcs' + '_temp'].dt.month
+    mdf_test[column + '_mdcs' + '_temp_leap'] = mdf_test[column + '_mdcs' + '_temp_leap'].dt.is_leap_year
+
+    mdf_test[column + '_mdcs' + '_temp_leap'] = \
+    np.where(mdf_test[column + '_mdcs' + '_temp_leap'], 29, 28)
+    
+    mdf_test[column + '_mdcs' + '_temp'] = \
+    np.where(mdf_test[column + '_mdcs' + '_temp'].isin([1,3,5,7,8,10,12]), 31, mdf_test[column + '_mdcs' + '_temp'].values)
+
+    mdf_test[column + '_mdcs' + '_temp'] = \
+    np.where(mdf_test[column + '_mdcs' + '_temp'].isin([4,6,9,11]), 30, mdf_test[column + '_mdcs' + '_temp'].values)
+
+    mdf_test[column + '_mdcs' + '_temp'] = \
+    np.where(mdf_test[column + '_mdcs' + '_temp'].isin([2]), mdf_test[column + '_mdcs' + '_temp_leap'], \
+    mdf_test[column + '_mdcs' + '_temp'].values)
+
+    mdf_test[column + '_mdcs' + '_temp'] = \
+    np.where(mdf_test[column + '_mdcs' + '_temp'].isin([28,29,30,31]), mdf_test[column + '_mdcs' + '_temp'].values, 30.42)
     
     #apply cos transform to combined day and month, note aversage of 30.42 days in a month, 12 months in a year
-    mdf_train[column + '_mdcs'] = np.cos((mdf_train[column + '_mdcs'].dt.month + mdf_train[column + '_mdcs'].dt.day / 30.42) * 2 * np.pi / 12 )
-    mdf_test[column + '_mdcs'] = np.cos((mdf_test[column + '_mdcs'].dt.month + mdf_test[column + '_mdcs'].dt.day / 30.42) * 2 * np.pi / 12 )
+    mdf_train[column + '_mdcs'] = np.cos((mdf_train[column + '_mdcs'].dt.month + mdf_train[column + '_mdcs'].dt.day / \
+    mdf_train[column + '_mdcs' + '_temp']) * 2 * np.pi / 12 )
+    mdf_test[column + '_mdcs'] = np.cos((mdf_test[column + '_mdcs'].dt.month + mdf_test[column + '_mdcs'].dt.day / \
+    mdf_test[column + '_mdcs' + '_temp']) * 2 * np.pi / 12 )
+
+    #delete the support columns 
+    del mdf_train[column + '_mdcs' + '_temp']
+    del mdf_test[column + '_mdcs' + '_temp']
+
+    del mdf_train[column + '_mdcs' + '_temp_leap']
+    del mdf_test[column + '_mdcs' + '_temp_leap']
     
     
     #get mean of various categories of datetime objects to use to plug in missing cells
@@ -15986,7 +16371,7 @@ class AutoMunge:
       if labels == True:
         
         if category == 'nmbr':
-          category = 'exc3'
+          category = 'exc2'
           
         if category == '1010':
           category = 'text'
@@ -21197,7 +21582,7 @@ class AutoMunge:
 
   def automunge(self, df_train, df_test = False, labels_column = False, trainID_column = False, \
                 testID_column = False, valpercent1=0.0, valpercent2 = 0.0, floatprecision = 32, \
-                shuffletrain = False, TrainLabelFreqLevel = False, powertransform = False, \
+                shuffletrain = True, TrainLabelFreqLevel = False, powertransform = False, \
                 binstransform = False, MLinfill = False, infilliterate=1, randomseed = 42, \
                 LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, \
                 LSfit = False, numbercategoryheuristic = 63, pandasoutput = False, NArw_marker = False, \
@@ -21478,6 +21863,7 @@ class AutoMunge:
     else:
       
       assign_param = assignparam
+    
 
 
     #we'll introduce convention that if df_test provided as False then we'll create
@@ -22009,6 +22395,8 @@ class AutoMunge:
 
             #printout display progress
             if printstatus == True:
+              print("______")
+              print("")
               print("evaluating label column: ", labels_column)
 
       if categorycomplete == False:
@@ -22023,6 +22411,8 @@ class AutoMunge:
 
         #printout display progress
         if printstatus == True:
+          print("______")
+          print("")
           print("evaluating label column: ", labels_column)
 
         #determine labels category and apply appropriate function
@@ -22049,8 +22439,7 @@ class AutoMunge:
 
       #printout display progress
       if printstatus == True:
-        print("______")
-        print("")
+
         print("processing label column: ", labels_column)
         print("    root label category: ", labelscategory)
         print("")
@@ -22865,7 +23254,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.27'
+    automungeversion = '3.28'
     application_number = random.randint(100000000000,999999999999)
     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -26005,9 +26394,38 @@ class AutoMunge:
 
 #     #grab month entries for test set
 #     mdf_test[column + '_mdsn'] = mdf_test[column + '_mdsn'].dt.month
+
+    #convert months to number of days in a temp column to support periodicity trasnform
+
+    mdf_test[column + '_mdsn' + '_temp'] = mdf_test[column + '_mdsn'].copy()
+    mdf_test[column + '_mdsn' + '_temp_leap'] = mdf_test[column + '_mdsn'].copy()
+
+    mdf_test[column + '_mdsn' + '_temp'] = mdf_test[column + '_mdsn' + '_temp'].dt.month
+    mdf_test[column + '_mdsn' + '_temp_leap'] = mdf_test[column + '_mdsn' + '_temp_leap'].dt.is_leap_year
+
+    mdf_test[column + '_mdsn' + '_temp_leap'] = \
+    np.where(mdf_test[column + '_mdsn' + '_temp_leap'], 29, 28)
+    
+    mdf_test[column + '_mdsn' + '_temp'] = \
+    np.where(mdf_test[column + '_mdsn' + '_temp'].isin([1,3,5,7,8,10,12]), 31, mdf_test[column + '_mdsn' + '_temp'].values)
+
+    mdf_test[column + '_mdsn' + '_temp'] = \
+    np.where(mdf_test[column + '_mdsn' + '_temp'].isin([4,6,9,11]), 30, mdf_test[column + '_mdsn' + '_temp'].values)
+
+    mdf_test[column + '_mdsn' + '_temp'] = \
+    np.where(mdf_test[column + '_mdsn' + '_temp'].isin([2]), mdf_test[column + '_mdsn' + '_temp_leap'], \
+    mdf_test[column + '_mdsn' + '_temp'].values)
+
+    mdf_test[column + '_mdsn' + '_temp'] = \
+    np.where(mdf_test[column + '_mdsn' + '_temp'].isin([28,29,30,31]), mdf_test[column + '_mdsn' + '_temp'].values, 30.42)
     
     #apply sin transform to combined day and month, note average of 30.42 days in a month, 12 months in a year
-    mdf_test[column + '_mdsn'] = np.sin((mdf_test[column + '_mdsn'].dt.month + mdf_test[column + '_mdsn'].dt.day / 30.42) * 2 * np.pi / 12 )
+    mdf_test[column + '_mdsn'] = np.sin((mdf_test[column + '_mdsn'].dt.month + mdf_test[column + '_mdsn'].dt.day / \
+    mdf_test[column + '_mdsn' + '_temp']) * 2 * np.pi / 12 )
+
+    #delete the support column
+    del mdf_test[column + '_mdsn' + '_temp']
+    del mdf_test[column + '_mdsn' + '_temp_leap']
 
     #replace missing data with training set mean
     mdf_test[column + '_mdsn'] = mdf_test[column + '_mdsn'].fillna(mean_mdsn)
@@ -26052,9 +26470,38 @@ class AutoMunge:
 
 #     #grab month entries for test set
 #     mdf_test[column + '_mdsn'] = mdf_test[column + '_mdsn'].dt.month
+
+    #convert months to number of days in a temp column to support periodicity trasnform
+
+    mdf_test[column + '_mdcs' + '_temp'] = mdf_test[column + '_mdcs'].copy()
+    mdf_test[column + '_mdcs' + '_temp_leap'] = mdf_test[column + '_mdcs'].copy()
+
+    mdf_test[column + '_mdcs' + '_temp'] = mdf_test[column + '_mdcs' + '_temp'].dt.month
+    mdf_test[column + '_mdcs' + '_temp_leap'] = mdf_test[column + '_mdcs' + '_temp_leap'].dt.is_leap_year
+
+    mdf_test[column + '_mdcs' + '_temp_leap'] = \
+    np.where(mdf_test[column + '_mdcs' + '_temp_leap'], 29, 28)
+    
+    mdf_test[column + '_mdcs' + '_temp'] = \
+    np.where(mdf_test[column + '_mdcs' + '_temp'].isin([1,3,5,7,8,10,12]), 31, mdf_test[column + '_mdcs' + '_temp'].values)
+
+    mdf_test[column + '_mdcs' + '_temp'] = \
+    np.where(mdf_test[column + '_mdcs' + '_temp'].isin([4,6,9,11]), 30, mdf_test[column + '_mdcs' + '_temp'].values)
+
+    mdf_test[column + '_mdcs' + '_temp'] = \
+    np.where(mdf_test[column + '_mdcs' + '_temp'].isin([2]), mdf_test[column + '_mdcs' + '_temp_leap'], \
+    mdf_test[column + '_mdcs' + '_temp'].values)
+
+    mdf_test[column + '_mdcs' + '_temp'] = \
+    np.where(mdf_test[column + '_mdcs' + '_temp'].isin([28,29,30,31]), mdf_test[column + '_mdcs' + '_temp'].values, 30.42)
     
     #apply sin transform to combined day and month, note average of 30.42 days in a month, 12 months in a year
-    mdf_test[column + '_mdcs'] = np.cos((mdf_test[column + '_mdcs'].dt.month + mdf_test[column + '_mdcs'].dt.day / 30.42) * 2 * np.pi / 12 )
+    mdf_test[column + '_mdcs'] = np.cos((mdf_test[column + '_mdcs'].dt.month + mdf_test[column + '_mdcs'].dt.day / \
+    mdf_test[column + '_mdcs' + '_temp']) * 2 * np.pi / 12 )
+
+    #delete support column
+    del mdf_test[column + '_mdcs' + '_temp']
+    del mdf_test[column + '_mdcs' + '_temp_leap']
 
     #replace missing data with training set mean
     mdf_test[column + '_mdcs'] = mdf_test[column + '_mdcs'].fillna(mean_mdcs)
