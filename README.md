@@ -141,7 +141,7 @@ labelsencoding_dict, finalcolumns_train, finalcolumns_test, \
 featureimportance, postprocess_dict = \
 am.automunge(df_train, df_test = False, labels_column = False, trainID_column = False, \
             testID_column = False, valpercent1=0.0, valpercent2 = 0.0, floatprecision = 32, \
-            shuffletrain = False, TrainLabelFreqLevel = False, powertransform = False, \
+            shuffletrain = True, TrainLabelFreqLevel = False, powertransform = False, \
             binstransform = False, MLinfill = False, infilliterate=1, randomseed = 42, \
 	    LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, \
             LSfit = False, numbercategoryheuristic = 63, pandasoutput = True, NArw_marker = False, \
@@ -360,7 +360,7 @@ labelsencoding_dict, finalcolumns_train, finalcolumns_test, \
 featureimportance, postprocess_dict = \
 am.automunge(df_train, df_test = False, labels_column = False, trainID_column = False, \
             testID_column = False, valpercent1=0.0, valpercent2 = 0.0, floatprecision = 32, \
-            shuffletrain = False, TrainLabelFreqLevel = False, powertransform = False, \
+            shuffletrain = True, TrainLabelFreqLevel = False, powertransform = False, \
             binstransform = False, MLinfill = False, infilliterate=1, randomseed = 42, \
 	    LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, \
             LSfit = False, numbercategoryheuristic = 63, pandasoutput = True, NArw_marker = False, \
@@ -552,7 +552,7 @@ demonstrated with the pickle library above.
 ```
 am.automunge(df_train, df_test = False, labels_column = False, trainID_column = False, \
             testID_column = False, valpercent1=0.0, valpercent2 = 0.0, floatprecision = 32, \
-            shuffletrain = False, TrainLabelFreqLevel = False, powertransform = False, \
+            shuffletrain = True, TrainLabelFreqLevel = False, powertransform = False, \
             binstransform = False, MLinfill = False, infilliterate=1, randomseed = 42, \
 	    LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, \
             LSfit = False, numbercategoryheuristic = 63, pandasoutput = True, NArw_marker = False, \
@@ -677,9 +677,10 @@ that there may be energy efficiency benefits at scale to basing this to 16.
 
 * shuffletrain: a boolean identifier (True/False) which indicates if the
 rows in df_train will be shuffled prior to carving out the validation
-sets.  This value defaults to False. Note that if this value is set to 
+sets.  This value defaults to True. Note that if this value is set to 
 False then any validation sets will be pulled from the bottom x% sequential 
 rows of the df_train dataframe. (Where x% is the sum of validation ratios.) 
+Otherwise validation rows will be randomly selected.
 
 * TrainLabelFreqLevel: a boolean identifier (True/False) which indicates
 if the TrainLabelFreqLevel method will be applied to prepare for oversampling 
@@ -777,7 +778,9 @@ featuremethod = 'pct'] or if [fesaturemetric > 0.0 and featuremethod =
 'metric']. Note this defaults to False because it cannot operate without
 a designated label column in the train set. (Note that any user-specified
 size of validationratios if passed are used in this method, otherwise 
-defaults to 0.33.)
+defaults to 0.33.) (*Note that featureselection doesn't yet support 
+hyperparameter tuning methods available for ML infill when passing sets
+of parameters to ML_cmnd, this functionality pending.)
 
 * featurepct: the percentage of derived sets that are kept in the output
 based on the feature importance evaluation. Note that NArw columns are
@@ -979,6 +982,10 @@ assignparam = {'category1' : {'column1' : {'param1' : 123}, 'column2' : {'param1
 #which accepts parameter 'minsplit' for minimum character length of detected overlaps. If we wanted to
 #pass 4 instead of the default of 5:
 assignparam = {'splt' : {'column1' : {'minsplit' : 4}}
+
+#Note that the category identifier should be the category entry to the family tree primitive associated
+#with the transform, which may be different than the root category of the family tree assigned in assigncat.
+#The set of family trees definitions for root categories are included below for reference.
 
 #Note that column string identifiers may just be the source column string or may include the
 #suffix appenders such as if multiple versions of transformations are applied within the same family tree
@@ -1987,7 +1994,8 @@ holiday
   - no suffix appender, column deleted
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: none
-* excl: passes source column un-altered
+* excl: passes source column un-altered. (Note that returned data may not be numeric and predictive 
+methods like ML infill and feature selection may not work for that scenario.)
   - default infill: none
   - default NArowtype: exclude
   - suffix appender: '_excl'
@@ -2013,7 +2021,9 @@ than once with different parameters. Does not prepare column for ML on it's own.
   - suffix appender: '_copy'
   - assignparam parameters accepted: 'suffix' for custom suffix appender
   - driftreport postmunge metrics: none
-* shfl: shuffles the values of a column based on passed randomseed
+* shfl: shuffles the values of a column based on passed randomseed (Note that returned data may not 
+be numeric and predictive methods like ML infill and feature selection may not work for that scenario
+unless an additional trasnform is applied downstream.)
   - default infill: exclude
   - default NArowtype: justNAN
   - suffix appender: '_shfl'
@@ -2182,6 +2192,33 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'niecesnephews' : ['d2dt'], \
                                      'coworkers' : ['retn'], \
                                      'friends' : []}})
+
+    transform_dict.update({'d4dt' : {'parents' : ['d4dt'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['retn'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : ['d3dt'], \
+                                     'coworkers' : ['retn'], \
+                                     'friends' : []}})
+
+    transform_dict.update({'d5dt' : {'parents' : ['d5dt'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['retn'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : ['d4dt'], \
+                                     'coworkers' : ['retn'], \
+                                     'friends' : []}})
+
+    transform_dict.update({'d6dt' : {'parents' : ['d6dt'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['retn'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : ['d5dt'], \
+                                     'coworkers' : ['retn'], \
+                                     'friends' : []}})
     
     transform_dict.update({'dxd2' : {'parents' : ['dxd2'], \
                                      'siblings': [], \
@@ -2207,6 +2244,33 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : ['d2d2'], \
+                                     'coworkers' : ['retn'], \
+                                     'friends' : []}})
+
+    transform_dict.update({'d4d2' : {'parents' : ['d4d2'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['retn'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : ['d3d2'], \
+                                     'coworkers' : ['retn'], \
+                                     'friends' : []}})
+
+    transform_dict.update({'d5d2' : {'parents' : ['d5d2'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['retn'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : ['d4d2'], \
+                                     'coworkers' : ['retn'], \
+                                     'friends' : []}})
+
+    transform_dict.update({'d6d2' : {'parents' : ['d6d2'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['retn'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : ['d5d2'], \
                                      'coworkers' : ['retn'], \
                                      'friends' : []}})
     
@@ -2236,10 +2300,37 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'niecesnephews' : [], \
                                      'coworkers' : ['retn'], \
                                      'friends' : []}})
+
+    transform_dict.update({'nmd4' : {'parents' : ['nmd4'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : ['d4dt'], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : ['retn'], \
+                                     'friends' : []}})
+
+    transform_dict.update({'nmd5' : {'parents' : ['nmd5'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : ['d5dt'], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : ['retn'], \
+                                     'friends' : []}})
+
+    transform_dict.update({'nmd6' : {'parents' : ['nmd6'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : ['d6dt'], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : ['retn'], \
+                                     'friends' : []}})
     
     transform_dict.update({'mmdx' : {'parents' : ['mmdx'], \
                                      'siblings': [], \
-                                     'auntsuncles' : ['mnmx'], \
+                                     'auntsuncles' : ['nbr2'], \
                                      'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
@@ -2261,6 +2352,33 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : ['mmd2'], \
+                                     'coworkers' : ['nbr2'], \
+                                     'friends' : []}})
+
+    transform_dict.update({'mmd4' : {'parents' : ['mmd4'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['nbr2'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : ['mmd3'], \
+                                     'coworkers' : ['nbr2'], \
+                                     'friends' : []}})
+
+    transform_dict.update({'mmd5' : {'parents' : ['mmd5'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['nbr2'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : ['mmd4'], \
+                                     'coworkers' : ['nbr2'], \
+                                     'friends' : []}})
+
+    transform_dict.update({'mmd6' : {'parents' : ['mmd6'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['nbr2'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : ['mmd5'], \
                                      'coworkers' : ['nbr2'], \
                                      'friends' : []}})
     
@@ -2290,6 +2408,33 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'niecesnephews' : ['ddd2'], \
                                      'coworkers' : [], \
                                      'friends' : []}})
+
+    transform_dict.update({'ddd4' : {'parents' : ['ddd4'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['exc2'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : ['ddd3'], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+
+    transform_dict.update({'ddd5' : {'parents' : ['ddd5'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['exc2'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : ['ddd4'], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+
+    transform_dict.update({'ddd6' : {'parents' : ['ddd6'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['exc2'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : ['ddd5'], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
     
     transform_dict.update({'dedt' : {'parents' : [], \
                                      'siblings': [], \
@@ -2315,6 +2460,33 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : ['ded2'], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+
+    transform_dict.update({'ded4' : {'parents' : ['ded4'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['exc2'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : ['ded3'], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+
+    transform_dict.update({'ded5' : {'parents' : ['ded5'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['exc2'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : ['ded4'], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+
+    transform_dict.update({'ded6' : {'parents' : ['ded6'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['exc2'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : ['ded5'], \
                                      'coworkers' : [], \
                                      'friends' : []}})
 
