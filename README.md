@@ -1838,15 +1838,16 @@ bin count defaults to 5/7/9 eg for bne0/bn7o/bn9o
 					   defaults to [0,1,2] (arbitrary plug values)
   - driftreport postmunge metrics: binsmean / buckets / bins_cuts / bins_id / ordl_activations_dict
 ### Sequential Numerical Set Transformations
-* dxdt/d2dt/d3dt: rate of change (row value minus value in preceding row), high orders return lower 
-orders (eg d2dt returns original set, dxdt, and d2dt), all returned sets include 'retn' normalization
+* dxdt/d2dt/d3dt/d4dt/d5dt/d6dt: rate of change (row value minus value in preceding row), high orders 
+return lower orders (eg d2dt returns original set, dxdt, and d2dt), all returned sets include 'retn' 
+normalization which scales data with min/max while retaining +/- sign
   - default infill: adjacent cells
   - default NArowtype: numeric
   - suffix appender: '_dxdt'
   - assignparam parameters accepted: 'periods' sets number of time steps offset to evaluate
   defaults to 1
   - driftreport postmunge metrics: (pending)
-* dxd2/d2d2/d3d2: denoised rate of change (average of last two rows minus average
+* dxd2/d2d2/d3d2/d4d2/d5d2/d6d2: denoised rate of change (average of last two rows minus average
 of preceding two rows), high orders return lower orders (eg d2d2 returns original set, dxd2, 
 and d2d2), all returned sets include 'retn' normalization
   - default infill: adjacent cells
@@ -1855,11 +1856,11 @@ and d2d2), all returned sets include 'retn' normalization
   - assignparam parameters accepted: 'periods' sets number of time steps offset to evaluate
   defaults to 2
   - driftreport postmunge metrics: (pending)
-* nmdx/nmd2/nmd3: comparable to dxdt but includes upstream of sequential transforms a nmrc numeric
-string parsing top extract numbers from string sets
-* mmdx/mmd2/mmd3: comparable to dxdt but uses z-score normalizaitons via 'nbr2' instead of 'retn'
-* dddt/ddd2/ddd3: comparable to dxdt but no normalziations applied
-* dedt/ded2/ded3: comparable to dxd2 but no normalziations applied
+* nmdx/nmd2/nmd3/nmd4/nmd5/nmd6: comparable to dxdt but includes upstream of sequential transforms a 
+nmrc numeric string parsing top extract numbers from string sets
+* mmdx/mmd2/mmd3/mmd4/mmd5/mmd6: comparable to dxdt but uses z-score normalizaitons via 'nbr2' instead of 'retn'
+* dddt/ddd2/ddd3/ddd4/ddd5/ddd6: comparable to dxdt but no normalziations applied
+* dedt/ded2/ded3/ded4/ded5/ded6: comparable to dxd2 but no normalziations applied
 ### Categorical Set Encodings
 * bnry: converts sets with two values to boolean identifiers. Defaults to assiging
 1 to most common value and 0 to second most common, unless 1 or 0 is already included
