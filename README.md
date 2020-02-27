@@ -1949,7 +1949,9 @@ dual columns with sin and cos transformations for time scale period (eg 12 month
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: mean_mnsn / mean_mncs / mean_dysn / mean_dycs / mean_hrsn / mean_hrcs
 			           mean_misn / mean_mscs / mean_scsn / mean_sccs
-* mdsn/mdcs: similar sin/cos treatment, but for combined month/day
+* mdsn/mdcs: similar sin/cos treatment, but for combined month/day, note that periodicity is based on 
+number of days in specific months, including account for leap year, or if month not specified defaults to 
+average days in a month (30.42) periodicity
   - default infill: mean
   - default NArowtype: datetime
   - suffix appender: includes appenders for (mdsn/mdcs)
