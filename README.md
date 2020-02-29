@@ -1126,6 +1126,10 @@ processdict =  {'newt' : {'dualprocess' : None, \
 #               '1010'   for multicolumn sets with binary encoding via 1010
 #                         will be converted to onehot for ML
 
+#labelctgy: should be a string entry of a single trasnform category found as an entry in the root category's family 
+#tree. Used to determine basis of feature selection for cases where labels are returned in multiple configurations.
+#Also used in label frequency levelizer.
+
 ```
 
 * evalcat: modularizes the automated evaluation of column properties for assignment 
@@ -1478,7 +1482,12 @@ turned off in the ML_cmnd, reference the ML_cmnd section under automunge(.) pass
 - powertransform: if the powertransform parameter is activated, a statistical evaluation
 will be performed on numerical sets to distinguish between columns to be subject to
 bxcx, nmbr, or mnmx. Please note that we intend to further refine the specifics of this
-process in future implementations. 
+process in future implementations. Additionally, powertransform may be passed as values 'excl' 
+or 'exc2', where for 'excl' columns not explicitly assigned to a root category in assigncat 
+will be left untouched, or for 'exc2' columns not explicitly assigned to a root category in 
+assigncat will be forced to numeric and subject to default modeinfill. (These two excl 
+arguments may be useful if a user wants to experiment with specific transforms on a subset of 
+the columns without incurring processing time of an entire set for instance.)
 
 - floatprecision: parameter indicates the precision of floats in returned sets (16/32/64)
 such as for memory considerations.
