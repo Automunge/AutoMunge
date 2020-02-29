@@ -4411,19 +4411,17 @@ def process_mnm8_class(mdf_train, mdf_test, column, category, \
   #for column in nmbrcolumns
   for nc in nmbrcolumns:
 
-    if nc[-5:] == '_mnm8':
+    column_dict = { nc : {'category' : 'mnm8', \
+                          'origcategory' : category, \
+                          'normalization_dict' : nmbrnormalization_dict, \
+                          'origcolumn' : column, \
+                          'columnslist' : nmbrcolumns, \
+                          'categorylist' : nmbrcolumns, \
+                          'infillmodel' : False, \
+                          'infillcomplete' : False, \
+                          'deletecolumn' : False}}
 
-      column_dict = { nc : {'category' : 'mnm8', \
-                           'origcategory' : category, \
-                           'normalization_dict' : nmbrnormalization_dict, \
-                           'origcolumn' : column, \
-                           'columnslist' : nmbrcolumns, \
-                           'categorylist' : nmbrcolumns, \
-                           'infillmodel' : False, \
-                           'infillcomplete' : False, \
-                           'deletecolumn' : False}}
-
-      column_dict_list.append(column_dict.copy())
+    column_dict_list.append(column_dict.copy())
 
 
 
