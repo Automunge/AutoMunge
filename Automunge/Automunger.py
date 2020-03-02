@@ -21945,15 +21945,25 @@ class AutoMunge:
     #set randomness seed number
     answer = randomseed
 
-    #first shuffle if that was selected
+    #first shuffle if that was selected 
+    #(at this point labels haven't yet been split from the training data)
 
-    if shuffletrain == True:
+    if shuffletrain == True or shuffletrain == 'traintest':
       #shuffle training set and labels
       df_train = shuffle(df_train, random_state = answer)
-      #df_labels = shuffle(df_labels, random_state = answer)
+#       df_labels = shuffle(df_labels, random_state = answer)
 
       if trainID_column != False:
         df_trainID = shuffle(df_trainID, random_state = answer)
+        
+    if shuffletrain == 'traintest':
+      #shuffle test set and labels
+      df_test = shuffle(df_test, random_state = answer)
+#       df_testlabels = shuffle(df_testlabels, random_state = answer)
+
+      if testID_column != False:
+        df_testID = shuffle(df_testID, random_state = answer)
+
 
 
     #ok now carve out the validation rows. We'll process these later
@@ -23134,15 +23144,6 @@ class AutoMunge:
         #del df_train[trainID_column]
 
 
-      #shuffle one more time as part of levelized label frequency
-      if shuffletrain == True:
-        #shuffle training set and labels
-        df_train = shuffle(df_train, random_state = answer)
-        df_labels = shuffle(df_labels, random_state = answer)
-
-        if trainID_column != False:
-          df_trainID = shuffle(df_trainID, random_state = answer)
-
       #printout display progress
       if printstatus == True:
 
@@ -23152,7 +23153,22 @@ class AutoMunge:
         print("")
 
 
+      #shuffle one more time as part of levelized label frequency    
+      if shuffletrain == True or shuffletrain == 'traintest':
+        #shuffle training set and labels
+        df_train = shuffle(df_train, random_state = answer)
+        df_labels = shuffle(df_labels, random_state = answer)
 
+        if trainID_column != False:
+          df_trainID = shuffle(df_trainID, random_state = answer)
+
+      if shuffletrain == 'traintest':
+        #shuffle test set and labels
+        df_test = shuffle(df_test, random_state = answer)
+        df_testlabels = shuffle(df_testlabels, random_state = answer)
+
+        if testID_column != False:
+          df_testID = shuffle(df_testID, random_state = answer)
 
 
     #great the data is processed now let's do a few moore global training preps
@@ -23186,7 +23202,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.29'
+    automungeversion = '3.30'
     application_number = random.randint(100000000000,999999999999)
     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -23258,13 +23274,20 @@ class AutoMunge:
         print("_______________")
         print("Begin Validation set processing with Postmunge")
         print("")
+        
+#       if shuffletrain == True or shuffletrain == 'traintest':
+#         postshuffletrain = True
+#       else:
+#         postshuffletrain = False
+      #(postshuffletrain not needed since data was already shuffled)
 
       #process validation set consistent to train set with postmunge here
       #df_validation1, _2, _3, _4, _5 = \
       df_validation1, _2, df_validationlabels1, _4, _5 = \
       self.postmunge(postprocess_dict, df_validation1, testID_column = False, \
                     labelscolumn = labels_column, pandasoutput = True, printstatus = printstatus, \
-                    LabelSmoothing = LabelSmoothing_val, LSfit = LSfit)
+                    LabelSmoothing = LabelSmoothing_val, LSfit = LSfit, \
+                    shuffletrain = False)
 
 
 
@@ -30204,7 +30227,7 @@ class AutoMunge:
     printstatus = printstatus
     TrainLabelFreqLevel = False
     featureeval = False
-    FSpostprocess_dict['shuffletrain'] = False
+    FSpostprocess_dict['shuffletrain'] = True
     FSpostprocess_dict['TrainLabelFreqLevel'] = False
     FSpostprocess_dict['MLinfill'] = False
     FSpostprocess_dict['ML_cmnd']['PCA_type'] = 'off'
@@ -30233,7 +30256,7 @@ class AutoMunge:
     self.postmunge(FSpostprocess_dict, df_test, testID_column = testID_column, \
                    labelscolumn = labelscolumn, pandasoutput = pandasoutput, printstatus = printstatus, \
                    TrainLabelFreqLevel = TrainLabelFreqLevel, featureeval = featureeval, \
-                   LabelSmoothing = FS_LabelSmoothing)
+                   LabelSmoothing = FS_LabelSmoothing, shuffletrain = True)
     
     #prepare validaiton sets for FS
     am_train, am_validation1 = \
@@ -30673,7 +30696,8 @@ class AutoMunge:
   def postmunge(self, postprocess_dict, df_test, testID_column = False, \
                 labelscolumn = False, pandasoutput = False, printstatus = True, \
                 TrainLabelFreqLevel = False, featureeval = False, driftreport = False, \
-                LabelSmoothing = False, LSfit = False, returnedsets = True):
+                LabelSmoothing = False, LSfit = False, returnedsets = True, \
+                shuffletrain = False):
     '''
     #postmunge(df_test, testID_column, postprocess_dict) Function that when fed a \
     #test data set coresponding to a previously processed train data set which was \
@@ -31778,6 +31802,17 @@ class AutoMunge:
         print("")
 
 
+    #if shuffletrain passed to postmunge it takes place here
+    #(postmunge does not default to consistent shuffle as train set, relies on parameter)
+    if shuffletrain is True:
+      #shuffle training set and labels
+      df_test = shuffle(df_test, random_state = postprocess_dict['randomseed'])
+      df_testlabels = shuffle(df_testlabels, random_state = postprocess_dict['randomseed'])
+
+      if testID_column is not False:
+        df_testID = shuffle(df_testID, random_state = postprocess_dict['randomseed'])
+        
+        
 
     #a special case, those columns that we completely excluded from processing via excl
     #we'll scrub the suffix appender
