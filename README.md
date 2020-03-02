@@ -211,7 +211,8 @@ labelsencoding_dict, postreports_dict = \
 am.postmunge(postprocess_dict, df_test, testID_column = False, \
              labelscolumn = False, pandasoutput=True, printstatus = True, \
              TrainLabelFreqLevel = False, featureeval = False, driftreport = False, \
-	     LabelSmoothing = False, LSfit = False, returnedsets = True)
+	     LabelSmoothing = False, LSfit = False, returnedsets = True, \
+	     shuffletrain = False)
 ```
 
 
@@ -428,10 +429,13 @@ am = Automunger.AutoMunge()
 #here postprocess_dict was returned from corresponding automunge(.) call
 #and df_test is the target data set to be prepared
 
+test, testID, testlabels, \
+labelsencoding_dict, postreports_dict = \
 am.postmunge(postprocess_dict, df_test, testID_column = False, \
              labelscolumn = False, pandasoutput=True, printstatus = True, \
              TrainLabelFreqLevel = False, featureeval = False, driftreport = False, \
-	     LabelSmoothing = False, LSfit = False, returnedsets = True):
+	     LabelSmoothing = False, LSfit = False, returnedsets = True, \
+	     shuffletrain = False):
 ```
 
 Note that the only required argument to the automunge function is the
@@ -675,12 +679,15 @@ usage and floating point precision, smaller for smaller footprint.)
 This currently defaults to 32 for 32-bit precision of float values. Note
 that there may be energy efficiency benefits at scale to basing this to 16.
 
-* shuffletrain: a boolean identifier (True/False) which indicates if the
-rows in df_train will be shuffled prior to carving out the validation
-sets.  This value defaults to True. Note that if this value is set to 
+* shuffletrain: can be passed as one of {True, False, 'traintest'} which 
+indicates if the rows in df_train will be shuffled prior to carving out the 
+validation sets.  This value defaults to True. Note that if this value is set to 
 False then any validation sets will be pulled from the bottom x% sequential 
 rows of the df_train dataframe. (Where x% is the sum of validation ratios.) 
-Otherwise validation rows will be randomly selected.
+Otherwise validation rows will be randomly selected. The third option 'traintest'
+is comparable to True for the training set and shuffles the returned test sets
+as well. Note that all corresponding returned sets are consistently shuffled 
+(such as between train/labels/trainID sets).
 
 * TrainLabelFreqLevel: a boolean identifier (True/False) which indicates
 if the TrainLabelFreqLevel method will be applied to prepare for oversampling 
@@ -1197,7 +1204,8 @@ labelsencoding_dict, postreports_dict = \
 am.postmunge(postprocess_dict, df_test, testID_column = False, \
              labelscolumn = False, pandasoutput=True, printstatus = True, \
              TrainLabelFreqLevel = False, featureeval = False, driftreport = False, \
-	     LabelSmoothing = False, LSfit = False, returnedsets = True)
+	     LabelSmoothing = False, LSfit = False, returnedsets = True, \
+	     shuffletrain = False)
 ```
 
 Or to run postmunge(.) with default parameters we simply need the postprocess_dict
@@ -1317,7 +1325,8 @@ labelsencoding_dict, finalcolumns_test = \
 am.postmunge(postprocess_dict, df_test, testID_column = False, \
              labelscolumn = False, pandasoutput=True, printstatus = True, \
              TrainLabelFreqLevel = False, featureeval = False, driftreport = False, \
-	     LabelSmoothing = False, LSfit = False, returnedsets = True)
+	     LabelSmoothing = False, LSfit = False, returnedsets = True, \
+	     shuffletrain = False)
 ```
 
 * postprocess_dict: this is the dictionary returned from the initial
@@ -1430,6 +1439,9 @@ am.postmunge(postprocess_dict, df_test, returnedsets = False)
 postprocess_dict['finalcolumns_labels']
 postprocess_dict['finalcolumns_trainID']
 ```
+
+* shuffletrain: can be passed as one of {True, False} which indicates if the rows in 
+the returned sets will be (consistently) shuffled. This value defaults to False. 
 ...
 
 ## Default Transformations
