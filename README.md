@@ -463,7 +463,11 @@ downstream machine learning model in the framework of a user's choice
 column(s) was passed to the function. This set may be useful if the shuffle
 option was applied. Note that an ID column may serve multiple purposes such
 as row identifiers or for pairing tabular data rows with a corresponding
-image file for instance.
+image file for instance. Also included in this set is a derived column
+titled 'Automunge_index_#' (where # is a 12 digit number stamp specific to 
+each function call), this column serves as an index identifier for order
+of rows as they were recieved in passed data, sucn as may be beneficial
+when data is shuffled.
 
 * labels: a set of numerically encoded labels corresponding to the
 train set if a label column was passed. Note that the function
@@ -475,7 +479,7 @@ flattened (e.g. [[1,2,3]] converted to [1,2,3] )
 that is intended for use in hyperparameter tuning of a downstream model.
 
 * validationID1: the set of ID values coresponding to the validation1
-set
+set. Comparable to columns returned in trainID.
 
 * validationlabels1: the set of labels coresponding to the validation1
 set
@@ -485,7 +489,7 @@ that is intended for the final validation of a downstream model (this
 set should not be applied extensively for hyperparameter tuning).
 
 * validationID2: the set of ID values coresponding to the validation2
-set.
+set. Comparable to columns returned in trainID.
 
 * validationlabels2: the set of labels coresponding to the validation2
 set
@@ -496,7 +500,8 @@ downstream model trained with train. Note that if no test data is
 available during initial address this processing will take place in the
 postmunge(.) function. 
 
-* testID: the set of ID values coresponding to the test set.
+* testID: the set of ID values coresponding to the test set. Comparable 
+to columns returned in trainID.
 
 * testlabels: a set of numerically encoded labels corresponding to the
 test set if a label column was passed. Note that the function
@@ -1227,7 +1232,11 @@ the function.
 training data, that can be used to generate predictions from a model
 trained with the train set from automunge.
 
-* testID: the set of ID values coresponding to the test set.
+* testID: the set of ID values coresponding to the test set. Also included 
+in this set is a derived column titled 'Automunge_index_#' (where # is a 
+12 digit number stamp specific to each function call), this column serves 
+as an index identifier for order of rows as they were recieved in passed 
+data, sucn as may be beneficial when data is shuffled.
 
 * testlabels: a set of numerically encoded labels corresponding to the
 test set if a label column was passed. Note that the function
