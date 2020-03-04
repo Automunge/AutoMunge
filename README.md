@@ -1121,22 +1121,22 @@ processdict =  {'newt' : {'dualprocess' : None, \
 # ** Note that NArowtype also is used as basis for metrics evaluated in drift assessment of source columns
 
 #MLinfilltype: can be entries of 'numeric', 'singlct', 'multirt', 'exclude'
-#              'multisp', 'exclude', 'label', 'binary' or '1010' where
+#'multisp', 'exclude', 'label', 'binary' or '1010' where:
 #	       'numeric' refers to columns where predictive algorithms treat
 #			 as a regression for numeric sets
-#	       'singlect' refers to columns where category gives a single column
-#			 where predictive algorithms treat as a classification target
-#		'multirt' refers to category returning multiple columns where 
+#	       'singlect' single column sets with ordinal entries (integers)
+#              'binary'  single column sets with boolean entries (0/1)
+#              'boolexclude' boolean set suitable for Binary transform but exluded from MLinfill (eg NArw entries)
+#	       'multirt' refers to category returning multiple columns where 
 #			 predictive algorithms treat as a multi modal classifier
-#		'exclude' refers to categories excluded from predcitive address
-#		'multisp' for bins multicolumn sets with boolean entries
-#                         (similar to multirt but treated differently in levelizer)
-#		'label' refers to categories specifically intended for label
-#			   processing
-#               'binary'  for multicolumn sets with boolean entries as may have 
-#                         multiple entries in the same row (not currently used, future extension)
-#               '1010'   for multicolumn sets with binary encoding via 1010
-#                         will be converted to onehot for ML
+#	       'exclude' refers to categories excluded from predcitive address
+#	       'multisp' for bins multicolumn sets with boolean entries
+#                        (similar to multirt but treated differently in levelizer)
+#	       'label'  refers to categories specifically intended for label
+#			 processing
+#              '1010'   for multicolumn sets with binary encoding via 1010
+#                        will be converted to onehot for ML
+#              'exclude' for columns which will be excluded from ML infill
 
 #labelctgy: should be a string entry of a single trasnform category found as an entry in the root category's family 
 #tree. Used to determine basis of feature selection for cases where labels are returned in multiple configurations.
