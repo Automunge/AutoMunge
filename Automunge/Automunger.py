@@ -19754,6 +19754,8 @@ class AutoMunge:
     return df
 
 
+
+
   def train_modeinfillfunction(self, df, column, postprocess_dict, \
                                masterNArows):
 
@@ -19765,16 +19767,92 @@ class AutoMunge:
 
     NAcount = len(masterNArows[masterNArows[NArw_columnname] == 1])
     
-    #create df without rows that were subject to infill to dervie mode
-    tempdf = pd.concat([df[column], masterNArows[NArw_columnname]], axis=1)
-    #remove rows that were subject to infill
-    tempdf = tempdf[tempdf[NArw_columnname] != 1]
+    #deriving a mode for one-hot encoded sets requires a different approach
+    if len(postprocess_dict['column_dict'][column]['categorylist']) > 1 \
+    and postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
+    in ['multirt', 'multisp']:
+      
+      categorylist = postprocess_dict['column_dict'][column]['categorylist']
+      
+      tempdf = pd.concat([df[categorylist], masterNArows[NArw_columnname]], axis=1)
+      #remove rows that were subject to infill
+      tempdf = tempdf[tempdf[NArw_columnname] != 1]
+      
+      del tempdf[NArw_columnname]
+      
+      tempdf_mode_dict = {}
+      
+      #since this is one hot encoded we can count activations in a column with sum
+      for tempcolumn in list(tempdf):
+        tempdf_mode_dict.update({tempdf[tempcolumn].sum() : tempcolumn})
+      
+      #create a list of those sums then sort to grab the mode column
+      tempdf_mode_dict_keys = list(tempdf_mode_dict)
+      tempdf_mode_dict_keys = sorted(tempdf_mode_dict_keys)
+      mode_column = tempdf_mode_dict[tempdf_mode_dict_keys[-1]]
+      
+      if mode_column == column:
+        mode = 1
+      else:
+        mode = 0
+        
+      del tempdf
+      del tempdf_mode_dict
+      del tempdf_mode_dict_keys
+      del mode_column
+      
+    #deriving a mode for multi-column binary encoded sets requires a different approach
+    elif len(postprocess_dict['column_dict'][column]['categorylist']) > 1 \
+    and postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
+    in ['1010']:
+      
+      categorylist = postprocess_dict['column_dict'][column]['categorylist']
+      
+      tempdf = pd.concat([df[categorylist], masterNArows[NArw_columnname]], axis=1)
+      #remove rows that were subject to infill
+      tempdf = tempdf[tempdf[NArw_columnname] != 1]
+      
+      del tempdf[NArw_columnname]
+      
+      #initialize a column to store encodings
+      tempdf['onehot'] = ''
+
+      #populate column to store aggregated encodings 
+      for tempdf_column in list(tempdf):
+        if tempdf_column != 'onehot':
+          tempdf['onehot'] = \
+          tempdf['onehot'] + tempdf[tempdf_column].astype(int).astype(str)
+
+      #find mode of the aggregation
+      binary_mode = tempdf['onehot'].mode()[0]
+      
+#       if len(binary_mode) < 1:
+#         binary_mode = 0
+      
+      
+      #remove rows other than mode
+      tempdf = tempdf[tempdf['onehot'] == binary_mode]
+      
+      #mode is the current columns value associated with that mode
+      mode = tempdf[column].values[0]
+      
+      del tempdf
+      del binary_mode
+      
     
+    #else if columns were not one-hot encoded
+    else:
     
-    #calculate mode of remaining rows
-    mode = tempdf[column].mode()[0]
-    
-    del tempdf
+      #create df without rows that were subject to infill to dervie mode
+      tempdf = pd.concat([df[column], masterNArows[NArw_columnname]], axis=1)
+      #remove rows that were subject to infill
+      tempdf = tempdf[tempdf[NArw_columnname] != 1]
+
+      
+      #calculate mode of remaining rows
+      mode = tempdf[column].mode()[0]
+
+      del tempdf
 
     infill = pd.DataFrame(np.zeros((NAcount, 1)))
     infill = infill.replace(0, mode)
@@ -19783,11 +19861,13 @@ class AutoMunge:
     columnslist = postprocess_dict['column_dict'][column]['columnslist']
     categorylist = postprocess_dict['column_dict'][column]['categorylist']
 
+
     #insert infill
     df = self.insertinfill(df, column, infill, category, \
                            pd.DataFrame(masterNArows[NArw_columnname]), \
                            postprocess_dict, columnslist = columnslist, \
-                           categorylist = categorylist)
+                           categorylist = categorylist, singlecolumncase = True)
+
 
     return df, mode
 
@@ -19812,117 +19892,22 @@ class AutoMunge:
     columnslist = postprocess_dict['column_dict'][column]['columnslist']
     categorylist = postprocess_dict['column_dict'][column]['categorylist']
 
+#     #insert infill
+#     df = self.insertinfill(df, column, infill, category, \
+#                            pd.DataFrame(masterNArows[NArw_columnname]), \
+#                            postprocess_dict, columnslist = columnslist, \
+#                            categorylist = categorylist)
+
     #insert infill
     df = self.insertinfill(df, column, infill, category, \
                            pd.DataFrame(masterNArows[NArw_columnname]), \
                            postprocess_dict, columnslist = columnslist, \
-                           categorylist = categorylist)
+                           categorylist = categorylist, singlecolumncase = True)
+
+
 
     return df
 
-  
-  def train_catmodeinfillfunction(self, df, column, postprocess_dict, \
-                               masterNArows):
-
-
-    #create infill dataframe of all zeros with number of rows corepsonding to the
-    #number of 1's found in masterNArows
-    NArw_columnname = \
-    postprocess_dict['column_dict'][column]['origcolumn'] + '_NArows'
-
-    NAcount = len(masterNArows[masterNArows[NArw_columnname] == 1])
-
-        
-    NArw_categorylist = \
-    postprocess_dict['column_dict'][column]['categorylist']
-    
-    
-    #create df without rows that were subject to infill to dervie mode
-    tempdf = pd.concat([df[NArw_categorylist], masterNArows[NArw_columnname]], axis=1)
-    #remove rows that were subject to infill
-    tempdf2 = tempdf[tempdf[NArw_columnname] != 1]
-    
-    #del tempdf[NArw_columnname]
-    
-    #find first column with max number of activations
-    df_sum = tempdf2.sum()
-    maxcolumn = df_sum.idxmax()
-    
-    
-    #now create infill
-    infill = tempdf[tempdf[NArw_columnname] == 1]
-    del infill[NArw_columnname]
-    
-    for catcolumn in NArw_categorylist:
-      if catcolumn == maxcolumn:
-        #infill[catcolumn] = 1
-        infill = infill.assign(catcolumn=1)
-      if catcolumn != maxcolumn:
-        #infill[catcolumn] = 0
-        infill = infill.assign(catcolumn=0)
-    
-    infill = infill.reset_index()
-    
-    del tempdf
-    del tempdf2
-
-    category = postprocess_dict['column_dict'][column]['category']
-    columnslist = postprocess_dict['column_dict'][column]['columnslist']
-    categorylist = postprocess_dict['column_dict'][column]['categorylist']
-
-    #insert infill
-    df = self.insertinfill(df, column, infill, category, \
-                           pd.DataFrame(masterNArows[NArw_columnname]), \
-                           postprocess_dict, columnslist = columnslist, \
-                           categorylist = categorylist)
-
-    return df, maxcolumn
-
-
-  def test_catmodeinfillfunction(self, df, column, postprocess_dict, \
-                                 masterNArows, maxcolumn):
-
-
-    #create infill dataframe of all zeros with number of rows corepsonding to the
-    #number of 1's found in masterNArows
-    NArw_columnname = \
-    postprocess_dict['column_dict'][column]['origcolumn'] + '_NArows'
-
-    NAcount = len(masterNArows[masterNArows[NArw_columnname] == 1])
-    
-    NArw_categorylist = \
-    postprocess_dict['column_dict'][column]['categorylist']
-    
-    maxcolumn = maxcolumn
-    
-    #create df without rows that were subject to infill
-    tempdf = pd.concat([df[NArw_categorylist], masterNArows[NArw_columnname]], axis=1)
-    
-    #now create infill
-    infill = tempdf[tempdf[NArw_columnname] == 1]
-    del infill[NArw_columnname]
-    
-    for catcolumn in NArw_categorylist:
-      if catcolumn == maxcolumn:
-        #infill[catcolumn] = 1
-        infill = infill.assign(catcolumn=1)
-      if catcolumn != maxcolumn:
-        #infill[catcolumn] = 0
-        infill = infill.assign(catcolumn=0)
-
-    infill = infill.reset_index()
-        
-    category = postprocess_dict['column_dict'][column]['category']
-    columnslist = postprocess_dict['column_dict'][column]['columnslist']
-    categorylist = postprocess_dict['column_dict'][column]['categorylist']
-
-    #insert infill
-    df = self.insertinfill(df, column, infill, category, \
-                           pd.DataFrame(masterNArows[NArw_columnname]), \
-                           postprocess_dict, columnslist = columnslist, \
-                           categorylist = categorylist)
-
-    return df
   
 
   def populatePCAdefaults(self, randomseed):
@@ -22910,29 +22895,19 @@ class AutoMunge:
                     print("infill to column: ", column)
                     print("     infill type: modeinfill")
                     print("")
-
-#                   #check if column is boolean
-#                   boolcolumn = False
-#                   if set(df_train[column].unique()) == {0,1} \
-#                   or set(df_train[column].unique()) == {0} \
-#                   or set(df_train[column].unique()) == {1}:
-#                     boolcolumn = True
                     
-                  #check if column is boolean
+                  #check if column is excluded (variable poorly named, interpret boolcolumn here as excluded)
                   boolcolumn = False
-                  #just exclude multi-column boolean from this infill, allow ordinal and binary
+
                   if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-                  in ['multirt', 'multisp', '1010', 'exclude', 'boolexclude']:
+                  in ['exclude', 'boolexclude']:
                     boolcolumn = True
 
                   categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
 
                   #if (column not in excludetransformscolumns) \
                   if (column not in postprocess_assigninfill_dict['stdrdinfill']) \
-                  and (categorylistlength == 1) \
                   and boolcolumn == False:
-                    #noting that currently we're only going to infill 0 for single column categorylists
-                    #some comparable address for multi-column categories is a future extension
 
                     df_train, infillvalue = \
                     self.train_modeinfillfunction(df_train, column, postprocess_dict, \
@@ -22944,20 +22919,7 @@ class AutoMunge:
                     self.test_modeinfillfunction(df_test, column, postprocess_dict, \
                                                  masterNArows_test, infillvalue)
 
-                  #if (column not in excludetransformscolumns) \
-                  if (column not in postprocess_assigninfill_dict['stdrdinfill']) \
-                  and (categorylistlength > 1) \
-                  and boolcolumn == True:
 
-                    df_train, infillvalue = \
-                    self.train_catmodeinfillfunction(df_train, column, postprocess_dict, \
-                                                  masterNArows_train)
-
-                    postprocess_dict['column_dict'][column]['normalization_dict'][column].update({'infillvalue':infillvalue})
-
-                    df_test = \
-                    self.test_catmodeinfillfunction(df_test, column, postprocess_dict, \
-                                                 masterNArows_test, infillvalue)
 
             if len(columns_train_ML) > 0:
 
@@ -23282,7 +23244,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.32'
+    automungeversion = '3.33'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -31698,26 +31660,21 @@ class AutoMunge:
                   print("     infill type: modeinfill")
                   print("")
 
-#                 #check if column is boolean
-#                 boolcolumn = False
-#                 if set(df_test[column].unique()) == {0,1} \
-#                 or set(df_test[column].unique()) == {0} \
-#                 or set(df_test[column].unique()) == {1}:
-#                   boolcolumn = True
+
                   
-                #check if column is boolean
+                #check if column is excluded (variable poorly named, interpret boolcolumn here as excluded)
                 boolcolumn = False
-                #just exclude multi-column boolean from this infill, allow ordinal and binary
+
                 if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-                in ['multirt', 'multisp', '1010', 'exclude', 'boolexclude']:
+                in ['exclude', 'boolexclude']:
                   boolcolumn = True
 
                 categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
 
                 #if (column not in excludetransformscolumns) \
                 if (column not in postprocess_assigninfill_dict['stdrdinfill']) \
-                and (categorylistlength == 1) \
                 and boolcolumn == False:
+                  
                   #noting that currently we're only going to infill 0 for single column categorylists
                   #some comparable address for multi-column categories is a future extension
 
@@ -31727,18 +31684,6 @@ class AutoMunge:
                   df_test = \
                   self.test_modeinfillfunction(df_test, column, postprocess_dict, \
                                                  masterNArows_test, infillvalue)
-
-                #if (column not in excludetransformscolumns) \
-                if (column not in postprocess_assigninfill_dict['stdrdinfill']) \
-                and (categorylistlength > 1) \
-                and boolcolumn == True:
-
-                  infillvalue = postprocess_dict['column_dict'][column]['normalization_dict']['infillvalue']
-
-                  df_test = \
-                  self.test_catmodeinfillfunction(df_test, column, postprocess_dict, \
-                                                 masterNArows_test, infillvalue)
-
 
 
           if len(columns_test_ML) > 0:
