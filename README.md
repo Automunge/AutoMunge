@@ -972,9 +972,10 @@ columns. medianinfill means inserting the median derived from the train
 set to numeric columns. (Note currently boolean columns derived from 
 numeric are not supported for mean/median and for those cases default to 
 those infill from stdrdinfill.) modeinfill means inserting the most common
-value for a set, note that modeinfill supports one-hot encoded sets. Note 
-that for single entry column assignments a user can just pass the string 
-or integer of the column header without the list brackets.
+value for a set, note that modeinfill supports mulit-column boolean encodings, 
+such as one-hot encoded sets or binary encoded sets. Note that for single 
+entry column assignments a user can just pass the string or integer of the 
+column header without the list brackets.
 
 * assignparam
 A user may pass column-specific parameters to those transformation functions
