@@ -683,6 +683,7 @@ the memory precision for returned float values. (A tradeoff between memory
 usage and floating point precision, smaller for smaller footprint.) 
 This currently defaults to 32 for 32-bit precision of float values. Note
 that there may be energy efficiency benefits at scale to basing this to 16.
+Note that integer data types are still retained with this option.
 
 * shuffletrain: can be passed as one of {True, False, 'traintest'} which 
 indicates if the rows in df_train will be shuffled prior to carving out the 
