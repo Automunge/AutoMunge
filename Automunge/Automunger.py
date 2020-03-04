@@ -2198,12 +2198,14 @@ class AutoMunge:
     # - 'datetime' marks for infill cells that arent' recognized as datetime objects
     
     #MLinfilltype entries are:
-    # - 'numeric' for columns with numeric entries
-    # - 'singlct' for single column sets with boolean or ordinal entries
-    # - 'multirt' for categorical multicolumn sets with boolean entries
+    # - 'numeric' for single columns with numeric entries (such as could be floats)
+    # - 'singlct' for single column sets with ordinal entries (integers)
+    # - 'binary' for single column sets with boolean entries (0/1)
+    # - 'multirt' for categorical multicolumn sets with boolean entries (0/1)
     # - 'multisp' for bins multicolumn sets with boolean entries
-    #(the two (rt/sp) are treated differently in labelfrequencylevelizer)
-    # - 'binary'  for multicolumn sets with boolean entries as may have 
+    #(the two (rt/sp) are treated differently in labelfrequencylevelizer, where
+    # multisp are elligeble to serve as basis for levelizing a numerical set via bins)
+    # - 'multime'  for multicolumn sets with boolean entries as may have 
     #multiple entries in the same row (not currently used, future extension)
     # - 'exclude' for columns which will be excluded from ML infill
     # - '1010' for binary encoded columns, will be converted to onehot for ML
@@ -2539,13 +2541,13 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_binary_class, \
                                   'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'singlct', \
+                                  'MLinfilltype' : 'binary', \
                                   'labelctgy' : 'bnry'}})
     process_dict.update({'bnr2' : {'dualprocess' : self.process_binary2_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_binary2_class, \
                                   'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'singlct', \
+                                  'MLinfilltype' : 'binary', \
                                   'labelctgy' : 'bnr2'}})
     process_dict.update({'text' : {'dualprocess' : self.process_text_class, \
                                   'singleprocess' : None, \
@@ -3337,25 +3339,25 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_bkt1_class, \
                                   'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+                                  'MLinfilltype' : 'multisp', \
                                   'labelctgy' : 'bkt1'}})
     process_dict.update({'bkt2' : {'dualprocess' : self.process_bkt2_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_bkt2_class, \
                                   'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+                                  'MLinfilltype' : 'multisp', \
                                   'labelctgy' : 'bkt2'}})
     process_dict.update({'bkt3' : {'dualprocess' : self.process_bkt3_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_bkt3_class, \
                                   'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+                                  'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'bkt3'}})
     process_dict.update({'bkt4' : {'dualprocess' : self.process_bkt4_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_bkt4_class, \
                                   'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+                                  'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'bkt4'}})
     process_dict.update({'wkdy' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_wkdy_class, \
@@ -3571,7 +3573,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_binary_class, \
                                   'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'singlct', \
+                                  'MLinfilltype' : 'binary', \
                                   'labelctgy' : 'bnry'}})
     process_dict.update({'datd' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
@@ -17413,7 +17415,7 @@ class AutoMunge:
 
 
       #if category == 'bnry':
-      if MLinfilltype in ['singlct']:
+      if MLinfilltype in ['singlct', 'binary']:
       
         if np_train_filltrain.shape[0] == 0:
           np_traininfill = np.zeros(shape=(1,len(columnslist)))
@@ -17920,7 +17922,7 @@ class AutoMunge:
     #if category in ['nmbr', 'bxcx', 'bnry', 'text', 'bins', 'bint']:
     
     #if category in ['nmbr', 'nbr2', 'bxcx', 'bnry', 'text', 'bins', 'bint']:
-    if MLinfilltype in ['numeric', 'singlct', 'multirt', 'multisp', '1010']:
+    if MLinfilltype in ['numeric', 'singlct', 'binary', 'multirt', 'multisp', '1010']:
 
       #if this is a single column set (not categorical)
       if len(categorylist) == 1:
@@ -18083,7 +18085,7 @@ class AutoMunge:
     NArowcolumn = NArows.columns[0]
 
     #if category in ['nmbr', 'nbr2', 'bxcx', 'bnry', 'text']:
-    if MLinfilltype in ['numeric', 'singlct', 'multisp', 'multirt', '1010']:
+    if MLinfilltype in ['numeric', 'singlct', 'binary', 'multisp', 'multirt', '1010']:
 
       #if this is a single column set (not categorical)
       if len(categorylist) == 1 or singlecolumncase == True:
@@ -18471,7 +18473,7 @@ class AutoMunge:
       multiplierlist = []
 
       #if labelscategory == 'bnry':
-      if MLinfilltype in ['singlct']:
+      if MLinfilltype in ['singlct', 'binary']:
         
         singlctcolumn = False
         
@@ -18886,7 +18888,7 @@ class AutoMunge:
 #                                           labelsencoding_dict, process_dict, labelctgy)
         
     #if labelscategory in ['bnry']:
-    if MLinfilltype in ['singlct']:
+    if MLinfilltype in ['singlct', 'binary']:
       
       #this is to address a weird error message suggesting I reshape the y with ravel()
       np_labels = np.ravel(np_labels)
@@ -19033,7 +19035,7 @@ class AutoMunge:
       columnaccuracy = 1 - mean_squared_log_error(np_labels, np_predictions)
       
     #if labelscategory in ['bnry']:
-    if MLinfilltype in ['singlct']:
+    if MLinfilltype in ['singlct', 'binary']:
       
       #this is to address a weird error message suggesting I reshape the y with ravel()
       np_labels = np.ravel(np_labels)
@@ -19927,8 +19929,8 @@ class AutoMunge:
     '''
     populates sa dictionary with default values for PCA methods PCA, 
     SparsePCA, and KernelPCA. (Each based on ScikitLearn default values)
-    #note that for SparsePCA the 'normalize_components' is set to True
-    #even though default for Scikit is False
+    #note that for SparsePCA the 'normalize_components' is not passed 
+    #since will be depreciated
     '''
 
     PCAdefaults = {'PCA':{}, 'SparsePCA':{}, 'KernelPCA':{}}
@@ -19949,8 +19951,9 @@ class AutoMunge:
                                      'U_init':None, \
                                      'V_init':None, \
                                      'verbose':False, \
-                                     'random_state':randomseed, \
-                                     'normalize_components':True})
+                                     'random_state':randomseed})
+#                                       , \
+#                                      'normalize_components':True})
 
     PCAdefaults['KernelPCA'].update({'kernel':'linear', \
                                      'gamma':None, \
@@ -20133,10 +20136,10 @@ class AutoMunge:
     else:
       random_state = PCAdefaults['SparsePCA']['random_state']
 
-    if 'normalize_components' in ML_cmnd['PCA_cmnd']:
-      normalize_components = ML_cmnd['PCA_cmnd']['normalize_components']
-    else:
-      normalize_components = PCAdefaults['SparsePCA']['normalize_components']
+#     if 'normalize_components' in ML_cmnd['PCA_cmnd']:
+#       normalize_components = ML_cmnd['PCA_cmnd']['normalize_components']
+#     else:
+#       normalize_components = PCAdefaults['SparsePCA']['normalize_components']
 
     #do other stuff?
 
@@ -20151,8 +20154,9 @@ class AutoMunge:
                          U_init = U_init, \
                          V_init = V_init, \
                          verbose = verbose, \
-                         random_state = random_state, \
-                         normalize_components = normalize_components)
+                         random_state = random_state)
+#                          , \
+#                          normalize_components = normalize_components)
 
     return PCAmodel
 
@@ -20383,7 +20387,7 @@ class AutoMunge:
         #   or set(df[checkcolumn].unique()) == {1} \
         #   or checkcolumn[-5:] == '_ordl':
           if postprocess_dict['process_dict'][postprocess_dict['column_dict'][checkcolumn]['category']]['MLinfilltype'] \
-          in ['singlct', 'multirt', 'multisp', 'binary', '1010', 'boolexclude']:
+          in ['singlct', 'binary', 'multirt', 'multisp', '1010', 'boolexclude']:
             #or isinstance(df[checkcolumn].dtype, pd.api.types.CategoricalDtype):
             if checkcolumn not in PCAexcl:
               PCAexcl.append(checkcolumn)
@@ -22818,11 +22822,18 @@ class AutoMunge:
                     print("     infill type: medianinfill")
                     print("")
 
+#                   #check if column is boolean
+#                   boolcolumn = False
+#                   if set(df_train[column].unique()) == {0,1} \
+#                   or set(df_train[column].unique()) == {0} \
+#                   or set(df_train[column].unique()) == {1}:
+#                     boolcolumn = True
+                    
                   #check if column is boolean
                   boolcolumn = False
-                  if set(df_train[column].unique()) == {0,1} \
-                  or set(df_train[column].unique()) == {0} \
-                  or set(df_train[column].unique()) == {1}:
+                  #exclude boolean and ordinal from this infill method
+                  if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
+                  in ['multirt', 'multisp', 'singlct', 'binary', '1010', 'exclude', 'boolexclude']:
                     boolcolumn = True
 
                   categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
@@ -22856,11 +22867,18 @@ class AutoMunge:
                     print("     infill type: meaninfill")
                     print("")
 
+#                   #check if column is boolean
+#                   boolcolumn = False
+#                   if set(df_train[column].unique()) == {0,1} \
+#                   or set(df_train[column].unique()) == {0} \
+#                   or set(df_train[column].unique()) == {1}:
+#                     boolcolumn = True
+                    
                   #check if column is boolean
                   boolcolumn = False
-                  if set(df_train[column].unique()) == {0,1} \
-                  or set(df_train[column].unique()) == {0} \
-                  or set(df_train[column].unique()) == {1}:
+                  #exclude boolean and ordinal from this infill method
+                  if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
+                  in ['multirt', 'multisp', 'singlct', 'binary', '1010', 'exclude', 'boolexclude']:
                     boolcolumn = True
 
                   categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
@@ -22893,11 +22911,18 @@ class AutoMunge:
                     print("     infill type: modeinfill")
                     print("")
 
+#                   #check if column is boolean
+#                   boolcolumn = False
+#                   if set(df_train[column].unique()) == {0,1} \
+#                   or set(df_train[column].unique()) == {0} \
+#                   or set(df_train[column].unique()) == {1}:
+#                     boolcolumn = True
+                    
                   #check if column is boolean
                   boolcolumn = False
-                  if set(df_train[column].unique()) == {0,1} \
-                  or set(df_train[column].unique()) == {0} \
-                  or set(df_train[column].unique()) == {1}:
+                  #just exclude multi-column boolean from this infill, allow ordinal and binary
+                  if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
+                  in ['multirt', 'multisp', '1010', 'exclude', 'boolexclude']:
                     boolcolumn = True
 
                   categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
@@ -23011,6 +23036,9 @@ class AutoMunge:
 
 
     prePCAcolumns = list(df_train)
+    
+    #marker if PCA applied
+    PCA_applied = False
 
     #if user passed anything to automunbge argument PCAn_components 
     #(either the number of columns integer or a float between 0-1)
@@ -23059,7 +23087,9 @@ class AutoMunge:
             print("columns excluded from PCA: ")
             print(bool_PCAexcl)
             print("")
-
+        
+        #PCA applied marker set to true
+        PCA_applied = True
 
         #this is to carve the excluded columns out from the set
         PCAset_train, PCAset_test, PCAexcl_posttransform = \
@@ -23168,7 +23198,7 @@ class AutoMunge:
 
 
       if postprocess_dict['process_dict'][labelscategory]['MLinfilltype'] \
-      in ['numeric', 'singlct', 'multirt', 'multisp', 'label']:
+      in ['numeric', 'singlct', 'binary', 'multirt', 'multisp', 'label']:
 
         #apply LabelFrequencyLevelizer defined function
         df_train, df_labels = \
@@ -23222,10 +23252,13 @@ class AutoMunge:
 
     #a special case, those columns that we completely excluded from processing via excl
     #we'll scrub the suffix appender
-    df_train.columns = [column[:-5] if postprocess_dict['column_dict'][column]['category'] == 'excl' \
-                        else column for column in df_train.columns]
-    df_test.columns = [column[:-5] if postprocess_dict['column_dict'][column]['category'] == 'excl' \
-                       else column for column in df_test.columns]
+    #(we won't perform this step to train and test sets if PCA was applied)
+    if PCA_applied is False:
+      df_train.columns = [column[:-5] if postprocess_dict['column_dict'][column]['category'] == 'excl' \
+                          else column for column in df_train.columns]
+      df_test.columns = [column[:-5] if postprocess_dict['column_dict'][column]['category'] == 'excl' \
+                         else column for column in df_test.columns]
+      
     if labels_column != False:
       df_labels.columns = [column[:-5] if postprocess_dict['column_dict'][column]['category'] == 'excl' \
                            else column for column in df_labels.columns]
@@ -23249,7 +23282,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.31'
+    automungeversion = '3.32'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -23296,6 +23329,7 @@ class AutoMunge:
                              'drift_dict' : drift_dict, \
                              'Binary' : Binary, \
                              'Binary_dict' : Binary_dict, \
+                             'PCA_applied' : PCA_applied, \
                              'PCAn_components' : PCAn_components, \
                              'PCAexcl' : PCAexcl, \
                              'prePCAcolumns' : prePCAcolumns, \
@@ -29734,7 +29768,7 @@ class AutoMunge:
     MLinfilltype = postprocess_dict['process_dict'][category]['MLinfilltype']
 
     #if category in ['nmbr', 'nbr2', 'bxcx', 'bnry', 'text', 'bins', 'bint']:
-    if MLinfilltype in ['numeric', 'singlct', 'multirt', 'multisp', '1010']:
+    if MLinfilltype in ['numeric', 'singlct', 'binary', 'multirt', 'multisp', '1010']:
 
       #if this is a single column set (not categorical)
       #if categorylist == []:
@@ -29956,7 +29990,7 @@ class AutoMunge:
 
 
       #if category == 'bnry':
-      if MLinfilltype in ['singlct']:
+      if MLinfilltype in ['singlct', 'binary']:
 
   #       #train logistic regression model using scikit-learn for binary classifier
   #       #model = LogisticRegression()
@@ -30280,6 +30314,7 @@ class AutoMunge:
     FSpostprocess_dict['shuffletrain'] = True
     FSpostprocess_dict['TrainLabelFreqLevel'] = False
     FSpostprocess_dict['MLinfill'] = False
+    FSpostprocess_dict['PCAn_components'] = None
     FSpostprocess_dict['ML_cmnd']['PCA_type'] = 'off'
     FSpostprocess_dict['assigninfill'] = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                                            'adjinfill':[], 'meaninfill':[], 'medianinfill':[]}
@@ -31580,11 +31615,18 @@ class AutoMunge:
                   print("     infill type: medianinfill")
                   print("")
 
+#                 #check if column is boolean
+#                 boolcolumn = False
+#                 if set(df_test[column].unique()) == {0,1} \
+#                 or set(df_test[column].unique()) == {0} \
+#                 or set(df_test[column].unique()) == {1}:
+#                   boolcolumn = True
+                  
                 #check if column is boolean
                 boolcolumn = False
-                if set(df_test[column].unique()) == {0,1} \
-                or set(df_test[column].unique()) == {0} \
-                or set(df_test[column].unique()) == {1}:
+                #exclude boolean and ordinal from this infill method
+                if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
+                in ['multirt', 'multisp', 'singlct', 'binary', '1010', 'exclude', 'boolexclude']:
                   boolcolumn = True
 
                 categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
@@ -31616,11 +31658,18 @@ class AutoMunge:
                   print("     infill type: meaninfill")
                   print("")
 
+#                 #check if column is boolean
+#                 boolcolumn = False
+#                 if set(df_test[column].unique()) == {0,1} \
+#                 or set(df_test[column].unique()) == {0} \
+#                 or set(df_test[column].unique()) == {1}:
+#                   boolcolumn = True
+                  
                 #check if column is boolean
                 boolcolumn = False
-                if set(df_test[column].unique()) == {0,1} \
-                or set(df_test[column].unique()) == {0} \
-                or set(df_test[column].unique()) == {1}:
+                #exclude boolean and ordinal from this infill method
+                if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
+                in ['multirt', 'multisp', 'singlct', 'binary', '1010', 'exclude', 'boolexclude']:
                   boolcolumn = True
 
                 categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
@@ -31649,11 +31698,18 @@ class AutoMunge:
                   print("     infill type: modeinfill")
                   print("")
 
+#                 #check if column is boolean
+#                 boolcolumn = False
+#                 if set(df_test[column].unique()) == {0,1} \
+#                 or set(df_test[column].unique()) == {0} \
+#                 or set(df_test[column].unique()) == {1}:
+#                   boolcolumn = True
+                  
                 #check if column is boolean
                 boolcolumn = False
-                if set(df_test[column].unique()) == {0,1} \
-                or set(df_test[column].unique()) == {0} \
-                or set(df_test[column].unique()) == {1}:
+                #just exclude multi-column boolean from this infill, allow ordinal and binary
+                if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
+                in ['multirt', 'multisp', '1010', 'exclude', 'boolexclude']:
                   boolcolumn = True
 
                 categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
@@ -31800,8 +31856,6 @@ class AutoMunge:
         print("")
       
       Binary_dict = postprocess_dict['Binary_dict']
-      
-      Binary_dict = postprocess_dict['Binary_dict']
           
       df_test = self.postBinary_convert(df_test, Binary_dict)
       
@@ -31843,7 +31897,7 @@ class AutoMunge:
 
 
       if postprocess_dict['process_dict'][labelscategory]['MLinfilltype'] \
-      in ['numeric', 'singlct', 'multirt', 'multisp', 'label']:
+      in ['numeric', 'singlct', 'binary', 'multirt', 'multisp', 'label']:
 
         #apply LabelFrequencyLevelizer defined function
         df_test, df_testlabels = \
@@ -31886,8 +31940,11 @@ class AutoMunge:
 
     #a special case, those columns that we completely excluded from processing via excl
     #we'll scrub the suffix appender
-    df_test.columns = [column[:-5] if postprocess_dict['column_dict'][column]['category'] == 'excl' \
-                       else column for column in df_test.columns]
+    #(we won't perform this step to test data if PCA was applied)
+    if postprocess_dict['PCA_applied'] is False:
+      df_test.columns = [column[:-5] if postprocess_dict['column_dict'][column]['category'] == 'excl' \
+                         else column for column in df_test.columns]
+      
     if labelscolumn != False:
       df_testlabels.columns = [column[:-5] if postprocess_dict['column_dict'][column]['category'] == 'excl' \
                                else column for column in df_testlabels.columns]
