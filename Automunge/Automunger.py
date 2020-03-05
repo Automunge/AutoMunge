@@ -18202,7 +18202,6 @@ class AutoMunge:
 
 
 
-
   def MLinfillfunction (self, df_train, df_test, column, postprocess_dict, \
                         masterNArows_train, masterNArows_test, randomseed, \
                         ML_cmnd):
@@ -18227,6 +18226,14 @@ class AutoMunge:
       categorylist = postprocess_dict['column_dict'][column]['categorylist']
       origcolumn = postprocess_dict['column_dict'][column]['origcolumn']
       category = postprocess_dict['column_dict'][column]['category']
+      
+      if len(categorylist) == 1:
+        #copy the datatype to ensure returned set is consistent
+        df_temp_dtype = pd.DataFrame(df_train[column][:0]).copy()
+
+      elif len(categorylist) > 1:
+        #copy the datatype to ensure returned set is consistent
+        df_temp_dtype = pd.DataFrame(df_train[categorylist][:0]).copy()
       
 
       #createMLinfillsets
@@ -18286,6 +18293,23 @@ class AutoMunge:
 #         #now change the infillcomplete marker in the dict for each associated column
 #         for columnname in categorylist:
 #           postprocess_dict['column_dict'][columnname]['infillcomplete'] = True
+
+      if len(categorylist) == 1:
+        #reset data type to ensure returned data is consistent with what was passed
+        df_train[column] = \
+        df_train[column].astype({column:df_temp_dtype[column].dtypes})
+        
+        df_test[column] = \
+        df_test[column].astype({column:df_temp_dtype[column].dtypes})
+
+      elif len(categorylist) > 1:
+        for dtype_column in categorylist:
+          #reset data type to ensure returned data is consistent with what was passed
+          df_train[dtype_column] = \
+          df_train[dtype_column].astype({column:df_temp_dtype[dtype_column].dtypes})
+          
+          df_test[dtype_column] = \
+          df_test[dtype_column].astype({column:df_temp_dtype[dtype_column].dtypes})
 
     return df_train, df_test, postprocess_dict
 
@@ -19539,7 +19563,9 @@ class AutoMunge:
 
   def zeroinfillfunction(self, df, column, postprocess_dict, \
                         masterNArows):
-
+    
+    #copy the datatype to ensure returned set is consistent
+    df_temp_dtype = pd.DataFrame(df[column][:0]).copy()
 
     #create infill dataframe of all zeros with number of rows corepsonding to the
     #number of 1's found in masterNArows
@@ -19560,11 +19586,19 @@ class AutoMunge:
                            postprocess_dict, columnslist = columnslist, \
                            categorylist = categorylist, singlecolumncase=True)
 
+    
+    #reset data type to ensure returned data is consistent with what was passed
+    df[column] = \
+    df[column].astype({column:df_temp_dtype[column].dtypes})
+    
     return df
 
   def oneinfillfunction(self, df, column, postprocess_dict, \
                         masterNArows):
 
+    #copy the datatype to ensure returned set is consistent
+    df_temp_dtype = pd.DataFrame(df[column][:0]).copy()
+    
 
     #create infill dataframe of all zeros with number of rows corepsonding to the
     #number of 1's found in masterNArows
@@ -19585,12 +19619,19 @@ class AutoMunge:
                            postprocess_dict, columnslist = columnslist, \
                            categorylist = categorylist, singlecolumncase=True)
 
+    #reset data type to ensure returned data is consistent with what was passed
+    df[column] = \
+    df[column].astype({column:df_temp_dtype[column].dtypes})
+    
     return df
 
 
   def adjinfillfunction(self, df, column, postprocess_dict, \
                         masterNArows):
 
+    #copy the datatype to ensure returned set is consistent
+    df_temp_dtype = pd.DataFrame(df[column][:0]).copy()
+    
     #create infill dataframe of all nan with number of rows corepsonding to the
     #number of 1's found in masterNArows
     NArw_columnname = \
@@ -19622,6 +19663,12 @@ class AutoMunge:
     #we'll follow with a bfill just in case first row had a nan
     df[column] = df[column].fillna(method='bfill')
     
+    #and final edge case if all cells were subject to infill we'll just insert 0
+    df[column] = df[column].fillna(value=0)
+    
+    #reset data type to ensure returned data is consistent with what was passed
+    df[column] = \
+    df[column].astype({column:df_temp_dtype[column].dtypes})
 
     return df
 
@@ -19629,6 +19676,8 @@ class AutoMunge:
   def train_medianinfillfunction(self, df, column, postprocess_dict, \
                                  masterNArows):
 
+    #copy the datatype to ensure returned set is consistent
+    df_temp_dtype = pd.DataFrame(df[column][:0]).copy()
 
     #create infill dataframe of all zeros with number of rows corepsonding to the
     #number of 1's found in masterNArows
@@ -19643,6 +19692,10 @@ class AutoMunge:
     tempdf = tempdf[tempdf[NArw_columnname] != 1]
     #calculate median of remaining rows
     median = tempdf[column].median()
+    
+    #edge case
+    if median != median:
+      median = 0
     
     del tempdf
 
@@ -19659,12 +19712,19 @@ class AutoMunge:
                            postprocess_dict, columnslist = columnslist, \
                            categorylist = categorylist)
 
+    #reset data type to ensure returned data is consistent with what was passed
+    df[column] = \
+    df[column].astype({column:df_temp_dtype[column].dtypes})
+    
     return df, median
 
   def test_medianinfillfunction(self, df, column, postprocess_dict, \
                                  masterNArows, median):
 
 
+    #copy the datatype to ensure returned set is consistent
+    df_temp_dtype = pd.DataFrame(df[column][:0]).copy()
+    
     #create infill dataframe of all zeros with number of rows corepsonding to the
     #number of 1's found in masterNArows
     NArw_columnname = \
@@ -19687,12 +19747,18 @@ class AutoMunge:
                            postprocess_dict, columnslist = columnslist, \
                            categorylist = categorylist)
 
+    #reset data type to ensure returned data is consistent with what was passed
+    df[column] = \
+    df[column].astype({column:df_temp_dtype[column].dtypes})
+    
     return df
 
   def train_meaninfillfunction(self, df, column, postprocess_dict, \
                                  masterNArows):
 
-
+    #copy the datatype to ensure returned set is consistent
+    df_temp_dtype = pd.DataFrame(df[column][:0]).copy()
+    
     #create infill dataframe of all zeros with number of rows corepsonding to the
     #number of 1's found in masterNArows
     NArw_columnname = \
@@ -19706,6 +19772,10 @@ class AutoMunge:
     tempdf = tempdf[tempdf[NArw_columnname] != 1]
     #calculate median of remaining rows
     mean = tempdf[column].mean()
+    
+    #edge case
+    if mean != mean:
+      mean = 0
     
     del tempdf
 
@@ -19722,12 +19792,18 @@ class AutoMunge:
                            postprocess_dict, columnslist = columnslist, \
                            categorylist = categorylist)
 
+    #reset data type to ensure returned data is consistent with what was passed
+    df[column] = \
+    df[column].astype({column:df_temp_dtype[column].dtypes})
+    
     return df, mean
 
 
   def test_meaninfillfunction(self, df, column, postprocess_dict, \
                                  masterNArows, mean):
 
+    #copy the datatype to ensure returned set is consistent
+    df_temp_dtype = pd.DataFrame(df[column][:0]).copy()
 
     #create infill dataframe of all zeros with number of rows corepsonding to the
     #number of 1's found in masterNArows
@@ -19751,6 +19827,10 @@ class AutoMunge:
                            postprocess_dict, columnslist = columnslist, \
                            categorylist = categorylist)
 
+    #reset data type to ensure returned data is consistent with what was passed
+    df[column] = \
+    df[column].astype({column:df_temp_dtype[column].dtypes})
+    
     return df
 
 
@@ -19759,6 +19839,8 @@ class AutoMunge:
   def train_modeinfillfunction(self, df, column, postprocess_dict, \
                                masterNArows):
 
+    #copy the datatype to ensure returned set is consistent
+    df_temp_dtype = pd.DataFrame(df[column][:0]).copy()
 
     #create infill dataframe of all zeros with number of rows corepsonding to the
     #number of 1's found in masterNArows
@@ -19824,7 +19906,12 @@ class AutoMunge:
           tempdf['onehot'] + tempdf[tempdf_column].astype(int).astype(str)
 
       #find mode of the aggregation
-      binary_mode = tempdf['onehot'].mode()[0]
+      binary_mode = tempdf['onehot'].mode()
+      
+      if len(binary_mode) > 0:
+        binary_mode = binary_mode[0]
+      else:
+        binary_mode = tempdf['onehot'].values[0]
       
 #       if len(binary_mode) < 1:
 #         binary_mode = 0
@@ -19850,7 +19937,12 @@ class AutoMunge:
 
       
       #calculate mode of remaining rows
-      mode = tempdf[column].mode()[0]
+      mode = tempdf[column].mode()
+      
+      if len(mode) > 0:
+        mode = mode[0]
+      else:
+        mode = 0
 
       del tempdf
 
@@ -19868,6 +19960,9 @@ class AutoMunge:
                            postprocess_dict, columnslist = columnslist, \
                            categorylist = categorylist, singlecolumncase = True)
 
+    #reset data type to ensure returned data is consistent with what was passed
+    df[column] = \
+    df[column].astype({column:df_temp_dtype[column].dtypes})
 
     return df, mode
 
@@ -19875,6 +19970,8 @@ class AutoMunge:
   def test_modeinfillfunction(self, df, column, postprocess_dict, \
                               masterNArows, mode):
 
+    #copy the datatype to ensure returned set is consistent
+    df_temp_dtype = pd.DataFrame(df[column][:0]).copy()
 
     #create infill dataframe of all zeros with number of rows corepsonding to the
     #number of 1's found in masterNArows
@@ -19904,7 +20001,9 @@ class AutoMunge:
                            postprocess_dict, columnslist = columnslist, \
                            categorylist = categorylist, singlecolumncase = True)
 
-
+    #reset data type to ensure returned data is consistent with what was passed
+    df[column] = \
+    df[column].astype({column:df_temp_dtype[column].dtypes})
 
     return df
 
@@ -23244,7 +23343,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.33'
+    automungeversion = '3.34'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
