@@ -3478,7 +3478,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_por2_class, \
                                   'NArowtype' : 'nonzeronumeric', \
                                   'MLinfilltype' : 'singlct', \
-                                  'labelctgy' : 'pwor'}})
+                                  'labelctgy' : 'por2'}})
     process_dict.update({'NArw' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_NArw_class, \
                                   'postprocess' : None, \
@@ -18306,10 +18306,10 @@ class AutoMunge:
         for dtype_column in categorylist:
           #reset data type to ensure returned data is consistent with what was passed
           df_train[dtype_column] = \
-          df_train[dtype_column].astype({column:df_temp_dtype[dtype_column].dtypes})
+          df_train[dtype_column].astype({dtype_column:df_temp_dtype[dtype_column].dtypes})
           
           df_test[dtype_column] = \
-          df_test[dtype_column].astype({column:df_temp_dtype[dtype_column].dtypes})
+          df_test[dtype_column].astype({dtype_column:df_temp_dtype[dtype_column].dtypes})
 
     return df_train, df_test, postprocess_dict
 
@@ -18865,103 +18865,22 @@ class AutoMunge:
     return df_train, df_test, postprocess_dict
   
 
-  
+
   def trainFSmodel(self, am_subset, am_labels, randomseed, labelsencoding_dict, \
                    process_dict, postprocess_dict, labelctgy, ML_cmnd):
     
-    '''
-    trains model for purpose of evaluating features
-    '''
-    #initialize defaults dictionary
-    MLinfilldefaults = \
-    self.populateMLinfilldefaults(randomseed)
+    df_train_fillfeatures_plug = am_subset[:][:1].copy()
+    df_test_fillfeatures_plug = am_subset[:][:1].copy()
+    categorylist = postprocess_dict['column_dict'][list(am_labels)[0]]['categorylist']
     
-    #initialize ML_cmnd
-    #ML_cmnd = postprocess_dict['ML_cmnd']
-    ML_cmnd = ML_cmnd
+    _infilla, _infillb, FSmodel = \
+    self.predictinfill(labelctgy, am_subset, am_labels, \
+                       df_train_fillfeatures_plug, df_test_fillfeatures_plug, \
+                       randomseed, postprocess_dict, ML_cmnd, \
+                       columnslist = categorylist)
     
-    #convert dataframes to numpy arrays
-    np_subset = am_subset.values
-    np_labels = am_labels.values
+    del _infilla, _infillb
     
-    #get category of labels from labelsencoding_dict
-    #labelscategory = next(iter(labelsencoding_dict))
-    labelscategory = labelctgy
-    
-    MLinfilltype = process_dict[labelscategory]['MLinfilltype']
-    
-    #if labelscategory in ['nmbr']:
-    if MLinfilltype in ['numeric', 'label']:
-      
-      #this is specific to the current means of address for numeric label sets
-      #as we build out our label engineering methods this will need to. be updated
-      for labelcolumn in list(am_labels):
-        if postprocess_dict['column_dict'][labelcolumn]['category'] == labelscategory:
-          np_labels = am_labels[labelcolumn].values
-          break
-      
-      #this is to address a weird error message suggesting I reshape the y with ravel()
-      np_labels = np.ravel(np_labels)
-
-      #FSmodel = RandomForestRegressor(n_estimators=100, random_state = randomseed, verbose=0)
-      FSmodel = self.initRandomForestRegressor(ML_cmnd, MLinfilldefaults)
-
-      FSmodel.fit(np_subset, np_labels)
-      
-#       baseaccuracy = self.shuffleaccuracy(am_subset, am_labels, FSmodel, randomseed, \
-#                                           labelsencoding_dict, process_dict, labelctgy)
-        
-    #if labelscategory in ['bnry']:
-    if MLinfilltype in ['singlct', 'binary']:
-      
-      #this is to address a weird error message suggesting I reshape the y with ravel()
-      np_labels = np.ravel(np_labels)
-
-      #train logistic regression model using scikit-learn for binary classifier
-      #FSmodel = RandomForestClassifier(n_estimators=100, random_state = randomseed, verbose=0)
-      FSmodel = self.initRandomForestClassifier(ML_cmnd, MLinfilldefaults)
-
-      FSmodel.fit(np_subset, np_labels)
-      
-#       baseaccuracy = self.shuffleaccuracy(am_subset, am_labels, FSmodel, randomseed, \
-#                                           labelsencoding_dict, process_dict, labelctgy)
-      
-    #if labelscategory in ['text']:
-    if MLinfilltype in ['multirt', 'multisp']:
-      
-      #muiltirt sets as edge case may sometimes be returned with one column
-      if np_labels.shape[1] == 1:
-        np_labels = np.ravel(np_labels)
-
-      #train logistic regression model using scikit-learn for binary classifier
-      #with multi_class argument activated
-      #FSmodel = RandomForestClassifier(n_estimators=100, random_state = randomseed, verbose=0)
-      FSmodel = self.initRandomForestClassifier(ML_cmnd, MLinfilldefaults)
-
-      FSmodel.fit(np_subset, np_labels)
-      
-#       baseaccuracy = self.shuffleaccuracy(am_subset, am_labels, FSmodel, randomseed, \
-#                                           labelsencoding_dict, process_dict, labelctgy)
-
-    if MLinfilltype in ['1010']:
-
-      #train logistic regression model using scikit-learn for binary classifier
-      #with multi_class argument activated
-      #FSmodel = RandomForestClassifier(n_estimators=100, random_state = randomseed, verbose=0)
-      FSmodel = self.initRandomForestClassifier(ML_cmnd, MLinfilldefaults)
-      
-      np_labels = \
-      self.convert_1010_to_onehot(np_labels)
-
-      FSmodel.fit(np_subset, np_labels)
-      
-#       baseaccuracy = self.shuffleaccuracy(am_subset, am_labels, FSmodel, randomseed, \
-#                                           labelsencoding_dict, process_dict, labelctgy)
-  
-    #I think this will clear some memory
-    del np_labels, np_subset
-    
-    #return FSmodel, baseaccuracy
     return FSmodel
       
   
@@ -19273,21 +19192,29 @@ class AutoMunge:
 
       #find labelctgy from process_dict based on this origcategory
       labelctgy = process_dict[origcategory]['labelctgy']
+      
+      am_categorylist = []
+      
+        
+      for am_label_column in list(am_labels):
+                
+        if FSpostprocess_dict['column_dict'][am_label_column]['category'] == labelctgy:
 
-      if len(list(am_labels)) > 1:
-
-        if process_dict[origcategory]['MLinfilltype'] not in ['multirt']:
-
-          #use suffix of labelctgy to find column that we'll use as labels for feature selection
-          FSlabelcolumn = list(am_labels)[0]
-          for labelcolumn in list(am_labels):
-            #note that because we are using len() this allows for multigenerational labels eg bxcx_nmbr
-            if labelcolumn[-len(labelctgy):] == labelctgy:
-              FSlabelcolumn = labelcolumn
-
-          #use FSlabelcolumn to set am_labels = pd.DataFrame(am_labels[that column])
-          am_labels = pd.DataFrame(am_labels[FSlabelcolumn])
-          am_validationlabels1 = pd.DataFrame(am_validationlabels1[FSlabelcolumn])
+          am_categorylist = FSpostprocess_dict['column_dict'][am_label_column]['categorylist']
+            
+      if len(am_categorylist) == 1:
+        am_labels = pd.DataFrame(am_labels[am_categorylist[0]])
+        am_validationlabels1 = pd.DataFrame(am_validationlabels1[am_categorylist[0]])
+        
+      else:
+        am_labels = am_labels[am_categorylist]
+        am_validationlabels1 = am_validationlabels1[am_categorylist]
+        
+      #if there's a bug occuring after this point it might mean the labelctgy wasn't
+      #properly populated in the process_dict for the root category assigned to the labels
+      #again the labelctgy entry to process_dict represents for labels returned in 
+      #multiple configurations the trasnofrmation category whose returned set will be
+      #used to train the feature selection model
       
         
       #printout display progress
@@ -19565,7 +19492,7 @@ class AutoMunge:
                         masterNArows):
     
     #copy the datatype to ensure returned set is consistent
-    df_temp_dtype = pd.DataFrame(df[column][:0]).copy()
+    df_temp_dtype = pd.DataFrame(df[column][:1]).copy()
 
     #create infill dataframe of all zeros with number of rows corepsonding to the
     #number of 1's found in masterNArows
@@ -19597,7 +19524,7 @@ class AutoMunge:
                         masterNArows):
 
     #copy the datatype to ensure returned set is consistent
-    df_temp_dtype = pd.DataFrame(df[column][:0]).copy()
+    df_temp_dtype = pd.DataFrame(df[column][:1]).copy()
     
 
     #create infill dataframe of all zeros with number of rows corepsonding to the
@@ -19630,7 +19557,7 @@ class AutoMunge:
                         masterNArows):
 
     #copy the datatype to ensure returned set is consistent
-    df_temp_dtype = pd.DataFrame(df[column][:0]).copy()
+    df_temp_dtype = pd.DataFrame(df[column][:1]).copy()
     
     #create infill dataframe of all nan with number of rows corepsonding to the
     #number of 1's found in masterNArows
@@ -19677,7 +19604,7 @@ class AutoMunge:
                                  masterNArows):
 
     #copy the datatype to ensure returned set is consistent
-    df_temp_dtype = pd.DataFrame(df[column][:0]).copy()
+    df_temp_dtype = pd.DataFrame(df[column][:1]).copy()
 
     #create infill dataframe of all zeros with number of rows corepsonding to the
     #number of 1's found in masterNArows
@@ -19723,7 +19650,7 @@ class AutoMunge:
 
 
     #copy the datatype to ensure returned set is consistent
-    df_temp_dtype = pd.DataFrame(df[column][:0]).copy()
+    df_temp_dtype = pd.DataFrame(df[column][:1]).copy()
     
     #create infill dataframe of all zeros with number of rows corepsonding to the
     #number of 1's found in masterNArows
@@ -19757,7 +19684,7 @@ class AutoMunge:
                                  masterNArows):
 
     #copy the datatype to ensure returned set is consistent
-    df_temp_dtype = pd.DataFrame(df[column][:0]).copy()
+    df_temp_dtype = pd.DataFrame(df[column][:1]).copy()
     
     #create infill dataframe of all zeros with number of rows corepsonding to the
     #number of 1's found in masterNArows
@@ -19803,7 +19730,7 @@ class AutoMunge:
                                  masterNArows, mean):
 
     #copy the datatype to ensure returned set is consistent
-    df_temp_dtype = pd.DataFrame(df[column][:0]).copy()
+    df_temp_dtype = pd.DataFrame(df[column][:1]).copy()
 
     #create infill dataframe of all zeros with number of rows corepsonding to the
     #number of 1's found in masterNArows
@@ -19840,7 +19767,7 @@ class AutoMunge:
                                masterNArows):
 
     #copy the datatype to ensure returned set is consistent
-    df_temp_dtype = pd.DataFrame(df[column][:0]).copy()
+    df_temp_dtype = pd.DataFrame(df[column][:1]).copy()
 
     #create infill dataframe of all zeros with number of rows corepsonding to the
     #number of 1's found in masterNArows
@@ -19971,7 +19898,7 @@ class AutoMunge:
                               masterNArows, mode):
 
     #copy the datatype to ensure returned set is consistent
-    df_temp_dtype = pd.DataFrame(df[column][:0]).copy()
+    df_temp_dtype = pd.DataFrame(df[column][:1]).copy()
 
     #create infill dataframe of all zeros with number of rows corepsonding to the
     #number of 1's found in masterNArows
@@ -23343,7 +23270,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.34'
+    automungeversion = '3.35'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -30447,21 +30374,28 @@ class AutoMunge:
 
       #find labelctgy from process_dict based on this origcategory
       labelctgy = process_dict[origcategory]['labelctgy']
+      
+      am_categorylist = []
+        
+      for am_label_column in list(am_labels):
 
-      if len(list(am_labels)) > 1:
+        if FSpostprocess_dict['column_dict'][am_label_column]['category'] == labelctgy:
 
-        if process_dict[origcategory]['MLinfilltype'] not in ['multirt']:
-
-          #use suffix of labelctgy to find column that we'll use as labels for feature selection
-          FSlabelcolumn = list(am_labels)[0]
-          for labelcolumn in list(am_labels):
-            #note that because we are using len() this allows for multigenerational labels eg bxcx_nmbr
-            if labelcolumn[-len(labelctgy):] == labelctgy:
-              FSlabelcolumn = labelcolumn
-
-          #use FSlabelcolumn to set am_labels = pd.DataFrame(am_labels[that column])
-          am_labels = pd.DataFrame(am_labels[FSlabelcolumn])
-          am_validationlabels1 = pd.DataFrame(am_validationlabels1[FSlabelcolumn])
+          am_categorylist = FSpostprocess_dict['column_dict'][am_label_column]['categorylist']
+            
+      if len(am_categorylist) == 1:
+        am_labels = pd.DataFrame(am_labels[am_categorylist[0]])
+        am_validationlabels1 = pd.DataFrame(am_validationlabels1[am_categorylist[0]])
+        
+      else:
+        am_labels = am_labels[am_categorylist]
+        am_validationlabels1 = am_validationlabels1[am_categorylist]
+        
+      #if there's a bug occuring after this point it might mean the labelctgy wasn't
+      #properly populated in the process_dict for the root category assigned to the labels
+      #again the labelctgy entry to process_dict represents for labels returned in 
+      #multiple configurations the trasnofrmation category whose returned set will be
+      #used to train the feature selection model
       
         
       #printout display progress
