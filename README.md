@@ -791,9 +791,7 @@ featuremethod = 'pct'] or if [fesaturemetric > 0.0 and featuremethod =
 'metric']. Note this defaults to False because it cannot operate without
 a designated label column in the train set. (Note that any user-specified
 size of validationratios if passed are used in this method, otherwise 
-defaults to 0.33.) (*Note that featureselection doesn't yet support 
-hyperparameter tuning methods available for ML infill when passing sets
-of parameters to ML_cmnd, this functionality pending.)
+defaults to 0.33.)
 
 * featurepct: the percentage of derived sets that are kept in the output
 based on the feature importance evaluation. Note that NArw columns are
