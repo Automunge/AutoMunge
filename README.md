@@ -177,7 +177,8 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
 		         'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'copy':[], 'shfl':[], \
                          'eval':[]}, \
             assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
-                            'adjinfill':[], 'meaninfill':[], 'medianinfill':[], 'modeinfill':[]}, \
+                            'adjinfill':[], 'meaninfill':[], 'medianinfill':[], \
+			    'modeinfill':[], 'lcinfill':[]}, \
             assignparam = {}, transformdict = {}, processdict = {}, evalcat = False, \
             printstatus = True)
 ```
@@ -397,7 +398,8 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
 		         'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'copy':[], 'shfl':[], \
                          'eval':[]}, \
             assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
-                            'adjinfill':[], 'meaninfill':[], 'medianinfill':[], 'modeinfill':[]}, \
+                            'adjinfill':[], 'meaninfill':[], 'medianinfill':[], \
+			    'modeinfill':[], 'lcinfill':[]}, \
             assignparam = {}, transformdict = {}, processdict = {}, evalcat = False, \
             printstatus = True)
 ```
@@ -597,7 +599,8 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
 		         'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'copy':[], 'shfl':[], \
                          'eval':[]}, \
             assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
-                            'adjinfill':[], 'meaninfill':[], 'medianinfill':[], 'modeinfill':[]}, \
+                            'adjinfill':[], 'meaninfill':[], 'medianinfill':[], \
+			    'modeinfill':[], 'lcinfill':[]}, \
             assignparam = {}, transformdict = {}, processdict = {}, evalcat = False, \
             printstatus = True)
 ```
@@ -739,6 +742,10 @@ infill processing are to be performed for purposes of predicting infill.
 The assumption is that for sets with high frequency of missing values
 that multiple applications of ML infill may improve accuracy although
 note this is not an extensively tested hypothesis. This defaults to 1.
+Note that due to the seuqunce of model training / applicaiton, a comparable
+set prepared in automunge nad postmunge with this option may vary slightly in 
+output (as automunge(.) will train seperate models on each iteration and
+postmunge will just apply the final model on each iteration).
 
 * randomseed: a postitive integer used as a seed for randomness throughout 
 such as for data set shuffling, ML infill, and feature importance  algorithms. 
@@ -956,7 +963,8 @@ of the column header without the list brackets.
 #Here are the current infill options built into our library, which
 #we are continuing to build out.
 assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
-                'adjinfill':[], 'meaninfill':[], 'medianinfill':[], 'modeinfill':[]}, \
+                'adjinfill':[], 'meaninfill':[], 'medianinfill':[], \
+		'modeinfill':[], 'lcinfill':[]}, \
 ```
 A user may add column identifier strings to each of these lists to 
 designate the column-specific infill approach for missing or
@@ -972,9 +980,10 @@ set to numeric columns. (Note currently boolean columns derived from
 numeric are not supported for mean/median and for those cases default to 
 those infill from stdrdinfill.) modeinfill means inserting the most common
 value for a set, note that modeinfill supports mulit-column boolean encodings, 
-such as one-hot encoded sets or binary encoded sets. Note that for single 
-entry column assignments a user can just pass the string or integer of the 
-column header without the list brackets.
+such as one-hot encoded sets or binary encoded sets. lcinfill is comparable 
+to modeinfill but with least common value instead of most. Note that for 
+single entry column assignments a user can just pass the string or integer of 
+the column header without the list brackets.
 
 * assignparam
 A user may pass column-specific parameters to those transformation functions
@@ -1132,8 +1141,6 @@ processdict =  {'newt' : {'dualprocess' : None, \
 #	       'exclude' refers to categories excluded from predcitive address
 #	       'multisp' for bins multicolumn sets with boolean entries
 #                        (similar to multirt but treated differently in levelizer)
-#	       'label'  refers to categories specifically intended for label
-#			 processing
 #              '1010'   for multicolumn sets with binary encoding via 1010
 #                        will be converted to onehot for ML
 #              'exclude' for columns which will be excluded from ML infill
