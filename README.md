@@ -4583,4 +4583,11 @@ The Automunge website is helpfully located at URL
 
 ...
 
+This file is part of Automunge which is released under GNU General Public License v3.0.
+See file LICENSE or go to https://github.com/Automunge/AutoMunge for full license details.
+
+contact available via automunge.com
+
+Copyright (C) 2018, 2019, 2020 Nicholas Teague - All Rights Reserved
+
 Patent Pending, application 16552857
