@@ -4,7 +4,7 @@ See file LICENSE or go to https://github.com/Automunge/AutoMunge for full licens
 
 contact available via automunge.com
 
-Copyright (C) 2018, 2019 Nicholas Teague - All Rights Reserved
+Copyright (C) 2018, 2019, 2020 Nicholas Teague - All Rights Reserved
 
 patent pending, application 16552857
 
@@ -22077,6 +22077,7 @@ class AutoMunge:
       test_plug_marker = True
       if labels_column != False:
         del df_test[labels_column]
+        
 
     #this converts any numeric columns labels, such as from a passed numpy array, to strings
     testlabels=[]
@@ -22189,6 +22190,9 @@ class AutoMunge:
       else:
         print("error, trainID_column value must be False, str, or list")
         
+      
+      df_train_tempID.index = df_trainID.index
+        
       df_trainID = pd.concat([df_trainID, df_train_tempID], axis=1)
     
       for IDcolumn in trainID_column:
@@ -22198,6 +22202,7 @@ class AutoMunge:
       trainID_column.append(indexcolumn)
       
     else:
+      df_train_tempID.index = df_train.index
       df_trainID = df_train_tempID.copy()
       trainID_column = [indexcolumn]
       
@@ -22222,7 +22227,9 @@ class AutoMunge:
         testID_column = testID_column
       else:
         print("error, testID_column value must be False, str, or list")
-
+      
+      df_test_tempID.index = df_testID.index
+      
       df_testID = pd.concat([df_testID, df_test_tempID], axis=1)
 
       for IDcolumn in testID_column:
@@ -22232,6 +22239,7 @@ class AutoMunge:
       testID_column.append(indexcolumn)
       
     else:
+      df_test_tempID.index = df_test.index
       df_testID = df_test_tempID.copy()
       testID_column = [indexcolumn]
 
@@ -23558,7 +23566,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.36'
+    automungeversion = '3.37'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -31284,7 +31292,9 @@ class AutoMunge:
           testID_column = testID_column
         else:
           print("error, testID_column value must be False, str, or list")
-
+        
+        df_test_tempID.index = df_testID.index
+        
         df_testID = pd.concat([df_testID, df_test_tempID], axis=1)
 
         for IDcolumn in testID_column:
@@ -31298,6 +31308,7 @@ class AutoMunge:
         testID_column = [indexcolumn]
       
     else:
+      df_test_tempID.index = df_test.index
       df_testID = df_test_tempID.copy()
       testID_column = [indexcolumn]
 
