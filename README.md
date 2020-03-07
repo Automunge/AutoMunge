@@ -407,7 +407,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
 Or for the postmunge function:
 
 ```
-#for postmunge(.) function on additional or subsequently available train or test data
+#for postmunge(.) function on additional or subsequently available test (or train) data
 #using the postprocess_dict object returned from original automunge(.) application
 
 #first you'll need to initialize
