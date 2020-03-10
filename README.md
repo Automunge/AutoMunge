@@ -25,7 +25,7 @@ Automunge is a platform for preparing tabular data for machine learning. A user
 has options between automated inference of column properties for application of
 appropriate simple feature engineering methods, or may also assign to distinct 
 columns custom feature engineering transformations, custom sets (e.g. "family 
-trees") of feature engineering transformations, or custom infill methods. The 
+trees") of feature engineering transformations, and custom infill methods. The 
 feature engineering transformation functions may be accessed from the internal 
 library of transformation categories (aka a "feature store"), or may also 
 be user defined with minimal requirements of simple data structures for 
