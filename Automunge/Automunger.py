@@ -7575,7 +7575,6 @@ class AutoMunge:
 
   #                 extract_already_in_overlap_dict = False
 
-                  #if is_number(extract):
                   if self.is_number(extract):
 
                     overlap_dict.update({unique : float(extract)})
@@ -7595,7 +7594,6 @@ class AutoMunge:
 
   #                 extract_already_in_overlap_dict = False
 
-                  #if is_number(extract):
                   if self.is_number(extract):
 
                     in_dict = True
@@ -7698,7 +7696,6 @@ class AutoMunge:
 
   #                 extract_already_in_overlap_dict = False
 
-                  #if is_number(extract):
                   if self.is_number(extract):
 
                     overlap_dict.update({unique : float(extract)})
@@ -7718,7 +7715,6 @@ class AutoMunge:
 
   #                 extract_already_in_overlap_dict = False
 
-                  #if is_number(extract):
                   if self.is_number(extract):
 
                     in_dict = True
@@ -7837,7 +7833,6 @@ class AutoMunge:
 
   #                 extract_already_in_overlap_dict = False
 
-                  #if is_number(extract):
                   if self.is_number(extract):
 
                     overlap_dict.update({unique : float(extract)})
@@ -7857,7 +7852,6 @@ class AutoMunge:
 
   #                 extract_already_in_overlap_dict = False
 
-                  #if is_number(extract):
                   if self.is_number(extract):
 
                     in_dict = True
@@ -7918,8 +7912,7 @@ class AutoMunge:
 
   #                 extract_already_in_overlap_dict = False
 
-                  if is_number(extract):
-                  #if self.is_number(extract):
+                  if self.is_number(extract):
 
                     test_overlap_dict.update({unique : float(extract)})
                 
@@ -7938,8 +7931,7 @@ class AutoMunge:
 
   #                 extract_already_in_overlap_dict = False
 
-                  if is_number(extract):
-                  #if self.is_number(extract):
+                  if self.is_number(extract):
 
                     in_dict = True
 
@@ -8046,7 +8038,6 @@ class AutoMunge:
 
   #                 extract_already_in_overlap_dict = False
 
-                  #if is_number_comma(extract):
                   if self.is_number_comma(extract):
 
                     overlap_dict.update({unique : float(extract.replace(',',''))})
@@ -8066,7 +8057,6 @@ class AutoMunge:
 
   #                 extract_already_in_overlap_dict = False
 
-                  #if is_number_comma(extract):
                   if self.is_number_comma(extract):
 
                     in_dict = True
@@ -8171,7 +8161,6 @@ class AutoMunge:
 
   #                 extract_already_in_overlap_dict = False
 
-                  #if is_number_comma(extract):
                   if self.is_number_comma(extract):
 
                     overlap_dict.update({unique : float(extract.replace(',',''))})
@@ -8191,7 +8180,6 @@ class AutoMunge:
 
   #                 extract_already_in_overlap_dict = False
 
-                  #if is_number_comma(extract):
                   if self.is_number_comma(extract):
 
                     in_dict = True
@@ -8315,7 +8303,6 @@ class AutoMunge:
 
   #                 extract_already_in_overlap_dict = False
 
-                  #if is_number_comma(extract):
                   if self.is_number_comma(extract):
 
                     overlap_dict.update({unique : float(extract.replace(',',''))})
@@ -8335,7 +8322,6 @@ class AutoMunge:
 
   #                 extract_already_in_overlap_dict = False
 
-                  #if is_number_comma(extract):
                   if self.is_number_comma(extract):
 
                     in_dict = True
@@ -8399,8 +8385,7 @@ class AutoMunge:
 
   #                 extract_already_in_overlap_dict = False
 
-                  if is_number(extract):
-                  #if self.is_number(extract):
+                  if self.is_number(extract):
 
                     test_overlap_dict.update({unique : float(extract)})
                 
@@ -8419,8 +8404,7 @@ class AutoMunge:
 
   #                 extract_already_in_overlap_dict = False
 
-                  if is_number(extract):
-                  #if self.is_number(extract):
+                  if self.is_number(extract):
 
                     in_dict = True
 
@@ -16918,7 +16902,6 @@ class AutoMunge:
 
   #                 extract_already_in_overlap_dict = False
 
-                  #if is_number(extract):
                   if self.is_number(extract):
         
                     overlap_dict.update({unique : False})
@@ -16938,7 +16921,6 @@ class AutoMunge:
 
   #                 extract_already_in_overlap_dict = False
 
-                  #if is_number(extract):
                   if self.is_number(extract):
 
                     in_dict = True
@@ -17004,7 +16986,6 @@ class AutoMunge:
 
   #                 extract_already_in_overlap_dict = False
 
-                  #if is_number_comma(extract):
                   if self.is_number_comma(extract):
 
                     overlap_dict.update({unique : False})
@@ -17024,7 +17005,6 @@ class AutoMunge:
 
   #                 extract_already_in_overlap_dict = False
 
-                  #if is_number_comma(extract):
                   if self.is_number_comma(extract):
 
                     in_dict = True
@@ -23773,7 +23753,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.38'
+    automungeversion = '3.39'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -26230,7 +26210,6 @@ class AutoMunge:
 
   #                 extract_already_in_overlap_dict = False
 
-                  #if is_number(extract):
                   if self.is_number(extract):
 
                     test_overlap_dict.update({unique : float(extract)})
@@ -26250,7 +26229,6 @@ class AutoMunge:
 
   #                 extract_already_in_overlap_dict = False
 
-                  #if is_number(extract):
                   if self.is_number(extract):
 
                     in_dict = True
@@ -26399,7 +26377,6 @@ class AutoMunge:
 
   #                 extract_already_in_overlap_dict = False
 
-                  #if is_number(extract):
                   if self.is_number(extract):
 
                     test_overlap_dict.update({unique : float(extract)})
@@ -26419,7 +26396,6 @@ class AutoMunge:
 
   #                 extract_already_in_overlap_dict = False
 
-                  #if is_number(extract):
                   if self.is_number(extract):
 
                     in_dict = True
@@ -30848,10 +30824,10 @@ class AutoMunge:
 
       #prepare validaiton sets for FS
       am_train, am_validation1 = \
-      train_test_split(am_train, test_size=totalvalidation, shuffle = True, random_state = randomseed)
+      train_test_split(am_train, test_size=totalvalidation, shuffle = False, random_state = randomseed)
 
       am_labels, am_validationlabels1 = \
-      train_test_split(am_labels, test_size=totalvalidation, shuffle = True, random_state = randomseed)
+      train_test_split(am_labels, test_size=totalvalidation, shuffle = False, random_state = randomseed)
 
 
   #     am_train, _1, am_labels, \
