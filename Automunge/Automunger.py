@@ -1896,6 +1896,42 @@ class AutoMunge:
                                      'coworkers' : [], \
                                      'friends' : []}})
     
+    transform_dict.update({'wkds' : {'parents' : ['wkds'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : ['text'], \
+                                     'friends' : []}})
+  
+    transform_dict.update({'wkdo' : {'parents' : ['wkdo'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : ['ord3'], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'mnts' : {'parents' : ['mnts'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : ['text'], \
+                                     'friends' : []}})
+  
+    transform_dict.update({'mnto' : {'parents' : ['mnto'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : ['ord3'], \
+                                     'friends' : []}})
+    
     transform_dict.update({'bins' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['bins'], \
@@ -3362,21 +3398,45 @@ class AutoMunge:
     process_dict.update({'wkdy' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_wkdy_class, \
                                   'postprocess' : None, \
-                                  'NArowtype' : 'justNaN', \
+                                  'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'wkdy'}})
     process_dict.update({'bshr' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_bshr_class, \
                                   'postprocess' : None, \
-                                  'NArowtype' : 'justNaN', \
+                                  'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'bshr'}})
     process_dict.update({'hldy' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_hldy_class, \
                                   'postprocess' : None, \
-                                  'NArowtype' : 'justNaN', \
+                                  'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'hldy'}})
+    process_dict.update({'wkds' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_wkds_class, \
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'datetime', \
+                                  'MLinfilltype' : 'singlct', \
+                                  'labelctgy' : 'text'}})
+    process_dict.update({'wkdo' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_wkds_class, \
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'datetime', \
+                                  'MLinfilltype' : 'singlct', \
+                                  'labelctgy' : 'ord3'}})
+    process_dict.update({'mnts' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_mnts_class, \
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'datetime', \
+                                  'MLinfilltype' : 'singlct', \
+                                  'labelctgy' : 'text'}})
+    process_dict.update({'mnto' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_mnts_class, \
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'datetime', \
+                                  'MLinfilltype' : 'singlct', \
+                                  'labelctgy' : 'ord3'}})
     process_dict.update({'bins' : {'dualprocess' : self.process_bins_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_bins_class, \
@@ -4536,6 +4596,19 @@ class AutoMunge:
     #dataframe inputs
     '''
     
+    #for cap ands floor, False means not applied, True means based on set's found max/min in train set
+    
+    #initialize parameters
+    if 'cap' in params:
+      cap = params['cap']
+    else:
+      cap = False
+      
+    if 'floor' in params:
+      floor = params['floor']
+    else:
+      floor = False
+    
     #copy source column into new column
     mdf_train[column + '_mnmx'] = mdf_train[column].copy()
     mdf_test[column + '_mnmx'] = mdf_test[column].copy()
@@ -4563,6 +4636,14 @@ class AutoMunge:
     #get minimum value of training column
     minimum = mdf_train[column + '_mnmx'].min()
     
+    #if cap < maximum, maximum = cap
+    if cap is not False and cap is not True:
+      if cap < maximum:
+        maximum = cap
+    if floor is not False and floor is not True:
+      if floor > minimum:
+        minimum = floor
+    
     #avoid outlier div by zero when max = min
     maxminusmin = maximum - minimum
     if maxminusmin == 0:
@@ -4575,10 +4656,27 @@ class AutoMunge:
     mdf_test[column + '_mnmx'] = (mdf_test[column + '_mnmx'] - minimum) / \
                                  (maxminusmin)
 
-#     #change data type for memory savings
-#     mdf_train[column + '_mnmx'] = mdf_train[column + '_mnmx'].astype(np.float32)
-#     mdf_test[column + '_mnmx'] = mdf_test[column + '_mnmx'].astype(np.float32)
-
+    #cap and floor application
+    if cap is True:
+      cap = maximum
+    if floor is True:
+      floor = minimum
+    
+    if cap is not False:
+      #replace values in test > cap with cap
+      mdf_train.loc[mdf_train[column + '_mnmx'] > (cap - minimum)/maxminusmin, (column + '_mnmx')] \
+      = (cap - minimum)/maxminusmin
+      
+      mdf_test.loc[mdf_test[column + '_mnmx'] > (cap - minimum)/maxminusmin, (column + '_mnmx')] \
+      = (cap - minimum)/maxminusmin
+    
+    if floor is not False:
+      #replace values in test < floor with floor
+      mdf_train.loc[mdf_train[column + '_mnmx'] < (floor - minimum)/maxminusmin, (column + '_mnmx')] \
+      = (floor - minimum)/maxminusmin
+      
+      mdf_test.loc[mdf_test[column + '_mnmx'] < (floor - minimum)/maxminusmin, (column + '_mnmx')] \
+      = (floor - minimum)/maxminusmin
 
     
     #create list of columns
@@ -4588,7 +4686,9 @@ class AutoMunge:
     nmbrnormalization_dict = {column + '_mnmx' : {'minimum' : minimum, \
                                                   'maximum' : maximum, \
                                                   'mean' : mean, \
-                                                  'std' : std}}
+                                                  'std' : std, \
+                                                  'cap' : cap, \
+                                                  'floor' : floor}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -8915,6 +9015,17 @@ class AutoMunge:
     #note this is a "singleprocess" function since is applied to single dataframe
     '''
     
+    #initialize parameters
+    if 'start' in params:
+      start = params['start']
+    else:
+      start = 9
+      
+    if 'end' in params:
+      end = params['end']
+    else:
+      end = 17
+    
     #convert improperly formatted values to datetime in new column
     df[column+'_bshr'] = pd.to_datetime(df[column], errors = 'coerce')
     
@@ -8923,7 +9034,7 @@ class AutoMunge:
     #would be required
     #For now we'll defer to Dollly Parton
     df[column+'_bshr'] = df[column+'_bshr'].dt.hour
-    df[column+'_bshr'] = df[column+'_bshr'].between(9,17)
+    df[column+'_bshr'] = df[column+'_bshr'].between(start, end)
     
     #reduce memory footprint
     df[column+'_bshr'] = df[column+'_bshr'].astype(np.int8)
@@ -9040,6 +9151,113 @@ class AutoMunge:
     for dc in datecolumns:
 
       column_dict = { dc : {'category' : 'hldy', \
+                           'origcategory' : category, \
+                           'normalization_dict' : normalization_dict, \
+                           'origcolumn' : column, \
+                           'columnslist' : datecolumns, \
+                           'categorylist' : [dc], \
+                           'infillmodel' : False, \
+                           'infillcomplete' : False, \
+                           'deletecolumn' : False, \
+                           'downstream':[]}}
+
+      column_dict_list.append(column_dict.copy())
+
+    return df, column_dict_list
+  
+  def process_wkds_class(self, df, column, category, postprocess_dict, params = {}):
+    '''
+    #processing funciton depending on input format of datetime data 
+    #that creates a categorical column 
+    #corresponding to weekdays in source column
+    #note this is a "singleprocess" function since is applied to single dataframe
+    #defdault infill is eight days a week
+    '''
+    
+    #convert improperly formatted values to datetime in new column
+    df[column+'_wkds'] = pd.to_datetime(df[column], errors = 'coerce')
+    
+    #This is kind of hack for whole hour increments, if we were needing
+    #to evlauate hour ranges between seperate days a different metod
+    #would be required
+    #For now we'll defer to Dollly Parton
+    df[column+'_wkds'] = pd.DatetimeIndex(df[column+'_wkds']).dayofweek
+    
+#     df[column+'_wkdy'] = df[column+'_wkdy'].between(0,4)
+
+    #we'll use convention for default infill of eight days a week
+    df[column + '_wkds'] = df[column + '_wkds'].fillna(7)
+    
+    #reduce memory footprint
+    df[column+'_wkds'] = df[column+'_wkds'].astype(np.int8)
+    
+    
+    #create list of columns
+    datecolumns = [column+'_wkds']
+
+    #create normalization dictionary
+    normalization_dict = {column+'_wkds' : {}}
+
+    #store some values in the nmbr_dict{} for use later in ML infill methods
+    column_dict_list = []
+
+    for dc in datecolumns:
+
+      column_dict = { dc : {'category' : 'wkds', \
+                           'origcategory' : category, \
+                           'normalization_dict' : normalization_dict, \
+                           'origcolumn' : column, \
+                           'columnslist' : datecolumns, \
+                           'categorylist' : [dc], \
+                           'infillmodel' : False, \
+                           'infillcomplete' : False, \
+                           'deletecolumn' : False, \
+                           'downstream':[]}}
+
+      column_dict_list.append(column_dict.copy())
+
+    return df, column_dict_list
+  
+  def process_mnts_class(self, df, column, category, postprocess_dict, params = {}):
+    '''
+    #processing funciton depending on input format of datetime data 
+    #that creates a categorical column 
+    #corresponding to months in source column
+    #note this is a "singleprocess" function since is applied to single dataframe
+    #default infill is 0
+    '''
+    
+    #convert improperly formatted values to datetime in new column
+    df[column+'_mnts'] = pd.to_datetime(df[column], errors = 'coerce')
+    
+    #This is kind of hack for whole hour increments, if we were needing
+    #to evlauate hour ranges between seperate days a different metod
+    #would be required
+    #For now we'll defer to Dollly Parton
+    df[column+'_mnts'] = pd.DatetimeIndex(df[column+'_mnts']).month
+    
+#     df[column+'_wkdy'] = df[column+'_wkdy'].between(0,4)
+
+    #we'll use convention for default infill of eight days a week
+    #jan-dec is 1-12, 0 is default infill
+    df[column + '_mnts'] = df[column + '_mnts'].fillna(0)
+    
+    #reduce memory footprint
+    df[column+'_mnts'] = df[column+'_mnts'].astype(np.int8)
+    
+    
+    #create list of columns
+    datecolumns = [column+'_mnts']
+
+    #create normalization dictionary
+    normalization_dict = {column+'_mnts' : {}}
+
+    #store some values in the nmbr_dict{} for use later in ML infill methods
+    column_dict_list = []
+
+    for dc in datecolumns:
+
+      column_dict = { dc : {'category' : '_mnts', \
                            'origcategory' : category, \
                            'normalization_dict' : normalization_dict, \
                            'origcolumn' : column, \
@@ -21799,6 +22017,7 @@ class AutoMunge:
                              'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], \
                              'or11':[], 'or12':[], 'or15':[], 'or17':[], 'or19':[], 'or20':[], \
                              'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
+                             'wkds':[], 'wkdo':[], 'mnts':[], 'mnto':[], \
                              'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
                              'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
                              'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'copy':[], 'shfl':[], \
@@ -22160,18 +22379,6 @@ class AutoMunge:
           print("error, testID_column allowable values are False, string, or list")
         testID_column = testID_column + list(df_test.index.names)
         df_test = df_test.reset_index(drop=False)
-
-
-    #my understanding is it is good practice to convert any None values into NaN \
-    #so I'll just get that out of the way
-    df_train.fillna(value=float('nan'), inplace=True)
-    df_test.fillna(value=float('nan'), inplace=True)
-
-#     #we'll delete any rows from training set missing values in the labels column
-#     if labels_column != False:
-#       df_train = df_train.dropna(subset=[labels_column])
-#       if labels_column in list(df_test):
-#         df_test = df_test.dropna(subset=[labels_column])
 
 
 
@@ -23566,7 +23773,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.37'
+    automungeversion = '3.38'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -24274,6 +24481,12 @@ class AutoMunge:
     
     maximum = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['maximum']
+    
+    cap = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['cap']
+    
+    floor = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['floor']
 
     #copy original column for implementation
     mdf_test[column + '_mnmx'] = mdf_test[column].copy()
@@ -24298,8 +24511,16 @@ class AutoMunge:
     mdf_test[column + '_mnmx'] = (mdf_test[column + '_mnmx'] - minimum) / \
                                  (maxminusmin)
 
-#     #change data type for memory savings
-#     mdf_test[column + '_mnmx'] = mdf_test[column + '_mnmx'].astype(np.float32)
+    if cap is not False:
+      #replace values in test > cap with cap
+      mdf_test.loc[mdf_test[column + '_mnmx'] > (cap - minimum)/maxminusmin, (column + '_mnmx')] \
+      = (cap - minimum)/maxminusmin
+    
+    if floor is not False:
+      #replace values in test < floor with floor
+      mdf_test.loc[mdf_test[column + '_mnmx'] < (floor - minimum)/maxminusmin, (column + '_mnmx')] \
+      = (floor - minimum)/maxminusmin
+
 
     return mdf_test
 
@@ -31232,18 +31453,6 @@ class AutoMunge:
           print("error, testID_column allowable values are False, string, or list")
         testID_column = testID_column + list(df_test.index.names)
         df_test = df_test.reset_index(drop=False)
-
-
-    #my understanding is it is good practice to convert any None values into NaN \
-    #so I'll just get that out of the way
-    df_test.fillna(value=float('nan'), inplace=True)
-
-#     #we'll delete any rows from training set missing values in the labels column
-#     if labelscolumn != False:
-#   #       df_train = df_train.dropna(subset=[labelscolumn])
-#       if labelscolumn in list(df_test):
-#         df_test = df_test.dropna(subset=[labelscolumn])
-
 
 
     if labelscolumn != False:
