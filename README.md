@@ -172,6 +172,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
                          'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], \
 			 'or11':[], 'or12':[], 'or15':[], 'or17':[], 'or19':[], 'or20':[], \
 		         'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
+			 'wkds':[], 'wkdo':[], 'mnts':[], 'mnto':[], \
 		         'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
 		         'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
 		         'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'copy':[], 'shfl':[], \
@@ -393,6 +394,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
                          'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], \
 			 'or11':[], 'or12':[], 'or15':[], 'or17':[], 'or19':[], 'or20':[], \
 		         'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
+			 'wkds':[], 'wkdo':[], 'mnts':[], 'mnto':[], \
 		         'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
 		         'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
 		         'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'copy':[], 'shfl':[], \
@@ -594,6 +596,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
                          'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], \
 			 'or11':[], 'or12':[], 'or15':[], 'or17':[], 'or19':[], 'or20':[], \
 		         'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
+			 'wkds':[], 'wkdo':[], 'mnts':[], 'mnto':[], \
 		         'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
 		         'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
 		         'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'copy':[], 'shfl':[], \
@@ -935,6 +938,7 @@ such as could potentially result in memory savings.
                  'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], \
 		 'or11':[], 'or12':[], 'or15':[], 'or17':[], 'or19':[], 'or20':[], \
 		 'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
+		 'wkds':[], 'wkdo':[], 'mnts':[], 'mnto':[], \
 		 'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
 		 'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
 		 'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'copy':[], 'shfl':[], \
@@ -1666,8 +1670,10 @@ benefits but really up to the user which they prefer.
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '_mnmx'
-  - assignparam parameters accepted: none
-  - driftreport postmunge metrics: minimum / maximum / mean / std
+  - assignparam parameters accepted: 'cap' and 'floor', default to False for no floor or cap, 
+  True means floor/cap based on training set min/max, otherwise passed values serve as floor/cap to scaling, 
+  noting that if cap<max then max reset to cap and if floor>min then min reset to floor
+  - driftreport postmunge metrics: minimum / maximum / mean / std / cap / floor
 * mnm3/mnm4: min-max scaling with outliers capped at 0.01 and 0.99 quantiles
   - default infill: mean
   - default NArowtype: numeric
@@ -2014,11 +2020,23 @@ average days in a month (30.42) periodicity
   - suffix appender: '_wkdy'
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: (pending)
+* wkds/wkdo: encoded weekdays 0-6, 'wkds' for one-hot via 'text', 'wkdo' for ordinal via 'ord3'
+  - default infill: 7 (eg eight days a week)
+  - default NArowtype: datetime
+  - suffix appender: '_wkds'
+  - assignparam parameters accepted: none
+  - driftreport postmunge metrics: None
+* mnts/mnto: encoded months 1-12, 'mnts' for one-hot via 'text', 'mnto' for ordinal via 'ord3'
+  - default infill: 0
+  - default NArowtype: datetime
+  - suffix appender: '_mnts'
+  - assignparam parameters accepted: none
+  - driftreport postmunge metrics: None
 * bshr: boolean identifier indicating whether a datetime object falls within business
 hours (9-5, time zone unaware)
   - default infill: datetime
   - default NArowtype: justNaN
-  - assignparam parameters accepted: none
+  - assignparam parameters accepted: 'start' and 'end', which default to 9 and 17
   - driftreport postmunge metrics: (pending)
 * hldy: boolean identifier indicating whether a datetime object is a US Federal
 holiday
@@ -3977,6 +3995,42 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'wkds' : {'parents' : ['wkds'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : ['text'], \
+                                     'friends' : []}})
+  
+    transform_dict.update({'wkdo' : {'parents' : ['wkdo'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : ['ord3'], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'mnts' : {'parents' : ['mnts'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : ['text'], \
+                                     'friends' : []}})
+  
+    transform_dict.update({'mnto' : {'parents' : ['mnto'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : ['ord3'], \
                                      'friends' : []}})
     
     transform_dict.update({'bins' : {'parents' : [], \
