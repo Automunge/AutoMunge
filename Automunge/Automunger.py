@@ -20894,6 +20894,538 @@ class AutoMunge:
     PCAset_test = pd.DataFrame(np_PCAset_test, columns = columnnames)
 
     return PCAset_train, PCAset_test, postprocess_dict, PCActgy
+  
+  
+  def check_am_miscparameters(self, valpercent1, valpercent2, floatprecision, shuffletrain, \
+                             TrainLabelFreqLevel, powertransform, binstransform, MLinfill, \
+                             infilliterate, randomseed, LabelSmoothing_train, LabelSmoothing_test, \
+                             LabelSmoothing_val, LSfit, numbercategoryheuristic, pandasoutput, \
+                             NArw_marker, featureselection, featurepct, featuremetric, \
+                             featuremethod, Binary, PCAn_components, PCAexcl, printstatus):
+    """
+    #Performs validation to confirm valid entries of passed automunge(.) parameters
+    #Note that this function is intended specifically for non-dictionary parameters
+    #eg assigncat, assigninfill, assignparam, transformdict, processdict validated elsewhere
+    #also note that labels_column, trainID_column, testID_column are checked inside automunge function
+    #also note that df_train, df_test, evalcat parameters validation methods still pending
+    #returns a dictionary of results
+    #False is good
+    """
+    
+    miscparameters_results = {}
+    
+    #check valpercent1
+    valpercent1_valresult = False
+    if isinstance(valpercent1, (int, float)) and not isinstance(valpercent1, bool):
+      if valpercent1 < 0 or valpercent1 >= 1:
+        valpercent1_valresult = True
+        print("Error: invalid entry passed for valpercent1")
+        print("Acceptable values are numbers in range 0 <= valpercent1 < 1.")
+        print()
+    else:
+      valpercent1_valresult = True
+      print("Error: invalid entry passed for valpercent1")
+      print("Acceptable values are numbers in range 0 <= valpercent1 < 1.")
+      print()
+      
+    miscparameters_results.update({'valpercent1_valresult' : valpercent1_valresult})
+    
+    #check valpercent2
+    valpercent2_valresult = False
+    if isinstance(valpercent2, (int, float)) and not isinstance(valpercent2, bool):
+      if valpercent2 < 0 or valpercent2 >= 1:
+        valpercent2_valresult = True
+        print("Error: invalid entry passed for valpercent2")
+        print("Acceptable values are numbers in range 0 <= valpercent2 < 1")
+        print()
+    else:
+      valpercent2_valresult = True
+      print("Error: invalid entry passed for valpercent2")
+      print("Acceptable values are numbers in range 0 <= valpercent2 < 1")
+      print()
+      
+    miscparameters_results.update({'valpercent2_valresult' : valpercent2_valresult})
+    
+    #check valpercent_sum
+    valpercent_sum_valresult = False
+    if (isinstance(valpercent1, (int, float)) and not isinstance(valpercent1, bool)) \
+    and isinstance(valpercent2, (int, float)) and not isinstance(valpercent2, bool):
+      valpercent_sum = valpercent1 + valpercent2
+      if valpercent_sum >= 1.0:
+        print("Error: invalid entries passed for valpercent1 &/or valpercent2.")
+        print("Valid entries for these two paraemters are numbers subject to constraint")
+        print("valpercent1 + valpercent2 < 1.0")
+        print()
+        valpercent_sum_valresult = True
+        
+    miscparameters_results.update({'valpercent_sum_valresult' : valpercent_sum_valresult})
+    
+    #check floatprecision
+    floatprecision_valresult = False
+    if floatprecision not in [16, 32, 64]:
+      floatprecision_valresult = True
+      print("Error: invalid entry passed for floatprecision parameter.")
+      print("Acceptable values are one of {16, 32, 64}")
+      print()
+      
+    miscparameters_results.update({'floatprecision_valresult' : floatprecision_valresult})
+    
+    #check shuffletrain
+    shuffletrain_valresult = False
+    if shuffletrain not in [True, False, 'traintest']:
+      shuffletrain_valresult = True
+      print("Error: invalid entry passed for shuffletrain parameter.")
+      print("Acceptable values are one of {True, False, 'traintest'}")
+      print()
+    elif shuffletrain not in ['traintest'] \
+    and not isinstance(shuffletrain, bool):
+      shuffletrain_valresult = True
+      print("Error: invalid entry passed for shuffletrain parameter.")
+      print("Acceptable values are one of {True, False, 'traintest'}")
+      print()
+      
+    miscparameters_results.update({'shuffletrain_valresult' : shuffletrain_valresult})
+    
+    #check TrainLabelFreqLevel
+    TrainLabelFreqLevel_valresult = False
+    if TrainLabelFreqLevel not in [True, False] or not isinstance(TrainLabelFreqLevel, bool):
+      TrainLabelFreqLevel_valresult = True
+      print("Error: invalid entry passed for TrainLabelFreqLevel parameter.")
+      print("Acceptable values are one of {True, False}")
+      print()
+      
+    miscparameters_results.update({'TrainLabelFreqLevel_valresult' : TrainLabelFreqLevel_valresult})
+    
+    #check powertransform
+    powertransform_valresult = False
+    if powertransform not in [True, False, 'excl', 'exc2']:
+      powertransform_valresult = True
+      print("Error: invalid entry passed for powertransform parameter.")
+      print("Acceptable values are one of {True, False, 'excl', 'exc2'}")
+      print()
+    elif powertransform not in ['excl', 'exc2'] \
+    and not isinstance(powertransform, bool):
+      powertransform_valresult = True
+      print("Error: invalid entry passed for powertransform parameter.")
+      print("Acceptable values are one of {True, False, 'excl', 'exc2'}")
+      print()
+      
+    miscparameters_results.update({'powertransform_valresult' : powertransform_valresult})
+    
+    #check binstransform
+    binstransform_valresult = False
+    if binstransform not in [True, False] or not isinstance(binstransform, bool):
+      binstransform_valresult = True
+      print("Error: invalid entry passed for binstransform parameter.")
+      print("Acceptable values are one of {True, False}")
+      print()
+      
+    miscparameters_results.update({'binstransform_valresult' : binstransform_valresult})
+    
+    #check MLinfill
+    MLinfill_valresult = False
+    if MLinfill not in [True, False] or not isinstance(MLinfill, bool):
+      MLinfill_valresult = True
+      print("Error: invalid entry passed for MLinfill parameter.")
+      print("Acceptable values are one of {True, False}")
+      print()
+      
+    miscparameters_results.update({'MLinfill_valresult' : MLinfill_valresult})
+    
+    #check infilliterate
+    infilliterate_valresult = False
+    if not isinstance(infilliterate, (int)) \
+    or isinstance(infilliterate, bool):
+      infilliterate_valresult = True
+      print("Error: invalid entry passed for infilliterate parameter.")
+      print("Acceptable values are integers >= 0")
+      print()
+    elif infilliterate < 0:
+      infilliterate_valresult = True
+      print("Error: invalid entry passed for infilliterate parameter.")
+      print("Acceptable values are integers >= 0")
+      print()
+      
+    miscparameters_results.update({'infilliterate_valresult' : infilliterate_valresult})
+    
+    #check randomseed
+    randomseed_valresult = False
+    if not isinstance(randomseed, (int)) \
+    or isinstance(randomseed, bool):
+      randomseed_valresult = True
+      print("Error: invalid entry passed for randomseed parameter.")
+      print("Acceptable values are integers >= 0")
+      print()
+    elif randomseed < 0:
+      randomseed_valresult = True
+      print("Error: invalid entry passed for randomseed parameter.")
+      print("Acceptable values are integers >= 0")
+      print()
+      
+    miscparameters_results.update({'randomseed_valresult' : randomseed_valresult})
+    
+    #check LabelSmoothing_train
+    LabelSmoothing_train_valresult = False
+    if not isinstance(LabelSmoothing_train, (float, bool)):
+      
+      LabelSmoothing_train_valresult = True
+      print("Error: invalid entry passed for LabelSmoothing_train parameter.")
+      print("Acceptable values are floats within range 0.0 < LabelSmoothing_train < 1.0")
+      print("Or boolean value of False")
+      print()
+      
+    elif isinstance(LabelSmoothing_train, float) \
+    and (LabelSmoothing_train <= 0.0 or LabelSmoothing_train >= 1.0):
+      
+      LabelSmoothing_train_valresult = True
+      print("Error: invalid entry passed for LabelSmoothing_train parameter.")
+      print("Acceptable values are floats within range 0.0 < LabelSmoothing_train < 1.0")
+      print("Or boolean value of False")
+      print()
+      
+    elif isinstance(LabelSmoothing_train, bool) \
+    and LabelSmoothing_train != False:
+      
+      LabelSmoothing_train_valresult = True
+      print("Error: invalid entry passed for LabelSmoothing_train parameter.")
+      print("Acceptable values are floats within range 0.0 < LabelSmoothing_train < 1.0")
+      print("Or boolean value of False")
+      print()
+      
+    miscparameters_results.update({'LabelSmoothing_train_valresult' : LabelSmoothing_train_valresult})
+    
+    #check LabelSmoothing_test
+    LabelSmoothing_test_valresult = False
+    if not isinstance(LabelSmoothing_test, (float, bool)):
+      
+      LabelSmoothing_test_valresult = True
+      print("Error: invalid entry passed for LabelSmoothing_test parameter.")
+      print("Acceptable values are floats within range 0.0 < LabelSmoothing_test < 1.0")
+      print("Or boolean value.")
+      print()
+      
+    elif isinstance(LabelSmoothing_test, float) \
+    and (LabelSmoothing_test <= 0.0 or LabelSmoothing_test >= 1.0):
+      
+      LabelSmoothing_test_valresult = True
+      print("Error: invalid entry passed for LabelSmoothing_test parameter.")
+      print("Acceptable values are floats within range 0.0 < LabelSmoothing_test < 1.0")
+      print("Or boolean value.")
+      print()
+      
+    miscparameters_results.update({'LabelSmoothing_test_valresult' : LabelSmoothing_test_valresult})
+    
+    #check LabelSmoothing_val
+    LabelSmoothing_val_valresult = False
+    if not isinstance(LabelSmoothing_val, (float, bool)):
+      
+      LabelSmoothing_val_valresult = True
+      print("Error: invalid entry passed for LabelSmoothing_val parameter.")
+      print("Acceptable values are floats within range 0.0 < LabelSmoothing_val < 1.0")
+      print("Or boolean value.")
+      print()
+      
+    elif isinstance(LabelSmoothing_val, float) \
+    and (LabelSmoothing_val <= 0.0 or LabelSmoothing_val >= 1.0):
+      
+      LabelSmoothing_val_valresult = True
+      print("Error: invalid entry passed for LabelSmoothing_val parameter.")
+      print("Acceptable values are floats within range 0.0 < LabelSmoothing_val < 1.0")
+      print("Or boolean value.")
+      print()
+      
+    miscparameters_results.update({'LabelSmoothing_val_valresult' : LabelSmoothing_val_valresult})
+    
+    #check LSfit
+    LSfit_valresult = False
+    if LSfit not in [True, False] or not isinstance(LSfit, bool):
+      LSfit_valresult = True
+      print("Error: invalid entry passed for LSfit parameter.")
+      print("Acceptable values are one of {True, False}")
+      print()
+      
+    miscparameters_results.update({'LSfit_valresult' : LSfit_valresult})
+    
+    #check numbercategoryheuristic
+    numbercategoryheuristic_valresult = False
+    if not isinstance(numbercategoryheuristic, int):
+      numbercategoryheuristic_valresult = True
+      print("Error: invalid entry passed for numbercategoryheuristic parameter.")
+      print("Acceptable values are integers >= 1")
+      print()
+    elif numbercategoryheuristic < 1:
+      numbercategoryheuristic_valresult = True
+      print("Error: invalid entry passed for numbercategoryheuristic parameter.")
+      print("Acceptable values are integers >= 1")
+      print()
+      
+    #check pandasoutput
+    pandasoutput_valresult = False
+    if pandasoutput not in [True, False] or not isinstance(pandasoutput, bool):
+      pandasoutput_valresult = True
+      print("Error: invalid entry passed for pandasoutput parameter.")
+      print("Acceptable values are one of {True, False}")
+      print()
+      
+    miscparameters_results.update({'pandasoutput_valresult' : pandasoutput_valresult})
+    
+    #check NArw_marker
+    NArw_marker_valresult = False
+    if NArw_marker not in [True, False] or not isinstance(NArw_marker, bool):
+      NArw_marker_valresult = True
+      print("Error: invalid entry passed for NArw_marker parameter.")
+      print("Acceptable values are one of {True, False}")
+      print()
+      
+    miscparameters_results.update({'NArw_marker_valresult' : NArw_marker_valresult})
+    
+
+    #check featureselection
+    featureselection_valresult = False
+    if featureselection not in [True, False] or not isinstance(featureselection, bool):
+      featureselection_valresult = True
+      print("Error: invalid entry passed for featureselection parameter.")
+      print("Acceptable values are one of {True, False}")
+      print()
+      
+    miscparameters_results.update({'featureselection_valresult' : featureselection_valresult})
+    
+    #check featurepct
+    featurepct_valresult = False
+    if not isinstance(featurepct, float):
+      featurepct_valresult = True
+      print("Error: invalid entry passed for featurepct parameter.")
+      print("Acceptable values are floats within range 0.0 < featurepct < 1.0")
+      print()
+    elif (featurepct <= 0.0 or featurepct > 1.0):
+      featurepct_valresult = True
+      print("Error: invalid entry passed for featurepct parameter.")
+      print("Acceptable values are floats within range 0.0 < featurepct <= 1.0")
+      print()
+      
+    miscparameters_results.update({'featurepct_valresult' : featurepct_valresult})
+    
+    #check featuremetric
+    featuremetric_valresult = False
+    if not isinstance(featuremetric, float):
+      featuremetric_valresult = True
+      print("Error: invalid entry passed for featuremetric parameter.")
+      print("Acceptable values are floats within range 0.0 <= featuremetric < 1.0")
+      print()
+    elif (featuremetric < 0.0 or featuremetric >= 1.0):
+      featuremetric_valresult = True
+      print("Error: invalid entry passed for featuremetric parameter.")
+      print("Acceptable values are floats within range 0.0 <= featuremetric < 1.0")
+      print()
+      
+    miscparameters_results.update({'featuremetric_valresult' : featuremetric_valresult})
+    
+    #check featuremethod
+    featuremethod_valresult = False
+    if featuremethod not in ['pct', 'metric', 'default', 'report']:
+      featuremethod_valresult = True
+      print("Error: invalid entry passed for featuremethod parameter.")
+      print("Acceptable values are one of {'pct', 'metric', 'default', 'report'}")
+      print()
+      
+    miscparameters_results.update({'featuremethod_valresult' : featuremethod_valresult})
+  
+
+    #check Binary
+    Binary_valresult = False
+    if Binary not in [True, False] or not isinstance(Binary, bool):
+      Binary_valresult = True
+      print("Error: invalid entry passed for Binary parameter.")
+      print("Acceptable values are one of {True, False}")
+      print()
+      
+    miscparameters_results.update({'Binary_valresult' : Binary_valresult})
+    
+    #check PCAn_components
+    #accepts integers >1 or floats between 0-1 or None
+    PCAn_components_valresult = False
+    if (isinstance(PCAn_components, (int, float)) \
+        and not isinstance(PCAn_components, bool)) \
+    or PCAn_components == None:
+      
+      if isinstance(PCAn_components, int):
+        if PCAn_components < 1:
+          PCAn_components_valresult = True
+          print("Error: invalid entry passed for PCAn_components")
+          print("Acceptable values are integers > 1, floats between 0-1, or None.")
+          print()
+        
+      if isinstance(PCAn_components, float):
+        if (PCAn_components > 1.0 or PCAn_components < 0.0):
+          PCAn_components_valresult = True
+          print("Error: invalid entry passed for PCAn_components")
+          print("Acceptable values are integers > 1, floats between 0-1, or None.")
+          print()
+
+    else:
+      PCAn_components_valresult = True
+      print("Error: invalid entry passed for PCAn_components")
+      print("Acceptable values are integers > 1, floats between 0-1, or None.")
+      print()
+      
+    miscparameters_results.update({'PCAn_components_valresult' : PCAn_components_valresult})
+      
+    
+    #check PCAexcl
+    #defer on this one for now, this is just a list of column headers to exclude from PCA
+    #to validate owuld need to pass list of column headers to this funciton
+    
+    #check printstatus
+    printstatus_valresult = False
+    if printstatus not in [True, False] or not isinstance(printstatus, bool):
+      printstatus_valresult = True
+      print("Error: invalid entry passed for printstatus parameter.")
+      print("Acceptable values are one of {True, False}")
+      print()
+      
+    miscparameters_results.update({'printstatus_valresult' : printstatus_valresult})
+    
+    
+    return miscparameters_results
+    
+  
+  
+  def check_pm_miscparameters(self, pandasoutput, printstatus, TrainLabelFreqLevel, \
+                              featureeval, driftreport, LabelSmoothing, LSfit, \
+                              returnedsets, shuffletrain):
+    """
+    #Performs validation to confirm valid entries of passed postmunge(.) parameters
+    #note one parameter not directly passed is df_test, just pass a list of the columns
+    #returns a dictionary of results
+    #False is good
+    """
+    
+    pm_miscparameters_results = {}
+    
+    #check pandasoutput
+    pandasoutput_valresult = False
+    if pandasoutput not in [True, False] or not isinstance(pandasoutput, bool):
+      pandasoutput_valresult = True
+      print("Error: invalid entry passed for pandasoutput parameter.")
+      print("Acceptable values are one of {True, False}")
+      print()
+      
+    pm_miscparameters_results.update({'pandasoutput_valresult' : pandasoutput_valresult})
+    
+    
+    #check printstatus
+    printstatus_valresult = False
+    if printstatus not in [True, False] or not isinstance(printstatus, bool):
+      printstatus_valresult = True
+      print("Error: invalid entry passed for printstatus parameter.")
+      print("Acceptable values are one of {True, False}")
+      print()
+      
+    pm_miscparameters_results.update({'printstatus_valresult' : printstatus_valresult})
+    
+    
+    #check TrainLabelFreqLevel
+    TrainLabelFreqLevel_valresult = False
+    if TrainLabelFreqLevel not in [True, False] or not isinstance(TrainLabelFreqLevel, bool):
+      TrainLabelFreqLevel_valresult = True
+      print("Error: invalid entry passed for TrainLabelFreqLevel parameter.")
+      print("Acceptable values are one of {True, False}")
+      print()
+      
+    pm_miscparameters_results.update({'TrainLabelFreqLevel_valresult' : TrainLabelFreqLevel_valresult})
+    
+    
+    #check featureeval
+    featureeval_valresult = False
+    if featureeval not in [True, False] or not isinstance(featureeval, bool):
+      featureeval_valresult = True
+      print("Error: invalid entry passed for featureeval parameter.")
+      print("Acceptable values are one of {True, False}")
+      print()
+      
+    pm_miscparameters_results.update({'featureeval_valresult' : featureeval_valresult})
+    
+    
+    #check driftreport
+    driftreport_valresult = False
+    if driftreport not in [True, False, 'efficient', 'report_effic', 'report_full']:
+      driftreport_valresult = True
+      print("Error: invalid entry passed for driftreport parameter.")
+      print("Acceptable values are one of {True, False, 'efficient', 'report_effic', 'report_full'}")
+      print()
+    elif driftreport not in ['efficient', 'report_effic', 'report_full'] \
+    and not isinstance(driftreport, bool):
+      driftreport_valresult = True
+      print("Error: invalid entry passed for driftreport parameter.")
+      print("Acceptable values are one of {True, False, 'efficient', 'report_effic', 'report_full'}")
+      print()
+      
+    pm_miscparameters_results.update({'driftreport_valresult' : driftreport_valresult})
+    
+    
+    #check LabelSmoothing
+    LabelSmoothing_valresult = False
+    if not isinstance(LabelSmoothing, (float, bool)):
+      
+      LabelSmoothing_valresult = True
+      print("Error: invalid entry passed for LabelSmoothing parameter.")
+      print("Acceptable values are floats within range 0.0 < LabelSmoothing < 1.0")
+      print("Or boolean value.")
+      print()
+      
+    elif isinstance(LabelSmoothing, float) \
+    and (LabelSmoothing <= 0.0 or LabelSmoothing >= 1.0):
+      
+      LabelSmoothing_valresult = True
+      print("Error: invalid entry passed for LabelSmoothing parameter.")
+      print("Acceptable values are floats within range 0.0 < LabelSmoothing < 1.0")
+      print("Or boolean value.")
+      print()
+      
+    pm_miscparameters_results.update({'LabelSmoothing_valresult' : LabelSmoothing_valresult})
+    
+    
+    #check LSfit
+    LSfit_valresult = False
+    if LSfit not in [True, False] or not isinstance(LSfit, bool):
+      LSfit_valresult = True
+      print("Error: invalid entry passed for LSfit parameter.")
+      print("Acceptable values are one of {True, False}")
+      print()
+      
+    pm_miscparameters_results.update({'LSfit_valresult' : LSfit_valresult})
+    
+    
+    #check returnedsets
+    returnedsets_valresult = False
+    if returnedsets not in [True, False, 'test_ID', 'test_labels', 'test_ID_labels']:
+      returnedsets_valresult = True
+      print("Error: invalid entry passed for returnedsets parameter.")
+      print("Acceptable values are one of {True, False, 'test_ID', 'test_labels', 'test_ID_labels'}")
+      print()
+    elif returnedsets not in ['test_ID', 'test_labels', 'test_ID_labels'] \
+    and not isinstance(returnedsets, bool):
+      returnedsets_valresult = True
+      print("Error: invalid entry passed for returnedsets parameter.")
+      print("Acceptable values are one of {True, False, 'test_ID', 'test_labels', 'test_ID_labels'}")
+      print()
+      
+    pm_miscparameters_results.update({'returnedsets_valresult' : returnedsets_valresult})
+    
+    
+    #check shuffletrain
+    shuffletrain_valresult = False
+    if shuffletrain not in [True, False] or not isinstance(shuffletrain, bool):
+      shuffletrain_valresult = True
+      print("Error: invalid entry passed for shuffletrain parameter.")
+      print("Acceptable values are one of {True, False}")
+      print()
+      
+    pm_miscparameters_results.update({'shuffletrain_valresult' : shuffletrain_valresult})
+    
+    
+    return pm_miscparameters_results
+    
 
 
   def check_assigncat(self, assigncat):
@@ -20984,45 +21516,46 @@ class AutoMunge:
 
     return result
   
-  #this function needs update since we have non-category entries in family trees
-  #such as NArw to support the NArw_marker parameter, save this for later
-#   def check_assigncat3(self, assigncat, process_dict, transform_dict):
-#     """
-#     #Here's we'll do a third check on assigncat
-#     #to ensure that for any listed root categories, 
-#     #any category entries to corresponding family tree primitives in process_dict 
-#     #have a corresponding entry in the transform_dict
-#     #note that transformdict entries not required for root categories, 
-#     #unless they are also entries to a family tree
-#     """
+  
+  def check_assigncat3(self, assigncat, process_dict, transform_dict):
+    """
+    #Here's we'll do a third check on assigncat
+    #to ensure that for any listed root categories, 
+    #any category entries to corresponding family tree primitives in process_dict 
+    #have a corresponding entry in the transform_dict
+    #note that transformdict entries not required for root categories, 
+    #unless they are also entries to a family tree
+    """
     
-#     #False is good
-#     result = False
+    #False is good
+    result = False
     
-#     for assigncat_key in list(assigncat):
+    for assigncat_key in list(assigncat):
       
-#       if assigncat_key in list(transform_dict):
+      if assigncat_key in list(transform_dict):
         
-#         familytree_entries = []
+        familytree_entries = []
         
-#         for familytree_key in transform_dict[assigncat_key]:
+        for familytree_key in transform_dict[assigncat_key]:
           
-#           familytree_entries += transform_dict[assigncat_key][familytree_key]
+          familytree_entries += transform_dict[assigncat_key][familytree_key]
           
-#         for familytree_entry in familytree_entries:
+        for familytree_entry in familytree_entries:
           
-#           if familytree_entry not in list(process_dict):
-            
-#             print("Error, the following category was found as an entry")
-#             print("in a family tree without a corresponding entry ")
-#             print("in the process_dict.")
-#             print("")
-#             print("family tree entry missing process_dict entry: ", familytree_entry)
-#             print("this entry was passed in the family tree of root category: ", assigncat_key)
-            
-#             result = True
+          if familytree_entry != None:
+
+            if familytree_entry not in list(process_dict):
+
+              print("Error, the following category was found as an entry")
+              print("in a family tree without a corresponding entry ")
+              print("in the process_dict.")
+              print("")
+              print("family tree entry missing process_dict entry: ", familytree_entry)
+              print("this entry was passed in the family tree of root category: ", assigncat_key)
+
+              result = True
         
-#     return result
+    return result
 
 
 
@@ -21120,21 +21653,6 @@ class AutoMunge:
 
     return result
   
-  def check_floatprecision(self, floatprecision):
-    """
-    #Quick check to ensure float precision is valid value (16/32/64)
-    """
-    
-    result = False
-    
-    if floatprecision not in [16, 32, 64]:
-      result = True
-      
-      print("Please note an invalid floatprecision value was passed")
-      print("Acceptible floatprecision values are 16, 32, 64.")
-      print("(Default is 32.)")
-      
-    return result
   
   def check_assignparam(self, assignparam):
     """
@@ -22110,9 +22628,21 @@ class AutoMunge:
     check_ML_cmnd_result = self.check_ML_cmnd(ML_cmnd)
     check_assignparam = self.check_assignparam(assignparam)
 
-    #quick check of floatprecision
-    check_floatprecision_result = self.check_floatprecision(floatprecision)
+    #check the range of parameters 
+    #(generally speaking other than passed dictionaries, dataframes, or column identifiers)
+    miscparameters_results = \
+    self.check_am_miscparameters(valpercent1, valpercent2, floatprecision, shuffletrain, \
+                                 TrainLabelFreqLevel, powertransform, binstransform, MLinfill, \
+                                 infilliterate, randomseed, LabelSmoothing_train, LabelSmoothing_test, \
+                                 LabelSmoothing_val, LSfit, numbercategoryheuristic, pandasoutput, \
+                                 NArw_marker, featureselection, featurepct, featuremetric, \
+                                 featuremethod, Binary, PCAn_components, PCAexcl, printstatus)
 
+    miscparameters_results.update({'check_assigncat_result' : check_assigncat_result, \
+                                   'check_assigninfill_result' : check_assigninfill_result, \
+                                   'check_ML_cmnd_result' : check_ML_cmnd_result, \
+                                   'check_assignparam' : check_assignparam})
+    
   #     #if we found any redundant column assignments
   #     if result1 == True or result2 = True:
   #       return
@@ -22138,6 +22668,8 @@ class AutoMunge:
 
       check_transformdict_result = self.check_transformdict(transformdict)
 
+      miscparameters_results.update({'check_transformdict_result' : check_transformdict_result})
+      
   #       #first print a notification if we are overwriting anything
   #       for keytd in list(transformdict.keys()):
   #         #keytd = key
@@ -22181,9 +22713,12 @@ class AutoMunge:
     #here we confirm that all of the keys of assigncat have corresponding entries in process_dict
     check_assigncat_result2 = self.check_assigncat2(assigncat, transform_dict)
     
-#     #now double check that any category entries in the assigncat have populated family trees
-#     #with categories that all have entries in the transform_dict
-#     check_assigncat_result3 = self.check_assigncat3(assigncat, process_dict, transform_dict)
+    #now double check that any category entries in the assigncat have populated family trees
+    #with categories that all have entries in the transform_dict
+    check_assigncat_result3 = self.check_assigncat3(assigncat, process_dict, transform_dict)
+    
+    miscparameters_results.update({'check_assigncat_result2' : check_assigncat_result2, \
+                                   'check_assigncat_result3' : check_assigncat_result3})
 
     #move this after a few preprocessing steps on column labels such as convert to strings
 #     if bool(assignparam) != False:
@@ -23500,7 +24035,8 @@ class AutoMunge:
       currentcolumns = list(df_train)
       
       #this is to address an edge case for featuremethod == 'default'
-      if featuremethod in ['default', 'report'] or FSmodel is False:
+      if featuremethod in ['default', 'report'] or FSmodel is False \
+      or (featuremethod in ['pct'] and featurepct == 1.0):
         madethecut = currentcolumns
       
       #get list of columns to trim
@@ -23786,7 +24322,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.40'
+    automungeversion = '3.41'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -23847,6 +24383,7 @@ class AutoMunge:
                              'assignparam' : assignparam, \
                              'assign_param' : assign_param, \
                              'ML_cmnd' : ML_cmnd, \
+                             'miscparameters_results' : miscparameters_results, \
                              'printstatus' : printstatus, \
                              'automungeversion' : automungeversion, \
                              'application_number' : application_number, \
@@ -31343,12 +31880,6 @@ class AutoMunge:
     #columns to be excluded from processing.
     '''
 
-
-    #printout display progress
-    if printstatus == True:
-      print("_______________")
-      print("Begin Postmunge processing")
-      print("")
       
     indexcolumn = postprocess_dict['indexcolumn']
     testID_column_orig = testID_column
@@ -31356,7 +31887,22 @@ class AutoMunge:
     #quick conversion of any passed column idenitfiers to str
     labelscolumn = self.parameter_str_convert(labelscolumn)
     testID_column = self.parameter_str_convert(testID_column)
+    
+    #check the range of parameters 
+    #(generally speaking other than passed dictionaries, dataframes, or column identifiers)
+    pm_miscparameters_results = \
+    self.check_pm_miscparameters(pandasoutput, printstatus, TrainLabelFreqLevel, \
+                                featureeval, driftreport, LabelSmoothing, LSfit, \
+                                returnedsets, shuffletrain)
+    
 
+    #printout display progress
+    if printstatus == True:
+      print("_______________")
+      print("Begin Postmunge processing")
+      print("")
+    
+    
     #feature selection analysis performed here if elected
     if featureeval == True:
 
@@ -31381,7 +31927,8 @@ class AutoMunge:
     #initialize postreports_dict
     postreports_dict = {'featureimportance':FScolumn_dict, \
                         'finalcolumns_test':[], \
-                        'driftreport':{}}
+                        'driftreport':{}, \
+                        'pm_miscparameters_results':pm_miscparameters_results}
 
 
     #functionality to support passed numpy arrays
