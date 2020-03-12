@@ -787,8 +787,9 @@ categorical sets default to binary encoding via '1010'. This defaults to 63.
 
 * pandasoutput: a selector for format of returned sets. Defaults to False
 for returned Numpy arrays. If set to True returns pandas dataframes
-(note that index is not preserved in the train/validation split, an ID
-column may be passed for index identification).
+(note that index is not always preserved, non-integer indexes are extracted to the ID sets,
+and automunge(.) generates an application specific range integer index in ID sets 
+corresponding to the order of rows as they were passed to function).
 
 * NArw_marker: a boolean identifier (True/False) which indicates if the
 returned sets will include columns with markers for rows subject to 
@@ -806,20 +807,21 @@ size of validationratios if passed are used in this method, otherwise
 defaults to 0.33.)
 
 * featurepct: the percentage of derived sets that are kept in the output
-based on the feature importance evaluation. Note that NArw columns are
-excluded from the trimming for now (the inclusion of NArws in trimming
-will likely be included in a future expansion). This item only used if
-featuremethod passed as 'pct' (the default).
+based on the feature importance evaluation. Accepts float in the range 0-1.
+Note that NArw columns are excluded from the trimming for now (the inclusion 
+of NArws in trimming will likely be included in a future expansion). This 
+item only used if featuremethod passed as 'pct' (the default).
 
 * featuremetric: the feature importance metric below which derived sets
 are trimmed from the output. Note that this item only used if
 featuremethod passed as 'metric'.
 
-* featuremethod: can be passed as either 'pct' or 'metric' to select which
-feature importance method is used for trimming the derived sets. Or can pass
-as 'default' for ignoring the featurepct/featuremetric parameters or can 
-pass as 'report' to return the featureimportance results with no further
-processing (other returned sets are empty).
+* featuremethod: can be passed as opne of {'pct', 'metric', 'default', 
+'report'} where 'pct' or 'metric' to select which feature importance method 
+is used for trimming the derived sets as a form of dimensionality reduction. 
+Or can pass as 'default' for ignoring the featurepct/featuremetric parameters 
+or can pass as 'report' to return the featureimportance results with no further
+processing (other returned sets are empty). Defaults to 'default'.
 
 * Binary: a dimensionality reduction technique whereby the set of columns
 with binary encodings are collectively encoded with binary encoding such
@@ -829,14 +831,16 @@ may be tradeoffs associated with ability of the model to handle outliers,
 as for any new combination of boolean set in the test data the collection
 will be subject to the infill. Pass True to activate, defaults to False.
 
-* PCAn_components: a user can pass an integer to define the number of PCA
-derived features for purposes of dimensionality reduction, such integer to 
-be less than the otherwise returned number of sets. Function will default 
-to kernel PCA for all non-negative sets or otherwise Sparse PCA. Also if
-this value is passed as a float <1.0 then linear PCA will be applied such 
-that the returned number of sets are the minimum number that can reproduce
-that percent of the variance. Note this can also be passed in conjunction 
-with assigned PCA type or parameters in the ML_cmnd object.
+* PCAn_components: defaults to None for no PCA dimensionality reduction performed
+(other than based on the automatic PCA application based on ratio of columns and 
+rows - see ML_cmnd if you want to turn that off). A user can pass an integer to 
+define the number of PCA derived features for purposes of dimensionality 
+reduction, such integer to be less than the otherwise returned number of sets. 
+Function will default to kernel PCA for all non-negative sets or otherwise Sparse PCA. 
+Also if this value is passed as a float <1.0 then linear PCA will be applied such 
+that the returned number of sets are the minimum number that can reproduce that 
+percent of the variance. Note this can also be passed in conjunction with assigned 
+PCA type or parameters in the ML_cmnd object.
 
 * PCAexcl: a list of column headers for columns that are to be excluded from
 any application of PCA
@@ -1392,8 +1396,10 @@ this parameter if they are passing data with labels.
 
 * pandasoutput: a selector for format of returned sets. Defaults to False
 for returned Numpy arrays. If set to True returns pandas dataframes
-(note that index is not preserved, an ID column may be passed for index
-identification).
+(note that index is not always preserved, non-integer indexes are extracted 
+to the ID sets, and automunge(.) generates an application specific range 
+integer index in ID sets corresponding to the order of rows as they were 
+passed to function).
 
 * printstatus: user can pass True/False indicating whether the function 
 will print status of processing during operation. Defaults to True.
@@ -1467,7 +1473,7 @@ postprocess_dict['finalcolumns_trainID']
 
 * shuffletrain: can be passed as one of {True, False} which indicates if the rows in 
 the returned sets will be (consistently) shuffled. This value defaults to False. 
-...
+
 
 ## Default Transformations
 
