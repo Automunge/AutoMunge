@@ -1083,6 +1083,9 @@ Note the family primitives tree of transformations can be summarized as:
 'coworkers' :         downstream auntsuncles / offspring generations / replaces column / no offspring
 'friends' :           downstream cousins / offspring generations / supplements column / no offspring
 ```
+
+![image](https://user-images.githubusercontent.com/44011748/76485331-a2a24380-63f2-11ea-8559-08bb1c3be395.png)
+
 Note that when we define a new transform such as 'newt' above, we also need 
 to define a corresponding processdict entry for the new category, which we 
 demonstrate here:
