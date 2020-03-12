@@ -16058,6 +16058,7 @@ class AutoMunge:
     #here we'll address any columns that returned a 'excl' category
     #note this is a. singleprocess transform
     #we'll simply maintain the same column but with a suffix to the header
+    #the excl trasnform is a very special exception, and this suffix is later scrubbed
     '''
     
     
@@ -16065,21 +16066,6 @@ class AutoMunge:
     df[exclcolumn] = df[column].copy()
     #del df[column]
     
-#     df[exclcolumn] = pd.to_numeric(df[exclcolumn], errors='coerce')
-    
-#     #since this is for labels, we'll create convention that if 
-#     #number of distinct values >3 (eg bool + nan) we'll infill with mean
-#     #otherwise we'll infill with most common, kind of. arbitary
-#     #a future extension may incorporate ML infill to labels
-    
-#     if df[exclcolumn].nunique() > 3:
-#       fillvalue = df[exclcolumn].mean()
-#     else:
-#       fillvalue = df[exclcolumn].value_counts().argmax()
-    
-    
-#     #replace missing data with training set mean
-#     df[exclcolumn] = df[exclcolumn].fillna(fillvalue)
     
     column_dict_list = []
 
@@ -20954,21 +20940,21 @@ class AutoMunge:
 
     return result
   
-  def check_assigncat2(self, assigncat, process_dict):
+  def check_assigncat2(self, assigncat, transform_dict):
     """
     #Here we'll do a quick check to ensure all of the keys of passed assigncat
-    #have corresponding entries in process_dict, (which may include user
-    #passed entries in processdict parameter)
+    #have corresponding entries in transform_dict, (which may include user
+    #passed entries in transformdict parameter)
     
     #a future extension may also do a comparable check comparing assigncat to 
-    #entries of transform_dict, however note that a transform_dict entry for a
+    #entries of process_dict, however note that a process_dict entry for a
     #root category is only required when that root category is also found as
-    #an entry to a family tree primitive in the process_dict    
+    #an entry to a family tree primitive in the transform_dict    
     
     #(in other words :)
-    #All passed assigncat entries require an entry as a root category in process_dict, 
+    #All passed assigncat entries require an entry as a root category in transform_dict, 
     #but only those categories also used as entries in the family tree primitives 
-    #for a root category in process_dict require a corresponding entry in transform_dict.
+    #for a root category in transform_dict require a corresponding entry in process_dict.
     
     #Note that in many cases a root category may be passed as a family tree primitive 
     #entry to it's own family tree set. The root category is used to access the family tree,
@@ -20980,7 +20966,10 @@ class AutoMunge:
     
     for assigncat_key in list(assigncat):
       
-      if assigncat_key not in list(process_dict) and assigncat_key != 'eval':
+      #eval is a special case, it triggers the application of evalcategory
+      #which may be neccesary when automated inference turned off with powertransform
+      #so it doesn't need a process_dit entry
+      if assigncat_key not in list(transform_dict) and assigncat_key != 'eval':
         
         result = True
         
@@ -20994,6 +20983,46 @@ class AutoMunge:
         print("for a root category in process_dict require a corresponding entry in transform_dict.)")
 
     return result
+  
+  #this function needs update since we have non-category entries in family trees
+  #such as NArw to support the NArw_marker parameter, save this for later
+#   def check_assigncat3(self, assigncat, process_dict, transform_dict):
+#     """
+#     #Here's we'll do a third check on assigncat
+#     #to ensure that for any listed root categories, 
+#     #any category entries to corresponding family tree primitives in process_dict 
+#     #have a corresponding entry in the transform_dict
+#     #note that transformdict entries not required for root categories, 
+#     #unless they are also entries to a family tree
+#     """
+    
+#     #False is good
+#     result = False
+    
+#     for assigncat_key in list(assigncat):
+      
+#       if assigncat_key in list(transform_dict):
+        
+#         familytree_entries = []
+        
+#         for familytree_key in transform_dict[assigncat_key]:
+          
+#           familytree_entries += transform_dict[assigncat_key][familytree_key]
+          
+#         for familytree_entry in familytree_entries:
+          
+#           if familytree_entry not in list(process_dict):
+            
+#             print("Error, the following category was found as an entry")
+#             print("in a family tree without a corresponding entry ")
+#             print("in the process_dict.")
+#             print("")
+#             print("family tree entry missing process_dict entry: ", familytree_entry)
+#             print("this entry was passed in the family tree of root category: ", assigncat_key)
+            
+#             result = True
+        
+#     return result
 
 
 
@@ -21059,13 +21088,13 @@ class AutoMunge:
         
         result = True
         
-        print("Please note a category was defined in the user passed transformdict")
-        print("without at least one replacement primitive for the source column.")
-        print("root category = ", transformkey)
-        print("Added auntsuncles primitive 'excl' to pass the original column unaltered.")
-        print("Please note ML infill or feature importance evaluation require all")
-        print("columns numerically encoded.")
-        print("")
+#         print("Please note a category was defined in the user passed transformdict")
+#         print("without at least one replacement primitive for the source column.")
+#         print("root category = ", transformkey)
+#         print("Added auntsuncles primitive 'excl' to pass the original column unaltered.")
+#         print("Please note ML infill or feature importance evaluation require all")
+#         print("columns numerically encoded.")
+#         print("")
 
 
     return result
@@ -22150,7 +22179,11 @@ class AutoMunge:
       process_dict.update(processdict)
       
     #here we confirm that all of the keys of assigncat have corresponding entries in process_dict
-    check_assigncat_result2 = self.check_assigncat2(assigncat, process_dict)
+    check_assigncat_result2 = self.check_assigncat2(assigncat, transform_dict)
+    
+#     #now double check that any category entries in the assigncat have populated family trees
+#     #with categories that all have entries in the transform_dict
+#     check_assigncat_result3 = self.check_assigncat3(assigncat, process_dict, transform_dict)
 
     #move this after a few preprocessing steps on column labels such as convert to strings
 #     if bool(assignparam) != False:
@@ -23753,7 +23786,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.39'
+    automungeversion = '3.40'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
