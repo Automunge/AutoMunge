@@ -222,6 +222,7 @@ am.postmunge(postprocess_dict, df_test, testID_column = False, \
 
 The functions depend on pandas dataframe formatted train and test data
 or numpy arrays with consistent order of columns between train and test data. 
+(For numpy arrays any label column should be incdluded as final column in set.)
 The functions return numpy arrays or pandas dataframes numerically encoded 
 and normalized such as to make them suitable for direct application to a 
 machine learning model in the framework of a user's choice, including sets for 
@@ -449,7 +450,14 @@ train set dataframe, the other arguments all have default values if
 nothing is passed. The postmunge function requires as minimum the
 postprocess_dict object (a python dictionary returned from the application of
 automunge) and a dataframe test set consistently formatted as those sets
-that were originally applied to automunge.
+that were originally applied to automunge. 
+
+Note that there is a potential source of error if the returned column header 
+title strings, which will include suffix appenders based on transformations applied, 
+match any of the original column header titles passed to automunge. This is an edge 
+case not expected to occur in common practice and will return error message at 
+conclusion of printouts.
+
 
 ...
 
@@ -619,7 +627,8 @@ such as an index column) and zero or one column intended to be used as labels
 for a downstream training operation. The tool supports the inclusion of 
 non-index-range column as index or multicolumn index (requires named index 
 columns). Such index types are added to the returned "ID" sets which are 
-consistently shuffled and partitioned as the train and test sets. 
+consistently shuffled and partitioned as the train and test sets. For passed
+numpy array any label column should be the final column.
 
 * df_test: a pandas dataframe or numpy array containing a structured 
 dataset intended for use to generate predictions from a downstream machine 
@@ -638,9 +647,9 @@ test sets.
 df_train set intended for use as labels in training a downstream machine
 learning model. The function defaults to False for cases where the
 training set does not include a label column. An integer column index may 
-also be passed such as if the source dataset was numpy array. If the df_train
-set passed to automunge is a single column intended for a label set, a user
-can pass True here instead of the column name.
+also be passed such as if the source dataset was numpy array. A user can 
+also pass True in which case the label set will be taken from the final
+column of the train set (including cases of single column in train set).
 
 * trainID_column: a string of the column title for the column from the
 df_train set intended for use as a row identifier value (such as could
