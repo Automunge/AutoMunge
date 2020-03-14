@@ -1674,7 +1674,13 @@ infill.
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '_nmbr'
-  - assignparam parameters accepted: none
+  - assignparam parameters accepted:  
+    - 'cap' and 'floor', default to False for no floor or cap, 
+      True means floor/cap based on training set min/max, otherwise passed values serve as floor/cap to scaling, 
+      noting that if cap<max then max reset to cap and if floor>min then min reset to floor
+      cap and floor based on pre-transform values
+    - 'muilitplier' and 'offset' to apply multiplier and offset to posttransform values, default to 1,0,
+      note that multiplier is applied prior to offset
   - driftreport postmunge metrics: mean / std / max / min
 * mean/mea2/mea3: mean normalization (like z-score in the numerator and min-max in the denominator)<br/>
 (x - mean) / (max - mean)
@@ -1693,6 +1699,7 @@ benefits but really up to the user which they prefer.
   - assignparam parameters accepted: 'cap' and 'floor', default to False for no floor or cap, 
   True means floor/cap based on training set min/max, otherwise passed values serve as floor/cap to scaling, 
   noting that if cap<max then max reset to cap and if floor>min then min reset to floor
+  cap and floor based on pre-transform values
   - driftreport postmunge metrics: minimum / maximum / mean / std / cap / floor
 * mnm3/mnm4: min-max scaling with outliers capped at 0.01 and 0.99 quantiles
   - default infill: mean
@@ -1712,7 +1719,15 @@ if max>0 and min<0, x=x/(max-min), else x=(x-min)/(max-min)
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '_retn'
-  - assignparam parameters accepted: none
+  - assignparam parameters accepted:  
+    - 'cap' and 'floor', default to False for no floor or cap, 
+      True means floor/cap based on training set min/max, otherwise passed values serve as floor/cap to scaling, 
+      noting that if cap<max then max reset to cap and if floor>min then min reset to floor
+      cap and floor based on pre-transform values
+    - 'muilitplier' and 'offset' to apply multiplier and offset to posttransform values, default to 1,0,
+      note that multiplier is applied prior to offset
+    - 'divisor' to select between default of 'minmax' or 'std', where minmax means scaling by divisor of max-min
+	std based on scaling by divisor of standard deviation
   - driftreport postmunge metrics: minimum / maximum / mean / std
 * MADn/MAD2: mean absolute deviation normalization, subtract set mean <br/>
 (x - mean) / (mean absolute deviation)
