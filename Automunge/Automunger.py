@@ -4150,6 +4150,27 @@ class AutoMunge:
     #if only have training but not test data handy, use same training data for both dataframe inputs
     '''
     
+    #initialize parameters
+    if 'offset' in params:
+      offset = params['offset']
+    else:
+      offset = 0
+      
+    if 'multiplier' in params:
+      multiplier = params['multiplier']
+    else:
+      multiplier = 1
+    
+    if 'cap' in params:
+      cap = params['cap']
+    else:
+      cap = False
+      
+    if 'floor' in params:
+      floor = params['floor']
+    else:
+      floor = False
+    
     #copy source column into new column
     mdf_train[column + '_nmbr'] = mdf_train[column].copy()
     mdf_test[column + '_nmbr'] = mdf_test[column].copy()
@@ -4163,6 +4184,36 @@ class AutoMunge:
     maximum = mdf_train[column + '_nmbr'].max()
     #get minimum value of training column
     minimum = mdf_train[column + '_nmbr'].min()
+    
+    #if cap < maximum, maximum = cap
+    if cap is not False and cap is not True:
+      if cap < maximum:
+        maximum = cap
+    if floor is not False and floor is not True:
+      if floor > minimum:
+        minimum = floor
+        
+    #cap and floor application
+    if cap is True:
+      cap = maximum
+    if floor is True:
+      floor = minimum
+      
+    if cap is not False:
+      #replace values in test > cap with cap
+      mdf_train.loc[mdf_train[column + '_nmbr'] > cap, (column + '_nmbr')] \
+      = cap
+      
+      mdf_test.loc[mdf_test[column + '_nmbr'] > cap, (column + '_nmbr')] \
+      = cap
+    
+    if floor is not False:
+      #replace values in test < floor with floor
+      mdf_train.loc[mdf_train[column + '_nmbr'] < floor, (column + '_nmbr')] \
+      = floor
+      
+      mdf_test.loc[mdf_test[column + '_nmbr'] < floor, (column + '_nmbr')] \
+      = floor
 
     #get mean of training data
     mean = mdf_train[column + '_nmbr'].mean()
@@ -4185,8 +4236,9 @@ class AutoMunge:
       std = 1
 
     #divide column values by std for both training and test data
-    mdf_train[column + '_nmbr'] = mdf_train[column + '_nmbr'] / std
-    mdf_test[column + '_nmbr'] = mdf_test[column + '_nmbr'] / std
+    #offset, multiplier are parameters that defaults to zero, one
+    mdf_train[column + '_nmbr'] = mdf_train[column + '_nmbr'] / std * multiplier + offset
+    mdf_test[column + '_nmbr'] = mdf_test[column + '_nmbr'] / std * multiplier + offset
     
 #     #change data type for memory savings
 #     mdf_train[column + '_nmbr'] = mdf_train[column + '_nmbr'].astype(np.float32)
@@ -4198,7 +4250,9 @@ class AutoMunge:
 
 
     nmbrnormalization_dict = {column + '_nmbr' : {'mean' : mean, 'std' : std, \
-                                                  'max' : maximum, 'min' : minimum}}
+                                                  'max' : maximum, 'min' : minimum, \
+                                                  'offset' : offset, 'multiplier': multiplier, \
+                                                  'cap' : cap, 'floor' : floor}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -4220,6 +4274,7 @@ class AutoMunge:
 
         
     return mdf_train, mdf_test, column_dict_list
+  
   
   def process_dxdt_class(self, df, column, category, postprocess_dict, params = {}):
     '''
@@ -4938,7 +4993,6 @@ class AutoMunge:
     return mdf_train, mdf_test, column_dict_list
   
   
-
   def process_retn_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
     """
     #process_retn_class(mdf_train, mdf_test, column, category)
@@ -4960,6 +5014,35 @@ class AutoMunge:
     #note this is a "dualprocess" function since is applied to both dataframes
     """
     
+    #initialize parameters
+    
+    #accepts divisor parameters of 'minmax' or 'std'
+    if 'divisor' in params:
+      divisor = params['divisor']
+    else:
+      divisor = 'minmax'
+    
+    if 'offset' in params:
+      offset = params['offset']
+    else:
+      offset = 0
+      
+    if 'multiplier' in params:
+      multiplier = params['multiplier']
+    else:
+      multiplier = False
+    
+    if 'cap' in params:
+      cap = params['cap']
+    else:
+      cap = False
+      
+    if 'floor' in params:
+      floor = params['floor']
+    else:
+      floor = False
+    
+    
     #copy source column into new column
     mdf_train[column + '_retn'] = mdf_train[column].copy()
     mdf_test[column + '_retn'] = mdf_test[column].copy()
@@ -4971,15 +5054,6 @@ class AutoMunge:
     #a few more metrics collected for driftreport
     #get standard deviation of training data
     std = mdf_train[column + '_retn'].std()
-
-    #get mean of training data
-    mean = mdf_train[column + '_retn'].mean()    
-
-    #replace missing data with training set mean
-    if mean != mean:
-      mean = 0
-    mdf_train[column + '_retn'] = mdf_train[column + '_retn'].fillna(mean)
-    mdf_test[column + '_retn'] = mdf_test[column + '_retn'].fillna(mean)
     
     #get maximum value of training column
     maximum = mdf_train[column + '_retn'].max()
@@ -4989,18 +5063,70 @@ class AutoMunge:
     
     #avoid outlier div by zero when max = min
     maxminusmin = maximum - minimum
-    if maxminusmin == 0:
+    if maxminusmin == 0 or maxminusmin != maxminusmin:
       maxminusmin = 1
+      
+    if std != std or std == 0:
+      std = 1
+      
+    #if cap < maximum, maximum = cap
+    if cap is not False and cap is not True:
+      if cap < maximum:
+        maximum = cap
+    if floor is not False and floor is not True:
+      if floor > minimum:
+        minimum = floor
+        
+    #cap and floor application
+    if cap is True:
+      cap = maximum
+    if floor is True:
+      floor = minimum
+      
+    if cap is not False:
+      #replace values in test > cap with cap
+      mdf_train.loc[mdf_train[column + '_retn'] > cap, (column + '_retn')] \
+      = cap
+      
+      mdf_test.loc[mdf_test[column + '_retn'] > cap, (column + '_retn')] \
+      = cap
+    
+    if floor is not False:
+      #replace values in test < floor with floor
+      mdf_train.loc[mdf_train[column + '_retn'] < floor, (column + '_retn')] \
+      = floor
+      
+      mdf_test.loc[mdf_test[column + '_retn'] < floor, (column + '_retn')] \
+      = floor
+      
+    #get mean of training data
+    mean = mdf_train[column + '_retn'].mean()    
+
+    #replace missing data with training set mean
+    if mean != mean:
+      mean = 0
+    mdf_train[column + '_retn'] = mdf_train[column + '_retn'].fillna(mean)
+    mdf_test[column + '_retn'] = mdf_test[column + '_retn'].fillna(mean)
+
+    
+    #divisor
+    if divisor not in ['minmax', 'std']:
+      print("Error: retn transform parameter 'divisor' only accepts entries of 'minmax' or 'std'")
+    if divisor == 'minmax':
+      divisor = maxminusmin
+    else:
+      divisor = std
+    
     
     #driftreport metric scalingapproach returned as 'retn' or 'mnmx'
     
     if maximum > 0 and minimum < 0:
       
       mdf_train[column + '_retn'] = (mdf_train[column + '_retn']) / \
-                                    (maxminusmin)
+                                    (divisor) * multiplier + offset
       
       mdf_test[column + '_retn'] = (mdf_test[column + '_retn']) / \
-                                    (maxminusmin)
+                                    (divisor) * multiplier + offset
       
       scalingapproach = 'retn'
       
@@ -5008,10 +5134,10 @@ class AutoMunge:
     
       #perform min-max scaling to train and test sets using values from train
       mdf_train[column + '_retn'] = (mdf_train[column + '_retn'] - minimum) / \
-                                    (maxminusmin)
+                                    (divisor) * multiplier + offset
 
       mdf_test[column + '_retn'] = (mdf_test[column + '_retn'] - minimum) / \
-                                   (maxminusmin)
+                                   (divisor) * multiplier + offset
       
       scalingapproach = 'mnmx'
     
@@ -5023,7 +5149,12 @@ class AutoMunge:
                                                   'maximum' : maximum, \
                                                   'mean' : mean, \
                                                   'std' : std, \
-                                                  'scalingapproach' : scalingapproach}}
+                                                  'scalingapproach' : scalingapproach, \
+                                                  'offset' : offset, \
+                                                  'multiplier': multiplier, \
+                                                  'cap' : cap, \
+                                                  'floor' : floor, \
+                                                  'divisor' : divisor }}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -24368,7 +24499,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.43'
+    automungeversion = '3.44'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -24934,6 +25065,15 @@ class AutoMunge:
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
     std = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['std']
+    offset = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['offset']
+    multiplier = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['multiplier']
+    cap = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['cap']
+    floor = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['floor']
+    
 
     #copy original column for implementation
     mdf_test[column + '_nmbr'] = mdf_test[column].copy()
@@ -24944,6 +25084,16 @@ class AutoMunge:
 
     #get mean of training data
     mean = mean  
+    
+    if cap is not False:
+      #replace values in test > cap with cap
+      mdf_test.loc[mdf_test[column + '_nmbr'] > cap, (column + '_nmbr')] \
+      = cap
+    
+    if floor is not False:
+      #replace values in test < floor with floor
+      mdf_test.loc[mdf_test[column + '_nmbr'] < floor, (column + '_nmbr')] \
+      = floor
 
     #replace missing data with training set mean
     mdf_test[column + '_nmbr'] = mdf_test[column + '_nmbr'].fillna(mean)
@@ -24955,7 +25105,8 @@ class AutoMunge:
     std = std
 
     #divide column values by std
-    mdf_test[column + '_nmbr'] = mdf_test[column + '_nmbr'] / std
+    #offset, multiplier are parameters that defaults to zero, one
+    mdf_test[column + '_nmbr'] = mdf_test[column + '_nmbr'] / std * multiplier + offset
 
 #     #change data type for memory savings
 #     mdf_test[column + '_nmbr'] = mdf_test[column + '_nmbr'].astype(np.float32)
@@ -25289,15 +25440,22 @@ class AutoMunge:
     
     mean = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
-    
     minimum = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['minimum']
-    
     maximum = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['maximum']
-    
     scalingapproach = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['scalingapproach']
+    offset = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['offset']
+    multiplier = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['multiplier']
+    cap = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['cap']
+    floor = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['floor']
+    divisor = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['divisor']
 
     
     #copy original column for implementation
@@ -25307,6 +25465,18 @@ class AutoMunge:
     #convert all values to either numeric or NaN
     mdf_test[column + '_retn'] = pd.to_numeric(mdf_test[column + '_retn'], errors='coerce')
 
+    
+    if cap is not False:
+      #replace values in test > cap with cap
+      mdf_test.loc[mdf_test[column + '_retn'] > cap, (column + '_retn')] \
+      = cap
+    
+    if floor is not False:
+      #replace values in test < floor with floor
+      mdf_test.loc[mdf_test[column + '_retn'] < floor, (column + '_retn')] \
+      = floor
+    
+    
     #get mean of training data
     mean = mean  
 
@@ -25323,13 +25493,13 @@ class AutoMunge:
     if scalingapproach == 'retn':
       
       mdf_test[column + '_retn'] = (mdf_test[column + '_retn']) / \
-                                    (maxminusmin)
+                                    (divisor) * multiplier + offset
       
     elif scalingapproach == 'mnmx':
     
       #perform min-max scaling to test set using values from train
       mdf_test[column + '_retn'] = (mdf_test[column + '_retn'] - minimum) / \
-                                   (maxminusmin)
+                                   (divisor) * multiplier + offset
 
 
     return mdf_test
