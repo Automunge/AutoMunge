@@ -23313,7 +23313,34 @@ class AutoMunge:
           df_train, df_test, postprocess_dict = \
           self.processfamily(df_train, df_test, column, category, category, process_dict, \
                             transform_dict, postprocess_dict, assign_param)
-
+          
+          #this is the validation to ensure no overlap error
+          templist3 = list(df_train)
+          overlapkeylist = list(set(templist3) - set(templist1))
+          if len(set(overlapkeylist) & set(columns_train)) > 0:
+            print("*****************")
+            print("Warning of potential error")
+            print("The set of columns returned from transformations applied to column ", column)
+            print("Has an overlap with column headers for those columns originally passed to automunge(.):")
+            print(set(overlapkeylist) & set(columns_train))
+            print("")
+            print("Some potential quick fixes for this error include:")
+            print("- rename columns to integers before passing to automunge(.)")
+            print("- strip underscores '_' from column header titles (convention is all suffix appenders include an underscore)")
+            print("")
+            print("Please note any updates to column headers will need to be carried through to assignment parameters.")
+            print("*****************")
+            print("")
+            
+            miscparameters_results['columnoverlap_valresults'].update({column : {'result' : True, \
+                                                                                 'overlap' : set(overlapkeylist) & set(columns_train)}})
+            
+          else:
+            
+            miscparameters_results['columnoverlap_valresults'].update({column : {'result' : False, \
+                                                                                 'overlap' : set()}})
+          
+          
           #now delete columns that were subject to replacement
           df_train, df_test, postprocess_dict = \
           self.circleoflife(df_train, df_test, column, category, category, process_dict, \
@@ -23354,30 +23381,6 @@ class AutoMunge:
           postprocess_dict['origcolumn'].update({column : {'category' : category, \
                                                            'columnkeylist' : columnkeylist, \
                                                            'columnkey' : columnkey}})
-          
-          if len(set(columnkeylist) & set(columns_train)) > 0:
-            print("*****************")
-            print("Warning of potential error")
-            print("The set of columns returned from transformations applied to column ", column)
-            print("Has an overlap with column headers for those columns originally passed to automunge(.):")
-            print(set(columnkeylist) & set(columns_train))
-            print("")
-            print("Some potential quick fixes for this error include:")
-            print("- rename columns to integers before passing to automunge(.)")
-            print("- strip underscores '_' from column header titles (convention is all suffix appenders include an underscore)")
-            print("")
-            print("Please note any updates to column headers will need to be carried through to assignment parameters.")
-            print("*****************")
-            print("")
-            
-            miscparameters_results['columnoverlap_valresults'].update({column : {'result' : True, \
-                                                                                 'overlap' : set(columnkeylist) & set(columns_train)}})
-            
-          else:
-            
-            miscparameters_results['columnoverlap_valresults'].update({column : {'result' : False, \
-                                                                                 'overlap' : set()}})
-          
           
 #           for newcolumn in postprocess_dict['origcolumn'][column]['columnkeylist']:
 #             postprocess_dict['newcolumn'].update({newcolumn : {'origcolumn' : column}})
@@ -23483,7 +23486,34 @@ class AutoMunge:
       df_labels, df_testlabels, postprocess_dict = \
       self.processfamily(df_labels, df_testlabels, labels_column, labelscategory, labelscategory, \
                         labelsprocess_dict, labelstransform_dict, postprocess_dict, assign_param)
+      
+      #this is the validation to ensure no overlap error
+      templist3 = list(df_labels)
+      overlapkeylist = list(set(templist3) - set(templist1))
+      if len(set(overlapkeylist) & set([labels_column])) > 0:
+        print("*****************")
+        print("Warning of potential error")
+        print("The set of columns returned from transformations applied to label column ", labels_column)
+        print("Has an overlap with column headers for those columns originally passed to automunge(.):")
+        print(set(overlapkeylist) & set([labels_column]))
+        print("")
+        print("Some potential quick fixes for this error include:")
+        print("- rename columns to integers before passing to automunge(.)")
+        print("- strip underscores '_' from column header titles (convention is all suffix appenders include an underscore)")
+        print("")
+        print("Please note any updates to column headers will need to be carried through to assignment parameters.")
+        print("*****************")
+        print("")
 
+        miscparameters_results['columnoverlap_valresults'].update({column : {'result' : True, \
+                                                                             'overlap' : set(overlapkeylist) & set([labels_column])}})
+
+      else:
+
+        miscparameters_results['columnoverlap_valresults'].update({column : {'result' : False, \
+                                                                             'overlap' : set()}})
+      
+      
       #now delete columns subject to replacement
       df_labels, df_testlabels, postprocess_dict = \
       self.circleoflife(df_labels, df_testlabels, labels_column, labelscategory, labelscategory, \
@@ -23530,30 +23560,6 @@ class AutoMunge:
       postprocess_dict['origcolumn'].update({labels_column : {'category' : labelscategory, \
                                                               'columnkeylist' : finalcolumns_labels, \
                                                               'columnkey' : columnkey}})
-      
-      #this isn't really a risk since only one labels_column, but including to include the miscparameters_results update
-      if len(set(finalcolumns_labels) & set([labels_column])) > 0:
-        print("*****************")
-        print("Warning of potential error")
-        print("The set of columns returned from transformations applied to label column ", labels_column)
-        print("Has an overlap with column headers for those columns originally passed to automunge(.):")
-        print(set(finalcolumns_labels) & set([labels_column]))
-        print("")
-        print("Some potential quick fixes for this error include:")
-        print("- rename columns to integers before passing to automunge(.)")
-        print("- strip underscores '_' from column header titles (convention is all suffix appenders include an underscore)")
-        print("")
-        print("Please note any updates to column headers will need to be carried through to assignment parameters.")
-        print("*****************")
-        print("")
-
-        miscparameters_results['columnoverlap_valresults'].update({labels_column : {'result' : True, \
-                                                                                    'overlap' : set(finalcolumns_labels) & set([labels_column])}})
-
-      else:
-
-        miscparameters_results['columnoverlap_valresults'].update({labels_column : {'result' : False, \
-                                                                                    'overlap' : set()}})
       
       #labelsencoding_dict is returned from automunge(.) and supports the reverse encoding of labels after predictions
       labelsencoding_dict[labelscategory] = labelsnormalization_dict
@@ -24362,7 +24368,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.42'
+    automungeversion = '3.43'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
