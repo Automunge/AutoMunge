@@ -1874,7 +1874,7 @@ bins default to width of 1/1000/1000000 eg for bnwd/bnwK/bnwM
 bin count defaults to 5/7/9 eg for bnep/bne7/bne9
   - default infill: no activation
   - default NArowtype: numeric
-  - suffix appender: '_bnep_#1' where #1 is the bin identifier (# from min) (or bne7/bne9)
+  - suffix appender: '_bnep_#1' where #1 is the bin identifier (# from min) (or bne7/bne9 instead of bnep)
   - assignparam parameters accepted: 'bincount' to set number of bins
   - driftreport postmunge metrics: binsmean / bn_min / bn_max / bn_delta / bn_count / bins_id / 
 			           bins_cuts / bincount / textcolumns / <column> + '_ratio' (column specific)
@@ -2079,7 +2079,8 @@ holiday
   - default infill: none
   - default NArowtype: datetime
   - suffix appender: '_hldy'
-  - assignparam parameters accepted: none
+  - assignparam parameters accepted: 'holiday_list', should be passed as a list of strings
+    of dates of additional holdays to be recognized e.g. ['2020/03/30']
   - driftreport postmunge metrics: (pending)
 ### Misc. Functions
 * null: deletes source column
@@ -2273,10 +2274,10 @@ that any user passing a custom defined transformation can avoid any unintentiona
 - '\_bkt4_' + i (where i is identifier of bin)
 - '_bn7o'
 - '_bn9o'
-- '\_bne7__' + i (where i is identifier of bin)
-- '\_bne9__' + i (where i is identifier of bin)
+- '\_bne7_' + i (where i is identifier of bin)
+- '\_bne9_' + i (where i is identifier of bin)
 - '_bneo'
-- '\_bnep__' + i (where i is identifier of bin)
+- '\_bnep_' + i (where i is identifier of bin)
 - '_bnKo'
 - '_bnMo'
 - '_bnr2'
