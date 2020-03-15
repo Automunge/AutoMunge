@@ -546,7 +546,9 @@ value provides an indication of the importance of the original source
 column such that larger value suggests greater importance, and the metric2 
 value provides an indication of the relative importance of columns derived
 from the original source column such that smaller metric2 value suggests 
-greater relative importance. One can print the values here such as with
+greater relative importance. Please note that in cases of multi-column 
+categorical encodings, metric2 has more validity for one-hot encoded sets
+than binary encoded sets. One can print the values here such as with
 this code:
 
 ```
@@ -557,7 +559,8 @@ for keys,values in featureimportance.items():
     print('metric2 = ', values['metric2'])
     print()
 ```
-
+Note that additional feature importance results are available in
+postprocess_dict['FS_sorted'].
 
 * postprocess_dict: a returned python dictionary that includes
 normalization parameters and trained machine learning models used to
