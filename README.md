@@ -2252,7 +2252,7 @@ that any user passing a custom defined transformation can avoid any unintentiona
 
 - '_-10^' + i (where i is an integer coresponding to the source number power of ten)
 - '_10^' + i (where i is an integer coresponding to the source number power of ten)
-- '_1010_' + i (where i is an integer coresponding to the ith digit of the binary encoding)
+- '\_1010_' + i (where i is an integer coresponding to the ith digit of the binary encoding)
 - '_absl'
 - '_addd'
 - '_bins_s-10'
@@ -2267,23 +2267,23 @@ that any user passing a custom defined transformation can avoid any unintentiona
 - '_bint_t+12'
 - '_bint_t<-2'
 - '_bint_t>+2'
-- '_bkt1_' + i (where i is identifier of bin)
-- '_bkt2_' + i (where i is identifier of bin)
-- '_bkt3_' + i (where i is identifier of bin)
-- '_bkt4_' + i (where i is identifier of bin)
+- '\_bkt1_' + i (where i is identifier of bin)
+- '\_bkt2_' + i (where i is identifier of bin)
+- '\_bkt3_' + i (where i is identifier of bin)
+- '\_bkt4_' + i (where i is identifier of bin)
 - '_bn7o'
 - '_bn9o'
-- '_bne7__' + i (where i is identifier of bin)
-- '_bne9__' + i (where i is identifier of bin)
+- '\_bne7__' + i (where i is identifier of bin)
+- '\_bne9__' + i (where i is identifier of bin)
 - '_bneo'
-- '_bnep__' + i (where i is identifier of bin)
+- '\_bnep__' + i (where i is identifier of bin)
 - '_bnKo'
 - '_bnMo'
 - '_bnr2'
 - '_bnry'
-- '_bnwd_' + i + '_' + j (where i is bin width and j is identifier of bin)
-- '_bnwK_' + i + '_' + j (where i is bin width and j is identifier of bin)
-- '_bnwM_' + i + '_' + j (where i is bin width and j is identifier of bin)
+- '\_bnwd_' + i + '_' + j (where i is bin width and j is identifier of bin)
+- '\_bnwK_' + i + '_' + j (where i is bin width and j is identifier of bin)
+- '\_bnwM_' + i + '_' + j (where i is bin width and j is identifier of bin)
 - '_bnwo'
 - '_bshr'
 - '_bsor'
@@ -2348,11 +2348,11 @@ that any user passing a custom defined transformation can avoid any unintentiona
 - '_spl2'
 - '_spl5'
 - '_spl7'
-- '_spl8_' + string (where string is an identified overlap of characters between categorical entries)
+- '\_spl8_' + string (where string is an identified overlap of characters between categorical entries)
 - '_spl9'
-- '_splt_' + string (where string is an identified overlap of characters between categorical entries)
+- '\_splt_' + string (where string is an identified overlap of characters between categorical entries)
 - '_sqrt'
-- '_text_' + string (where string is a categorical entry in one-hot encoded set)
+- '\_text_' + string (where string is a categorical entry in one-hot encoded set)
 - '_UPCS'
 - '_wkds'
 - '_wkdy'
