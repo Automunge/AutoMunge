@@ -2360,7 +2360,7 @@ that any user passing a custom defined transformation can avoid any unintentiona
 
  ___ 
 ### Root Category Family Tree Definitions
-And here are the of family tree definitions for root categories currently built into the internal 
+And here are the family tree definitions for root categories currently built into the internal 
 library. Basically providing this as a reference, not really expecting anyone to read this line 
 by line or anything. (Note that the NArw transformation without quotation marks (eg NArw 
 vs 'NArw') will not be activated if user passes the automunge(.) parameter as NArw_marker=False.)
