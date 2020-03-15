@@ -9234,6 +9234,7 @@ class AutoMunge:
 
 
 
+
   def process_hldy_class(self, df, column, category, postprocess_dict, params = {}):
     '''
     #processing funciton depending on input format of datetime data 
@@ -9242,11 +9243,36 @@ class AutoMunge:
     #note this is a "singleprocess" function since is applied to single dataframe
     '''
     
+    #initialize parameters
+    if 'holiday_list' in params:
+      holiday_list = params['holiday_list']
+    else:
+      holiday_list = []
+    
+    if len(holiday_list) > 0:
+    
+      #reformat holiday_list
+      holiday_list = pd.to_datetime(pd.DataFrame(holiday_list)[0], errors = 'coerce')
+
+      #reform holiday_list again
+      timestamp_list = []
+
+      for row in range(holiday_list.shape[0]):
+        timestamp = pd.Timestamp(holiday_list[row])
+        timestamp_list += [timestamp]
+      timestamp_list
+      
+    else:
+      timestamp_list = []
+    
+    
     #convert improperly formatted values to datetime in new column
     df[column+'_hldy'] = pd.to_datetime(df[column], errors = 'coerce')
     
     #grab list of holidays from import
-    holidays = USFederalHolidayCalendar().holidays()
+    holidays = USFederalHolidayCalendar().holidays().tolist()
+
+    holidays += timestamp_list
     
     #activate boolean identifier for holidays
     df[column+'_hldy'] = df[column+'_hldy'].isin(holidays)
@@ -9279,6 +9305,7 @@ class AutoMunge:
       column_dict_list.append(column_dict.copy())
 
     return df, column_dict_list
+  
   
   def process_wkds_class(self, df, column, category, postprocess_dict, params = {}):
     '''
@@ -14569,7 +14596,7 @@ class AutoMunge:
 
       bins_id = []
       for i in range(bn_count):
-        bins_id.append('_' + str(i))
+        bins_id.append(str(i))
 
       bins_cuts = cutintervals
 
@@ -14771,7 +14798,7 @@ class AutoMunge:
 
       bins_id = []
       for i in range(bn_count):
-        bins_id.append('_' + str(i))
+        bins_id.append(str(i))
 
       bins_cuts = cutintervals
 
@@ -14972,7 +14999,7 @@ class AutoMunge:
 
       bins_id = []
       for i in range(bn_count):
-        bins_id.append('_' + str(i))
+        bins_id.append(str(i))
 
       bins_cuts = cutintervals
 
@@ -24499,7 +24526,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.44'
+    automungeversion = '3.45'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
