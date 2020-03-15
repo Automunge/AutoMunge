@@ -1600,6 +1600,7 @@ columns in assigncat by using corresponding alternates of (nmbd/101d/ordd/texd/b
 * [String Parsing](https://github.com/Automunge/AutoMunge/blob/master/README.md#string-parsing)
 * [More Efficient String Parsing](https://github.com/Automunge/AutoMunge/blob/master/README.md#more-efficient-string-parsing)
 * [Multi-tier String Parsing](https://github.com/Automunge/AutoMunge/blob/master/README.md#multi-tier-string-parsing)
+* [List of Suffix Appenders]()
 * [Root Category Family Tree Definitions](https://github.com/Automunge/AutoMunge/blob/master/README.md#root-category-family-tree-definitions)
  ___ 
 ### Intro
@@ -2240,6 +2241,122 @@ within the overlaps
   - assignparam parameters accepted: 'minsplit': indicating lowest character length for recognized overlaps 
   (note that parameter has to be assigned to specific categories such as spl2/spl5 etc)
   - driftreport postmunge metrics: comparable to constituent functions
+
+ ___ 
+### List of Suffix Appenders
+The convention is that each transform returns a derived column or set of columns which are distinguished 
+from the source column by suffix appenders to the header strings. Note that in cases of root categories 
+whose family trees include multiple generations, there may be multiple inclusions of different suffix 
+appenders in a single returned column. Provided here is a concise sorted list of all suffix appenders so 
+that any user passing a custom defined transformation can avoid any unintentional duplication.
+
+'_-10^' + i (where i is an integer coresponding to the source number power of ten)
+'_10^' + i (where i is an integer coresponding to the source number power of ten)
+'_1010_' + i (where i is an integer coresponding to the ith digit of the binary encoding)
+'_absl'
+'_addd'
+'_bins_s-10'
+'_bins_s-21'
+'_bins_s+01'
+'_bins_s+12'
+'_bins_s<-2'
+'_bins_s>+2'
+'_bint_t-10'
+'_bint_t-21'
+'_bint_t+01'
+'_bint_t+12'
+'_bint_t<-2'
+'_bint_t>+2'
+'_bkt1_' + i (where i is identifier of bin)
+'_bkt2_' + i (where i is identifier of bin)
+'_bkt3_' + i (where i is identifier of bin)
+'_bkt4_' + i (where i is identifier of bin)
+'_bn7o'
+'_bn9o'
+'_bne7__' + i (where i is identifier of bin)
+'_bne9__' + i (where i is identifier of bin)
+'_bneo'
+'_bnep__' + i (where i is identifier of bin)
+'_bnKo'
+'_bnMo'
+'_bnr2'
+'_bnry'
+'_bnwd_' + i + '_' + j (where i is bin width and j is identifier of bin)
+'_bnwK_' + i + '_' + j (where i is bin width and j is identifier of bin)
+'_bnwM_' + i + '_' + j (where i is bin width and j is identifier of bin)
+'_bnwo'
+'_bshr'
+'_bsor'
+'_bxcx'
+'_copy'
+'_days'
+'_dhmc'
+'_dhms'
+'_divd'
+'_dxd2'
+'_dxdt'
+'_dycs'
+'_dysn'
+'_exc2'
+'_excl'
+'_hldy'
+'_hmsc'
+'_hmss'
+'_hour'
+'_hrcs'
+'_hrsn'
+'_lngt'
+'_log0'
+'_MAD3'
+'_MADn'
+'_mdcs'
+'_mdsn'
+'_mean'
+'_mics'
+'_mint'
+'_misn'
+'_mltp'
+'_mncs'
+'_mnm3'
+'_mnm6'
+'_mnmx'
+'_mnsn'
+'_mnth'
+'_mnts'
+'_mscs'
+'_mssn'
+'_NArw'
+'_nmbr'
+'_nmc4'
+'_nmc7'
+'_nmcm'
+'_nmr4'
+'_nmr7'
+'_nmrc'
+'_ord3'
+'_ordl'
+'_por2'
+'_pwor'
+'_rais'
+'_retn'
+'_sbtr'
+'_sccs'
+'_scnd'
+'_scsn'
+'_shfl'
+'_sp10'
+'_spl2'
+'_spl5'
+'_spl7'
+'_spl8_' + string (where string is an identified overlap of characters between categorical entries)
+'_spl9'
+'_splt_' + string (where string is an identified overlap of characters between categorical entries)
+'_sqrt'
+'_text_' + string (where string is a categorical entry in one-hot encoded set)
+'_UPCS'
+'_wkds'
+'_wkdy'
+'_year'
 
  ___ 
 ### Root Category Family Tree Definitions
