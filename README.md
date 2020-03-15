@@ -813,7 +813,8 @@ featuremethod = 'pct'] or if [fesaturemetric > 0.0 and featuremethod =
 'metric']. Note this defaults to False because it cannot operate without
 a designated label column in the train set. (Note that any user-specified
 size of validationratios if passed are used in this method, otherwise 
-defaults to 0.33.)
+defaults to 0.33.) Note that sorted feature importance results are returned
+in postprocess_dict['FS_sorted'], including columns sorted by metric and metric2.
 
 * featurepct: the percentage of derived sets that are kept in the output
 based on the feature importance evaluation. Accepts float in the range 0-1.
@@ -1426,7 +1427,9 @@ this requires the inclusion of a designated labels column.
 importance evaluation, comparable to one performed in automunge but based
 on the test set passed to postmunge. The results are returned in the
 postreports_dict object returned from postmunge as postreports_dict['featureimportance']. 
-The results will also be printed out if printstatus is activated.
+The results will also be printed out if printstatus is activated.  Note that sorted 
+feature importance results are returned in postreports_dict['FS_sorted'], including 
+columns sorted by metric and metric2.
 
 * driftreport: activates a drift report evaluation, in which the normalization 
 parameters are recalculated for the columns of the test data passed to postmunge 
