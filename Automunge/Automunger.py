@@ -9269,6 +9269,11 @@ class AutoMunge:
     #convert improperly formatted values to datetime in new column
     df[column+'_hldy'] = pd.to_datetime(df[column], errors = 'coerce')
     
+    df[column+'_hldy'] = df[column+'_hldy'].dt.date
+    
+    df[column+'_hldy'] = pd.to_datetime(df[column+'_hldy'], errors = 'coerce')
+    
+    
     #grab list of holidays from import
     holidays = USFederalHolidayCalendar().holidays().tolist()
 
@@ -19620,7 +19625,9 @@ class AutoMunge:
 
           #initialize dictionary FScolumn_dict = {}
           FScolumn_dict = {}
-
+          
+          FS_origcolumns = list(FSpostprocess_dict['origcolumn'])
+          
           #assemble FScolumn_dict to support the feature evaluation
           for column in am_train_columns:
 
@@ -19628,11 +19635,13 @@ class AutoMunge:
             categorylist = FSpostprocess_dict['column_dict'][column]['categorylist']
             category = FSpostprocess_dict['column_dict'][column]['category']
             columnslist = FSpostprocess_dict['column_dict'][column]['columnslist']
+            origcolumn = FSpostprocess_dict['column_dict'][column]['origcolumn']
 
             #create entry to FScolumn_dict
             FScolumn_dict.update({column : {'categorylist' : categorylist, \
                                             'category' : category, \
                                             'columnslist' : columnslist, \
+                                            'origcolumn' : origcolumn, \
                                             'FScomplete' : False, \
                                             'shuffleaccuracy' : None, \
                                             'shuffleaccuracy2' : None, \
@@ -19756,6 +19765,59 @@ class AutoMunge:
             print('metric2 = ', values['metric2'])
             print("")
     
+
+
+    FS_sorted = {'metric_key':{}, 'column_key':{}, 'metric2_key':{}, 'metric2_column_key':{}}
+    
+    #first we'll handle first metric based on source column
+    for FS_origcolumn in FS_origcolumns:
+      for key in FScolumn_dict:
+        if FScolumn_dict[key]['origcolumn'] == FS_origcolumn:
+          FS_sorted['metric_key'].update({FScolumn_dict[key]['metric'] : FS_origcolumn})
+          break
+
+    FS_sorted['metric_key'] = dict(sorted(FS_sorted['metric_key'].items(), reverse=True))
+    
+    for key in FS_sorted['metric_key']:
+      FS_sorted['column_key'].update({FS_sorted['metric_key'][key] : key})
+      
+    
+    #now for metric2 based on derived columns relative importance
+    for FS_origcolumn in FS_origcolumns:
+      FS_sorted['metric2_key'].update({FS_origcolumn : {}})
+      for key in FScolumn_dict:
+        if FScolumn_dict[key]['origcolumn'] == FS_origcolumn:
+          FS_sorted['metric2_key'][FS_origcolumn].update({FScolumn_dict[key]['metric2'] : key})
+    
+    for key in FS_sorted['metric2_key']:
+      FS_sorted['metric2_key'][key] = dict(sorted(FS_sorted['metric2_key'][key].items(), reverse=True))
+    
+    for key1 in FS_sorted['metric2_key']:
+      FS_sorted['metric2_column_key'].update({key1 : {}})
+      for key2 in FS_sorted['metric2_key'][key1]:
+        FS_sorted['metric2_column_key'][key1].update({FS_sorted['metric2_key'][key1][key2] : key2})
+        
+    
+    if printstatus == True:
+      print()
+      print("______________________")
+      print("sorted metric results:")
+      print()
+      for keys,values in FS_sorted['metric_key'].items():
+        print(values)
+        print(keys)
+        print()
+      print("______________________")
+      print("sorted metric2 results:")
+      print()
+      for key in FS_sorted['metric2_key']:
+        print("for source column: ", key)
+        for keys,values in FS_sorted['metric2_key'][key].items():
+          print(values)
+          print(keys)
+          print()
+        print()
+    
     if FSmodel is False:
       
       madethecut = []
@@ -19768,7 +19830,7 @@ class AutoMunge:
       print("Feature Importance evaluation complete")
       print("")
     
-    return madethecut, FSmodel, FScolumn_dict
+    return madethecut, FSmodel, FScolumn_dict, FS_sorted
 
 
 
@@ -22894,9 +22956,10 @@ class AutoMunge:
         madethecut = []
         FSmodel = False
         FScolumn_dict = {}
+        FS_sorted = {}
 
       else:
-        madethecut, FSmodel, FScolumn_dict = \
+        madethecut, FSmodel, FScolumn_dict, FS_sorted = \
         self.featureselect(df_train, labels_column, trainID_column, \
                           powertransform, binstransform, randomseed, \
                           numbercategoryheuristic, assigncat, transformdict, \
@@ -22923,7 +22986,7 @@ class AutoMunge:
         [], [], [], \
         [], [], [], \
         [], [], [],  \
-        FScolumn_dict, {}
+        FScolumn_dict, FS_sorted
 
 
 
@@ -22933,6 +22996,7 @@ class AutoMunge:
       madethecut = []
       FSmodel = False
       FScolumn_dict = {}
+      FS_sorted = {}
 
 
     #printout display progress
@@ -24526,7 +24590,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.45'
+    automungeversion = '3.46'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -24570,6 +24634,7 @@ class AutoMunge:
                              'featuremethod' : featuremethod, \
                              'FSmodel' : FSmodel, \
                              'FScolumn_dict' : FScolumn_dict, \
+                             'FS_sorted' : FS_sorted, \
                              'drift_dict' : drift_dict, \
                              'Binary' : Binary, \
                              'Binary_dict' : Binary_dict, \
@@ -31760,6 +31825,8 @@ class AutoMunge:
 
           #initialize dictionary FScolumn_dict = {}
           FScolumn_dict = {}
+          
+          FS_origcolumns = list(FSpostprocess_dict['origcolumn'])
 
           #assemble FScolumn_dict to support the feature evaluation
           for column in am_train_columns:
@@ -31768,11 +31835,13 @@ class AutoMunge:
             categorylist = FSpostprocess_dict['column_dict'][column]['categorylist']
             category = FSpostprocess_dict['column_dict'][column]['category']
             columnslist = FSpostprocess_dict['column_dict'][column]['columnslist']
+            origcolumn = FSpostprocess_dict['column_dict'][column]['origcolumn']
 
             #create entry to FScolumn_dict
             FScolumn_dict.update({column : {'categorylist' : categorylist, \
                                             'category' : category, \
                                             'columnslist' : columnslist, \
+                                            'origcolumn' : origcolumn, \
                                             'FScomplete' : False, \
                                             'shuffleaccuracy' : None, \
                                             'shuffleaccuracy2' : None, \
@@ -31901,6 +31970,58 @@ class AutoMunge:
               print('metric2 = ', values['metric2'])
               print()
               
+    FS_sorted = {'metric_key':{}, 'column_key':{}, 'metric2_key':{}, 'metric2_column_key':{}}
+    
+    #first we'll handle first metric based on source column
+    for FS_origcolumn in FS_origcolumns:
+      for key in FScolumn_dict:
+        if FScolumn_dict[key]['origcolumn'] == FS_origcolumn:
+          FS_sorted['metric_key'].update({FScolumn_dict[key]['metric'] : FS_origcolumn})
+          break
+
+    FS_sorted['metric_key'] = dict(sorted(FS_sorted['metric_key'].items(), reverse=True))
+    
+    for key in FS_sorted['metric_key']:
+      FS_sorted['column_key'].update({FS_sorted['metric_key'][key] : key})
+      
+    
+    #now for metric2 based on derived columns relative importance
+    for FS_origcolumn in FS_origcolumns:
+      FS_sorted['metric2_key'].update({FS_origcolumn : {}})
+      for key in FScolumn_dict:
+        if FScolumn_dict[key]['origcolumn'] == FS_origcolumn:
+          FS_sorted['metric2_key'][FS_origcolumn].update({FScolumn_dict[key]['metric2'] : key})
+    
+    for key in FS_sorted['metric2_key']:
+      FS_sorted['metric2_key'][key] = dict(sorted(FS_sorted['metric2_key'][key].items(), reverse=True))
+    
+    for key1 in FS_sorted['metric2_key']:
+      FS_sorted['metric2_column_key'].update({key1 : {}})
+      for key2 in FS_sorted['metric2_key'][key1]:
+        FS_sorted['metric2_column_key'][key1].update({FS_sorted['metric2_key'][key1][key2] : key2})
+        
+    
+    if printstatus == True:
+      print()
+      print("______________________")
+      print("sorted metric results:")
+      print()
+      for keys,values in FS_sorted['metric_key'].items():
+        print(values)
+        print(keys)
+        print()
+      print("______________________")
+      print("sorted metric2 results:")
+      print()
+      for key in FS_sorted['metric2_key']:
+        print("for source column: ", key)
+        for keys,values in FS_sorted['metric2_key'][key].items():
+          print(values)
+          print(keys)
+          print()
+        print()
+              
+              
     if FSmodel is False:
       
       FScolumn_dict = {}
@@ -31915,7 +32036,7 @@ class AutoMunge:
 
     
     
-    return FSmodel, FScolumn_dict
+    return FSmodel, FScolumn_dict, FS_sorted
   
 
   def prepare_driftreport(self, df_test, postprocess_dict, printstatus):
@@ -32172,9 +32293,10 @@ class AutoMunge:
         madethecut = []
         FSmodel = False
         FScolumn_dict = {}
+        FS_sorted = {}
 
       else:
-        FSmodel, FScolumn_dict = \
+        FSmodel, FScolumn_dict, FS_sorted = \
         self.postfeatureselect(df_test, labelscolumn, testID_column, \
                                postprocess_dict, printstatus)
 
@@ -32183,9 +32305,11 @@ class AutoMunge:
       madethecut = []
       FSmodel = None
       FScolumn_dict = {}
+      FS_sorted = {}
 
     #initialize postreports_dict
     postreports_dict = {'featureimportance':FScolumn_dict, \
+                        'FS_sorted' : FS_sorted, \
                         'finalcolumns_test':[], \
                         'driftreport':{}, \
                         'pm_miscparameters_results':pm_miscparameters_results}
