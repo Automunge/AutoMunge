@@ -724,7 +724,9 @@ to False. Note that this feature may be applied to numerical label sets if
 the processing applied to the set includes aggregated bins, such as for example
 by passing a label column to the 'exc3' category in assigncat for pass-through
 force to numeric with inclusion of standard deviation bins or to 'exc4' for 
-inclusion of powers of ten bins.
+inclusion of powers of ten bins. For cases where labels are included in the 
+test set, may also be passed as 'traintest' to apply levelizing to both train
+and test sets or be passed as 'test' to only apply levelizing to test set.
 
 * powertransform: a boolean identifier (True/False) which indicates if an
 evaluation will be performed of distribution properties to select between
@@ -821,9 +823,9 @@ in postprocess_dict['FS_sorted'], including columns sorted by metric and metric2
 
 * featurepct: the percentage of derived sets that are kept in the output
 based on the feature importance evaluation. Accepts float in the range 0-1.
-Note that NArw columns are excluded from the trimming for now (the inclusion 
-of NArws in trimming will likely be included in a future expansion). This 
-item only used if featuremethod passed as 'pct' (the default).
+Note that NArw columns are only retained for those sets corresponding to 
+columns that "made the cut". This item only used if featuremethod passed as 
+'pct' (the default).
 
 * featuremetric: the feature importance metric below which derived sets
 are trimmed from the output. Note that this item only used if
