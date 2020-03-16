@@ -19458,6 +19458,21 @@ class AutoMunge:
       
     #generate list of rows making the cut
     madethecut = candidatefeaturerows[:numbermakingcut]
+    
+    #we'll add NArw columns which still have correspondence with a column in madethecut
+    removeNArw_list = []
+    for candidateNArw in candidateNArws:
+      for FScolumn in FScolumn_dict:
+        if candidateNArw in FScolumn_dict[FScolumn]['columnslist']:        
+          candidateNArw_columnslist = FScolumn_dict[FScolumn]['columnslist']
+          break
+      if len(set(candidateNArw_columnslist) & set(madethecut)) == 0:
+        removeNArw_list.append(candidateNArw)
+
+    for removeNArw in removeNArw_list:
+      candidateNArws.remove(removeNArw)
+    
+    
     #add on the NArws
     madethecut = madethecut + candidateNArws
     
@@ -21208,10 +21223,15 @@ class AutoMunge:
     
     #check TrainLabelFreqLevel
     TrainLabelFreqLevel_valresult = False
-    if TrainLabelFreqLevel not in [True, False] or not isinstance(TrainLabelFreqLevel, bool):
+    if TrainLabelFreqLevel not in [True, False, 'test', 'traintest']:
       TrainLabelFreqLevel_valresult = True
       print("Error: invalid entry passed for TrainLabelFreqLevel parameter.")
-      print("Acceptable values are one of {True, False}")
+      print("Acceptable values are one of {True, False, 'test', 'traintest'}")
+      print()
+    elif TrainLabelFreqLevel not in ['test', 'traintest'] and not isinstance(TrainLabelFreqLevel, bool):
+      TrainLabelFreqLevel_valresult = True
+      print("Error: invalid entry passed for TrainLabelFreqLevel parameter.")
+      print("Acceptable values are one of {True, False, 'test', 'traintest'}")
       print()
       
     miscparameters_results.update({'TrainLabelFreqLevel_valresult' : TrainLabelFreqLevel_valresult})
@@ -21430,12 +21450,12 @@ class AutoMunge:
     if not isinstance(featuremetric, float):
       featuremetric_valresult = True
       print("Error: invalid entry passed for featuremetric parameter.")
-      print("Acceptable values are floats within range 0.0 <= featuremetric < 1.0")
+      print("Acceptable values are floats within range 0.0 <= featuremetric < 100.0")
       print()
-    elif (featuremetric < 0.0 or featuremetric >= 1.0):
+    elif (featuremetric < 0.0 or featuremetric >= 100.0):
       featuremetric_valresult = True
       print("Error: invalid entry passed for featuremetric parameter.")
-      print("Acceptable values are floats within range 0.0 <= featuremetric < 1.0")
+      print("Acceptable values are floats within range 0.0 <= featuremetric < 100.0")
       print()
       
     miscparameters_results.update({'featuremetric_valresult' : featuremetric_valresult})
@@ -22392,7 +22412,8 @@ class AutoMunge:
       #plus let's check if this is one-hot encoded (vs like binary encoded or something)
       #this is a proxy for testing if category is '1010'
       onehot = True
-      if df[label_categorylist].sum().sum() != df.shape[0]:
+      #if df[label_categorylist].sum().sum() != df.shape[0]:
+      if df[label_categorylist].sum().sum() > df.shape[0]:
         onehot = False
 
       if (unique_set == {0,1} \
@@ -22472,7 +22493,8 @@ class AutoMunge:
       #plus let's check if this is one-hot encoded (vs like binary encoded or something)
       #this is a proxy for testing if category is '1010'
       onehot = True
-      if df[label_categorylist].sum().sum() != df.shape[0]:
+      #if df[label_categorylist].sum().sum() != df.shape[0]:
+      if df[label_categorylist].sum().sum() > df.shape[0]:
         onehot = False
 
       if (unique_set == {0,1} \
@@ -22539,7 +22561,8 @@ class AutoMunge:
       #plus let's check if this is one-hot encoded (vs like binary encoded or something)
       #this is a proxy for testing if category is '1010'
       onehot = True
-      if df[label_categorylist].sum().sum() != df.shape[0]:
+      #if df[label_categorylist].sum().sum() != df.shape[0]:
+      if df[label_categorylist].sum().sum() > df.shape[0]:
         onehot = False
 
       if (unique_set == {0,1} \
@@ -22622,7 +22645,8 @@ class AutoMunge:
       #plus let's check if this is one-hot encoded (vs like binary encoded or something)
       #this is a proxy for testing if category is '1010'
       onehot = True
-      if df[label_categorylist].sum().sum() != df.shape[0]:
+      #if df[label_categorylist].sum().sum() != df.shape[0]:
+      if df[label_categorylist].sum().sum() > df.shape[0]:
         onehot = False
 
       if (unique_set == {0,1} \
@@ -23823,6 +23847,8 @@ class AutoMunge:
             df_labels, categorycomplete_dict, LSfitparams_dict = \
             self.apply_LabelSmoothing(df_labels, labelsmoothingcolumn, LabelSmoothing_train, label_categorylist, label_category, categorycomplete_dict, LSfit, LSfitparams_dict)
       
+
+  
       #else prepare empty LSfitparams_dict
       else:
         
@@ -24484,7 +24510,7 @@ class AutoMunge:
     #a future extension will include numerical labels by adding supplemental 
     #label columns to designate inclusion in some fractional bucket of the distribution
     #e.g. such as quintiles for instance
-    if TrainLabelFreqLevel == True \
+    if TrainLabelFreqLevel in [True, 'traintest'] \
     and labels_column != False:
 
       #printout display progress
@@ -24496,15 +24522,11 @@ class AutoMunge:
         print(df_labels.shape[0])
         print("")
 
-  #       train_df = pd.DataFrame(np_train, columns = finalcolumns_train)
-  #       labels_df = pd.DataFrame(np_labels, columns = finalcolumns_labels)
-      if trainID_column != False:
-  #         trainID_df = pd.DataFrame(np_trainID, columns = [trainID_column])
-        #add trainID set to train set for consistent processing
-  #         train_df = pd.concat([train_df, trainID_df], axis=1)                        
+
+      if trainID_column is not False:
         df_train = pd.concat([df_train, df_trainID], axis=1)                        
 
-
+        
       if postprocess_dict['process_dict'][labelscategory]['MLinfilltype'] \
       in ['numeric', 'singlct', 'binary', 'multirt', 'multisp', 'label']:
 
@@ -24526,7 +24548,6 @@ class AutoMunge:
           tempIDlist = trainID_column
         for IDcolumn in tempIDlist:
           del df_train[IDcolumn]
-        #del df_train[trainID_column]
 
 
       #printout display progress
@@ -24547,6 +24568,66 @@ class AutoMunge:
         if trainID_column != False:
           df_trainID = shuffle(df_trainID, random_state = answer)
 
+      if shuffletrain == 'traintest':
+        #shuffle test set and labels
+        df_test = shuffle(df_test, random_state = answer)
+        df_testlabels = shuffle(df_testlabels, random_state = answer)
+
+        if testID_column != False:
+          df_testID = shuffle(df_testID, random_state = answer)
+          
+
+
+    if TrainLabelFreqLevel in ['test', 'traintest'] \
+    and labelspresenttest is True:
+
+      #printout display progress
+      if printstatus == True:
+        print("_______________")
+        print("Begin test set label rebalancing")
+        print("")
+        print("Before rebalancing test set row count = ")
+        print(df_testlabels.shape[0])
+        print("")
+        
+
+      if testID_column is not False:
+        df_test = pd.concat([df_test, df_testID], axis=1)                        
+
+
+      if postprocess_dict['process_dict'][labelscategory]['MLinfilltype'] \
+      in ['numeric', 'singlct', 'binary', 'multirt', 'multisp', 'label']:
+        
+        if LabelSmoothing_test is True:
+          LabelSmoothing_test = LabelSmoothing_train
+        
+        #apply LabelFrequencyLevelizer defined function
+        df_test, df_testlabels = \
+        self.LabelFrequencyLevelizer(df_test, df_testlabels, labelsencoding_dict, \
+                                     postprocess_dict, process_dict, LabelSmoothing_test)
+        
+        
+      #extract testID
+      if testID_column is not False:
+
+        df_testID = pd.DataFrame(df_test[testID_column])
+
+        if isinstance(testID_column, str):
+          tempIDlist = [testID_column]
+        elif isinstance(testID_column, list):
+          tempIDlist = testID_column
+        for IDcolumn in tempIDlist:
+          del df_test[IDcolumn]
+          
+      #printout display progress
+      if printstatus == True:
+
+        print("")
+        print("After rebalancing test set row count = ")
+        print(df_testlabels.shape[0])
+        print("")
+        
+      #shuffle one more time as part of levelized label frequency
       if shuffletrain == 'traintest':
         #shuffle test set and labels
         df_test = shuffle(df_test, random_state = answer)
@@ -24590,7 +24671,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.46'
+    automungeversion = '3.47'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
