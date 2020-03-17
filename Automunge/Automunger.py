@@ -3399,19 +3399,19 @@ class AutoMunge:
                                   'singleprocess' : self.process_wkdy_class, \
                                   'postprocess' : None, \
                                   'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'singlct', \
+                                  'MLinfilltype' : 'binary', \
                                   'labelctgy' : 'wkdy'}})
     process_dict.update({'bshr' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_bshr_class, \
                                   'postprocess' : None, \
                                   'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'singlct', \
+                                  'MLinfilltype' : 'binary', \
                                   'labelctgy' : 'bshr'}})
     process_dict.update({'hldy' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_hldy_class, \
                                   'postprocess' : None, \
                                   'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'singlct', \
+                                  'MLinfilltype' : 'binary', \
                                   'labelctgy' : 'hldy'}})
     process_dict.update({'wkds' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_wkds_class, \
@@ -4998,20 +4998,30 @@ class AutoMunge:
     #process_retn_class(mdf_train, mdf_test, column, category)
     #function to scale data as follows:
     
-    # if max > 0 and min < 0:
+    # if max >= 0 and min <= 0:
   
     #   #scaling based on 
     #   x = x / (max - min)
 
-    # else:
+    # elif max >= 0 and min >= 0:
 
     #   #traditional min/max
     #   x = (x - min) / (max - min)
+    
+    # elif max <= 0 and min <= 0:
+
+    #   #max/min (retains negative values)
+    #   x = (x - max) / (max - min)
     
     #replaces missing or improperly formatted data with mean of remaining values
     
     #returns same dataframes with new column of name column + '_retn'
     #note this is a "dualprocess" function since is applied to both dataframes
+    
+    #note with parameters divisor can also be set as standard deviation
+    #also aprameters accepted for cap/floor/mulitplier/offset
+    #where cap/floor based on pretransform values
+    #multiplier/offset based on posttransform values, muoltiplier applied betfore offset
     """
     
     #initialize parameters
@@ -5030,7 +5040,7 @@ class AutoMunge:
     if 'multiplier' in params:
       multiplier = params['multiplier']
     else:
-      multiplier = False
+      multiplier = 1
     
     if 'cap' in params:
       cap = params['cap']
@@ -5107,7 +5117,12 @@ class AutoMunge:
       mean = 0
     mdf_train[column + '_retn'] = mdf_train[column + '_retn'].fillna(mean)
     mdf_test[column + '_retn'] = mdf_test[column + '_retn'].fillna(mean)
-
+    
+    #edge case (only neccesary so scalingapproach is assigned)
+    if maximum != maximum:
+      maximum = 0
+    if minimum != minimum:
+      minimum = 0
     
     #divisor
     if divisor not in ['minmax', 'std']:
@@ -5118,9 +5133,11 @@ class AutoMunge:
       divisor = std
     
     
-    #driftreport metric scalingapproach returned as 'retn' or 'mnmx'
+    #driftreport metric scalingapproach returned as 'retn' or 'mnmx' or 'mxmn'
+    #where mnmx is for cases where all values in train set are positive
+    #mxmn is for cases where all values in train set are negative
     
-    if maximum > 0 and minimum < 0:
+    if maximum >= 0 and minimum <= 0:
       
       mdf_train[column + '_retn'] = (mdf_train[column + '_retn']) / \
                                     (divisor) * multiplier + offset
@@ -5130,7 +5147,7 @@ class AutoMunge:
       
       scalingapproach = 'retn'
       
-    else:
+    elif maximum >= 0 and minimum >= 0:
     
       #perform min-max scaling to train and test sets using values from train
       mdf_train[column + '_retn'] = (mdf_train[column + '_retn'] - minimum) / \
@@ -5140,6 +5157,17 @@ class AutoMunge:
                                    (divisor) * multiplier + offset
       
       scalingapproach = 'mnmx'
+      
+    elif maximum <= 0 and minimum <= 0:
+    
+      #perform min-max scaling to train and test sets using values from train
+      mdf_train[column + '_retn'] = (mdf_train[column + '_retn'] - maximum) / \
+                                    (divisor) * multiplier + offset
+
+      mdf_test[column + '_retn'] = (mdf_test[column + '_retn'] - maximum) / \
+                                   (divisor) * multiplier + offset
+      
+      scalingapproach = 'mxmn'
     
     #create list of columns
     nmbrcolumns = [column + '_retn']
@@ -23788,12 +23816,16 @@ class AutoMunge:
   #         df_labels, labelsdummy, _1 = \
   #         self.process_text_class(df_labels, labelsdummy, labels_column)
 
-      #we have convention that NArw's aren't included in returned label sets since 
-      #mssing label rows are deleted earlier in the automunge workflow
-      if labels_column + '_NArw' in list(df_labels):
-        del df_labels[labels_column + '_NArw']
-      if labels_column + '_NArw' in list(df_testlabels):
-        del df_testlabels[labels_column + '_NArw']
+      #we have convention that NArw's aren't included in returned label sets        
+      for df_labels_column in list(df_labels):
+        if df_labels_column in postprocess_dict['column_dict']:
+          if postprocess_dict['column_dict'][df_labels_column]['category'] == 'NArw':
+            del df_labels[df_labels_column]
+          
+      for df_testlabels_column in list(df_testlabels):
+        if df_testlabels_column in postprocess_dict['column_dict']:
+          if postprocess_dict['column_dict'][df_testlabels_column]['category'] == 'NArw':
+            del df_testlabels[df_testlabels_column]
 
       finalcolumns_labels = list(df_labels)
 
@@ -24671,7 +24703,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.47'
+    automungeversion = '3.48'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -25591,20 +25623,30 @@ class AutoMunge:
     #process_retn_class(mdf_train, mdf_test, column, category)
     #function to scale data as follows:
     
-    # if max > 0 and min < 0:
+    # if max >= 0 and min <= 0:
   
     #   #scaling based on 
     #   x = x / (max - min)
 
-    # else:
+    # elif max >= 0 and min >= 0:
 
     #   #traditional min/max
     #   x = (x - min) / (max - min)
+    
+    # elif max <= 0 and min <= 0:
+
+    #   #max/min (retains negative values)
+    #   x = (x - max) / (max - min)
     
     #replaces missing or improperly formatted data with mean of remaining values
     
     #returns same dataframes with new column of name column + '_retn'
     #note this is a "dualprocess" function since is applied to both dataframes
+    
+    #note with parameters divisor can also be set as standard deviation
+    #also aprameters accepted for cap/floor/mulitplier/offset
+    #where cap/floor based on pretransform values
+    #multiplier/offset based on posttransform values, muoltiplier applied betfore offset
     """
     
     
@@ -25672,6 +25714,12 @@ class AutoMunge:
     
       #perform min-max scaling to test set using values from train
       mdf_test[column + '_retn'] = (mdf_test[column + '_retn'] - minimum) / \
+                                   (divisor) * multiplier + offset
+      
+    elif scalingapproach == 'mxmn':
+    
+      #perform min-max scaling to test set using values from train
+      mdf_test[column + '_retn'] = (mdf_test[column + '_retn'] - maximum) / \
                                    (divisor) * multiplier + offset
 
 
@@ -32478,8 +32526,8 @@ class AutoMunge:
 
     if labelscolumn != False:
       labels_column = postprocess_dict['labels_column']
-      if labels_column in list(df_test):
-        df_test = df_test.dropna(subset=[labels_column])
+#       if labels_column in list(df_test):
+#         df_test = df_test.dropna(subset=[labels_column])
 
       if labelscolumn != True:
         if labelscolumn != labels_column:
@@ -32864,8 +32912,11 @@ class AutoMunge:
     labels_column = postprocess_dict['labels_column']
 
     #ok now let's check if that labels column is present in the test set
-    if labelscolumn != False:
-      if labelscolumn != True:
+    if labelscolumn is False:
+      df_testlabels = pd.DataFrame()
+    
+    if labelscolumn is not False:
+      if labelscolumn is not True:
         if labelscolumn != labels_column:
           print("error, labelscolumn in test set passed to postmunge must have same column")
           print("labeling convention, labels column from automunge was: ", labels_column)
@@ -32909,9 +32960,11 @@ class AutoMunge:
       self.postcircleoflife(df_testlabels, labels_column, labelscategory, labelscategory, process_dict, \
                             transform_dict, preFSpostprocess_dict, columnkey)
 
-      #per our convention that NArw's aren't included in labels output 
-      if labels_column + '_NArw' in list(df_testlabels):
-        del df_testlabels[labels_column + '_NArw']
+      #per our convention that NArw's aren't included in labels output
+      for df_testlabels_column in list(df_testlabels):
+        if df_testlabels_column in postprocess_dict['column_dict']:
+          if postprocess_dict['column_dict'][df_testlabels_column]['category'] == 'NArw':
+            del df_testlabels[df_testlabels_column]
 
       #marker for printouts
       pmsmoothing = False
