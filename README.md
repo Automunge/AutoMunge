@@ -1724,7 +1724,8 @@ test set returned values >= 0, such as might be useful for kernel PCA for instan
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: minimum / maximum / mean / std
 * retn: related to min/max scaling but retains +/- of values, based on conditions
-if max>0 and min<0, x=x/(max-min), else x=(x-min)/(max-min)
+if max>=0 and min<=0, x=x/(max-min), elif max>=0 and min>=0 x=(x-min)/(max-min),
+elif max<=0 and min<=0 x=(x-max)/(max-min)
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '_retn'
