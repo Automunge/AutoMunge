@@ -143,9 +143,9 @@ labelsencoding_dict, finalcolumns_train, finalcolumns_test, \
 featureimportance, postprocess_dict = \
 am.automunge(df_train, df_test = False, labels_column = False, trainID_column = False, \
             testID_column = False, valpercent1=0.0, valpercent2 = 0.0, floatprecision = 32, \
-	    shuffletrain = True, TrainLabelFreqLevel = False, powertransform = False, \
+            shuffletrain = True, TrainLabelFreqLevel = False, powertransform = False, \
             binstransform = False, MLinfill = False, infilliterate=1, randomseed = 42, \
-	    LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, \
+            LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, \
             LSfit = False, numbercategoryheuristic = 63, pandasoutput = True, NArw_marker = False, \
             featureselection = False, featurepct = 1.0, featuremetric = .02, featuremethod = 'default', \
             Binary = False, PCAn_components = None, PCAexcl = [], \
@@ -154,34 +154,34 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
                        'PCA_type':'default', \
                        'PCA_cmnd':{}}, \
             assigncat = {'mnmx':[], 'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[], \
-	                 'mean':[], 'mea2':[], 'mea3':[], 'retn':[], \
-		         'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'MAD3':[], \
-		         'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
-		         'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
-		         'bins':[], 'bint':[], 'bsor':[], 'pwr2':[], 'por2':[], \
-			 'bnwd':[], 'bnwK':[], 'bnwM':[], 'bnwo':[], 'bnKo':[], 'bnMo':[], \
-			 'bnep':[], 'bne7':[], 'bne9':[], 'bneo':[], 'bn7o':[], 'bn9o':[], \
+                         'mean':[], 'mea2':[], 'mea3':[], 'retn':[], \
+                         'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'MAD3':[], \
+                         'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
+                         'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
+                         'bins':[], 'bint':[], 'bsor':[], 'pwr2':[], 'por2':[], \
+                         'bnwd':[], 'bnwK':[], 'bnwM':[], 'bnwo':[], 'bnKo':[], 'bnMo':[], \
+                         'bnep':[], 'bne7':[], 'bne9':[], 'bneo':[], 'bn7o':[], 'bn9o':[], \
                          'bkt1':[], 'bkt2':[], 'bkt3':[], 'bkt4':[], \
                          'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
                          'addd':[], 'sbtr':[], 'mltp':[], 'divd':[], \
                          'log0':[], 'log1':[], 'sqrt':[], 'rais':[], 'absl':[], \
-		         'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
-		         'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
-			 'Utxt':[], 'Utx2':[], 'Utx3':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
+                         'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
+                         'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
+                         'Utxt':[], 'Utx2':[], 'Utx3':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
                          'splt':[], 'spl2':[], 'spl3':[], 'spl4':[], 'spl5':[], 'lngt':[], \
                          'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
-			 'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
+                         'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
                          'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], \
-			 'or11':[], 'or12':[], 'or15':[], 'or17':[], 'or19':[], 'or20':[], \
-		         'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
-			 'wkds':[], 'wkdo':[], 'mnts':[], 'mnto':[], \
-		         'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
-		         'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
-		         'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'copy':[], 'shfl':[], \
+                         'or11':[], 'or12':[], 'or15':[], 'or17':[], 'or19':[], 'or20':[], \
+                         'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
+                         'wkds':[], 'wkdo':[], 'mnts':[], 'mnto':[], \
+                         'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
+                         'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
+                         'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'copy':[], 'shfl':[], \
                          'eval':[]}, \
             assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                             'adjinfill':[], 'meaninfill':[], 'medianinfill':[], \
-			    'modeinfill':[], 'lcinfill':[]}, \
+                            'modeinfill':[], 'lcinfill':[]}, \
             assignparam = {}, transformdict = {}, processdict = {}, evalcat = False, \
             printstatus = True)
 ```
@@ -215,8 +215,8 @@ labelsencoding_dict, postreports_dict = \
 am.postmunge(postprocess_dict, df_test, testID_column = False, \
              labelscolumn = False, pandasoutput=True, printstatus = True, \
              TrainLabelFreqLevel = False, featureeval = False, driftreport = False, \
-	     LabelSmoothing = False, LSfit = False, returnedsets = True, \
-	     shuffletrain = False)
+             LabelSmoothing = False, LSfit = False, returnedsets = True, \
+             shuffletrain = False)
 ```
 
 
@@ -366,9 +366,9 @@ labelsencoding_dict, finalcolumns_train, finalcolumns_test, \
 featureimportance, postprocess_dict = \
 am.automunge(df_train, df_test = False, labels_column = False, trainID_column = False, \
             testID_column = False, valpercent1=0.0, valpercent2 = 0.0, floatprecision = 32, \
-	    shuffletrain = True, TrainLabelFreqLevel = False, powertransform = False, \
+            shuffletrain = True, TrainLabelFreqLevel = False, powertransform = False, \
             binstransform = False, MLinfill = False, infilliterate=1, randomseed = 42, \
-	    LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, \
+            LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, \
             LSfit = False, numbercategoryheuristic = 63, pandasoutput = True, NArw_marker = False, \
             featureselection = False, featurepct = 1.0, featuremetric = .02, featuremethod = 'default', \
             Binary = False, PCAn_components = None, PCAexcl = [], \
@@ -377,34 +377,34 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
                        'PCA_type':'default', \
                        'PCA_cmnd':{}}, \
             assigncat = {'mnmx':[], 'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[], \
-	                 'mean':[], 'mea2':[], 'mea3':[], 'retn':[], \
-		         'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'MAD3':[], \
-		         'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
-		         'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
-		         'bins':[], 'bint':[], 'bsor':[], 'pwr2':[], 'por2':[], \
-			 'bnwd':[], 'bnwK':[], 'bnwM':[], 'bnwo':[], 'bnKo':[], 'bnMo':[], \
-			 'bnep':[], 'bne7':[], 'bne9':[], 'bneo':[], 'bn7o':[], 'bn9o':[], \
+                         'mean':[], 'mea2':[], 'mea3':[], 'retn':[], \
+                         'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'MAD3':[], \
+                         'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
+                         'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
+                         'bins':[], 'bint':[], 'bsor':[], 'pwr2':[], 'por2':[], \
+                         'bnwd':[], 'bnwK':[], 'bnwM':[], 'bnwo':[], 'bnKo':[], 'bnMo':[], \
+                         'bnep':[], 'bne7':[], 'bne9':[], 'bneo':[], 'bn7o':[], 'bn9o':[], \
                          'bkt1':[], 'bkt2':[], 'bkt3':[], 'bkt4':[], \
                          'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
                          'addd':[], 'sbtr':[], 'mltp':[], 'divd':[], \
                          'log0':[], 'log1':[], 'sqrt':[], 'rais':[], 'absl':[], \
-		         'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
-		         'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
-			 'Utxt':[], 'Utx2':[], 'Utx3':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
+                         'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
+                         'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
+                         'Utxt':[], 'Utx2':[], 'Utx3':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
                          'splt':[], 'spl2':[], 'spl3':[], 'spl4':[], 'spl5':[], 'lngt':[], \
                          'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
-			 'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
+                         'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
                          'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], \
-			 'or11':[], 'or12':[], 'or15':[], 'or17':[], 'or19':[], 'or20':[], \
-		         'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
-			 'wkds':[], 'wkdo':[], 'mnts':[], 'mnto':[], \
-		         'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
-		         'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
-		         'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'copy':[], 'shfl':[], \
+                         'or11':[], 'or12':[], 'or15':[], 'or17':[], 'or19':[], 'or20':[], \
+                         'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
+                         'wkds':[], 'wkdo':[], 'mnts':[], 'mnto':[], \
+                         'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
+                         'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
+                         'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'copy':[], 'shfl':[], \
                          'eval':[]}, \
             assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                             'adjinfill':[], 'meaninfill':[], 'medianinfill':[], \
-			    'modeinfill':[], 'lcinfill':[]}, \
+                            'modeinfill':[], 'lcinfill':[]}, \
             assignparam = {}, transformdict = {}, processdict = {}, evalcat = False, \
             printstatus = True)
 ```
@@ -441,8 +441,8 @@ labelsencoding_dict, postreports_dict = \
 am.postmunge(postprocess_dict, df_test, testID_column = False, \
              labelscolumn = False, pandasoutput=True, printstatus = True, \
              TrainLabelFreqLevel = False, featureeval = False, driftreport = False, \
-	     LabelSmoothing = False, LSfit = False, returnedsets = True, \
-	     shuffletrain = False):
+             LabelSmoothing = False, LSfit = False, returnedsets = True, \
+             shuffletrain = False):
 ```
 
 Note that the only required argument to the automunge function is the
@@ -576,11 +576,17 @@ demonstrated with the pickle library above.
 ## automunge(.) passed arguments
 
 ```
+train, trainID, labels, \
+validation1, validationID1, validationlabels1, \
+validation2, validationID2, validationlabels2, \
+test, testID, testlabels, \
+labelsencoding_dict, finalcolumns_train, finalcolumns_test, \
+featureimportance, postprocess_dict = \
 am.automunge(df_train, df_test = False, labels_column = False, trainID_column = False, \
             testID_column = False, valpercent1=0.0, valpercent2 = 0.0, floatprecision = 32, \
-	    shuffletrain = True, TrainLabelFreqLevel = False, powertransform = False, \
+            shuffletrain = True, TrainLabelFreqLevel = False, powertransform = False, \
             binstransform = False, MLinfill = False, infilliterate=1, randomseed = 42, \
-	    LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, \
+            LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, \
             LSfit = False, numbercategoryheuristic = 63, pandasoutput = True, NArw_marker = False, \
             featureselection = False, featurepct = 1.0, featuremetric = .02, featuremethod = 'default', \
             Binary = False, PCAn_components = None, PCAexcl = [], \
@@ -589,34 +595,34 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
                        'PCA_type':'default', \
                        'PCA_cmnd':{}}, \
             assigncat = {'mnmx':[], 'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[], \
-	                 'mean':[], 'mea2':[], 'mea3':[], 'retn':[], \
-		         'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'MAD3':[], \
-		         'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
-		         'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
-		         'bins':[], 'bint':[], 'bsor':[], 'pwr2':[], 'por2':[], \
-			 'bnwd':[], 'bnwK':[], 'bnwM':[], 'bnwo':[], 'bnKo':[], 'bnMo':[], \
-			 'bnep':[], 'bne7':[], 'bne9':[], 'bneo':[], 'bn7o':[], 'bn9o':[], \
+                         'mean':[], 'mea2':[], 'mea3':[], 'retn':[], \
+                         'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'MAD3':[], \
+                         'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
+                         'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
+                         'bins':[], 'bint':[], 'bsor':[], 'pwr2':[], 'por2':[], \
+                         'bnwd':[], 'bnwK':[], 'bnwM':[], 'bnwo':[], 'bnKo':[], 'bnMo':[], \
+                         'bnep':[], 'bne7':[], 'bne9':[], 'bneo':[], 'bn7o':[], 'bn9o':[], \
                          'bkt1':[], 'bkt2':[], 'bkt3':[], 'bkt4':[], \
                          'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
                          'addd':[], 'sbtr':[], 'mltp':[], 'divd':[], \
                          'log0':[], 'log1':[], 'sqrt':[], 'rais':[], 'absl':[], \
-		         'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
-		         'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
-			 'Utxt':[], 'Utx2':[], 'Utx3':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
+                         'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
+                         'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
+                         'Utxt':[], 'Utx2':[], 'Utx3':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
                          'splt':[], 'spl2':[], 'spl3':[], 'spl4':[], 'spl5':[], 'lngt':[], \
                          'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
-			 'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
+                         'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
                          'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], \
-			 'or11':[], 'or12':[], 'or15':[], 'or17':[], 'or19':[], 'or20':[], \
-		         'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
-			 'wkds':[], 'wkdo':[], 'mnts':[], 'mnto':[], \
-		         'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
-		         'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
-		         'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'copy':[], 'shfl':[], \
+                         'or11':[], 'or12':[], 'or15':[], 'or17':[], 'or19':[], 'or20':[], \
+                         'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
+                         'wkds':[], 'wkdo':[], 'mnts':[], 'mnto':[], \
+                         'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
+                         'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
+                         'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'copy':[], 'shfl':[], \
                          'eval':[]}, \
             assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                             'adjinfill':[], 'meaninfill':[], 'medianinfill':[], \
-			    'modeinfill':[], 'lcinfill':[]}, \
+                            'modeinfill':[], 'lcinfill':[]}, \
             assignparam = {}, transformdict = {}, processdict = {}, evalcat = False, \
             printstatus = True)
 ```
@@ -940,29 +946,29 @@ such as could potentially result in memory savings.
 
     assigncat = {'mnmx':[], 'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[], \
                  'mean':[], 'mea2':[], 'mea3':[], 'retn':[], \
-		 'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'MAD3':[], \
-		 'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
-		 'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
-		 'bins':[], 'bint':[], 'bsor':[], 'pwr2':[], 'por2':[], \
-		 'bnwd':[], 'bnwK':[], 'bnwM':[], 'bnwo':[], 'bnKo':[], 'bnMo':[], \
-		 'bnep':[], 'bne7':[], 'bne9':[], 'bneo':[], 'bn7o':[], 'bn9o':[], \
+                 'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'MAD3':[], \
+                 'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
+                 'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
+                 'bins':[], 'bint':[], 'bsor':[], 'pwr2':[], 'por2':[], \
+                 'bnwd':[], 'bnwK':[], 'bnwM':[], 'bnwo':[], 'bnKo':[], 'bnMo':[], \
+                 'bnep':[], 'bne7':[], 'bne9':[], 'bneo':[], 'bn7o':[], 'bn9o':[], \
                  'bkt1':[], 'bkt2':[], 'bkt3':[], 'bkt4':[], \
                  'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
                  'addd':[], 'sbtr':[], 'mltp':[], 'divd':[], \
                  'log0':[], 'log1':[], 'sqrt':[], 'rais':[], 'absl':[], \
-		 'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
-		 'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
-		 'Utxt':[], 'Utx2':[], 'Utx3':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
+                 'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
+                 'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
+                 'Utxt':[], 'Utx2':[], 'Utx3':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
                  'splt':[], 'spl2':[], 'spl3':[], 'spl4':[], 'spl5':[], 'lngt':[], \
                  'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
-		 'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
+                 'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
                  'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], \
-		 'or11':[], 'or12':[], 'or15':[], 'or17':[], 'or19':[], 'or20':[], \
-		 'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
-		 'wkds':[], 'wkdo':[], 'mnts':[], 'mnto':[], \
-		 'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
-		 'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
-		 'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'copy':[], 'shfl':[], \
+                 'or11':[], 'or12':[], 'or15':[], 'or17':[], 'or19':[], 'or20':[], \
+                 'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
+                 'wkds':[], 'wkdo':[], 'mnts':[], 'mnto':[], \
+                 'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
+                 'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
+                 'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'copy':[], 'shfl':[], \
                  'eval':[]}, \
 ```         
 
@@ -989,7 +995,7 @@ of the column header without the list brackets.
 #we are continuing to build out.
 assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                 'adjinfill':[], 'meaninfill':[], 'medianinfill':[], \
-		'modeinfill':[], 'lcinfill':[]}, \
+                'modeinfill':[], 'lcinfill':[]}, \
 ```
 A user may add column identifier strings to each of these lists to 
 designate the column-specific infill approach for missing or
@@ -1043,7 +1049,7 @@ assignparam = {'splt' : {'column1' : {'minsplit' : 4}}
 #parameters that are not otherwise specified in assignparam)
 assignparam = {'category1' : {'column1' : {'param1' : 123}, 'column2' : {'param1' : 456}}, \
                'cateogry2' : {'column3' : {'param2' : 'abc', 'param3' : 'def'}}, \
-	       'default_assignparam' : {'category3' : {'param4' : 789}
+               'default_assignparam' : {'category3' : {'param4' : 789}
 
 ```
 See the Library of Transformations section below for those transformations that accept parameters.
@@ -1118,11 +1124,11 @@ corresponding to new transformdict keys. We'll describe the entries here:
 ```
 #for example 
 processdict =  {'newt' : {'dualprocess' : None, \
-			  'singleprocess' : None, \
-			  'postprocess' : None, \
-        	          'NArowtype' : 'numeric', \
-      		          'MLinfilltype' : 'numeric', \
-           		  'labelctgy' : 'mnmx'}}
+                          'singleprocess' : None, \
+                          'postprocess' : None, \
+                          'NArowtype' : 'numeric', \
+                          'MLinfilltype' : 'numeric', \
+                          'labelctgy' : 'mnmx'}}
 
 #A user should pass either a pair of processing functions to both 
 #dualprocess and postprocess, or alternatively just a single processing
@@ -1246,8 +1252,8 @@ labelsencoding_dict, postreports_dict = \
 am.postmunge(postprocess_dict, df_test, testID_column = False, \
              labelscolumn = False, pandasoutput=True, printstatus = True, \
              TrainLabelFreqLevel = False, featureeval = False, driftreport = False, \
-	     LabelSmoothing = False, LSfit = False, returnedsets = True, \
-	     shuffletrain = False)
+             LabelSmoothing = False, LSfit = False, returnedsets = True, \
+             shuffletrain = False)
 ```
 
 Or to run postmunge(.) with default parameters we simply need the postprocess_dict
@@ -1319,7 +1325,7 @@ postreports_dict = \
                            'newreturnedcolumns_list':[(derivedcolumns)],
                            'drift_category':(category),
                            'orignotinnew': {(derivedcolumn):{'orignormparam':{(stats)}},
-			   'newnotinorig': {(derivedcolumn):{'newnormparam':{(stats)}},
+                           'newnotinorig': {(derivedcolumn):{'newnormparam':{(stats)}},
                            'newreturnedcolumn':{(derivedcolumn):{'orignormparam':{(stats)},
                                                                  'newnormparam':{(stats)}}}},
 'sourcecolumn_drift': {'orig_driftstats': {(sourcecolumn) : (stats)}, 
@@ -1331,22 +1337,22 @@ postreports_dict = \
 #here is an example of source column drift assessment statistics for a positive numeric root category:
 postreports_dict['sourcecolumn_drift']['new_driftstats'] = \
 {(sourcecolumn) : {'max'         : (stat),
-		   'quantile_99' : (stat),
-		   'quantile_90' : (stat),
-		   'quantile_66' : (stat),
-		   'median'      : (stat),
-		   'quantile_33' : (stat),
-		   'quantile_10' : (stat),
-		   'quantile_01' : (stat),
-		   'min'         : (stat),
-		   'mean'        : (stat),
-		   'std'         : (stat),
-		   'MAD'         : (stat),
-		   'skew'        : (stat),
-		   'shapiro_W'   : (stat),
-		   'shapiro_p'   : (stat),
-		   'nonpositive_ratio' : (stat),
-		   'nan_ratio'   : (stat)}} 
+                   'quantile_99' : (stat),
+                   'quantile_90' : (stat),
+                   'quantile_66' : (stat),
+                   'median'      : (stat),
+                   'quantile_33' : (stat),
+                   'quantile_10' : (stat),
+                   'quantile_01' : (stat),
+                   'min'         : (stat),
+                   'mean'        : (stat),
+                   'std'         : (stat),
+                   'MAD'         : (stat),
+                   'skew'        : (stat),
+                   'shapiro_W'   : (stat),
+                   'shapiro_p'   : (stat),
+                   'nonpositive_ratio' : (stat),
+                   'nan_ratio'   : (stat)}} 
 ```
 
 ...
@@ -1371,8 +1377,8 @@ labelsencoding_dict, finalcolumns_test = \
 am.postmunge(postprocess_dict, df_test, testID_column = False, \
              labelscolumn = False, pandasoutput=True, printstatus = True, \
              TrainLabelFreqLevel = False, featureeval = False, driftreport = False, \
-	     LabelSmoothing = False, LSfit = False, returnedsets = True, \
-	     shuffletrain = False)
+             LabelSmoothing = False, LSfit = False, returnedsets = True, \
+             shuffletrain = False)
 ```
 
 * postprocess_dict: this is the dictionary returned from the initial
