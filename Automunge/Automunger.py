@@ -5131,6 +5131,9 @@ class AutoMunge:
       divisor = maxminusmin
     else:
       divisor = std
+      
+    if divisor == 0 or divisor != divisor:
+      divisor = 1
     
     
     #driftreport metric scalingapproach returned as 'retn' or 'mnmx' or 'mxmn'
@@ -5222,6 +5225,27 @@ class AutoMunge:
     #dataframe inputs
     '''
     
+    #initialize parameters
+    if 'offset' in params:
+      offset = params['offset']
+    else:
+      offset = 0
+      
+    if 'multiplier' in params:
+      multiplier = params['multiplier']
+    else:
+      multiplier = 1
+    
+    if 'cap' in params:
+      cap = params['cap']
+    else:
+      cap = False
+      
+    if 'floor' in params:
+      floor = params['floor']
+    else:
+      floor = False
+    
     #copy source column into new column
     mdf_train[column + '_mean'] = mdf_train[column].copy()
     mdf_test[column + '_mean'] = mdf_test[column].copy()
@@ -5229,6 +5253,43 @@ class AutoMunge:
     #convert all values to either numeric or NaN
     mdf_train[column + '_mean'] = pd.to_numeric(mdf_train[column + '_mean'], errors='coerce')
     mdf_test[column + '_mean'] = pd.to_numeric(mdf_test[column + '_mean'], errors='coerce')
+    
+    #get maximum value of training column
+    maximum = mdf_train[column + '_mean'].max()
+    
+    #get minimum value of training column
+    minimum = mdf_train[column + '_mean'].min()
+    
+    #if cap < maximum, maximum = cap
+    if cap is not False and cap is not True:
+      if cap < maximum:
+        maximum = cap
+    if floor is not False and floor is not True:
+      if floor > minimum:
+        minimum = floor
+        
+    #cap and floor application
+    if cap is True:
+      cap = maximum
+    if floor is True:
+      floor = minimum
+      
+    if cap is not False:
+      #replace values in test > cap with cap
+      mdf_train.loc[mdf_train[column + '_mean'] > cap, (column + '_mean')] \
+      = cap
+      
+      mdf_test.loc[mdf_test[column + '_mean'] > cap, (column + '_mean')] \
+      = cap
+    
+    if floor is not False:
+      #replace values in test < floor with floor
+      mdf_train.loc[mdf_train[column + '_mean'] < floor, (column + '_mean')] \
+      = floor
+      
+      mdf_test.loc[mdf_test[column + '_mean'] < floor, (column + '_mean')] \
+      = floor
+    
     
     #a few more metrics collected for driftreport
     #get standard deviation of training data
@@ -5243,23 +5304,19 @@ class AutoMunge:
     mdf_train[column + '_mean'] = mdf_train[column + '_mean'].fillna(mean)
     mdf_test[column + '_mean'] = mdf_test[column + '_mean'].fillna(mean)
     
-    #get maximum value of training column
-    maximum = mdf_train[column + '_mean'].max()
-    
-    #get minimum value of training column
-    minimum = mdf_train[column + '_mean'].min()
+
     
     #avoid outlier div by zero when max = min
     maxminusmin = maximum - minimum
-    if maxminusmin == 0:
+    if maxminusmin == 0 or maxminusmin != maxminusmin:
       maxminusmin = 1
     
     #perform min-max scaling to train and test sets using values from train
     mdf_train[column + '_mean'] = (mdf_train[column + '_mean'] - mean) / \
-                                  (maxminusmin)
+                                  (maxminusmin) * multiplier + offset
     
     mdf_test[column + '_mean'] = (mdf_test[column + '_mean'] - mean) / \
-                                 (maxminusmin)
+                                 (maxminusmin) * multiplier + offset
 
 #     #change data type for memory savings
 #     mdf_train[column + '_mnmx'] = mdf_train[column + '_mnmx'].astype(np.float32)
@@ -5273,8 +5330,13 @@ class AutoMunge:
 
     nmbrnormalization_dict = {column + '_mean' : {'minimum' : minimum, \
                                                   'maximum' : maximum, \
+                                                  'maxminusmin' : maxminusmin, \
                                                   'mean' : mean, \
-                                                  'std' : std}}
+                                                  'std' : std, \
+                                                  'offset' : offset, \
+                                                  'multiplier': multiplier, \
+                                                  'cap' : cap, \
+                                                  'floor' : floor}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -16389,7 +16451,8 @@ class AutoMunge:
   
 
 
-  def evalcategory(self, df_source, column, numbercategoryheuristic, powertransform, labels = False):
+  def evalcategory(self, df_source, column, defaultcategoric, defaultnumeric, defaultdatetime, \
+                   numbercategoryheuristic, powertransform, labels = False):
     '''
     #evalcategory(df, column)
     #Function that dakes as input a dataframe and associated column id \
@@ -16420,15 +16483,17 @@ class AutoMunge:
       
       #default categorical
       #defaultcategorical = 'text'
-      defaultcategorical = '1010'
+      #defaultcategorical = '1010'
+      defaultcategorical = defaultcategoric
       
       defaultordinal = 'ord3'
       
-      
-      defaultnumerical = 'nmbr'
+      defaultnumerical = defaultnumeric
+      #defaultnumerical = 'nmbr'
       #defaultnumerical = 'mean'
       
-      defaultdatetime = 'dat6'
+      #defaultdatetime = 'dat6'
+      defaultdatetime = defaultdatetime
       
       #_____
       
@@ -21825,6 +21890,62 @@ class AutoMunge:
         
     return result
 
+  def check_defaults(self, defaultcategoric, defaultnumeric, defaultdatetime, \
+                     process_dict, transform_dict):
+    """
+    #validate that defaults defaultcategoric, defaultnumeric, defaultdatetime
+    #have entries in process_dict and transform_dict
+    """
+    
+    #False is good
+    result_defaultcategoric = False
+    result_defaultnumeric = False
+    result_defaultdatetime = False
+    
+    
+    #check defaultcategoric
+    if defaultcategoric not in process_dict:
+      result_defaultcategoric = True
+      print("Error, a category was passed to defaultcategoric ")
+      print("without a corresponding entry in the process_dict.")
+      print("")
+    
+    if defaultcategoric not in transform_dict:
+      result_defaultcategoric = True
+      print("Error, a category was passed to defaultcategoric ")
+      print("without a corresponding entry in the transform_dict.")
+      print("")
+      
+      
+    #check defaultnumeric
+    if defaultnumeric not in process_dict:
+      result_defaultnumeric = True
+      print("Error, a category was passed to defaultnumeric ")
+      print("without a corresponding entry in the process_dict.")
+      print("")
+    
+    if defaultnumeric not in transform_dict:
+      result_defaultnumeric = True
+      print("Error, a category was passed to defaultnumeric ")
+      print("without a corresponding entry in the transform_dict.")
+      print("")
+      
+      
+    #check defaultdatetime
+    if defaultdatetime not in process_dict:
+      result_defaultdatetime = True
+      print("Error, a category was passed to defaultdatetime ")
+      print("without a corresponding entry in the process_dict.")
+      print("")
+    
+    if defaultdatetime not in transform_dict:
+      result_defaultdatetime = True
+      print("Error, a category was passed to defaultdatetime ")
+      print("without a corresponding entry in the transform_dict.")
+      print("")
+
+        
+    return result_defaultcategoric, result_defaultnumeric, result_defaultdatetime
 
 
   def check_assigninfill(self, assigninfill):
@@ -22785,6 +22906,7 @@ class AutoMunge:
 
   def automunge(self, df_train, df_test = False, labels_column = False, trainID_column = False, \
                 testID_column = False, valpercent1=0.0, valpercent2 = 0.0, floatprecision = 32, \
+                defaultcategoric = '1010', defaultnumeric = 'nmbr', defaultdatetime = 'dat6', \
                 shuffletrain = True, TrainLabelFreqLevel = False, powertransform = False, \
                 binstransform = False, MLinfill = False, infilliterate=1, randomseed = 42, \
                 LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, \
@@ -22988,6 +23110,11 @@ class AutoMunge:
     #now double check that any category entries in the assigncat have populated family trees
     #with categories that all have entries in the transform_dict
     check_assigncat_result3 = self.check_assigncat3(assigncat, process_dict, transform_dict)
+    
+    #run some validaitons on default categories
+    result_defaultcategoric, result_defaultnumeric, result_defaultdatetime \
+    = self.check_defaults(defaultcategoric, defaultnumeric, defaultdatetime, \
+                          process_dict, transform_dict)
     
     miscparameters_results.update({'check_assigncat_result2' : check_assigncat_result2, \
                                    'check_assigncat_result3' : check_assigncat_result3})
@@ -23486,9 +23613,11 @@ class AutoMunge:
               #passing a True for powertransform parameter
               if key in ['eval']:
                 if evalcat == False:
-                  category = self.evalcategory(df_train, column, numbercategoryheuristic, True, False)
+                  category = self.evalcategory(df_train, column, defaultcategoric, defaultnumeric, defaultdatetime, \
+                                               numbercategoryheuristic, True, False)
                 elif type(evalcat) == types.FunctionType:
-                  category = evalcat(df_train, column, numbercategoryheuristic, True, False)
+                  category = evalcat(df_train, column, defaultcategoric, defaultnumeric, defaultdatetime, \
+                                     numbercategoryheuristic, True, False)
                 else:
                   print("error: evalcat must be passed as either False or as a defined function per READ ME")
 
@@ -23501,9 +23630,11 @@ class AutoMunge:
             print("evaluating column: ", column)
 
           if evalcat == False:
-            category = self.evalcategory(df_train, column, numbercategoryheuristic, powertransform, False)
+            category = self.evalcategory(df_train, column, defaultcategoric, defaultnumeric, defaultdatetime, \
+                                         numbercategoryheuristic, powertransform, False)
           elif type(evalcat) == types.FunctionType:
-            category = evalcat(df_train, column, numbercategoryheuristic, powertransform, False)
+            category = evalcat(df_train, column, defaultcategoric, defaultnumeric, defaultdatetime, \
+                               numbercategoryheuristic, powertransform, False)
           else:
             print("error: evalcat must be passed as either False or as a defined function per READ ME")
 
@@ -23716,9 +23847,11 @@ class AutoMunge:
         #labelscategory = self.evalcategory(df_labels, labels_column, numbercategoryheuristic, powertransform)
 
         if evalcat == False:
-          labelscategory = self.evalcategory(df_labels, labels_column, numbercategoryheuristic, powertransform, True)
+          labelscategory = self.evalcategory(df_labels, labels_column, defaultcategoric, defaultnumeric, defaultdatetime, \
+                                             numbercategoryheuristic, powertransform, True)
         elif type(evalcat) == types.FunctionType:
-          labelscategory = evalcat(df_labels, labels_column, numbercategoryheuristic, powertransform, True)
+          labelscategory = evalcat(df_labels, labels_column, defaultcategoric, defaultnumeric, defaultdatetime, \
+                                   numbercategoryheuristic, powertransform, True)
         else:
           print("error: evalcat must be passed as either False or as a defined function per READ ME")
           
@@ -25752,6 +25885,21 @@ class AutoMunge:
     
     maximum = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['maximum']
+    
+    maxminusmin = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['maxminusmin']
+    
+    offset = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['offset']
+    
+    multiplier = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['multiplier']
+    
+    cap = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['cap']
+    
+    floor = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['floor']
 
     #copy original column for implementation
     mdf_test[column + '_mean'] = mdf_test[column].copy()
@@ -25759,6 +25907,16 @@ class AutoMunge:
 
     #convert all values to either numeric or NaN
     mdf_test[column + '_mean'] = pd.to_numeric(mdf_test[column + '_mean'], errors='coerce')
+    
+    if cap is not False:
+      #replace values in test > cap with cap
+      mdf_test.loc[mdf_test[column + '_mean'] > cap, (column + '_mean')] \
+      = cap
+    
+    if floor is not False:
+      #replace values in test < floor with floor
+      mdf_test.loc[mdf_test[column + '_mean'] < floor, (column + '_mean')] \
+      = floor
 
     #get mean of training data
     mean = mean  
@@ -25766,15 +25924,10 @@ class AutoMunge:
     #replace missing data with training set mean
     mdf_test[column + '_mean'] = mdf_test[column + '_mean'].fillna(mean)
     
-    
-    #avoid outlier div by zero when max = min
-    maxminusmin = maximum - minimum
-    if maxminusmin == 0:
-      maxminusmin = 1
 
     #perform min-max scaling to test set using values from train
     mdf_test[column + '_mean'] = (mdf_test[column + '_mean'] - mean) / \
-                                 (maxminusmin)
+                                 (maxminusmin) * multiplier + offset
 
 #     #change data type for memory savings
 #     mdf_test[column + '_mnmx'] = mdf_test[column + '_mnmx'].astype(np.float32)
