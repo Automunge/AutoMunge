@@ -143,8 +143,7 @@ labelsencoding_dict, finalcolumns_train, finalcolumns_test, \
 featureimportance, postprocess_dict = \
 am.automunge(df_train, df_test = False, labels_column = False, trainID_column = False, \
             testID_column = False, valpercent1=0.0, valpercent2 = 0.0, floatprecision = 32, \
-	    defaultcategoric = '1010', defaultnumeric = 'nmbr', defaultdatetime = 'dat6', \
-            shuffletrain = True, TrainLabelFreqLevel = False, powertransform = False, \
+	    shuffletrain = True, TrainLabelFreqLevel = False, powertransform = False, \
             binstransform = False, MLinfill = False, infilliterate=1, randomseed = 42, \
 	    LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, \
             LSfit = False, numbercategoryheuristic = 63, pandasoutput = True, NArw_marker = False, \
@@ -367,8 +366,7 @@ labelsencoding_dict, finalcolumns_train, finalcolumns_test, \
 featureimportance, postprocess_dict = \
 am.automunge(df_train, df_test = False, labels_column = False, trainID_column = False, \
             testID_column = False, valpercent1=0.0, valpercent2 = 0.0, floatprecision = 32, \
-	    defaultcategoric = '1010', defaultnumeric = 'nmbr', defaultdatetime = 'dat6', \
-            shuffletrain = True, TrainLabelFreqLevel = False, powertransform = False, \
+	    shuffletrain = True, TrainLabelFreqLevel = False, powertransform = False, \
             binstransform = False, MLinfill = False, infilliterate=1, randomseed = 42, \
 	    LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, \
             LSfit = False, numbercategoryheuristic = 63, pandasoutput = True, NArw_marker = False, \
@@ -580,8 +578,7 @@ demonstrated with the pickle library above.
 ```
 am.automunge(df_train, df_test = False, labels_column = False, trainID_column = False, \
             testID_column = False, valpercent1=0.0, valpercent2 = 0.0, floatprecision = 32, \
-	    defaultcategoric = '1010', defaultnumeric = 'nmbr', defaultdatetime = 'dat6', \
-            shuffletrain = True, TrainLabelFreqLevel = False, powertransform = False, \
+	    shuffletrain = True, TrainLabelFreqLevel = False, powertransform = False, \
             binstransform = False, MLinfill = False, infilliterate=1, randomseed = 42, \
 	    LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, \
             LSfit = False, numbercategoryheuristic = 63, pandasoutput = True, NArw_marker = False, \
@@ -707,26 +704,6 @@ usage and floating point precision, smaller for smaller footprint.)
 This currently defaults to 32 for 32-bit precision of float values. Note
 that there may be energy efficiency benefits at scale to basing this to 16.
 Note that integer data types are still retained with this option.
-
-* defaultcategoric: the category intended as default processing methods for
-categoric encodings under automation, defaults to '1010' for binary encoding. 
-For example could be passed as 'text' for one-hot encoding, 'ordl' for sorted 
-ordinal encoding, 'ord3' for ordinal encoding sorted by frequency, or 'excl' 
-for no transforms.
-
-* defaultnumeric: the category intended as default processing methods for
-numeric encodings under automation, defaults to 'nmbr' for z-score normalizaiton.
-For example could be passed as 'mean' for mean scaling, 'mnmx' for min-max scaling, 
-'retn' for scaling with sign retention, or 'excl' for no transforms.
-
-* defaultdatetime: the category intended as default processing methods for
-datetime encodings under automunge, defaults to 'dat6' to return seperate columns
-for year with z-score normalizaiton, mdsn (combined month/day with sin transform for 
-periodicity), mdcs (combined month/day with cos transform for periodicity), hmss 
-(combined hour/min/sec with sin transform for periodicity), hmsc (combined 
-hour/min/sec with cos transform for periodicity), bshr (boolean activations for time 
-within 9-5), wkdy (boolean activation for M-F), and hldy (boolean activation for US 
-federal holidays). See Library of transforms below for additional options.
 
 * shuffletrain: can be passed as one of {True, False, 'traintest'} which 
 indicates if the rows in df_train will be shuffled prior to carving out the 
