@@ -16451,8 +16451,8 @@ class AutoMunge:
   
 
 
-  def evalcategory(self, df_source, column, defaultcategoric, defaultnumeric, defaultdatetime, \
-                   numbercategoryheuristic, powertransform, labels = False):
+
+  def evalcategory(self, df_source, column, numbercategoryheuristic, powertransform, labels = False):
     '''
     #evalcategory(df, column)
     #Function that dakes as input a dataframe and associated column id \
@@ -16483,17 +16483,14 @@ class AutoMunge:
       
       #default categorical
       #defaultcategorical = 'text'
-      #defaultcategorical = '1010'
-      defaultcategorical = defaultcategoric
+      defaultcategorical = '1010'
       
       defaultordinal = 'ord3'
       
-      defaultnumerical = defaultnumeric
-      #defaultnumerical = 'nmbr'
+      defaultnumerical = 'nmbr'
       #defaultnumerical = 'mean'
       
-      #defaultdatetime = 'dat6'
-      defaultdatetime = defaultdatetime
+      defaultdatetime = 'dat6'
       
       #_____
       
@@ -21890,62 +21887,6 @@ class AutoMunge:
         
     return result
 
-  def check_defaults(self, defaultcategoric, defaultnumeric, defaultdatetime, \
-                     process_dict, transform_dict):
-    """
-    #validate that defaults defaultcategoric, defaultnumeric, defaultdatetime
-    #have entries in process_dict and transform_dict
-    """
-    
-    #False is good
-    result_defaultcategoric = False
-    result_defaultnumeric = False
-    result_defaultdatetime = False
-    
-    
-    #check defaultcategoric
-    if defaultcategoric not in process_dict:
-      result_defaultcategoric = True
-      print("Error, a category was passed to defaultcategoric ")
-      print("without a corresponding entry in the process_dict.")
-      print("")
-    
-    if defaultcategoric not in transform_dict:
-      result_defaultcategoric = True
-      print("Error, a category was passed to defaultcategoric ")
-      print("without a corresponding entry in the transform_dict.")
-      print("")
-      
-      
-    #check defaultnumeric
-    if defaultnumeric not in process_dict:
-      result_defaultnumeric = True
-      print("Error, a category was passed to defaultnumeric ")
-      print("without a corresponding entry in the process_dict.")
-      print("")
-    
-    if defaultnumeric not in transform_dict:
-      result_defaultnumeric = True
-      print("Error, a category was passed to defaultnumeric ")
-      print("without a corresponding entry in the transform_dict.")
-      print("")
-      
-      
-    #check defaultdatetime
-    if defaultdatetime not in process_dict:
-      result_defaultdatetime = True
-      print("Error, a category was passed to defaultdatetime ")
-      print("without a corresponding entry in the process_dict.")
-      print("")
-    
-    if defaultdatetime not in transform_dict:
-      result_defaultdatetime = True
-      print("Error, a category was passed to defaultdatetime ")
-      print("without a corresponding entry in the transform_dict.")
-      print("")
-
-        
-    return result_defaultcategoric, result_defaultnumeric, result_defaultdatetime
 
 
   def check_assigninfill(self, assigninfill):
@@ -22906,7 +22847,6 @@ class AutoMunge:
 
   def automunge(self, df_train, df_test = False, labels_column = False, trainID_column = False, \
                 testID_column = False, valpercent1=0.0, valpercent2 = 0.0, floatprecision = 32, \
-                defaultcategoric = '1010', defaultnumeric = 'nmbr', defaultdatetime = 'dat6', \
                 shuffletrain = True, TrainLabelFreqLevel = False, powertransform = False, \
                 binstransform = False, MLinfill = False, infilliterate=1, randomseed = 42, \
                 LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, \
@@ -23110,11 +23050,6 @@ class AutoMunge:
     #now double check that any category entries in the assigncat have populated family trees
     #with categories that all have entries in the transform_dict
     check_assigncat_result3 = self.check_assigncat3(assigncat, process_dict, transform_dict)
-    
-    #run some validaitons on default categories
-    result_defaultcategoric, result_defaultnumeric, result_defaultdatetime \
-    = self.check_defaults(defaultcategoric, defaultnumeric, defaultdatetime, \
-                          process_dict, transform_dict)
     
     miscparameters_results.update({'check_assigncat_result2' : check_assigncat_result2, \
                                    'check_assigncat_result3' : check_assigncat_result3})
@@ -23613,11 +23548,9 @@ class AutoMunge:
               #passing a True for powertransform parameter
               if key in ['eval']:
                 if evalcat == False:
-                  category = self.evalcategory(df_train, column, defaultcategoric, defaultnumeric, defaultdatetime, \
-                                               numbercategoryheuristic, True, False)
+                  category = self.evalcategory(df_train, column, numbercategoryheuristic, True, False)
                 elif type(evalcat) == types.FunctionType:
-                  category = evalcat(df_train, column, defaultcategoric, defaultnumeric, defaultdatetime, \
-                                     numbercategoryheuristic, True, False)
+                  category = evalcat(df_train, column, numbercategoryheuristic, True, False)
                 else:
                   print("error: evalcat must be passed as either False or as a defined function per READ ME")
 
@@ -23630,11 +23563,9 @@ class AutoMunge:
             print("evaluating column: ", column)
 
           if evalcat == False:
-            category = self.evalcategory(df_train, column, defaultcategoric, defaultnumeric, defaultdatetime, \
-                                         numbercategoryheuristic, powertransform, False)
+            category = self.evalcategory(df_train, column, numbercategoryheuristic, powertransform, False)
           elif type(evalcat) == types.FunctionType:
-            category = evalcat(df_train, column, defaultcategoric, defaultnumeric, defaultdatetime, \
-                               numbercategoryheuristic, powertransform, False)
+            category = evalcat(df_train, column, numbercategoryheuristic, powertransform, False)
           else:
             print("error: evalcat must be passed as either False or as a defined function per READ ME")
 
@@ -23847,11 +23778,9 @@ class AutoMunge:
         #labelscategory = self.evalcategory(df_labels, labels_column, numbercategoryheuristic, powertransform)
 
         if evalcat == False:
-          labelscategory = self.evalcategory(df_labels, labels_column, defaultcategoric, defaultnumeric, defaultdatetime, \
-                                             numbercategoryheuristic, powertransform, True)
+          labelscategory = self.evalcategory(df_labels, labels_column, numbercategoryheuristic, powertransform, True)
         elif type(evalcat) == types.FunctionType:
-          labelscategory = evalcat(df_labels, labels_column, defaultcategoric, defaultnumeric, defaultdatetime, \
-                                   numbercategoryheuristic, powertransform, True)
+          labelscategory = evalcat(df_labels, labels_column, numbercategoryheuristic, powertransform, True)
         else:
           print("error: evalcat must be passed as either False or as a defined function per READ ME")
           
@@ -24836,7 +24765,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.48'
+    automungeversion = '3.50'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
