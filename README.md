@@ -1946,7 +1946,7 @@ normalization which scales data with min/max while retaining +/- sign
   - suffix appender: '_dxdt'
   - assignparam parameters accepted: 'periods' sets number of time steps offset to evaluate
   defaults to 1
-  - driftreport postmunge metrics: (pending)
+  - driftreport postmunge metrics: positiveratio / negativeratio / zeroratio / minimum / maximum / mean / std
 * dxd2/d2d2/d3d2/d4d2/d5d2/d6d2: denoised rate of change (average of last two rows minus average
 of preceding two rows), high orders return lower orders (eg d2d2 returns original set, dxd2, 
 and d2d2), all returned sets include 'retn' normalization
@@ -1955,7 +1955,7 @@ and d2d2), all returned sets include 'retn' normalization
   - suffix appender: '_dxd2'
   - assignparam parameters accepted: 'periods' sets number of time steps offset to evaluate
   defaults to 2
-  - driftreport postmunge metrics: (pending)
+  - driftreport postmunge metrics: positiveratio / negativeratio / zeroratio / minimum / maximum / mean / std
 * nmdx/nmd2/nmd3/nmd4/nmd5/nmd6: comparable to dxdt but includes upstream of sequential transforms a 
 nmrc numeric string parsing top extract numbers from string sets
 * mmdx/mmd2/mmd3/mmd4/mmd5/mmd6: comparable to dxdt but uses z-score normalizaitons via 'nbr2' instead of 'retn'
@@ -2076,25 +2076,27 @@ average days in a month (30.42) periodicity
   - default NArowtype: datetime
   - suffix appender: '_wkdy'
   - assignparam parameters accepted: none
-  - driftreport postmunge metrics: (pending)
+  - driftreport postmunge metrics: activationratio
 * wkds/wkdo: encoded weekdays 0-6, 'wkds' for one-hot via 'text', 'wkdo' for ordinal via 'ord3'
   - default infill: 7 (eg eight days a week)
   - default NArowtype: datetime
   - suffix appender: '_wkds'
   - assignparam parameters accepted: none
-  - driftreport postmunge metrics: None
+  - driftreport postmunge metrics: mon_ratio / tue_ratio / wed_ratio / thr_ratio / fri_ratio / sat_ratio / 
+	  sun_ratio / infill_ratio
 * mnts/mnto: encoded months 1-12, 'mnts' for one-hot via 'text', 'mnto' for ordinal via 'ord3'
   - default infill: 0
   - default NArowtype: datetime
   - suffix appender: '_mnts'
   - assignparam parameters accepted: none
-  - driftreport postmunge metrics: None
+  - driftreport postmunge metrics: infill_ratio / jan_ratio / feb_ratio / mar_ratio / apr_ratio / may_ratio / 
+	  jun_ratio / jul_ratio / aug_ratio / sep_ratio / oct_ratio / nov_ratio / dec_ratio
 * bshr: boolean identifier indicating whether a datetime object falls within business
 hours (9-5, time zone unaware)
   - default infill: datetime
   - default NArowtype: justNaN
   - assignparam parameters accepted: 'start' and 'end', which default to 9 and 17
-  - driftreport postmunge metrics: (pending)
+  - driftreport postmunge metrics: activationratio
 * hldy: boolean identifier indicating whether a datetime object is a US Federal
 holiday
   - default infill: none
@@ -2102,7 +2104,7 @@ holiday
   - suffix appender: '_hldy'
   - assignparam parameters accepted: 'holiday_list', should be passed as a list of strings
     of dates of additional holdays to be recognized e.g. ['2020/03/30']
-  - driftreport postmunge metrics: (pending)
+  - driftreport postmunge metrics: activationratio
 ### Misc. Functions
 * null: deletes source column
   - default infill: none
