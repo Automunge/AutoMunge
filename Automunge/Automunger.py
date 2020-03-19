@@ -4330,7 +4330,26 @@ class AutoMunge:
     nmbrcolumns = [column + '_dxdt']
 
 
-    nmbrnormalization_dict = {column + '_dxdt' : {}}
+    #grab some driftreport metrics
+    #note that if this function implemented for data streams at scale it may be appropriate
+    #to consider creating an alternate to dxdt without the driftreport metrics for postmunge efficiency
+    positiveratio = df[df[column + '_dxdt'] >= 0].shape[0] / df[column + '_dxdt'].shape[0]
+    negativeratio = df[df[column + '_dxdt'] < 0].shape[0] / df[column + '_dxdt'].shape[0]
+    zeroratio = df[df[column + '_dxdt'] == 0].shape[0] / df[column + '_dxdt'].shape[0]
+    minimum = df[column + '_dxdt'].min()
+    maximum = df[column + '_dxdt'].max()
+    mean = df[column + '_dxdt'].mean()
+    std = df[column + '_dxdt'].std()
+
+
+    nmbrnormalization_dict = {column + '_dxdt' : {'positiveratio' : positiveratio, \
+                                                  'negativeratio' : negativeratio, \
+                                                  'zeroratio' : zeroratio, \
+                                                  'minimum' : minimum, \
+                                                  'maximum' : maximum, \
+                                                  'mean' : mean, \
+                                                  'std' : std, \
+                                                  'periods' : periods}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -4434,7 +4453,25 @@ class AutoMunge:
     nmbrcolumns = [column + '_dxd2']
 
 
-    nmbrnormalization_dict = {column + '_dxd2' : {}}
+    #grab some driftreport metrics
+    #note that if this function implemented for data streams at scale it may be appropriate
+    #to consider creating an alternate to dxd2 without the driftreport metrics for postmunge efficiency
+    positiveratio = df[df[column + '_dxd2'] >= 0].shape[0] / df[column + '_dxd2'].shape[0]
+    negativeratio = df[df[column + '_dxd2'] < 0].shape[0] / df[column + '_dxd2'].shape[0]
+    zeroratio = df[df[column + '_dxd2'] == 0].shape[0] / df[column + '_dxd2'].shape[0]
+    minimum = df[column + '_dxd2'].min()
+    maximum = df[column + '_dxd2'].max()
+    mean = df[column + '_dxd2'].mean()
+    std = df[column + '_dxd2'].std()
+  
+    nmbrnormalization_dict = {column + '_dxd2' : {'positiveratio' : positiveratio, \
+                                                  'negativeratio' : negativeratio, \
+                                                  'zeroratio' : zeroratio, \
+                                                  'minimum' : minimum, \
+                                                  'maximum' : maximum, \
+                                                  'mean' : mean, \
+                                                  'std' : std, \
+                                                  'periods' : periods}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -9248,8 +9285,11 @@ class AutoMunge:
     #create list of columns
     datecolumns = [column + '_bshr']
 
+    #grab some driftreport metrics
+    activationratio = df[column + '_bshr'].sum() / df[column + '_bshr'].shape[0]
+
     #create normalization dictionary
-    normalization_dict = {column + '_bshr' : {}}
+    normalization_dict = {column + '_bshr' : {'activationratio' : activationratio}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -9299,8 +9339,11 @@ class AutoMunge:
     #create list of columns
     datecolumns = [column+'_wkdy']
 
+    #grab some driftreport metrics
+    activationratio = df[column + '_wkdy'].sum() / df[column + '_wkdy'].shape[0]
+
     #create normalization dictionary
-    normalization_dict = {column+'_wkdy' : {}}
+    normalization_dict = {column + '_wkdy' : {'activationratio' : activationratio}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -9378,8 +9421,11 @@ class AutoMunge:
     #create list of columns
     datecolumns = [column + '_hldy']
 
+    #grab some driftreport metrics
+    activationratio = df[column + '_hldy'].sum() / df[column + '_hldy'].shape[0]
+
     #create normalization dictionary
-    normalization_dict = {column + '_hldy' : {}}
+    normalization_dict = {column + '_hldy' : {'activationratio' : activationratio}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -9432,8 +9478,27 @@ class AutoMunge:
     #create list of columns
     datecolumns = [column+'_wkds']
 
+    #grab some driftreport metrics
+    numberofrows = df[column + '_wkds'].shape[0]
+    mon_ratio = df[df[column + '_wkds'] == 0].shape[0] / numberofrows
+    tue_ratio = df[df[column + '_wkds'] == 1].shape[0] / numberofrows
+    wed_ratio = df[df[column + '_wkds'] == 2].shape[0] / numberofrows
+    thr_ratio = df[df[column + '_wkds'] == 3].shape[0] / numberofrows
+    fri_ratio = df[df[column + '_wkds'] == 4].shape[0] / numberofrows
+    sat_ratio = df[df[column + '_wkds'] == 5].shape[0] / numberofrows
+    sun_ratio = df[df[column + '_wkds'] == 6].shape[0] / numberofrows
+    infill_ratio = df[df[column + '_wkds'] == 7].shape[0] / numberofrows
+  
+  
     #create normalization dictionary
-    normalization_dict = {column+'_wkds' : {}}
+    normalization_dict = {column+'_wkds' : {'mon_ratio' : mon_ratio, \
+                                            'tue_ratio' : tue_ratio, \
+                                            'wed_ratio' : wed_ratio, \
+                                            'thr_ratio' : thr_ratio, \
+                                            'fri_ratio' : fri_ratio, \
+                                            'sat_ratio' : sat_ratio, \
+                                            'sun_ratio' : sun_ratio, \
+                                            'infill_ratio' : infill_ratio}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -9486,8 +9551,36 @@ class AutoMunge:
     #create list of columns
     datecolumns = [column+'_mnts']
 
+    #grab some driftreport metrics
+    numberofrows = df[column + '_mnts'].shape[0]
+    infill_ratio = df[df[column + '_mnts'] == 0].shape[0] / numberofrows
+    jan_ratio = df[df[column + '_mnts'] == 1].shape[0] / numberofrows
+    feb_ratio = df[df[column + '_mnts'] == 2].shape[0] / numberofrows
+    mar_ratio = df[df[column + '_mnts'] == 3].shape[0] / numberofrows
+    apr_ratio = df[df[column + '_mnts'] == 4].shape[0] / numberofrows
+    may_ratio = df[df[column + '_mnts'] == 5].shape[0] / numberofrows
+    jun_ratio = df[df[column + '_mnts'] == 6].shape[0] / numberofrows
+    jul_ratio = df[df[column + '_mnts'] == 7].shape[0] / numberofrows
+    aug_ratio = df[df[column + '_mnts'] == 8].shape[0] / numberofrows
+    sep_ratio = df[df[column + '_mnts'] == 9].shape[0] / numberofrows
+    oct_ratio = df[df[column + '_mnts'] == 10].shape[0] / numberofrows
+    nov_ratio = df[df[column + '_mnts'] == 11].shape[0] / numberofrows
+    dec_ratio = df[df[column + '_mnts'] == 12].shape[0] / numberofrows
+  
     #create normalization dictionary
-    normalization_dict = {column+'_mnts' : {}}
+    normalization_dict = {column+'_mnts' : {'infill_ratio' : infill_ratio, \
+                                            'jan_ratio' : jan_ratio, \
+                                            'feb_ratio' : feb_ratio, \
+                                            'mar_ratio' : mar_ratio, \
+                                            'apr_ratio' : apr_ratio, \
+                                            'may_ratio' : may_ratio, \
+                                            'jun_ratio' : jun_ratio, \
+                                            'jul_ratio' : jul_ratio, \
+                                            'aug_ratio' : aug_ratio, \
+                                            'sep_ratio' : sep_ratio, \
+                                            'oct_ratio' : oct_ratio, \
+                                            'nov_ratio' : nov_ratio, \
+                                            'dec_ratio' : dec_ratio}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -24765,7 +24858,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.50'
+    automungeversion = '3.51'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
