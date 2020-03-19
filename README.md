@@ -1699,7 +1699,7 @@ infill.
   - driftreport postmunge metrics: mean / std / max / min
 * mean/mea2/mea3: mean normalization (like z-score in the numerator and min-max in the denominator)<br/>
 (x - mean) / (max - min)
-Note this is what Andrew Ng suggested as default in his MOOC. My intuition says z-score has some 
+My intuition says z-score has some 
 benefits but really up to the user which they prefer.
   - default infill: mean
   - default NArowtype: numeric
