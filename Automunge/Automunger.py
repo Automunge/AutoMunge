@@ -17107,6 +17107,9 @@ class AutoMunge:
     #if category in ['excl']:
     if NArowtype in ['exclude', 'boolexclude']:
       
+      if driftassess is True:
+        drift_dict.update({column : {}})
+      
 #       NArows = pd.DataFrame(np.zeros((df2.shape[0], 1)), columns=[column+'_NArows'])
       #NArows = NArows.rename(columns = {column:column+'_NArows'})
       
@@ -24828,6 +24831,14 @@ class AutoMunge:
 
     #a special case, those columns that we completely excluded from processing via excl
     #we'll scrub the suffix appender
+    
+    #first let's create a list of excl columns with and without suffix, just in case might come in handy
+    postprocess_dict.update({'excl_columns_with_suffix':[], 'excl_columns_without_suffix':[]})
+    for cd_column in postprocess_dict['column_dict']:
+      if postprocess_dict['column_dict'][cd_column]['category'] == 'excl':
+        postprocess_dict['excl_columns_with_suffix'].append(cd_column)
+        postprocess_dict['excl_columns_without_suffix'].append(cd_column[:-5])
+    
     #(we won't perform this step to train and test sets if PCA was applied)
     if PCA_applied is False:
       df_train.columns = [column[:-5] if postprocess_dict['column_dict'][column]['category'] == 'excl' \
@@ -24858,7 +24869,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.51'
+    automungeversion = '3.52'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
