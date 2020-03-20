@@ -2115,7 +2115,7 @@ holiday
 methods like ML infill and feature selection may not work for that scenario.)
   - default infill: none
   - default NArowtype: exclude
-  - suffix appender: '_excl'
+  - suffix appender: None (this is a special case)
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: none
 * exc2/exc3/exc4: passes source column unaltered other than force to numeric, mode infill applied
