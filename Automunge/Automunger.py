@@ -2130,6 +2130,15 @@ class AutoMunge:
                                      'coworkers' : [], \
                                      'friends' : ['pwr2']}})
     
+    transform_dict.update({'exc5' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['exc5'], \
+                                     'cousins' : [], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
     transform_dict.update({'shfl' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['shfl'], \
@@ -2224,6 +2233,7 @@ class AutoMunge:
     
     #NArowtype entries are:
     # - 'numeric' for source columns with expected numeric entries
+    # - 'integer' for source column with expected integer entries
     # - 'justNaN' for source columns that may have expected entries other than numeric
     # - 'exclude' for source columns that aren't needing NArow columns derived
     # - 'positivenumeric' for source columns with expected positive numeric entries
@@ -3599,6 +3609,12 @@ class AutoMunge:
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'exc2'}})
+    process_dict.update({'exc5' : {'dualprocess' : self.process_exc5_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_exc5_class, \
+                                  'NArowtype' : 'integer', \
+                                  'MLinfilltype' : 'singlct', \
+                                  'labelctgy' : 'exc5'}})
     process_dict.update({'shfl' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_shfl_class, \
                                   'postprocess' : None, \
@@ -4122,6 +4138,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : NArwnormalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : nmbrcolumns, \
                            'categorylist' : [nc], \
                            'infillmodel' : False, \
@@ -4263,6 +4280,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : nmbrnormalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : nmbrcolumns, \
                            'categorylist' : [nc], \
                            'infillmodel' : False, \
@@ -4360,6 +4378,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : nmbrnormalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : nmbrcolumns, \
                            'categorylist' : [nc], \
                            'infillmodel' : False, \
@@ -4482,6 +4501,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : nmbrnormalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : nmbrcolumns, \
                            'categorylist' : [nc], \
                            'infillmodel' : False, \
@@ -4567,6 +4587,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : nmbrnormalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : nmbrcolumns, \
                            'categorylist' : [nc], \
                            'infillmodel' : False, \
@@ -4659,6 +4680,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : nmbrnormalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : nmbrcolumns, \
                            'categorylist' : [nc], \
                            'infillmodel' : False, \
@@ -4791,6 +4813,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : nmbrnormalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : nmbrcolumns, \
                            'categorylist' : [nc], \
                            'infillmodel' : False, \
@@ -4919,6 +4942,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : nmbrnormalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : nmbrcolumns, \
                            'categorylist' : [nc], \
                            'infillmodel' : False, \
@@ -5017,6 +5041,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : nmbrnormalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : nmbrcolumns, \
                            'categorylist' : [nc], \
                            'infillmodel' : False, \
@@ -5233,6 +5258,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : nmbrnormalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : nmbrcolumns, \
                            'categorylist' : nmbrcolumns, \
                            'infillmodel' : False, \
@@ -5384,6 +5410,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : nmbrnormalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : nmbrcolumns, \
                            'categorylist' : [nc], \
                            'infillmodel' : False, \
@@ -5594,6 +5621,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : bnrynormalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : bnrycolumns, \
                            'categorylist' : [bc], \
                            'infillmodel' : False, \
@@ -5806,6 +5834,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : bnrynormalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : bnrycolumns, \
                            'categorylist' : [bc], \
                            'infillmodel' : False, \
@@ -5964,13 +5993,14 @@ class AutoMunge:
       tc_ratio = tc + '_ratio'
       tcratio = mdf_train[tc].sum() / mdf_train[tc].shape[0]
 
-      textnormalization_dict = {tc : {'textlabelsdict' : textlabelsdict, \
+      textnormalization_dict = {tc : {'textlabelsdict_text' : textlabelsdict, \
                                       tc_ratio : tcratio}}
       
       column_dict = {tc : {'category' : 'text', \
                            'origcategory' : category, \
                            'normalization_dict' : textnormalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : textcolumns, \
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
@@ -6027,6 +6057,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : normalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : columns, \
                            'categorylist' : columns, \
                            'infillmodel' : False, \
@@ -6074,6 +6105,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : normalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : UPCScolumns, \
                            'categorylist' : UPCScolumns, \
                            'infillmodel' : False, \
@@ -6257,13 +6289,14 @@ class AutoMunge:
     for tc in newcolumns:
 
       textnormalization_dict = {tc : {'overlap_dict' : overlap_dict, \
-                                      'splt_newcolumns'   : newcolumns, \
+                                      'splt_newcolumns_splt'   : newcolumns, \
                                       'minsplit' : minsplit}}
       
       column_dict = {tc : {'category' : 'splt', \
                            'origcategory' : category, \
                            'normalization_dict' : textnormalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : newcolumns, \
                            'categorylist' : newcolumns, \
                            'infillmodel' : False, \
@@ -6511,6 +6544,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : textnormalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : newcolumns, \
                            'categorylist' : newcolumns, \
                            'infillmodel' : False, \
@@ -6776,6 +6810,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : textnormalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : newcolumns, \
                            'categorylist' : newcolumns, \
                            'infillmodel' : False, \
@@ -7038,6 +7073,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : textnormalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : newcolumns, \
                            'categorylist' : newcolumns, \
                            'infillmodel' : False, \
@@ -7231,13 +7267,14 @@ class AutoMunge:
     for tc in newcolumns:
 
       textnormalization_dict = {tc : {'overlap_dict' : overlap_dict, \
-                                      'splt_newcolumns'   : newcolumns, \
+                                      'splt_newcolumns_spl8'   : newcolumns, \
                                       'minsplit' : minsplit}}
       
       column_dict = {tc : {'category' : 'spl8', \
                            'origcategory' : category, \
                            'normalization_dict' : textnormalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : newcolumns, \
                            'categorylist' : newcolumns, \
                            'infillmodel' : False, \
@@ -7497,6 +7534,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : textnormalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : newcolumns, \
                            'categorylist' : newcolumns, \
                            'infillmodel' : False, \
@@ -7778,6 +7816,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : textnormalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : newcolumns, \
                            'categorylist' : newcolumns, \
                            'infillmodel' : False, \
@@ -7902,6 +7941,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : nmbrnormalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : nmbrcolumns, \
                            'categorylist' : nmbrcolumns, \
                            'infillmodel' : False, \
@@ -8039,6 +8079,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : nmbrnormalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : nmbrcolumns, \
                            'categorylist' : nmbrcolumns, \
                            'infillmodel' : False, \
@@ -8244,6 +8285,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : nmbrnormalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : nmbrcolumns, \
                            'categorylist' : nmbrcolumns, \
                            'infillmodel' : False, \
@@ -8366,6 +8408,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : nmbrnormalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : nmbrcolumns, \
                            'categorylist' : nmbrcolumns, \
                            'infillmodel' : False, \
@@ -8506,6 +8549,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : nmbrnormalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : nmbrcolumns, \
                            'categorylist' : nmbrcolumns, \
                            'infillmodel' : False, \
@@ -8719,6 +8763,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : nmbrnormalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : nmbrcolumns, \
                            'categorylist' : nmbrcolumns, \
                            'infillmodel' : False, \
@@ -8873,6 +8918,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : normalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : categorylist, \
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
@@ -9031,6 +9077,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : normalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : categorylist, \
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
@@ -9236,6 +9283,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : normalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : categorylist, \
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
@@ -9300,6 +9348,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : normalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : datecolumns, \
                            'categorylist' : [dc], \
                            'infillmodel' : False, \
@@ -9354,6 +9403,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : normalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : datecolumns, \
                            'categorylist' : [dc], \
                            'infillmodel' : False, \
@@ -9436,6 +9486,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : normalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : datecolumns, \
                            'categorylist' : [dc], \
                            'infillmodel' : False, \
@@ -9509,6 +9560,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : normalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : datecolumns, \
                            'categorylist' : [dc], \
                            'infillmodel' : False, \
@@ -9591,6 +9643,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : normalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : datecolumns, \
                            'categorylist' : [dc], \
                            'infillmodel' : False, \
@@ -9707,6 +9760,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : timenormalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : datecolumns, \
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
@@ -9829,6 +9883,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : timenormalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : datecolumns, \
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
@@ -9923,6 +9978,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : timenormalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : datecolumns, \
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
@@ -10017,6 +10073,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : timenormalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : datecolumns, \
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
@@ -10168,6 +10225,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : timenormalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : datecolumns, \
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
@@ -10318,6 +10376,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : timenormalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : datecolumns, \
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
@@ -10435,6 +10494,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : timenormalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : datecolumns, \
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
@@ -10531,6 +10591,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : timenormalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : datecolumns, \
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
@@ -10627,6 +10688,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : timenormalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : datecolumns, \
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
@@ -10721,6 +10783,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : timenormalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : datecolumns, \
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
@@ -10816,6 +10879,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : timenormalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : datecolumns, \
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
@@ -10934,6 +10998,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : timenormalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : datecolumns, \
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
@@ -11029,6 +11094,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : timenormalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : datecolumns, \
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
@@ -11124,6 +11190,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : timenormalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : datecolumns, \
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
@@ -11219,6 +11286,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : timenormalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : datecolumns, \
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
@@ -11314,6 +11382,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : timenormalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : datecolumns, \
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
@@ -11432,6 +11501,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : timenormalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : datecolumns, \
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
@@ -11527,6 +11597,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : timenormalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : datecolumns, \
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
@@ -11622,6 +11693,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : timenormalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : datecolumns, \
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
@@ -11716,6 +11788,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : timenormalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : datecolumns, \
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
@@ -11810,6 +11883,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : timenormalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : datecolumns, \
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
@@ -11928,6 +12002,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : timenormalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : datecolumns, \
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
@@ -12023,6 +12098,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : timenormalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : datecolumns, \
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
@@ -12118,6 +12194,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : timenormalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : datecolumns, \
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
@@ -12267,6 +12344,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : normalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : nmbrcolumns, \
                            'categorylist' : [nc], \
                            'infillmodel' : False, \
@@ -12351,6 +12429,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : nmbrnormalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : nmbrcolumns, \
                            'categorylist' : [nc], \
                            'infillmodel' : False, \
@@ -12432,6 +12511,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : nmbrnormalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : nmbrcolumns, \
                            'categorylist' : [nc], \
                            'infillmodel' : False, \
@@ -12505,6 +12585,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : nmbrnormalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : nmbrcolumns, \
                            'categorylist' : nmbrcolumns, \
                            'infillmodel' : False, \
@@ -12579,6 +12660,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : nmbrnormalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : nmbrcolumns, \
                            'categorylist' : nmbrcolumns, \
                            'infillmodel' : False, \
@@ -12653,6 +12735,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : nmbrnormalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : nmbrcolumns, \
                            'categorylist' : nmbrcolumns, \
                            'infillmodel' : False, \
@@ -12729,6 +12812,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : nmbrnormalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : nmbrcolumns, \
                            'categorylist' : nmbrcolumns, \
                            'infillmodel' : False, \
@@ -12801,6 +12885,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : nmbrnormalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : nmbrcolumns, \
                            'categorylist' : nmbrcolumns, \
                            'infillmodel' : False, \
@@ -12864,6 +12949,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : nmbrnormalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : nmbrcolumns, \
                            'categorylist' : nmbrcolumns, \
                            'infillmodel' : False, \
@@ -13016,6 +13102,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : powernormalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : powercolumns, \
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
@@ -13095,6 +13182,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : powernormalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : powercolumns, \
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
@@ -13304,6 +13392,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : powernormalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : powercolumns, \
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
@@ -13505,6 +13594,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : powernormalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : powercolumns, \
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
@@ -13640,6 +13730,7 @@ class AutoMunge:
                              'origcategory' : category, \
                              'normalization_dict' : nmbrnormalization_dict, \
                              'origcolumn' : column, \
+                             'inputcolumn' : column, \
                              'columnslist' : nmbrcolumns, \
                              'categorylist' : textcolumns, \
                              'infillmodel' : False, \
@@ -13772,6 +13863,7 @@ class AutoMunge:
                              'origcategory' : category, \
                              'normalization_dict' : nmbrnormalization_dict, \
                              'origcolumn' : column, \
+                             'inputcolumn' : column, \
                              'columnslist' : nmbrcolumns, \
                              'categorylist' : textcolumns, \
                              'infillmodel' : False, \
@@ -13872,6 +13964,7 @@ class AutoMunge:
                              'origcategory' : category, \
                              'normalization_dict' : nmbrnormalization_dict, \
                              'origcolumn' : column, \
+                             'inputcolumn' : column, \
                              'columnslist' : nmbrcolumns, \
                              'categorylist' : nmbrcolumns, \
                              'infillmodel' : False, \
@@ -14014,7 +14107,7 @@ class AutoMunge:
                                       'bn_count' : bn_count, \
                                       'bins_id' : bins_id, \
                                       'bins_cuts' : bins_cuts, \
-                                      'bn_width' : bn_width, \
+                                      'bn_width_bnwd' : bn_width, \
                                       'textcolumns' : textcolumns, \
                                       tc_ratio : tcratio}}
 
@@ -14024,6 +14117,7 @@ class AutoMunge:
                              'origcategory' : category, \
                              'normalization_dict' : nmbrnormalization_dict, \
                              'origcolumn' : column, \
+                             'inputcolumn' : column, \
                              'columnslist' : nmbrcolumns, \
                              'categorylist' : textcolumns, \
                              'infillmodel' : False, \
@@ -14162,7 +14256,7 @@ class AutoMunge:
                                       'bn_count' : bn_count, \
                                       'bins_id' : bins_id, \
                                       'bins_cuts' : bins_cuts, \
-                                      'bn_width' : bn_width, \
+                                      'bn_width_bnwK' : bn_width, \
                                       'textcolumns' : textcolumns, \
                                       tc_ratio : tcratio}}
 
@@ -14172,6 +14266,7 @@ class AutoMunge:
                              'origcategory' : category, \
                              'normalization_dict' : nmbrnormalization_dict, \
                              'origcolumn' : column, \
+                             'inputcolumn' : column, \
                              'columnslist' : nmbrcolumns, \
                              'categorylist' : textcolumns, \
                              'infillmodel' : False, \
@@ -14312,7 +14407,7 @@ class AutoMunge:
                                       'bn_count' : bn_count, \
                                       'bins_id' : bins_id, \
                                       'bins_cuts' : bins_cuts, \
-                                      'bn_width' : bn_width, \
+                                      'bn_width_bnwM' : bn_width, \
                                       'textcolumns' : textcolumns, \
                                       tc_ratio : tcratio}}
 
@@ -14322,6 +14417,7 @@ class AutoMunge:
                              'origcategory' : category, \
                              'normalization_dict' : nmbrnormalization_dict, \
                              'origcolumn' : column, \
+                             'inputcolumn' : column, \
                              'columnslist' : nmbrcolumns, \
                              'categorylist' : textcolumns, \
                              'infillmodel' : False, \
@@ -14440,6 +14536,7 @@ class AutoMunge:
                              'origcategory' : category, \
                              'normalization_dict' : nmbrnormalization_dict, \
                              'origcolumn' : column, \
+                             'inputcolumn' : column, \
                              'columnslist' : nmbrcolumns, \
                              'categorylist' : nmbrcolumns, \
                              'infillmodel' : False, \
@@ -14558,6 +14655,7 @@ class AutoMunge:
                              'origcategory' : category, \
                              'normalization_dict' : nmbrnormalization_dict, \
                              'origcolumn' : column, \
+                             'inputcolumn' : column, \
                              'columnslist' : nmbrcolumns, \
                              'categorylist' : nmbrcolumns, \
                              'infillmodel' : False, \
@@ -14677,6 +14775,7 @@ class AutoMunge:
                              'origcategory' : category, \
                              'normalization_dict' : nmbrnormalization_dict, \
                              'origcolumn' : column, \
+                             'inputcolumn' : column, \
                              'columnslist' : nmbrcolumns, \
                              'categorylist' : nmbrcolumns, \
                              'infillmodel' : False, \
@@ -14873,7 +14972,7 @@ class AutoMunge:
                                       'bn_count' : bn_count, \
                                       'bins_id' : bins_id, \
                                       'bins_cuts' : bins_cuts, \
-                                      'bincount' : bincount, \
+                                      'bincount_bnep' : bincount, \
                                       'textcolumns' : textcolumns, \
                                       tc_ratio : tcratio}}
 
@@ -14883,6 +14982,7 @@ class AutoMunge:
                              'origcategory' : category, \
                              'normalization_dict' : nmbrnormalization_dict, \
                              'origcolumn' : column, \
+                             'inputcolumn' : column, \
                              'columnslist' : nmbrcolumns, \
                              'categorylist' : textcolumns, \
                              'infillmodel' : False, \
@@ -15073,7 +15173,7 @@ class AutoMunge:
                                       'bn_count' : bn_count, \
                                       'bins_id' : bins_id, \
                                       'bins_cuts' : bins_cuts, \
-                                      'bincount' : bincount, \
+                                      'bincount_bne7' : bincount, \
                                       'textcolumns' : textcolumns, \
                                       tc_ratio : tcratio}}
 
@@ -15083,6 +15183,7 @@ class AutoMunge:
                              'origcategory' : category, \
                              'normalization_dict' : nmbrnormalization_dict, \
                              'origcolumn' : column, \
+                             'inputcolumn' : column, \
                              'columnslist' : nmbrcolumns, \
                              'categorylist' : textcolumns, \
                              'infillmodel' : False, \
@@ -15274,7 +15375,7 @@ class AutoMunge:
                                       'bn_count' : bn_count, \
                                       'bins_id' : bins_id, \
                                       'bins_cuts' : bins_cuts, \
-                                      'bincount' : bincount, \
+                                      'bincount_bne9' : bincount, \
                                       'textcolumns' : textcolumns, \
                                       tc_ratio : tcratio}}
 
@@ -15284,6 +15385,7 @@ class AutoMunge:
                              'origcategory' : category, \
                              'normalization_dict' : nmbrnormalization_dict, \
                              'origcolumn' : column, \
+                             'inputcolumn' : column, \
                              'columnslist' : nmbrcolumns, \
                              'categorylist' : textcolumns, \
                              'infillmodel' : False, \
@@ -15462,6 +15564,7 @@ class AutoMunge:
                              'origcategory' : category, \
                              'normalization_dict' : nmbrnormalization_dict, \
                              'origcolumn' : column, \
+                             'inputcolumn' : column, \
                              'columnslist' : nmbrcolumns, \
                              'categorylist' : nmbrcolumns, \
                              'infillmodel' : False, \
@@ -15638,6 +15741,7 @@ class AutoMunge:
                              'origcategory' : category, \
                              'normalization_dict' : nmbrnormalization_dict, \
                              'origcolumn' : column, \
+                             'inputcolumn' : column, \
                              'columnslist' : nmbrcolumns, \
                              'categorylist' : nmbrcolumns, \
                              'infillmodel' : False, \
@@ -15816,6 +15920,7 @@ class AutoMunge:
                              'origcategory' : category, \
                              'normalization_dict' : nmbrnormalization_dict, \
                              'origcolumn' : column, \
+                             'inputcolumn' : column, \
                              'columnslist' : nmbrcolumns, \
                              'categorylist' : nmbrcolumns, \
                              'infillmodel' : False, \
@@ -15943,7 +16048,7 @@ class AutoMunge:
       tcratio = mdf_train[nc].sum() / mdf_train[nc].shape[0]
 
       nmbrnormalization_dict = {nc : {'binsmean' : mean, \
-                                      'buckets' : buckets, \
+                                      'buckets_bkt1' : buckets, \
                                       'bins_cuts' : bins_cuts, \
                                       'bins_id' : bins_id, \
                                       'textcolumns' : textcolumns, \
@@ -15955,6 +16060,7 @@ class AutoMunge:
                              'origcategory' : category, \
                              'normalization_dict' : nmbrnormalization_dict, \
                              'origcolumn' : column, \
+                             'inputcolumn' : column, \
                              'columnslist' : nmbrcolumns, \
                              'categorylist' : textcolumns, \
                              'infillmodel' : False, \
@@ -16080,7 +16186,7 @@ class AutoMunge:
       tcratio = mdf_train[nc].sum() / mdf_train[nc].shape[0]
 
       nmbrnormalization_dict = {nc : {'binsmean' : mean, \
-                                      'buckets' : buckets, \
+                                      'buckets_bkt2' : buckets, \
                                       'bins_cuts' : bins_cuts, \
                                       'bins_id' : bins_id, \
                                       'textcolumns' : textcolumns, \
@@ -16092,6 +16198,7 @@ class AutoMunge:
                              'origcategory' : category, \
                              'normalization_dict' : nmbrnormalization_dict, \
                              'origcolumn' : column, \
+                             'inputcolumn' : column, \
                              'columnslist' : nmbrcolumns, \
                              'categorylist' : textcolumns, \
                              'infillmodel' : False, \
@@ -16196,6 +16303,7 @@ class AutoMunge:
                              'origcategory' : category, \
                              'normalization_dict' : nmbrnormalization_dict, \
                              'origcolumn' : column, \
+                             'inputcolumn' : column, \
                              'columnslist' : nmbrcolumns, \
                              'categorylist' : nmbrcolumns, \
                              'infillmodel' : False, \
@@ -16320,6 +16428,7 @@ class AutoMunge:
                              'origcategory' : category, \
                              'normalization_dict' : nmbrnormalization_dict, \
                              'origcolumn' : column, \
+                             'inputcolumn' : column, \
                              'columnslist' : nmbrcolumns, \
                              'categorylist' : nmbrcolumns, \
                              'infillmodel' : False, \
@@ -16347,6 +16456,7 @@ class AutoMunge:
                                       'origcategory' : category, \
                                       'normalization_dict' : {column + '_null':{}}, \
                                       'origcolumn' : column, \
+                                      'inputcolumn' : column, \
                                       'columnslist' : [column], \
                                       'categorylist' : [], \
                                       'infillmodel' : False, \
@@ -16386,6 +16496,7 @@ class AutoMunge:
                                  'origcategory' : category, \
                                  'normalization_dict' : {copy_column:{}}, \
                                  'origcolumn' : column, \
+                                 'inputcolumn' : column, \
                                  'columnslist' : [copy_column], \
                                  'categorylist' : [copy_column], \
                                  'infillmodel' : False, \
@@ -16419,6 +16530,7 @@ class AutoMunge:
                                  'origcategory' : category, \
                                  'normalization_dict' : {exclcolumn:{}}, \
                                  'origcolumn' : column, \
+                                 'inputcolumn' : column, \
                                  'columnslist' : [exclcolumn], \
                                  'categorylist' : [exclcolumn], \
                                  'infillmodel' : False, \
@@ -16430,7 +16542,7 @@ class AutoMunge:
 
 
 
-    return df, column_dict_list  
+    return df, column_dict_list
 
 
   def process_exc2_class(self, mdf_train, mdf_test, column, category, \
@@ -16474,6 +16586,68 @@ class AutoMunge:
                                  'origcategory' : category, \
                                  'normalization_dict' : exc2_normalization_dict, \
                                  'origcolumn' : column, \
+                                 'inputcolumn' : column, \
+                                 'columnslist' : [exclcolumn], \
+                                 'categorylist' : [exclcolumn], \
+                                 'infillmodel' : False, \
+                                 'infillcomplete' : False, \
+                                 'deletecolumn' : False}}
+    
+    #now append column_dict onto postprocess_dict
+    column_dict_list.append(column_dict.copy())
+
+
+
+    return mdf_train, mdf_test, column_dict_list
+  
+  
+  def process_exc5_class(self, mdf_train, mdf_test, column, category, \
+                         postprocess_dict, params = {}):
+    '''
+    #here we'll address any columns that returned a 'excl' category
+    #note this is a. singleprocess transform
+    #we'll simply maintain the same column but with a suffix to the header
+    '''
+    
+    
+    exclcolumn = column + '_exc5'
+    
+    
+    mdf_train[exclcolumn] = mdf_train[column].copy()
+    mdf_test[exclcolumn] = mdf_test[column].copy()
+    
+    #del df[column]
+    
+    mdf_train[exclcolumn] = pd.to_numeric(mdf_train[exclcolumn], errors='coerce')
+    mdf_test[exclcolumn] = pd.to_numeric(mdf_test[exclcolumn], errors='coerce')
+    
+    #non integers are subject to infill
+    mdf_train[exclcolumn] = np.where(mdf_train[exclcolumn] == mdf_train[exclcolumn].round(), mdf_train[exclcolumn], np.nan)
+    mdf_test[exclcolumn] = np.where(mdf_test[exclcolumn] == mdf_test[exclcolumn].round(), mdf_test[exclcolumn], np.nan)
+
+    
+    if len(mdf_train[exclcolumn].mode())<1:
+      fillvalue = mdf_train[exclcolumn].mean()
+    else:
+      fillvalue = mdf_train[exclcolumn].mode()[0]
+      
+    #special case if column didn't have any numeric entries
+    if fillvalue != fillvalue:
+      fillvalue = 0
+    
+    #replace missing data with fill value
+    mdf_train[exclcolumn] = mdf_train[exclcolumn].fillna(fillvalue)
+    mdf_test[exclcolumn] = mdf_test[exclcolumn].fillna(fillvalue)
+    
+    exc2_normalization_dict = {exclcolumn : {'fillvalue' : fillvalue}}
+    
+    column_dict_list = []
+
+    column_dict = {exclcolumn : {'category' : 'exc5', \
+                                 'origcategory' : category, \
+                                 'normalization_dict' : exc2_normalization_dict, \
+                                 'origcolumn' : column, \
+                                 'inputcolumn' : column, \
                                  'columnslist' : [exclcolumn], \
                                  'categorylist' : [exclcolumn], \
                                  'infillmodel' : False, \
@@ -16530,6 +16704,7 @@ class AutoMunge:
                            'origcategory' : category, \
                            'normalization_dict' : nmbrnormalization_dict, \
                            'origcolumn' : column, \
+                           'inputcolumn' : column, \
                            'columnslist' : nmbrcolumns, \
                            'categorylist' : [nc], \
                            'infillmodel' : False, \
@@ -16917,6 +17092,51 @@ class AutoMunge:
 
       #convert all values to either numeric or NaN
       df2[column] = pd.to_numeric(df2[column], errors='coerce')
+      
+      if driftassess is True:
+        
+        if df2[column].notnull().nunique() > 2:
+          W, p = shapiro(df2[df2[column].notnull()][column].astype(float))
+          skew_stat = skew(df2[df2[column].notnull()][column].astype(float))
+        else:
+          W = np.nan
+          p = np.nan
+          skew_stat = np.nan
+          
+#         W, p = shapiro(df2[df2[column].notnull()][column].astype(float))
+#         skew_stat = skew(df2[df2[column].notnull()][column].astype(float))
+        
+        drift_dict.update({column : {'max' : df2[column].max(), \
+                                     'quantile_99' : df2[column].quantile(0.99), \
+                                     'quantile_90' : df2[column].quantile(0.90), \
+                                     'quantile_66' : df2[column].quantile(0.66), \
+                                     'median' : df2[column].median(), \
+                                     'quantile_33' : df2[column].quantile(0.33), \
+                                     'quantile_10' : df2[column].quantile(0.10), \
+                                     'quantile_01' : df2[column].quantile(0.01), \
+                                     'min' : df2[column].min(), \
+                                     'mean' : df2[column].mean(), \
+                                     'std' : df2[column].std(), \
+                                     'MAD' : df2[column].mad(), \
+                                     'skew' : skew_stat, \
+                                     'shapiro_W' : W, \
+                                     'shapiro_p' : p, \
+                                     'nan_ratio' : pd.isna(df2[column]).sum() / df2[column].shape[0]}})
+
+      #returns dataframe of True and False, where True coresponds to the NaN's
+      #renames column name to column + '_NArows'
+      NArows = pd.isna(df2[column])
+      NArows = pd.DataFrame(NArows)
+      NArows = NArows.rename(columns = {column:column+'_NArows'})
+      
+      
+    if NArowtype in ['integer']:
+
+      #convert all values to either numeric or NaN
+      df2[column] = pd.to_numeric(df2[column], errors='coerce')
+      
+      #non integers are subject to infill
+      df2[column] = np.where(df2[column] == df2[column].round(), df2[column], np.nan)
       
       if driftassess is True:
         
@@ -19733,7 +19953,7 @@ class AutoMunge:
                     testID_column = False, valpercent1 = totalvalidation, valpercent2 = 0.0, \
                     shuffletrain = True, TrainLabelFreqLevel = False, powertransform = powertransform, \
                     binstransform = binstransform, MLinfill = False, infilliterate=1, randomseed = randomseed, \
-                    LabelSmoothing_train = FS_LabelSmoothing, \
+                    LabelSmoothing_train = FS_LabelSmoothing, excl_suffix = True, \
                     numbercategoryheuristic = numbercategoryheuristic, pandasoutput = True, NArw_marker = NArw_marker, \
                     featureselection = False, featurepct = 1.00, featuremetric = featuremetric, \
                     featuremethod = 'pct', ML_cmnd = FSML_cmnd, assigncat = assigncat, \
@@ -19952,6 +20172,7 @@ class AutoMunge:
         am_validationlabels1, _5, _6, _7, \
         _8, _9, labelsencoding_dict, finalcolumns_train, _10,  \
         FSpostprocess_dict
+        
 
         if printstatus == True:
           print("_______________")
@@ -19983,7 +20204,7 @@ class AutoMunge:
       FS_sorted['column_key'].update({FS_sorted['metric_key'][key] : key})
       
     
-    #now for metric2 based on derived columns relative importance
+    #now for metric2 based on derived columns relative importance, note sorted in other order
     for FS_origcolumn in FS_origcolumns:
       FS_sorted['metric2_key'].update({FS_origcolumn : {}})
       for key in FScolumn_dict:
@@ -19991,7 +20212,7 @@ class AutoMunge:
           FS_sorted['metric2_key'][FS_origcolumn].update({FScolumn_dict[key]['metric2'] : key})
     
     for key in FS_sorted['metric2_key']:
-      FS_sorted['metric2_key'][key] = dict(sorted(FS_sorted['metric2_key'][key].items(), reverse=True))
+      FS_sorted['metric2_key'][key] = dict(sorted(FS_sorted['metric2_key'][key].items(), reverse=False))
     
     for key1 in FS_sorted['metric2_key']:
       FS_sorted['metric2_column_key'].update({key1 : {}})
@@ -21322,7 +21543,7 @@ class AutoMunge:
                              infilliterate, randomseed, LabelSmoothing_train, LabelSmoothing_test, \
                              LabelSmoothing_val, LSfit, numbercategoryheuristic, pandasoutput, \
                              NArw_marker, featureselection, featurepct, featuremetric, \
-                             featuremethod, Binary, PCAn_components, PCAexcl, printstatus):
+                             featuremethod, Binary, PCAn_components, PCAexcl, printstatus, excl_suffix):
     """
     #Performs validation to confirm valid entries of passed automunge(.) parameters
     #Note that this function is intended specifically for non-dictionary parameters
@@ -21710,6 +21931,17 @@ class AutoMunge:
       print()
       
     miscparameters_results.update({'printstatus_valresult' : printstatus_valresult})
+    
+    
+    #check excl_suffix
+    excl_suffix_valresult = False
+    if excl_suffix not in [True, False] or not isinstance(excl_suffix, bool):
+      excl_suffix_valresult = True
+      print("Error: invalid entry passed for excl_suffix parameter.")
+      print("Acceptable values are one of {True, False}")
+      print()
+      
+    miscparameters_results.update({'excl_suffix_valresult' : excl_suffix_valresult})
     
     
     return miscparameters_results
@@ -22948,7 +23180,7 @@ class AutoMunge:
                 LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, \
                 LSfit = False, numbercategoryheuristic = 63, pandasoutput = False, NArw_marker = False, \
                 featureselection = False, featurepct = 1.0, featuremetric = 0.0, featuremethod = 'default', \
-                Binary = False, PCAn_components = None, PCAexcl = [], \
+                Binary = False, PCAn_components = None, PCAexcl = [], excl_suffix = False, \
                 ML_cmnd = {'MLinfill_type':'default', \
                            'MLinfill_cmnd':{'RandomForestClassifier':{}, 'RandomForestRegressor':{}}, \
                            'PCA_type':'default', \
@@ -23066,7 +23298,7 @@ class AutoMunge:
                                  infilliterate, randomseed, LabelSmoothing_train, LabelSmoothing_test, \
                                  LabelSmoothing_val, LSfit, numbercategoryheuristic, pandasoutput, \
                                  NArw_marker, featureselection, featurepct, featuremetric, \
-                                 featuremethod, Binary, PCAn_components, PCAexcl, printstatus)
+                                 featuremethod, Binary, PCAn_components, PCAexcl, printstatus, excl_suffix)
 
     miscparameters_results.update({'check_assigncat_result' : check_assigncat_result, \
                                    'check_assigninfill_result' : check_assigninfill_result, \
@@ -24550,13 +24782,11 @@ class AutoMunge:
           print(madethecut)
           print("")
 
-      #trim columns using circle of life function
+      #trim columns
       for trimmee in trimcolumns:
 
-        df_train, df_test, postprocess_dict = \
-        self.secondcircle(df_train, df_test, trimmee, postprocess_dict)
-
-
+        del df_train[trimmee]
+        del df_test[trimmee]
 
 
     prePCAcolumns = list(df_train)
@@ -24838,19 +25068,27 @@ class AutoMunge:
       if postprocess_dict['column_dict'][cd_column]['category'] == 'excl':
         postprocess_dict['excl_columns_with_suffix'].append(cd_column)
         postprocess_dict['excl_columns_without_suffix'].append(cd_column[:-5])
+        
+    if excl_suffix is False:
+      #we'll duplicate excl columns in postprocess_dict['column_dict'] to have entries both with and without suffix as keys
+      for excl_column_with_suffix in postprocess_dict['excl_columns_with_suffix']:
+        excl_index = postprocess_dict['excl_columns_with_suffix'].index(excl_column_with_suffix)
+        excl_column_without_suffix = postprocess_dict['excl_columns_without_suffix'][excl_index]
+        postprocess_dict['column_dict'].update({excl_column_without_suffix : \
+                                                deepcopy(postprocess_dict['column_dict'][excl_column_with_suffix])})
     
     #(we won't perform this step to train and test sets if PCA was applied)
-    if PCA_applied is False:
+    if PCA_applied is False and excl_suffix is False:
       df_train.columns = [column[:-5] if postprocess_dict['column_dict'][column]['category'] == 'excl' \
                           else column for column in df_train.columns]
       df_test.columns = [column[:-5] if postprocess_dict['column_dict'][column]['category'] == 'excl' \
                          else column for column in df_test.columns]
       
-    if labels_column != False:
+    if labels_column != False and excl_suffix is False:
       df_labels.columns = [column[:-5] if postprocess_dict['column_dict'][column]['category'] == 'excl' \
                            else column for column in df_labels.columns]
 
-    if labelspresenttest == True:
+    if labelspresenttest == True and excl_suffix is False:
       df_testlabels.columns = [column[:-5] if postprocess_dict['column_dict'][column]['category'] == 'excl' \
                                else column for column in df_testlabels.columns]
 
@@ -24869,7 +25107,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.52'
+    automungeversion = '3.53'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -24922,6 +25160,7 @@ class AutoMunge:
                              'PCAexcl' : PCAexcl, \
                              'prePCAcolumns' : prePCAcolumns, \
                              'madethecut' : madethecut, \
+                             'excl_suffix' : excl_suffix, \
                              'assigncat' : assigncat, \
                              'assigninfill' : assigninfill, \
                              'transformdict' : transformdict, \
@@ -26164,10 +26403,10 @@ class AutoMunge:
     #moved this to after the initial infill
     #new method for retrieving a columnkey
     normkey = False
-    for unique in mdf_test[tempcolumn].unique():
-      if column + '_' + str(unique) in postprocess_dict['column_dict']:
-        normkey = column + '_' + str(unique)
-        break
+#     for unique in mdf_test[tempcolumn].unique():
+#       if column + '_' + str(unique) in postprocess_dict['column_dict']:
+#         normkey = column + '_' + str(unique)
+#         break
     
     #this second method for normkey retrieval addresses outlier scenarios when 
     #no unique valuies in test set match those in train set
@@ -26184,12 +26423,12 @@ class AutoMunge:
         columnkeylist = postprocess_dict['origcolumn'][origcolumn]['columnkeylist']
 
       for columnkey in columnkeylist:
+        
+        if column == postprocess_dict['column_dict'][columnkey]['inputcolumn']:
 
-        normalization_dict = postprocess_dict['column_dict'][columnkey]['normalization_dict']
+          if 'textlabelsdict_text' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
 
-        if 'textlabelsdict' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
-
-          normkey = columnkey
+            normkey = columnkey
           
     if normkey != False:
 
@@ -26403,11 +26642,11 @@ class AutoMunge:
     
     for columnkey in columnkeylist:
       
-      normalization_dict = postprocess_dict['column_dict'][columnkey]['normalization_dict']
-    
-      if 'splt_newcolumns' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
-        
-        normkey = columnkey
+      if column == postprocess_dict['column_dict'][columnkey]['inputcolumn']:
+
+        if 'splt_newcolumns_splt' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
+
+          normkey = columnkey
         
     if normkey != False:
 
@@ -26416,7 +26655,7 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['overlap_dict']
 
       newcolumns = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['splt_newcolumns']
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['splt_newcolumns_splt']
 
 
       #now for mdf_test we'll only consider those overlaps already identified from train set
@@ -26507,8 +26746,6 @@ class AutoMunge:
 #       columnkeylist = postprocess_dict['origcolumn'][origcolumn]['columnkeylist']
     
 #     for columnkey in columnkeylist:
-      
-#       normalization_dict = postprocess_dict['column_dict'][columnkey]['normalization_dict']
     
 #       if 'splt_newcolumns' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
         
@@ -26634,8 +26871,6 @@ class AutoMunge:
 #       columnkeylist = postprocess_dict['origcolumn'][origcolumn]['columnkeylist']
     
 #     for columnkey in columnkeylist:
-      
-#       normalization_dict = postprocess_dict['column_dict'][columnkey]['normalization_dict']
     
 #       if 'splt_newcolumns' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
         
@@ -26768,8 +27003,6 @@ class AutoMunge:
 #       columnkeylist = postprocess_dict['origcolumn'][origcolumn]['columnkeylist']
     
 #     for columnkey in columnkeylist:
-      
-#       normalization_dict = postprocess_dict['column_dict'][columnkey]['normalization_dict']
     
 #       if 'splt_newcolumns' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
         
@@ -26907,11 +27140,11 @@ class AutoMunge:
     
     for columnkey in columnkeylist:
       
-      normalization_dict = postprocess_dict['column_dict'][columnkey]['normalization_dict']
-    
-      if 'splt_newcolumns' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
-        
-        normkey = columnkey
+      if column == postprocess_dict['column_dict'][columnkey]['inputcolumn']:
+
+        if 'splt_newcolumns_spl8' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
+
+          normkey = columnkey
         
     if normkey != False:
 
@@ -26920,7 +27153,7 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['overlap_dict']
 
       newcolumns = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['splt_newcolumns']
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['splt_newcolumns_spl8']
 
 
       #now for mdf_test we'll only consider those overlaps already identified from train set
@@ -27017,8 +27250,6 @@ class AutoMunge:
 #       columnkeylist = postprocess_dict['origcolumn'][origcolumn]['columnkeylist']
     
 #     for columnkey in columnkeylist:
-      
-#       normalization_dict = postprocess_dict['column_dict'][columnkey]['normalization_dict']
     
 #       if 'splt_newcolumns' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
         
@@ -27173,8 +27404,6 @@ class AutoMunge:
 #       columnkeylist = postprocess_dict['origcolumn'][origcolumn]['columnkeylist']
     
 #     for columnkey in columnkeylist:
-      
-#       normalization_dict = postprocess_dict['column_dict'][columnkey]['normalization_dict']
     
 #       if 'splt_newcolumns' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
         
@@ -30217,13 +30446,13 @@ class AutoMunge:
     
     for columnkey in columnkeylist:
       
-      normalization_dict = postprocess_dict['column_dict'][columnkey]['normalization_dict']
-    
-      if 'bn_width' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
-        
-        if postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]['bn_width'] == bn_width:
-        
-          normkey = columnkey
+      if column == postprocess_dict['column_dict'][columnkey]['inputcolumn']:
+
+        if 'bn_width_bnwd' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
+
+          if postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]['bn_width_bnwd'] == bn_width:
+
+            normkey = columnkey
         
     if normkey != False:
       
@@ -30234,7 +30463,7 @@ class AutoMunge:
       bn_count = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_count']
       bins_id = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_id']
       bins_cuts = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_cuts']
-      bn_width = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_width']
+      bn_width = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_width_bnwd']
       textcolumns = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['textcolumns']
       
       binscolumn = column + '_bnwd'
@@ -30311,13 +30540,13 @@ class AutoMunge:
     
     for columnkey in columnkeylist:
       
-      normalization_dict = postprocess_dict['column_dict'][columnkey]['normalization_dict']
-    
-      if 'bn_width' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
-        
-        if postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]['bn_width'] == bn_width:
-        
-          normkey = columnkey
+      if column == postprocess_dict['column_dict'][columnkey]['inputcolumn']:
+
+        if 'bn_width_bnwK' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
+
+          if postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]['bn_width_bnwK'] == bn_width:
+
+            normkey = columnkey
         
     if normkey != False:
       
@@ -30328,7 +30557,7 @@ class AutoMunge:
       bn_count = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_count']
       bins_id = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_id']
       bins_cuts = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_cuts']
-      bn_width = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_width']
+      bn_width = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_width_bnwK']
       textcolumns = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['textcolumns']
       
       binscolumn = column + '_bnwK'
@@ -30406,13 +30635,13 @@ class AutoMunge:
     
     for columnkey in columnkeylist:
       
-      normalization_dict = postprocess_dict['column_dict'][columnkey]['normalization_dict']
-    
-      if 'bn_width' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
-        
-        if postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]['bn_width'] == bn_width:
-        
-          normkey = columnkey
+      if column == postprocess_dict['column_dict'][columnkey]['inputcolumn']:
+
+        if 'bn_width_bnwM' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
+
+          if postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]['bn_width_bnwM'] == bn_width:
+
+            normkey = columnkey
         
     if normkey != False:
       
@@ -30423,7 +30652,7 @@ class AutoMunge:
       bn_count = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_count']
       bins_id = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_id']
       bins_cuts = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_cuts']
-      bn_width = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_width']
+      bn_width = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_width_bnwM']
       textcolumns = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['textcolumns']
       
       binscolumn = column + '_bnwM'
@@ -30663,13 +30892,13 @@ class AutoMunge:
     
     for columnkey in columnkeylist:
       
-      normalization_dict = postprocess_dict['column_dict'][columnkey]['normalization_dict']
-    
-      if 'bincount' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
-        
-        if postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]['bincount'] == bincount:
-        
-          normkey = columnkey
+      if column == postprocess_dict['column_dict'][columnkey]['inputcolumn']:
+
+        if 'bincount_bnep' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
+
+          if postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]['bincount_bnep'] == bincount:
+
+            normkey = columnkey
         
     if normkey != False:
       
@@ -30680,7 +30909,7 @@ class AutoMunge:
       bn_count = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_count']
       bins_id = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_id']
       bins_cuts = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_cuts']
-      bincount = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bincount']
+      bincount = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bincount_bnep']
       textcolumns = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['textcolumns']
       
       binscolumn = column + '_bnep'
@@ -30762,13 +30991,13 @@ class AutoMunge:
     
     for columnkey in columnkeylist:
       
-      normalization_dict = postprocess_dict['column_dict'][columnkey]['normalization_dict']
-    
-      if 'bincount' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
-        
-        if postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]['bincount'] == bincount:
-        
-          normkey = columnkey
+      if column == postprocess_dict['column_dict'][columnkey]['inputcolumn']:
+
+        if 'bincount_bne7' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
+
+          if postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]['bincount_bne7'] == bincount:
+
+            normkey = columnkey
         
     if normkey != False:
       
@@ -30779,7 +31008,7 @@ class AutoMunge:
       bn_count = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_count']
       bins_id = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_id']
       bins_cuts = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_cuts']
-      bincount = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bincount']
+      bincount = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bincount_bne7']
       textcolumns = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['textcolumns']
       
       binscolumn = column + '_bne7'
@@ -30862,13 +31091,13 @@ class AutoMunge:
     
     for columnkey in columnkeylist:
       
-      normalization_dict = postprocess_dict['column_dict'][columnkey]['normalization_dict']
-    
-      if 'bincount' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
-        
-        if postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]['bincount'] == bincount:
-        
-          normkey = columnkey
+      if column == postprocess_dict['column_dict'][columnkey]['inputcolumn']:
+
+        if 'bincount_bne9' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
+
+          if postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]['bincount_bne9'] == bincount:
+
+            normkey = columnkey
         
     if normkey != False:
       
@@ -30879,7 +31108,7 @@ class AutoMunge:
       bn_count = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_count']
       bins_id = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_id']
       bins_cuts = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_cuts']
-      bincount = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bincount']
+      bincount = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bincount_bne9']
       textcolumns = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['textcolumns']
       
       binscolumn = column + '_bne9'
@@ -31162,19 +31391,19 @@ class AutoMunge:
     
     for columnkey in columnkeylist:
       
-      normalization_dict = postprocess_dict['column_dict'][columnkey]['normalization_dict']
-      
-      if 'buckets' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
-        
-        if postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]['buckets'] == buckets:
-        
-          normkey = columnkey
+      if column == postprocess_dict['column_dict'][columnkey]['inputcolumn']:
+
+        if 'buckets_bkt1' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
+
+          if postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]['buckets_bkt1'] == buckets:
+
+            normkey = columnkey
           
         
     if normkey != False:
       
       mean = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binsmean']
-      buckets = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['buckets']
+      buckets = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['buckets_bkt1']
       bins_cuts = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_cuts']
       bins_id = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_id']
       textcolumns = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['textcolumns']
@@ -31251,18 +31480,18 @@ class AutoMunge:
     
     for columnkey in columnkeylist:
       
-      normalization_dict = postprocess_dict['column_dict'][columnkey]['normalization_dict']
-    
-      if 'buckets' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
-        
-        if postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]['buckets'] == buckets:
-        
-          normkey = columnkey
+      if column == postprocess_dict['column_dict'][columnkey]['inputcolumn']:
+
+        if 'buckets_bkt2' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
+
+          if postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]['buckets_bkt2'] == buckets:
+
+            normkey = columnkey
         
     if normkey != False:
       
       mean = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binsmean']
-      buckets = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['buckets']
+      buckets = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['buckets_bkt2']
       bins_cuts = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_cuts']
       bins_id = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_id']
       textcolumns = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['textcolumns']
@@ -31430,6 +31659,43 @@ class AutoMunge:
     
     mdf_test[exclcolumn] = pd.to_numeric(mdf_test[exclcolumn], errors='coerce')
 
+    
+    #fillvalue = mdf_train[exclcolumn].mode()[0]
+    
+    #replace missing data with fill value
+    mdf_test[exclcolumn] = mdf_test[exclcolumn].fillna(fillvalue)
+    
+
+
+    return mdf_test
+  
+  def postprocess_exc5_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+    '''
+    #here we'll address any columns that returned a 'excl' category
+    #note this is a. singleprocess transform
+    #we'll simply maintain the same column but with a suffix to the header
+    '''
+    
+    #retrieve normalizastion parameters from postprocess_dict
+    normkey = column + '_exc5'
+    
+    fillvalue = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['fillvalue']
+    
+    
+    exclcolumn = column + '_exc5'
+    
+    
+    mdf_test[exclcolumn] = mdf_test[column].copy()
+    
+    #del df[column]
+    
+    mdf_test[exclcolumn] = pd.to_numeric(mdf_test[exclcolumn], errors='coerce')
+    
+    
+    #non integers are subject to infill
+    mdf_test[exclcolumn] = np.where(mdf_test[exclcolumn] == mdf_test[exclcolumn].round(), mdf_test[exclcolumn], np.nan)
+    
     
     #fillvalue = mdf_train[exclcolumn].mode()[0]
     
@@ -32004,6 +32270,7 @@ class AutoMunge:
       FSpostprocess_dict['TrainLabelFreqLevel'] = False
       FSpostprocess_dict['MLinfill'] = False
       FSpostprocess_dict['PCAn_components'] = None
+      FSpostprocess_dict['excl_suffix'] = True
       FSpostprocess_dict['ML_cmnd']['PCA_type'] = 'off'
       FSpostprocess_dict['assigninfill'] = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                                              'adjinfill':[], 'meaninfill':[], 'medianinfill':[]}
@@ -32300,7 +32567,7 @@ class AutoMunge:
       FS_sorted['column_key'].update({FS_sorted['metric_key'][key] : key})
       
     
-    #now for metric2 based on derived columns relative importance
+    #now for metric2 based on derived columns relative importance, note sorted in other order
     for FS_origcolumn in FS_origcolumns:
       FS_sorted['metric2_key'].update({FS_origcolumn : {}})
       for key in FScolumn_dict:
@@ -32308,7 +32575,7 @@ class AutoMunge:
           FS_sorted['metric2_key'][FS_origcolumn].update({FScolumn_dict[key]['metric2'] : key})
     
     for key in FS_sorted['metric2_key']:
-      FS_sorted['metric2_key'][key] = dict(sorted(FS_sorted['metric2_key'][key].items(), reverse=True))
+      FS_sorted['metric2_key'][key] = dict(sorted(FS_sorted['metric2_key'][key].items(), reverse=False))
     
     for key1 in FS_sorted['metric2_key']:
       FS_sorted['metric2_column_key'].update({key1 : {}})
@@ -33755,11 +34022,11 @@ class AutoMunge:
     #a special case, those columns that we completely excluded from processing via excl
     #we'll scrub the suffix appender
     #(we won't perform this step to test data if PCA was applied)
-    if postprocess_dict['PCA_applied'] is False:
+    if postprocess_dict['PCA_applied'] is False and postprocess_dict['excl_suffix'] is False:
       df_test.columns = [column[:-5] if postprocess_dict['column_dict'][column]['category'] == 'excl' \
                          else column for column in df_test.columns]
       
-    if labelscolumn != False:
+    if labelscolumn != False and postprocess_dict['excl_suffix'] is False:
       df_testlabels.columns = [column[:-5] if postprocess_dict['column_dict'][column]['category'] == 'excl' \
                                else column for column in df_testlabels.columns]
 
