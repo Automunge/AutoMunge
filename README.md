@@ -148,7 +148,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
             LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, \
             LSfit = False, numbercategoryheuristic = 63, pandasoutput = True, NArw_marker = False, \
             featureselection = False, featurepct = 1.0, featuremetric = .02, featuremethod = 'default', \
-            Binary = False, PCAn_components = None, PCAexcl = [], \
+            Binary = False, PCAn_components = None, PCAexcl = [], excl_suffix = False, \
             ML_cmnd = {'MLinfill_type':'default', \
                        'MLinfill_cmnd':{'RandomForestClassifier':{}, 'RandomForestRegressor':{}}, \
                        'PCA_type':'default', \
@@ -371,7 +371,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
             LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, \
             LSfit = False, numbercategoryheuristic = 63, pandasoutput = True, NArw_marker = False, \
             featureselection = False, featurepct = 1.0, featuremetric = .02, featuremethod = 'default', \
-            Binary = False, PCAn_components = None, PCAexcl = [], \
+            Binary = False, PCAn_components = None, PCAexcl = [], excl_suffix = False, \
             ML_cmnd = {'MLinfill_type':'default', \
                        'MLinfill_cmnd':{'RandomForestClassifier':{}, 'RandomForestRegressor':{}}, \
                        'PCA_type':'default', \
@@ -589,7 +589,7 @@ am.automunge(df_train, df_test = False, labels_column = False, trainID_column = 
             LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, \
             LSfit = False, numbercategoryheuristic = 63, pandasoutput = True, NArw_marker = False, \
             featureselection = False, featurepct = 1.0, featuremetric = .02, featuremethod = 'default', \
-            Binary = False, PCAn_components = None, PCAexcl = [], \
+            Binary = False, PCAn_components = None, PCAexcl = [], excl_suffix = False, \
             ML_cmnd = {'MLinfill_type':'default', \
                        'MLinfill_cmnd':{'RandomForestClassifier':{}, 'RandomForestRegressor':{}}, \
                        'PCA_type':'default', \
@@ -865,6 +865,10 @@ PCA type or parameters in the ML_cmnd object.
 
 * PCAexcl: a list of column headers for columns that are to be excluded from
 any application of PCA
+
+* excl_suffix: boolean selector {True, False} for whether columns headers from 'excl' 
+transform are returned with suffix appender '\_excl' included. Defaults to False for
+no suffix.
 
 * ML_cmnd: 
 
@@ -1153,6 +1157,7 @@ processdict =  {'newt' : {'dualprocess' : None, \
 #NArowtype: can be entries of either 'numeric', 'positivenumeric', 'justNaN', 
 #or 'exclude' where
 # - 'numeric' for source columns with expected numeric entries
+# - 'integer' for source columns with expected integer entries
 # - 'justNaN' for source columns that may have expected entries other than numeric
 # - 'exclude' for source columns that aren't needing NArow columns derived
 # - 'positivenumeric' for source columns with expected positive numeric entries
@@ -2124,6 +2129,12 @@ methods like ML infill and feature selection may not work for that scenario.)
   - suffix appender: '_exc2'
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: none
+* exc5: passes source column unaltered other than force to numeric, mode infill applied for non-integers
+  - default infill: mode
+  - default NArowtype: integer
+  - suffix appender: '_exc5'
+  - assignparam parameters accepted: none
+  - driftreport postmunge metrics: none
 * eval: performs distribution property evaluation consistent with the automunge
 'powertransform' parameter activated to designated column
   - default infill: based on evaluation
@@ -2273,6 +2284,7 @@ whose family trees include multiple generations, there may be multiple inclusion
 appenders in a single returned column. Provided here is a concise sorted list of all suffix appenders so 
 that any user passing a custom defined transformation can avoid any unintentional duplication.
 
+- '_:;:_temp'
 - '_-10^' + i (where i is an integer coresponding to the source number power of ten)
 - '_10^' + i (where i is an integer coresponding to the source number power of ten)
 - '\_1010_' + i (where i is an integer coresponding to the ith digit of the binary encoding)
@@ -2321,6 +2333,7 @@ that any user passing a custom defined transformation can avoid any unintentiona
 - '_dycs'
 - '_dysn'
 - '_exc2'
+- '_exc5'
 - '_excl'
 - '_hldy'
 - '_hmsc'
@@ -4672,6 +4685,7 @@ def process_mnm8_class(mdf_train, mdf_test, column, category, \
                           'origcategory' : category, \
                           'normalization_dict' : nmbrnormalization_dict, \
                           'origcolumn' : column, \
+			  'inputcolumn' : column, \
                           'columnslist' : nmbrcolumns, \
                           'categorylist' : nmbrcolumns, \
                           'infillmodel' : False, \
