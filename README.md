@@ -1037,6 +1037,11 @@ that accept parameters. Any parameters passed to automunge(.) will be saved in
 the postprocess_dict and consistently applied in postmunge(.). assignparam is 
 a dictionary that should be formatted per following example:
 ```
+#template:
+assignparam = {'default_assignparam' : {'(category)' : {'(parameter)' : 42}}, \
+                        '(category)' : {'(column)'   : {'(parameter)' : 42}}}, \
+
+#example:
 assignparam = {'category1' : {'column1' : {'param1' : 123}, 'column2' : {'param1' : 456}}, \
                'cateogry2' : {'column3' : {'param2' : 'abc', 'param3' : 'def'}}}
 
