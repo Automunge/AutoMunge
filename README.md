@@ -2137,8 +2137,10 @@ holiday
 * excl: passes source column un-altered. (Note that returned data may not be numeric and predictive 
 methods like ML infill and feature selection may not work for that scenario.)
 Note that the excl transform is unique in that it is an in-place operation for efficieny purposes, and
-so may only be passed in a user defined transformdict as an entry to cousins primitive. For comparable
-functionility elligible for other primitive entries please use 'exc6' transform.
+so may only be passed in a user defined transformdict as an entry to cousins primitive, although it's 
+application "replaces" the source column. (Note that for any other transform a cousins primitive entry 
+only supplements the source column, 'excl' is the exception to the rule). For comparable functionality 
+elligible for other primitive entries in a passed transformdict please use 'exc6' transform instead. 
   - default infill: none
   - default NArowtype: exclude
   - suffix appender: None or '_excl' (dependant on automunge(.) excl_suffix parameter)
