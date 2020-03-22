@@ -2148,6 +2148,15 @@ class AutoMunge:
                                      'coworkers' : [], \
                                      'friends' : []}})
     
+    transform_dict.update({'exc6' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['exc6'], \
+                                     'cousins' : [], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
     transform_dict.update({'shfl' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['shfl'], \
@@ -3630,6 +3639,12 @@ class AutoMunge:
                                   'NArowtype' : 'integer', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'exc5'}})
+    process_dict.update({'exc6' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_exc6_class, \
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'exclude', \
+                                  'MLinfilltype' : 'exclude', \
+                                  'labelctgy' : 'excl'}})
     process_dict.update({'shfl' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_shfl_class, \
                                   'postprocess' : None, \
@@ -3722,8 +3737,41 @@ class AutoMunge:
     #as automunge runs a for loop through each column in automunge, this is the master 
     #processing function applied which runs through the different family primitives
     #populated in the transform_dict by assembletransformdict
+    
+    #we will run in order of
+    #parents, auntsuncles, siblings, cousins
     '''
 
+    #process the parents (with downstream, with replacement)
+    for parent in transform_dict[category]['parents']:
+
+      if parent != None:
+
+        df_train, df_test, postprocess_dict = \
+        self.processparent(df_train, df_test, column, parent, origcategory, \
+                          process_dict, transform_dict, postprocess_dict, assign_param)
+        
+        
+    #process the auntsuncles (no downstream, with replacement)
+    for auntuncle in transform_dict[category]['auntsuncles']:
+
+      if auntuncle != None:
+
+        #note we use the processcousin function here
+        df_train, df_test, postprocess_dict = \
+        self.processcousin(df_train, df_test, column, auntuncle, origcategory, \
+                            process_dict, transform_dict, postprocess_dict, assign_param)
+        
+    #process the siblings (with downstream, supplemental)
+    for sibling in transform_dict[category]['siblings']:
+
+      if sibling != None:
+        #note we use the processparent function here
+        df_train, df_test, postprocess_dict = \
+        self.processparent(df_train, df_test, column, sibling, origcategory, \
+                          process_dict, transform_dict, postprocess_dict, assign_param)
+        
+    
     #process the cousins (no downstream, supplemental)
     for cousin in transform_dict[category]['cousins']:
       
@@ -3735,34 +3783,6 @@ class AutoMunge:
         self.processcousin(df_train, df_test, column, cousin, origcategory, \
                             process_dict, transform_dict, postprocess_dict, assign_param)
 
-
-    #process the siblings (with downstream, supplemental)
-    for sibling in transform_dict[category]['siblings']:
-
-      if sibling != None:
-        #note we use the processparent function here
-        df_train, df_test, postprocess_dict = \
-        self.processparent(df_train, df_test, column, sibling, origcategory, \
-                          process_dict, transform_dict, postprocess_dict, assign_param)
-
-    #process the auntsuncles (no downstream, with replacement)
-    for auntuncle in transform_dict[category]['auntsuncles']:
-
-      if auntuncle != None:
-
-        #note we use the processcousin function here
-        df_train, df_test, postprocess_dict = \
-        self.processcousin(df_train, df_test, column, auntuncle, origcategory, \
-                            process_dict, transform_dict, postprocess_dict, assign_param)
-
-    #process the parents (with downstream, with replacement)
-    for parent in transform_dict[category]['parents']:
-
-      if parent != None:
-
-        df_train, df_test, postprocess_dict = \
-        self.processparent(df_train, df_test, column, parent, origcategory, \
-                          process_dict, transform_dict, postprocess_dict, assign_param)
 
 
     #if we had replacement transformations performed then mark column for deletion
@@ -3960,7 +3980,6 @@ class AutoMunge:
 
 
 
-
   def processparent(self, df_train, df_test, column, parent, origcategory, \
                     process_dict, transform_dict, postprocess_dict, assign_param):
     '''
@@ -3975,8 +3994,12 @@ class AutoMunge:
     #reminder the format of assign_param is e.g.
     #assignparam = {'splt' : {'column1' : {'minsplit' : 4}}, \
     #               'spl2' : {'column2' : {'minsplit' : 3}}}
+    
+    #we want to apply in order of
+    #upstream process, children, coworkers, niecesnephews, friends
     '''
 
+    #upstream process
     
     params = self.grab_params(assign_param, parent, column)
     
@@ -4030,10 +4053,24 @@ class AutoMunge:
       #a future extension may check the categorylist from column_dict for 
       #purposes of transforms applied to multicolumn source
       parentcolumn = list(column_dict.keys())[0]
-
-
+    
 
     #if transform_dict[parent] != None:
+    
+    #process any children
+    for child in transform_dict[parent]['children']:
+
+      if child != None:
+
+        #process the child
+        #note the function applied is processparent (using recursion)
+        #parent column
+        df_train, df_test, postprocess_dict = \
+        self.processparent(df_train, df_test, parentcolumn, child, origcategory, \
+                           process_dict, transform_dict, postprocess_dict, assign_param)
+  #         self.processfamily(df_train, df_test, parentcolumn, child, origcategory, \
+  #                            process_dict, transform_dict, postprocess_dict)
+    
 
     #process any coworkers
     for coworker in transform_dict[parent]['coworkers']:
@@ -4045,17 +4082,7 @@ class AutoMunge:
         df_train, df_test, postprocess_dict = \
         self.processcousin(df_train, df_test, parentcolumn, coworker, origcategory, \
                            process_dict, transform_dict, postprocess_dict, assign_param)
-
-    #process any friends
-    for friend in transform_dict[parent]['friends']:
-
-      if friend != None:
-
-        #process the friend
-        #note the function applied is processcousin
-        df_train, df_test, postprocess_dict = \
-        self.processcousin(df_train, df_test, parentcolumn, friend, origcategory, \
-                           process_dict, transform_dict, postprocess_dict, assign_param)
+        
 
 
     #process any niecesnephews
@@ -4075,20 +4102,18 @@ class AutoMunge:
   #                            process_dict, transform_dict, postprocess_dict)
 
 
-    #process any children
-    for child in transform_dict[parent]['children']:
+    #process any friends
+    for friend in transform_dict[parent]['friends']:
 
-      if child != None:
+      if friend != None:
 
-        #process the child
-        #note the function applied is processparent (using recursion)
-        #parent column
+        #process the friend
+        #note the function applied is processcousin
         df_train, df_test, postprocess_dict = \
-        self.processparent(df_train, df_test, parentcolumn, child, origcategory, \
+        self.processcousin(df_train, df_test, parentcolumn, friend, origcategory, \
                            process_dict, transform_dict, postprocess_dict, assign_param)
-  #         self.processfamily(df_train, df_test, parentcolumn, child, origcategory, \
-  #                            process_dict, transform_dict, postprocess_dict)
 
+  
 
   #     #if we had replacement transformations performed then delete the original column 
   #     #(circle of life)
@@ -4101,6 +4126,7 @@ class AutoMunge:
 
   # #       else:
   # #         postprocess_dict['column_dict'].update({parentcolumn : {'deletecolumn' : True}})
+  
 
     #if we had replacement transformations performed then mark column for deletion
     #(circle of life)
@@ -16687,6 +16713,41 @@ class AutoMunge:
 
     return mdf_train, mdf_test, column_dict_list
   
+  def process_exc6_class(self, df, column, category, postprocess_dict, params = {}):
+    """
+    #comparable to excl (direct pass-through, no infill) 
+    #but uses a copy operation instead of inplace
+    #thus can be used as entry in any family tree primitive
+    #in a user passed transformdict
+    """
+    
+    exclcolumn = column + '_exc6'
+    df[exclcolumn] = df[column].copy()
+    #del df[column]
+    
+    #df.rename(columns = {column : exclcolumn}, inplace = True)
+    
+    
+    column_dict_list = []
+
+    column_dict = {exclcolumn : {'category' : 'exc6', \
+                                 'origcategory' : category, \
+                                 'normalization_dict' : {exclcolumn:{}}, \
+                                 'origcolumn' : column, \
+                                 'inputcolumn' : column, \
+                                 'columnslist' : [exclcolumn], \
+                                 'categorylist' : [exclcolumn], \
+                                 'infillmodel' : False, \
+                                 'infillcomplete' : False, \
+                                 'deletecolumn' : False}}
+    
+    #now append column_dict onto postprocess_dict
+    column_dict_list.append(column_dict.copy())
+
+
+
+    return df, column_dict_list
+  
 
   def process_shfl_class(self, df, column, category, postprocess_dict, params = {}):
     '''
@@ -19857,11 +19918,13 @@ class AutoMunge:
     
     #create list of NArws
     #candidateNArws = candidates[-NaNcount:]
-    candidateNArws = list(FSsupport_df[FSsupport_df['category']=='NArw']['FS_column'])
+#     candidateNArws = list(FSsupport_df[FSsupport_df['category']=='NArw']['FS_column'])
+    candidateNArws = list()
     
     #create list of feature rows
     #candidatefeaturerows = candidates[:-NaNcount]
-    candidatefeaturerows = list(FSsupport_df[FSsupport_df['category']!='NArw']['FS_column'])
+#     candidatefeaturerows = list(FSsupport_df[FSsupport_df['category']!='NArw']['FS_column'])
+    candidatefeaturerows = list(FSsupport_df['FS_column'])
     
 #     #calculate the number of features we'll keep using the ratio passed from automunge
 #     numbermakingcut = int(metriccount * featurepct)
@@ -19891,22 +19954,22 @@ class AutoMunge:
     #generate list of rows making the cut
     madethecut = candidatefeaturerows[:numbermakingcut]
     
-    #we'll add NArw columns which still have correspondence with a column in madethecut
-    removeNArw_list = []
-    for candidateNArw in candidateNArws:
-      for FScolumn in FScolumn_dict:
-        if candidateNArw in FScolumn_dict[FScolumn]['columnslist']:        
-          candidateNArw_columnslist = FScolumn_dict[FScolumn]['columnslist']
-          break
-      if len(set(candidateNArw_columnslist) & set(madethecut)) == 0:
-        removeNArw_list.append(candidateNArw)
+#     #we'll add NArw columns which still have correspondence with a column in madethecut
+#     removeNArw_list = []
+#     for candidateNArw in candidateNArws:
+#       for FScolumn in FScolumn_dict:
+#         if candidateNArw in FScolumn_dict[FScolumn]['columnslist']:        
+#           candidateNArw_columnslist = FScolumn_dict[FScolumn]['columnslist']
+#           break
+#       if len(set(candidateNArw_columnslist) & set(madethecut)) == 0:
+#         removeNArw_list.append(candidateNArw)
 
-    for removeNArw in removeNArw_list:
-      candidateNArws.remove(removeNArw)
+#     for removeNArw in removeNArw_list:
+#       candidateNArws.remove(removeNArw)
     
     
-    #add on the NArws
-    madethecut = madethecut + candidateNArws
+#     #add on the NArws
+#     madethecut = madethecut + candidateNArws
     
     return madethecut
 
@@ -20265,7 +20328,7 @@ class AutoMunge:
       for key2 in FS_sorted['metric2_key'][key1]:
         for entry in FS_sorted['metric2_key'][key1][key2]:
           entry_index = FS_sorted['metric2_key'][key1][key2].index(entry)
-          FS_sorted['metric2_column_key'].update({FS_sorted['metric2_key'][key1][key2][entry_index] : key2})
+          FS_sorted['metric2_column_key'][key1].update({FS_sorted['metric2_key'][key1][key2][entry_index] : key2})
         
     
     if printstatus == True:
@@ -22321,7 +22384,8 @@ class AutoMunge:
     #and if found move to a corresponding supplement primitive
     """
     
-    result = False
+    result1 = False
+    result2 = False
     
     for transformkey in sorted(transformdict):
       replacements = len(transformdict[transformkey]['parents']) \
@@ -22333,40 +22397,33 @@ class AutoMunge:
         
           transformdict[transformkey]['cousins'].append('excl')
 
-          result = True
+          result1 = True
+          
+      #this ensures 'excl' is final transform in the cousins list
+      transformdict[transformkey]['cousins'].append('excl')
+      transformdict[transformkey]['cousins'].remove('excl')
           
     for transformkey in sorted(transformdict):
-      if 'excl' in transformdict[transformkey]['parents']:
-        transformdict[transformkey]['parents'].remove('excl')
-        transformdict[transformkey]['siblings'].append('excl')
-        result = True
+      if 'excl' in transformdict[transformkey]['parents'] \
+      or 'excl' in transformdict[transformkey]['auntsuncles'] \
+      or 'excl' in transformdict[transformkey]['children'] \
+      or 'excl' in transformdict[transformkey]['coworkers'] \
+      or 'excl' in transformdict[transformkey]['siblings'] \
+      or 'excl' in transformdict[transformkey]['friends'] \
+      or 'excl' in transformdict[transformkey]['niecesnephews']:
         
-      if 'excl' in transformdict[transformkey]['auntsuncles']:
-        transformdict[transformkey]['auntsuncles'].remove('excl')
-        transformdict[transformkey]['cousins'].append('excl')
-        result = True
+        result2 = True
         
-      if 'excl' in transformdict[transformkey]['shildren']:
-        transformdict[transformkey]['children'].remove('excl')
-        transformdict[transformkey]['niecesnephews'].append('excl')
-        result = True
-        
-      if 'excl' in transformdict[transformkey]['coworkers']:
-        transformdict[transformkey]['coworkers'].remove('excl')
-        transformdict[transformkey]['friends'].append('excl')
-        result = True
-        
-
-#         print("Please note a category was defined in the user passed transformdict")
-#         print("without at least one replacement primitive for the source column.")
-#         print("root category = ", transformkey)
-#         print("Added auntsuncles primitive 'excl' to pass the original column unaltered.")
-#         print("Please note ML infill or feature importance evaluation require all")
-#         print("columns numerically encoded.")
-#         print("")
+        print("Error warning: 'excl' transform found in in family tree ")
+        print("of user passed transformdict in root category: ", transformkey)
+        print("'excl' transform is an in-place operator ")
+        print("and only allowed as an entry in the cousins primitive.")
+        print("Please use 'exc6' instead which is a direct pass-through ")
+        print("relying on a copy operation instead of in-place operation.")
+        print()
 
 
-    return result
+    return result1, result2, transformdict
 
   def check_ML_cmnd(self, ML_cmnd):
     """
@@ -23355,7 +23412,7 @@ class AutoMunge:
                              'wkds':[], 'wkdo':[], 'mnts':[], 'mnto':[], \
                              'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
                              'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
-                             'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[], \
+                             'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[], 'exc6':[], \
                              'null':[], 'copy':[], 'shfl':[], 'eval':[]}, \
                 assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                                 'adjinfill':[], 'meaninfill':[], 'medianinfill':[], \
@@ -23475,9 +23532,11 @@ class AutoMunge:
 
     if bool(transformdict) != False:
 
-      check_transformdict_result = self.check_transformdict(transformdict)
+      check_transformdict_result1, check_transformdict_result2, transformdict = \
+      self.check_transformdict(transformdict)
 
-      miscparameters_results.update({'check_transformdict_result' : check_transformdict_result})
+      miscparameters_results.update({'check_transformdict_result1' : check_transformdict_result1, \
+                                     'check_transformdict_result2' : check_transformdict_result2})
       
   #       #first print a notification if we are overwriting anything
   #       for keytd in list(transformdict.keys()):
@@ -25268,7 +25327,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.54'
+    automungeversion = '3.55'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -25556,29 +25615,43 @@ class AutoMunge:
   
   
 
+
   def postprocessfamily(self, df_test, column, category, origcategory, process_dict, \
                         transform_dict, postprocess_dict, columnkey, assign_param):
     '''
     #as automunge runs a for loop through each column in automunge, this is the  
     #processing function applied which runs through the family primitives
     #populated in the transform_dict by assembletransformdict.
+    
+    #we will run in order of
+    #parents, auntsuncles, siblings, cousins
     '''
 
   #     print("postprocessfamily")
   #     print("column = ", column)
   #     print("category = ", category)
 
-    #process the cousins (no downstream, supplemental)
-    for cousin in transform_dict[category]['cousins']:
+  
+    #process the parents (with downstream, with replacement)
+    for parent in transform_dict[category]['parents']:
 
-  #       print("cousin = ", cousin)
+  #       print("parent = ", parent)
 
-      if cousin != None:
-        #note we use the processsibling function here
+      if parent != None:
         df_test = \
-        self.postprocesscousin(df_test, column, cousin, origcategory, process_dict, \
-                                transform_dict, postprocess_dict, columnkey, assign_param)
+        self.postprocessparent(df_test, column, parent, origcategory, process_dict, \
+                              transform_dict, postprocess_dict, columnkey, assign_param)
+        
+    #process the auntsuncles (no downstream, with replacement)
+    for auntuncle in transform_dict[category]['auntsuncles']:
 
+  #       print("auntuncle = ", auntuncle)
+
+      if auntuncle != None:
+        df_test = \
+        self.postprocesscousin(df_test, column, auntuncle, origcategory, process_dict, \
+                                transform_dict, postprocess_dict, columnkey, assign_param)
+        
     #process the siblings (with downstream, supplemental)
     for sibling in transform_dict[category]['siblings']:
 
@@ -25589,26 +25662,17 @@ class AutoMunge:
         df_test = \
         self.postprocessparent(df_test, column, sibling, origcategory, process_dict, \
                               transform_dict, postprocess_dict, columnkey, assign_param)
+  
+    #process the cousins (no downstream, supplemental)
+    for cousin in transform_dict[category]['cousins']:
 
-    #process the auntsuncles (no downstream, with replacement)
-    for auntuncle in transform_dict[category]['auntsuncles']:
+  #       print("cousin = ", cousin)
 
-  #       print("auntuncle = ", auntuncle)
-
-      if auntuncle != None:
+      if cousin != None:
+        #note we use the processsibling function here
         df_test = \
-        self.postprocesscousin(df_test, column, auntuncle, origcategory, process_dict, \
+        self.postprocesscousin(df_test, column, cousin, origcategory, process_dict, \
                                 transform_dict, postprocess_dict, columnkey, assign_param)
-
-    #process the parents (with downstream, with replacement)
-    for parent in transform_dict[category]['parents']:
-
-  #       print("parent = ", parent)
-
-      if parent != None:
-        df_test = \
-        self.postprocessparent(df_test, column, parent, origcategory, process_dict, \
-                              transform_dict, postprocess_dict, columnkey, assign_param)
 
 
   #     #if we had replacement transformations performed then delete the original column 
@@ -25697,7 +25761,12 @@ class AutoMunge:
 
   def postprocessparent(self, df_test, column, parent, origcategory, process_dict, \
                       transform_dict, postprocess_dict, columnkey, assign_param):
-
+    """
+    #we want to apply in order of
+    #upstream process, children, coworkers, niecesnephews, friends
+    """
+    
+    
     #this is used to derive the new columns from the trasform
     origcolumnsset = set(list(df_test))
     
@@ -25749,6 +25818,20 @@ class AutoMunge:
     elif len(categorylist) > 0:
       parentcolumn = categorylist[0]
 
+      #process any children
+      for child in transform_dict[parent]['children']:
+
+        if child != None:
+
+          #process the child
+          #note the function applied is postprocessparent (using recursion)
+          #parent column
+          df_test = \
+          self.postprocessparent(df_test, parentcolumn, child, origcategory, process_dict, \
+                                 transform_dict, postprocess_dict, columnkey, assign_param)
+  #         self.postprocessfamily(df_test, parentcolumn, child, origcategory, process_dict, \
+  #                               transform_dict, postprocess_dict, columnkey)
+      
 
       #process any coworkers
       for coworker in transform_dict[parent]['coworkers']:
@@ -25761,18 +25844,7 @@ class AutoMunge:
           self.postprocesscousin(df_test, parentcolumn, coworker, origcategory, \
                                  process_dict, transform_dict, postprocess_dict, columnkey, assign_param)
 
-      #process any friends
-      for friend in transform_dict[parent]['friends']:
-
-        if friend != None:
-
-          #process the friend
-          #note the function applied is processcousin
-          df_test = \
-          self.postprocesscousin(df_test, parentcolumn, friend, origcategory, \
-                                 process_dict, transform_dict, postprocess_dict, columnkey, assign_param)
-
-
+          
       #process any niecesnephews
       #note the function applied is comparable to processsibling, just a different
       #parent column
@@ -25787,20 +25859,18 @@ class AutoMunge:
                                  process_dict, transform_dict, postprocess_dict, columnkey, assign_param)
   #         self.postprocessfamily(df_test, parentcolumn, niecenephew, origcategory, \
   #                                process_dict, transform_dict, postprocess_dict, columnkey)
+          
+          
+      #process any friends
+      for friend in transform_dict[parent]['friends']:
 
-      #process any children
-      for child in transform_dict[parent]['children']:
+        if friend != None:
 
-        if child != None:
-
-          #process the child
-          #note the function applied is postprocessparent (using recursion)
-          #parent column
+          #process the friend
+          #note the function applied is processcousin
           df_test = \
-          self.postprocessparent(df_test, parentcolumn, child, origcategory, process_dict, \
-                                 transform_dict, postprocess_dict, columnkey, assign_param)
-  #         self.postprocessfamily(df_test, parentcolumn, child, origcategory, process_dict, \
-  #                               transform_dict, postprocess_dict, columnkey)
+          self.postprocesscousin(df_test, parentcolumn, friend, origcategory, \
+                                 process_dict, transform_dict, postprocess_dict, columnkey, assign_param)
 
 
   #     #if we had replacement transformations performed then delete the original column 
@@ -32430,6 +32500,7 @@ class AutoMunge:
       FSpostprocess_dict['shuffletrain'] = True
       FSpostprocess_dict['TrainLabelFreqLevel'] = False
       FSpostprocess_dict['MLinfill'] = False
+      FSpostprocess_dict['featureselection'] = False
       FSpostprocess_dict['PCAn_components'] = None
       FSpostprocess_dict['excl_suffix'] = True
       FSpostprocess_dict['ML_cmnd']['PCA_type'] = 'off'
@@ -32763,7 +32834,7 @@ class AutoMunge:
       for key2 in FS_sorted['metric2_key'][key1]:
         for entry in FS_sorted['metric2_key'][key1][key2]:
           entry_index = FS_sorted['metric2_key'][key1][key2].index(entry)
-          FS_sorted['metric2_column_key'].update({FS_sorted['metric2_key'][key1][key2][entry_index] : key2})
+          FS_sorted['metric2_column_key'][key1].update({FS_sorted['metric2_key'][key1][key2][entry_index] : key2})
         
     
     if printstatus == True:
