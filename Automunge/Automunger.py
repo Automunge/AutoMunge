@@ -1097,7 +1097,7 @@ class AutoMunge:
     
     transform_dict.update({'NAr2' : {'parents' : [], \
                                      'siblings': [], \
-                                     'auntsuncles' : ['NArw'], \
+                                     'auntsuncles' : ['NAr2'], \
                                      'cousins' : [], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
@@ -1106,7 +1106,7 @@ class AutoMunge:
     
     transform_dict.update({'NAr3' : {'parents' : [], \
                                      'siblings': [], \
-                                     'auntsuncles' : ['NArw'], \
+                                     'auntsuncles' : ['NAr3'], \
                                      'cousins' : [], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
@@ -1115,7 +1115,16 @@ class AutoMunge:
     
     transform_dict.update({'NAr4' : {'parents' : [], \
                                      'siblings': [], \
-                                     'auntsuncles' : ['NArw'], \
+                                     'auntsuncles' : ['NAr4'], \
+                                     'cousins' : [], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'NAr5' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['NAr5'], \
                                      'cousins' : [], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
@@ -2096,8 +2105,8 @@ class AutoMunge:
     
     transform_dict.update({'excl' : {'parents' : [], \
                                      'siblings': [], \
-                                     'auntsuncles' : ['excl'], \
-                                     'cousins' : [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : ['excl'], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
@@ -3571,6 +3580,12 @@ class AutoMunge:
                                   'singleprocess' : self.process_NArw_class, \
                                   'postprocess' : None, \
                                   'NArowtype' : 'nonnegativenumeric', \
+                                  'MLinfilltype' : 'boolexclude', \
+                                  'labelctgy' : 'NArw'}})
+    process_dict.update({'NAr5' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_NArw_class, \
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'integer', \
                                   'MLinfilltype' : 'boolexclude', \
                                   'labelctgy' : 'NArw'}})
     process_dict.update({'null' : {'dualprocess' : None, \
@@ -16510,18 +16525,29 @@ class AutoMunge:
 
     return df, column_dict_list
 
+
   def process_excl_class(self, df, column, category, postprocess_dict, params = {}):
-    '''
+    """
     #here we'll address any columns that returned a 'excl' category
     #note this is a. singleprocess transform
     #we'll simply maintain the same column but with a suffix to the header
-    #the excl trasnform is a very special exception, and this suffix is later scrubbed
-    '''
+    #the excl trasnform is a very special exception, and this suffix is later
+    #removed when automunge(*.)parameter excl_suffix passed as False
     
+    #note that excl transform is also special in that it may only be applied
+    #as a supplement primitive in a family tree (eg cousins)
+    #as it replaces the source column internally (by a simple rename)
+    
+    #Note that the function check_transformdict(.) works 'under the hood'
+    #to translate user passed excl transforms in family trees
+    #from replacement primitives to corresponding supplement primitives
+    """
     
     exclcolumn = column + '_excl'
-    df[exclcolumn] = df[column].copy()
+    #df[exclcolumn] = df[column].copy()
     #del df[column]
+    
+    df.rename(columns = {column : exclcolumn}, inplace = True)
     
     
     column_dict_list = []
@@ -20080,8 +20106,9 @@ class AutoMunge:
           #perform feature evaluation on each column
           for column in am_train_columns:
 
-            if FSpostprocess_dict['column_dict'][column]['category'] != 'NArw' \
-            and FScolumn_dict[column]['FScomplete'] == False:
+#             if FSpostprocess_dict['column_dict'][column]['category'] != 'NArw' \
+#             and FScolumn_dict[column]['FScomplete'] == False:
+            if FScolumn_dict[column]['FScomplete'] == False:
 
               #categorylist = FScolumn_dict[column]['categorylist']
               #update version 1.80, let's perform FS on columnslist instead of categorylist
@@ -20195,13 +20222,24 @@ class AutoMunge:
     for FS_origcolumn in FS_origcolumns:
       for key in FScolumn_dict:
         if FScolumn_dict[key]['origcolumn'] == FS_origcolumn:
-          FS_sorted['metric_key'].update({FScolumn_dict[key]['metric'] : FS_origcolumn})
+          if FScolumn_dict[key]['metric'] in FS_sorted['metric_key']:
+            if isinstance(FS_sorted['metric_key'][FScolumn_dict[key]['metric']], list):
+              FS_sorted['metric_key'][FScolumn_dict[key]['metric']].append(FS_origcolumn)
+            else:
+              FS_sorted['metric_key'][FScolumn_dict[key]['metric']] = \
+              [FS_sorted['metric_key'][FScolumn_dict[key]['metric']]]
+              FS_sorted['metric_key'][FScolumn_dict[key]['metric']].append(FS_origcolumn)
+          else:
+            FS_sorted['metric_key'].update({FScolumn_dict[key]['metric'] : [FS_origcolumn]})
           break
 
+          
     FS_sorted['metric_key'] = dict(sorted(FS_sorted['metric_key'].items(), reverse=True))
     
     for key in FS_sorted['metric_key']:
-      FS_sorted['column_key'].update({FS_sorted['metric_key'][key] : key})
+      for entry in FS_sorted['metric_key'][key]:
+        entry_index = FS_sorted['metric_key'][key].index(entry)
+        FS_sorted['column_key'].update({FS_sorted['metric_key'][key][entry_index] : key})
       
     
     #now for metric2 based on derived columns relative importance, note sorted in other order
@@ -20209,7 +20247,15 @@ class AutoMunge:
       FS_sorted['metric2_key'].update({FS_origcolumn : {}})
       for key in FScolumn_dict:
         if FScolumn_dict[key]['origcolumn'] == FS_origcolumn:
-          FS_sorted['metric2_key'][FS_origcolumn].update({FScolumn_dict[key]['metric2'] : key})
+          if FScolumn_dict[key]['metric2'] in FS_sorted['metric2_key'][FS_origcolumn]:
+            if isinstance(FS_sorted['metric2_key'][FS_origcolumn][FScolumn_dict[key]['metric2']], list):
+              FS_sorted['metric2_key'][FS_origcolumn][FScolumn_dict[key]['metric2']].append(key)
+            else:
+              FS_sorted['metric2_key'][FS_origcolumn][FScolumn_dict[key]['metric2']] = \
+              [FS_sorted['metric2_key'][FS_origcolumn][FScolumn_dict[key]['metric2']]]
+              FS_sorted['metric2_key'][FS_origcolumn][FScolumn_dict[key]['metric2']].append(key)
+          else:
+            FS_sorted['metric2_key'][FS_origcolumn].update({FScolumn_dict[key]['metric2'] : [key]})
     
     for key in FS_sorted['metric2_key']:
       FS_sorted['metric2_key'][key] = dict(sorted(FS_sorted['metric2_key'][key].items(), reverse=False))
@@ -20217,7 +20263,9 @@ class AutoMunge:
     for key1 in FS_sorted['metric2_key']:
       FS_sorted['metric2_column_key'].update({key1 : {}})
       for key2 in FS_sorted['metric2_key'][key1]:
-        FS_sorted['metric2_column_key'][key1].update({FS_sorted['metric2_key'][key1][key2] : key2})
+        for entry in FS_sorted['metric2_key'][key1][key2]:
+          entry_index = FS_sorted['metric2_key'][key1][key2].index(entry)
+          FS_sorted['metric2_column_key'].update({FS_sorted['metric2_key'][key1][key2][entry_index] : key2})
         
     
     if printstatus == True:
@@ -20226,18 +20274,20 @@ class AutoMunge:
       print("sorted metric results:")
       print()
       for keys,values in FS_sorted['metric_key'].items():
-        print(values)
-        print(keys)
-        print()
+        for entry in values:
+          print(entry)
+          print(keys)
+          print()
       print("______________________")
       print("sorted metric2 results:")
       print()
       for key in FS_sorted['metric2_key']:
         print("for source column: ", key)
         for keys,values in FS_sorted['metric2_key'][key].items():
-          print(values)
-          print(keys)
-          print()
+          for entry in values:
+            print(entry)
+            print(keys)
+            print()
         print()
     
     if FSmodel is False:
@@ -22265,6 +22315,10 @@ class AutoMunge:
     """
     #Here we'll do a quick check for any entries in the user passed
     #transformdict which don't have at least one replacement column specified
+    #and if not found apply a cousins excl transform
+    
+    #we'll also do a test for excl tranfsorms as replacement primitives
+    #and if found move to a corresponding supplement primitive
     """
     
     result = False
@@ -22275,10 +22329,34 @@ class AutoMunge:
 
       if replacements == 0:
         
-        transformdict[transformkey]['auntsuncles'] = ['excl']
+        if 'excl' not in transformdict[transformkey]['cousins']:
         
+          transformdict[transformkey]['cousins'].append('excl')
+
+          result = True
+          
+    for transformkey in sorted(transformdict):
+      if 'excl' in transformdict[transformkey]['parents']:
+        transformdict[transformkey]['parents'].remove('excl')
+        transformdict[transformkey]['siblings'].append('excl')
         result = True
         
+      if 'excl' in transformdict[transformkey]['auntsuncles']:
+        transformdict[transformkey]['auntsuncles'].remove('excl')
+        transformdict[transformkey]['cousins'].append('excl')
+        result = True
+        
+      if 'excl' in transformdict[transformkey]['shildren']:
+        transformdict[transformkey]['children'].remove('excl')
+        transformdict[transformkey]['niecesnephews'].append('excl')
+        result = True
+        
+      if 'excl' in transformdict[transformkey]['coworkers']:
+        transformdict[transformkey]['coworkers'].remove('excl')
+        transformdict[transformkey]['friends'].append('excl')
+        result = True
+        
+
 #         print("Please note a category was defined in the user passed transformdict")
 #         print("without at least one replacement primitive for the source column.")
 #         print("root category = ", transformkey)
@@ -22325,6 +22403,73 @@ class AutoMunge:
     
     result = False
     
+    return result
+  
+  def check_normalization_dict(self, postprocess_dict):
+    """
+    #Double checks that any postprocess_dict['column_dict'] entries for
+    #normalization_dict don't have overlaps for those entries where
+    #postprocess functions use normalization_dict keys to 
+    #retrieve a column key
+
+    #in other words, for set of required unique normalizaiton_dict entry identifiers
+    #ensures they are only used in correct transformation categories
+    """
+
+    result = False
+
+    required_unique_normalization_dict_entries = \
+    {'textlabelsdict_text'  : 'text', \
+     'splt_newcolumns_splt' : 'splt', \
+     'splt_newcolumns_spl8' : 'spl8', \
+     'bn_width_bnwd'        : 'bnwd', \
+     'bn_width_bnwK'        : 'bnwK', \
+     'bn_width_bnwM'        : 'bnwM', \
+     'bincount_bnep'        : 'bnep', \
+     'bincount_bne7'        : 'bne7', \
+     'bincount_bne9'        : 'bne9', \
+     'buckets_bkt1'         : 'bkt1', \
+     'buckets_bkt2'         : 'bkt2'}
+
+    for column_dict_entry in postprocess_dict['column_dict']:
+
+      if column_dict_entry in postprocess_dict['column_dict'][column_dict_entry]['normalization_dict']:
+
+        for normalization_dict_entry in postprocess_dict['column_dict'][column_dict_entry]['normalization_dict'][column_dict_entry]:
+
+          if normalization_dict_entry in list(required_unique_normalization_dict_entries):
+
+            if required_unique_normalization_dict_entries[normalization_dict_entry] != \
+            postprocess_dict['column_dict'][column_dict_entry]['category']:
+
+              result = True
+
+              print("Warning of potential error for multi-generation family trees ")
+              print("from overlap in normalization_dict entry identifiers")
+              print("In a few cases for transforms with multicolumn derived sets")
+              print("The postprocess functions rely on uniquity of this item to dervie a key to access parameters")
+              print("potential overlap found for category ", postprocess_dict['column_dict'][column_dict_entry]['category'])
+              print("In regards to normalization_dict entry ", normalization_dict_entry)
+              print("Which overlaps with the category ", required_unique_normalization_dict_entries[normalization_dict_entry])
+              print("Overlap found for column ", column_dict_entry)
+
+
+    return result
+  
+  def check_columnheaders(self, columnheaders_list):
+    """
+    #Performs a validation that all of the column headers are unique
+    """
+    
+    result = False
+    
+    if len(columnheaders_list) > len(set(columnheaders_list)):
+      
+      result = True
+      
+      print("Warning of potential error from duplicate column headers.")
+      print("")
+      
     return result
   
   
@@ -23172,31 +23317,32 @@ class AutoMunge:
     
     return df_test
   
-
-  def automunge(self, df_train, df_test = False, labels_column = False, trainID_column = False, \
-                testID_column = False, valpercent1=0.0, valpercent2 = 0.0, floatprecision = 32, \
-                shuffletrain = True, TrainLabelFreqLevel = False, powertransform = False, \
-                binstransform = False, MLinfill = False, infilliterate=1, randomseed = 42, \
-                LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, \
-                LSfit = False, numbercategoryheuristic = 63, pandasoutput = False, NArw_marker = False, \
+  
+  def automunge(self, df_train, df_test = False, \
+                labels_column = False, trainID_column = False, testID_column = False, \
+                valpercent1=0.0, valpercent2 = 0.0, floatprecision = 32, shuffletrain = True, \
+                TrainLabelFreqLevel = False, powertransform = False, binstransform = False, \
+                MLinfill = False, infilliterate=1, randomseed = 42, \
+                LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, LSfit = False, \
+                numbercategoryheuristic = 63, pandasoutput = False, NArw_marker = False, \
                 featureselection = False, featurepct = 1.0, featuremetric = 0.0, featuremethod = 'default', \
                 Binary = False, PCAn_components = None, PCAexcl = [], excl_suffix = False, \
                 ML_cmnd = {'MLinfill_type':'default', \
                            'MLinfill_cmnd':{'RandomForestClassifier':{}, 'RandomForestRegressor':{}}, \
                            'PCA_type':'default', \
                            'PCA_cmnd':{}}, \
-                assigncat = {'mnmx':[], 'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[], \
-                             'mean':[], 'mea2':[], 'mea3':[], 'retn':[], \
-                             'nmbr':[], 'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'MAD3':[], \
-                             'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
-                             'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
-                             'bins':[], 'bint':[], 'bsor':[], 'pwr2':[], 'por2':[], \
+                assigncat = {'nmbr':[], 'retn':[], 'mnmx':[], 'mean':[], 'MAD3':[], \
+                             'bins':[], 'bsor':[], 'pwr2':[], 'por2':[], 'bxcx':[], \
+                             'addd':[], 'sbtr':[], 'mltp':[], 'divd':[], \
+                             'log0':[], 'log1':[], 'sqrt':[], 'rais':[], 'absl':[], \
                              'bnwd':[], 'bnwK':[], 'bnwM':[], 'bnwo':[], 'bnKo':[], 'bnMo':[], \
                              'bnep':[], 'bne7':[], 'bne9':[], 'bneo':[], 'bn7o':[], 'bn9o':[], \
                              'bkt1':[], 'bkt2':[], 'bkt3':[], 'bkt4':[], \
-                             'bxcx':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
-                             'addd':[], 'sbtr':[], 'mltp':[], 'divd':[], \
-                             'log0':[], 'log1':[], 'sqrt':[], 'rais':[], 'absl':[], \
+                             'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], \
+                             'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[], \
+                             'mea2':[], 'mea3':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
+                             'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
+                             'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
                              'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
                              'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
                              'Utxt':[], 'Utx2':[], 'Utx3':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
@@ -23209,14 +23355,15 @@ class AutoMunge:
                              'wkds':[], 'wkdo':[], 'mnts':[], 'mnto':[], \
                              'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
                              'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
-                             'excl':[], 'exc2':[], 'exc3':[], 'null':[], 'copy':[], 'shfl':[], \
-                             'eval':[]}, \
+                             'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[], \
+                             'null':[], 'copy':[], 'shfl':[], 'eval':[]}, \
                 assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                                 'adjinfill':[], 'meaninfill':[], 'medianinfill':[], \
                                 'modeinfill':[], 'lcinfill':[]}, \
-                assignparam = {}, transformdict = {}, processdict = {}, evalcat = False, \
+                assignparam = {'default_assignparam' : {'(category)' : {'(parameter)' : 42}}, \
+                                        '(category)' : {'(column)'   : {'(parameter)' : 42}}}, \
+                transformdict = {}, processdict = {}, evalcat = False, \
                 printstatus = True):
-
     '''
     #automunge(df_train, df_test, labels_column, valpercent=0.20, powertransform = True, \
     #MLinfill = True, infilliterate=1, randomseed = 42, \
@@ -23471,6 +23618,12 @@ class AutoMunge:
     for column in list(df_train):
       trainlabels.append(str(column))
     df_train.columns = trainlabels
+    
+    #confirm all unique column headers
+    check_columnheaders_result = \
+    self.check_columnheaders(list(df_train))
+
+    miscparameters_results.update({'check_columnheaders_result' : check_columnheaders_result})
     
         
     #if user passes as True labels_column passed based on final column (including single column scenario)
@@ -24343,6 +24496,14 @@ class AutoMunge:
             print("")
 
 
+    #now that all transforms are applied on training set and labels
+    #we'll do quick validation of normalization_dict entries
+    
+    check_normalization_dict_result = \
+    self.check_normalization_dict(postprocess_dict)
+
+    miscparameters_results.update({'check_normalization_dict_result' : check_normalization_dict_result})
+    
 
     #now that we've pre-processed all of the columns, let's run through them again\
     #using infill to derive plug values for the previously missing cells
@@ -25107,7 +25268,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.53'
+    automungeversion = '3.54'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -32441,8 +32602,9 @@ class AutoMunge:
           #perform feature evaluation on each column
           for column in am_train_columns:
 
-            if FSpostprocess_dict['column_dict'][column]['category'] != 'NArw' \
-            and FScolumn_dict[column]['FScomplete'] == False:
+#             if FSpostprocess_dict['column_dict'][column]['category'] != 'NArw' \
+#             and FScolumn_dict[column]['FScomplete'] == False:
+            if FScolumn_dict[column]['FScomplete'] == False:
 
               #categorylist = FScolumn_dict[column]['categorylist']
               #update version 1.80, let's perform FS on columnslist instead of categorylist
@@ -32558,13 +32720,24 @@ class AutoMunge:
     for FS_origcolumn in FS_origcolumns:
       for key in FScolumn_dict:
         if FScolumn_dict[key]['origcolumn'] == FS_origcolumn:
-          FS_sorted['metric_key'].update({FScolumn_dict[key]['metric'] : FS_origcolumn})
+          if FScolumn_dict[key]['metric'] in FS_sorted['metric_key']:
+            if isinstance(FS_sorted['metric_key'][FScolumn_dict[key]['metric']], list):
+              FS_sorted['metric_key'][FScolumn_dict[key]['metric']].append(FS_origcolumn)
+            else:
+              FS_sorted['metric_key'][FScolumn_dict[key]['metric']] = \
+              [FS_sorted['metric_key'][FScolumn_dict[key]['metric']]]
+              FS_sorted['metric_key'][FScolumn_dict[key]['metric']].append(FS_origcolumn)
+          else:
+            FS_sorted['metric_key'].update({FScolumn_dict[key]['metric'] : [FS_origcolumn]})
           break
 
+          
     FS_sorted['metric_key'] = dict(sorted(FS_sorted['metric_key'].items(), reverse=True))
     
     for key in FS_sorted['metric_key']:
-      FS_sorted['column_key'].update({FS_sorted['metric_key'][key] : key})
+      for entry in FS_sorted['metric_key'][key]:
+        entry_index = FS_sorted['metric_key'][key].index(entry)
+        FS_sorted['column_key'].update({FS_sorted['metric_key'][key][entry_index] : key})
       
     
     #now for metric2 based on derived columns relative importance, note sorted in other order
@@ -32572,7 +32745,15 @@ class AutoMunge:
       FS_sorted['metric2_key'].update({FS_origcolumn : {}})
       for key in FScolumn_dict:
         if FScolumn_dict[key]['origcolumn'] == FS_origcolumn:
-          FS_sorted['metric2_key'][FS_origcolumn].update({FScolumn_dict[key]['metric2'] : key})
+          if FScolumn_dict[key]['metric2'] in FS_sorted['metric2_key'][FS_origcolumn]:
+            if isinstance(FS_sorted['metric2_key'][FS_origcolumn][FScolumn_dict[key]['metric2']], list):
+              FS_sorted['metric2_key'][FS_origcolumn][FScolumn_dict[key]['metric2']].append(key)
+            else:
+              FS_sorted['metric2_key'][FS_origcolumn][FScolumn_dict[key]['metric2']] = \
+              [FS_sorted['metric2_key'][FS_origcolumn][FScolumn_dict[key]['metric2']]]
+              FS_sorted['metric2_key'][FS_origcolumn][FScolumn_dict[key]['metric2']].append(key)
+          else:
+            FS_sorted['metric2_key'][FS_origcolumn].update({FScolumn_dict[key]['metric2'] : [key]})
     
     for key in FS_sorted['metric2_key']:
       FS_sorted['metric2_key'][key] = dict(sorted(FS_sorted['metric2_key'][key].items(), reverse=False))
@@ -32580,7 +32761,9 @@ class AutoMunge:
     for key1 in FS_sorted['metric2_key']:
       FS_sorted['metric2_column_key'].update({key1 : {}})
       for key2 in FS_sorted['metric2_key'][key1]:
-        FS_sorted['metric2_column_key'][key1].update({FS_sorted['metric2_key'][key1][key2] : key2})
+        for entry in FS_sorted['metric2_key'][key1][key2]:
+          entry_index = FS_sorted['metric2_key'][key1][key2].index(entry)
+          FS_sorted['metric2_column_key'].update({FS_sorted['metric2_key'][key1][key2][entry_index] : key2})
         
     
     if printstatus == True:
@@ -32589,18 +32772,20 @@ class AutoMunge:
       print("sorted metric results:")
       print()
       for keys,values in FS_sorted['metric_key'].items():
-        print(values)
-        print(keys)
-        print()
+        for entry in values:
+          print(entry)
+          print(keys)
+          print()
       print("______________________")
       print("sorted metric2 results:")
       print()
       for key in FS_sorted['metric2_key']:
         print("for source column: ", key)
         for keys,values in FS_sorted['metric2_key'][key].items():
-          print(values)
-          print(keys)
-          print()
+          for entry in values:
+            print(entry)
+            print(keys)
+            print()
         print()
               
               
@@ -32820,11 +33005,12 @@ class AutoMunge:
     return drift_ppd, drift_report
   
 
-  def postmunge(self, postprocess_dict, df_test, testID_column = False, \
-                labelscolumn = False, pandasoutput = False, printstatus = True, \
+  def postmunge(self, postprocess_dict, df_test, \
+                testID_column = False, labelscolumn = False, \
+                pandasoutput = False, printstatus = True, \
                 TrainLabelFreqLevel = False, featureeval = False, driftreport = False, \
-                LabelSmoothing = False, LSfit = False, returnedsets = True, \
-                shuffletrain = False):
+                LabelSmoothing = False, LSfit = False, \
+                returnedsets = True, shuffletrain = False):
     '''
     #postmunge(df_test, testID_column, postprocess_dict) Function that when fed a \
     #test data set coresponding to a previously processed train data set which was \
