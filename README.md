@@ -178,7 +178,7 @@ am.automunge(df_train, df_test = False, \
                           'wkds':[], 'wkdo':[], 'mnts':[], 'mnto':[], \
                           'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
                           'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
-                          'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[], \
+                          'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[], 'exc6':[], \
                           'null':[], 'copy':[], 'shfl':[], 'eval':[]}, \
              assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                              'adjinfill':[], 'meaninfill':[], 'medianinfill':[], \
@@ -405,7 +405,7 @@ am.automunge(df_train, df_test = False, \
                           'wkds':[], 'wkdo':[], 'mnts':[], 'mnto':[], \
                           'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
                           'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
-                          'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[], \
+                          'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[], 'exc6':[], \
                           'null':[], 'copy':[], 'shfl':[], 'eval':[]}, \
              assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                              'adjinfill':[], 'meaninfill':[], 'medianinfill':[], \
@@ -627,7 +627,7 @@ am.automunge(df_train, df_test = False, \
                           'wkds':[], 'wkdo':[], 'mnts':[], 'mnto':[], \
                           'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
                           'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
-                          'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[], \
+                          'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[], 'exc6':[], \
                           'null':[], 'copy':[], 'shfl':[], 'eval':[]}, \
              assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                              'adjinfill':[], 'meaninfill':[], 'medianinfill':[], \
@@ -983,7 +983,7 @@ assigncat = {'nmbr':[], 'retn':[], 'mnmx':[], 'mean':[], 'MAD3':[], \
              'wkds':[], 'wkdo':[], 'mnts':[], 'mnto':[], \
              'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
              'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
-             'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[], \
+             'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[], 'exc6':[], \
              'null':[], 'copy':[], 'shfl':[], 'eval':[]}
 ```         
 
@@ -2131,9 +2131,12 @@ holiday
   - driftreport postmunge metrics: none
 * excl: passes source column un-altered. (Note that returned data may not be numeric and predictive 
 methods like ML infill and feature selection may not work for that scenario.)
+Note that the excl transform is unique in that it is an in-place operation for efficieny purposes, and
+so may only be passed in a user defined transformdict as an entry to cousins primitive. For comparable
+functionility elligible for other primitive entries please use 'exc6' transform.
   - default infill: none
   - default NArowtype: exclude
-  - suffix appender: None (this is a special case)
+  - suffix appender: None or '_excl' (dependant on automunge(.) excl_suffix parameter)
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: none
 * exc2/exc3/exc4: passes source column unaltered other than force to numeric, mode infill applied
@@ -2146,6 +2149,13 @@ methods like ML infill and feature selection may not work for that scenario.)
   - default infill: mode
   - default NArowtype: integer
   - suffix appender: '_exc5'
+  - assignparam parameters accepted: none
+  - driftreport postmunge metrics: none
+* exc6: passes source column un-altered. (Comparable to 'excl' but elligible for entry to full set of 
+family tree primitives in a user-defined transformdict.)
+  - default infill: none
+  - default NArowtype: exclude
+  - suffix appender: '_exc6'
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: none
 * eval: performs distribution property evaluation consistent with the automunge
