@@ -22272,7 +22272,7 @@ class AutoMunge:
       #eval is a special case, it triggers the application of evalcategory
       #which may be neccesary when automated inference turned off with powertransform
       #so it doesn't need a process_dit entry
-      if assigncat_key not in list(transform_dict) and assigncat_key != 'eval':
+      if assigncat_key not in list(transform_dict) and assigncat_key not in ['eval', 'ptfm']:
         
         result = True
         
@@ -23413,7 +23413,7 @@ class AutoMunge:
                              'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
                              'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
                              'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[], 'exc6':[], \
-                             'null':[], 'copy':[], 'shfl':[], 'eval':[]}, \
+                             'null':[], 'copy':[], 'shfl':[], 'eval':[], 'ptfm':[]}, \
                 assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                                 'adjinfill':[], 'meaninfill':[], 'medianinfill':[], \
                                 'modeinfill':[], 'lcinfill':[]}, \
@@ -24057,7 +24057,6 @@ class AutoMunge:
     #create empty dictionary to serve as store for drift metrics
     drift_dict = {}
     
-
     #For each column, determine appropriate processing function
     #processing function will be based on evaluation of train set
     for column in columns_train:
@@ -24066,206 +24065,218 @@ class AutoMunge:
       #our postprocess_dict
       column_dict = {}
 
-      #we're only going to process columns that weren't in our excluded set
-      #if column not in excludetransformscolumns:
-      if True == True:
 
-        categorycomplete = False
+      #
+      categorycomplete = False
 
-        if bool(assigncat) == True:
+      if bool(assigncat) == True:
 
-          for key in assigncat:
-            if column in assigncat[key]:
-              category = key
-              category_test = key
-              categorycomplete = True
+        for key in assigncat:
+          if column in assigncat[key]:
+            category = key
+            category_test = key
+            categorycomplete = True
 
-              #printout display progress
-              if printstatus == True:
-                print("evaluating column: ", column)
+            #printout display progress
+            if printstatus == True:
+              print("evaluating column: ", column)
 
-              #special case, if user assigned column to 'eval' then we'll run evalcategory
-              #passing a True for powertransform parameter
-              if key in ['eval']:
-                if evalcat == False:
-                  category = self.evalcategory(df_train, column, numbercategoryheuristic, True, False)
-                elif type(evalcat) == types.FunctionType:
-                  category = evalcat(df_train, column, numbercategoryheuristic, True, False)
-                else:
-                  print("error: evalcat must be passed as either False or as a defined function per READ ME")
+            #special case, if user assigned column to 'eval' then we'll run evalcategory
+            #passing a False for powertransform parameter
+            if key in ['eval']:
+              if evalcat == False:
+                category = self.evalcategory(df_train, column, numbercategoryheuristic, False, False)
+              elif type(evalcat) == types.FunctionType:
+                category = evalcat(df_train, column, numbercategoryheuristic, False, False)
+              else:
+                print("error: evalcat must be passed as either False or as a defined function per READ ME")
 
-                category_test = category
+              category_test = category
+            
+            #or for 'ptfm' passing a True for powertransform parameter
+            if key in ['ptfm']:
+              if evalcat == False:
+                category = self.evalcategory(df_train, column, numbercategoryheuristic, True, False)
+              elif type(evalcat) == types.FunctionType:
+                category = evalcat(df_train, column, numbercategoryheuristic, True, False)
+              else:
+                print("error: evalcat must be passed as either False or as a defined function per READ ME")
 
-        if categorycomplete == False:
+              category_test = category
 
-          #printout display progress
-          if printstatus == True:
-            print("evaluating column: ", column)
+      #
+      if categorycomplete == False:
 
-          if evalcat == False:
-            category = self.evalcategory(df_train, column, numbercategoryheuristic, powertransform, False)
-          elif type(evalcat) == types.FunctionType:
-            category = evalcat(df_train, column, numbercategoryheuristic, powertransform, False)
-          else:
-            print("error: evalcat must be passed as either False or as a defined function per READ ME")
+        #printout display progress
+        if printstatus == True:
+          print("evaluating column: ", column)
 
-
-  #           #let's make sure the category is consistent between train and test sets
-  #           #we'll only evaluate if we didn't use a dummy set for df_set
-  #           if test_plug_marker != True:
-  #             category_test = self.evalcategory(df_test, column, numbercategoryheuristic, powertransform)
-
-  #           else:
-  #             category_test = category
-
-
-
-  #           #for the special case of train category = bxcx and test category = nmbr
-  #           #(meaning there were no negative values in train but there were in test)
-  #           #we'll resolve by reseting the train category to nmbr
-  #           if category == 'bxcx' and category_test == 'nmbr':
-  #             category = 'nmbr'
-
-  #           #one more bxcx special case: if user elects not to apply boxcox transform
-  #           #default to 'nmbr' category instead of 'bxcx'
-  #           if category == 'bxcx' and powertransform == False:
-  #             category = 'nmbr'
-  #             category_test = 'nmbr'
-
-  #           #one more special case, if train was a numerical set to categorical based
-  #           #on heuristic, let's force test to as well
-  #           if category == 'text' and category_test == 'nmbr':
-  #             category_test = 'text'
-
-  #           #special case for bug fix, need because these are part of the evalcategory outputs
-  # #           if (category == 'text' or category == 'ordl') and category_test == 'bnry':
-  # #               category_test = category
-  #           if category in ['text', 'ordl', 'bnry'] and category_test in ['text', 'ordl', 'bnry']:
-  #             category_test = category
-  #           if category in ['nmbr', 'bxcx', 'mnmx', 'MAD3'] and category_test in ['nmbr', 'bxcx', 'mnmx', 'MAD3']:
-  #             category_test = category
-  #           if category == 'null':
-  #             category_test = category
-
-  #         #otherwise if train category != test category return error
-  #         if category != category_test:
-  #           print('error - different category between train and test sets for column ',\
-  #                column)
-
-        #Previously had a few methods here to validate consistensy of data between train
-        #and test sets. Found it was introducing too much complexity and was having trouble
-        #keeping track of all the edge cases. So let's just make outright assumption that
-        #test data if passed is consistently formatted as train data (for now)
-        #added benefit that this reduces running time
-        if True == False:
-          pass
-
-        #so if we didn't find discrepency let's proceed
+        if evalcat == False:
+          category = self.evalcategory(df_train, column, numbercategoryheuristic, powertransform, False)
+        elif type(evalcat) == types.FunctionType:
+          category = evalcat(df_train, column, numbercategoryheuristic, powertransform, False)
         else:
-
-          #to support the postprocess_dict entry below, let's first create a temp
-          #list of columns
-          templist1 = list(df_train)
-
-          #create NArows (column of True/False where True coresponds to missing data)
-          trainNArows, drift_dict = self.getNArows(df_train, column, category, postprocess_dict, drift_dict=drift_dict, driftassess=True)
-          testNArows = self.getNArows(df_test, column, category, postprocess_dict)
-
-          #now append that NArows onto a master NA rows df
-          masterNArows_train = pd.concat([masterNArows_train, trainNArows], axis=1)
-          masterNArows_test = pd.concat([masterNArows_test, testNArows], axis=1)
-
-          #printout display progress
-          if printstatus == True:
-            print("processing column: ", column)
-            print("    root category: ", category)
-
-  #           #now process ancestors
-  #           df_train, df_test, postprocess_dict = \
-  #           self.processancestors(df_train, df_test, column, category, category, process_dict, \
-  #                                 transform_dict, postprocess_dict)
-
-          #now process family
-          df_train, df_test, postprocess_dict = \
-          self.processfamily(df_train, df_test, column, category, category, process_dict, \
-                            transform_dict, postprocess_dict, assign_param)
-          
-          #this is the validation to ensure no overlap error
-          templist3 = list(df_train)
-          overlapkeylist = list(set(templist3) - set(templist1))
-          if len(set(overlapkeylist) & set(columns_train)) > 0:
-            print("*****************")
-            print("Warning of potential error")
-            print("The set of columns returned from transformations applied to column ", column)
-            print("Has an overlap with column headers for those columns originally passed to automunge(.):")
-            print(set(overlapkeylist) & set(columns_train))
-            print("")
-            print("Some potential quick fixes for this error include:")
-            print("- rename columns to integers before passing to automunge(.)")
-            print("- strip underscores '_' from column header titles (convention is all suffix appenders include an underscore)")
-            print("")
-            print("Please note any updates to column headers will need to be carried through to assignment parameters.")
-            print("*****************")
-            print("")
-            
-            miscparameters_results['columnoverlap_valresults'].update({column : {'result' : True, \
-                                                                                 'overlap' : set(overlapkeylist) & set(columns_train)}})
-            
-          else:
-            
-            miscparameters_results['columnoverlap_valresults'].update({column : {'result' : False, \
-                                                                                 'overlap' : set()}})
-          
-          
-          #now delete columns that were subject to replacement
-          df_train, df_test, postprocess_dict = \
-          self.circleoflife(df_train, df_test, column, category, category, process_dict, \
-                            transform_dict, postprocess_dict)
-
-          #here's another templist to support the postprocess_dict entry below
-          templist2 = list(df_train)
-
-          #ok now we're going to pick one of the new entries in templist2 to serve 
-          #as a "columnkey" for pulling datas from the postprocess_dict down the road
-          #columnkeylist = list(set(templist2) - set(templist1))[0]
-          columnkeylist = list(set(templist2) - set(templist1))
-
-          #now we'll apply the floatprecision transformation
-          df_train = self.floatprecision_transform(df_train, columnkeylist, floatprecision)
-          df_test = self.floatprecision_transform(df_test, columnkeylist, floatprecision)
+          print("error: evalcat must be passed as either False or as a defined function per READ ME")
 
 
-          #so last line I believe returns string if only one entry, so let's run a test
-          if isinstance(columnkeylist, str):
-            columnkey = columnkeylist
-          else:
-            #if list is empty
-            if len(columnkeylist) == 0:
-              columnkey = column
-            else:
-              columnkey = columnkeylist[0]
-              if columnkey in postprocess_dict['column_dict']:
-                if postprocess_dict['column_dict'][columnkey]['category'] == 'NArw':
-                  if len(columnkeylist) > 1:
-                    columnkey = columnkeylist[1]
-                  else:
-                    columnkey = columnkey
+#           #let's make sure the category is consistent between train and test sets
+#           #we'll only evaluate if we didn't use a dummy set for df_set
+#           if test_plug_marker != True:
+#             category_test = self.evalcategory(df_test, column, numbercategoryheuristic, powertransform)
 
-          #ok this is sort of a hack, originating in version 1.77,
-          #we're going to create an entry to postprocess_dict to
-          #store a columnkey for each of the original columns
-          postprocess_dict['origcolumn'].update({column : {'category' : category, \
-                                                           'columnkeylist' : columnkeylist, \
-                                                           'columnkey' : columnkey}})
-          
+#           else:
+#             category_test = category
+
+
+
+#           #for the special case of train category = bxcx and test category = nmbr
+#           #(meaning there were no negative values in train but there were in test)
+#           #we'll resolve by reseting the train category to nmbr
+#           if category == 'bxcx' and category_test == 'nmbr':
+#             category = 'nmbr'
+
+#           #one more bxcx special case: if user elects not to apply boxcox transform
+#           #default to 'nmbr' category instead of 'bxcx'
+#           if category == 'bxcx' and powertransform == False:
+#             category = 'nmbr'
+#             category_test = 'nmbr'
+
+#           #one more special case, if train was a numerical set to categorical based
+#           #on heuristic, let's force test to as well
+#           if category == 'text' and category_test == 'nmbr':
+#             category_test = 'text'
+
+#           #special case for bug fix, need because these are part of the evalcategory outputs
+# #           if (category == 'text' or category == 'ordl') and category_test == 'bnry':
+# #               category_test = category
+#           if category in ['text', 'ordl', 'bnry'] and category_test in ['text', 'ordl', 'bnry']:
+#             category_test = category
+#           if category in ['nmbr', 'bxcx', 'mnmx', 'MAD3'] and category_test in ['nmbr', 'bxcx', 'mnmx', 'MAD3']:
+#             category_test = category
+#           if category == 'null':
+#             category_test = category
+
+#         #otherwise if train category != test category return error
+#         if category != category_test:
+#           print('error - different category between train and test sets for column ',\
+#                column)
+
+      #Previously had a few methods here to validate consistensy of data between train
+      #and test sets. Found it was introducing too much complexity and was having trouble
+      #keeping track of all the edge cases. So let's just make outright assumption that
+      #test data if passed is consistently formatted as train data (for now)
+      #added benefit that this reduces running time
+#       if True == False:
+#         pass
+#       #
+#       #so if we didn't find discrepency let's proceed
+#       else:
+
+      ##
+      #to support the postprocess_dict entry below, let's first create a temp
+      #list of columns
+      templist1 = list(df_train)
+
+      #create NArows (column of True/False where True coresponds to missing data)
+      trainNArows, drift_dict = self.getNArows(df_train, column, category, postprocess_dict, drift_dict=drift_dict, driftassess=True)
+      testNArows = self.getNArows(df_test, column, category, postprocess_dict)
+
+      #now append that NArows onto a master NA rows df
+      masterNArows_train = pd.concat([masterNArows_train, trainNArows], axis=1)
+      masterNArows_test = pd.concat([masterNArows_test, testNArows], axis=1)
+
+      #printout display progress
+      if printstatus == True:
+        print("processing column: ", column)
+        print("    root category: ", category)
+
+#           #now process ancestors
+#           df_train, df_test, postprocess_dict = \
+#           self.processancestors(df_train, df_test, column, category, category, process_dict, \
+#                                 transform_dict, postprocess_dict)
+      ##
+      #now process family
+      df_train, df_test, postprocess_dict = \
+      self.processfamily(df_train, df_test, column, category, category, process_dict, \
+                        transform_dict, postprocess_dict, assign_param)
+      ##
+      #this is the validation to ensure no overlap error
+      templist3 = list(df_train)
+      overlapkeylist = list(set(templist3) - set(templist1))
+      if len(set(overlapkeylist) & set(columns_train)) > 0:
+        print("*****************")
+        print("Warning of potential error")
+        print("The set of columns returned from transformations applied to column ", column)
+        print("Has an overlap with column headers for those columns originally passed to automunge(.):")
+        print(set(overlapkeylist) & set(columns_train))
+        print("")
+        print("Some potential quick fixes for this error include:")
+        print("- rename columns to integers before passing to automunge(.)")
+        print("- strip underscores '_' from column header titles (convention is all suffix appenders include an underscore)")
+        print("")
+        print("Please note any updates to column headers will need to be carried through to assignment parameters.")
+        print("*****************")
+        print("")
+
+        miscparameters_results['columnoverlap_valresults'].update({column : {'result' : True, \
+                                                                             'overlap' : set(overlapkeylist) & set(columns_train)}})
+      ##
+      else:
+
+        miscparameters_results['columnoverlap_valresults'].update({column : {'result' : False, \
+                                                                             'overlap' : set()}})
+
+      ##
+      #now delete columns that were subject to replacement
+      df_train, df_test, postprocess_dict = \
+      self.circleoflife(df_train, df_test, column, category, category, process_dict, \
+                        transform_dict, postprocess_dict)
+      ##
+      #here's another templist to support the postprocess_dict entry below
+      templist2 = list(df_train)
+
+      #ok now we're going to pick one of the new entries in templist2 to serve 
+      #as a "columnkey" for pulling datas from the postprocess_dict down the road
+      #columnkeylist = list(set(templist2) - set(templist1))[0]
+      columnkeylist = list(set(templist2) - set(templist1))
+
+      #now we'll apply the floatprecision transformation
+      df_train = self.floatprecision_transform(df_train, columnkeylist, floatprecision)
+      df_test = self.floatprecision_transform(df_test, columnkeylist, floatprecision)
+
+      ##
+      #so last line I believe returns string if only one entry, so let's run a test
+      if isinstance(columnkeylist, str):
+        columnkey = columnkeylist
+      else:
+        #if list is empty
+        if len(columnkeylist) == 0:
+          columnkey = column
+        else:
+          columnkey = columnkeylist[0]
+          if columnkey in postprocess_dict['column_dict']:
+            if postprocess_dict['column_dict'][columnkey]['category'] == 'NArw':
+              if len(columnkeylist) > 1:
+                columnkey = columnkeylist[1]
+              else:
+                columnkey = columnkey
+      ##
+      #ok this is sort of a hack, originating in version 1.77,
+      #we're going to create an entry to postprocess_dict to
+      #store a columnkey for each of the original columns
+      postprocess_dict['origcolumn'].update({column : {'category' : category, \
+                                                       'columnkeylist' : columnkeylist, \
+                                                       'columnkey' : columnkey}})
+
 #           for newcolumn in postprocess_dict['origcolumn'][column]['columnkeylist']:
 #             postprocess_dict['newcolumn'].update({newcolumn : {'origcolumn' : column}})
+      ##
+      #printout display progress
+      if printstatus == True:
+        print(" returned columns:")
+        print(postprocess_dict['origcolumn'][column]['columnkeylist'])
+        print("")
 
-          #printout display progress
-          if printstatus == True:
-            print(" returned columns:")
-            print(postprocess_dict['origcolumn'][column]['columnkeylist'])
-            print("")
 
 
 
@@ -24297,6 +24308,29 @@ class AutoMunge:
               print("______")
               print("")
               print("evaluating label column: ", labels_column)
+              
+            #special case, if user assigned column to 'eval' then we'll run evalcategory
+            #passing a False for powertransform parameter
+            if key in ['eval']:
+              if evalcat == False:
+                category = self.evalcategory(df_labels, labels_column, numbercategoryheuristic, False, True)
+              elif type(evalcat) == types.FunctionType:
+                category = evalcat(df_labels, labels_column, numbercategoryheuristic, False, True)
+              else:
+                print("error: evalcat must be passed as either False or as a defined function per READ ME")
+
+              labelscategory = category
+              
+            #or for 'ptfm' passing a True for powertransform parameter
+            if key in ['ptfm']:
+              if evalcat == False:
+                category = self.evalcategory(df_labels, labels_column, numbercategoryheuristic, True, True)
+              elif type(evalcat) == types.FunctionType:
+                category = evalcat(df_labels, labels_column, numbercategoryheuristic, True, True)
+              else:
+                print("error: evalcat must be passed as either False or as a defined function per READ ME")
+
+              labelscategory = category
 
       if categorycomplete == False:
         
@@ -25327,7 +25361,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.55'
+    automungeversion = '3.56'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
