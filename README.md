@@ -1789,7 +1789,7 @@ elif max<=0 and min<=0 x=(x-max)/(max-min)
 ### Numerical Set Transformations
 * bxcx/bxc2/bxc3/bxc4/bxc5: performs Box-Cox power law transformation. Applies infill to 
 values <= 0. Note we currently have a test for overflow in returned results and if found 
-set to 0.
+set to 0. Please note that this method makes use of scipy.stats.boxcox.
   - default infill: mean
   - default NArowtype: positivenumeric
   - suffix appender: '_bxcx'
