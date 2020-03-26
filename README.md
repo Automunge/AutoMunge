@@ -179,7 +179,7 @@ am.automunge(df_train, df_test = False, \
                           'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
                           'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
                           'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[], 'exc6':[], \
-                          'null':[], 'copy':[], 'shfl':[], 'eval':[]}, \
+                          'null':[], 'copy':[], 'shfl':[], 'eval':[], 'ptfm':[]}, \
              assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                              'adjinfill':[], 'meaninfill':[], 'medianinfill':[], \
                              'modeinfill':[], 'lcinfill':[]}, \
@@ -406,7 +406,7 @@ am.automunge(df_train, df_test = False, \
                           'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
                           'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
                           'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[], 'exc6':[], \
-                          'null':[], 'copy':[], 'shfl':[], 'eval':[]}, \
+                          'null':[], 'copy':[], 'shfl':[], 'eval':[], 'ptfm':[]}, \
              assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                              'adjinfill':[], 'meaninfill':[], 'medianinfill':[], \
                              'modeinfill':[], 'lcinfill':[]}, \
@@ -628,7 +628,7 @@ am.automunge(df_train, df_test = False, \
                           'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
                           'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
                           'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[], 'exc6':[], \
-                          'null':[], 'copy':[], 'shfl':[], 'eval':[]}, \
+                          'null':[], 'copy':[], 'shfl':[], 'eval':[], 'ptfm':[]}, \
              assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                              'adjinfill':[], 'meaninfill':[], 'medianinfill':[], \
                              'modeinfill':[], 'lcinfill':[]}, \
@@ -745,21 +745,20 @@ inclusion of powers of ten bins. For cases where labels are included in the
 test set, may also be passed as 'traintest' to apply levelizing to both train
 and test sets or be passed as 'test' to only apply levelizing to test set.
 
-* powertransform: a boolean identifier (True/False) which indicates if an
-evaluation will be performed of distribution properties to select between
-box-cox, z-score, min-max scaling, or mean absolute deviaiton scaling 
-normalization. Note that after application of box-cox transform child columns 
-are generated for a subsequent z-score normalization as well as a set of bins
-associated with number of standard deviations from the mean. Please note that
-I don't consider the current means of distribution property evaluation very
+* powertransform: (True/False/'excl'/'exc2'), defaults top False, when passed as 
+True an evaluation will be performed of distribution properties to select between
+box-cox, z-score, min-max scaling, or mean absolute deviaiton scaling normalization
+of numerical data. Note that after application of box-cox transform child columns 
+are generated for a subsequent z-score normalization. Please note that
+I don't consider the current means of distribution property evaluation highly
 sophisticated and we will continue to refine this method with further research
-going forward. This defaults to False. Additionally, powertransform may be 
-passed as values 'excl' or 'exc2', where for 'excl' columns not explicitly 
-assigned to a root category in assigncat will be left untouched, or for 'exc2'
-columns not explicitly assigned to a root category in assigncat will be forced 
-to numeric and subject to default modeinfill. (These two excl arguments may be 
-useful if a user wants to experiment with specific transforms on a subset of
-the columns without incurring processing time of an entire set.)
+going forward. Additionally, powertransform may be passed as values 'excl' or 
+'exc2', where for 'excl' columns not explicitly assigned to a root category in 
+assigncat will be left untouched, or for 'exc2' columns not explicitly assigned 
+to a root category in assigncat will be forced to numeric and subject to default 
+modeinfill. (These two excl arguments may be useful if a user wants to experiment 
+with specific transforms on a subset of the columns without incurring processing 
+time of an entire set.)
 
 * binstransform: a boolean identifier (True/False) which indicates if all
 default numerical sets will receive bin processing such as to generate child
@@ -984,7 +983,7 @@ assigncat = {'nmbr':[], 'retn':[], 'mnmx':[], 'mean':[], 'MAD3':[], \
              'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
              'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
              'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[], 'exc6':[], \
-             'null':[], 'copy':[], 'shfl':[], 'eval':[]}
+             'null':[], 'copy':[], 'shfl':[], 'eval':[], 'ptfm':[]}
 ```         
 
 Descriptions of these transformations are provided in document below (in section
@@ -2165,8 +2164,14 @@ family tree primitives in a user-defined transformdict.)
   - suffix appender: '_exc6'
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: none
-* eval: performs distribution property evaluation consistent with the automunge
-'powertransform' parameter activated to designated column
+* eval: performs data property evaluation consistent with default automation to designated column
+  - default infill: based on evaluation
+  - default NArowtype: based on evaluation
+  - suffix appender: based on evlauation
+  - assignparam parameters accepted: none
+  - driftreport postmunge metrics: none
+* ptfm: performs distribution property evaluation consistent with the automunge powertransform 
+parameter activated to designated column
   - default infill: based on evaluation
   - default NArowtype: based on evaluation
   - suffix appender: based on evlauation
