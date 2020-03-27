@@ -328,7 +328,7 @@ PCA - all currently implemented in Scikit-Learn.
 
 The function also can perform dimensionality reduction of the sets via
 the Binary option which takes the set of columns with boolean {1/0} encodings
-and applies a binary transform to reduce the number of columns.
+and collectively applies a binary transform to reduce the number of columns.
 
 ## automunge(.)
 
