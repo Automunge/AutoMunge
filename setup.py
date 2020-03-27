@@ -8,7 +8,7 @@ setuptools.setup(
     version="3.57",
     author="Nicholas Teague",
     author_email="pitg888@gmail.com",
-    description="A tool for automated data wrangling",
+    description="platform for preparing tabular data for machine learning",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/Automunge/AutoMunge",
