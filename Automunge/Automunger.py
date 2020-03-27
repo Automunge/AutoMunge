@@ -14303,7 +14303,7 @@ class AutoMunge:
 
       if nc in textcolumns:
 
-        column_dict = { nc : {'category' : 'bnwd', \
+        column_dict = { nc : {'category' : 'bnwK', \
                              'origcategory' : category, \
                              'normalization_dict' : nmbrnormalization_dict, \
                              'origcolumn' : column, \
@@ -14454,7 +14454,7 @@ class AutoMunge:
 
       if nc in textcolumns:
 
-        column_dict = { nc : {'category' : 'bnwd', \
+        column_dict = { nc : {'category' : 'bnwM', \
                              'origcategory' : category, \
                              'normalization_dict' : nmbrnormalization_dict, \
                              'origcolumn' : column, \
@@ -14692,7 +14692,7 @@ class AutoMunge:
 
       if nc in nmbrcolumns:
 
-        column_dict = { nc : {'category' : 'bnwo', \
+        column_dict = { nc : {'category' : 'bnKo', \
                              'origcategory' : category, \
                              'normalization_dict' : nmbrnormalization_dict, \
                              'origcolumn' : column, \
@@ -14812,7 +14812,7 @@ class AutoMunge:
 
       if nc in nmbrcolumns:
 
-        column_dict = { nc : {'category' : 'bnwo', \
+        column_dict = { nc : {'category' : 'bnMo', \
                              'origcategory' : category, \
                              'normalization_dict' : nmbrnormalization_dict, \
                              'origcolumn' : column, \
@@ -17086,37 +17086,39 @@ class AutoMunge:
   #       category = 'nmbr'
 
       if category in ['nmbr', 'bxcx', defaultnumerical] and powertransform == True:
+        
+        if df[pd.to_numeric(df[column], errors='coerce').notnull()][column].astype(float).nunique() >= 3:
 
-        #shapiro tests for normality, we'll use a common threshold p<0.05 to reject the normality hypothesis
-        stat, p = shapiro(df[pd.to_numeric(df[column], errors='coerce').notnull()][column].astype(float))
-        #a typical threshold to test for normality is >0.05, let's try a lower bar for this application
-        if p > 0.025:
-          category = 'nmbr'
-        if p <= 0.025:
-          #skewness helps recognize exponential distributions, reference wikipedia
-          #reference from wikipedia
-  #       A normal distribution and any other symmetric distribution with finite third moment has a skewness of 0
-  #       A half-normal distribution has a skewness just below 1
-  #       An exponential distribution has a skewness of 2
-  #       A lognormal distribution can have a skewness of any positive value, depending on its parameters
-          #skewness = skew(df[column])
-          skewness = skew(df[pd.to_numeric(df[column], errors='coerce').notnull()][column].astype(float))
-          if skewness < 1.5:
-            category = 'mnmx'
-          else:
-            #if powertransform == True:
-            if category in ['nmbr', 'bxcx']:
+          #shapiro tests for normality, we'll use a common threshold p<0.05 to reject the normality hypothesis
+          stat, p = shapiro(df[pd.to_numeric(df[column], errors='coerce').notnull()][column].astype(float))
+          #a typical threshold to test for normality is >0.05, let's try a lower bar for this application
+          if p > 0.025:
+            category = 'nmbr'
+          if p <= 0.025:
+            #skewness helps recognize exponential distributions, reference wikipedia
+            #reference from wikipedia
+    #       A normal distribution and any other symmetric distribution with finite third moment has a skewness of 0
+    #       A half-normal distribution has a skewness just below 1
+    #       An exponential distribution has a skewness of 2
+    #       A lognormal distribution can have a skewness of any positive value, depending on its parameters
+            #skewness = skew(df[column])
+            skewness = skew(df[pd.to_numeric(df[column], errors='coerce').notnull()][column].astype(float))
+            if skewness < 1.5:
+              category = 'mnmx'
+            else:
+              #if powertransform == True:
+              if category in ['nmbr', 'bxcx']:
 
-              #note we'll only allow bxcx category if all values greater than a clip value
-              #>0 (currently set at 0.1) since there is an asymptote for box-cox at 0
-              if (df[pd.to_numeric(df[column], errors='coerce').notnull()][column].astype(float) >= 0.1).all():
-                category = 'bxcx'
+                #note we'll only allow bxcx category if all values greater than a clip value
+                #>0 (currently set at 0.1) since there is an asymptote for box-cox at 0
+                if (df[pd.to_numeric(df[column], errors='coerce').notnull()][column].astype(float) >= 0.1).all():
+                  category = 'bxcx'
+
+                else:
+                  category = 'nmbr'
 
               else:
-                category = 'nmbr'
-
-            else:
-              category = 'MAD3'
+                category = 'MAD3'
 
       del df
       
@@ -25393,7 +25395,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.57'
+    automungeversion = '3.58'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -33046,7 +33048,7 @@ class AutoMunge:
           columnkey = drift_column
         else:
           columnkey = columnkeylist[0]
-          if postprocess_dict['column_dict'][columnkey]['category'] == 'NArw':
+          if drift_ppd['column_dict'][columnkey]['category'] == 'NArw':
             if len(columnkeylist) > 1:
               columnkey = columnkeylist[1]
             else:
