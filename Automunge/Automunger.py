@@ -18062,6 +18062,7 @@ class AutoMunge:
     #other ML architectures such a SVM or something SGD based for instance
     '''
     
+    
     #initialize defaults dictionary
     MLinfilldefaults = \
     self.populateMLinfilldefaults(randomseed)
@@ -18219,8 +18220,14 @@ class AutoMunge:
           model.fit(np_train_filltrain, np_train_filllabel)    
 
 
-          #predict infill values
-          np_traininfill = model.predict(np_train_fillfeatures)
+#           #predict infill values
+#           np_traininfill = model.predict(np_train_fillfeatures)
+          
+          #only run following if we have any train rows needing infill
+          if df_train_fillfeatures.shape[0] > 0:
+            np_traininfill = model.predict(np_train_fillfeatures)
+          else:
+            np_traininfill = np.array([0])
 
           #only run following if we have any test rows needing infill
           if df_test_fillfeatures.shape[0] > 0:
@@ -18376,8 +18383,14 @@ class AutoMunge:
 
           model.fit(np_train_filltrain, np_train_filllabel)
 
-          #predict infill values
-          np_traininfill = model.predict(np_train_fillfeatures)
+#           #predict infill values
+#           np_traininfill = model.predict(np_train_fillfeatures)
+          
+          #only run following if we have any train rows needing infill
+          if df_train_fillfeatures.shape[0] > 0:
+            np_traininfill = model.predict(np_train_fillfeatures)
+          else:
+            np_traininfill = np.array([0])
 
           #only run following if we have any test rows needing infill
           if df_test_fillfeatures.shape[0] > 0:
@@ -18525,8 +18538,15 @@ class AutoMunge:
               
           model.fit(np_train_filltrain, np_train_filllabel)
           
-          #predict infill values
-          np_traininfill = model.predict(np_train_fillfeatures)
+#           #predict infill values
+#           np_traininfill = model.predict(np_train_fillfeatures)
+          
+          #only run following if we have any train rows needing infill
+          if df_train_fillfeatures.shape[0] > 0:
+            np_traininfill = model.predict(np_train_fillfeatures)
+          else:
+            #this needs to have same number of columns as text category
+            np_traininfill = np.zeros(shape=(1,len(columnslist)))
           
           #only run following if we have any test rows needing infill
           if df_test_fillfeatures.shape[0] > 0:
@@ -18678,12 +18698,24 @@ class AutoMunge:
               
           model.fit(np_train_filltrain, np_train_filllabel)
           
-          #predict infill values
-          np_traininfill = model.predict(np_train_fillfeatures)
+#           #predict infill values
+#           np_traininfill = model.predict(np_train_fillfeatures)
           
-          #convert from one-hot to binary encoding
-          np_traininfill = \
-          self.convert_onehot_to_1010(np_traininfill)
+#           #convert from one-hot to binary encoding
+#           np_traininfill = \
+#           self.convert_onehot_to_1010(np_traininfill)
+          
+          #only run following if we have any train rows needing infill
+          if df_train_fillfeatures.shape[0] > 0:
+            np_traininfill = model.predict(np_train_fillfeatures)
+            
+            np_traininfill = \
+            self.convert_onehot_to_1010(np_traininfill)
+            
+          else:
+            #this needs to have same number of columns as text category
+            np_traininfill = np.zeros(shape=(1,len(columnslist)))
+          
           
           #only run following if we have any test rows needing infill
           if df_test_fillfeatures.shape[0] > 0:
@@ -25361,7 +25393,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.56'
+    automungeversion = '3.57'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -32536,6 +32568,7 @@ class AutoMunge:
       FSpostprocess_dict['MLinfill'] = False
       FSpostprocess_dict['featureselection'] = False
       FSpostprocess_dict['PCAn_components'] = None
+      FSpostprocess_dict['Binary'] = False
       FSpostprocess_dict['excl_suffix'] = True
       FSpostprocess_dict['ML_cmnd']['PCA_type'] = 'off'
       FSpostprocess_dict['assigninfill'] = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
