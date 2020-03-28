@@ -769,7 +769,10 @@ defaults to False.
 infill method will be applied as a default to predict infill for missing 
 or improperly formatted data using machine learning models trained on the
 rest of the set. This defaults to False. Note that ML infill may alternatively
-be assigned to distinct columns in assigninfill.
+be assigned to distinct columns in assigninfill. Note that even if sets passed
+to automunge(.) have no points needing infill, when MLinfill is activated 
+machine learning models will still be trained for potential use of predicting 
+infill to subsequent data passed through the postmunge(.) function.
 
 * infilliterate: an integer indicating how many applications of the ML
 infill processing are to be performed for purposes of predicting infill.
