@@ -191,7 +191,7 @@ am.automunge(df_train, df_test = False, \
 
 Please remember to save the automunge(.) returned object postprocess_dict 
 such as using pickle library, which can then be later passed to the postmunge(.) 
-function to consistently process subsequently available data.
+function to consistently prepare subsequently available data.
 
 ```
 #Sample pickle code:
@@ -222,7 +222,6 @@ am.postmunge(postprocess_dict, df_test, \
              LabelSmoothing = False, LSfit = False, \
              returnedsets = True, shuffletrain = False)
 ```
-
 
 The functions depend on pandas dataframe formatted train and test data
 or numpy arrays with consistent order of columns between train and test data. 
@@ -351,7 +350,7 @@ featureimportance, postprocess_dict \
 = am.automunge(df_train)
 ```
 
-The full set of arguments available to be passed are given here, with
+The full set of parameters available to be passed are given here, with
 explanations provided below: 
 
 ```
@@ -581,7 +580,7 @@ demonstrated with the pickle library above.
 
 ...
 
-## automunge(.) passed arguments
+## automunge(.) passed parameters
 
 ```
 train, trainID, labels, \
@@ -1377,7 +1376,7 @@ postreports_dict['sourcecolumn_drift']['new_driftstats'] = \
 ...
 
 
-## postmunge(.) passed arguments
+## postmunge(.) passed parameters
 
 ```
 
