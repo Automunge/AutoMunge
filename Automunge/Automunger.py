@@ -18100,10 +18100,10 @@ class AutoMunge:
     
     
     #convert dataframes to numpy arrays
-    np_train_filltrain = df_train_filltrain.values
-    np_train_filllabel = df_train_filllabel.values
-    np_train_fillfeatures = df_train_fillfeatures.values
-    np_test_fillfeatures = df_test_fillfeatures.values
+    df_train_filltrain = df_train_filltrain.values
+    df_train_filllabel = df_train_filllabel.values
+    df_train_fillfeatures = df_train_fillfeatures.values
+    df_test_fillfeatures = df_test_fillfeatures.values
 
     #ony run the following if we have any rows needing infill
     if df_train_fillfeatures.shape[0] > 0 or df_test_fillfeatures.shape[0] > 0:
@@ -18112,9 +18112,9 @@ class AutoMunge:
       #if category in ['nmbr', 'nbr2', 'bxcx']:
       if MLinfilltype in ['numeric']:
         
-        if np_train_filltrain.shape[0] == 0:
-          np_traininfill = np.zeros(shape=(1,len(columnslist)))
-          np_testinfill = np.zeros(shape=(1,len(columnslist)))
+        if df_train_filltrain.shape[0] == 0:
+          df_traininfill = np.zeros(shape=(1,len(columnslist)))
+          df_testinfill = np.zeros(shape=(1,len(columnslist)))
           
           
           model = False
@@ -18122,7 +18122,7 @@ class AutoMunge:
         else:
 
           #this is to address a not weird error message suggesting I reshape the y with ravel()
-          np_train_filllabel = np.ravel(np_train_filllabel)
+          df_train_filllabel = np.ravel(df_train_filllabel)
           
           #currently this only supports MLinfill_type of 'default'
           if 'MLinfill_type' in ML_cmnd:
@@ -18184,7 +18184,7 @@ class AutoMunge:
             #now we'll run a fit on the grid search
             #for now won't pass any fit parameters
             fit_params = {}
-            tune_search.fit(np_train_filltrain, np_train_filllabel, **fit_params)
+            tune_search.fit(df_train_filltrain, df_train_filllabel, **fit_params)
             
             #acess the tuned parameters based on the tuning operation
             tuned_params = tune_search.best_params_
@@ -18219,62 +18219,62 @@ class AutoMunge:
             model = self.initRandomForestRegressor(ML_cmnd, MLinfilldefaults)
 
 
-          model.fit(np_train_filltrain, np_train_filllabel)    
+          model.fit(df_train_filltrain, df_train_filllabel)    
 
 
 #           #predict infill values
-#           np_traininfill = model.predict(np_train_fillfeatures)
+#           df_traininfill = model.predict(df_train_fillfeatures)
           
           #only run following if we have any train rows needing infill
           if df_train_fillfeatures.shape[0] > 0:
-            np_traininfill = model.predict(np_train_fillfeatures)
+            df_traininfill = model.predict(df_train_fillfeatures)
           else:
-            np_traininfill = np.array([0])
+            df_traininfill = np.array([0])
 
           #only run following if we have any test rows needing infill
           if df_test_fillfeatures.shape[0] > 0:
-            np_testinfill = model.predict(np_test_fillfeatures)
+            df_testinfill = model.predict(df_test_fillfeatures)
           else:
-            np_testinfill = np.array([0])
+            df_testinfill = np.array([0])
 
         #convert infill values to dataframe
-        df_traininfill = pd.DataFrame(np_traininfill, columns = ['infill'])
-        df_testinfill = pd.DataFrame(np_testinfill, columns = ['infill'])
+        df_traininfill = pd.DataFrame(df_traininfill, columns = ['infill'])
+        df_testinfill = pd.DataFrame(df_testinfill, columns = ['infill'])
         
 
 
 #       if category == 'bxcx':
 
 #         #this is to address a weird error message suggesting I reshape the y with ravel()
-#         np_train_filllabel = np.ravel(np_train_filllabel)
+#         df_train_filllabel = np.ravel(df_train_filllabel)
 
 #         #model = SVR()
 #         model = RandomForestRegressor(random_state = randomseed)
 
-#         model.fit(np_train_filltrain, np_train_filllabel)   
+#         model.fit(df_train_filltrain, df_train_filllabel)   
 
 #         #predict infill values
-#         np_traininfill = model.predict(np_train_fillfeatures)
+#         df_traininfill = model.predict(df_train_fillfeatures)
 
 
 #         #only run following if we have any test rows needing infill
 #         if df_test_fillfeatures.shape[0] > 0:
-#           np_testinfill = model.predict(np_test_fillfeatures)
+#           df_testinfill = model.predict(df_test_fillfeatures)
 #         else:
-#           np_testinfill = np.array([0])
+#           df_testinfill = np.array([0])
 
 #         #convert infill values to dataframe
-#         df_traininfill = pd.DataFrame(np_traininfill, columns = ['infill'])
-#         df_testinfill = pd.DataFrame(np_testinfill, columns = ['infill'])     
+#         df_traininfill = pd.DataFrame(df_traininfill, columns = ['infill'])
+#         df_testinfill = pd.DataFrame(df_testinfill, columns = ['infill'])     
 
 
 
       #if category == 'bnry':
       if MLinfilltype in ['singlct', 'binary']:
       
-        if np_train_filltrain.shape[0] == 0:
-          np_traininfill = np.zeros(shape=(1,len(columnslist)))
-          np_testinfill = np.zeros(shape=(1,len(columnslist)))
+        if df_train_filltrain.shape[0] == 0:
+          df_traininfill = np.zeros(shape=(1,len(columnslist)))
+          df_testinfill = np.zeros(shape=(1,len(columnslist)))
           
           
           model = False
@@ -18282,7 +18282,7 @@ class AutoMunge:
         else:
           
           #this is to address a not weird error message suggesting I reshape the y with ravel()
-          np_train_filllabel = np.ravel(np_train_filllabel)
+          df_train_filllabel = np.ravel(df_train_filllabel)
           
           #currently this only supports MLinfill_type of 'default'
           if 'MLinfill_type' in ML_cmnd:
@@ -18342,7 +18342,7 @@ class AutoMunge:
             #now we'll run a fit on the grid search
             #for now won't pass any fit parameters
             fit_params = {}
-            tune_search.fit(np_train_filltrain, np_train_filllabel, **fit_params)
+            tune_search.fit(df_train_filltrain, df_train_filllabel, **fit_params)
             
             #acess the tuned parameters based on the tuning operation
             tuned_params = tune_search.best_params_
@@ -18383,26 +18383,26 @@ class AutoMunge:
               model = False
             
 
-          model.fit(np_train_filltrain, np_train_filllabel)
+          model.fit(df_train_filltrain, df_train_filllabel)
 
 #           #predict infill values
-#           np_traininfill = model.predict(np_train_fillfeatures)
+#           df_traininfill = model.predict(df_train_fillfeatures)
           
           #only run following if we have any train rows needing infill
           if df_train_fillfeatures.shape[0] > 0:
-            np_traininfill = model.predict(np_train_fillfeatures)
+            df_traininfill = model.predict(df_train_fillfeatures)
           else:
-            np_traininfill = np.array([0])
+            df_traininfill = np.array([0])
 
           #only run following if we have any test rows needing infill
           if df_test_fillfeatures.shape[0] > 0:
-            np_testinfill = model.predict(np_test_fillfeatures)
+            df_testinfill = model.predict(df_test_fillfeatures)
           else:
-            np_testinfill = np.array([0])
+            df_testinfill = np.array([0])
 
         #convert infill values to dataframe
-        df_traininfill = pd.DataFrame(np_traininfill, columns = ['infill'])
-        df_testinfill = pd.DataFrame(np_testinfill, columns = ['infill'])
+        df_traininfill = pd.DataFrame(df_traininfill, columns = ['infill'])
+        df_testinfill = pd.DataFrame(df_testinfill, columns = ['infill'])
 
   #       print('category is bnry, df_traininfill is')
   #       print(df_traininfill)
@@ -18411,9 +18411,9 @@ class AutoMunge:
       #if category in ['text', 'bins', 'bint']:
       if MLinfilltype in ['multirt', 'multisp']:
       
-        if np_train_filltrain.shape[0] == 0:
-          np_traininfill = np.zeros(shape=(1,len(columnslist)))
-          np_testinfill = np.zeros(shape=(1,len(columnslist)))
+        if df_train_filltrain.shape[0] == 0:
+          df_traininfill = np.zeros(shape=(1,len(columnslist)))
+          df_testinfill = np.zeros(shape=(1,len(columnslist)))
           
           model = False
           
@@ -18428,12 +18428,12 @@ class AutoMunge:
           
 #           #apply_LabelSmoothing_numpy will be comparable to apply_LabelSmoothing
 #           #but intended for numpy arrays, making use of fact that #columns = len(categorylist) for MLinfill
-#           np_traininfill = self.apply_LabelSmoothing_numpy(np_traininfill, epsilon)
+#           df_traininfill = self.apply_LabelSmoothing_numpy(df_traininfill, epsilon)
 
           
           #muiltirt sets as edge case may sometimes be returned with one column
-          if np_train_filllabel.shape[1] == 1:
-            np_train_filllabel = np.ravel(np_train_filllabel)
+          if df_train_filllabel.shape[1] == 1:
+            df_train_filllabel = np.ravel(df_train_filllabel)
             
           #currently this only supports MLinfill_type of 'default'
           if 'MLinfill_type' in ML_cmnd:
@@ -18497,7 +18497,7 @@ class AutoMunge:
             #now we'll run a fit on the grid search
             #for now won't pass any fit parameters
             fit_params = {}
-            tune_search.fit(np_train_filltrain, np_train_filllabel, **fit_params)
+            tune_search.fit(df_train_filltrain, df_train_filllabel, **fit_params)
             
             #acess the tuned parameters based on the tuning operation
             tuned_params = tune_search.best_params_
@@ -18538,47 +18538,47 @@ class AutoMunge:
               model = False
               
               
-          model.fit(np_train_filltrain, np_train_filllabel)
+          model.fit(df_train_filltrain, df_train_filllabel)
           
 #           #predict infill values
-#           np_traininfill = model.predict(np_train_fillfeatures)
+#           df_traininfill = model.predict(df_train_fillfeatures)
           
           #only run following if we have any train rows needing infill
           if df_train_fillfeatures.shape[0] > 0:
-            np_traininfill = model.predict(np_train_fillfeatures)
+            df_traininfill = model.predict(df_train_fillfeatures)
           else:
             #this needs to have same number of columns as text category
-            np_traininfill = np.zeros(shape=(1,len(columnslist)))
+            df_traininfill = np.zeros(shape=(1,len(columnslist)))
           
           #only run following if we have any test rows needing infill
           if df_test_fillfeatures.shape[0] > 0:
-            np_testinfill = model.predict(np_test_fillfeatures)
+            df_testinfill = model.predict(df_test_fillfeatures)
           else:
             #this needs to have same number of columns as text category
-            np_testinfill = np.zeros(shape=(1,len(columnslist)))
+            df_testinfill = np.zeros(shape=(1,len(columnslist)))
             
           
         #convert infill values to dataframe
 #         if len(columnslist) > 1:
-        df_traininfill = pd.DataFrame(np_traininfill, columns = columnslist)
-        df_testinfill = pd.DataFrame(np_testinfill, columns = columnslist)
+        df_traininfill = pd.DataFrame(df_traininfill, columns = columnslist)
+        df_testinfill = pd.DataFrame(df_testinfill, columns = columnslist)
 
   
 
       if MLinfilltype in ['1010']:
       
-        if np_train_filltrain.shape[0] == 0:
+        if df_train_filltrain.shape[0] == 0:
           
-          np_traininfill = np.zeros(shape=(1,len(columnslist)))
-          np_testinfill = np.zeros(shape=(1,len(columnslist)))
+          df_traininfill = np.zeros(shape=(1,len(columnslist)))
+          df_testinfill = np.zeros(shape=(1,len(columnslist)))
 
           model = False
           
         else:
           
           #convert from binary to one-hot encoding
-          np_train_filllabel = \
-          self.convert_1010_to_onehot(np_train_filllabel)
+          df_train_filllabel = \
+          self.convert_1010_to_onehot(df_train_filllabel)
           
 #         #FUTURE EXTENSION - Label Smoothing for ML infill
 #         if ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['LabelSmoothing'] >0.0 and
@@ -18589,12 +18589,12 @@ class AutoMunge:
           
 #           #apply_LabelSmoothing_numpy will be comparable to apply_LabelSmoothing
 #           #but intended for numpy arrays, making use of fact that #columns = len(categorylist) for MLinfill
-#           np_traininfill = self.apply_LabelSmoothing_numpy(np_traininfill, epsilon)
+#           df_traininfill = self.apply_LabelSmoothing_numpy(df_traininfill, epsilon)
 
           
           #muiltirt sets as edge case may sometimes be returned with one column
-          if np_train_filllabel.shape[1] == 1:
-            np_train_filllabel = np.ravel(np_train_filllabel)
+          if df_train_filllabel.shape[1] == 1:
+            df_train_filllabel = np.ravel(df_train_filllabel)
             
           #currently this only supports MLinfill_type of 'default'
           if 'MLinfill_type' in ML_cmnd:
@@ -18657,7 +18657,7 @@ class AutoMunge:
             #now we'll run a fit on the grid search
             #for now won't pass any fit parameters
             fit_params = {}
-            tune_search.fit(np_train_filltrain, np_train_filllabel, **fit_params)
+            tune_search.fit(df_train_filltrain, df_train_filllabel, **fit_params)
             
             #acess the tuned parameters based on the tuning operation
             tuned_params = tune_search.best_params_
@@ -18698,42 +18698,42 @@ class AutoMunge:
               model = False
               
               
-          model.fit(np_train_filltrain, np_train_filllabel)
+          model.fit(df_train_filltrain, df_train_filllabel)
           
 #           #predict infill values
-#           np_traininfill = model.predict(np_train_fillfeatures)
+#           df_traininfill = model.predict(df_train_fillfeatures)
           
 #           #convert from one-hot to binary encoding
-#           np_traininfill = \
-#           self.convert_onehot_to_1010(np_traininfill)
+#           df_traininfill = \
+#           self.convert_onehot_to_1010(df_traininfill)
           
           #only run following if we have any train rows needing infill
           if df_train_fillfeatures.shape[0] > 0:
-            np_traininfill = model.predict(np_train_fillfeatures)
+            df_traininfill = model.predict(df_train_fillfeatures)
             
-            np_traininfill = \
-            self.convert_onehot_to_1010(np_traininfill)
+            df_traininfill = \
+            self.convert_onehot_to_1010(df_traininfill)
             
           else:
             #this needs to have same number of columns as text category
-            np_traininfill = np.zeros(shape=(1,len(columnslist)))
+            df_traininfill = np.zeros(shape=(1,len(columnslist)))
           
           
           #only run following if we have any test rows needing infill
           if df_test_fillfeatures.shape[0] > 0:
-            np_testinfill = model.predict(np_test_fillfeatures)
+            df_testinfill = model.predict(df_test_fillfeatures)
             
-            np_testinfill = \
-            self.convert_onehot_to_1010(np_testinfill)
+            df_testinfill = \
+            self.convert_onehot_to_1010(df_testinfill)
             
           else:
             #this needs to have same number of columns as text category
-            np_testinfill = np.zeros(shape=(1,len(columnslist)))
+            df_testinfill = np.zeros(shape=(1,len(columnslist)))
             
           
         #convert infill values to dataframe
-        df_traininfill = pd.DataFrame(np_traininfill, columns = columnslist)
-        df_testinfill = pd.DataFrame(np_testinfill, columns = columnslist)
+        df_traininfill = pd.DataFrame(df_traininfill, columns = columnslist)
+        df_testinfill = pd.DataFrame(df_testinfill, columns = columnslist)
       
         
 
@@ -18757,10 +18757,10 @@ class AutoMunge:
     else:
 
       if category == 'text':
-        np_traininfill = np.zeros(shape=(1,len(columnslist)))
-        np_testinfill = np.zeros(shape=(1,len(columnslist)))
-        df_traininfill = pd.DataFrame(np_traininfill, columns = columnslist)
-        df_testinfill = pd.DataFrame(np_testinfill, columns = columnslist) 
+        df_traininfill = np.zeros(shape=(1,len(columnslist)))
+        df_testinfill = np.zeros(shape=(1,len(columnslist)))
+        df_traininfill = pd.DataFrame(df_traininfill, columns = columnslist)
+        df_testinfill = pd.DataFrame(df_testinfill, columns = columnslist) 
 
       else :
         df_traininfill = pd.DataFrame({'infill' : [0]}) 
@@ -19804,7 +19804,7 @@ class AutoMunge:
     return shuffleset2
     
   
-  def shuffleaccuracy(self, shuffleset, am_labels, FSmodel, randomseed, \
+  def shuffleaccuracy(self, np_shuffleset, np_labels, FSmodel, randomseed, \
                       labelsencoding_dict, process_dict, labelctgy, postprocess_dict):
     '''
     measures accuracy of predictions of shuffleset (which had permutation method)
@@ -19812,8 +19812,8 @@ class AutoMunge:
     '''
     
     #convert dataframes to numpy arrays
-    np_shuffleset = shuffleset.values
-    np_labels = am_labels.values
+    np_shuffleset = np_shuffleset.values
+    np_labels = np_labels.values
     
     #get category of labels from labelsencoding_dict
     #labelscategory = next(iter(labelsencoding_dict))
@@ -21642,8 +21642,8 @@ class AutoMunge:
     self.populatePCAdefaults(randomseed)
     
     #convert PCAsets to numpy arrays
-    np_PCAset_train = PCAset_train.values
-    np_PCAset_test = PCAset_test.values
+    PCAset_train = PCAset_train.values
+    PCAset_test = PCAset_test.values
     
     #initialize a PCA model
     #PCAmodel = PCA(n_components = PCAn_components, random_state = randomseed)
@@ -21663,24 +21663,24 @@ class AutoMunge:
       PCAmodel = self.initPCA(ML_cmnd, PCAdefaults, n_components)
 
     #derive the PCA model (note htis is unsupervised training, no labels)
-    PCAmodel.fit(np_PCAset_train)
+    PCAmodel.fit(PCAset_train)
 
     #Save the trained PCA model to the postprocess_dict
     postprocess_dict.update({'PCAmodel' : PCAmodel})
 
     #apply the transform
-    np_PCAset_train = PCAmodel.transform(np_PCAset_train)
-    np_PCAset_test = PCAmodel.transform(np_PCAset_test)
+    PCAset_train = PCAmodel.transform(PCAset_train)
+    PCAset_test = PCAmodel.transform(PCAset_test)
 
     #get new number of columns
-    newcolumncount = np.size(np_PCAset_train,1)
+    newcolumncount = np.size(PCAset_train,1)
 
     #generate a list of column names for the conversion to pandas
     columnnames = ['PCAcol'+str(y) for y in range(newcolumncount)]
 
     #convert output to pandas
-    PCAset_train = pd.DataFrame(np_PCAset_train, columns = columnnames)
-    PCAset_test = pd.DataFrame(np_PCAset_test, columns = columnnames)
+    PCAset_train = pd.DataFrame(PCAset_train, columns = columnnames)
+    PCAset_test = pd.DataFrame(PCAset_test, columns = columnnames)
 
     return PCAset_train, PCAset_test, postprocess_dict, PCActgy
   
@@ -25395,7 +25395,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.58'
+    automungeversion = '3.59'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -32160,7 +32160,6 @@ class AutoMunge:
 
 
 
-
   def predictpostinfill(self, category, model, df_test_fillfeatures, \
                         postprocess_dict, columnslist = []):
     '''
@@ -32180,10 +32179,10 @@ class AutoMunge:
     MLinfilltype = postprocess_dict['process_dict'][category]['MLinfilltype']
     
     #convert dataframes to numpy arrays
-  #   np_train_filltrain = df_train_filltrain.values
-  #   np_train_filllabel = df_train_filllabel.values
-  #   np_train_fillfeatures = df_train_fillfeatures.values
-    np_test_fillfeatures = df_test_fillfeatures.values
+  #   df_train_filltrain = df_train_filltrain.values
+  #   df_train_filllabel = df_train_filllabel.values
+  #   df_train_fillfeatures = df_train_fillfeatures.values
+    df_test_fillfeatures = df_test_fillfeatures.values
 
     #ony run the following if we have any rows needing infill
   #   if df_train_fillfeatures.shape[0] > 0:
@@ -32202,21 +32201,21 @@ class AutoMunge:
   #       #model = RidgeCV()
   #       #note that SVR doesn't have an argument for random_state
   #       model = SVR()
-  #       model.fit(np_train_filltrain, np_train_filllabel)    
+  #       model.fit(df_train_filltrain, df_train_filllabel)    
 
 
   #       #predict infill values
-  #       np_traininfill = model.predict(np_train_fillfeatures)
+  #       df_traininfill = model.predict(df_train_fillfeatures)
 
         #only run following if we have any test rows needing infill
         if df_test_fillfeatures.shape[0] > 0:
-          np_testinfill = model.predict(np_test_fillfeatures)
+          df_testinfill = model.predict(df_test_fillfeatures)
         else:
-          np_testinfill = np.array([0])
+          df_testinfill = np.array([0])
 
         #convert infill values to dataframe
-  #       df_traininfill = pd.DataFrame(np_traininfill, columns = ['infill'])
-        df_testinfill = pd.DataFrame(np_testinfill, columns = ['infill'])
+  #       df_traininfill = pd.DataFrame(df_traininfill, columns = ['infill'])
+        df_testinfill = pd.DataFrame(df_testinfill, columns = ['infill'])
 
   #       print('category is nmbr, df_traininfill is')
   #       print(df_traininfill)
@@ -32227,22 +32226,22 @@ class AutoMunge:
 
 
 #   #       model = SVR()
-#   #       model.fit(np_train_filltrain, np_train_filllabel)   
+#   #       model.fit(df_train_filltrain, df_train_filllabel)   
 
 #   #       #predict infill values
-#   #       np_traininfill = model.predict(np_train_fillfeatures)
+#   #       df_traininfill = model.predict(df_train_fillfeatures)
 
 
 
 #         #only run following if we have any test rows needing infill
 #         if df_test_fillfeatures.shape[0] > 0:
-#           np_testinfill = model.predict(np_test_fillfeatures)
+#           df_testinfill = model.predict(df_test_fillfeatures)
 #         else:
-#           np_testinfill = np.array([0])
+#           df_testinfill = np.array([0])
 
 #         #convert infill values to dataframe
-#   #       df_traininfill = pd.DataFrame(np_traininfill, columns = ['infill'])
-#         df_testinfill = pd.DataFrame(np_testinfill, columns = ['infill'])     
+#   #       df_traininfill = pd.DataFrame(df_traininfill, columns = ['infill'])
+#         df_testinfill = pd.DataFrame(df_testinfill, columns = ['infill'])     
 
 
       #if category == 'bnry':
@@ -32254,20 +32253,20 @@ class AutoMunge:
   #       #model = SGDClassifier(random_state = randomseed)
   #       model = SVC(random_state = randomseed)
 
-  #       model.fit(np_train_filltrain, np_train_filllabel)
+  #       model.fit(df_train_filltrain, df_train_filllabel)
 
   #       #predict infill values
-  #       np_traininfill = model.predict(np_train_fillfeatures)
+  #       df_traininfill = model.predict(df_train_fillfeatures)
 
         #only run following if we have any test rows needing infill
         if df_test_fillfeatures.shape[0] > 0:
-          np_testinfill = model.predict(np_test_fillfeatures)
+          df_testinfill = model.predict(df_test_fillfeatures)
         else:
-          np_testinfill = np.array([0])
+          df_testinfill = np.array([0])
 
         #convert infill values to dataframe
-  #       df_traininfill = pd.DataFrame(np_traininfill, columns = ['infill'])
-        df_testinfill = pd.DataFrame(np_testinfill, columns = ['infill'])
+  #       df_traininfill = pd.DataFrame(df_traininfill, columns = ['infill'])
+        df_testinfill = pd.DataFrame(df_testinfill, columns = ['infill'])
 
 
       #if category in ['text', 'bins', 'bint']:
@@ -32279,21 +32278,21 @@ class AutoMunge:
   #       #model = SGDClassifier(random_state = randomseed)
   #       model = SVC(random_state = randomseed)
 
-  #       model.fit(np_train_filltrain, np_train_filllabel_argmax)
+  #       model.fit(df_train_filltrain, df_train_filllabel_argmax)
 
   #       #predict infill values
-  #       np_traininfill = model.predict(np_train_fillfeatures)
+  #       df_traininfill = model.predict(df_train_fillfeatures)
 
         #only run following if we have any test rows needing infill
         if df_test_fillfeatures.shape[0] > 0:
-          np_testinfill = model.predict(np_test_fillfeatures)
+          df_testinfill = model.predict(df_test_fillfeatures)
         else:
           #this needs to have same number of columns as text category
-          np_testinfill = np.zeros(shape=(1,len(columnslist)))
+          df_testinfill = np.zeros(shape=(1,len(columnslist)))
           
         #convert infill values to dataframe
-  #       df_traininfill = pd.DataFrame(np_traininfill, columns = columnslist)
-        df_testinfill = pd.DataFrame(np_testinfill, columns = columnslist) 
+  #       df_traininfill = pd.DataFrame(df_traininfill, columns = columnslist)
+        df_testinfill = pd.DataFrame(df_testinfill, columns = columnslist) 
           
       if MLinfilltype in ['1010']:
 
@@ -32303,27 +32302,27 @@ class AutoMunge:
   #       #model = SGDClassifier(random_state = randomseed)
   #       model = SVC(random_state = randomseed)
 
-  #       model.fit(np_train_filltrain, np_train_filllabel_argmax)
+  #       model.fit(df_train_filltrain, df_train_filllabel_argmax)
 
   #       #predict infill values
-  #       np_traininfill = model.predict(np_train_fillfeatures)
+  #       df_traininfill = model.predict(df_train_fillfeatures)
 
         #only run following if we have any test rows needing infill
         if df_test_fillfeatures.shape[0] > 0:
-          np_testinfill = model.predict(np_test_fillfeatures)
+          df_testinfill = model.predict(df_test_fillfeatures)
           
-          np_testinfill = \
-          self.convert_onehot_to_1010(np_testinfill)
+          df_testinfill = \
+          self.convert_onehot_to_1010(df_testinfill)
           
         else:
           #this needs to have same number of columns as text category
-          np_testinfill = np.zeros(shape=(1,len(columnslist)))
+          df_testinfill = np.zeros(shape=(1,len(columnslist)))
 
 
 
         #convert infill values to dataframe
-  #       df_traininfill = pd.DataFrame(np_traininfill, columns = columnslist)
-        df_testinfill = pd.DataFrame(np_testinfill, columns = columnslist) 
+  #       df_traininfill = pd.DataFrame(df_traininfill, columns = columnslist)
+        df_testinfill = pd.DataFrame(df_testinfill, columns = columnslist) 
 
 
   #       print('category is text, df_traininfill is')
@@ -32350,8 +32349,8 @@ class AutoMunge:
     #else if we didn't have any infill rows let's create some plug values
     else:
 
-      np_testinfill = np.zeros(shape=(1,len(columnslist)))
-      df_testinfill = pd.DataFrame(np_testinfill, columns = columnslist) 
+      df_testinfill = np.zeros(shape=(1,len(columnslist)))
+      df_testinfill = pd.DataFrame(df_testinfill, columns = columnslist) 
 
 
   
@@ -32504,19 +32503,19 @@ class AutoMunge:
     PCAmodel = postprocess_dict['PCAmodel']
 
     #convert PCAsets to numpy arrays
-    np_PCAset_test = PCAset_test.values
+    PCAset_test = PCAset_test.values
 
     #apply the transform
-    np_PCAset_test = PCAmodel.transform(np_PCAset_test)
+    PCAset_test = PCAmodel.transform(PCAset_test)
 
     #get new number of columns
-    newcolumncount = np.size(np_PCAset_test,1)
+    newcolumncount = np.size(PCAset_test,1)
 
     #generate a list of column names for the conversion to pandas
     columnnames = ['PCAcol'+str(y) for y in range(newcolumncount)]
 
     #convert output to pandas
-    PCAset_test = pd.DataFrame(np_PCAset_test, columns = columnnames)
+    PCAset_test = pd.DataFrame(PCAset_test, columns = columnnames)
 
     return PCAset_test, postprocess_dict
 
