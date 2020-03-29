@@ -1027,6 +1027,7 @@ the list brackets.
 ```
 #  - stdrdinfill  : the default infill specified in the libary of transfomations for 
 #                   each tranfsorm below unless MLinfill activated. 
+#  - MLinfill     : for MLinfill to distinct columns when MLinfill parameter not activated
 #  - zeroinfill   : inserting the integer 0 to missing cells. 
 #  - oneinfill    : inserting the integer 1. 
 #  - adjinfill    : passing the value from the preceding row to missing cells. 
