@@ -1206,17 +1206,20 @@ processdict =  {'newt' : {'dualprocess' : None, \
 #'multisp', 'exclude', 'label', 'binary' or '1010' where:
 #	       'numeric' refers to columns where predictive algorithms treat
 #			 as a regression for numeric sets
-#	       'singlect' single column sets with ordinal entries (integers)
+#	       'singlct' single column sets with ordinal entries (integers)
 #              'binary'  single column sets with boolean entries (0/1)
-#              'boolexclude' boolean set suitable for Binary transform but exluded from MLinfill (eg NArw entries)
 #	       'multirt' refers to category returning multiple columns where 
 #			 predictive algorithms treat as a multi modal classifier
+#	       'multisp' for bins multicolumn sets with boolean entries (the two (multirt/multisp) 
+#                        are treated differently in labelfrequencylevelizer, where multisp are 
+#                        elligeble to serve as basis for levelizing a numerical set via bins)
 #	       'exclude' refers to categories excluded from predcitive address
 #	       'multisp' for bins multicolumn sets with boolean entries
 #                        (similar to multirt but treated differently in levelizer)
 #              '1010'   for multicolumn sets with binary encoding via 1010
 #                        will be converted to onehot for ML
 #              'exclude' for columns which will be excluded from ML infill
+#              'boolexclude' boolean set suitable for Binary transform but exluded from MLinfill (eg NArw entries)
 
 #labelctgy: should be a string entry of a single trasnform category found as an entry in the root category's family 
 #tree. Used to determine basis of feature selection for cases where labels are returned in multiple configurations.
