@@ -10,11 +10,11 @@
  ___ 
 * [automunge(.)](https://github.com/Automunge/AutoMunge#automunge-1)
 * [automunge(.) returned sets](https://github.com/Automunge/AutoMunge#automunge-returned-sets)
-* [automunge(.) passed arguments](https://github.com/Automunge/AutoMunge#automunge-passed-arguments)
+* [automunge(.) passed parameters](https://github.com/Automunge/AutoMunge#automunge-passed-parameters)
  ___ 
 * [postmunge(.)](https://github.com/Automunge/AutoMunge#postmunge)
 * [postmunge(.) returned sets](https://github.com/Automunge/AutoMunge#postmunge-returned-sets)
-* [postmunge(.) passed arguments](https://github.com/Automunge/AutoMunge#postmunge-passed-arguments)
+* [postmunge(.) passed parameters](https://github.com/Automunge/AutoMunge#postmunge-passed-parameters)
  ___ 
 * [Default Transformations](https://github.com/Automunge/AutoMunge#default-transformations)
 * [Library of Transformations](https://github.com/Automunge/AutoMunge#library-of-transformations)
@@ -1013,24 +1013,30 @@ assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[]
                 'adjinfill':[], 'meaninfill':[], 'medianinfill':[], \
                 'modeinfill':[], 'lcinfill':[]}, \
 ```
-A user may add column identifier strings to each of these lists to 
-designate the column-specific infill approach for missing or
-improperly formated values. Note that this infill category defaults to
-MLinfill if nothing assigned and the MLinfill argument to automunge is
-set to True. stdrdinfill means: mean for numeric sets, most common for 
-binary, and new column boolean for categorical. zeroinfill means inserting 
-the integer 0 to missing cells. oneinfill means inserting the integer 1.
-adjinfill means passing the value from the preceding row to missing cells. 
-meaninfill means inserting the mean derived from the train set to numeric 
-columns. medianinfill means inserting the median derived from the train 
-set to numeric columns. (Note currently boolean columns derived from 
-numeric are not supported for mean/median and for those cases default to 
-those infill from stdrdinfill.) modeinfill means inserting the most common
-value for a set, note that modeinfill supports mulit-column boolean encodings, 
-such as one-hot encoded sets or binary encoded sets. lcinfill is comparable 
-to modeinfill but with least common value instead of most. Note that for 
-single entry column assignments a user can just pass the string or integer of 
-the column header without the list brackets.
+A user may add column identifier strings to each of these lists to designate the 
+column-specific infill approach for missing or improperly formated values. The
+source column identifier strings may be passed for assignment of common infill 
+approach to all columns dervied from same source column, or dervied column identifier
+strings (such as including the suffix appenders from transformations) may be passed
+to assign infill approach to a specific derived column. Note that passed dervied
+column headers take precidence in case of overlap with passed source column headers.
+Note that this infill category defaults to MLinfill if nothing assigned and the 
+MLinfill argument to automunge is set to True. Note that for single entry column 
+assignments a user can just pass the string or integer of the column header without 
+the list brackets.
+- stdrdinfill means the default infill specified in the libary of transfomations for 
+each tranfsorm below unless MLinfill activated. 
+- zeroinfill means inserting the integer 0 to missing cells. 
+- oneinfill means inserting the integer 1. 
+- adjinfill means passing the value from the preceding row to missing cells. 
+- meaninfill means inserting the mean derived from the train set to numeric columns. 
+- medianinfill means inserting the median derived from the train set to numeric columns. 
+(Note currently boolean columns derived from numeric are not supported for mean/median 
+and for those cases default to those infill from stdrdinfill.) 
+- modeinfill means inserting the most common value for a set, note that modeinfill 
+supports mulit-column boolean encodings, such as one-hot encoded sets or binary encoded 
+sets. 
+- lcinfill is comparable to modeinfill but with least common value instead of most. 
 
 * assignparam
 A user may pass column-specific parameters to those transformation functions
