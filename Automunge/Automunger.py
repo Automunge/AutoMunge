@@ -20353,7 +20353,6 @@ class AutoMunge:
     return madethecut, FSmodel, FScolumn_dict, FS_sorted
 
 
-
   def assemblepostprocess_assigninfill(self, assigninfill, infillcolumns_list, 
                                        columns_train, postprocess_dict):
     #so the convention we'll follow is a column is not explicitly included in 
@@ -20431,6 +20430,8 @@ class AutoMunge:
           postprocess_assigninfill_dict['stdrdinfill'] = \
           postprocess_assigninfill_dict['stdrdinfill'] + \
           postprocess_dict['column_dict'][columnkey]['columnslist']
+        
+        
       
       
     #ok great now let's do the other infill methods  
@@ -20452,6 +20453,56 @@ class AutoMunge:
               postprocess_assigninfill_dict[infillcatkey] = \
               postprocess_assigninfill_dict[infillcatkey] + \
               postprocess_dict['column_dict'][columnkey]['columnslist']
+              
+              
+    #the following addition extends the method to support passing derived column headers
+    #instead of source column headers
+    #where passing a derived header overrides if that header was already populated from a source header
+              
+    #now for passed derived columns instead of source column
+    for stndrdcolumn in allstdrdinfill_list:
+      
+      if stndrdcolumn not in postprocess_dict['origcolumn'] \
+      and stndrdcolumn in postprocess_dict['column_dict']:
+        
+        if stndrdcolumn not in postprocess_assigninfill_dict['stdrdinfill']:
+          
+          postprocess_assigninfill_dict['stdrdinfill'] = \
+          postprocess_assigninfill_dict['stdrdinfill'] + [stndrdcolumn]
+          
+          #then remove if this derived column was already populated in another infillcatkey
+          for infillcatkey2 in assigninfill:
+
+            if infillcatkey2 != 'stdrdinfill':
+
+              if stndrdcolumn in postprocess_assigninfill_dict[infillcatkey2]:
+
+                postprocess_assigninfill_dict[infillcatkey2].remove(stndrdcolumn)
+              
+              
+    #ok great now let's do the other infill methods for dervied columns instead of orig columns
+    for infillcatkey in assigninfill:
+      
+      if infillcatkey != 'stdrdinfill':
+        
+        for infillcolumn in assigninfill[infillcatkey]:
+          
+          if infillcolumn not in postprocess_dict['origcolumn'] \
+          and infillcolumn in postprocess_dict['column_dict']:
+            
+            if infillcolumn not in postprocess_assigninfill_dict[infillcatkey]:
+              
+              postprocess_assigninfill_dict[infillcatkey] = \
+              postprocess_assigninfill_dict[infillcatkey] + [infillcolumn]
+              
+              #then remove if this derived column was already populated in another infillcatkey
+              for infillcatkey2 in assigninfill:
+                
+                if infillcatkey2 != infillcatkey:
+                  
+                  if infillcolumn in postprocess_assigninfill_dict[infillcatkey2]:
+                    
+                    postprocess_assigninfill_dict[infillcatkey2].remove(infillcolumn)
               
 
     return postprocess_assigninfill_dict
@@ -25346,7 +25397,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.60'
+    automungeversion = '3.61'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -25406,6 +25457,7 @@ class AutoMunge:
                              'transform_dict' : transform_dict, \
                              'processdict' : processdict, \
                              'process_dict' : process_dict, \
+                             'postprocess_assigninfill_dict' : postprocess_assigninfill_dict, \
                              'assignparam' : assignparam, \
                              'assign_param' : assign_param, \
                              'ML_cmnd' : ML_cmnd, \
@@ -33766,24 +33818,11 @@ class AutoMunge:
       print("______")
       print("")
 
-    infillcolumns_list = list(df_test)
 
-    #excludetransformscolumns = postprocess_dict['excludetransformscolumns']
-
-    #Here is the list of columns for the stdrdinfill approach
-    #(bassically using MLinfill if MLinfill elected for default, otherwise
-    #using mean for numerical, most common for binary, and unique column for categorical)
-    assigninfill = postprocess_dict['assigninfill']
-
-
-    #allstdrdinfill_list = self.stdrdinfilllist(assigninfill, infillcolumns_list)
-
-    #Here is the application of assemblepostprocess_assigninfill
+    #access infill assignments derived in automunge(.) call
     postprocess_assigninfill_dict = \
-    self.assemblepostprocess_assigninfill(assigninfill, infillcolumns_list, \
-                                          columns_test, preFSpostprocess_dict)
-
-
+    postprocess_dict['postprocess_assigninfill_dict']
+    
 
     if 'stdrdinfill' not in postprocess_assigninfill_dict:
       postprocess_assigninfill_dict.update({'stdrdinfill':[]})
@@ -33829,7 +33868,7 @@ class AutoMunge:
       else:
         columns_test_ML = []
 
-
+    
     
     #infilliterate allows ML infill sets to run multiple times
     #as may be bneficial if set had a high number of infill for instance
