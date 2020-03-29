@@ -1024,19 +1024,29 @@ Note that this infill category defaults to MLinfill if nothing assigned and the
 MLinfill argument to automunge is set to True. Note that for single entry column 
 assignments a user can just pass the string or integer of the column header without 
 the list brackets.
-  * stdrdinfill means the default infill specified in the libary of transfomations for 
-    each tranfsorm below unless MLinfill activated. 
-  * zeroinfill means inserting the integer 0 to missing cells. 
-  * oneinfill means inserting the integer 1. 
-  * adjinfill means passing the value from the preceding row to missing cells. 
-  * meaninfill means inserting the mean derived from the train set to numeric columns. 
-  * medianinfill means inserting the median derived from the train set to numeric columns. 
-    (Note currently boolean columns derived from numeric are not supported for mean/median 
-    and for those cases default to those infill from stdrdinfill.) 
-  * modeinfill means inserting the most common value for a set, note that modeinfill 
-    supports mulit-column boolean encodings, such as one-hot encoded sets or binary encoded 
-    sets. 
-  * lcinfill is comparable to modeinfill but with least common value instead of most. 
+```
+#  * stdrdinfill means the default infill specified in the libary of transfomations for 
+#    each tranfsorm below unless MLinfill activated. 
+#  * zeroinfill means inserting the integer 0 to missing cells. 
+#  * oneinfill means inserting the integer 1. 
+#  * adjinfill means passing the value from the preceding row to missing cells. 
+#  * meaninfill means inserting the mean derived from the train set to numeric columns. 
+#  * medianinfill means inserting the median derived from the train set to numeric columns. 
+#    (Note currently boolean columns derived from numeric are not supported for mean/median 
+#    and for those cases default to those infill from stdrdinfill.) 
+#  * modeinfill means inserting the most common value for a set, note that modeinfill 
+#    supports mulit-column boolean encodings, such as one-hot encoded sets or binary encoded 
+#    sets. 
+#  * lcinfill is comparable to modeinfill but with least common value instead of most. 
+
+#an example of passing columns to assign infill via assigninfill:
+#for source column 'column1', which hypothetically is returned through automunge(.) as
+#'column1_nmbr', 'column1_mnmx', 'column1_bxcx_nmbr'
+#we can assign MLinfill to 'column1_bxcx_nmbr' and meaninfill to the other two by passing 
+#to an automunge call: 
+
+assigninfill = {'MLinfill':['column1_bxcx_nmbr'], 'meaninfill':['column1']}
+```
 
 * assignparam
 A user may pass column-specific parameters to those transformation functions
