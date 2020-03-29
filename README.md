@@ -1198,25 +1198,26 @@ processdict =  {'newt' : {'dualprocess' : None, \
 # - 'nonnegativenumeric' for source columns with expected non-nbegative numeric (zero allowed)
 # - 'nonzeronumeric' for source columns with allowed postiive and negative but no zero
 # - 'parsenumeric' marks for infill strings that don't contain any numeric character entries
-# - 'parsenumeric_commas' marks for infill strings that don't contain any numeric character entries, recognizes commas
+# - 'parsenumeric_commas' marks for infill strings that don't contain any numeric character 
+#                         entries, recognizes commas
 # - 'datetime' marks for infill cells that arent' recognized as datetime objects
 # ** Note that NArowtype also is used as basis for metrics evaluated in drift assessment of source columns
 
-#MLinfilltype: can be entries of 'numeric', 'singlct', 'multirt', 'exclude'
-#'multisp', 'exclude', 'label', 'binary' or '1010' where:
-#	       'numeric' refers to columns where predictive algorithms treat
-#			 as a regression for numeric sets
-#	       'singlect' single column sets with ordinal entries (integers)
+#MLinfilltype: can be entries {'numeric', 'singlct', 'binary', 'multirt', 'multisp', '1010',
+#                              'exclude', 'boolexclude'}
+#              'numeric' refers to columns where predictive algorithms treat
+#                        as a regression for numeric sets
+#              'singlct' single column sets with ordinal entries (integers)
 #              'binary'  single column sets with boolean entries (0/1)
-#              'boolexclude' boolean set suitable for Binary transform but exluded from MLinfill (eg NArw entries)
-#	       'multirt' refers to category returning multiple columns where 
-#			 predictive algorithms treat as a multi modal classifier
-#	       'exclude' refers to categories excluded from predcitive address
-#	       'multisp' for bins multicolumn sets with boolean entries
+#              'multirt' refers to category returning multiple columns where 
+#                        predictive algorithms treat as a multi modal classifier
+#              'multisp' for bins multicolumn sets with boolean entries
 #                        (similar to multirt but treated differently in levelizer)
+#              'exclude' refers to categories excluded from predcitive address
 #              '1010'   for multicolumn sets with binary encoding via 1010
 #                        will be converted to onehot for ML
 #              'exclude' for columns which will be excluded from ML infill
+#              'boolexclude' boolean set suitable for Binary transform but exluded from MLinfill (eg NArw entries)
 
 #labelctgy: should be a string entry of a single trasnform category found as an entry in the root category's family 
 #tree. Used to determine basis of feature selection for cases where labels are returned in multiple configurations.
