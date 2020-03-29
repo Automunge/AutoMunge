@@ -1025,19 +1025,19 @@ MLinfill argument to automunge is set to True. Note that for single entry column
 assignments a user can just pass the string or integer of the column header without 
 the list brackets.
 ```
-#  * stdrdinfill means the default infill specified in the libary of transfomations for 
-#    each tranfsorm below unless MLinfill activated. 
-#  * zeroinfill means inserting the integer 0 to missing cells. 
-#  * oneinfill means inserting the integer 1. 
-#  * adjinfill means passing the value from the preceding row to missing cells. 
-#  * meaninfill means inserting the mean derived from the train set to numeric columns. 
-#  * medianinfill means inserting the median derived from the train set to numeric columns. 
-#    (Note currently boolean columns derived from numeric are not supported for mean/median 
-#    and for those cases default to those infill from stdrdinfill.) 
-#  * modeinfill means inserting the most common value for a set, note that modeinfill 
-#    supports mulit-column boolean encodings, such as one-hot encoded sets or binary encoded 
-#    sets. 
-#  * lcinfill is comparable to modeinfill but with least common value instead of most. 
+#  - stdrdinfill  : the default infill specified in the libary of transfomations for 
+#                   each tranfsorm below unless MLinfill activated. 
+#  - zeroinfill   : inserting the integer 0 to missing cells. 
+#  - oneinfill    : inserting the integer 1. 
+#  - adjinfill    : passing the value from the preceding row to missing cells. 
+#  - meaninfill   : inserting the mean derived from the train set to numeric columns. 
+#  - medianinfill : inserting the median derived from the train set to numeric columns. 
+#                   (Note currently boolean columns derived from numeric are not supported 
+#                   for mean/median and for those cases default to those infill from stdrdinfill.) 
+#  - modeinfill   : inserting the most common value for a set, note that modeinfill 
+#                   supports mulit-column boolean encodings, such as one-hot encoded sets or 
+#                   binary encoded sets. 
+#  - lcinfill     : comparable to modeinfill but with least common value instead of most. 
 
 #an example of passing columns to assign infill via assigninfill:
 #for source column 'column1', which hypothetically is returned through automunge(.) as
