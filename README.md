@@ -33,13 +33,13 @@ feature engineering transformations may be accessed from the internal library
 (aka a "feature store"), or may also be externally user defined with minimal 
 requirements of simple data structures. The tool includes options for automated 
 feature importance evaluation, automated derivation of infill predictions using 
-machine learning models trained on the set in a fully generalized automated fashion, 
+machine learning models trained on the set in a fully automated fashion, 
 automated preparation for oversampling for class imbalance in labels, automated 
-dimensionality reductions such as based on feature importance or principle 
-component analysis (PCA), automated evaluation of data property drift between 
-training data and subsequent data, and perhaps most importantly the simplest 
-means for consistent processing of additional data with just a single function 
-call. 
+dimensionality reductions such as based on feature importance, principle 
+component analysis (PCA), or binary encoding, automated evaluation of data 
+property drift between training data and subsequent data, and perhaps most 
+importantly the simplest means for consistent processing of additional data with 
+just a single function call. 
 
 > In other words, put simply:<br/>
 >  - **automunge(.)** prepares tabular data for machine learning.<br/>
@@ -47,8 +47,8 @@ call.
 >  
 > We make machine learning easy.
 
-The automunge(.) function takes as input structured training data intended 
-to train a machine learning model with any corresponding labels if available 
+The automunge(.) function takes as input tabular training data intended to
+train a machine learning model with any corresponding labels if available 
 included in the set, and also if available consistently formatted test data 
 that can then be used to generate predictions from that trained model. When 
 fed pandas dataframes or numpy arrays for these sets the function returns a 
@@ -56,36 +56,23 @@ series of transformed numpy arrays or pandas dataframes (per selection) which
 are numerically encoded and suitable for the direct application of machine 
 learning algorithms. A user has an option between default feature engineering 
 based on inferred properties of the data with feature transformations such as 
-z-score normalization, standard deviation bins for numerical sets, box-cox 
-power law transform for all positive numerical sets, binary encoding for 
-categorical sets, time series agregation to sin and cos transforms (with bins
-for business hours, weekdays, and holidays), and more (full documentation 
-below); assigning specific column feature engineering methods using a built-in 
-library of feature engineering transformations; or alternatively the passing 
-of user-defined custom transformation functions incorporating simple data 
-structures such as to allow custom methods to each column while still making 
-use of all of the built-in features of the tool (such as ML infill, feature 
-importance, dimensionality reduction, and most importantly the simplest way 
-for the consistent processing of subsequently available data using just a 
-single function call of the postmunge(.) function). Missing data points in the 
-sets are also available to be addressed by either assigning distinct methods 
-to each column or alternatively by the automated "ML infill" method which 
-predicts infill using machine learning models trained on the rest of the set 
-in a fully generalized and automated fashion. automunge(.) returns a python 
-dictionary which can be used as an input along with a subsequent test data 
-set to the function postmunge(.) for  consistent processing of test data 
-which wasn't available for the initial address.
-
-In addition to it's use for feature engineering transformations, automunge(.) 
-also can serve an evaluatory purpose by way of a feature importance evaluation 
-through the derivation of a series of metrics which provide an indication for 
-the importance of original and derived features towards the accuracy of a 
-predictive model.
-
-If elected, a user can also use the tool to perform a dimensionality reduction 
-via principle component analysis (a type of entity embedding via unsupervised 
-learning) of the data sets with the automunge(.) function or consistently for 
-subsequently available data with the postmunge(.) function.
+z-score normalization, binary encoding for categorical sets, time series 
+agregation to sin and cos transforms (with bins for business hours, weekdays, 
+and holidays), and more (full documentation below); assigning distinct column 
+feature engineering methods using a built-in library of feature engineering 
+transformations; or alternatively the passing of user-defined custom 
+transformation functions incorporating simple data structures such as to allow 
+custom methods to each column while still making use of all of the built-in 
+features of the tool (such as ML infill, feature importance, dimensionality 
+reduction, and most importantly the simplest way for the consistent preperation 
+of subsequently available data using just a single function call of the 
+postmunge(.) function). Missing data points in the sets are also available to be 
+addressed by either assigning distinct methods to each column or alternatively by 
+the automated "ML infill" method which predicts infill using machine learning 
+models trained on the rest of the set in a fully generalized and automated 
+fashion. automunge(.) returns a python dictionary which can be used as an input 
+along with a subsequent test data set to the function postmunge(.) for consistent 
+processing of data which wasn't available for the initial address.
 
 ## Install, Initialize, and Basics
 
