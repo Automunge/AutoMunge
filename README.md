@@ -461,7 +461,7 @@ that were originally applied to automunge.
 
 Note that there is a potential source of error if the returned column header 
 title strings, which will include suffix appenders based on transformations applied, 
-match any of the original column header titles passed to automunge. This is an edge 
+match any of the original column header titles passed to automunge. This is an edge 
 case not expected to occur in common practice and will return error message at 
 conclusion of printouts.
 
@@ -1335,12 +1335,12 @@ identify which feature engineering transformations were applied to each
 column. Note that this list should match the one from automunge.
 
 * postreports_dict: a dictionary containing entries for following:
-  - `postreports_dict['featureimportance']`: results of optional feature 
+  - postreports_dict['featureimportance']: results of optional feature 
   importance evaluation based on parameter featureeval. (See automunge(.) 
   notes above for feature importance printout methods.)
-  - `postreports_dict['finalcolumns_test']`: list of columns returned from 
+  - postreports_dict['finalcolumns_test']: list of columns returned from 
   postmunge
-  - `postreports_dict['driftreport']`: results of optional drift report 
+  - postreports_dict['driftreport']: results of optional drift report 
   evaluation tracking properties of postmunge data in comparision to the 
   original data from automunge call associated with the postprocess_dict 
   presumably used to train a model. Results aggregated by entries for the
@@ -1348,7 +1348,7 @@ column. Note that this list should match the one from automunge.
   parameters from the automunge call saved in postprocess_dict as well
   as the corresponding parameters from the new data consistently derived 
   in postmunge
-  - `postreports_dict['sourcecolumn_drift']`: results of optional drift report
+  - postreports_dict['sourcecolumn_drift']: results of optional drift report
   evaluation tracking properties of postmunge data derived from source 
   columns in comparision to the original data from automunge(.) call associated 
   with the postprocess_dict presumably used to train a model. 
@@ -1726,8 +1726,8 @@ default NArowtype refers to the categories of data that won't be subject to
 infill.
 
 ### Numerical Set Normalizations
-* nmbr/nbr2/nbr3/nmdx/nmd2/nmd3: z-score normalization
-`(x - mean) / (standard deviation)`
+* nmbr/nbr2/nbr3/nmdx/nmd2/nmd3: z-score normalization<br/>
+(x - mean) / (standard deviation)
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '_nmbr'
@@ -1739,9 +1739,8 @@ infill.
     - 'muilitplier' and 'offset' to apply multiplier and offset to posttransform values, default to 1,0,
       note that multiplier is applied prior to offset
   - driftreport postmunge metrics: mean / std / max / min
-* mean/mea2/mea3: mean normalization (like z-score in the numerator and min-max in the denominator)
-	
-`(x - mean) / (max - min)`
+* mean/mea2/mea3: mean normalization (like z-score in the numerator and min-max in the denominator)<br/>
+(x - mean) / (max - min)
 My intuition says z-score has some benefits but really up to the user which they prefer.
   - default infill: mean
   - default NArowtype: numeric
@@ -1754,9 +1753,8 @@ My intuition says z-score has some benefits but really up to the user which they
     - 'muilitplier' and 'offset' to apply multiplier and offset to posttransform values, default to 1,0,
       note that multiplier is applied prior to offset
   - driftreport postmunge metrics: minimum / maximum / mean / std
-* mnmx/mnm2/mnm5/mmdx/mmd2/mmd3: vanilla min-max scaling
-
-`(x - min) / (max - min)`
+* mnmx/mnm2/mnm5/mmdx/mmd2/mmd3: vanilla min-max scaling<br/>
+(x - min) / (max - min)
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '_mnmx'
@@ -1779,10 +1777,8 @@ test set returned values >= 0, such as might be useful for kernel PCA for instan
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: minimum / maximum / mean / std
 * retn: related to min/max scaling but retains +/- of values, based on conditions
-
-`if max>=0 and min<=0, x=x/(max-min), 
-elif max>=0 and min>=0 x=(x-min)/(max-min),
-elif max<=0 and min<=0 x=(x-max)/(max-min)`
+if max>=0 and min<=0, x=x/(max-min), elif max>=0 and min>=0 x=(x-min)/(max-min),
+elif max<=0 and min<=0 x=(x-max)/(max-min)
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '_retn'
@@ -1796,17 +1792,15 @@ elif max<=0 and min<=0 x=(x-max)/(max-min)`
     - 'divisor' to select between default of 'minmax' or 'std', where minmax means scaling by divisor of max-min
 	std based on scaling by divisor of standard deviation
   - driftreport postmunge metrics: minimum / maximum / mean / std
-* MADn/MAD2: mean absolute deviation normalization, subtract set mean
-	
-`(x - mean) / (mean absolute deviation)`
+* MADn/MAD2: mean absolute deviation normalization, subtract set mean <br/>
+(x - mean) / (mean absolute deviation)
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '_MADn'
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: mean / MAD / maximum / minimum
-* MAD3: mean absolute deviation normalization, subtract set maximum
-
-`(x - maximum) / (mean absolute deviation)`
+* MAD3: mean absolute deviation normalization, subtract set maximum<br/>
+(x - maximum) / (mean absolute deviation)
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '_MAD3'
