@@ -1016,9 +1016,9 @@ assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[]
 A user may add column identifier strings to each of these lists to designate the 
 column-specific infill approach for missing or improperly formated values. The
 source column identifier strings may be passed for assignment of common infill 
-approach to all columns dervied from same source column, or dervied column identifier
+approach to all columns derived from same source column, or derived column identifier
 strings (such as including the suffix appenders from transformations) may be passed
-to assign infill approach to a specific derived column. Note that passed dervied
+to assign infill approach to a specific derived column. Note that passed derived
 column headers take precidence in case of overlap with passed source column headers.
 Note that this infill category defaults to MLinfill if nothing assigned and the 
 MLinfill argument to automunge is set to True. Note that for single entry column 
@@ -1341,16 +1341,16 @@ column. Note that this list should match the one from automunge.
   - postreports_dict['finalcolumns_test']: list of columns returned from 
   postmunge
   - postreports_dict['driftreport']: results of optional drift report 
-  evaluation tracking properties of psotmunge data in comparision to the 
+  evaluation tracking properties of postmunge data in comparision to the 
   original data from automunge call associated with the postprocess_dict 
   presumably used to train a model. Results aggregated by entries for the
-  original (pre-transform) list of columns, and include the normailzaiton
+  original (pre-transform) list of columns, and include the normalization
   parameters from the automunge call saved in postprocess_dict as well
   as the corresponding parameters from the new data consistently derived 
   in postmunge
   - postreports_dict['sourcecolumn_drift']: results of optional drift report
-  evaluation tracking properties of postmunge data dervied form source 
-  columns in comparision to the original data from automunge call associated 
+  evaluation tracking properties of postmunge data derived from source 
+  columns in comparision to the original data from automunge(.) call associated 
   with the postprocess_dict presumably used to train a model. 
   
 ```
@@ -1370,7 +1370,7 @@ postreports_dict = \
 'sourcecolumn_drift': {'orig_driftstats': {(sourcecolumn) : (stats)}, 
                        'new_driftstats' : {(sourcecolumn) : (stats)}}}
 		       
-#the driftreport stats for dervied columns are based on the normalization_dict entries from the
+#the driftreport stats for derived columns are based on the normalization_dict entries from the
 #correspoding processing function associated with that column's derivation
 
 #here is an example of source column drift assessment statistics for a positive numeric root category:
