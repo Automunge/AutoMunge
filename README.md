@@ -42,8 +42,8 @@ means for consistent processing of additional data with just a single function
 call. 
 
 > In other words, put simply:<br/>
->  - automunge(.) prepares tabular data for machine learning.<br/>
->  - postmunge(.) consistently prepares additional data very effficiently.<br/>
+>  - **automunge(.)** prepares tabular data for machine learning.<br/>
+>  - **postmunge(.)** consistently prepares additional data very effficiently.<br/>
 >  
 > We make machine learning easy.
 
