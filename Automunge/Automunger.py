@@ -25397,7 +25397,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.61'
+    automungeversion = '3.62'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -33817,7 +33817,8 @@ class AutoMunge:
     if printstatus == True:
       print("______")
       print("")
-
+    
+    infillcolumns_list = list(df_test)
 
     #access infill assignments derived in automunge(.) call
     postprocess_assigninfill_dict = \
