@@ -1139,6 +1139,10 @@ Note the family primitives tree of transformations can be summarized as:
 
 ![image](https://user-images.githubusercontent.com/44011748/76485331-a2a24380-63f2-11ea-8559-08bb1c3be395.png)
 
+Since there is recursion involved a user should be careful of creating infinite loops from passing
+downstream primitive entries with offspring whose own offspring coincide with an earlier generation.
+(The presence of infinite loops is tested for to a max depth of 111 offspring, an arbitrary figure.)
+
 Note that when we define a new transform such as 'newt' above, we also need 
 to define a corresponding processdict entry for the new category, which we 
 demonstrate here:
