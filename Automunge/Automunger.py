@@ -22460,6 +22460,137 @@ class AutoMunge:
 
 
     return result1, result2, transformdict
+  
+  #
+  def check_haltingproblem(self, transformdict, transform_dict, max_check_count = 111):
+    """
+    #evaluates user passed transformdict entries to check for infinite loops
+    #we'll arbitrarily check for a max depth of 111 offspring to keep things manageable
+    #we'll assume this takes place after user passed entries have been merged into transform_dict
+    #such that transformdict is just user passed entries
+    #and transform_dict is both user-passed and internal library
+    """
+    
+    haltingproblem_result = False
+    
+    for root_category in transformdict:
+      
+      check_count = 0
+      
+      offspring_list = []
+      
+      parents_list = \
+      transform_dict[root_category]['parents'] + transform_dict[root_category]['siblings']
+      
+      for parent in parents_list:
+        
+        upstream_list = []
+        upstream_list = [parent]
+        
+        offspring_list = \
+        transform_dict[parent]['children'] + transform_dict[parent]['niecesnephews']
+      
+        if len(offspring_list) > 0:
+
+          for offspring in offspring_list:
+
+            check_count += 1
+
+            if offspring in upstream_list:
+
+              haltingproblem_result = True
+
+              print("Error, infinite loop detected in transformdict for root category ", root_category)
+              print()
+
+              break
+
+
+            upstream_list += [offspring]
+
+            if check_count < max_check_count:
+
+              offspring_result, check_count = \
+              self.check_offspring(transform_dict, offspring, root_category, \
+                                   upstream_list, check_count, max_check_count)
+#               offspring_result, check_count = \
+#               check_offspring(transform_dict, offspring, root_category, \
+#                               upstream_list, check_count, max_check_count)
+
+              if offspring_result is True:
+
+                haltingproblem_result = True
+
+                break
+
+            else:
+
+              print("Number of offspring generations for root category ", root_category)
+              print("exceeded 111, infinite loop check halted.")
+              print()
+              
+              break
+              
+    
+    return haltingproblem_result
+  
+  
+  #
+  def check_offspring(self, transform_dict, root_category, orig_root_category, \
+                      upstream_list, check_count, max_check_count):
+    """
+    #support function for check_haltingproblem
+    """
+    
+    offspring_result = False
+
+    offspring_list = \
+    transform_dict[root_category]['children'] + transform_dict[root_category]['niecesnephews']
+
+    if len(offspring_list) > 0:
+
+      for offspring in offspring_list:
+        
+        check_count += 1
+
+        if offspring in upstream_list:
+
+          offspring_result = True
+
+          print("Error, infinite loop detected in transformdict for root category ", orig_root_category)
+          print()
+
+          break
+
+        else:
+            
+          upstream_list2 = upstream_list.copy() + [offspring]
+
+          if check_count < max_check_count:
+
+            offspring_result2, check_count = \
+            self.check_offspring(transform_dict, offspring, orig_root_category, \
+                                 upstream_list, check_count, max_check_count)
+#             offspring_result2, check_count = \
+#             check_offspring(transform_dict, offspring, orig_root_category, \
+#                             upstream_list2, check_count, max_check_count)
+
+            if offspring_result2 is True:
+
+              offspring_result = True
+
+              break
+
+          else:
+
+            print("Number of offspring generations for root category ", root_category)
+            print("exceeded 111, infinite loop check halted.")
+            print()
+            
+            break
+            
+    
+    return offspring_result, check_count
 
   def check_ML_cmnd(self, ML_cmnd):
     """
@@ -23583,6 +23714,12 @@ class AutoMunge:
 
       #now update the trasnformdict
       transform_dict.update(transformdict)
+      
+    #check for infinite loops in user passed transformdict
+    check_haltingproblem_result = \
+    self.check_haltingproblem(transformdict, transform_dict, max_check_count = 111)
+    
+    miscparameters_results.update({'check_haltingproblem_result' : check_haltingproblem_result})
 
     #initialize process_dict
     process_dict = self.assembleprocessdict()
@@ -25397,7 +25534,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.62'
+    automungeversion = '3.63'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
