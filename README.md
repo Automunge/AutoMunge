@@ -148,7 +148,7 @@ am.automunge(df_train, df_test = False, \
                           'bnwd':[], 'bnwK':[], 'bnwM':[], 'bnwo':[], 'bnKo':[], 'bnMo':[], \
                           'bnep':[], 'bne7':[], 'bne9':[], 'bneo':[], 'bn7o':[], 'bn9o':[], \
                           'bkt1':[], 'bkt2':[], 'bkt3':[], 'bkt4':[], \
-                          'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], \
+                          'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'tlbn':[], \
                           'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[], \
                           'mea2':[], 'mea3':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
                           'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
@@ -374,7 +374,7 @@ am.automunge(df_train, df_test = False, \
                           'bnwd':[], 'bnwK':[], 'bnwM':[], 'bnwo':[], 'bnKo':[], 'bnMo':[], \
                           'bnep':[], 'bne7':[], 'bne9':[], 'bneo':[], 'bn7o':[], 'bn9o':[], \
                           'bkt1':[], 'bkt2':[], 'bkt3':[], 'bkt4':[], \
-                          'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], \
+                          'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'tlbn':[], \
                           'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[], \
                           'mea2':[], 'mea3':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
                           'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
@@ -596,7 +596,7 @@ am.automunge(df_train, df_test = False, \
                           'bnwd':[], 'bnwK':[], 'bnwM':[], 'bnwo':[], 'bnKo':[], 'bnMo':[], \
                           'bnep':[], 'bne7':[], 'bne9':[], 'bneo':[], 'bn7o':[], 'bn9o':[], \
                           'bkt1':[], 'bkt2':[], 'bkt3':[], 'bkt4':[], \
-                          'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], \
+                          'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'tlbn':[], \
                           'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[], \
                           'mea2':[], 'mea3':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
                           'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
@@ -954,7 +954,7 @@ assigncat = {'nmbr':[], 'retn':[], 'mnmx':[], 'mean':[], 'MAD3':[], \
              'bnwd':[], 'bnwK':[], 'bnwM':[], 'bnwo':[], 'bnKo':[], 'bnMo':[], \
              'bnep':[], 'bne7':[], 'bne9':[], 'bneo':[], 'bn7o':[], 'bn9o':[], \
              'bkt1':[], 'bkt2':[], 'bkt3':[], 'bkt4':[], \
-             'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], \
+             'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'tlbn':[], \
              'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[], \
              'mea2':[], 'mea3':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
              'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
@@ -1913,7 +1913,8 @@ bins default to width of 1/1000/1000000 eg for bnwd/bnwK/bnwM
   - suffix appender: '_bswd_#1_#2' where #1 is the width and #2 is the bin identifier (# from min)
   - assignparam parameters accepted: 'width' to set bin width
   - driftreport postmunge metrics: binsmean / bn_min / bn_max / bn_delta / bn_count / bins_id / 
-			           bins_cuts / bn_width / textcolumns / <column> + '_ratio' (column specific)
+			           bins_cuts / bn_width_bnwd (or bnwK/bnwM) / textcolumns / 
+                                   <column> + '_ratio' (column specific)
 * bnwo/bnKo/bnMo: for numerical set graining to fixed width bins for ordinal encoded bins 
 (integers without train set activations still included in test set). 
 bins default to width of 1/1000/1000000 eg for bnwd/bnwK/bnwM
@@ -1930,7 +1931,8 @@ bin count defaults to 5/7/9 eg for bnep/bne7/bne9
   - suffix appender: '_bnep_#1' where #1 is the bin identifier (# from min) (or bne7/bne9 instead of bnep)
   - assignparam parameters accepted: 'bincount' to set number of bins
   - driftreport postmunge metrics: binsmean / bn_min / bn_max / bn_delta / bn_count / bins_id / 
-			           bins_cuts / bincount / textcolumns / <column> + '_ratio' (column specific)
+                                   bins_cuts / bincount_bnep (or bne7/bne9) / textcolumns / 
+                                   <column> + '_ratio' (column specific)
 * bneo/bn7o/bn9o: for numerical set graining to equal population bins for ordinal encoded bins. 
 bin count defaults to 5/7/9 eg for bne0/bn7o/bn9o
   - default infill: adjacent cell
@@ -1945,7 +1947,7 @@ bin count defaults to 5/7/9 eg for bne0/bn7o/bn9o
   - suffix appender: '_bkt1_#1' where #1 is the bin identifier (# from min)
   - assignparam parameters accepted: 'buckets', a list of numbers, to set bucket boundaries (leave out +/-'inf')
 					   defaults to [0,1,2] (arbitrary plug values)
-  - driftreport postmunge metrics: binsmean / buckets / bins_cuts / bins_id / textcolumns / 
+  - driftreport postmunge metrics: binsmean / buckets_bkt1 / bins_cuts / bins_id / textcolumns / 
 					   <column> + '_ratio' (column specific)
 * bkt2: for numerical set graining to user specified encoded bins. First and last bins bounded.
   - default infill: mean
@@ -1953,7 +1955,7 @@ bin count defaults to 5/7/9 eg for bne0/bn7o/bn9o
   - suffix appender: '_bkt2_#1' where #1 is the bin identifier (# from min)
   - assignparam parameters accepted: 'buckets', a list of numbers, to set bucket boundaries
 					   defaults to [0,1,2] (arbitrary plug values)
-  - driftreport postmunge metrics: binsmean / buckets / bins_cuts / bins_id / textcolumns / 
+  - driftreport postmunge metrics: binsmean / buckets_bkt2 / bins_cuts / bins_id / textcolumns / 
 					   <column> + '_ratio' (column specific)
 * bkt3: for numerical set graining to user specified ordinal encoded bins. First and last bins unconstrained.
   - default infill: mean
@@ -1969,6 +1971,16 @@ bin count defaults to 5/7/9 eg for bne0/bn7o/bn9o
   - assignparam parameters accepted: 'buckets', a list of numbers, to set bucket boundaries
 					   defaults to [0,1,2] (arbitrary plug values)
   - driftreport postmunge metrics: binsmean / buckets / bins_cuts / bins_id / ordl_activations_dict
+* tlbn: returns equal population bins in seperate columns with activations replaced by min-max scaled 
+values within that segment's range (between 0-1) and other values subject to an infill of -1 
+(intended for use to evaluate feature improtance of different segments of a numerical set's distribution
+with metric2 results from a feature importance evaluation)
+  - default infill: no activation
+  - default NArowtype: numeric
+  - suffix appender: '_tlbn_#' where # is the bin identifier
+  - assignparam parameters accepted: 'bincount' to set number of bins
+  - driftreport postmunge metrics: binsmean / bn_min / bn_max / bn_delta / bn_count / bins_id / 
+			           bins_cuts / bincount_tlbn / textcolumns / <column> + '_ratio' (column specific)
 ### Sequential Numerical Set Transformations
 * dxdt/d2dt/d3dt/d4dt/d5dt/d6dt: rate of change (row value minus value in preceding row), high orders 
 return lower orders (eg d2dt returns original set, dxdt, and d2dt), all returned sets include 'retn' 
@@ -2018,7 +2030,7 @@ as bnry except for default infill.)
   - default NArowtype: justNaN
   - suffix appender: '_(category)' where category is the target of the column
   - assignparam parameters accepted: none
-  - driftreport postmunge metrics: textlabelsdict / <column> + '_ratio' (column specific)
+  - driftreport postmunge metrics: textlabelsdict_text / <column> + '_ratio' (column specific)
 * ordl/ord2: converts categorical sets to ordinally encoded set of integer identifiers
   - default infill: plug value 'zzzinfill'
   - default NArowtype: justNaN
@@ -2254,7 +2266,7 @@ start at 20 character length and go down to 5 character length.
   - default NArowtype: justNaN
   - suffix appender: '_splt_##*##' where ##*## is target idenbtified string overlap 
   - assignparam parameters accepted: 'minsplit': indicating lowest character length for recognized overlaps 
-  - driftreport postmunge metrics: overlap_dict / splt_newcolumns / minsplit
+  - driftreport postmunge metrics: overlap_dict / splt_newcolumns_splt / minsplit
 * spl2/spl3/spl4/ors2/txt3: similar to splt, but instead of creating new column identifier it replaces categorical 
 entries with the abbreviated string overlap
   - default infill: none
