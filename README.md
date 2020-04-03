@@ -157,7 +157,7 @@ am.automunge(df_train, df_test = False, \
                           'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
                           'Utxt':[], 'Utx2':[], 'Utx3':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
                           'splt':[], 'spl2':[], 'spl3':[], 'spl4':[], 'spl5':[], 'lngt':[], \
-                          'spl7':[], 'spl8':[], 'spl9':[], 'sp10':[], \
+                          'spl7':[], 'spl8':[], 'spl9':[], 'sp10':[], 'srch':[], 'src2':[], \
                           'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
                           'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
                           'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], \
@@ -384,7 +384,7 @@ am.automunge(df_train, df_test = False, \
                           'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
                           'Utxt':[], 'Utx2':[], 'Utx3':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
                           'splt':[], 'spl2':[], 'spl3':[], 'spl4':[], 'spl5':[], 'lngt':[], \
-                          'spl7':[], 'spl8':[], 'spl9':[], 'sp10':[], \
+                          'spl7':[], 'spl8':[], 'spl9':[], 'sp10':[], 'srch':[], 'src2':[], \
                           'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
                           'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
                           'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], \
@@ -607,7 +607,7 @@ am.automunge(df_train, df_test = False, \
                           'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
                           'Utxt':[], 'Utx2':[], 'Utx3':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
                           'splt':[], 'spl2':[], 'spl3':[], 'spl4':[], 'spl5':[], 'lngt':[], \
-                          'spl7':[], 'spl8':[], 'spl9':[], 'sp10':[], \
+                          'spl7':[], 'spl8':[], 'spl9':[], 'sp10':[], 'srch':[], 'src2':[], \
                           'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
                           'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
                           'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], \
@@ -966,7 +966,7 @@ assigncat = {'nmbr':[], 'retn':[], 'mnmx':[], 'mean':[], 'MAD3':[], \
              'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
              'Utxt':[], 'Utx2':[], 'Utx3':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
              'splt':[], 'spl2':[], 'spl3':[], 'spl4':[], 'spl5':[], 'lngt':[], \
-             'spl7':[], 'spl8':[], 'spl9':[], 'sp10':[], \
+             'spl7':[], 'spl8':[], 'spl9':[], 'sp10':[], 'srch':[], 'src2':[], \
              'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
              'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
              'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], \
@@ -2268,7 +2268,7 @@ Note that priority is given to overlaps of higher length, and by default overlap
 start at 20 character length and go down to 5 character length.
   - default infill: none
   - default NArowtype: justNaN
-  - suffix appender: '_splt_##*##' where ##*## is target idenbtified string overlap 
+  - suffix appender: '_splt_##*##' where ##*## is target identified string overlap 
   - assignparam parameters accepted: 'minsplit': indicating lowest character length for recognized overlaps 
                                      'space_and_punctuation': True/False, defaults to True, when passed as
                                      False character overlaps are not recorded which include space or punctuation
@@ -2330,8 +2330,14 @@ within the overlaps
                                      'excluded_characters': a list of strings which are excluded from overlap 
                                      identification when space_and_punctuation set as False, defaults to
                                      `[' ', ',', '.', '?', '!', '(', ')']`
-  - driftreport postmunge metrics: overlap_dict / spl2_newcolumns / spl2_overlap_dict / spl2_test_overlap_dict / 
-                                   spl5_zero_dict / minsplit
+  - driftreport postmunge metrics: overlap_dict / srch_newcolumns_srch / search
+* srch: searches categorical sets for overlaps with user passed search string and returns new boolean column
+for identified overlap entries.
+  - default infill: none
+  - default NArowtype: justNaN
+  - suffix appender: '_srch_##*##' where ##*## is target identified search string
+  - assignparam parameters accepted: 'search': a list of strings, defaults as empty set
+  - driftreport postmunge metrics: overlap_dict / splt_newcolumns_splt / minsplit
 * nmrc/nmr2/nmr3: parses strings and returns any number groupings, prioritized by longest length
   - default infill: mean
   - default NArowtype: parsenumeric
@@ -2344,15 +2350,15 @@ within the overlaps
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: overlap_dict / mean / maximum / minimum
 ### More Efficient String Parsing
-* new processing functions nmr4/nmr5/nmr6/nmc4/nmc5/nmc6/spl8/spl9/sp10 (spelled sp"ten"):
-  - comparable to functions nmrc/nmr2/nmr3/nmcm/nmc2/nmc3/splt/spl2/spl5
+* new processing functions nmr4/nmr5/nmr6/nmc4/nmc5/nmc6/spl8/spl9/sp10 (spelled sp"ten")/src2:
+  - comparable to functions nmrc/nmr2/nmr3/nmcm/nmc2/nmc3/splt/spl2/spl5/srch
   - but make use of new assumption that set of unique values in test set is same or a subset of those values 
     from the train set, which allows for a more efficient application (no more string parsing of test sets)
   - default infill: comparable
   - default NArowtype: comparable
   - suffix appender: same format, updated per the new category
   - assignparam parameters accepted: comparable
-  - driftreport postmunge metrics: overlap_dict / mean / maximum / minimum / unique_list
+  - driftreport postmunge metrics: comparable
 * new processing functions nmr7/nmr8/nmr9/nmc7/nmc8/nmc9:
   - comparable to functions nmrc/nmr2/nmr3/nmcm/nmc2/nmc3
   - but implements string parsing only for unique test set entries not found in train set
@@ -2495,6 +2501,8 @@ that any user passing a custom defined transformation can avoid any unintentiona
 - '_spl9'
 - '\_splt_' + string (where string is an identified overlap of characters between categorical entries)
 - '_sqrt'
+- '\_src2_' + string (where string is an identified overlap of characters with user passed search string)
+- '\_srch_' + string (where string is an identified overlap of characters with user passed search string)
 - '_tlbn_' + i (where i is identifier of bin)
 - '\_text_' + string (where string is a categorical entry in one-hot encoded set)
 - '_UPCS'
