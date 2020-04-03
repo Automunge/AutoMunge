@@ -2332,7 +2332,7 @@ within the overlaps
   - default infill: comparable
   - default NArowtype: comparable
   - suffix appender: same format, updated per the new category
-  - assignparam parameters accepted: none
+  - assignparam parameters accepted: comparable
   - driftreport postmunge metrics: overlap_dict / mean / maximum / minimum / unique_list
 * new processing functions nmr7/nmr8/nmr9/nmc7/nmc8/nmc9:
   - comparable to functions nmrc/nmr2/nmr3/nmcm/nmc2/nmc3
@@ -2342,7 +2342,7 @@ within the overlaps
   - default infill: comparable
   - default NArowtype: comparable
   - suffix appender: same format, updated per the new category
-  - assignparam parameters accepted: none
+  - assignparam parameters accepted: comparable
   - driftreport postmunge metrics: overlap_dict / mean / maximum / minimum / unique_list / maxlength
 ### Multi-tier String Parsing
 * new processing root categories or11 / or12 / or13 / or14 / or15 / or16 / or17 / or18 / or19 / or20
