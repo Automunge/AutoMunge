@@ -235,9 +235,9 @@ that wasn't available at initial address with the postmunge(.) function.
 
 The feature engineering transformations are recorded with a series of suffixes 
 appended to the column header title in the returned sets, for one example the 
-application of z-score normalization returns a column with header origname + '_nmbr'. 
+application of z-score normalization returns a column with header origname + '\_nmbr'. 
 As another example, for one-hot encoded sets the set of columns are returned with
-header origname + '_category' where category is the category from the set indicated 
+header origname + '\_category' where category is the category from the set indicated 
 by a column. Each transformation category has a unique suffix appender.
 
 In automation, for numerical data, the functions generate a series of derived
