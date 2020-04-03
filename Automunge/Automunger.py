@@ -6199,6 +6199,11 @@ class AutoMunge:
       
       minsplit = 4
       
+    if 'space_and_punctuation' in params:
+      space_and_punctuation = params['space_and_punctuation']
+    else:
+      space_and_punctuation = True
+      
     
     #first we find overlaps from mdf_train
     
@@ -6264,22 +6269,50 @@ class AutoMunge:
 
                     extract2 = unique2[j:(overlap_length+j)]
 
-                    if extract2 == extract:
+                    #________
+                    
+                    if space_and_punctuation is True:
 
-                      if extract in overlap_dict:
+                      if extract2 == extract:
 
-                        if unique2 not in overlap_dict[extract]:
+                        if extract in overlap_dict:
 
-                          overlap_dict[extract].append(unique2)
+                          if unique2 not in overlap_dict[extract]:
 
-                        if unique not in overlap_dict[extract]:
+                            overlap_dict[extract].append(unique2)
 
-                          overlap_dict[extract].append(unique)
+                          if unique not in overlap_dict[extract]:
 
-                      #else if we don't have a key for extract
-                      else:
+                            overlap_dict[extract].append(unique)
 
-                        overlap_dict.update({extract : [unique, unique2]})
+                        #else if we don't have a key for extract
+                        else:
+
+                          overlap_dict.update({extract : [unique, unique2]})
+                          
+                    elif space_and_punctuation is False:
+                      
+                      for scrub_punctuation in [' ', ',', '.', '?', '!', '(', ')']:
+                        
+                        extract2 = extract2.replace(scrub_punctuation, '')
+                        
+                      #if any punctuation was scrubbed these two extracts will be different lengths
+                      if extract2 == extract:
+
+                        if extract in overlap_dict:
+
+                          if unique2 not in overlap_dict[extract]:
+
+                            overlap_dict[extract].append(unique2)
+
+                          if unique not in overlap_dict[extract]:
+
+                            overlap_dict[extract].append(unique)
+
+                        #else if we don't have a key for extract
+                        else:
+
+                          overlap_dict.update({extract : [unique, unique2]})
 
                         
     #now for mdf_test we'll only consider those overlaps already identified from train set
@@ -6394,7 +6427,12 @@ class AutoMunge:
     
     else:
       
-      minsplit = 4  
+      minsplit = 4
+      
+    if 'space_and_punctuation' in params:
+      space_and_punctuation = params['space_and_punctuation']
+    else:
+      space_and_punctuation = True
   
   
     #first we find overlaps from mdf_train
@@ -6461,22 +6499,50 @@ class AutoMunge:
 
                     extract2 = unique2[j:(overlap_length+j)]
 
-                    if extract2 == extract:
+                    #________
+                    
+                    if space_and_punctuation is True:
 
-                      if extract in overlap_dict:
+                      if extract2 == extract:
 
-                        if unique2 not in overlap_dict[extract]:
+                        if extract in overlap_dict:
 
-                          overlap_dict[extract].append(unique2)
+                          if unique2 not in overlap_dict[extract]:
 
-                        if unique not in overlap_dict[extract]:
+                            overlap_dict[extract].append(unique2)
 
-                          overlap_dict[extract].append(unique)
+                          if unique not in overlap_dict[extract]:
 
-                      #else if we don't have a key for extract
-                      else:
+                            overlap_dict[extract].append(unique)
 
-                        overlap_dict.update({extract : [unique, unique2]})
+                        #else if we don't have a key for extract
+                        else:
+
+                          overlap_dict.update({extract : [unique, unique2]})
+                          
+                    elif space_and_punctuation is False:
+                      
+                      for scrub_punctuation in [' ', ',', '.', '?', '!', '(', ')']:
+                        
+                        extract2 = extract2.replace(scrub_punctuation, '')
+                        
+                      #if any punctuation was scrubbed these two extracts will be different lengths
+                      if extract2 == extract:
+
+                        if extract in overlap_dict:
+
+                          if unique2 not in overlap_dict[extract]:
+
+                            overlap_dict[extract].append(unique2)
+
+                          if unique not in overlap_dict[extract]:
+
+                            overlap_dict[extract].append(unique)
+
+                        #else if we don't have a key for extract
+                        else:
+
+                          overlap_dict.update({extract : [unique, unique2]})
 
                         
     #now for mdf_test we'll only consider those overlaps already identified from train set
@@ -6648,6 +6714,11 @@ class AutoMunge:
     else:
       
       minsplit = 4
+      
+    if 'space_and_punctuation' in params:
+      space_and_punctuation = params['space_and_punctuation']
+    else:
+      space_and_punctuation = True
     
     #first we find overlaps from mdf_train
     
@@ -6713,22 +6784,50 @@ class AutoMunge:
 
                     extract2 = unique2[j:(overlap_length+j)]
 
-                    if extract2 == extract:
+                    #________
+                    
+                    if space_and_punctuation is True:
 
-                      if extract in overlap_dict:
+                      if extract2 == extract:
 
-                        if unique2 not in overlap_dict[extract]:
+                        if extract in overlap_dict:
 
-                          overlap_dict[extract].append(unique2)
+                          if unique2 not in overlap_dict[extract]:
 
-                        if unique not in overlap_dict[extract]:
+                            overlap_dict[extract].append(unique2)
 
-                          overlap_dict[extract].append(unique)
+                          if unique not in overlap_dict[extract]:
 
-                      #else if we don't have a key for extract
-                      else:
+                            overlap_dict[extract].append(unique)
 
-                        overlap_dict.update({extract : [unique, unique2]})
+                        #else if we don't have a key for extract
+                        else:
+
+                          overlap_dict.update({extract : [unique, unique2]})
+                          
+                    elif space_and_punctuation is False:
+                      
+                      for scrub_punctuation in [' ', ',', '.', '?', '!', '(', ')']:
+                        
+                        extract2 = extract2.replace(scrub_punctuation, '')
+                        
+                      #if any punctuation was scrubbed these two extracts will be different lengths
+                      if extract2 == extract:
+
+                        if extract in overlap_dict:
+
+                          if unique2 not in overlap_dict[extract]:
+
+                            overlap_dict[extract].append(unique2)
+
+                          if unique not in overlap_dict[extract]:
+
+                            overlap_dict[extract].append(unique)
+
+                        #else if we don't have a key for extract
+                        else:
+
+                          overlap_dict.update({extract : [unique, unique2]})
 
                         
     #now for mdf_test we'll only consider those overlaps already 
@@ -6911,6 +7010,11 @@ class AutoMunge:
     else:
       
       minsplit = 2 - 1
+      
+    if 'space_and_punctuation' in params:
+      space_and_punctuation = params['space_and_punctuation']
+    else:
+      space_and_punctuation = True
     
     #first we find overlaps from mdf_train
     
@@ -6976,22 +7080,50 @@ class AutoMunge:
 
                     extract2 = unique2[j:(overlap_length+j)]
 
-                    if extract2 == extract:
+                    #________
+                    
+                    if space_and_punctuation is True:
 
-                      if extract in overlap_dict:
+                      if extract2 == extract:
 
-                        if unique2 not in overlap_dict[extract]:
+                        if extract in overlap_dict:
 
-                          overlap_dict[extract].append(unique2)
+                          if unique2 not in overlap_dict[extract]:
 
-                        if unique not in overlap_dict[extract]:
+                            overlap_dict[extract].append(unique2)
 
-                          overlap_dict[extract].append(unique)
+                          if unique not in overlap_dict[extract]:
 
-                      #else if we don't have a key for extract
-                      else:
+                            overlap_dict[extract].append(unique)
 
-                        overlap_dict.update({extract : [unique, unique2]})
+                        #else if we don't have a key for extract
+                        else:
+
+                          overlap_dict.update({extract : [unique, unique2]})
+                          
+                    elif space_and_punctuation is False:
+                      
+                      for scrub_punctuation in [' ', ',', '.', '?', '!', '(', ')']:
+                        
+                        extract2 = extract2.replace(scrub_punctuation, '')
+                        
+                      #if any punctuation was scrubbed these two extracts will be different lengths
+                      if extract2 == extract:
+
+                        if extract in overlap_dict:
+
+                          if unique2 not in overlap_dict[extract]:
+
+                            overlap_dict[extract].append(unique2)
+
+                          if unique not in overlap_dict[extract]:
+
+                            overlap_dict[extract].append(unique)
+
+                        #else if we don't have a key for extract
+                        else:
+
+                          overlap_dict.update({extract : [unique, unique2]})
 
                         
     #now for mdf_test we'll only consider those overlaps already 
@@ -7172,6 +7304,11 @@ class AutoMunge:
     else:
       
       minsplit = 4
+      
+    if 'space_and_punctuation' in params:
+      space_and_punctuation = params['space_and_punctuation']
+    else:
+      space_and_punctuation = True
     
     #first we find overlaps from mdf_train
     
@@ -7237,22 +7374,50 @@ class AutoMunge:
 
                     extract2 = unique2[j:(overlap_length+j)]
 
-                    if extract2 == extract:
+                    #________
+                    
+                    if space_and_punctuation is True:
 
-                      if extract in overlap_dict:
+                      if extract2 == extract:
 
-                        if unique2 not in overlap_dict[extract]:
+                        if extract in overlap_dict:
 
-                          overlap_dict[extract].append(unique2)
+                          if unique2 not in overlap_dict[extract]:
 
-                        if unique not in overlap_dict[extract]:
+                            overlap_dict[extract].append(unique2)
 
-                          overlap_dict[extract].append(unique)
+                          if unique not in overlap_dict[extract]:
 
-                      #else if we don't have a key for extract
-                      else:
+                            overlap_dict[extract].append(unique)
 
-                        overlap_dict.update({extract : [unique, unique2]})
+                        #else if we don't have a key for extract
+                        else:
+
+                          overlap_dict.update({extract : [unique, unique2]})
+                          
+                    elif space_and_punctuation is False:
+                      
+                      for scrub_punctuation in [' ', ',', '.', '?', '!', '(', ')']:
+                        
+                        extract2 = extract2.replace(scrub_punctuation, '')
+                        
+                      #if any punctuation was scrubbed these two extracts will be different lengths
+                      if extract2 == extract:
+
+                        if extract in overlap_dict:
+
+                          if unique2 not in overlap_dict[extract]:
+
+                            overlap_dict[extract].append(unique2)
+
+                          if unique not in overlap_dict[extract]:
+
+                            overlap_dict[extract].append(unique)
+
+                        #else if we don't have a key for extract
+                        else:
+
+                          overlap_dict.update({extract : [unique, unique2]})
 
                         
     #now for mdf_test we'll only consider those overlaps already identified from train set
@@ -7374,6 +7539,11 @@ class AutoMunge:
     else:
       
       minsplit = 4
+      
+    if 'space_and_punctuation' in params:
+      space_and_punctuation = params['space_and_punctuation']
+    else:
+      space_and_punctuation = True
     
     #first we find overlaps from mdf_train
     
@@ -7439,22 +7609,50 @@ class AutoMunge:
 
                     extract2 = unique2[j:(overlap_length+j)]
 
-                    if extract2 == extract:
+                    #________
+                    
+                    if space_and_punctuation is True:
 
-                      if extract in overlap_dict:
+                      if extract2 == extract:
 
-                        if unique2 not in overlap_dict[extract]:
+                        if extract in overlap_dict:
 
-                          overlap_dict[extract].append(unique2)
+                          if unique2 not in overlap_dict[extract]:
 
-                        if unique not in overlap_dict[extract]:
+                            overlap_dict[extract].append(unique2)
 
-                          overlap_dict[extract].append(unique)
+                          if unique not in overlap_dict[extract]:
 
-                      #else if we don't have a key for extract
-                      else:
+                            overlap_dict[extract].append(unique)
 
-                        overlap_dict.update({extract : [unique, unique2]})
+                        #else if we don't have a key for extract
+                        else:
+
+                          overlap_dict.update({extract : [unique, unique2]})
+                          
+                    elif space_and_punctuation is False:
+                      
+                      for scrub_punctuation in [' ', ',', '.', '?', '!', '(', ')']:
+                        
+                        extract2 = extract2.replace(scrub_punctuation, '')
+                        
+                      #if any punctuation was scrubbed these two extracts will be different lengths
+                      if extract2 == extract:
+
+                        if extract in overlap_dict:
+
+                          if unique2 not in overlap_dict[extract]:
+
+                            overlap_dict[extract].append(unique2)
+
+                          if unique not in overlap_dict[extract]:
+
+                            overlap_dict[extract].append(unique)
+
+                        #else if we don't have a key for extract
+                        else:
+
+                          overlap_dict.update({extract : [unique, unique2]})
 
                         
     #now for mdf_test we'll only consider those overlaps already identified from train set
@@ -7638,6 +7836,11 @@ class AutoMunge:
     else:
       
       minsplit = 4
+      
+    if 'space_and_punctuation' in params:
+      space_and_punctuation = params['space_and_punctuation']
+    else:
+      space_and_punctuation = True
     
     #first we find overlaps from mdf_train
     
@@ -7703,22 +7906,50 @@ class AutoMunge:
 
                     extract2 = unique2[j:(overlap_length+j)]
 
-                    if extract2 == extract:
+                    #________
+                    
+                    if space_and_punctuation is True:
 
-                      if extract in overlap_dict:
+                      if extract2 == extract:
 
-                        if unique2 not in overlap_dict[extract]:
+                        if extract in overlap_dict:
 
-                          overlap_dict[extract].append(unique2)
+                          if unique2 not in overlap_dict[extract]:
 
-                        if unique not in overlap_dict[extract]:
+                            overlap_dict[extract].append(unique2)
 
-                          overlap_dict[extract].append(unique)
+                          if unique not in overlap_dict[extract]:
 
-                      #else if we don't have a key for extract
-                      else:
+                            overlap_dict[extract].append(unique)
 
-                        overlap_dict.update({extract : [unique, unique2]})
+                        #else if we don't have a key for extract
+                        else:
+
+                          overlap_dict.update({extract : [unique, unique2]})
+                          
+                    elif space_and_punctuation is False:
+                      
+                      for scrub_punctuation in [' ', ',', '.', '?', '!', '(', ')']:
+                        
+                        extract2 = extract2.replace(scrub_punctuation, '')
+                        
+                      #if any punctuation was scrubbed these two extracts will be different lengths
+                      if extract2 == extract:
+
+                        if extract in overlap_dict:
+
+                          if unique2 not in overlap_dict[extract]:
+
+                            overlap_dict[extract].append(unique2)
+
+                          if unique not in overlap_dict[extract]:
+
+                            overlap_dict[extract].append(unique)
+
+                        #else if we don't have a key for extract
+                        else:
+
+                          overlap_dict.update({extract : [unique, unique2]})
 
                         
     #now for mdf_test we'll only consider those overlaps already 
@@ -23849,6 +24080,7 @@ class AutoMunge:
                              'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
                              'Utxt':[], 'Utx2':[], 'Utx3':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
                              'splt':[], 'spl2':[], 'spl3':[], 'spl4':[], 'spl5':[], 'lngt':[], \
+                             'spl7':[], 'spl8':[], 'spl9':[], 'sp10':[], \
                              'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
                              'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
                              'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], \
