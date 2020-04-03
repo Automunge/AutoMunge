@@ -6204,6 +6204,11 @@ class AutoMunge:
     else:
       space_and_punctuation = True
       
+    if 'excluded_characters' in params:
+      excluded_characters = params['excluded_characters']
+    else:
+      excluded_characters = [' ', ',', '.', '?', '!', '(', ')']
+      
     
     #first we find overlaps from mdf_train
     
@@ -6292,7 +6297,7 @@ class AutoMunge:
                           
                     elif space_and_punctuation is False:
                       
-                      for scrub_punctuation in [' ', ',', '.', '?', '!', '(', ')']:
+                      for scrub_punctuation in excluded_characters:
                         
                         extract2 = extract2.replace(scrub_punctuation, '')
                         
@@ -6433,6 +6438,11 @@ class AutoMunge:
       space_and_punctuation = params['space_and_punctuation']
     else:
       space_and_punctuation = True
+      
+    if 'excluded_characters' in params:
+      excluded_characters = params['excluded_characters']
+    else:
+      excluded_characters = [' ', ',', '.', '?', '!', '(', ')']
   
   
     #first we find overlaps from mdf_train
@@ -6522,7 +6532,7 @@ class AutoMunge:
                           
                     elif space_and_punctuation is False:
                       
-                      for scrub_punctuation in [' ', ',', '.', '?', '!', '(', ')']:
+                      for scrub_punctuation in excluded_characters:
                         
                         extract2 = extract2.replace(scrub_punctuation, '')
                         
@@ -6719,6 +6729,11 @@ class AutoMunge:
       space_and_punctuation = params['space_and_punctuation']
     else:
       space_and_punctuation = True
+      
+    if 'excluded_characters' in params:
+      excluded_characters = params['excluded_characters']
+    else:
+      excluded_characters = [' ', ',', '.', '?', '!', '(', ')']
     
     #first we find overlaps from mdf_train
     
@@ -6807,7 +6822,7 @@ class AutoMunge:
                           
                     elif space_and_punctuation is False:
                       
-                      for scrub_punctuation in [' ', ',', '.', '?', '!', '(', ')']:
+                      for scrub_punctuation in excluded_characters:
                         
                         extract2 = extract2.replace(scrub_punctuation, '')
                         
@@ -7015,6 +7030,11 @@ class AutoMunge:
       space_and_punctuation = params['space_and_punctuation']
     else:
       space_and_punctuation = True
+      
+    if 'excluded_characters' in params:
+      excluded_characters = params['excluded_characters']
+    else:
+      excluded_characters = [' ', ',', '.', '?', '!', '(', ')']
     
     #first we find overlaps from mdf_train
     
@@ -7103,7 +7123,7 @@ class AutoMunge:
                           
                     elif space_and_punctuation is False:
                       
-                      for scrub_punctuation in [' ', ',', '.', '?', '!', '(', ')']:
+                      for scrub_punctuation in excluded_characters:
                         
                         extract2 = extract2.replace(scrub_punctuation, '')
                         
@@ -7309,6 +7329,11 @@ class AutoMunge:
       space_and_punctuation = params['space_and_punctuation']
     else:
       space_and_punctuation = True
+      
+    if 'excluded_characters' in params:
+      excluded_characters = params['excluded_characters']
+    else:
+      excluded_characters = [' ', ',', '.', '?', '!', '(', ')']
     
     #first we find overlaps from mdf_train
     
@@ -7397,7 +7422,7 @@ class AutoMunge:
                           
                     elif space_and_punctuation is False:
                       
-                      for scrub_punctuation in [' ', ',', '.', '?', '!', '(', ')']:
+                      for scrub_punctuation in excluded_characters:
                         
                         extract2 = extract2.replace(scrub_punctuation, '')
                         
@@ -7544,6 +7569,11 @@ class AutoMunge:
       space_and_punctuation = params['space_and_punctuation']
     else:
       space_and_punctuation = True
+      
+    if 'excluded_characters' in params:
+      excluded_characters = params['excluded_characters']
+    else:
+      excluded_characters = [' ', ',', '.', '?', '!', '(', ')']
     
     #first we find overlaps from mdf_train
     
@@ -7632,7 +7662,7 @@ class AutoMunge:
                           
                     elif space_and_punctuation is False:
                       
-                      for scrub_punctuation in [' ', ',', '.', '?', '!', '(', ')']:
+                      for scrub_punctuation in excluded_characters:
                         
                         extract2 = extract2.replace(scrub_punctuation, '')
                         
@@ -7841,6 +7871,11 @@ class AutoMunge:
       space_and_punctuation = params['space_and_punctuation']
     else:
       space_and_punctuation = True
+      
+    if 'excluded_characters' in params:
+      excluded_characters = params['excluded_characters']
+    else:
+      excluded_characters = [' ', ',', '.', '?', '!', '(', ')']
     
     #first we find overlaps from mdf_train
     
@@ -7929,7 +7964,7 @@ class AutoMunge:
                           
                     elif space_and_punctuation is False:
                       
-                      for scrub_punctuation in [' ', ',', '.', '?', '!', '(', ')']:
+                      for scrub_punctuation in excluded_characters:
                         
                         extract2 = extract2.replace(scrub_punctuation, '')
                         
@@ -26044,7 +26079,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.64'
+    automungeversion = '3.66'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
