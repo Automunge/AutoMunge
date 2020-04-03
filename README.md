@@ -2461,6 +2461,7 @@ that any user passing a custom defined transformation can avoid any unintentiona
 - '_spl9'
 - '\_splt_' + string (where string is an identified overlap of characters between categorical entries)
 - '_sqrt'
+- '_tlbn_' + i (where i is identifier of bin)
 - '\_text_' + string (where string is a categorical entry in one-hot encoded set)
 - '_UPCS'
 - '_wkds'
