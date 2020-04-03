@@ -2272,7 +2272,10 @@ start at 20 character length and go down to 5 character length.
   - assignparam parameters accepted: 'minsplit': indicating lowest character length for recognized overlaps 
                                      'space_and_punctuation': True/False, defaults to True, when passed as
                                      False character overlaps are not recorded which include space or punctuation
-                                     based on characters [' ' , . ? ! ( )]
+                                     based on characters in excluded_characters parameter
+                                     'excluded_characters': a list of strings which are excluded from overlap 
+                                     identification when space_and_punctuation set as False, defaults to
+                                     `[' ', ',', '.', '?', '!', '(', ')']`
   - driftreport postmunge metrics: overlap_dict / splt_newcolumns_splt / minsplit
 * spl2/spl3/spl4/ors2/txt3: similar to splt, but instead of creating new column identifier it replaces categorical 
 entries with the abbreviated string overlap
@@ -2282,7 +2285,10 @@ entries with the abbreviated string overlap
   - assignparam parameters accepted: 'minsplit': indicating lowest character length for recognized overlaps 
                                      'space_and_punctuation': True/False, defaults to True, when passed as
                                      False character overlaps are not recorded which include space or punctuation
-                                     based on characters [' ' , . ? ! ( )]		  
+                                     based on characters in excluded_characters parameter
+                                     'excluded_characters': a list of strings which are excluded from overlap 
+                                     identification when space_and_punctuation set as False, defaults to
+                                     `[' ', ',', '.', '?', '!', '(', ')']`
   - driftreport postmunge metrics: overlap_dict / spl2_newcolumns / spl2_overlap_dict / spl2_test_overlap_dict / 
                                    minsplit
 * spl5/spl6/ors5/ors6: similar to spl2, but those entries without idenitified string overlap are set to 0,
@@ -2293,7 +2299,10 @@ entries with the abbreviated string overlap
   - assignparam parameters accepted: 'minsplit': indicating lowest character length for recognized overlaps 
                                      'space_and_punctuation': True/False, defaults to True, when passed as
                                      False character overlaps are not recorded which include space or punctuation
-                                     based on characters [' ' , . ? ! ( )]
+                                     based on characters in excluded_characters parameter
+                                     'excluded_characters': a list of strings which are excluded from overlap 
+                                     identification when space_and_punctuation set as False, defaults to
+                                     `[' ', ',', '.', '?', '!', '(', ')']`
   - driftreport postmunge metrics: overlap_dict / spl2_newcolumns / spl2_overlap_dict / spl2_test_overlap_dict / 
                                    spl5_zero_dict / minsplit
 * spl6: similar to spl5, but with a splt performed downstream for identification of overlaps
@@ -2304,7 +2313,10 @@ within the overlaps
   - assignparam parameters accepted: 'minsplit': indicating lowest character length for recognized overlaps 
                                      'space_and_punctuation': True/False, defaults to True, when passed as
                                      False character overlaps are not recorded which include space or punctuation
-                                     based on characters [' ' , . ? ! ( )]
+                                     based on characters in excluded_characters parameter
+                                     'excluded_characters': a list of strings which are excluded from overlap 
+                                     identification when space_and_punctuation set as False, defaults to
+                                     `[' ', ',', '.', '?', '!', '(', ')']`
   - driftreport postmunge metrics: overlap_dict / spl2_newcolumns / spl2_overlap_dict / spl2_test_overlap_dict / 
                                    spl5_zero_dict / minsplit
 * spl7: similar to spl5, but recognizes string character overlaps down to minimum 2 instead of 5
@@ -2314,7 +2326,10 @@ within the overlaps
   - assignparam parameters accepted: 'minsplit': indicating lowest character length for recognized overlaps 
                                      'space_and_punctuation': True/False, defaults to True, when passed as
                                      False character overlaps are not recorded which include space or punctuation
-                                     based on characters [' ' , . ? ! ( )]
+                                     based on characters in excluded_characters parameter
+                                     'excluded_characters': a list of strings which are excluded from overlap 
+                                     identification when space_and_punctuation set as False, defaults to
+                                     `[' ', ',', '.', '?', '!', '(', ')']`
   - driftreport postmunge metrics: overlap_dict / spl2_newcolumns / spl2_overlap_dict / spl2_test_overlap_dict / 
                                    spl5_zero_dict / minsplit
 * nmrc/nmr2/nmr3: parses strings and returns any number groupings, prioritized by longest length
