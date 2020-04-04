@@ -681,6 +681,24 @@ class AutoMunge:
                                      'coworkers' : ['ord3'], \
                                      'friends' : []}})
     
+    transform_dict.update({'srch' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['srch'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+  
+    transform_dict.update({'src2' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['src2'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
     transform_dict.update({'nmrc' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['nmrc'], \
@@ -2711,7 +2729,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_splt_class, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'multirt', \
-                                  'labelctgy' : 'text'}})
+                                  'labelctgy' : 'splt'}})
     process_dict.update({'spl2' : {'dualprocess' : self.process_spl2_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_spl2_class, \
@@ -2766,6 +2784,18 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'ord3'}})
+    process_dict.update({'srch' : {'dualprocess' : self.process_srch_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_srch_class, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'multirt', \
+                                  'labelctgy' : 'srch'}})
+    process_dict.update({'src2' : {'dualprocess' : self.process_src2_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_src2_class, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'multirt', \
+                                  'labelctgy' : 'src2'}})
     process_dict.update({'nmrc' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_nmrc_class, \
                                   'postprocess' : None, \
@@ -8151,6 +8181,325 @@ class AutoMunge:
       
       column_dict_list = []
 
+    
+    return mdf_train, mdf_test, column_dict_list
+  
+  
+  def process_srch_class(self, mdf_train, mdf_test, column, category, \
+                         postprocess_dict, params = {}):
+    """
+    #process_srch_class(mdf_train, mdf_test, column, category)
+    #preprocess column with categorical entries as strings
+    #relies on user passed list of strings in search parameter
+    #string parses unique entries to identify overlaps with search strings
+    #when overlap found returns a column with boolean activation identifiers
+    
+    #for example, if a categoical set consisted of unique values 
+    #['west', 'north', 'northwest']
+    #and a user passed the search parameter as ['west']
+    #then a new column would be returned 
+    #with activations corresponding to entries of 'west' and 'northwest'
+
+    #missing values are ignored by default
+    """
+        
+    if 'search' in params:
+      search = params['search']
+    else:
+      search = []
+    
+    #first we find overlaps from mdf_train
+    
+    unique_list = list(mdf_train[column].unique())
+
+    unique_list = list(map(str, unique_list))
+    
+#     maxlength = max(len(x) for x in unique_list)
+    
+#     overlap_lengths = list(range(maxlength - 1, minsplit, -1))
+
+    
+
+    #we'll populate overlap_dict as
+    #{search_string : [list of associate categories with that overlap found]}
+
+    
+    overlap_dict = {}
+    
+    for search_string in search:
+      
+      overlap_dict.update({search_string : []})
+    
+    
+    
+    for search_string in search:
+      
+      len_search_string = len(search_string)
+    
+      for unique in unique_list:
+        
+        len_unique = len(unique)
+        
+        if len_unique >= len_search_string:
+          
+          nbr_iterations = len_unique - len_search_string
+          
+          for i in range(nbr_iterations + 1):
+            
+            extract = unique[i:(len_search_string+i)]
+            
+            if extract in search:
+              
+              overlap_dict[extract].append(unique)
+
+
+                        
+    #now for mdf_test
+    
+    unique_list_test = list(mdf_test[column].unique())
+
+    unique_list_test = list(map(str, unique_list_test))
+
+    test_overlap_dict = {}
+    
+    for search_string in search:
+      
+      test_overlap_dict.update({search_string : []})
+    
+
+    train_keys = list(overlap_dict)
+
+    train_keys.sort(key = len, reverse=True)
+
+    for dict_key in train_keys:
+
+      for unique_test in unique_list_test:
+
+        len_key = len(dict_key)
+
+        if len(unique_test) >= len_key:
+
+          nbr_iterations4 = len(unique_test) - len_key
+
+          for l in range(nbr_iterations4 + 1):
+
+            extract4 = unique_test[l:(len_key+l)]
+
+            if extract4 == dict_key:
+
+              test_overlap_dict[dict_key].append(unique_test)
+                        
+                        
+    
+    newcolumns = []
+
+    for dict_key in overlap_dict:
+      
+      if len(overlap_dict[dict_key]) > 0:
+
+        newcolumn = column + '_srch_' + dict_key
+
+        mdf_train[newcolumn] = mdf_train[column].copy()
+        mdf_test[newcolumn] = mdf_test[column].copy()
+
+        mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
+        mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
+
+        mdf_train[newcolumn] = mdf_train[newcolumn].isin(overlap_dict[dict_key])
+        mdf_train[newcolumn] = mdf_train[newcolumn].astype(np.int8)
+
+        mdf_test[newcolumn] = mdf_test[newcolumn].isin(test_overlap_dict[dict_key])
+        mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
+
+        newcolumns.append(newcolumn)
+    
+    
+    
+    column_dict_list = []
+
+    for tc in newcolumns:
+
+      textnormalization_dict = {tc : {'overlap_dict' : overlap_dict, \
+                                      'srch_newcolumns_srch'   : newcolumns, \
+                                      'search' : search}}
+      
+      column_dict = {tc : {'category' : 'srch', \
+                           'origcategory' : category, \
+                           'normalization_dict' : textnormalization_dict, \
+                           'origcolumn' : column, \
+                           'inputcolumn' : column, \
+                           'columnslist' : newcolumns, \
+                           'categorylist' : newcolumns, \
+                           'infillmodel' : False, \
+                           'infillcomplete' : False, \
+                           'deletecolumn' : False}}
+
+      column_dict_list.append(column_dict.copy())
+      
+    if len(newcolumns) == 0:
+      
+      column_dict_list = []
+    
+    return mdf_train, mdf_test, column_dict_list
+  
+  
+  def process_src2_class(self, mdf_train, mdf_test, column, category, \
+                         postprocess_dict, params = {}):
+    """
+    #process_src2_class(mdf_train, mdf_test, column, category)
+    #preprocess column with categorical entries as strings
+    #relies on user passed list of strings in search parameter
+    #string parses unique entries to identify overlaps with search strings
+    #when overlap found returns a column with boolean activation identifiers
+    
+    #for example, if a categoical set consisted of unique values 
+    #['west', 'north', 'northwest']
+    #and a user passed the search parameter as ['west']
+    #then a new column would be returned 
+    #with activations corresponding to entries of 'west' and 'northwest'
+
+    #missing values are ignored by default
+    
+    #assumes that unique values of test set are same or subset of train set
+    #for more efficient application in postmunge
+    """
+        
+    if 'search' in params:
+      search = params['search']
+    else:
+      search = []
+    
+    #first we find overlaps from mdf_train
+    
+    unique_list = list(mdf_train[column].unique())
+
+    unique_list = list(map(str, unique_list))
+    
+#     maxlength = max(len(x) for x in unique_list)
+    
+#     overlap_lengths = list(range(maxlength - 1, minsplit, -1))
+
+    
+
+    #we'll populate overlap_dict as
+    #{search_string : [list of associate categories with that overlap found]}
+
+    
+    overlap_dict = {}
+    
+    for search_string in search:
+      
+      overlap_dict.update({search_string : []})
+    
+    
+    
+    for search_string in search:
+      
+      len_search_string = len(search_string)
+    
+      for unique in unique_list:
+        
+        len_unique = len(unique)
+        
+        if len_unique >= len_search_string:
+          
+          nbr_iterations = len_unique - len_search_string
+          
+          for i in range(nbr_iterations + 1):
+            
+            extract = unique[i:(len_search_string+i)]
+            
+            if extract in search:
+              
+              overlap_dict[extract].append(unique)
+
+
+                        
+#     #now for mdf_test
+    
+#     unique_list_test = list(mdf_test[column].unique())
+
+#     unique_list_test = list(map(str, unique_list_test))
+
+#     test_overlap_dict = {}
+    
+#     for search_string in search:
+      
+#       test_overlap_dict.update({search_string : []})
+    
+
+#     train_keys = list(overlap_dict)
+
+#     train_keys.sort(key = len, reverse=True)
+
+#     for dict_key in train_keys:
+
+#       for unique_test in unique_list_test:
+
+#         len_key = len(dict_key)
+
+#         if len(unique_test) >= len_key:
+
+#           nbr_iterations4 = len(unique_test) - len_key
+
+#           for l in range(nbr_iterations4 + 1):
+
+#             extract4 = unique_test[l:(len_key+l)]
+
+#             if extract4 == dict_key:
+
+#               test_overlap_dict[dict_key].append(unique_test)
+                        
+                        
+    
+    newcolumns = []
+
+    for dict_key in overlap_dict:
+      
+      if len(overlap_dict[dict_key]) > 0:
+
+        newcolumn = column + '_src2_' + dict_key
+
+        mdf_train[newcolumn] = mdf_train[column].copy()
+        mdf_test[newcolumn] = mdf_test[column].copy()
+
+        mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
+        mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
+
+        mdf_train[newcolumn] = mdf_train[newcolumn].isin(overlap_dict[dict_key])
+        mdf_train[newcolumn] = mdf_train[newcolumn].astype(np.int8)
+
+        mdf_test[newcolumn] = mdf_test[newcolumn].isin(overlap_dict[dict_key])
+        mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
+
+        newcolumns.append(newcolumn)
+    
+    
+    
+    column_dict_list = []
+
+    for tc in newcolumns:
+
+      textnormalization_dict = {tc : {'overlap_dict' : overlap_dict, \
+                                      'src2_newcolumns_src2'   : newcolumns, \
+                                      'search' : search}}
+      
+      column_dict = {tc : {'category' : 'src2', \
+                           'origcategory' : category, \
+                           'normalization_dict' : textnormalization_dict, \
+                           'origcolumn' : column, \
+                           'inputcolumn' : column, \
+                           'columnslist' : newcolumns, \
+                           'categorylist' : newcolumns, \
+                           'infillmodel' : False, \
+                           'infillcomplete' : False, \
+                           'deletecolumn' : False}}
+
+      column_dict_list.append(column_dict.copy())
+      
+    if len(newcolumns) == 0:
+      
+      column_dict_list = []
     
     return mdf_train, mdf_test, column_dict_list
   
@@ -24115,7 +24464,7 @@ class AutoMunge:
                              'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
                              'Utxt':[], 'Utx2':[], 'Utx3':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
                              'splt':[], 'spl2':[], 'spl3':[], 'spl4':[], 'spl5':[], 'lngt':[], \
-                             'spl7':[], 'spl8':[], 'spl9':[], 'sp10':[], \
+                             'spl7':[], 'spl8':[], 'spl9':[], 'sp10':[], 'srch':[], 'src2':[], \
                              'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
                              'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
                              'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], \
@@ -26079,7 +26428,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.66'
+    automungeversion = '3.67'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -28513,6 +28862,235 @@ class AutoMunge:
     
     
     return mdf_test
+  
+  def postprocess_srch_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+    """
+    #process_srch_class(mdf_train, mdf_test, column, category)
+    #preprocess column with categorical entries as strings
+    #relies on user passed list of strings in search parameter
+    #string parses unique entries to identify overlaps with search strings
+    #when overlap found returns a column with boolean activation identifiers
+    
+    #for example, if a categoical set consisted of unique values 
+    #['west', 'north', 'northwest']
+    #and a user passed the search parameter as ['west']
+    #then a new column would be returned 
+    #with activations corresponding to entries of 'west' and 'northwest'
+
+    #missing values are ignored by default
+    """
+    
+    #to retrieve the normalization dictionary we're going to use new method since we don't yet 
+    #know what the returned columns titles are yet
+    
+    normkey = False
+    
+    if column in postprocess_dict['origcolumn']:
+      
+      columnkeylist = postprocess_dict['origcolumn'][column]['columnkeylist']
+      
+    else:
+      
+      origcolumn = postprocess_dict['column_dict'][column]['origcolumn']
+      
+      columnkeylist = postprocess_dict['origcolumn'][origcolumn]['columnkeylist']
+    
+    for columnkey in columnkeylist:
+      
+      if column == postprocess_dict['column_dict'][columnkey]['inputcolumn']:
+
+        if 'srch_newcolumns_srch' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
+
+          normkey = columnkey
+        
+    if normkey != False:
+
+      #great now we can grab normalization parameters
+      overlap_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['overlap_dict']
+
+      newcolumns = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['srch_newcolumns_srch']
+      
+      search = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['search']
+
+      
+      #now for mdf_test
+
+      unique_list_test = list(mdf_test[column].unique())
+
+      unique_list_test = list(map(str, unique_list_test))
+
+      test_overlap_dict = {}
+
+      for search_string in search:
+
+        test_overlap_dict.update({search_string : []})
+
+
+      train_keys = list(overlap_dict)
+
+      train_keys.sort(key = len, reverse=True)
+
+      for dict_key in train_keys:
+
+        for unique_test in unique_list_test:
+
+          len_key = len(dict_key)
+
+          if len(unique_test) >= len_key:
+
+            nbr_iterations4 = len(unique_test) - len_key
+
+            for l in range(nbr_iterations4 + 1):
+
+              extract4 = unique_test[l:(len_key+l)]
+
+              if extract4 == dict_key:
+
+                test_overlap_dict[dict_key].append(unique_test)
+                
+
+
+      newcolumns = []
+
+      for dict_key in overlap_dict:
+        
+        if len(overlap_dict[dict_key]) > 0:
+
+          newcolumn = column + '_srch_' + dict_key
+
+  #         mdf_train[newcolumn] = mdf_train[column].copy()
+          mdf_test[newcolumn] = mdf_test[column].copy()
+
+  #         mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
+          mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
+
+          mdf_test[newcolumn] = mdf_test[newcolumn].isin(test_overlap_dict[dict_key])
+          mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
+
+          newcolumns.append(newcolumn)
+    
+    
+    return mdf_test
+  
+  
+  def postprocess_src2_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+    """
+    #process_src2_class(mdf_train, mdf_test, column, category)
+    #preprocess column with categorical entries as strings
+    #relies on user passed list of strings in search parameter
+    #string parses unique entries to identify overlaps with search strings
+    #when overlap found returns a column with boolean activation identifiers
+    
+    #for example, if a categoical set consisted of unique values 
+    #['west', 'north', 'northwest']
+    #and a user passed the search parameter as ['west']
+    #then a new column would be returned 
+    #with activations corresponding to entries of 'west' and 'northwest'
+
+    #missing values are ignored by default
+    
+    #assumes that unique values of test set are same or subset of train set
+    #for more efficient application in postmunge
+    """
+    
+    #to retrieve the normalization dictionary we're going to use new method since we don't yet 
+    #know what the returned columns titles are yet
+    
+    normkey = False
+    
+    if column in postprocess_dict['origcolumn']:
+      
+      columnkeylist = postprocess_dict['origcolumn'][column]['columnkeylist']
+      
+    else:
+      
+      origcolumn = postprocess_dict['column_dict'][column]['origcolumn']
+      
+      columnkeylist = postprocess_dict['origcolumn'][origcolumn]['columnkeylist']
+    
+    for columnkey in columnkeylist:
+      
+      if column == postprocess_dict['column_dict'][columnkey]['inputcolumn']:
+
+        if 'src2_newcolumns_src2' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
+
+          normkey = columnkey
+        
+    if normkey != False:
+
+      #great now we can grab normalization parameters
+      overlap_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['overlap_dict']
+
+      newcolumns = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['src2_newcolumns_src2']
+      
+      search = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['search']
+
+      
+#       #now for mdf_test
+
+#       unique_list_test = list(mdf_test[column].unique())
+
+#       unique_list_test = list(map(str, unique_list_test))
+
+#       test_overlap_dict = {}
+
+#       for search_string in search:
+
+#         test_overlap_dict.update({search_string : []})
+
+
+#       train_keys = list(overlap_dict)
+
+#       train_keys.sort(key = len, reverse=True)
+
+#       for dict_key in train_keys:
+
+#         for unique_test in unique_list_test:
+
+#           len_key = len(dict_key)
+
+#           if len(unique_test) >= len_key:
+
+#             nbr_iterations4 = len(unique_test) - len_key
+
+#             for l in range(nbr_iterations4 + 1):
+
+#               extract4 = unique_test[l:(len_key+l)]
+
+#               if extract4 == dict_key:
+
+#                 test_overlap_dict[dict_key].append(unique_test)
+                
+
+
+      newcolumns = []
+
+      for dict_key in overlap_dict:
+        
+        if len(overlap_dict[dict_key]) > 0:
+
+          newcolumn = column + '_src2_' + dict_key
+
+  #         mdf_train[newcolumn] = mdf_train[column].copy()
+          mdf_test[newcolumn] = mdf_test[column].copy()
+
+  #         mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
+          mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
+
+          mdf_test[newcolumn] = mdf_test[newcolumn].isin(overlap_dict[dict_key])
+          mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
+
+          newcolumns.append(newcolumn)
+    
+    
+    return mdf_test
+  
   
   def postprocess_nmr4_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     """
@@ -34633,9 +35211,14 @@ class AutoMunge:
     
     infillcolumns_list = list(df_test)
 
-    #access infill assignments derived in automunge(.) call
+#     #access infill assignments derived in automunge(.) call
+#     postprocess_assigninfill_dict = \
+#     postprocess_dict['postprocess_assigninfill_dict']
+    
+    #Here is the application of assemblepostprocess_assigninfill
     postprocess_assigninfill_dict = \
-    postprocess_dict['postprocess_assigninfill_dict']
+    self.assemblepostprocess_assigninfill(postprocess_dict['assigninfill'], infillcolumns_list, \
+                                          columns_test, postprocess_dict)
     
 
     if 'stdrdinfill' not in postprocess_assigninfill_dict:
@@ -34671,7 +35254,7 @@ class AutoMunge:
         postprocess_assigninfill_dict['stdrdinfill'] = []
 
       else:
-        columns_train_ML = postprocess_assigninfill_dict['stdrdinfill']
+        columns_test_ML = postprocess_assigninfill_dict['stdrdinfill']
 
         postprocess_assigninfill_dict['stdrdinfill'] = []
 
