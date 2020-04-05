@@ -886,7 +886,7 @@ option for 'MLinfill_type' is default which uses Scikit-learn's Random
 Forest implementation, the intent is to add other options in a future extension.
 For example, a user who doesn't mind a little extra training time for ML infill 
 could increase the passed n_estimators beyond the scikit default of 100.
-_
+
 ```
 ML_cmnd = {'MLinfill_type':'default', \
            'MLinfill_cmnd':{'RandomForestClassifier':{'n_estimators':1000}, \
