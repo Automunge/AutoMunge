@@ -884,13 +884,13 @@ The ML_cmnd allows a user to pass parameters to the predictive algorithms
 used for ML infill / feature importance evaluation or PCA. Currently the only
 option for 'MLinfill_type' is default which uses Scikit-learn's Random 
 Forest implementation, the intent is to add other options in a future extension.
-For example, a user wishing to pass a custom parameter of max_depth for to the 
-Random Forest algorithms could pass:
+For example, a user who doesn't mind a little extra training time for ML infill 
+could increase the passed n_estimators beyond the scikit default of 100.
 _
 ```
 ML_cmnd = {'MLinfill_type':'default', \
-           'MLinfill_cmnd':{'RandomForestClassifier':{'max_depth':4}, \
-                            'RandomForestRegressor':{'max_depth':4}}, \
+           'MLinfill_cmnd':{'RandomForestClassifier':{'n_estimators':1000}, \
+                            'RandomForestRegressor':{'n_estimators':1000}}, \
            'PCA_type':'default', \
            'PCA_cmnd':{}}, \
            
