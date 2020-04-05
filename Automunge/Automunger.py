@@ -18594,7 +18594,7 @@ class AutoMunge:
                                                        'class_weight':None})
   
     MLinfilldefaults['RandomForestRegressor'].update({'n_estimators':100, \
-                                                      'criterion':'gini', \
+                                                      'criterion':'mse', \
                                                       'max_depth':None, \
                                                       'min_samples_split':2, \
                                                       'min_samples_leaf':1, \
@@ -18716,7 +18716,7 @@ class AutoMunge:
 
     #then initialize RandomForestClassifier model
     model = RandomForestClassifier(n_estimators = n_estimators, \
-                                   #criterion = criterion, \
+                                   criterion = criterion, \
                                    max_depth = max_depth, \
                                    min_samples_split = min_samples_split, \
                                    min_samples_leaf = min_samples_leaf, \
@@ -18727,7 +18727,7 @@ class AutoMunge:
                                    min_impurity_split = min_impurity_split, \
                                    bootstrap = bootstrap, \
                                    oob_score = oob_score, \
-                                   #n_jobs = n_jobs, \
+                                   n_jobs = n_jobs, \
                                    random_state = random_state, \
                                    verbose = verbose, \
                                    warm_start = warm_start, \
@@ -18834,7 +18834,7 @@ class AutoMunge:
 
     #then initialize RandomForestRegressor model 
     model = RandomForestRegressor(n_estimators = n_estimators, \
-                                  #criterion = criterion, \
+                                  criterion = criterion, \
                                   max_depth = max_depth, \
                                   min_samples_split = min_samples_split, \
                                   min_samples_leaf = min_samples_leaf, \
@@ -18845,7 +18845,7 @@ class AutoMunge:
                                   min_impurity_split = min_impurity_split, \
                                   bootstrap = bootstrap, \
                                   oob_score = oob_score, \
-                                  #n_jobs = n_jobs, \
+                                  n_jobs = n_jobs, \
                                   random_state = random_state, \
                                   verbose = verbose, \
                                   warm_start = warm_start)
@@ -22225,7 +22225,7 @@ class AutoMunge:
                          max_iter = max_iter, \
                          tol = tol, \
                          method = method, \
-                         #n_jobs = n_jobs, \
+                         n_jobs = n_jobs, \
                          U_init = U_init, \
                          V_init = V_init, \
                          verbose = verbose, \
@@ -22332,9 +22332,8 @@ class AutoMunge:
                          max_iter = max_iter, \
                          remove_zero_eig = remove_zero_eig, \
                          random_state = random_state, \
-                         copy_X = copy_X)
-                         #, \
-                         #n_jobs = n_jobs)
+                         copy_X = copy_X, \
+                         n_jobs = n_jobs)
 
     return PCAmodel
 
@@ -26428,7 +26427,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.67'
+    automungeversion = '3.68'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
