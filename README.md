@@ -76,8 +76,7 @@ processing of data which wasn't available for the initial address.
 
 ## Install, Initialize, and Basics
 
-AutoMunge is now available for free pip install for your open source
-python data-wrangling
+AutoMunge is now available for pip install for open source python data-wrangling:
 
 ```
 pip install Automunge
