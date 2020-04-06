@@ -68,7 +68,7 @@ class AutoMunge:
   def __init__(self):
     pass
 
-  def assembletransformdict(self, powertransform, binstransform, NArw_marker):
+  def assembletransformdict(self, binstransform, NArw_marker):
     '''
     #assembles the range of transformations to be applied based on the evaluated \
     #category of data
@@ -19603,7 +19603,7 @@ class AutoMunge:
 
 
     #if category in ['date', 'NArw', 'null']:
-    if MLinfilltype in ['exclude', 'label', 'boolexclude']:
+    if MLinfilltype in ['exclude', 'boolexclude']:
 
       #create empty sets for now
       #an extension of this method would be to implement a comparable infill \
@@ -19918,7 +19918,7 @@ class AutoMunge:
 
 
     #if category == 'date':
-    if MLinfilltype in ['exclude', 'label', 'boolexclude']:
+    if MLinfilltype in ['exclude', 'boolexclude']:
       #this spot reserved for future update to incorporate address of datetime\
       #category data
       df = df
@@ -20307,7 +20307,7 @@ class AutoMunge:
 
 
       #if labelscategory in ['nmbr', 'bxcx']:
-      if MLinfilltype in ['label', 'numeric', 'exclude', 'multisp', '1010', 'boolexclude']:
+      if MLinfilltype in ['numeric', 'exclude', 'multisp', '1010', 'boolexclude']:
 
         columns_labels = []
         for label in list(labels_df):
@@ -20323,7 +20323,7 @@ class AutoMunge:
             
             
       #if labelscategory in ['text', 'nmbr', 'bxcx']:
-      if MLinfilltype in ['label', 'multirt', 'multisp', 'numeric', 'exclude', '1010', 'boolexclude']:
+      if MLinfilltype in ['multirt', 'multisp', 'numeric', 'exclude', '1010', 'boolexclude']:
         if columns_labels != []:
           
           #note for. label smoothing activation values won't be 1
@@ -20680,7 +20680,7 @@ class AutoMunge:
     MLinfilltype = process_dict[labelscategory]['MLinfilltype']
     
     #if labelscategory in ['nmbr']:
-    if MLinfilltype in ['numeric', 'label']:
+    if MLinfilltype in ['numeric']:
       
       #this is specific to the current means of address for numeric label sets
       #as we build out our label engineering methods this will need to. be updated
@@ -24577,7 +24577,7 @@ class AutoMunge:
   #     #initialize processing dicitonaries
   #     if bool(transformdict) == False:
   #       transform_dict = \
-  #       self.assembletransformdict(powertransform, binstransform)
+  #       self.assembletransformdict(binstransform)
   #     else:
   #       transform_dict = transformdict
 
@@ -24588,7 +24588,7 @@ class AutoMunge:
   #       process_dict = processdict
 
     #initialize processing dicitonaries
-    transform_dict = self.assembletransformdict(powertransform, binstransform, NArw_marker)
+    transform_dict = self.assembletransformdict(binstransform, NArw_marker)
 
     if bool(transformdict) != False:
 
@@ -25683,6 +25683,7 @@ class AutoMunge:
     postprocess_assigninfill_dict = \
     self.assemblepostprocess_assigninfill(assigninfill, infillcolumns_list, \
                                           columns_train, postprocess_dict)
+    
 
 
   #     #if a column was deleted as a 'null' category, we'll remove from postprocess_assigninfill_dict
@@ -25730,12 +25731,16 @@ class AutoMunge:
                                             postprocess_assigninfill_dict['MLinfill']))
 
         postprocess_assigninfill_dict['stdrdinfill'] = []
+        
+        postprocess_assigninfill_dict['MLinfill'] = columns_train_ML
 
       else:
 
         columns_train_ML = postprocess_assigninfill_dict['stdrdinfill']
 
         postprocess_assigninfill_dict['stdrdinfill'] = []
+        
+        postprocess_assigninfill_dict['MLinfill'] = columns_train_ML
 
     else:
 
@@ -26054,8 +26059,6 @@ class AutoMunge:
       iteration += 1
 
 
-
-
     #Here's where we'll trim the columns that were stricken as part of featureselection method
 
     #copy postprocess_dict in current state (prior to feature selection updates)
@@ -26268,7 +26271,7 @@ class AutoMunge:
 
         
       if postprocess_dict['process_dict'][labelscategory]['MLinfilltype'] \
-      in ['numeric', 'singlct', 'binary', 'multirt', 'multisp', 'label']:
+      in ['numeric', 'singlct', 'binary', 'multirt', 'multisp']:
 
         #apply LabelFrequencyLevelizer defined function
         df_train, df_labels = \
@@ -26336,7 +26339,7 @@ class AutoMunge:
 
 
       if postprocess_dict['process_dict'][labelscategory]['MLinfilltype'] \
-      in ['numeric', 'singlct', 'binary', 'multirt', 'multisp', 'label']:
+      in ['numeric', 'singlct', 'binary', 'multirt', 'multisp']:
         
         if LabelSmoothing_test is True:
           LabelSmoothing_test = LabelSmoothing_train
@@ -26427,7 +26430,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.68'
+    automungeversion = '3.69'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -33722,7 +33725,7 @@ class AutoMunge:
   #       print(df_traininfill)
 
       #if category == 'date':
-      if MLinfilltype in ['exclude', 'label', 'boolexclude']:
+      if MLinfilltype in ['exclude', 'boolexclude']:
 
         #create empty sets for now
         #an extension of this method would be to implement a comparable infill \
@@ -34645,7 +34648,7 @@ class AutoMunge:
     NArw_marker = postprocess_dict['NArw_marker']
     floatprecision = postprocess_dict['floatprecision']
 
-#     transform_dict = self.assembletransformdict(powertransform, binstransform, NArw_marker)
+#     transform_dict = self.assembletransformdict(binstransform, NArw_marker)
 
 #     if bool(postprocess_dict['transformdict']) != False:
 #       transform_dict.update(postprocess_dict['transformdict'])
@@ -35210,14 +35213,14 @@ class AutoMunge:
     
     infillcolumns_list = list(df_test)
 
-#     #access infill assignments derived in automunge(.) call
-#     postprocess_assigninfill_dict = \
-#     postprocess_dict['postprocess_assigninfill_dict']
-    
-    #Here is the application of assemblepostprocess_assigninfill
+    #access infill assignments derived in automunge(.) call
     postprocess_assigninfill_dict = \
-    self.assemblepostprocess_assigninfill(postprocess_dict['assigninfill'], infillcolumns_list, \
-                                          columns_test, postprocess_dict)
+    postprocess_dict['postprocess_assigninfill_dict']
+    
+#     #Here is the application of assemblepostprocess_assigninfill
+#     postprocess_assigninfill_dict = \
+#     self.assemblepostprocess_assigninfill(postprocess_dict['assigninfill'], infillcolumns_list, \
+#                                           columns_test, postprocess_dict)
     
 
     if 'stdrdinfill' not in postprocess_assigninfill_dict:
@@ -35689,7 +35692,7 @@ class AutoMunge:
 
 
       if postprocess_dict['process_dict'][labelscategory]['MLinfilltype'] \
-      in ['numeric', 'singlct', 'binary', 'multirt', 'multisp', 'label']:
+      in ['numeric', 'singlct', 'binary', 'multirt', 'multisp']:
 
         #apply LabelFrequencyLevelizer defined function
         df_test, df_testlabels = \
