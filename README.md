@@ -5167,9 +5167,8 @@ def process_mnm8_class(df, column, category, postprocess_dict):
 
 ## Conclusion
 
-And there you have it, you now have all you need to wrangle data on the 
-Automunge platform. Feedback is welcome.
-
+And there you have it, you now have all you need to prepare data for 
+machine learning with the Automunge platform. Feedback is welcome.
 
 ...
 
