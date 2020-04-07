@@ -1203,11 +1203,10 @@ processdict =  {'newt' : {'dualprocess' : None, \
 #                        predictive algorithms treat as a multi modal classifier
 #              'multisp' for bins multicolumn sets with boolean entries
 #                        (similar to multirt but treated differently in levelizer)
-#              'exclude' refers to categories excluded from predcitive address
 #              '1010'   for multicolumn sets with binary encoding via 1010
 #                        will be converted to onehot for ML
 #              'exclude' for columns which will be excluded from ML infill
-#              'boolexclude' boolean set suitable for Binary transform but exluded from MLinfill (eg NArw entries)
+#              'boolexclude' boolean set suitable for Binary transform but exluded from all infill (eg NArw entries)
 
 #labelctgy: should be a string entry of a single trasnform category found as an entry in the root category's family 
 #tree. Used to determine basis of feature selection for cases where labels are returned in multiple configurations.
@@ -1557,6 +1556,24 @@ set default to bnry.
 'year', 'mdsn', 'mdcs', 'hmss', 'hmsc', 'bshr', 'wkdy', 'hldy' (these are defined 
 in next section)
 - null: for columns without any valid values (e.g. all NaN) column is deleted
+
+For label sets, we use a distinct set of root categories under automation. These are in
+some cases comparable to those listed above for training data, but differ in others and
+a commonality is that the label sets will not include a returned 'NArw' (infill marker)
+even when parameter NArw_marker passed as True.
+- lbnm: for numerical data, columns are treated with an 'exc2' pass-through transform.
+- lb10: for categorical data, columns are subject to one-hot encoding via the 'text'
+transform. (lb10 and lbte have comparable family trees)
+- lbor: for categorical data, if the number of unique entries in the column exceeds 
+the parameter 'numbercategoryheuristic' (which defaults to 63), the encoding will 
+instead be by 'ord3' which is an ordinal (integer) encoding sorted by most common value.
+- lbte: for categorical data of 3 unique values excluding infill (eg NaN), the 
+column is encoded via one-hot encoding.
+- lbbn: for categorical data of <=2 unique values excluding infill (eg NaN), the 
+column is encoded to 0/1. Note that numerical sets with <= 2 unique values default to bnry.
+- lbda: for time-series data, a set of derivations are performed returning
+'year', 'mdsn', 'mdcs', 'hmss', 'hmsc', 'bshr', 'wkdy', 'hldy' (these are defined 
+in next section)
 
 Note that if a user wishes to avoid the automated assignment of default transformations,
 such as to leave those columns not specifically assigned to transformation categories in 
@@ -2496,6 +2513,12 @@ avoid unintentional duplication.
 - 'hrs3',
 - 'hrs4',
 - 'hrsn',
+- 'lb10',
+- 'lbbn',
+- 'lbda',
+- 'lbnm',
+- 'lbor',
+- 'lbte',
 - 'lngt',
 - 'lnlg',
 - 'log0',
@@ -3324,6 +3347,24 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : ['ord3'], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'srch' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['srch'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+  
+    transform_dict.update({'src2' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['src2'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
                                      'friends' : []}})
     
     transform_dict.update({'nmrc' : {'parents' : [], \
@@ -4711,6 +4752,15 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
+    
+    transform_dict.update({'tlbn' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['tlbn'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
 
     transform_dict.update({'bn9o' : {'parents' : [], \
                                      'siblings': [], \
@@ -4792,7 +4842,7 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
-				         
+    
     transform_dict.update({'exc6' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['exc6'], \
@@ -4868,6 +4918,60 @@ If you want to skip to the next section you can click here: [Custom Transformati
     transform_dict.update({'nuld' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['null'], \
+                                     'cousins' : [], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'lbnm' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['exc2'], \
+                                     'cousins' : [], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+
+    transform_dict.update({'lb10' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['text'], \
+                                     'cousins' : [], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'lbor' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['ord3'], \
+                                     'cousins' : [], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'lbte' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['text'], \
+                                     'cousins' : [], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'lbbn' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['bnry'], \
+                                     'cousins' : [], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'lbda' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['year', 'mdsn', 'mdcs', 'hmss', 'hmsc', 'bshr', 'wkdy', 'hldy'], \
                                      'cousins' : [], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
