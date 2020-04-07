@@ -2255,6 +2255,60 @@ class AutoMunge:
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
                                      'friends' : []}})
+    
+    transform_dict.update({'lbnm' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['exc2'], \
+                                     'cousins' : [], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+
+    transform_dict.update({'lb10' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['text'], \
+                                     'cousins' : [], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'lbor' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['ord3'], \
+                                     'cousins' : [], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'lbte' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['text'], \
+                                     'cousins' : [], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'lbbn' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['bnry'], \
+                                     'cousins' : [], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'lbda' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['year', 'mdsn', 'mdcs', 'hmss', 'hmsc', 'bshr', 'wkdy', 'hldy'], \
+                                     'cousins' : [], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
 
 
     return transform_dict
@@ -2939,7 +2993,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_ord3_class, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'singlct', \
-                                  'labelctgy' : 'ordl'}})
+                                  'labelctgy' : 'ord3'}})
     process_dict.update({'ord4' : {'dualprocess' : self.process_ord3_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_ord3_class, \
@@ -3658,7 +3712,7 @@ class AutoMunge:
                                   'singleprocess' : self.process_excl_class, \
                                   'postprocess' : None, \
                                   'NArowtype' : 'exclude', \
-                                  'MLinfilltype' : 'exclude', \
+                                  'MLinfilltype' : 'boolexclude', \
                                   'labelctgy' : 'excl'}})
     process_dict.update({'exc2' : {'dualprocess' : self.process_exc2_class, \
                                   'singleprocess' : None, \
@@ -3713,7 +3767,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_ord3_class, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'singlct', \
-                                  'labelctgy' : 'ordl'}})
+                                  'labelctgy' : 'ord3'}})
     process_dict.update({'texd' : {'dualprocess' : self.process_text_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_text_class, \
@@ -3738,6 +3792,42 @@ class AutoMunge:
                                   'NArowtype' : 'exclude', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : None}})
+    process_dict.update({'lbnm' : {'dualprocess' : self.process_exc2_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_exc2_class, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'exc2'}})
+    process_dict.update({'lb10' : {'dualprocess' : self.process_text_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_text_class, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'multirt', \
+                                  'labelctgy' : 'text'}})
+    process_dict.update({'lbor' : {'dualprocess' : self.process_ord3_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_ord3_class, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'singlct', \
+                                  'labelctgy' : 'ord3'}})
+    process_dict.update({'lbte' : {'dualprocess' : self.process_text_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_text_class, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'multirt', \
+                                  'labelctgy' : 'text'}})
+    process_dict.update({'lbbn' : {'dualprocess' : self.process_binary_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_binary_class, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'binary', \
+                                  'labelctgy' : 'bnry'}})
+    process_dict.update({'lbda' : {'dualprocess' : None, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'datetime', \
+                                  'MLinfilltype' : 'exclude', \
+                                  'labelctgy' : 'mdsn'}})
 
     return process_dict
 
@@ -17986,10 +18076,22 @@ class AutoMunge:
       if labels == True:
         
         if category == 'nmbr':
-          category = 'exc2'
+          category = 'lbnm'
           
         if category == '1010':
-          category = 'text'
+          category = 'lb10'
+          
+        if category == 'ord3':
+          category = 'lbor'
+          
+        if category == 'text':
+          category = 'lbte'
+          
+        if category == 'bnry':
+          category = 'lbbn'
+          
+        if category == 'dat6':
+          category = 'lbda'
     
     return category
 
@@ -20679,7 +20781,6 @@ class AutoMunge:
     return columnaccuracy
   
   
-  #def assemblemadethecut(self, FScolumn_dict, featurepct, am_subset_columns):
   def assemblemadethecut(self, FScolumn_dict, featurepct, featuremetric, featuremethod, \
                          am_subset_columns):
     '''
@@ -20714,12 +20815,10 @@ class AutoMunge:
     candidates = list(FSsupport_df['FS_column'])
     
     
-    #count the number of NArw categories
-    NaNcount = len(FSsupport_df[FSsupport_df['category']=='NArw'])
     #count the total number of rows
     totalrowcount =  FSsupport_df.shape[0]
     #count ranked rows
-    metriccount = totalrowcount - NaNcount
+    metriccount = totalrowcount
     
     #create list of NArws
     #candidateNArws = candidates[-NaNcount:]
@@ -20759,22 +20858,6 @@ class AutoMunge:
     #generate list of rows making the cut
     madethecut = candidatefeaturerows[:numbermakingcut]
     
-#     #we'll add NArw columns which still have correspondence with a column in madethecut
-#     removeNArw_list = []
-#     for candidateNArw in candidateNArws:
-#       for FScolumn in FScolumn_dict:
-#         if candidateNArw in FScolumn_dict[FScolumn]['columnslist']:        
-#           candidateNArw_columnslist = FScolumn_dict[FScolumn]['columnslist']
-#           break
-#       if len(set(candidateNArw_columnslist) & set(madethecut)) == 0:
-#         removeNArw_list.append(candidateNArw)
-
-#     for removeNArw in removeNArw_list:
-#       candidateNArws.remove(removeNArw)
-    
-    
-#     #add on the NArws
-#     madethecut = madethecut + candidateNArws
     
     return madethecut
 
@@ -25110,14 +25193,8 @@ class AutoMunge:
           columnkey = column
         else:
           columnkey = columnkeylist[0]
-          if columnkey in postprocess_dict['column_dict']:
-            if postprocess_dict['column_dict'][columnkey]['category'] == 'NArw':
-              if len(columnkeylist) > 1:
-                columnkey = columnkeylist[1]
-              else:
-                columnkey = columnkey
+
       ##
-      #ok this is sort of a hack, originating in version 1.77,
       #we're going to create an entry to postprocess_dict to
       #store a columnkey for each of the original columns
       postprocess_dict['origcolumn'].update({column : {'category' : category, \
@@ -25297,23 +25374,7 @@ class AutoMunge:
           columnkey = labels_column
         else:
           columnkey = columnkeylist[0]
-          if columnkey in postprocess_dict['column_dict']:
-            if postprocess_dict['column_dict'][columnkey]['category'] == 'NArw':
-              columnkey = columnkeylist[1]
 
-  #         df_labels, labelsdummy, _1 = \
-  #         self.process_text_class(df_labels, labelsdummy, labels_column)
-
-      #we have convention that NArw's aren't included in returned label sets        
-      for df_labels_column in list(df_labels):
-        if df_labels_column in postprocess_dict['column_dict']:
-          if postprocess_dict['column_dict'][df_labels_column]['category'] == 'NArw':
-            del df_labels[df_labels_column]
-          
-      for df_testlabels_column in list(df_testlabels):
-        if df_testlabels_column in postprocess_dict['column_dict']:
-          if postprocess_dict['column_dict'][df_testlabels_column]['category'] == 'NArw':
-            del df_testlabels[df_testlabels_column]
 
       finalcolumns_labels = list(df_labels)
 
@@ -25507,7 +25568,7 @@ class AutoMunge:
 
     
     #infilliterate allows ML infill sets to run multiple times
-    #as may be bneficial if set had a high number of infill for instance
+    #as may be beneficial if set had a high proportion of infill for instance
     iteration = 0
     if infilliterate == 0:
       infilliterate = 1
@@ -25561,21 +25622,13 @@ class AutoMunge:
 
                   categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
 
-                  #if (column not in excludetransformscolumns) \
-                  #if (column not in postprocess_assigninfill_dict['stdrdinfill']) \
-                  #and (column[-5:] != '_NArw') \
-                  #and (categorylistlength == 1):
-                  if (column not in postprocess_assigninfill_dict['stdrdinfill']):
-                    #noting that currently we're only going to infill 0 for single column categorylists
-                    #some comparable address for multi-column categories is a future extension
+                  df_train = \
+                  self.zeroinfillfunction(df_train, column, postprocess_dict, \
+                                          masterNArows_train)
 
-                    df_train = \
-                    self.zeroinfillfunction(df_train, column, postprocess_dict, \
-                                            masterNArows_train)
-
-                    df_test = \
-                    self.zeroinfillfunction(df_test, column, postprocess_dict, \
-                                            masterNArows_test)
+                  df_test = \
+                  self.zeroinfillfunction(df_test, column, postprocess_dict, \
+                                          masterNArows_test)
 
               if 'oneinfill' in postprocess_assigninfill_dict:
 
@@ -25590,21 +25643,14 @@ class AutoMunge:
 
                   categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
 
-                  #if (column not in excludetransformscolumns) \
-                  #if (column not in postprocess_assigninfill_dict['stdrdinfill']) \
-                  #and (column[-5:] != '_NArw') \
-                  #and (categorylistlength == 1):
-                  if (column not in postprocess_assigninfill_dict['stdrdinfill']):
-                    #noting that currently we're only going to infill 0 for single column categorylists
-                    #some comparable address for multi-column categories is a future extension
 
-                    df_train = \
-                    self.oneinfillfunction(df_train, column, postprocess_dict, \
-                                           masterNArows_train)
+                  df_train = \
+                  self.oneinfillfunction(df_train, column, postprocess_dict, \
+                                         masterNArows_train)
 
-                    df_test = \
-                    self.oneinfillfunction(df_test, column, postprocess_dict, \
-                                           masterNArows_test)
+                  df_test = \
+                  self.oneinfillfunction(df_test, column, postprocess_dict, \
+                                         masterNArows_test)
 
               if 'adjinfill' in postprocess_assigninfill_dict:
 
@@ -25617,16 +25663,14 @@ class AutoMunge:
                     print("     infill type: adjinfill")
                     print("")
 
-                  #if column not in excludetransformscolumns \
-                  if column not in postprocess_assigninfill_dict['stdrdinfill']:
 
-                    df_train = \
-                    self.adjinfillfunction(df_train, column, postprocess_dict, \
-                                           masterNArows_train)
+                  df_train = \
+                  self.adjinfillfunction(df_train, column, postprocess_dict, \
+                                         masterNArows_train)
 
-                    df_test = \
-                    self.adjinfillfunction(df_test, column, postprocess_dict, \
-                                           masterNArows_test)
+                  df_test = \
+                  self.adjinfillfunction(df_test, column, postprocess_dict, \
+                                         masterNArows_test)
 
 
               if 'medianinfill' in postprocess_assigninfill_dict: 
@@ -25645,14 +25689,12 @@ class AutoMunge:
                   boolcolumn = False
                   #exclude boolean and ordinal from this infill method
                   if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-                  in ['multirt', 'multisp', 'singlct', 'binary', '1010', 'exclude', 'boolexclude']:
+                  in ['multirt', 'multisp', 'singlct', 'binary', '1010', 'boolexclude']:
                     boolcolumn = True
 
                   categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
 
-                  #if (column not in excludetransformscolumns) \
-                  if (column not in postprocess_assigninfill_dict['stdrdinfill']) \
-                  and (categorylistlength == 1) \
+                  if (categorylistlength == 1) \
                   and boolcolumn == False:
                     #noting that currently we're only going to infill 0 for single column categorylists
                     #some comparable address for multi-column categories is a future extension
@@ -25684,14 +25726,13 @@ class AutoMunge:
                   boolcolumn = False
                   #exclude boolean and ordinal from this infill method
                   if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-                  in ['multirt', 'multisp', 'singlct', 'binary', '1010', 'exclude', 'boolexclude']:
+                  in ['multirt', 'multisp', 'singlct', 'binary', '1010', 'boolexclude']:
                     boolcolumn = True
 
                   categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
 
                   #if (column not in excludetransformscolumns) \
-                  if (column not in postprocess_assigninfill_dict['stdrdinfill']) \
-                  and (categorylistlength == 1) \
+                  if (categorylistlength == 1) \
                   and boolcolumn == False:
                     #noting that currently we're only going to infill 0 for single column categorylists
                     #some comparable address for multi-column categories is a future extension
@@ -25721,14 +25762,11 @@ class AutoMunge:
                   boolcolumn = False
 
                   if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-                  in ['exclude', 'boolexclude']:
+                  in ['boolexclude']:
                     boolcolumn = True
 
-                  categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
 
-                  #if (column not in excludetransformscolumns) \
-                  if (column not in postprocess_assigninfill_dict['stdrdinfill']) \
-                  and boolcolumn == False:
+                  if boolcolumn == False:
 
                     df_train, infillvalue = \
                     self.train_modeinfillfunction(df_train, column, postprocess_dict, \
@@ -25756,14 +25794,11 @@ class AutoMunge:
                   boolcolumn = False
 
                   if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-                  in ['exclude', 'boolexclude']:
+                  in ['boolexclude']:
                     boolcolumn = True
 
-                  categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
 
-                  #if (column not in excludetransformscolumns) \
-                  if (column not in postprocess_assigninfill_dict['stdrdinfill']) \
-                  and boolcolumn == False:
+                  if boolcolumn == False:
 
                     df_train, infillvalue = \
                     self.train_lcinfillfunction(df_train, column, postprocess_dict, \
@@ -26172,7 +26207,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.70'
+    automungeversion = '3.71'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -34095,11 +34130,7 @@ class AutoMunge:
           columnkey = drift_column
         else:
           columnkey = columnkeylist[0]
-          if drift_ppd['column_dict'][columnkey]['category'] == 'NArw':
-            if len(columnkeylist) > 1:
-              columnkey = columnkeylist[1]
-            else:
-              columnkey = columnkey
+
       
       #if drift_ppd['origcolumn'][drift_column]['columnkey'] not in drift_ppd['column_dict']:
       if len(columnkeylist) == 0:
@@ -34618,11 +34649,6 @@ class AutoMunge:
       self.postcircleoflife(df_testlabels, labels_column, labelscategory, labelscategory, process_dict, \
                             transform_dict, preFSpostprocess_dict, columnkey)
 
-      #per our convention that NArw's aren't included in labels output
-      for df_testlabels_column in list(df_testlabels):
-        if df_testlabels_column in postprocess_dict['column_dict']:
-          if postprocess_dict['column_dict'][df_testlabels_column]['category'] == 'NArw':
-            del df_testlabels[df_testlabels_column]
 
       #marker for printouts
       pmsmoothing = False
@@ -34746,7 +34772,7 @@ class AutoMunge:
         postprocess_dict['column_dict'][key]['infillcomplete'] = False
       
       if printstatus is True:
-        if postprocess_dict['infilliterate'] > 0 and print_infilliterate is True:
+        if print_infilliterate is True:
           print("______")
           print("ML infill infilliterate iteration: ", iteration + 1)
           print(" ")
@@ -34778,19 +34804,10 @@ class AutoMunge:
                   print("     infill type: zeroinfill")
                   print("")
 
-                categorylistlength = len(preFSpostprocess_dict['column_dict'][column]['categorylist'])
 
-      #             #if (column not in excludetransformscolumns) \
-      #             if (column not in postprocess_assigninfill_dict['stdrdinfill']) \
-      #             and (column[-5:] != '_NArw') \
-      #             and (categorylistlength == 1):
-                if (column not in postprocess_assigninfill_dict['stdrdinfill']):
-                  #noting that currently we're only going to infill 0 for single column categorylists
-                  #some comparable address for multi-column categories is a future extension
-
-                  df_test = \
-                  self.zeroinfillfunction(df_test, column, preFSpostprocess_dict, \
-                                          masterNArows_test)    
+                df_test = \
+                self.zeroinfillfunction(df_test, column, preFSpostprocess_dict, \
+                                        masterNArows_test)    
 
             if 'oneinfill' in postprocess_assigninfill_dict:
 
@@ -34803,19 +34820,9 @@ class AutoMunge:
                   print("     infill type: oneinfill")
                   print("")
 
-                categorylistlength = len(preFSpostprocess_dict['column_dict'][column]['categorylist'])
-
-      #             #if (column not in excludetransformscolumns) \
-      #             if (column not in postprocess_assigninfill_dict['stdrdinfill']) \
-      #             and (column[-5:] != '_NArw') \
-      #             and (categorylistlength == 1):
-                if (column not in postprocess_assigninfill_dict['stdrdinfill']):
-                  #noting that currently we're only going to infill 0 for single column categorylists
-                  #some comparable address for multi-column categories is a future extension
-
-                  df_test = \
-                  self.oneinfillfunction(df_test, column, preFSpostprocess_dict, \
-                                         masterNArows_test)
+                df_test = \
+                self.oneinfillfunction(df_test, column, preFSpostprocess_dict, \
+                                       masterNArows_test)
 
             if 'adjinfill' in postprocess_assigninfill_dict:
 
@@ -34829,12 +34836,9 @@ class AutoMunge:
                   print("")
 
 
-                #if column not in excludetransformscolumns \
-                if column not in postprocess_assigninfill_dict['stdrdinfill']:
-
-                  df_test = \
-                  self.adjinfillfunction(df_test, column, preFSpostprocess_dict, \
-                                         masterNArows_test)    
+                df_test = \
+                self.adjinfillfunction(df_test, column, preFSpostprocess_dict, \
+                                       masterNArows_test)    
 
 
             if 'medianinfill' in postprocess_assigninfill_dict:
@@ -34853,14 +34857,13 @@ class AutoMunge:
                 boolcolumn = False
                 #exclude boolean and ordinal from this infill method
                 if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-                in ['multirt', 'multisp', 'singlct', 'binary', '1010', 'exclude', 'boolexclude']:
+                in ['multirt', 'multisp', 'singlct', 'binary', '1010', 'boolexclude']:
                   boolcolumn = True
 
                 categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
 
                 #if (column not in excludetransformscolumns) \
-                if (column not in postprocess_assigninfill_dict['stdrdinfill']) \
-                and (categorylistlength == 1) \
+                if (categorylistlength == 1) \
                 and boolcolumn == False:
                   #noting that currently we're only going to infill 0 for single column categorylists
                   #some comparable address for multi-column categories is a future extension
@@ -34890,14 +34893,13 @@ class AutoMunge:
                 boolcolumn = False
                 #exclude boolean and ordinal from this infill method
                 if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-                in ['multirt', 'multisp', 'singlct', 'binary', '1010', 'exclude', 'boolexclude']:
+                in ['multirt', 'multisp', 'singlct', 'binary', '1010', 'boolexclude']:
                   boolcolumn = True
 
                 categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
 
                 #if (column not in excludetransformscolumns) \
-                if (column not in postprocess_assigninfill_dict['stdrdinfill']) \
-                and (categorylistlength == 1) \
+                if (categorylistlength == 1) \
                 and boolcolumn == False:
                   #noting that currently we're only going to infill 0 for single column categorylists
                   #some comparable address for multi-column categories is a future extension
@@ -34925,18 +34927,12 @@ class AutoMunge:
                 boolcolumn = False
 
                 if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-                in ['exclude', 'boolexclude']:
+                in ['boolexclude']:
                   boolcolumn = True
 
-                categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
 
-                #if (column not in excludetransformscolumns) \
-                if (column not in postprocess_assigninfill_dict['stdrdinfill']) \
-                and boolcolumn == False:
+                if boolcolumn == False:
                   
-                  #noting that currently we're only going to infill 0 for single column categorylists
-                  #some comparable address for multi-column categories is a future extension
-
                   infillvalue = postprocess_dict['column_dict'][column]['normalization_dict'][column]['infillvalue']
 
 
@@ -34961,14 +34957,11 @@ class AutoMunge:
                 boolcolumn = False
 
                 if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-                in ['exclude', 'boolexclude']:
+                in ['boolexclude']:
                   boolcolumn = True
 
-                categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
 
-                #if (column not in excludetransformscolumns) \
-                if (column not in postprocess_assigninfill_dict['stdrdinfill']) \
-                and boolcolumn == False:
+                if boolcolumn == False:
                   
                   #noting that currently we're only going to infill 0 for single column categorylists
                   #some comparable address for multi-column categories is a future extension
