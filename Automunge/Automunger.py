@@ -18035,7 +18035,8 @@ class AutoMunge:
   #     if category == 'bxcx' and powertransform == False:
   #       category = 'nmbr'
 
-      if category in ['nmbr', 'bxcx', defaultnumerical] and powertransform == True:
+      if category in ['nmbr', 'bxcx', defaultnumerical] \
+      and powertransform == True:
         
         if df[pd.to_numeric(df[column], errors='coerce').notnull()][column].astype(float).nunique() >= 3:
 
@@ -20684,9 +20685,6 @@ class AutoMunge:
     against the model trained on the unshuffled set
     '''
     
-    #convert dataframes to numpy arrays
-    np_shuffleset = np_shuffleset.values
-    np_labels = np_labels.values
     
     #get category of labels from labelsencoding_dict
     #labelscategory = next(iter(labelsencoding_dict))
@@ -20713,11 +20711,15 @@ class AutoMunge:
       
       #this is specific to the current means of address for numeric label sets
       #as we build out our label engineering methods this will need to. be updated
-      for labelcolumn in list(am_labels):
+      for labelcolumn in list(np_labels):
         if postprocess_dict['column_dict'][labelcolumn]['category'] == labelscategory:
         
-          np_labels = am_labels[labelcolumn].values
+          np_labels = np_labels[labelcolumn]
           break
+          
+      #convert dataframes to numpy arrays
+      np_shuffleset = np_shuffleset.values
+      np_labels = np_labels.values
       
       #this is to address a weird error message suggesting I reshape the y with ravel()
       np_labels = np.ravel(np_labels)
@@ -20738,6 +20740,10 @@ class AutoMunge:
     #if labelscategory in ['bnry']:
     if MLinfilltype in ['singlct', 'binary']:
       
+      #convert dataframes to numpy arrays
+      np_shuffleset = np_shuffleset.values
+      np_labels = np_labels.values
+      
       #this is to address a weird error message suggesting I reshape the y with ravel()
       np_labels = np.ravel(np_labels)
       
@@ -20749,6 +20755,10 @@ class AutoMunge:
       
     #if labelscategory in ['text']:
     if MLinfilltype in ['multirt', 'multisp']:
+      
+      #convert dataframes to numpy arrays
+      np_shuffleset = np_shuffleset.values
+      np_labels = np_labels.values
       
       #muiltirt sets as edge case may sometimes be returned with one column
       if np_labels.shape[1] == 1:
@@ -20763,6 +20773,9 @@ class AutoMunge:
 
     if MLinfilltype in ['1010']:
 
+      #convert dataframes to numpy arrays
+      np_shuffleset = np_shuffleset.values
+      np_labels = np_labels.values
       
       np_labels = \
       self.convert_1010_to_onehot(np_labels)
@@ -25284,10 +25297,12 @@ class AutoMunge:
         #determine labels category and apply appropriate function
         #labelscategory = self.evalcategory(df_labels, labels_column, numbercategoryheuristic, powertransform)
 
+        #we'll follow convention that default powertransform option not applied to labels
+        #user can apply instead by passing column to ptfm in assigncat
         if evalcat == False:
-          labelscategory = self.evalcategory(df_labels, labels_column, numbercategoryheuristic, powertransform, True)
+          labelscategory = self.evalcategory(df_labels, labels_column, numbercategoryheuristic, False, True)
         elif type(evalcat) == types.FunctionType:
-          labelscategory = evalcat(df_labels, labels_column, numbercategoryheuristic, powertransform, True)
+          labelscategory = evalcat(df_labels, labels_column, numbercategoryheuristic, False, True)
         else:
           print("error: evalcat must be passed as either False or as a defined function per READ ME")
           
@@ -26207,7 +26222,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.71'
+    automungeversion = '3.72'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
