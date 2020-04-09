@@ -746,7 +746,8 @@ assigncat will be left untouched, or for 'exc2' columns not explicitly assigned
 to a root category in assigncat will be forced to numeric and subject to default 
 modeinfill. (These two excl arguments may be useful if a user wants to experiment 
 with specific transforms on a subset of the columns without incurring processing 
-time of an entire set.)
+time of an entire set.) Note that powertransform not applied to label columns by
+default, but can still be applied by passing label column to ptfm in assigncat.
 
 * binstransform: a boolean identifier (True/False) which indicates if all
 default numerical sets will receive bin processing such as to generate child
