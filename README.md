@@ -730,8 +730,8 @@ the processing applied to the set includes aggregated bins, such as for example
 by passing a label column to the 'exc3' category in assigncat for pass-through
 force to numeric with inclusion of standard deviation bins or to 'exc4' for 
 inclusion of powers of ten bins. For cases where labels are included in the 
-test set, may also be passed as 'traintest' to apply levelizing to both train
-and test sets or be passed as 'test' to only apply levelizing to test set.
+test set, this may also be passed as 'traintest' to apply levelizing to both 
+train and test sets or be passed as 'test' to only apply levelizing to test set.
 
 * powertransform: (False/True/'excl'/'exc2'), defaults to False, when passed as 
 True an evaluation will be performed of distribution properties to select between
@@ -1470,8 +1470,10 @@ data associated with underrepresented labels. The method adds multiples
 to test data rows for those labels with lower frequency resulting in
 an (approximately) levelized frequency. This defaults to False. Note that
 this feature may be applied to numerical label sets if the processing
-applied to the set in automunge had included standard deviation bins. Note 
-this requires the inclusion of a designated labels column.
+applied to the set in automunge had included standard deviation bins, such
+as for example 'exc3' for pass-through numeric with standard deviation bins,
+or 'exc4' for pass-thorugh numeric with powers of ten bins. Note this 
+method requires the inclusion of a designated label column.
 
 * featureeval: a boolean identifier (True/False) to activate a feature
 importance evaluation, comparable to one performed in automunge but based
