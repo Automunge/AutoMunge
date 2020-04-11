@@ -20628,17 +20628,23 @@ class AutoMunge:
   def trainFSmodel(self, am_subset, am_labels, randomseed, labelsencoding_dict, \
                    process_dict, postprocess_dict, labelctgy, ML_cmnd):
     
-    df_train_fillfeatures_plug = am_subset[:][:1].copy()
-    df_test_fillfeatures_plug = am_subset[:][:1].copy()
-    categorylist = postprocess_dict['column_dict'][list(am_labels)[0]]['categorylist']
-    
-    _infilla, _infillb, FSmodel = \
-    self.predictinfill(labelctgy, am_subset, am_labels, \
-                       df_train_fillfeatures_plug, df_test_fillfeatures_plug, \
-                       randomseed, postprocess_dict, ML_cmnd, \
-                       columnslist = categorylist)
-    
-    del _infilla, _infillb
+    if len(list(am_labels)) > 0:
+
+      df_train_fillfeatures_plug = am_subset[:][:1].copy()
+      df_test_fillfeatures_plug = am_subset[:][:1].copy()
+      categorylist = postprocess_dict['column_dict'][list(am_labels)[0]]['categorylist']
+
+      _infilla, _infillb, FSmodel = \
+      self.predictinfill(labelctgy, am_subset, am_labels, \
+                         df_train_fillfeatures_plug, df_test_fillfeatures_plug, \
+                         randomseed, postprocess_dict, ML_cmnd, \
+                         columnslist = categorylist)
+
+      del _infilla, _infillb
+      
+    else:
+      
+      FSmodel = False
     
     return FSmodel
       
@@ -20993,6 +20999,10 @@ class AutoMunge:
         
         if FSmodel is False:
           
+          FScolumn_dict = {}
+          
+          FS_origcolumns = list(FSpostprocess_dict['origcolumn'])
+          
           #printout display progress
           if printstatus == True:
             print("_______________")
@@ -21108,8 +21118,8 @@ class AutoMunge:
 
           
           
-        madethecut = self.assemblemadethecut(FScolumn_dict, featurepct, featuremetric, \
-                                         featuremethod, am_train_columns)
+          madethecut = self.assemblemadethecut(FScolumn_dict, featurepct, featuremetric, \
+                                           featuremethod, am_train_columns)
     
     
     #if the only column left in madethecut from origin column is a NArw, delete from the set
@@ -26188,7 +26198,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.74'
+    automungeversion = '3.75'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -33750,6 +33760,11 @@ class AutoMunge:
                           FSprocess_dict, FSpostprocess_dict, labelctgy, ML_cmnd)
         
         if FSmodel is False:
+          
+          #initialize dictionary FScolumn_dict = {}
+          FScolumn_dict = {}
+          
+          FS_origcolumns = list(FSpostprocess_dict['origcolumn'])
           
           #printout display progress
           if printstatus == True:
