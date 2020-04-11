@@ -1209,7 +1209,7 @@ processdict =  {'newt' : {'dualprocess' : None, \
 #              'exclude' for columns which will be excluded from ML infill
 #              'boolexclude' boolean set suitable for Binary transform but exluded from all infill (eg NArw entries)
 
-#labelctgy: should be a string entry of a single trasnform category found as an entry in the root category's family 
+#labelctgy: should be a string entry of a single transform category found as an entry in the root category's family 
 #tree. Used to determine basis of feature selection for cases where labels are returned in multiple configurations.
 #Also used in label frequency levelizer.
 
