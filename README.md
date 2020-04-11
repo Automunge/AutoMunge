@@ -838,7 +838,7 @@ in postprocess_dict['FS_sorted'], including columns sorted by metric and metric2
 based on the feature importance evaluation. Accepts float in the range 0-1.
 Note that NArw columns are only retained for those sets corresponding to 
 columns that "made the cut". This item only used if featuremethod passed as 
-'pct' (the default).
+'pct'.
 
 * featuremetric: the feature importance metric below which derived sets
 are trimmed from the output. Note that this item only used if
