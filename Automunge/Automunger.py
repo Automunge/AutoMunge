@@ -20377,7 +20377,7 @@ class AutoMunge:
 
 
       #if labelscategory in ['nmbr', 'bxcx']:
-      if MLinfilltype in ['numeric', 'exclude', 'multisp', '1010', 'boolexclude']:
+      if MLinfilltype in ['numeric', 'multisp']:
 
         columns_labels = []
         for label in list(labels_df):
@@ -20393,7 +20393,7 @@ class AutoMunge:
             
             
       #if labelscategory in ['text', 'nmbr', 'bxcx']:
-      if MLinfilltype in ['multirt', 'multisp', 'numeric', 'exclude', '1010', 'boolexclude']:
+      if MLinfilltype in ['numeric', 'multisp', 'multirt']:
         if columns_labels != []:
           
           #note for. label smoothing activation values won't be 1
@@ -20471,74 +20471,10 @@ class AutoMunge:
           #now delete the labels column from train set
           train_df = train_df.drop(columns_labels, axis=1)
         
-#         i=0
-#         for label in labels:
-          
-#           column = columns_labels[i]
-#           #derive set of labels dataframe for counting length
-#           df = self.LabelSetGenerator(labels_df, column, 1)
-        
-#           #append length onto list
-#           setlength = df.shape[0]
-#           #setlengthlist = setlengthlist.append(setlength)
-#           setlengthlist.append(setlength)
-
-#           i+=1
-
-#         #length of biggest label set
-#         maxlength = max(setlengthlist)
-
-#         #set counter to 0
-#         i = 0
-#         for label in labels:
-
-#           #derive multiplier to levelize label frequency
-#           setlength = setlengthlist[i]
-#           if setlength > 0:
-#             labelmultiplier = int(round(maxlength / setlength))
-#           else:
-#             labelmultiplier = 0
-#           #append multiplier onto list
-#           #multiplierlist = multiplierlist.append(labelmultiplier)
-#           multiplierlist.append(labelmultiplier)
-#           #increment counter
-#           i+=1
-
-#         #concatinate labels onto train set
-#         train_df = pd.concat([train_df, labels_df], axis=1)
-
-#         #reset counter
-#         i=0
-#         #for loop through labels
-#         for label in labels:
-
-
-#           #create train subset corresponding to label
-#           column = columns_labels[i]
-#           df = self.LabelSetGenerator(train_df, column, 1)
-
-#           #set j counter to 0
-#           j = 0
-#           #concatinate an additional copy of the label set multiplier times
-#           while j < multiplierlist[i]:
-#             train_df = pd.concat([train_df, df], axis=0)
-#             #train_df = train_df.reset_index()
-#             j+=1
-
-#           i+=1
-
-#         #now seperate the labels df from the train df
-#         labels_df = train_df[columns_labels]
-#         #now delete the labels column from train set
-#         train_df = train_df.drop(columns_labels, axis=1)
-
-
-      if labelscategory in ['date', 'bxcx', 'nmbr']:
-
-        pass
 
 
     return train_df, labels_df
+  
 
   
   def dictupdatetrim(self, column, postprocess_dict):
@@ -20695,6 +20631,7 @@ class AutoMunge:
     
     
     MLinfilltype = process_dict[labelscategory]['MLinfilltype']
+    
     
     #if labelscategory in ['nmbr']:
     if MLinfilltype in ['numeric']:
@@ -26038,13 +25975,10 @@ class AutoMunge:
         df_train = pd.concat([df_train, df_trainID], axis=1)                        
 
         
-      if postprocess_dict['process_dict'][labelscategory]['MLinfilltype'] \
-      in ['numeric', 'singlct', 'binary', 'multirt', 'multisp']:
-
-        #apply LabelFrequencyLevelizer defined function
-        df_train, df_labels = \
-        self.LabelFrequencyLevelizer(df_train, df_labels, labelsencoding_dict, \
-                                     postprocess_dict, process_dict, LabelSmoothing_train)
+      #apply LabelFrequencyLevelizer defined function
+      df_train, df_labels = \
+      self.LabelFrequencyLevelizer(df_train, df_labels, labelsencoding_dict, \
+                                   postprocess_dict, process_dict, LabelSmoothing_train)
 
 
 
@@ -26105,17 +26039,14 @@ class AutoMunge:
       if testID_column is not False:
         df_test = pd.concat([df_test, df_testID], axis=1)                        
 
+        
+      if LabelSmoothing_test is True:
+        LabelSmoothing_test = LabelSmoothing_train
 
-      if postprocess_dict['process_dict'][labelscategory]['MLinfilltype'] \
-      in ['numeric', 'singlct', 'binary', 'multirt', 'multisp']:
-        
-        if LabelSmoothing_test is True:
-          LabelSmoothing_test = LabelSmoothing_train
-        
-        #apply LabelFrequencyLevelizer defined function
-        df_test, df_testlabels = \
-        self.LabelFrequencyLevelizer(df_test, df_testlabels, labelsencoding_dict, \
-                                     postprocess_dict, process_dict, LabelSmoothing_test)
+      #apply LabelFrequencyLevelizer defined function
+      df_test, df_testlabels = \
+      self.LabelFrequencyLevelizer(df_test, df_testlabels, labelsencoding_dict, \
+                                   postprocess_dict, process_dict, LabelSmoothing_test)
         
         
       #extract testID
@@ -26198,7 +26129,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.75'
+    automungeversion = '3.76'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -35125,13 +35056,10 @@ class AutoMunge:
         df_test = pd.concat([df_test, df_testID], axis=1)                        
 
 
-      if postprocess_dict['process_dict'][labelscategory]['MLinfilltype'] \
-      in ['numeric', 'singlct', 'binary', 'multirt', 'multisp']:
-
-        #apply LabelFrequencyLevelizer defined function
-        df_test, df_testlabels = \
-        self.LabelFrequencyLevelizer(df_test, df_testlabels, labelsencoding_dict, \
-                                     postprocess_dict, process_dict, LabelSmoothing)
+      #apply LabelFrequencyLevelizer defined function
+      df_test, df_testlabels = \
+      self.LabelFrequencyLevelizer(df_test, df_testlabels, labelsencoding_dict, \
+                                   postprocess_dict, process_dict, LabelSmoothing)
 
 
 
