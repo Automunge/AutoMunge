@@ -20684,38 +20684,14 @@ class AutoMunge:
     measures accuracy of predictions of shuffleset (which had permutation method)
     against the model trained on the unshuffled set
     '''
-    
-    
-    #get category of labels from labelsencoding_dict
-    #labelscategory = next(iter(labelsencoding_dict))
-    labelscategory = labelctgy
-#     labelcolumnkey = list(am_labels)[0]
-#     origcolumn = postprocess_dict['column_dict'][labelcolumnkey]['origcolumn']
-#     origcategory = postprocess_dict['column_dict'][labelcolumnkey]['origcategory']
-#     labelscategory = process_dict[origcategory]['labelctgy']
-    
-    
-#       #find origcateogry of am_labels from FSpostprocess_dict
-#       labelcolumnkey = list(am_labels)[0]
-#       origcolumn = FSpostprocess_dict['column_dict'][labelcolumnkey]['origcolumn']
-#       origcategory = FSpostprocess_dict['column_dict'][labelcolumnkey]['origcategory']
 
-#       #find labelctgy from process_dict based on this origcategory
-#       labelctgy = process_dict[origcategory]['labelctgy']
+    labelscategory = labelctgy
     
     
     MLinfilltype = process_dict[labelscategory]['MLinfilltype']
     
     #if labelscategory in ['nmbr']:
     if MLinfilltype in ['numeric']:
-      
-      #this is specific to the current means of address for numeric label sets
-      #as we build out our label engineering methods this will need to. be updated
-      for labelcolumn in list(np_labels):
-        if postprocess_dict['column_dict'][labelcolumn]['category'] == labelscategory:
-        
-          np_labels = np_labels[labelcolumn]
-          break
           
       #convert dataframes to numpy arrays
       np_shuffleset = np_shuffleset.values
@@ -26222,7 +26198,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.72'
+    automungeversion = '3.73'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
