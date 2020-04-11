@@ -815,7 +815,12 @@ corresponding to the order of rows as they were passed to function).
 
 * NArw_marker: a boolean identifier (True/False) which indicates if the
 returned sets will include columns with markers for rows subject to 
-infill (columns with suffix 'NArw'). This value defaults to False.
+infill (columns with suffix 'NArw'). This value defaults to False. Note 
+that the properties of cells qualifying as candidate for infill are based
+on the 'NArowtype' of the root category of transformations associated with 
+the column, see Library of Transformations section below for catalog, the
+various NArowtype options are also furher clarified below in discussion 
+around the processdict parameter.
 
 * featureselection: a boolean identifier telling the function whether to
 perform a feature importance evaluation. If selected automunge will
@@ -1035,6 +1040,7 @@ the list brackets.
 
 assigninfill = {'MLinfill':['column1_bxcx_nmbr'], 'meaninfill':['column1']}
 ```
+Please note that support of assigninfill to label columns is intended as a future extension.
 
 * assignparam
 A user may pass column-specific parameters to those transformation functions
