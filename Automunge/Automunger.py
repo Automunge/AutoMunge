@@ -25382,16 +25382,6 @@ class AutoMunge:
       #labelsencoding_dict is returned from automunge(.) and supports the reverse encoding of labels after predictions
       labelsencoding_dict[labelscategory] = labelsnormalization_dict
 
-      #remove any normnalization dictionary entries associated with NArw (by convention labels don't have infill)
-      delkeylist = []
-      for keys in labelsencoding_dict[labelscategory]:
-        if keys in postprocess_dict['column_dict']:
-          if postprocess_dict['column_dict'][keys]['category'] == 'NArw':
-            delkey = keys
-            delkeylist.append(delkey)
-      #led
-      for keys in delkeylist:
-        del labelsencoding_dict[labelscategory][keys]
 
 
       #markers for label smoothing printouts
@@ -26198,7 +26188,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.73'
+    automungeversion = '3.74'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
