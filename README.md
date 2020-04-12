@@ -2002,7 +2002,7 @@ bin count defaults to 5/7/9 eg for bne0/bn7o/bn9o
 values within that segment's range (between 0-1) and other values subject to an infill of -1 
 (intended for use to evaluate feature improtance of different segments of a numerical set's distribution
 with metric2 results from a feature importance evaluation)
-  - default infill: no activation
+  - default infill: no activation (this is the recomended infill for this transform)
   - default NArowtype: numeric
   - suffix appender: '_tlbn_#' where # is the bin identifier
   - assignparam parameters accepted: 'bincount' to set number of bins
