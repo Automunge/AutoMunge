@@ -857,7 +857,8 @@ as may drastically reduce the column count. This has many benefits such as
 memory bandwidth and energy cost for inference I suspect, however, there 
 may be tradeoffs associated with ability of the model to handle outliers,
 as for any new combination of boolean set in the test data the collection
-will be subject to the infill. Pass True to activate, defaults to False.
+will be subject to the infill. Pass True to activate, defaults to False. 
+(For now also requires passing parameter excl_suffix = True.)
 
 * PCAn_components: defaults to None for no PCA dimensionality reduction performed
 (other than based on the automatic PCA application based on ratio of columns and 
