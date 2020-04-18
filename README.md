@@ -5287,7 +5287,7 @@ machine learning with the Automunge platform. Feedback is welcome.
 ...
 
 As a citation, please note that the Automunge package makes use of 
-the Pandas, Scikit-learn, and NumPy libraries.
+the Pandas, Scikit-learn, SciPy stats, and NumPy libraries.
 
 Wes McKinney. Data Structures for Statistical Computing in Python,
 Proceedings of the 9th Python in Science Conference, 51-56 (2010)
@@ -5302,8 +5302,21 @@ Scikit-learn: Machine Learning in Python, Journal of Machine Learning
 Research, 12, 2825-2830 (2011) [publisher
 link](http://jmlr.org/papers/v12/pedregosa11a.html)
 
-Sorry I don't know what paper to cite, but Numpy website at:
-https://www.numpy.org/
+Pauli Virtanen, Ralf Gommers, Travis E. Oliphant, Matt Haberland, Tyler 
+Reddy, David Cournapeau, Evgeni Burovski, Pearu Peterson, Warren 
+Weckesser, Jonathan Bright, St ́efan J. van der Walt, Matthew Brett, 
+Joshua Wilson, K. Jarrod Millman, Nikolay Mayorov, Andrew R. J. Nelson, 
+Eric Jones, Robert Kern, Eric Larson, CJ Carey, Ilhan Polat, Yu Feng, 
+Eric W. Moore, Jake Vand erPlas, Denis Laxalde, Josef Perktold, Robert 
+Cim- rman, Ian Henriksen, E. A. Quintero, Charles R Harris, Anne M. 
+Archibald, Antˆonio H. Ribeiro, Fabian Pedregosa, Paul van Mulbregt, and 
+SciPy 1. 0 Contributors. SciPy 1.0: Fundamental Algorithms for Scientific 
+Computing in Python. Nature Methods, 17:261– 272, 2020. 
+doi: https://doi.org/10.1038/s41592-019-0686-2.
+
+S. van der Walt, S. Colbert, and G. Varoquaux. The numpy array: A 
+structure for efficient numerical computation. Computing in Science 
+& Engineering, 13:22–30, 2011.
 
 ...
 
