@@ -4006,7 +4006,6 @@ class AutoMunge:
 
 
 
-
   def processcousin(self, df_train, df_test, column, cousin, origcategory, \
                      process_dict, transform_dict, postprocess_dict, assign_param):
     '''
@@ -4034,18 +4033,18 @@ class AutoMunge:
       if process_dict[cousin]['dualprocess'] != None:
         df_train, df_test, column_dict_list = \
         process_dict[cousin]['dualprocess'](df_train, df_test, column, origcategory, \
-                                            deepcopy(postprocess_dict), params)
+                                            postprocess_dict, params)
 
       #else if this is a single process function process train and test seperately
       elif process_dict[cousin]['singleprocess'] != None:
 
         df_train, column_dict_list =  \
         process_dict[cousin]['singleprocess'](df_train, column, origcategory, \
-                                              deepcopy(postprocess_dict), params)
+                                              postprocess_dict, params)
 
         df_test, _1 = \
         process_dict[cousin]['singleprocess'](df_test, column, origcategory, \
-                                              deepcopy(postprocess_dict), params)
+                                              postprocess_dict, params)
 
 
     #else if there were no params call process functions without passing params
@@ -4055,18 +4054,18 @@ class AutoMunge:
       if process_dict[cousin]['dualprocess'] != None:
         df_train, df_test, column_dict_list = \
         process_dict[cousin]['dualprocess'](df_train, df_test, column, origcategory, \
-                                            deepcopy(postprocess_dict))
+                                            postprocess_dict)
 
       #else if this is a single process function process train and test seperately
       elif process_dict[cousin]['singleprocess'] != None:
 
         df_train, column_dict_list =  \
         process_dict[cousin]['singleprocess'](df_train, column, origcategory, \
-                                              deepcopy(postprocess_dict))
+                                              postprocess_dict)
 
         df_test, _1 = \
         process_dict[cousin]['singleprocess'](df_test, column, origcategory, \
-                                              deepcopy(postprocess_dict))
+                                              postprocess_dict)
 
 
     #update the columnslist and normalization_dict for both column_dict and postprocess_dict
@@ -4110,18 +4109,18 @@ class AutoMunge:
 
         df_train, df_test, column_dict_list = \
         process_dict[parent]['dualprocess'](df_train, df_test, column, origcategory, \
-                                           deepcopy(postprocess_dict), params)
+                                           postprocess_dict, params)
 
       #else if this is a single process function process train and test seperately
       elif process_dict[parent]['singleprocess'] != None:
 
         df_train, column_dict_list =  \
         process_dict[parent]['singleprocess'](df_train, column, origcategory, \
-                                           deepcopy(postprocess_dict), params)
+                                           postprocess_dict, params)
 
         df_test, _1 = \
         process_dict[parent]['singleprocess'](df_test, column, origcategory, \
-                                           deepcopy(postprocess_dict), params)
+                                           postprocess_dict, params)
         
     else:
       
@@ -4130,18 +4129,18 @@ class AutoMunge:
 
         df_train, df_test, column_dict_list = \
         process_dict[parent]['dualprocess'](df_train, df_test, column, origcategory, \
-                                           deepcopy(postprocess_dict))
+                                           postprocess_dict)
 
       #else if this is a single process function process train and test seperately
       elif process_dict[parent]['singleprocess'] != None:
 
         df_train, column_dict_list =  \
         process_dict[parent]['singleprocess'](df_train, column, origcategory, \
-                                           deepcopy(postprocess_dict))
+                                           postprocess_dict)
 
         df_test, _1 = \
         process_dict[parent]['singleprocess'](df_test, column, origcategory, \
-                                           deepcopy(postprocess_dict))
+                                           postprocess_dict)
 
     #update the columnslist and normalization_dict for both column_dict and postprocess_dict
     for column_dict in column_dict_list:
@@ -26496,6 +26495,7 @@ class AutoMunge:
 
 
 
+
   def postprocesscousin(self, df_test, column, cousin, origcategory, process_dict, \
                        transform_dict, postprocess_dict, columnkey, assign_param):
     
@@ -26506,7 +26506,7 @@ class AutoMunge:
       #if this is a dual process function
       if process_dict[cousin]['postprocess'] != None:
         df_test = \
-        process_dict[cousin]['postprocess'](df_test, column, deepcopy(postprocess_dict), \
+        process_dict[cousin]['postprocess'](df_test, column, postprocess_dict, \
                                              columnkey, params)
 
       #else if this is a single process function
@@ -26514,14 +26514,14 @@ class AutoMunge:
 
         df_test, _1 = \
         process_dict[cousin]['singleprocess'](df_test, column, origcategory, \
-                                              deepcopy(postprocess_dict), params)
+                                              postprocess_dict, params)
       
     else:
     
       #if this is a dual process function
       if process_dict[cousin]['postprocess'] != None:
         df_test = \
-        process_dict[cousin]['postprocess'](df_test, column, deepcopy(postprocess_dict), \
+        process_dict[cousin]['postprocess'](df_test, column, postprocess_dict, \
                                              columnkey)
 
       #else if this is a single process function
@@ -26529,7 +26529,7 @@ class AutoMunge:
 
         df_test, _1 = \
         process_dict[cousin]['singleprocess'](df_test, column, origcategory, \
-                                              deepcopy(postprocess_dict))
+                                              postprocess_dict)
 
     return df_test
 
@@ -26555,7 +26555,7 @@ class AutoMunge:
       if process_dict[parent]['postprocess'] != None:
 
         df_test = \
-        process_dict[parent]['postprocess'](df_test, column, deepcopy(postprocess_dict), \
+        process_dict[parent]['postprocess'](df_test, column, postprocess_dict, \
                                              columnkey, params)
 
       #else if this is a single process function process train and test seperately
@@ -26563,7 +26563,7 @@ class AutoMunge:
 
         df_test, _1 = \
         process_dict[parent]['singleprocess'](df_test, column, origcategory, \
-                                              deepcopy(postprocess_dict), params)
+                                              postprocess_dict, params)
       
     else:
 
@@ -26571,7 +26571,7 @@ class AutoMunge:
       if process_dict[parent]['postprocess'] != None:
 
         df_test = \
-        process_dict[parent]['postprocess'](df_test, column, deepcopy(postprocess_dict), \
+        process_dict[parent]['postprocess'](df_test, column, postprocess_dict, \
                                              columnkey)
 
       #else if this is a single process function process train and test seperately
@@ -26579,7 +26579,7 @@ class AutoMunge:
 
         df_test, _1 = \
         process_dict[parent]['singleprocess'](df_test, column, origcategory, \
-                                              deepcopy(postprocess_dict))
+                                              postprocess_dict)
 
     #this is used to derive the new columns from the trasform
     newcolumnsset = set(list(df_test))
@@ -26658,6 +26658,7 @@ class AutoMunge:
 
 
     return df_test
+  
   
   
   
