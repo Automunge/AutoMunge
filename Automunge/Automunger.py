@@ -21317,6 +21317,7 @@ class AutoMunge:
               if stndrdcolumn in postprocess_assigninfill_dict[infillcatkey2]:
 
                 postprocess_assigninfill_dict[infillcatkey2].remove(stndrdcolumn)
+                
               
               
     #ok great now let's do the other infill methods for dervied columns instead of orig columns
@@ -21342,6 +21343,18 @@ class AutoMunge:
                   if infillcolumn in postprocess_assigninfill_dict[infillcatkey2]:
                     
                     postprocess_assigninfill_dict[infillcatkey2].remove(infillcolumn)
+                    
+                    
+    #this is a hack to fix edge case in which columns returned in multiple paths
+    for infillcatkey in postprocess_assigninfill_dict:
+      
+      if infillcatkey != 'stdrdinfill':
+        
+        for infillcolumn in postprocess_assigninfill_dict[infillcatkey]:
+          
+          if infillcolumn in postprocess_assigninfill_dict['stdrdinfill']:
+            
+            postprocess_assigninfill_dict['stdrdinfill'].remove(infillcolumn)
                     
                     
     #I recognize this may be a little confusing, but needed to come up with a convention
