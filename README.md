@@ -1019,7 +1019,7 @@ assignments a user can just pass the string or integer of the column header with
 the list brackets.
 ```
 #  - stdrdinfill  : the default infill specified in the libary of transfomations for 
-#                   each tranfsorm below unless MLinfill activated. 
+#                   each transform below. 
 #  - MLinfill     : for MLinfill to distinct columns when MLinfill parameter not activated
 #  - zeroinfill   : inserting the integer 0 to missing cells. 
 #  - oneinfill    : inserting the integer 1. 
