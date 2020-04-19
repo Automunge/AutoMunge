@@ -5271,7 +5271,7 @@ def process_mnm8_class(df, column, category, postprocess_dict, params = {}):
   
   #etc
   
-  return return df, column_dict_list
+  return df, column_dict_list
 
 #For a full demonstration check out my essay 
 "Automunge 1.79: An Open Source Platform for Feature Engineering"
