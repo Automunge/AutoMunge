@@ -5267,7 +5267,7 @@ def postprocess_mnm3_class(mdf_test, column, postprocess_dict, columnkey, params
 #passed
 
 #Such as:
-def process_mnm8_class(df, column, category, postprocess_dict):
+def process_mnm8_class(df, column, category, postprocess_dict, params = {}):
   
   #etc
   
