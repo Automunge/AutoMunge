@@ -70,9 +70,9 @@ postmunge(.) function). Missing data points in the sets are also available to be
 addressed by either assigning distinct methods to each column or alternatively by 
 the automated "ML infill" method which predicts infill using machine learning 
 models trained on the rest of the set in a fully generalized and automated 
-fashion. automunge(.) returns a python dictionary which can be used as an input 
-along with a subsequent test data set to the function postmunge(.) for consistent 
-processing of data which wasn't available for the initial address.
+fashion. automunge(.) returns a populated python dictionary which can be used as 
+input along with a subsequent test data set to the postmunge(.) function for 
+consistent preparation of data.
 
 ## Install, Initialize, and Basics
 
