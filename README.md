@@ -1010,13 +1010,12 @@ A user may add column identifier strings to each of these lists to designate the
 column-specific infill approach for missing or improperly formated values. The
 source column identifier strings may be passed for assignment of common infill 
 approach to all columns derived from same source column, or derived column identifier
-strings (such as including the suffix appenders from transformations) may be passed
-to assign infill approach to a specific derived column. Note that passed derived
-column headers take precidence in case of overlap with passed source column headers.
-Note that this infill category defaults to MLinfill if nothing assigned and the 
-MLinfill argument to automunge is set to True. Note that for single entry column 
-assignments a user can just pass the string or integer of the column header without 
-the list brackets.
+strings (including the suffix appenders from transformations) may be passed to assign 
+infill approach to a specific derived column. Note that passed derived column headers 
+take precidence in case of overlap with passed source column headers. Note that infill
+defaults to MLinfill if nothing assigned and the MLinfill argument to automunge is set 
+to True. Note that for single entry column assignments a user can just pass the string 
+or integer of the column header without the list brackets.
 ```
 #  - stdrdinfill  : the default infill specified in the libary of transfomations for 
 #                   each transform below. 
