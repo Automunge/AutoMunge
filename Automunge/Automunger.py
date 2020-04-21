@@ -21184,212 +21184,132 @@ class AutoMunge:
       print("")
     
     return madethecut, FSmodel, FScolumn_dict, FS_sorted
-
-
-
+  
+  
   def assemblepostprocess_assigninfill(self, assigninfill, infillcolumns_list, 
                                        columns_train, postprocess_dict, MLinfill):
-    #so the convention we'll follow is a column is not explicitly included in 
-    #any of the infill methods we'll add it to stdrdinfill
+    """
+    #this function converts user passed assigninfill
+    #into a collection of post-transform column assignments
+    #to various infill methods for application in apply infill functions
     
-    #where as a reminder assigninfill is the dictionary passed to automunge(.)
-    #which allows user to assign infill method to pre-rpocessed columns
-    #and infillcolumns_list is a list of columns from df_train after processing
-    #and columns_train is the list of original columns preceding processing
+    #assigninfill is as passed by user
+    #(note assigninfill previously had validations performed in check_assigninfill)
+    #infillcolumns_list is all dervied columns in train set
+    #columns_train is all source columns in train set
+    #postprocess_dict is how data shared between functions
+    #MLinfill is boolean marker for default MLinfill applciation
     
-#     and postprocess_dict is our datas strucutre for passing around info
-#     abotu the various columns to the functions
+    #The convention is that unspecified columns are cast to
+    #stndrdinfill or MLinfill based on MLinfill parameter
+    #The other convention is that user may assign column headers
+    #both with and without suffix appenders
+    #the source column headers are converted to set of dervied column headers
+    #and then any user specified derived columns w/ suffix take precendence over the converted ones
     
-    #note that the assigned infill methods in the assigninfill are pre-rpocessed
-    #and the columns listed in infillcolumns_list are post process
-    #so we'll need to do some convertions here to assemble the final returned
-    #set finalassignedinfill which will represent the list of postprocessed
-    #columns abd their corresponding infill method
+    #so workflow is as follows
+    #- received spec'd assigninfill (which may include both pre-suf and w/-suf)
+    #- aggregate just spec'd w/-suf into mirror spec assigninfill_withsuffix
+    #- aggregate spec'd pre-suf into mirror spec assigninfill_sourcecolumn
+    #- identify unspecified source columns missing from assigninfill_sourcecolumn,
+    #add as new category assigninfill_sourcecolumn['unspecified']
+    #- convert source columns to dervied columns from assigninfill_sourcecolumn
+    #to assigninfill_sourcecolumn_converted
+    #- if assigninfill_sourcecolumn_converted doesn't yet have entries for stdrdinfill or MLinfill, create
+    #- based on MLinfill, copy entries from assigninfill_sourcecolumn_converted['unspecified']
+    #into either 'stdrdinfill' or 'MLinfill'
+    #(we'll keep 'unspecified' entry in case might be of use down the road)
+    #- for duplicates between entries to assigninfill_withsuffix and assigninfill_sourcecolumn_converted
+    #assigninfill_withsuffix takes precedence
+    #so cycle through and if duplicates found remove from assigninfill_sourcecolumn_converted
+    #- combine assigninfill_withsuffix and assigninfill_sourcecolumn_converted into
+    #the returned set postprocess_assigninfill_dict
+    #- insert any missing keys needed for apply_am_infill
+    #- return postprocess_assigninfill_dict
+    """
     
-    #we'll return a dicitonary comparable to assigninfill but containing
-    #posprocess columns
+    #- received spec'd assigninfill (which may include both pre-suf and w/-suf)
     
-    #first this is admittedly not pretty, but to address MLinfill=True below, creating
-    #an extra copy of any user specified assigninfill['stdrdinfill']
-    if 'stdrdinfill' in assigninfill:
-      orig_stdrdinfill = assigninfill['stdrdinfill'].copy()
-
-    #create list of all specificied infill columns
-    allspecdinfill_list = []
-    #for each of the pre-processed columns
+    #- aggregate just spec'd w/-suf into mirror spec assigninfill_withsuffix
+    assigninfill_withsuffix = {}
     for key in assigninfill:
-      if key != 'stdrdinfill':
-        for infillcolumn in assigninfill[key]:
-          if infillcolumn in allspecdinfill_list:
-            print("___________________")
-            print("error: column entered for more than one infill method in assigninfill dicitonary.")
-            print("___________________")
-        allspecdinfill_list = allspecdinfill_list + assigninfill[key]
-    
-    #so no we have a list of all infill pre-processed columns which will use 
-    #stdrdinfill which we'll call allspecdinfill_list, again these are
-    #pre-processed columns
-    
-    addthesecolumns = []
-
-    #for infillcolumn in infillcolumns_list:
-    for infillcolumn in columns_train:
-      
-      if infillcolumn not in allspecdinfill_list:
-        addthesecolumns = addthesecolumns + [infillcolumn]
-    
-    if 'stdrdinfill' not in assigninfill:
-    
-      assigninfill.update({'stdrdinfill':[]})
-    
-    allstdrdinfill_list = addthesecolumns + assigninfill['stdrdinfill']
-    
-    assigninfill['orig_stdrdinfill'] = orig_stdrdinfill
-    
-    
-    #ok all of that was mostly to assemble our list of pre-processed columns
-    #for standardinfill
-    #now the next step is to assemble a dicitonary comparable to assigninfill
-    #but containing postprocess columns, to do so we'll use the info stored in
-    #postprocess_dict to support
-    
-    #first initialize the dictionary we'll return from the function
-    #which when complete will be comparable to the assigninfill passed to
-    #automunge but containing postprocessed columns
-    postprocess_assigninfill_dict = {'stdrdinfill':[]}
-    
-    #first let's do the standard infill methods, this will assemble a list
-    #of corresponding postprocess columns
-    for stndrdcolumn in allstdrdinfill_list:
-      
-      if stndrdcolumn in postprocess_dict['origcolumn']:
-            
-        columnkey = postprocess_dict['origcolumn'][stndrdcolumn]['columnkey']
-        
-        if columnkey in postprocess_dict['column_dict']:
-      
-          postprocess_assigninfill_dict['stdrdinfill'] = \
-          postprocess_assigninfill_dict['stdrdinfill'] + \
-          postprocess_dict['column_dict'][columnkey]['columnslist']
-        
-      
-    #ok great now let's do the other infill methods  
-    for infillcatkey in assigninfill:
-      
-      if infillcatkey != 'stdrdinfill':
-        
-        postprocess_assigninfill_dict.update({infillcatkey: []})
-        
-        for infillcolumn in assigninfill[infillcatkey]:
+      assigninfill_withsuffix.update({key:[]})
+      for entry in assigninfill[key]:
+        if entry in infillcolumns_list:
+          assigninfill_withsuffix[key].append(entry)
           
-          if infillcolumn in postprocess_dict['origcolumn']:
+    #- aggregate spec'd pre-suf into mirror spec assigninfill_sourcecolumn
+    assigninfill_sourcecolumn = {}
+    for key in assigninfill:
+      assigninfill_sourcecolumn.update({key:[]})
+      for entry in assigninfill[key]:
+        if entry in columns_train:
+          assigninfill_sourcecolumn[key].append(entry)
           
-            columnkey = postprocess_dict['origcolumn'][infillcolumn]['columnkey']
-            
-            #this if is for null category
-            if columnkey in postprocess_dict['column_dict']:
-            
-              postprocess_assigninfill_dict[infillcatkey] = \
-              postprocess_assigninfill_dict[infillcatkey] + \
-              postprocess_dict['column_dict'][columnkey]['columnslist']
-              
-              
-    #the following addition extends the method to support passing derived column headers
-    #instead of source column headers
-    #where passing a derived header overrides if that header was already populated from a source header
-              
-    #now for passed derived columns instead of source column
-    for stndrdcolumn in allstdrdinfill_list:
-      
-      if stndrdcolumn not in postprocess_dict['origcolumn'] \
-      and stndrdcolumn in postprocess_dict['column_dict']:
-        
-        if stndrdcolumn not in postprocess_assigninfill_dict['stdrdinfill']:
-          
-          postprocess_assigninfill_dict['stdrdinfill'] = \
-          postprocess_assigninfill_dict['stdrdinfill'] + [stndrdcolumn]
-          
-          #then remove if this derived column was already populated in another infillcatkey
-          for infillcatkey2 in assigninfill:
-
-            if infillcatkey2 != 'stdrdinfill':
-
-              if stndrdcolumn in postprocess_assigninfill_dict[infillcatkey2]:
-
-                postprocess_assigninfill_dict[infillcatkey2].remove(stndrdcolumn)
-                
-              
-              
-    #ok great now let's do the other infill methods for dervied columns instead of orig columns
-    for infillcatkey in assigninfill:
-      
-      if infillcatkey != 'stdrdinfill':
-        
-        for infillcolumn in assigninfill[infillcatkey]:
-          
-          if infillcolumn not in postprocess_dict['origcolumn'] \
-          and infillcolumn in postprocess_dict['column_dict']:
-            
-            if infillcolumn not in postprocess_assigninfill_dict[infillcatkey]:
-              
-              postprocess_assigninfill_dict[infillcatkey] = \
-              postprocess_assigninfill_dict[infillcatkey] + [infillcolumn]
-              
-              #then remove if this derived column was already populated in another infillcatkey
-              for infillcatkey2 in assigninfill:
-                
-                if infillcatkey2 != infillcatkey:
-                  
-                  if infillcolumn in postprocess_assigninfill_dict[infillcatkey2]:
-                    
-                    postprocess_assigninfill_dict[infillcatkey2].remove(infillcolumn)
-                    
-                    
-    #this is a hack to fix edge case in which columns returned in multiple paths
-    for infillcatkey in postprocess_assigninfill_dict:
-      
-      if infillcatkey != 'stdrdinfill':
-        
-        for infillcolumn in postprocess_assigninfill_dict[infillcatkey]:
-          
-          if infillcolumn in postprocess_assigninfill_dict['stdrdinfill']:
-            
-            postprocess_assigninfill_dict['stdrdinfill'].remove(infillcolumn)
-                    
-                    
-    #I recognize this may be a little confusing, but needed to come up with a convention
-    #for interface between MLinfill parameter and 'stdrdinfill', this is what came up with
-    #basically, when MLinfill is True, all default infill as MLinfill other then user specified as stndrdinfill
-    #and since currently default infill mixed with specified columns to stndrdinfill
-    #we'll move all into MLinfill and then revert the original passed values saved as orig_assigned_stdrdinfill
-    if MLinfill == True:
-      if 'MLinfill' in postprocess_assigninfill_dict:
-        
-        postprocess_assigninfill_dict['MLinfill'] = \
-        list(set().union(postprocess_assigninfill_dict['stdrdinfill'], \
-        postprocess_assigninfill_dict['MLinfill']))
-        
-        postprocess_assigninfill_dict['stdrdinfill'] = []
-        
-      else:
-        postprocess_assigninfill_dict['MLinfill'] = \
-        postprocess_assigninfill_dict['stdrdinfill']
-        
-        postprocess_assigninfill_dict['stdrdinfill'] = []
-        
-      #then revert the stndrdinfill to the original passed values
-      for orig_stndrd in postprocess_assigninfill_dict['orig_stdrdinfill']:
-        
-        postprocess_assigninfill_dict['stdrdinfill'].append(orig_stndrd)
-        
-        if orig_stndrd in postprocess_assigninfill_dict['MLinfill']:
-          postprocess_assigninfill_dict['MLinfill'].remove(orig_stndrd)
-        
-    del postprocess_assigninfill_dict['orig_stdrdinfill']
+    #- identify unspecified source columns missing from assigninfill_sourcecolumn,
+    #add as new category assigninfill_sourcecolumn['unspecified']
+    specd_sourcecolumns = []
+    for key in assigninfill_sourcecolumn:
+      specd_sourcecolumns += assigninfill_sourcecolumn[key]
+    unspecd_sourcecolumns = list(set(columns_train) - set(specd_sourcecolumns))
+    assigninfill_sourcecolumn.update({'unspecified':unspecd_sourcecolumns})
     
+    #- convert source columns to dervied columns from assigninfill_sourcecolumn
+    #to assigninfill_sourcecolumn_converted
+    assigninfill_sourcecolumn_converted = {}
+    for key in assigninfill_sourcecolumn:
+      assigninfill_sourcecolumn_converted.update({key:[]})
+      for entry in assigninfill_sourcecolumn[key]:
+        #accessing dervied columns from source column, 
+        #adding as entries to assigninfill_sourcecolumn_converted[key]
+        assigninfill_sourcecolumn_converted[key] += postprocess_dict['origcolumn'][entry]['columnkeylist']
+        
+    #- if assigninfill_sourcecolumn_converted doesn't yet have entries for stdrdinfill or MLinfill, create
+    if 'stdrdinfill' not in assigninfill_sourcecolumn_converted:
+      assigninfill_sourcecolumn_converted.update({'stdrdinfill':[]})
+    if 'MLinfill' not in assigninfill_sourcecolumn_converted:
+      assigninfill_sourcecolumn_converted.update({'MLinfill':[]})
     
-    #let's make sure our infill options have entries in postprocess_assigninfill_dict
-    #if not assigned by user
+    #- based on MLinfill, copy entries from assigninfill_sourcecolumn_converted['unspecified']
+    #into either 'stdrdinfill' or 'MLinfill'
+    #(we'll keep 'unspecified' entry in case might be of use down the road)
+    if MLinfill is True:
+      assigninfill_sourcecolumn_converted['MLinfill'] += assigninfill_sourcecolumn_converted['unspecified']
+    else:
+      assigninfill_sourcecolumn_converted['stdrdinfill'] += assigninfill_sourcecolumn_converted['unspecified']
+      
+    #- for duplicates between entries to assigninfill_withsuffix and assigninfill_sourcecolumn_converted
+    #assigninfill_withsuffix takes precedence
+    #so cycle through and if duplicates found remove from assigninfill_sourcecolumn_converted
+    all_specd_withsuffix = []
+    for key in assigninfill_withsuffix:
+      all_specd_withsuffix += assigninfill_withsuffix[key]
+    for key in assigninfill_sourcecolumn_converted:
+      for entry in assigninfill_sourcecolumn_converted[key]:
+        if entry in all_specd_withsuffix:
+          assigninfill_sourcecolumn_converted[key].remove(entry)
+          
+    #- combine assigninfill_withsuffix and assigninfill_sourcecolumn_converted into
+    #the returned set postprocess_assigninfill_dict
+    
+    #first let's make sure they have equivalent keys
+    for key1 in assigninfill_withsuffix:
+      if key1 not in assigninfill_sourcecolumn_converted:
+        assigninfill_sourcecolumn_converted.update({key1:[]})
+    for key2 in assigninfill_sourcecolumn_converted:
+      if key2 not in assigninfill_withsuffix:
+        assigninfill_withsuffix.update({key2:[]})
+    
+    #ok now populate 
+    postprocess_assigninfill_dict = {}
+    
+    for key in assigninfill_sourcecolumn_converted:
+      postprocess_assigninfill_dict.update({key: assigninfill_withsuffix[key] + assigninfill_sourcecolumn_converted[key]})
+    
+    #- insert any missing keys needed for apply_am_infill
+    if 'stdrdinfill' not in postprocess_assigninfill_dict:
+      postprocess_assigninfill_dict['stdrdinfill'] = []
+    
     if 'zeroinfill' not in postprocess_assigninfill_dict:
       postprocess_assigninfill_dict['zeroinfill'] = []
 
@@ -21414,9 +21334,9 @@ class AutoMunge:
     if 'MLinfill' not in postprocess_assigninfill_dict:
       postprocess_assigninfill_dict['MLinfill'] = []
     
-    
+    #- return postprocess_assigninfill_dict
     return postprocess_assigninfill_dict
-  
+    
   
   def apply_am_infill(self, df_train, df_test, postprocess_assigninfill_dict, \
                       postprocess_dict, infilliterate, printstatus, infillcolumns_list, \
@@ -26371,7 +26291,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.78'
+    automungeversion = '3.79'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
