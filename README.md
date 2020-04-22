@@ -1199,6 +1199,7 @@ processdict =  {'newt' : {'dualprocess' : None, \
 #                         entries, recognizes commas
 # - 'datetime' marks for infill cells that arent' recognized as datetime objects
 # ** Note that NArowtype also is used as basis for metrics evaluated in drift assessment of source columns
+# ** Note that by default any np.inf values are recognized as NaN for infill
 
 #MLinfilltype: can be entries {'numeric', 'singlct', 'binary', 'multirt', 'multisp', '1010',
 #                              'exclude', 'boolexclude'}
