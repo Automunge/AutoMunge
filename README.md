@@ -5262,7 +5262,7 @@ def postprocess_mnm3_class(mdf_test, column, postprocess_dict, columnkey, params
 #between the train and test set, we could have just processed one at a time,
 #and in that case we wouldn't need to define seperate functions for 
 #dualprocess and postprocess, we could just define what we call a singleprocess 
-#function incorproating similar data strucures but with only a single dataframe.
+#function incorporating similar data strucures but passing only a single dataframe.
 
 #Such as:
 def process_mnm8_class(df, column, category, postprocess_dict, params = {}):
