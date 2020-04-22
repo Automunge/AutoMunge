@@ -18104,6 +18104,9 @@ class AutoMunge:
     #also accepts a dictionary to store results of a drfit assessment available
     #by passing driftassess = True
     #if drift assessment performed returns an updated dictionary withj results
+    
+    #by default all NArowtypes recognize np.inf as NaN
+    #(option activated external to this function)
     '''
     
     NArowtype = postprocess_dict['process_dict'][category]['NArowtype']
@@ -25454,6 +25457,11 @@ class AutoMunge:
     #create empty dictionary to serve as store for drift metrics
     drift_dict = {}
     
+    #this is a setting that allows pandas isna function to recognize np.inf as NaN
+    #performing outside of column loop, relevant to getNArows function
+    #also impacts any isna() calls in processing functions
+    pd.options.mode.use_inf_as_na = True
+    
     #For each column, determine appropriate processing function
     #processing function will be based on evaluation of train set
     for column in columns_train:
@@ -26291,7 +26299,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.79'
+    automungeversion = '3.80'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -34543,6 +34551,10 @@ class AutoMunge:
       print("error, different order of column labels in the train and test set")
       return
 
+    #this is a setting that allows pandas isna function to recognize np.inf as NaN
+    #performing outside of column loop, relevant to getNArows function
+    #also impacts any isna() calls in processing functions
+    pd.options.mode.use_inf_as_na = True
 
     #here we'll perform drift report if elected
     #if driftreport == True:
