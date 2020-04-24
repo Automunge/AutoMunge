@@ -543,6 +543,15 @@ class AutoMunge:
                                      'coworkers' : [], \
                                      'friends' : []}})
     
+    transform_dict.update({'Ucct' : {'parents' : ['Ucct'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : ['ucct', 'ord3'], \
+                                     'friends' : []}})
+    
     transform_dict.update({'Uord' : {'parents' : ['Uord'], \
                                      'siblings': [], \
                                      'auntsuncles' : [], \
@@ -906,6 +915,15 @@ class AutoMunge:
     transform_dict.update({'ord3' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['ord3'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'ucct' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['ucct'], \
                                      'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
@@ -2745,6 +2763,12 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'text'}})
+    process_dict.update({'Ucct' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_UPCS_class, \
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'exclude', \
+                                  'labelctgy' : 'ucct'}})
     process_dict.update({'Uord' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_UPCS_class, \
                                   'postprocess' : None, \
@@ -2991,6 +3015,12 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'ord3'}})
+    process_dict.update({'ucct' : {'dualprocess' : self.process_ucct_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_ucct_class, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'ucct'}})
     process_dict.update({'ord4' : {'dualprocess' : self.process_ord3_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_ord3_class, \
@@ -7849,6 +7879,7 @@ class AutoMunge:
     spl2_test_overlap_dict = deepcopy(spl2_overlap_dict)
     
     unique_list_test = list(mdf_test[column].unique())
+    unique_list_test = list(map(str, unique_list_test))
     
     extra_unique_test = list(set(unique_list_test) - set(unique_list))
     
@@ -8161,6 +8192,7 @@ class AutoMunge:
     spl2_test_overlap_dict = deepcopy(spl2_overlap_dict)
     
     unique_list_test = list(mdf_test[column].unique())
+    unique_list_test = list(map(str, unique_list_test))
     
     extra_unique_test = list(set(unique_list_test) - set(unique_list))
     
@@ -9796,6 +9828,152 @@ class AutoMunge:
                                   'ordl_activations_dict' : ordl_activations_dict}}
     
       column_dict = {tc : {'category' : 'ord3', \
+                           'origcategory' : category, \
+                           'normalization_dict' : normalization_dict, \
+                           'origcolumn' : column, \
+                           'inputcolumn' : column, \
+                           'columnslist' : categorylist, \
+                           'categorylist' : categorylist, \
+                           'infillmodel' : False, \
+                           'infillcomplete' : False, \
+                           'deletecolumn' : False}}
+
+      column_dict_list.append(column_dict.copy())
+    
+    
+    return mdf_train, mdf_test, column_dict_list
+  
+  def process_ucct_class(self, mdf_train, mdf_test, column, category, \
+                         postprocess_dict, params = {}):
+    '''
+    #process_ucct_class(mdf_train, mdf_test, column, category)
+    #preprocess column with categories into unique class count sets
+    #normalized by total row count
+    #e.g. for each class in train set, 
+    #counts instances and divides by total train set row count
+    #(so values will fall in range 0-1)
+    #test sets recive comparable encoding
+    '''
+    
+    #create new column for trasnformation
+    mdf_train[column + '_ucct'] = mdf_train[column].copy()
+    mdf_test[column + '_ucct'] = mdf_test[column].copy()
+    
+    #convert column to category
+    mdf_train[column + '_ucct'] = mdf_train[column + '_ucct'].astype('category')
+    mdf_test[column + '_ucct'] = mdf_test[column + '_ucct'].astype('category')
+
+    #if set is categorical we'll need the plug value for missing values included
+    mdf_train[column + '_ucct'] = mdf_train[column + '_ucct'].cat.add_categories(['zzzinfill'])
+    mdf_test[column + '_ucct'] = mdf_test[column + '_ucct'].cat.add_categories(['zzzinfill'])
+
+    #replace NA with a dummy variable
+    mdf_train[column + '_ucct'] = mdf_train[column + '_ucct'].fillna('zzzinfill')
+    mdf_test[column + '_ucct'] = mdf_test[column + '_ucct'].fillna('zzzinfill')
+
+    #replace numerical with string equivalent
+    mdf_train[column + '_ucct'] = mdf_train[column + '_ucct'].astype(str)
+    mdf_test[column + '_ucct'] = mdf_test[column + '_ucct'].astype(str)
+    
+    #extract categories for column labels
+    #with values sorted by frequency of occurance from most to least
+    labels_train = mdf_train[column + '_ucct'].value_counts().index.tolist()
+    
+#     labels_train = list(mdf_train[column + '_ordl'].unique())
+#     labels_train.sort()
+    labels_test = list(mdf_test[column + '_ucct'].unique())
+    labels_test.sort()
+
+    #if infill not present in train set, insert
+    if 'zzzinfill' not in labels_train:
+      labels_train = labels_train + ['zzzinfill']
+#       labels_train.sort()
+    if 'zzzinfill' not in labels_test:
+      labels_test = labels_test + ['zzzinfill']
+      labels_test.sort()
+    
+    listlength = len(labels_train)
+    
+    #____
+    #quick check if there are any overlaps between binary encodings and prior unique values in the column
+    #as would interfere with the replacement operation
+    #(I know this is an outlier scenario, just trying to be thorough)
+    
+    overlap_list = []
+    overlap_replace = {}
+    for value in labels_train:
+      if value in range(listlength):
+        overlap_list.append(value)
+        
+        #here's what we'll replace with, the string suffix is arbitrary and intended as not likely to be in set
+        overlap_replace.update({value : value + 'encoding_overlap'})
+        
+    
+    #here we replace the overlaps with version with jibberish suffix
+    if len(overlap_list) > 0:
+      mdf_train[column + '_ucct'] = mdf_train[column + '_ucct'].replace(overlap_replace)
+      mdf_test[column + '_ucct'] = mdf_test[column + '_ucct'].replace(overlap_replace)
+      
+      #then we'll redo the encodings
+      
+      #extract categories for column labels
+      #note that .unique() extracts the labels as a numpy array
+      labels_train = mdf_train[column + '_ucct'].value_counts().index.tolist()
+      
+#       labels_train = list(mdf_train[column + '_ord2'].unique())
+#       labels_train.sort()
+      labels_test = list(mdf_test[column + '_ucct'].unique())
+      labels_test.sort()
+      
+    #clear up memory
+    del overlap_list
+    
+    #____
+    
+    
+    #assemble the ordinal_dict
+    #with key of class and value of normalized unique class count
+    ordinal_dict = {}
+    rowcount = mdf_train.shape[0]
+    
+    for item in labels_train:
+      item_count = mdf_train[mdf_train[column + '_ucct'] == item].shape[0]
+      ordinal_dict.update({item: item_count / rowcount})
+    
+    
+    #replace the cateogries in train set via ordinal trasnformation
+    mdf_train[column + '_ucct'] = mdf_train[column + '_ucct'].replace(ordinal_dict)
+    
+    #in test set, we'll need to strike any categories that weren't present in train
+    #first let'/s identify what applies
+    testspecificcategories = list(set(labels_test)-set(labels_train))
+    
+    #so we'll just replace those items with our plug value
+    testplug_dict = dict(zip(testspecificcategories, ['zzzinfill'] * len(testspecificcategories)))
+    mdf_test[column + '_ucct'] = mdf_test[column + '_ucct'].replace(testplug_dict)
+    
+    #now we'll apply the ordinal transformation to the test set
+    mdf_test[column + '_ucct'] = mdf_test[column + '_ucct'].replace(ordinal_dict)
+    
+
+    #new driftreport metric ordl_activations_dict
+    ordl_activations_dict = {}
+    for key in ordinal_dict:
+      sumcalc = (mdf_train[column+'_ucct'] == ordinal_dict[key]).sum() 
+      ratio = sumcalc / mdf_train[column+'_ucct'].shape[0]
+      ordl_activations_dict.update({key:ratio})
+    
+    categorylist = [column + '_ucct']  
+        
+    column_dict_list = []
+    
+    for tc in categorylist:
+        
+      normalization_dict = {tc : {'ordinal_dict' : ordinal_dict, \
+                                  'ordinal_overlap_replace' : overlap_replace, \
+                                  'ordl_activations_dict' : ordl_activations_dict}}
+    
+      column_dict = {tc : {'category' : 'ucct', \
                            'origcategory' : category, \
                            'normalization_dict' : normalization_dict, \
                            'origcolumn' : column, \
@@ -23374,13 +23552,19 @@ class AutoMunge:
 
     #check Binary
     Binary_valresult = False
-    if Binary not in [True, False] or not isinstance(Binary, bool):
+    if Binary not in [True, False, 'retain']:
       Binary_valresult = True
       print("Error: invalid entry passed for Binary parameter.")
-      print("Acceptable values are one of {True, False}")
+      print("Acceptable values are one of {True, False, 'retain'}")
       print()
+    elif Binary not in ['retain'] \
+    and not isinstance(Binary, bool):
+      Binary_valresult = True
+      print("Error: invalid entry passed for Binary parameter.")
+      print("Acceptable values are one of {True, False, 'retain'}")
       
     miscparameters_results.update({'Binary_valresult' : Binary_valresult})
+      
     
     #check PCAn_components
     #accepts integers >1 or floats between 0-1 or None
@@ -24803,7 +24987,8 @@ class AutoMunge:
     
     return df, categorycomplete_dict
   
-  def Binary_convert(self, df_train, df_test, bool_column_list):
+  
+  def Binary_convert(self, df_train, df_test, bool_column_list, Binary):
     """
     #Binary_convert takes as input a processed dataframe and a list of boolean encoded columns
     #and applies a dimensionality reduction on the boolean set as a binary encodiong
@@ -24843,16 +25028,21 @@ class AutoMunge:
     del df_train['Binary']
     del df_test['Binary']
     
-    for column in bool_column_list:
-      
-      del df_train[column]
-      del df_test[column]
+    #we won't delete the origin columns if Binary passed as 'retain'
+    #(such that the binary encoding is a supplement instead of a replacement)
+    if Binary not in ['retain']:
+
+      for column in bool_column_list:
+
+        del df_train[column]
+        del df_test[column]
     
     
     return df_train, df_test, Binary_dict
   
   
-  def postBinary_convert(self, df_test, Binary_dict):
+  
+  def postBinary_convert(self, df_test, Binary_dict, Binary):
     """
     #Binary_convert takes as input a processed dataframe and a list of boolean encoded columns
     #and applies a dimensionality reduction on the boolean set as a binary encodiong
@@ -24880,11 +25070,27 @@ class AutoMunge:
     
     del df_test['Binary']
     
-    for column in bool_column_list:
+    #we won't delete the origin columns if Binary passed as 'retain'
+    #(such that the binary encoding is a supplement instead of a replacement)
+    if Binary not in ['retain']:
       
-      del df_test[column]
+      for column in bool_column_list:
+
+        del df_test[column]
     
     return df_test
+  
+  def convert_inf_to_nan(self, df):
+    """
+    #converts all np.inf values in a dataframe to np.nan
+    #similar to pandas pd.options.mode.use_inf_as_na = True
+    #except that it works
+    """
+    
+    df[df == np.inf] = np.nan
+    df[df == -np.inf] = np.nan
+    
+    return df
   
   
   def automunge(self, df_train, df_test = False, \
@@ -24919,7 +25125,7 @@ class AutoMunge:
                              'spl7':[], 'spl8':[], 'spl9':[], 'sp10':[], 'srch':[], 'src2':[], \
                              'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
                              'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
-                             'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], \
+                             'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], 'ucct':[], 'Ucct':[], \
                              'or11':[], 'or12':[], 'or15':[], 'or17':[], 'or19':[], 'or20':[], \
                              'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
                              'wkds':[], 'wkdo':[], 'mnts':[], 'mnto':[], \
@@ -25349,6 +25555,7 @@ class AutoMunge:
     #initialize a helper 
     labelspresenttrain = False
     labelspresenttest = False
+    single_train_column_labels_case = False
 
     #wasn't sure where to put this seems as a good place as any
     if labels_column is False:
@@ -25365,6 +25572,7 @@ class AutoMunge:
       if df_train.shape[1] == 0:
 #         df_train = df_labels[0:10].copy()
         df_train = df_labels[0:1].copy()
+        single_train_column_labels_case = True
 
       #if the labels column is present in test set too
       if labels_column in list(df_test):
@@ -25457,10 +25665,12 @@ class AutoMunge:
     #create empty dictionary to serve as store for drift metrics
     drift_dict = {}
     
-    #this is a setting that allows pandas isna function to recognize np.inf as NaN
-    #performing outside of column loop, relevant to getNArows function
-    #also impacts any isna() calls in processing functions
-    pd.options.mode.use_inf_as_na = True
+    #Automunge currently is based on convention that all np.inf are treated as np.nan
+    #for purposes of infill
+    df_train = self.convert_inf_to_nan(df_train)
+    df_labels = self.convert_inf_to_nan(df_labels)
+    df_test = self.convert_inf_to_nan(df_test)
+    df_testlabels = self.convert_inf_to_nan(df_testlabels)
     
     #For each column, determine appropriate processing function
     #processing function will be based on evaluation of train set
@@ -26087,7 +26297,7 @@ class AutoMunge:
     
     #we'll only apply to training and test data not labels
     #making an executive decvision for now that ordinal encoded columns will be excluded
-    if Binary is True:
+    if Binary in [True, 'retain']:
       
       #printout display progress
       if printstatus == True:
@@ -26111,7 +26321,7 @@ class AutoMunge:
 
             bool_column_list.append(column)
           
-      df_train, df_test, Binary_dict = self.Binary_convert(df_train, df_test, bool_column_list)
+      df_train, df_test, Binary_dict = self.Binary_convert(df_train, df_test, bool_column_list, Binary)
       
       
       if printstatus == True:
@@ -26299,7 +26509,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.80'
+    automungeversion = '3.81'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -26312,6 +26522,7 @@ class AutoMunge:
                              'finalcolumns_train' : finalcolumns_train, \
                              'labels_column' : labels_column, \
                              'finalcolumns_labels' : list(df_labels), \
+                             'single_train_column_labels_case' : single_train_column_labels_case, \
                              'trainID_column_orig' : trainID_column_orig, \
                              'trainID_column' : trainID_column, \
                              'finalcolumns_trainID' : list(df_trainID), \
@@ -28480,6 +28691,7 @@ class AutoMunge:
       spl2_test_overlap_dict = deepcopy(spl2_overlap_dict)
 
       unique_list_test = list(mdf_test[column].unique())
+      unique_list_test = list(map(str, unique_list_test))
 
       extra_unique_test = list(set(unique_list_test) - set(unique_list))
 
@@ -28656,6 +28868,7 @@ class AutoMunge:
       spl2_test_overlap_dict = deepcopy(spl2_overlap_dict)
 
       unique_list_test = list(mdf_test[column].unique())
+      unique_list_test = list(map(str, unique_list_test))
 
       extra_unique_test = list(set(unique_list_test) - set(unique_list))
 
@@ -29404,6 +29617,76 @@ class AutoMunge:
         
 #     #convert column to category
 #     mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype('category')
+    
+    return mdf_test
+  
+  
+  def postprocess_ucct_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+    '''
+    #process_ucct_class(mdf_train, mdf_test, column, category)
+    #preprocess column with categories into unique class count sets
+    #normalized by total row count
+    #e.g. for each class in train set, 
+    #counts instances and divides by total train set row count
+    #(so values will fall in range 0-1)
+    #test sets recive comparable encoding
+    '''
+    
+    normkey = column + '_ucct'
+    
+    #grab normalization parameters from postprocess_dict
+    ordinal_dict = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordinal_dict']
+    
+    overlap_replace = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordinal_overlap_replace']
+    
+    #create new column for trasnformation
+    mdf_test[column + '_ucct'] = mdf_test[column].copy()
+    
+    #convert column to category
+    mdf_test[column + '_ucct'] = mdf_test[column + '_ucct'].astype('category')
+    
+    #if set is categorical we'll need the plug value for missing values included
+    mdf_test[column + '_ucct'] = mdf_test[column + '_ucct'].cat.add_categories(['zzzinfill'])
+
+    #replace NA with a dummy variable
+    mdf_test[column + '_ucct'] = mdf_test[column + '_ucct'].fillna('zzzinfill')
+    
+    #replace numerical with string equivalent
+    mdf_test[column + '_ucct'] = mdf_test[column + '_ucct'].astype(str)    
+    
+    #extract categories for column labels
+    #note that .unique() extracts the labels as a numpy array
+    #train categories are in the ordinal_dict we p[ulled from normalization_dict
+    labels_train = list(ordinal_dict.keys())
+#     labels_train.sort()
+    labels_test = list(mdf_test[column + '_ucct'].unique())
+    labels_test.sort()
+    
+    #if infill not present in train set, insert
+    if 'zzzinfill' not in labels_train:
+      labels_train = labels_train + ['zzzinfill']
+#       labels_train.sort()
+    if 'zzzinfill' not in labels_test:
+      labels_test = labels_test + ['zzzinfill']
+      labels_test.sort()
+      
+    #here we replace the overlaps with version with jibberish suffix
+    if len(overlap_replace) > 0:
+      mdf_test[column + '_ucct'] = mdf_test[column + '_ucct'].replace(overlap_replace)
+    
+    #in test set, we'll need to strike any categories that weren't present in train
+    #first let'/s identify what applies
+    testspecificcategories = list(set(labels_test)-set(labels_train))
+    
+    #so we'll just replace those items with our plug value
+    testplug_dict = dict(zip(testspecificcategories, ['zzzinfill'] * len(testspecificcategories)))
+    mdf_test[column + '_ucct'] = mdf_test[column + '_ucct'].replace(testplug_dict)
+    
+    #now we'll apply the ordinal transformation to the test set
+    mdf_test[column + '_ucct'] = mdf_test[column + '_ucct'].replace(ordinal_dict)
+    
     
     return mdf_test
   
@@ -34398,16 +34681,6 @@ class AutoMunge:
       testlabels.append(str(column))
     df_test.columns = testlabels
     
-    #special case, if user only passes a single column of labels, they can pass
-    #labels_column = True
-    if labelscolumn is True:
-      if len(testlabels) == 1:
-        labelscolumn = testlabels[0]
-#       else:
-#         print("Passing 'True' to labelscolumn only supported if single column in set.")
-#         print("Processing without labels.")
-#         print("")
-#         labelscolumn = False
 
     #initialize processing dicitonaries
 
@@ -34479,6 +34752,9 @@ class AutoMunge:
       if df_test.shape[1] == 0:
 #         df_test = df_testlabels[0:10].copy()
         df_test = df_testlabels[0:1].copy()
+  
+    else:
+      df_testlabels = pd.DataFrame()
 
 
     #here we derive a range integer index for inclusion in the test ID sets
@@ -34551,10 +34827,10 @@ class AutoMunge:
       print("error, different order of column labels in the train and test set")
       return
 
-    #this is a setting that allows pandas isna function to recognize np.inf as NaN
-    #performing outside of column loop, relevant to getNArows function
-    #also impacts any isna() calls in processing functions
-    pd.options.mode.use_inf_as_na = True
+    #Automunge currently is based on convention that all np.inf are treated as np.nan
+    #for purposes of infill
+    df_test = self.convert_inf_to_nan(df_test)
+    df_testlabels = self.convert_inf_to_nan(df_testlabels)
 
     #here we'll perform drift report if elected
     #if driftreport == True:
@@ -34704,8 +34980,6 @@ class AutoMunge:
     labels_column = postprocess_dict['labels_column']
 
     #ok now let's check if that labels column is present in the test set
-    if labelscolumn is False:
-      df_testlabels = pd.DataFrame()
     
     if labelscolumn is not False:
       if labelscolumn is not True:
@@ -34906,7 +35180,7 @@ class AutoMunge:
     #Binary dimensionality reduction goes here
     #we'll only apply to test data not labels
     #making an executive decvision for now that ordinal encoded columns will be excluded
-    if postprocess_dict['Binary'] is True:
+    if postprocess_dict['Binary'] in [True, 'retain']:
       
       #printout display progress
       if printstatus == True:
@@ -34918,13 +35192,15 @@ class AutoMunge:
         print("")
       
       Binary_dict = postprocess_dict['Binary_dict']
+      Binary = postprocess_dict['Binary']
           
-      df_test = self.postBinary_convert(df_test, Binary_dict)
+      df_test = self.postBinary_convert(df_test, Binary_dict, Binary)
       
       #printout display progress
       if printstatus == True:
         print("Boolean column count = ")
         print(len(Binary_dict['bool_column_list']))
+        print("")
         print("After transform test set column count = ")
         print(df_test.shape[1])
         print("")
