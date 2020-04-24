@@ -858,7 +858,9 @@ memory bandwidth and energy cost for inference I suspect, however, there
 may be tradeoffs associated with ability of the model to handle outliers,
 as for any new combination of boolean set in the test data the collection
 will be subject to the infill. Pass True to activate, defaults to False. 
-(For now also requires passing parameter excl_suffix = True.)
+(For now also requires passing parameter excl_suffix = True.) Note that
+can also be passed as 'retain' to retain the boolean columns that served 
+as basis for encoding.
 
 * PCAn_components: defaults to None for no PCA dimensionality reduction performed
 (other than based on the automatic PCA application based on ratio of columns and 
@@ -2082,14 +2084,22 @@ efficent than one-hot encoding)
 	                           _1010_binary_column_count / _1010_activations_dict
   (for example if 1010 encoded to three columns based on number of categories <8,
   it would retuyrn three columns with suffix appenders 1010_1, 1010_2, 1010_3)
+* ucct: converts categorical sets to a normalized float of unique class count,
+for example, a 10 row train set with two instances of 'circle' would replace 'circle' with 0.2
+and comparable to test set independent of test set row count
+  - default infill: ratio of infill in train set
+  - default NArowtype: justNaN
+  - suffix appender: '_ucct'
+  - assignparam parameters accepted: none
+  - driftreport postmunge metrics: ordinal_dict / ordinal_overlap_replace / ordinal_activations_dict
 * lngt, lnlg: returtns string length of categoric entries (lngt followed by min/max, lnlg by log)
   - default infill: plug value of 3 (based on len(str(np.nan)) )
   - default NArowtype: justNaN
   - suffix appender: '_lngt'
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: maximum, minimum, mean, std
-* new processing functions Utxt / Utx2 / Utx3 / Uord / Uor2 / Uor3 / Uor6 / U101
-  - comparable to functions text / txt2 / txt3 / ordl / ord2 / ord3 / ors6 / 1010
+* new processing functions Utxt / Utx2 / Utx3 / Uord / Uor2 / Uor3 / Uor6 / U101 / Ucct
+  - comparable to functions text / txt2 / txt3 / ordl / ord2 / ord3 / ors6 / 1010 / Ucct
   - but upstream conversion of all strings to uppercase characters prior to encoding
   - (e.g. 'USA' and 'usa' would be consistently encoded)
   - default infill: in uppercase conversion NaN's are assigned distinct encoding 'NAN'
@@ -2428,6 +2438,7 @@ avoid unintentional duplication.
 - 'NAr5',
 - 'NArw',
 - 'U101',
+- 'Ucct',
 - 'UPCS',
 - 'Uor2',
 - 'Uor3',
@@ -2656,6 +2667,7 @@ avoid unintentional duplication.
 - 'tlbn',
 - 'txt2',
 - 'txt3',
+- 'ucct', 
 - 'wkdo',
 - 'wkds',
 - 'wkdy',
@@ -2778,6 +2790,7 @@ that any user passing a custom defined transformation can avoid any unintentiona
 - '\_srch_' + string (where string is an identified overlap of characters with user passed search string)
 - '_tlbn_' + i (where i is identifier of bin)
 - '\_text_' + string (where string is a categorical entry in one-hot encoded set)
+- '_ucct'
 - '_UPCS'
 - '_wkds'
 - '_wkdy'
@@ -3224,6 +3237,15 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'coworkers' : [], \
                                      'friends' : []}})
     
+    transform_dict.update({'Ucct' : {'parents' : ['Ucct'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : ['ucct', 'ord3'], \
+                                     'friends' : []}})
+    
     transform_dict.update({'Uord' : {'parents' : ['Uord'], \
                                      'siblings': [], \
                                      'auntsuncles' : [], \
@@ -3587,6 +3609,15 @@ If you want to skip to the next section you can click here: [Custom Transformati
     transform_dict.update({'ord3' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['ord3'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'ucct' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['ucct'], \
                                      'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
