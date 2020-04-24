@@ -159,7 +159,7 @@ am.automunge(df_train, df_test = False, \
                           'spl7':[], 'spl8':[], 'spl9':[], 'sp10':[], 'srch':[], 'src2':[], \
                           'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
                           'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
-                          'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], \
+                          'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], 'ucct':[], 'Ucct':[], \
                           'or11':[], 'or12':[], 'or15':[], 'or17':[], 'or19':[], 'or20':[], \
                           'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
                           'wkds':[], 'wkdo':[], 'mnts':[], 'mnto':[], \
@@ -386,7 +386,7 @@ am.automunge(df_train, df_test = False, \
                           'spl7':[], 'spl8':[], 'spl9':[], 'sp10':[], 'srch':[], 'src2':[], \
                           'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
                           'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
-                          'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], \
+                          'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], 'ucct':[], 'Ucct':[], \
                           'or11':[], 'or12':[], 'or15':[], 'or17':[], 'or19':[], 'or20':[], \
                           'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
                           'wkds':[], 'wkdo':[], 'mnts':[], 'mnto':[], \
@@ -609,7 +609,7 @@ am.automunge(df_train, df_test = False, \
                           'spl7':[], 'spl8':[], 'spl9':[], 'sp10':[], 'srch':[], 'src2':[], \
                           'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
                           'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
-                          'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], \
+                          'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], 'ucct':[], 'Ucct':[], \
                           'or11':[], 'or12':[], 'or15':[], 'or17':[], 'or19':[], 'or20':[], \
                           'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
                           'wkds':[], 'wkdo':[], 'mnts':[], 'mnto':[], \
@@ -973,7 +973,7 @@ assigncat = {'nmbr':[], 'retn':[], 'mnmx':[], 'mean':[], 'MAD3':[], \
              'spl7':[], 'spl8':[], 'spl9':[], 'sp10':[], 'srch':[], 'src2':[], \
              'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
              'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
-             'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], \
+             'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], 'ucct':[], 'Ucct':[], \
              'or11':[], 'or12':[], 'or15':[], 'or17':[], 'or19':[], 'or20':[], \
              'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
              'wkds':[], 'wkdo':[], 'mnts':[], 'mnto':[], \
