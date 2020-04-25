@@ -703,14 +703,14 @@ size sets.) Note that if shuffletrain is set to False although the validations
 will be pulled from sequential rows, the split between validaiton1 and 
 validation2 sets will be randomized.
 
-* floatprecision: an integer with acceptable values of 16/32/64 designating
+* floatprecision: an integer with acceptable values of _16/32/64_ designating
 the memory precision for returned float values. (A tradeoff between memory
 usage and floating point precision, smaller for smaller footprint.) 
 This currently defaults to 32 for 32-bit precision of float values. Note
 that there may be energy efficiency benefits at scale to basing this to 16.
 Note that integer data types are still retained with this option.
 
-* shuffletrain: can be passed as one of {True, False, 'traintest'} which 
+* shuffletrain: can be passed as one of _{True, False, 'traintest'}_ which 
 indicates if the rows in df_train will be shuffled prior to carving out the 
 validation sets.  This value defaults to True. Note that if this value is set to 
 False then any validation sets will be pulled from the bottom x% sequential 
@@ -720,7 +720,7 @@ is comparable to True for the training set and shuffles the returned test sets
 as well. Note that all corresponding returned sets are consistently shuffled 
 (such as between train/labels/trainID sets).
 
-* TrainLabelFreqLevel: a boolean identifier (True/False) which indicates
+* TrainLabelFreqLevel: a boolean identifier _(True/False)_ which indicates
 if the TrainLabelFreqLevel method will be applied to prepare for oversampling 
 training data associated with underrepresented labels (aka class imbalance). 
 The method adds multiples to training data rows for those labels with lower 
@@ -730,10 +730,10 @@ the processing applied to the set includes aggregated bins, such as for example
 by passing a label column to the 'exc3' category in assigncat for pass-through
 force to numeric with inclusion of standard deviation bins or to 'exc4' for 
 inclusion of powers of ten bins. For cases where labels are included in the 
-test set, this may also be passed as 'traintest' to apply levelizing to both 
-train and test sets or be passed as 'test' to only apply levelizing to test set.
+test set, this may also be passed as _'traintest'_ to apply levelizing to both 
+train and test sets or be passed as _'test'_ to only apply levelizing to test set.
 
-* powertransform: (False/True/'excl'/'exc2'), defaults to False, when passed as 
+* powertransform: _(False/True/'excl'/'exc2')_, defaults to False, when passed as 
 True an evaluation will be performed of distribution properties to select between
 box-cox, z-score, min-max scaling, or mean absolute deviaiton scaling normalization
 of numerical data. Note that after application of box-cox transform child columns 
@@ -749,13 +749,13 @@ with specific transforms on a subset of the columns without incurring processing
 time of an entire set.) Note that powertransform not applied to label columns by
 default, but can still be applied by passing label column to ptfm in assigncat.
 
-* binstransform: a boolean identifier (True/False) which indicates if all
+* binstransform: a boolean identifier _(True/False)_ which indicates if all
 default numerical sets will receive bin processing such as to generate child
 columns with boolean identifiers for number of standard deviations from
 the mean, with groups for values <-2, -2-1, -10, 01, 12, and >2. This value 
 defaults to False.
 
-* MLinfill: a boolean identifier (True/False) which indicates if the ML
+* MLinfill: a boolean identifier _(True/False)_ which indicates if the ML
 infill method will be applied as a default to predict infill for missing 
 or improperly formatted data using machine learning models trained on the
 rest of the set. This defaults to False. Note that ML infill may alternatively
@@ -779,7 +779,7 @@ such as for data set shuffling, ML infill, and feature importance  algorithms.
 This defaults to 42, a nice round number.
 
 * LabelSmoothing_train / LabelSmoothing_test / LabelSmoothing_val: each of these
-parameters accept float values in range 0.0-1.0 or the default value of False to 
+parameters accept float values in range _0.0-1.0_ or the default value of _False_ to 
 turn off. train is for the train set labels, test is for the test set labels, and
 val is for the validation set labels. Label Smoothing refers to the regularaization
 tactic of transforming boolean encoded labels from 1/0 designations to some mix of
@@ -790,12 +790,12 @@ for the one-hot encoding of a three label set it would be convert 1/0 to 0.9/0.0
 Hat tip for the concept to "Rethinking the Inception Architecture for Computer Vision"
 by Szegedy et al. Note that I believe not all predictive library cklassifiers 
 uniformily accept smoothed labels, but when available the method can at times be useful. 
-Note that a user can pass True to either of LabelSmoothing_test / LabelSmoothing_val 
+Note that a user can pass _True_ to either of LabelSmoothing_test / LabelSmoothing_val 
 which will consistently encode to LabelSmoothing_train. Please note that if multiple
 one-hot encoded transformations originate from the same labels source column, the
 application of Label Smoothing will be applied to each set individually.
 
-* LSfit: a True/False indication for basis of label smoothing parameters. The default
+* LSfit: a _True/False_ indication for basis of label smoothing parameters. The default
 of False means the assumption will be for level distribution of labels, passing True
 means any label smoothing will evaluate distribution of label activations such as to fit
 the smoothing factor to specific cells based on the activated column and target column.
@@ -807,13 +807,13 @@ categorical set has more unique values than this heuristic, it defaults
 to categorical treatment via ordinal processing via 'ord3', otherwise 
 categorical sets default to binary encoding via '1010'. This defaults to 63.
 
-* pandasoutput: a selector for format of returned sets. Defaults to False
-for returned Numpy arrays. If set to True returns pandas dataframes
+* pandasoutput: a selector for format of returned sets. Defaults to _False_
+for returned Numpy arrays. If set to _True_ returns pandas dataframes
 (note that index is not always preserved, non-integer indexes are extracted to the ID sets,
 and automunge(.) generates an application specific range integer index in ID sets 
 corresponding to the order of rows as they were passed to function).
 
-* NArw_marker: a boolean identifier (True/False) which indicates if the
+* NArw_marker: a boolean identifier _(True/False)_ which indicates if the
 returned sets will include columns with markers for rows subject to 
 infill (columns with suffix 'NArw'). This value defaults to False. Note 
 that the properties of cells qualifying as candidate for infill are based
@@ -822,8 +822,8 @@ the column, see Library of Transformations section below for catalog, the
 various NArowtype options are also further clarified below in discussion 
 around the processdict parameter.
 
-* featureselection: a boolean identifier telling the function whether to
-perform a feature importance evaluation. If selected automunge will
+* featureselection: a boolean identifier _(True/False)_ telling the function 
+to perform a feature importance evaluation. If selected automunge will
 return a summary of feature importance findings in the featureimportance
 returned dictionary. This also activates the trimming of derived sets
 that did not meet the importance threshold if [featurepct < 1.0 and 
@@ -831,7 +831,7 @@ featuremethod = 'pct'] or if [fesaturemetric > 0.0 and featuremethod =
 'metric']. Note this defaults to False because it cannot operate without
 a designated label column in the train set. (Note that any user-specified
 size of validationratios if passed are used in this method, otherwise 
-defaults to 0.33.) Note that sorted feature importance results are returned
+defaults to 0.2.) Note that sorted feature importance results are returned
 in postprocess_dict['FS_sorted'], including columns sorted by metric and metric2.
 
 * featurepct: the percentage of derived sets that are kept in the output
@@ -844,8 +844,8 @@ columns that "made the cut". This item only used if featuremethod passed as
 are trimmed from the output. Note that this item only used if
 featuremethod passed as 'metric'.
 
-* featuremethod: can be passed as opne of {'pct', 'metric', 'default', 
-'report'} where 'pct' or 'metric' to select which feature importance method 
+* featuremethod: can be passed as opne of _{'pct', 'metric', 'default',_ 
+_'report'}_ where 'pct' or 'metric' to select which feature importance method 
 is used for trimming the derived sets as a form of dimensionality reduction. 
 Or can pass as 'default' for ignoring the featurepct/featuremetric parameters 
 or can pass as 'report' to return the featureimportance results with no further
@@ -857,26 +857,26 @@ as may drastically reduce the column count. This has many benefits such as
 memory bandwidth and energy cost for inference I suspect, however, there 
 may be tradeoffs associated with ability of the model to handle outliers,
 as for any new combination of boolean set in the test data the collection
-will be subject to the infill. Pass True to activate, defaults to False. 
+will be subject to the infill. Pass _True_ to activate, defaults to _False_. 
 (For now also requires passing parameter excl_suffix = True.) Note that
-can also be passed as 'retain' to retain the boolean columns that served 
+can also be passed as _'retain'_ to retain the boolean columns that served 
 as basis for encoding.
 
-* PCAn_components: defaults to None for no PCA dimensionality reduction performed
+* PCAn_components: defaults to _None_ for no PCA dimensionality reduction performed
 (other than based on the automatic PCA application based on ratio of columns and 
-rows - see ML_cmnd if you want to turn that off). A user can pass an integer to 
+rows - see ML_cmnd if you want to turn that off). A user can pass _an integer_ to 
 define the number of PCA derived features for purposes of dimensionality 
 reduction, such integer to be less than the otherwise returned number of sets. 
 Function will default to kernel PCA for all non-negative sets or otherwise Sparse PCA. 
-Also if this value is passed as a float <1.0 then linear PCA will be applied such 
+Also if this value is passed as a _float <1.0_ then linear PCA will be applied such 
 that the returned number of sets are the minimum number that can reproduce that 
 percent of the variance. Note this can also be passed in conjunction with assigned 
 PCA type or parameters in the ML_cmnd object.
 
-* PCAexcl: a list of column headers for columns that are to be excluded from
+* PCAexcl: a _list_ of column headers for columns that are to be excluded from
 any application of PCA
 
-* excl_suffix: boolean selector {True, False} for whether columns headers from 'excl' 
+* excl_suffix: boolean selector _{True, False}_ for whether columns headers from 'excl' 
 transform are returned with suffix appender '\_excl' included. Defaults to False for
 no suffix.
 
@@ -1082,7 +1082,7 @@ assignparam = {'splt' : {'column1' : {'minsplit' : 4}}
 #parameters that are not otherwise specified in assignparam)
 assignparam = {'category1' : {'column1' : {'param1' : 123}, 'column2' : {'param1' : 456}}, \
                'cateogry2' : {'column3' : {'param2' : 'abc', 'param3' : 'def'}}, \
-               'default_assignparam' : {'category3' : {'param4' : 789}
+               'default_assignparam' : {'category3' : {'param4' : 789}}}
 
 ```
 See the Library of Transformations section below for those transformations that accept parameters.
@@ -1187,8 +1187,10 @@ processdict =  {'newt' : {'dualprocess' : None, \
 #             parameters originally derived from the train set are applied
 #             to seperately process a test set
 
-#NArowtype: can be entries of either 'numeric', 'positivenumeric', 'justNaN', 
-#or 'exclude' where
+#NArowtype: can be entries of {'numeric', 'integer', 'justNaN', 'exclude', 
+#                              'positivenumeric', 'nonnegativenumeric', 
+#                              'nonzeronumeric', 'parsenumeric', 'parsenumeric_commas', 
+#                              'datetime'}
 # - 'numeric' for source columns with expected numeric entries
 # - 'integer' for source columns with expected integer entries
 # - 'justNaN' for source columns that may have expected entries other than numeric
@@ -1201,7 +1203,7 @@ processdict =  {'newt' : {'dualprocess' : None, \
 #                         entries, recognizes commas
 # - 'datetime' marks for infill cells that arent' recognized as datetime objects
 # ** Note that NArowtype also is used as basis for metrics evaluated in drift assessment of source columns
-# ** Note that by default any np.inf values are recognized as NaN for infill
+# ** Note that by default any np.inf values are converted to NaN for infill
 
 #MLinfilltype: can be entries {'numeric', 'singlct', 'binary', 'multirt', 'multisp', '1010',
 #                              'exclude', 'boolexclude'}
@@ -1253,7 +1255,7 @@ applied to columns not assigned in assigncat. (Note that columns assigned to 'ev
 in assigncat will be passed to this function for evaluation with powertransform = False / True
 respectively.)
 
-* printstatus: user can pass True/False indicating whether the function will print 
+* printstatus: user can pass _True/False_ indicating whether the function will print 
 status of processing during operation. Defaults to True.
 
 Ok well we'll demonstrate further below how to build custom processing functions,
@@ -1449,36 +1451,37 @@ columns to be excluded from processing but consistently partitioned. An
 integer column index or list of integer column indexes may also be passed 
 such as if the source dataset was numpy array.
 
-* labelscolumn: default to False indicates that a labels column is not 
+* labelscolumn: default to _False_ indicates that a labels column is not 
 included in the test set passed to postmunge. A user can either pass
-True or the string ID of the labels column, noting that it is a requirement
+_True_ or the string ID of the labels column, noting that it is a requirement
 that the labels column header string must be consistent with that from
 the original train set. An integer column index may also be passed such
 as if the source dataset was numpy array. A user should take care to set 
-this parameter if they are passing data with labels.
+this parameter if they are passing data with labels. Note that True signals
+presence of consistent labels column header as was passed to automunge(.).
 
-* pandasoutput: a selector for format of returned sets. Defaults to False
-for returned Numpy arrays. If set to True returns pandas dataframes
+* pandasoutput: a selector for format of returned sets. Defaults to _False_
+for returned Numpy arrays. If set to _True_ returns pandas dataframes
 (note that index is not always preserved, non-integer indexes are extracted 
 to the ID sets, and automunge(.) generates an application specific range 
 integer index in ID sets corresponding to the order of rows as they were 
 passed to function).
 
-* printstatus: user can pass True/False indicating whether the function 
+* printstatus: user can pass _True/False_ indicating whether the function 
 will print status of processing during operation. Defaults to True.
 
-* TrainLabelFreqLevel: a boolean identifier (True/False) which indicates
+* TrainLabelFreqLevel: a boolean identifier _(True/False)_ which indicates
 if the TrainLabelFreqLevel method will be applied to oversample test
 data associated with underrepresented labels. The method adds multiples
 to test data rows for those labels with lower frequency resulting in
 an (approximately) levelized frequency. This defaults to False. Note that
-this feature may be applied to numerical label sets if the processing
-applied to the set in automunge had included standard deviation bins, such
+this feature may be applied to numerical label sets if the assigncat processing
+applied to the set in automunge(.) had included standard deviation bins, such
 as for example 'exc3' for pass-through numeric with standard deviation bins,
 or 'exc4' for pass-thorugh numeric with powers of ten bins. Note this 
 method requires the inclusion of a designated label column.
 
-* featureeval: a boolean identifier (True/False) to activate a feature
+* featureeval: a boolean identifier _(True/False)_ to activate a feature
 importance evaluation, comparable to one performed in automunge but based
 on the test set passed to postmunge. The results are returned in the
 postreports_dict object returned from postmunge as postreports_dict['featureimportance']. 
@@ -1491,32 +1494,32 @@ parameters are recalculated for the columns of the test data passed to postmunge
 for comparison to the original normalization parameters derived from the corresponding 
 columns of the automunge train data set. The results are returned in the
 postreports_dict object returned from postmunge as postreports_dict['driftreport']. 
-The results will also be printed out if printstatus is activated. Defaults to False, and:
-  - False means no postmunge drift assessment is performed
-  - True means an assessment is performed for both the source column and derived column 
+The results will also be printed out if printstatus is activated. Defaults to _False_, and:
+  - _False_ means no postmunge drift assessment is performed
+  - _True_ means an assessment is performed for both the source column and derived column 
   stats
-  - 'efficient' means that a postmunge drift assessment is only performed on the source 
+  - _'efficient'_ means that a postmunge drift assessment is only performed on the source 
   columns (less information but much more energy efficient)
-  - 'report_effic' means that the efficient assessment is performed and returned with 
+  - _'report_effic'_ means that the efficient assessment is performed and returned with 
   no processing of data
-  - 'report_full' means that the full assessment is performed and returned with no 
+  - _'report_full'_ means that the full assessment is performed and returned with no 
   processing of data
 
-* LabelSmoothing: accepts float values in range 0.0-1.0 or the default value of False
-to turn off Label Smoothing. Note that a user can pass True to LabelSmoothing which 
+* LabelSmoothing: accepts float values in range 0.0-1.0 or the default value of _False_
+to turn off Label Smoothing. Note that a user can pass _True_ to LabelSmoothing which 
 will consistently encode to LabelSmoothing_train from the corresponding automunge(.) 
 call, including any application of LSfit based on parameters of transformations 
 derived from the train set labels.
 
-* LSfit: a True/False indication for basis of label smoothing parameter K. The default
+* LSfit: a _True/False_ indication for basis of label smoothing parameter K. The default
 of False means the assumption will be for level distribution of labels, passing True
 means any label smoothing will evaluate distribution of label activations such as to fit
 the smoothing factor to specific cells based on the activated column and target column.
 Note that if LabelSmoothing passed as True the LSfit will be based on the basis from
 the corresponding automunge(.) call (will override the one passed to postmunge).
 
-* returnedsets: Can be passed as one of {True, False, 'test_ID', 
-'test_labels', 'test_ID_labels'}. Designates the composition of the sets returned
+* returnedsets: Can be passed as one of _{True, False, 'test_ID', _
+_'test_labels', 'test_ID_labels'}_. Designates the composition of the sets returned
 from a postmunge(.) call. Defaults to True for the full composition of five returned sets.
 With other options postmunge(.) only returns a single set, where for False that set consists 
 of the test set, or for the other options returns the test set concatinated with the ID, 
@@ -1538,7 +1541,7 @@ postprocess_dict['finalcolumns_labels']
 postprocess_dict['finalcolumns_trainID']
 ```
 
-* shuffletrain: can be passed as one of {True, False} which indicates if the rows in 
+* shuffletrain: can be passed as one of _{True, False}_ which indicates if the rows in 
 the returned sets will be (consistently) shuffled. This value defaults to False. 
 
 
