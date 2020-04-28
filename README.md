@@ -1075,7 +1075,7 @@ assignparam = {'splt' : {'column1' : {'minsplit' : 4}}
 #Note that column string identifiers may just be the source column string or may include the
 #suffix appenders such as if multiple versions of transformations are applied within the same family tree
 #If more than one column identifier matches a column, the longest character length key which matches
-#will be applied (such as may include suffixc appenders).
+#will be applied (such as may include suffix appenders).
 
 #Note that if a user wishes to overwrite the default parameters for all columns without specifying
 #them individually they can pass a 'default_assignparam' entry as follows (this only overwrites those 
