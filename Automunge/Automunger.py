@@ -23842,13 +23842,13 @@ class AutoMunge:
         result = True
         
         print("Error, the following entry to user passed assigncat was not found")
-        print("to have a corresponding entry in process_dict.")
+        print("to have a corresponding entry in transform_dict.")
         print("")
-        print("assigncat key missing process_dict entry: ", assigncat_key)
+        print("assigncat key missing transform_dict entry: ", assigncat_key)
         print("")
-        print("All passed assigncat entries require an entry as a root category in process_dict")
+        print("All passed assigncat entries require an entry as a root category in transform_dict")
         print("(but only those categories also used as entries in the family tree primitives")
-        print("for a root category in process_dict require a corresponding entry in transform_dict.)")
+        print("for a root category in transform_dict require a corresponding entry in process_dict.)")
 
     return result
   
@@ -23989,6 +23989,63 @@ class AutoMunge:
 
 
     return result1, result2, transformdict
+  
+  
+
+  def check_transformdict2(self, transformdict):
+    """
+    #Here we'll do an additional check on transformdict to ensure
+    #no redundant specifications in adjacent primitives
+    """
+    
+    
+    result1 = False
+    result2 = False
+    
+    upstream_entries = []
+    downstream_entries = []
+    
+    for transformkey in sorted(transformdict):
+      
+      for primitive in transformdict[transformkey]:
+        
+        if primitive in ['parents', 'siblings', 'auntsuncles', 'cousins']:  
+          
+          for entry in transformdict[transformkey][primitive]:
+            
+            if entry in upstream_entries:
+              
+              result1 = True
+              
+              print("error warning: ")
+              print("redundant entries found in the upstream primitives ")
+              print("for user-passed transformdict key: ", transformkey)
+              
+            else:
+          
+              upstream_entries += [entry]
+          
+        if primitive in ['children', 'niecesnephews', 'coworkers', 'friends']:  
+          
+          for entry in transformdict[transformkey][primitive]:
+            
+            if entry in downstream_entries:
+              
+              result2 = True
+              
+              print("error warning: ")
+              print("redundant entries found in the downstream primitives ")
+              print("for user-passed transformdict key: ", transformkey)
+              
+            else:
+          
+              downstream_entries += [entry]
+
+      upstream_entries = []
+      downstream_entries = []
+
+
+    return result1, result2
   
   #
   def check_haltingproblem(self, transformdict, transform_dict, max_check_count = 111):
@@ -25195,6 +25252,13 @@ class AutoMunge:
 
       miscparameters_results.update({'check_transformdict_result1' : check_transformdict_result1, \
                                      'check_transformdict_result2' : check_transformdict_result2})
+      
+      check_transformdict2_result1, check_transformdict2_result2 = \
+      self.check_transformdict2(transformdict)
+      
+      miscparameters_results.update({'check_transformdict2_result1' : check_transformdict2_result1, \
+                                     'check_transformdict2_result2' : check_transformdict2_result2})
+      
       
   #       #first print a notification if we are overwriting anything
   #       for keytd in list(transformdict.keys()):
@@ -26509,7 +26573,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.81'
+    automungeversion = '3.82'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
