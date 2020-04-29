@@ -664,18 +664,18 @@ df_train set intended for use as a row identifier value (such as could
 be sequential numbers for instance). The function defaults to False for
 cases where the training set does not include an ID column. A user can 
 also pass a list of string columns titles such as to carve out multiple
-columns to be excluded from processing but consistently partitioned. An 
-integer column index or list of integer column indexes may also be passed 
-such as if the source dataset was numpy array.
+columns to be excluded from processing but consistently shuffled and 
+partitioned. An integer column index or list of integer column indexes 
+may also be passed such as if the source dataset was numpy array.
 
 * testID_column: a string of the column title for the column from the
 df_test set intended for use as a row identifier value (such as could be
 sequential numbers for instance). The function defaults to False for
 cases where the training set does not include an ID column. A user can 
 also pass a list of string columns titles such as to carve out multiple
-columns to be excluded from processing but consistently partitioned. An 
-integer column index or list of integer column indexes may also be passed 
-such as if the source dataset was numpy array.
+columns to be excluded from processing but consistently shuffled and 
+partitioned. An integer column index or list of integer column indexes 
+may also be passed such as if the source dataset was numpy array.
 
 * valpercent1: a float value between 0 and 1 which designates the percent
 of the training data which will be set aside for the first validation
@@ -1448,9 +1448,9 @@ df_test set intended for use as a row identifier value (such as could be
 sequential numbers for instance). The function defaults to False for
 cases where the training set does not include an ID column. A user can 
 also pass a list of string columns titles such as to carve out multiple
-columns to be excluded from processing but consistently partitioned. An 
-integer column index or list of integer column indexes may also be passed 
-such as if the source dataset was numpy array.
+columns to be excluded from processing but consistently shuffled and 
+partitioned. An integer column index or list of integer column indexes 
+may also be passed such as if the source dataset was numpy array.
 
 * labelscolumn: default to _False_ indicates that a labels column is not 
 included in the test set passed to postmunge. A user can either pass
