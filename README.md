@@ -1804,6 +1804,7 @@ test set returned values >= 0, such as might be useful for kernel PCA for instan
 * retn: related to min/max scaling but retains +/- of values, based on conditions
 if max>=0 and min<=0, x=x/(max-min), elif max>=0 and min>=0 x=(x-min)/(max-min),
 elif max<=0 and min<=0 x=(x-max)/(max-min)
+![image](https://user-images.githubusercontent.com/44011748/80632143-cbbf7780-8a24-11ea-9bdb-2f7230328247.png)
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '_retn'
