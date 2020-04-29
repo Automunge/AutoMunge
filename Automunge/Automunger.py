@@ -97,14 +97,14 @@ class AutoMunge:
     transform_dict = {}
 
     #initialize bins based on what was passed through application of automunge(.)
-    if binstransform == True:
+    if binstransform is True:
       bins = 'bins'
       bint = 'bint'
     else:
       bins = None
       bint = None
         
-    if NArw_marker == True:
+    if NArw_marker is True:
       NArw = 'NArw'
     else:
       NArw = None
@@ -3942,7 +3942,7 @@ class AutoMunge:
     #if we had replacement transformations performed on downstream generation \
     #then delete the associated parent column 
     for columndict_column in postprocess_dict['column_dict']:
-      if postprocess_dict['column_dict'][columndict_column]['deletecolumn'] == True:
+      if postprocess_dict['column_dict'][columndict_column]['deletecolumn'] is True:
 
         #first we'll remove the column from columnslists 
         for columnslistcolumn in postprocess_dict['column_dict'][columndict_column]['columnslist']:
@@ -6371,7 +6371,7 @@ class AutoMunge:
 
                     extract_already_in_overlap_dict = True
 
-            if extract_already_in_overlap_dict == False:
+            if extract_already_in_overlap_dict is False:
 
               for unique2 in unique_list:
 
@@ -6606,7 +6606,7 @@ class AutoMunge:
 
                     extract_already_in_overlap_dict = True
 
-            if extract_already_in_overlap_dict == False:
+            if extract_already_in_overlap_dict is False:
 
               for unique2 in unique_list:
 
@@ -6896,7 +6896,7 @@ class AutoMunge:
 
                     extract_already_in_overlap_dict = True
 
-            if extract_already_in_overlap_dict == False:
+            if extract_already_in_overlap_dict is False:
 
               for unique2 in unique_list:
 
@@ -7197,7 +7197,7 @@ class AutoMunge:
 
                     extract_already_in_overlap_dict = True
 
-            if extract_already_in_overlap_dict == False:
+            if extract_already_in_overlap_dict is False:
 
               for unique2 in unique_list:
 
@@ -7496,7 +7496,7 @@ class AutoMunge:
 
                     extract_already_in_overlap_dict = True
 
-            if extract_already_in_overlap_dict == False:
+            if extract_already_in_overlap_dict is False:
 
               for unique2 in unique_list:
 
@@ -7736,7 +7736,7 @@ class AutoMunge:
 
                     extract_already_in_overlap_dict = True
 
-            if extract_already_in_overlap_dict == False:
+            if extract_already_in_overlap_dict is False:
 
               for unique2 in unique_list:
 
@@ -8039,7 +8039,7 @@ class AutoMunge:
 
                     extract_already_in_overlap_dict = True
 
-            if extract_already_in_overlap_dict == False:
+            if extract_already_in_overlap_dict is False:
 
               for unique2 in unique_list:
 
@@ -8651,7 +8651,7 @@ class AutoMunge:
 
                     overlap_dict.update({unique : float(extract)})
                   
-              if in_dict == False:
+              if in_dict is False:
 
                 overlap_dict.update({unique : np.nan})
     
@@ -8773,7 +8773,7 @@ class AutoMunge:
 
                     overlap_dict.update({unique : float(extract)})
                   
-              if in_dict == False:
+              if in_dict is False:
 
                 overlap_dict.update({unique : np.nan})
     
@@ -8911,7 +8911,7 @@ class AutoMunge:
 
                     overlap_dict.update({unique : float(extract)})
                   
-              if in_dict == False:
+              if in_dict is False:
 
                 overlap_dict.update({unique : np.nan})
     
@@ -8990,7 +8990,7 @@ class AutoMunge:
 
                     test_overlap_dict.update({unique : float(extract)})
                   
-              if in_dict == False:
+              if in_dict is False:
 
                 test_overlap_dict.update({unique : np.nan})
     
@@ -9117,7 +9117,7 @@ class AutoMunge:
 
                     overlap_dict.update({unique : float(extract.replace(',',''))})
                   
-              if in_dict == False:
+              if in_dict is False:
 
                 overlap_dict.update({unique : np.nan})
     
@@ -9241,7 +9241,7 @@ class AutoMunge:
 
                     overlap_dict.update({unique : float(extract.replace(',',''))})
                   
-              if in_dict == False:
+              if in_dict is False:
 
                 overlap_dict.update({unique : np.nan})
     
@@ -9384,7 +9384,7 @@ class AutoMunge:
 
                     overlap_dict.update({unique : float(extract.replace(',',''))})
                   
-              if in_dict == False:
+              if in_dict is False:
 
                 overlap_dict.update({unique : np.nan})
     
@@ -9466,7 +9466,7 @@ class AutoMunge:
 
                     test_overlap_dict.update({unique : float(extract)})
                   
-              if in_dict == False:
+              if in_dict is False:
 
                 test_overlap_dict.update({unique : np.nan})
     
@@ -18072,7 +18072,7 @@ class AutoMunge:
             category = 'text'
           else:
             category = 'bnry'
-  #       if True == False:
+  #       if True is False:
   #         pass
 
         else:
@@ -18148,7 +18148,7 @@ class AutoMunge:
             else:
               category = 'bnry'
 
-  #         if True == False:
+  #         if True is False:
   #           pass
 
           else:
@@ -18204,11 +18204,11 @@ class AutoMunge:
       #I don't consider mytself an expert here, these are kind of a placeholder while I conduct more research
 
   #     #default to 'nmbr' category instead of 'bxcx'
-  #     if category == 'bxcx' and powertransform == False:
+  #     if category == 'bxcx' and powertransform is False:
   #       category = 'nmbr'
 
       if category in ['nmbr', 'bxcx', defaultnumerical] \
-      and powertransform == True:
+      and powertransform is True:
         
         if df[pd.to_numeric(df[column], errors='coerce').notnull()][column].astype(float).nunique() >= 3:
 
@@ -18229,7 +18229,7 @@ class AutoMunge:
             if skewness < 1.5:
               category = 'mnmx'
             else:
-              #if powertransform == True:
+              #if powertransform is True:
               if category in ['nmbr', 'bxcx']:
 
                 #note we'll only allow bxcx category if all values greater than a clip value
@@ -18246,7 +18246,7 @@ class AutoMunge:
       del df
       
       #special cases for evlauation of labels column
-      if labels == True:
+      if labels is True:
         
         if category == 'nmbr':
           category = 'lbnm'
@@ -18709,7 +18709,7 @@ class AutoMunge:
 
                     overlap_dict.update({unique : False})
                   
-              if in_dict == False:
+              if in_dict is False:
 
                 overlap_dict.update({unique : True})
     
@@ -18793,7 +18793,7 @@ class AutoMunge:
 
                     overlap_dict.update({unique : False})
                   
-              if in_dict == False:
+              if in_dict is False:
 
                 overlap_dict.update({unique : True})
     
@@ -20060,7 +20060,7 @@ class AutoMunge:
     if MLinfilltype in ['numeric', 'singlct', 'binary', 'multisp', 'multirt', '1010']:
 
       #if this is a single column set (not categorical)
-      if len(categorylist) == 1 or singlecolumncase == True:
+      if len(categorylist) == 1 or singlecolumncase is True:
 
         #create new dataframe for infills wherein the infill values are placed in \
         #rows coresponding to NArows True values and rows coresponding to NArows \
@@ -20191,7 +20191,7 @@ class AutoMunge:
     '''
     
     
-    if postprocess_dict['column_dict'][column]['infillcomplete'] == False:
+    if postprocess_dict['column_dict'][column]['infillcomplete'] is False:
 
       columnslist = postprocess_dict['column_dict'][column]['columnslist']
       categorylist = postprocess_dict['column_dict'][column]['categorylist']
@@ -20481,7 +20481,7 @@ class AutoMunge:
           for labelcolumn in labels:
             if postprocess_dict['column_dict'][labelcolumn]['category'] == labelscategory:
               singlctcolumn = labelcolumn
-          if singlctcolumn == False:
+          if singlctcolumn is False:
             singlctcolumn = labels[0]
         
         uniquevalues = list(labels_df[singlctcolumn].unique())
@@ -20991,7 +20991,7 @@ class AutoMunge:
     
         
     #printout display progress
-    if printstatus == True:
+    if printstatus is True:
       print("_______________")
       print("Begin Feature Importance evaluation")
       print("")
@@ -21001,7 +21001,7 @@ class AutoMunge:
       FSmodel = False
       
       #printout display progress
-      if printstatus == True:
+      if printstatus is True:
         print("_______________")
         print("No labels_column passed, Feature Importance halted")
         print("")
@@ -21057,7 +21057,7 @@ class AutoMunge:
         FSmodel = False
         
         #printout display progress
-        if printstatus == True:
+        if printstatus is True:
           print("_______________")
           print("No labels returned from automunge(.), Feature Importance halted")
           print("")
@@ -21098,7 +21098,7 @@ class AutoMunge:
 
 
         #printout display progress
-        if printstatus == True:
+        if printstatus is True:
           print("_______________")
           print("Training feature importance evaluation model")
           print("")
@@ -21116,7 +21116,7 @@ class AutoMunge:
           FS_origcolumns = list(FSpostprocess_dict['origcolumn'])
           
           #printout display progress
-          if printstatus == True:
+          if printstatus is True:
             print("_______________")
             print("No model returned from training, Feature Importance halted")
             print("")
@@ -21159,7 +21159,7 @@ class AutoMunge:
                                             'metric2' : None}})
 
           #printout display progress
-          if printstatus == True:
+          if printstatus is True:
             print("_______________")
             print("Evaluating feature importances")
             print("")
@@ -21169,8 +21169,8 @@ class AutoMunge:
           for column in am_train_columns:
 
 #             if FSpostprocess_dict['column_dict'][column]['category'] != 'NArw' \
-#             and FScolumn_dict[column]['FScomplete'] == False:
-            if FScolumn_dict[column]['FScomplete'] == False:
+#             and FScolumn_dict[column]['FScomplete'] is False:
+            if FScolumn_dict[column]['FScomplete'] is False:
 
               #categorylist = FScolumn_dict[column]['categorylist']
               #update version 1.80, let's perform FS on columnslist instead of categorylist
@@ -21263,13 +21263,13 @@ class AutoMunge:
         FSpostprocess_dict
         
 
-        if printstatus == True:
+        if printstatus is True:
           print("_______________")
           print("Feature Importance results:")
           print("")
 
         #to inspect values returned in featureimportance object one could run
-        if printstatus == True:
+        if printstatus is True:
           for keys,values in FScolumn_dict.items():
             print(keys)
             print('metric = ', values['metric'])
@@ -21330,7 +21330,7 @@ class AutoMunge:
           FS_sorted['metric2_column_key'][key1].update({FS_sorted['metric2_key'][key1][key2][entry_index] : key2})
         
     
-    if printstatus == True:
+    if printstatus is True:
       print()
       print("______________________")
       print("sorted metric results:")
@@ -21359,7 +21359,7 @@ class AutoMunge:
     
     
     #printout display progress
-    if printstatus == True:
+    if printstatus is True:
       print("_______________")
       print("Feature Importance evaluation complete")
       print("")
@@ -21564,7 +21564,7 @@ class AutoMunge:
               if column in postprocess_assigninfill_dict['stdrdinfill']:
 
                 #printout display progress
-                if printstatus == True:
+                if printstatus is True:
                   print("infill to column: ", column)
                   print("     infill type: stdrdinfill")
                   print("")
@@ -21573,7 +21573,7 @@ class AutoMunge:
               if column in postprocess_assigninfill_dict['zeroinfill']:
 
                 #printout display progress
-                if printstatus == True:
+                if printstatus is True:
                   print("infill to column: ", column)
                   print("     infill type: zeroinfill")
                   print("")
@@ -21593,7 +21593,7 @@ class AutoMunge:
               if column in postprocess_assigninfill_dict['oneinfill']:
 
                 #printout display progress
-                if printstatus == True:
+                if printstatus is True:
                   print("infill to column: ", column)
                   print("     infill type: oneinfill")
                   print("")
@@ -21614,7 +21614,7 @@ class AutoMunge:
               if column in postprocess_assigninfill_dict['adjinfill']:
 
                 #printout display progress
-                if printstatus == True:
+                if printstatus is True:
                   print("infill to column: ", column)
                   print("     infill type: adjinfill")
                   print("")
@@ -21633,7 +21633,7 @@ class AutoMunge:
               if column in postprocess_assigninfill_dict['medianinfill']:
 
                 #printout display progress
-                if printstatus == True:
+                if printstatus is True:
                   print("infill to column: ", column)
                   print("     infill type: medianinfill")
                   print("")
@@ -21649,7 +21649,7 @@ class AutoMunge:
                 categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
 
                 if (categorylistlength == 1) \
-                and boolcolumn == False:
+                and boolcolumn is False:
                   #noting that currently we're only going to infill 0 for single column categorylists
                   #some comparable address for multi-column categories is a future extension
 
@@ -21668,7 +21668,7 @@ class AutoMunge:
               if column in postprocess_assigninfill_dict['meaninfill']:
 
                 #printout display progress
-                if printstatus == True:
+                if printstatus is True:
                   print("infill to column: ", column)
                   print("     infill type: meaninfill")
                   print("")
@@ -21685,7 +21685,7 @@ class AutoMunge:
 
                 #if (column not in excludetransformscolumns) \
                 if (categorylistlength == 1) \
-                and boolcolumn == False:
+                and boolcolumn is False:
                   #noting that currently we're only going to infill 0 for single column categorylists
                   #some comparable address for multi-column categories is a future extension
 
@@ -21704,7 +21704,7 @@ class AutoMunge:
               if column in postprocess_assigninfill_dict['modeinfill']:
 
                 #printout display progress
-                if printstatus == True:
+                if printstatus is True:
                   print("infill to column: ", column)
                   print("     infill type: modeinfill")
                   print("")
@@ -21717,7 +21717,7 @@ class AutoMunge:
                   boolcolumn = True
 
 
-                if boolcolumn == False:
+                if boolcolumn is False:
 
                   df_train, infillvalue = \
                   self.train_modeinfillfunction(df_train, column, postprocess_dict, \
@@ -21734,7 +21734,7 @@ class AutoMunge:
               if column in postprocess_assigninfill_dict['lcinfill']:
 
                 #printout display progress
-                if printstatus == True:
+                if printstatus is True:
                   print("infill to column: ", column)
                   print("     infill type: lcinfill")
                   print("")
@@ -21747,7 +21747,7 @@ class AutoMunge:
                   boolcolumn = True
 
 
-                if boolcolumn == False:
+                if boolcolumn is False:
 
                   df_train, infillvalue = \
                   self.train_lcinfillfunction(df_train, column, postprocess_dict, \
@@ -21766,7 +21766,7 @@ class AutoMunge:
             if column in postprocess_assigninfill_dict['MLinfill']:
 
               #printout display progress
-              if printstatus == True:
+              if printstatus is True:
                 print("infill to column: ", column)
                 print("     infill type: MLinfill")
                 print("")
@@ -21833,7 +21833,7 @@ class AutoMunge:
             if column in postprocess_assigninfill_dict['stdrdinfill']:
 
               #printout display progress
-              if printstatus == True:
+              if printstatus is True:
                 print("infill to column: ", column)
                 print("     infill type: stdrdinfill")
                 print("")
@@ -21843,7 +21843,7 @@ class AutoMunge:
             if column in postprocess_assigninfill_dict['zeroinfill']:
 
               #printout display progress
-              if printstatus == True:
+              if printstatus is True:
                 print("infill to column: ", column)
                 print("     infill type: zeroinfill")
                 print("")
@@ -21857,7 +21857,7 @@ class AutoMunge:
             if column in postprocess_assigninfill_dict['oneinfill']:
 
               #printout display progress
-              if printstatus == True:
+              if printstatus is True:
                 print("infill to column: ", column)
                 print("     infill type: oneinfill")
                 print("")
@@ -21871,7 +21871,7 @@ class AutoMunge:
             if column in postprocess_assigninfill_dict['adjinfill']:
 
               #printout display progress
-              if printstatus == True:
+              if printstatus is True:
                 print("infill to column: ", column)
                 print("     infill type: adjinfill")
                 print("")
@@ -21884,7 +21884,7 @@ class AutoMunge:
             if column in postprocess_assigninfill_dict['medianinfill']:
 
               #printout display progress
-              if printstatus == True:
+              if printstatus is True:
                 print("infill to column: ", column)
                 print("     infill type: medianinfill")
                 print("")
@@ -21901,7 +21901,7 @@ class AutoMunge:
 
               #if (column not in excludetransformscolumns) \
               if (categorylistlength == 1) \
-              and boolcolumn == False:
+              and boolcolumn is False:
                 #noting that currently we're only going to infill 0 for single column categorylists
                 #some comparable address for multi-column categories is a future extension
 
@@ -21917,7 +21917,7 @@ class AutoMunge:
             if column in postprocess_assigninfill_dict['meaninfill']:
 
               #printout display progress
-              if printstatus == True:
+              if printstatus is True:
                 print("infill to column: ", column)
                 print("     infill type: meaninfill")
                 print("")
@@ -21934,7 +21934,7 @@ class AutoMunge:
 
               #if (column not in excludetransformscolumns) \
               if (categorylistlength == 1) \
-              and boolcolumn == False:
+              and boolcolumn is False:
                 #noting that currently we're only going to infill 0 for single column categorylists
                 #some comparable address for multi-column categories is a future extension
 
@@ -21949,7 +21949,7 @@ class AutoMunge:
             if column in postprocess_assigninfill_dict['modeinfill']:
 
               #printout display progress
-              if printstatus == True:
+              if printstatus is True:
                 print("infill to column: ", column)
                 print("     infill type: modeinfill")
                 print("")
@@ -21963,7 +21963,7 @@ class AutoMunge:
                 boolcolumn = True
 
 
-              if boolcolumn == False:
+              if boolcolumn is False:
 
                 infillvalue = postprocess_dict['column_dict'][column]['normalization_dict'][column]['infillvalue']
 
@@ -21977,7 +21977,7 @@ class AutoMunge:
             if column in postprocess_assigninfill_dict['lcinfill']:
 
               #printout display progress
-              if printstatus == True:
+              if printstatus is True:
                 print("infill to column: ", column)
                 print("     infill type: lcinfill")
                 print("")
@@ -21992,7 +21992,7 @@ class AutoMunge:
                 boolcolumn = True
 
 
-              if boolcolumn == False:
+              if boolcolumn is False:
 
                 #noting that currently we're only going to infill 0 for single column categorylists
                 #some comparable address for multi-column categories is a future extension
@@ -22009,7 +22009,7 @@ class AutoMunge:
           if column in postprocess_assigninfill_dict['MLinfill']:
 
             #printout display progress
-            if printstatus == True:
+            if printstatus is True:
               print("infill to column: ", column)
               print("     infill type: MLinfill")
               print("")
@@ -23035,7 +23035,7 @@ class AutoMunge:
 #     if 'bool_PCA_excl' in ML_cmnd['PCA_cmnd']:
         
 #       #if user passed the bool_PCA_excl as True in ML_cmnd['PCA_cmnd'] 
-#       if ML_cmnd['PCA_cmnd']['bool_PCA_excl'] == True:
+#       if ML_cmnd['PCA_cmnd']['bool_PCA_excl'] is True:
 #         for checkcolumn in df:
 #           #if column is boolean then add to lists
 #           if set(df[checkcolumn].unique()) == {0,1} \
@@ -23067,7 +23067,7 @@ class AutoMunge:
     if 'bool_PCA_excl' in ML_cmnd['PCA_cmnd']:
         
       #if user passed the bool_PCA_excl as True in ML_cmnd['PCA_cmnd'] 
-      if ML_cmnd['PCA_cmnd']['bool_PCA_excl'] == True:
+      if ML_cmnd['PCA_cmnd']['bool_PCA_excl'] is True:
         for checkcolumn in df:
           #if column is boolean then add to lists
         #   if set(df[checkcolumn].unique()) == {0,1} \
@@ -23081,7 +23081,7 @@ class AutoMunge:
     
     if 'bool_ordl_PCAexcl' in ML_cmnd['PCA_cmnd']:
       #if user passed the bool_ordl_PCAexcl as True in ML_cmnd['PCA_cmnd'] 
-      if ML_cmnd['PCA_cmnd']['bool_ordl_PCAexcl'] == True:
+      if ML_cmnd['PCA_cmnd']['bool_ordl_PCAexcl'] is True:
         for checkcolumn in df:
           #if column is boolean then add to lists
         #   if set(df[checkcolumn].unique()) == {0,1} \
@@ -23403,7 +23403,7 @@ class AutoMunge:
       print()
       
     elif isinstance(LabelSmoothing_train, bool) \
-    and LabelSmoothing_train != False:
+    and LabelSmoothing_train is not False:
       
       LabelSmoothing_train_valresult = True
       print("Error: invalid entry passed for LabelSmoothing_train parameter.")
@@ -24599,17 +24599,17 @@ class AutoMunge:
 #     """
 #     #applies label smoothing based on user passed epsilon 
     
-#     #if LSfit == False
+#     #if LSfit is False
 #     #based on method described in "Rethinking the Inception Architecture for Computer Vision" by Szegedy et al
 #     #hat tip to Stack Overflow user lejlot for some implementaiton suggestions
 #     # https://stackoverflow.com/questions/39335535/label-smoothing-soft-targets-in-pandas
     
-#     #if LSfit == True
+#     #if LSfit is True
 #     #based on extension wherein the Smoothing factor K for each column is fit to the
 #     #distribution of the set is is a function of the activation column and target column
     
-#     #we'll follow convention that if LSfit == False we'll only apply LS to current column
-#     #and if LSfit == True we'll apply to all columns in categorylist
+#     #we'll follow convention that if LSfit is False we'll only apply LS to current column
+#     #and if LSfit is True we'll apply to all columns in categorylist
 #     #and return a diciotnary indicating which columns have recieved
 #     #(dicitonary categorycomplete_dict initialized external to function)
     
@@ -24629,7 +24629,7 @@ class AutoMunge:
 # #     and len(label_categorylist) > 1:
 
       
-#     if LSfit == True:
+#     if LSfit is True:
       
 #       unique_set = set(pd.unique(df[label_categorylist].values.ravel('K')))
       
@@ -24642,10 +24642,10 @@ class AutoMunge:
 #       if (unique_set == {0,1} \
 #       or unique_set == {0} \
 #       or unique_set == {1}) \
-#       and onehot == True \
+#       and onehot is True \
 #       and len(label_categorylist) > 1:
         
-#         #if LSfit == True we'll apply LS to all columns in categorylist
+#         #if LSfit is True we'll apply LS to all columns in categorylist
 
 #         #activation_dcit will track the count of activations for each column in the categorylist
 #         activation_dict = {}
@@ -24697,7 +24697,7 @@ class AutoMunge:
 #           categorycomplete_dict[column1] = True
     
     
-#     #if LSfit != True:
+#     #if LSfit is not True:
 #     #else we'll only apply LS to the passed column with assumption of level distribution for K
 #     else:
       
@@ -24712,7 +24712,7 @@ class AutoMunge:
 #       if (unique_set == {0,1} \
 #       or unique_set == {0} \
 #       or unique_set == {1}) \
-#       and onehot == True \
+#       and onehot is True \
 #       and len(label_categorylist) > 1:
         
 #         for column1 in label_categorylist:
@@ -24736,12 +24736,12 @@ class AutoMunge:
     """
     #applies label smoothing based on user passed epsilon 
     
-    #if LSfit == False
+    #if LSfit is False
     #based on method described in "Rethinking the Inception Architecture for Computer Vision" by Szegedy et al
     #hat tip to Stack Overflow user lejlot for some implementaiton suggestions
     # https://stackoverflow.com/questions/39335535/label-smoothing-soft-targets-in-pandas
     
-    #if LSfit == True
+    #if LSfit is True
     #based on extension wherein the Smoothing factor K for each column is fit to the
     #distribution of the set is is a function of the activation column and target column
     
@@ -24778,7 +24778,7 @@ class AutoMunge:
                                           'label_category' : label_category}})
     
     
-    if LSfit == True:
+    if LSfit is True:
       
       unique_set = set(pd.unique(df[label_categorylist].values.ravel('K')))
       
@@ -24792,10 +24792,10 @@ class AutoMunge:
       if (unique_set == {0,1} \
       or unique_set == {0} \
       or unique_set == {1}) \
-      and onehot == True \
+      and onehot is True \
       and len(label_categorylist) > 1:
         
-        #if LSfit == True we'll apply LS to all columns in categorylist
+        #if LSfit is True we'll apply LS to all columns in categorylist
 
         #activation_dcit will track the count of activations for each column in the categorylist
         activation_dict = {}
@@ -24857,7 +24857,7 @@ class AutoMunge:
           categorycomplete_dict[column1] = True
     
     
-    #if LSfit != True:
+    #if LSfit is not True:
     #else we'll only apply LS to the passed column with assumption of level distribution for K
     else:
       
@@ -24873,7 +24873,7 @@ class AutoMunge:
       if (unique_set == {0,1} \
       or unique_set == {0} \
       or unique_set == {1}) \
-      and onehot == True \
+      and onehot is True \
       and len(label_categorylist) > 1:
         
         for column1 in label_categorylist:
@@ -24898,12 +24898,12 @@ class AutoMunge:
     #applies label smoothing based on user passed LSfitparams_dict
     #consiostently to label smoothing from corresponding train data
     
-    #if LSfit == False
+    #if LSfit is False
     #based on method described in "Rethinking the Inception Architecture for Computer Vision" by Szegedy et al
     #hat tip to Stack Overflow user lejlot for some implementaiton suggestions
     # https://stackoverflow.com/questions/39335535/label-smoothing-soft-targets-in-pandas
     
-    #if LSfit == True
+    #if LSfit is True
     #based on extension wherein the Smoothing factor K for each column is fit to the
     #distribution of the set is is a function of the activation column and target column
     
@@ -24927,7 +24927,7 @@ class AutoMunge:
     label_category = LSfitparams_dict[targetcolumn]['label_category']
     
     
-    if LSfit == True:
+    if LSfit is True:
       
       unique_set = set(pd.unique(df[label_categorylist].values.ravel('K')))
       
@@ -24941,13 +24941,13 @@ class AutoMunge:
       if (unique_set == {0,1} \
       or unique_set == {0} \
       or unique_set == {1}) \
-      and onehot == True \
+      and onehot is True \
       and len(label_categorylist) > 1:
         
 #         activation_dict = LSfitparams_dict[targetcolumn]['activation_dict']
         LS_dict = LSfitparams_dict[targetcolumn]['LS_dict']
         
-        #if LSfit == True we'll apply LS to all columns in categorylist
+        #if LSfit is True we'll apply LS to all columns in categorylist
 
 #         #activation_dcit will track the count of activations for each column in the categorylist
 #         activation_dict = {}
@@ -25009,7 +25009,7 @@ class AutoMunge:
           categorycomplete_dict[column1] = True
     
     
-    #if LSfit != True:
+    #if LSfit is not True:
     #else we'll only apply LS to the passed column with assumption of level distribution for K
     else:
       
@@ -25025,7 +25025,7 @@ class AutoMunge:
       if (unique_set == {0,1} \
       or unique_set == {0} \
       or unique_set == {1}) \
-      and onehot == True \
+      and onehot is True \
       and len(label_categorylist) > 1:
         
         for column1 in label_categorylist:
@@ -25245,7 +25245,7 @@ class AutoMunge:
     #initialize processing dicitonaries
     transform_dict = self.assembletransformdict(binstransform, NArw_marker)
 
-    if bool(transformdict) != False:
+    if bool(transformdict) is not False:
 
       check_transformdict_result1, check_transformdict_result2, transformdict = \
       self.check_transformdict(transformdict)
@@ -25294,7 +25294,7 @@ class AutoMunge:
         if 'bool_PCA_excl' not in ML_cmnd['PCA_cmnd']:
           ML_cmnd['PCA_cmnd'].update({'bool_PCA_excl':True})
 
-    if bool(processdict) != False:
+    if bool(processdict) is not False:
 
   #       #first print a notification if we are overwriting anything
   #       for keypd in list(processdict.keys()):
@@ -25318,9 +25318,9 @@ class AutoMunge:
 
 
     #feature selection analysis performed here if elected
-    if featureselection == True:
+    if featureselection is True:
 
-      if labels_column == False:
+      if labels_column is False:
         print("featureselection not available without labels_column in training set")
         
         madethecut = []
@@ -25342,7 +25342,7 @@ class AutoMunge:
 
 
         #printout display progress
-        if printstatus == True:
+        if printstatus is True:
           print("_______________")
           print("Feature Importance results returned")
           print("")
@@ -25370,7 +25370,7 @@ class AutoMunge:
 
 
     #printout display progress
-    if printstatus == True:
+    if printstatus is True:
       print("_______________")
       print("Begin Automunge processing")
       print("")
@@ -25404,7 +25404,7 @@ class AutoMunge:
       labels_column = trainlabels[-1]
     
     #populate the assign_param now that we've coverted column labels to strings
-    if bool(assignparam) != False:
+    if bool(assignparam) is not False:
 
       #assemble the assign_param
       assign_param = self.assemble_assign_param(assignparam, trainlabels)
@@ -25424,7 +25424,7 @@ class AutoMunge:
       df_test = df_train[0:1].copy()
       testID_column = trainID_column
       test_plug_marker = True
-      if labels_column != False:
+      if labels_column is not False:
         del df_test[labels_column]
         
 
@@ -25455,7 +25455,7 @@ class AutoMunge:
         else:
           print("error, non integer index passed without columns named")
       else:
-        if trainID_column == False:
+        if trainID_column is False:
           trainID_column = []
         elif isinstance(trainID_column, str):
           trainID_column = [trainID_column]
@@ -25474,7 +25474,7 @@ class AutoMunge:
         else:
           print("error, non integer index passed without columns named")
       else:
-        if testID_column == False:
+        if testID_column is False:
           testID_column = []
         elif isinstance(testID_column, str):
           testID_column = [testID_column]
@@ -25576,7 +25576,7 @@ class AutoMunge:
       else:
         shuffle_param=False
 
-      if labels_column != False:
+      if labels_column is not False:
         #we'll wait to split out the validation labels
         df_train, df_validation1 = \
         train_test_split(df_train, test_size=totalvalidationratio, random_state=answer, shuffle = shuffle_param)
@@ -25590,7 +25590,7 @@ class AutoMunge:
 
 
 
-      if trainID_column != False:
+      if trainID_column is not False:
         df_trainID, df_validationID1 = \
         train_test_split(df_trainID, test_size=totalvalidationratio, random_state=answer, shuffle = shuffle_param)
 
@@ -25649,9 +25649,9 @@ class AutoMunge:
 #         if df_test.shape[1] == 0:
 #           df_test = df_testlabels[0:10].copy()
 
-    if labelspresenttrain == False:
+    if labelspresenttrain is False:
       df_labels = pd.DataFrame()
-    if labelspresenttest == False:
+    if labelspresenttest is False:
 
       #we'll introduce convention that if no df_testlabels we'll create
       #a dummy set derived from df_label's first rows
@@ -25748,7 +25748,7 @@ class AutoMunge:
       #
       categorycomplete = False
 
-      if bool(assigncat) == True:
+      if bool(assigncat) is True:
 
         for key in assigncat:
           if column in assigncat[key]:
@@ -25757,13 +25757,13 @@ class AutoMunge:
             categorycomplete = True
 
             #printout display progress
-            if printstatus == True:
+            if printstatus is True:
               print("evaluating column: ", column)
 
             #special case, if user assigned column to 'eval' then we'll run evalcategory
             #passing a False for powertransform parameter
             if key in ['eval']:
-              if evalcat == False:
+              if evalcat is False:
                 category = self.evalcategory(df_train, column, numbercategoryheuristic, False, False)
               elif type(evalcat) == types.FunctionType:
                 category = evalcat(df_train, column, numbercategoryheuristic, False, False)
@@ -25774,7 +25774,7 @@ class AutoMunge:
             
             #or for 'ptfm' passing a True for powertransform parameter
             if key in ['ptfm']:
-              if evalcat == False:
+              if evalcat is False:
                 category = self.evalcategory(df_train, column, numbercategoryheuristic, True, False)
               elif type(evalcat) == types.FunctionType:
                 category = evalcat(df_train, column, numbercategoryheuristic, True, False)
@@ -25784,13 +25784,13 @@ class AutoMunge:
               category_test = category
 
       #
-      if categorycomplete == False:
+      if categorycomplete is False:
 
         #printout display progress
-        if printstatus == True:
+        if printstatus is True:
           print("evaluating column: ", column)
 
-        if evalcat == False:
+        if evalcat is False:
           category = self.evalcategory(df_train, column, numbercategoryheuristic, powertransform, False)
         elif type(evalcat) == types.FunctionType:
           category = evalcat(df_train, column, numbercategoryheuristic, powertransform, False)
@@ -25818,7 +25818,7 @@ class AutoMunge:
       masterNArows_test = pd.concat([masterNArows_test, testNArows], axis=1)
 
       #printout display progress
-      if printstatus == True:
+      if printstatus is True:
         print("processing column: ", column)
         print("    root category: ", category)
 
@@ -25895,7 +25895,7 @@ class AutoMunge:
 #             postprocess_dict['newcolumn'].update({newcolumn : {'origcolumn' : column}})
       ##
       #printout display progress
-      if printstatus == True:
+      if printstatus is True:
         print(" returned columns:")
         print(postprocess_dict['origcolumn'][column]['columnkeylist'])
         print("")
@@ -25905,7 +25905,7 @@ class AutoMunge:
 
     #ok here's where we address labels
 
-    if labels_column != False:        
+    if labels_column is not False:        
 
       #for now we'll just assume consistent processing approach for labels as for data
       #a future extension may segregate this approach
@@ -25919,7 +25919,7 @@ class AutoMunge:
       #we'll allow user to assign category to labels as well via assigncat call
       categorycomplete = False
 
-      if bool(assigncat) == True:
+      if bool(assigncat) is True:
 
         for key in assigncat:
           if labels_column in assigncat[key]:
@@ -25927,7 +25927,7 @@ class AutoMunge:
             categorycomplete = True
 
             #printout display progress
-            if printstatus == True:
+            if printstatus is True:
               print("______")
               print("")
               print("evaluating label column: ", labels_column)
@@ -25935,7 +25935,7 @@ class AutoMunge:
             #special case, if user assigned column to 'eval' then we'll run evalcategory
             #passing a False for powertransform parameter
             if key in ['eval']:
-              if evalcat == False:
+              if evalcat is False:
                 category = self.evalcategory(df_labels, labels_column, numbercategoryheuristic, False, True)
               elif type(evalcat) == types.FunctionType:
                 category = evalcat(df_labels, labels_column, numbercategoryheuristic, False, True)
@@ -25946,7 +25946,7 @@ class AutoMunge:
               
             #or for 'ptfm' passing a True for powertransform parameter
             if key in ['ptfm']:
-              if evalcat == False:
+              if evalcat is False:
                 category = self.evalcategory(df_labels, labels_column, numbercategoryheuristic, True, True)
               elif type(evalcat) == types.FunctionType:
                 category = evalcat(df_labels, labels_column, numbercategoryheuristic, True, True)
@@ -25955,7 +25955,7 @@ class AutoMunge:
 
               labelscategory = category
 
-      if categorycomplete == False:
+      if categorycomplete is False:
         
         #ok this isnt; exactly elegant, but going to add a special case for LabelSmoothing
         #first we[ll determine if labelsmoothing present
@@ -25966,7 +25966,7 @@ class AutoMunge:
           labelsmoothingpresent = True
 
         #printout display progress
-        if printstatus == True:
+        if printstatus is True:
           print("______")
           print("")
           print("evaluating label column: ", labels_column)
@@ -25976,7 +25976,7 @@ class AutoMunge:
 
         #we'll follow convention that default powertransform option not applied to labels
         #user can apply instead by passing column to ptfm in assigncat
-        if evalcat == False:
+        if evalcat is False:
           labelscategory = self.evalcategory(df_labels, labels_column, numbercategoryheuristic, False, True)
         elif type(evalcat) == types.FunctionType:
           labelscategory = evalcat(df_labels, labels_column, numbercategoryheuristic, False, True)
@@ -25996,7 +25996,7 @@ class AutoMunge:
   #           labelscategory = 'exc3'
 
       #printout display progress
-      if printstatus == True:
+      if printstatus is True:
 
         print("processing label column: ", labels_column)
         print("    root label category: ", labelscategory)
@@ -26102,7 +26102,7 @@ class AutoMunge:
         #for column in label columns
         for labelsmoothingcolumn in postprocess_dict['origcolumn'][labels_column]['columnkeylist']:
           
-          if categorycomplete_dict[labelsmoothingcolumn] == False:
+          if categorycomplete_dict[labelsmoothingcolumn] is False:
 
             label_categorylist = postprocess_dict['column_dict'][labelsmoothingcolumn]['categorylist']
             label_category = postprocess_dict['column_dict'][labelsmoothingcolumn]['category']
@@ -26142,7 +26142,7 @@ class AutoMunge:
         #for column in label columns
         for labelsmoothingcolumn in postprocess_dict['origcolumn'][labels_column]['columnkeylist']:
           
-          if categorycomplete_dict[labelsmoothingcolumn] == False:
+          if categorycomplete_dict[labelsmoothingcolumn] is False:
             
             if match_testLS_to_train is False:
                                      
@@ -26161,7 +26161,7 @@ class AutoMunge:
 
 
       #printout display progress
-      if printstatus == True:
+      if printstatus is True:
         print(" returned columns:")
         print(postprocess_dict['origcolumn'][labels_column]['columnkeylist'])
         print("")
@@ -26197,7 +26197,7 @@ class AutoMunge:
     #using infill to derive plug values for the previously missing cells
     
     #printout display progress
-    if printstatus == True:
+    if printstatus is True:
       print("______")
       print("")
 
@@ -26221,7 +26221,7 @@ class AutoMunge:
 
     #trim branches here associated with featureselect
 
-    if featureselection == True:
+    if featureselection is True:
 
       #get list of columns currently included
       currentcolumns = list(df_train)
@@ -26237,7 +26237,7 @@ class AutoMunge:
 
       if len(trimcolumns) > 0:
         #printout display progress
-        if printstatus == True:
+        if printstatus is True:
           print("_______________")
           print("Begin feature importance dimensionality reduction")
           print("")
@@ -26306,10 +26306,10 @@ class AutoMunge:
       if n_components < (len(list(df_train)) - len(PCAexcl)) \
       and (n_components != 0) \
       and (n_components != None) \
-      and (n_components != False):
+      and (n_components is not False):
 
         #printout display progress
-        if printstatus == True:
+        if printstatus is True:
           print("_______________")
           print("Applying PCA dimensionality reduction")
           print("")
@@ -26331,7 +26331,7 @@ class AutoMunge:
                          randomseed, ML_cmnd)
 
         #printout display progress
-        if printstatus == True:
+        if printstatus is True:
           print("PCA model applied: ")
           print(PCActgy)
           print("")
@@ -26344,7 +26344,7 @@ class AutoMunge:
         df_test = pd.concat([PCAset_test.set_index(df_test.index), df_test[PCAexcl_posttransform]], axis=1)
 
         #printout display progress
-        if printstatus == True:
+        if printstatus is True:
           print("returned PCA columns: ")
           print(list(PCAset_train))
           print("")
@@ -26364,7 +26364,7 @@ class AutoMunge:
     if Binary in [True, 'retain']:
       
       #printout display progress
-      if printstatus == True:
+      if printstatus is True:
         print("_______________")
         print("Begin Binary dimensionality reduction")
         print("")
@@ -26388,7 +26388,7 @@ class AutoMunge:
       df_train, df_test, Binary_dict = self.Binary_convert(df_train, df_test, bool_column_list, Binary)
       
       
-      if printstatus == True:
+      if printstatus is True:
         print("Boolean column count = ")
         print(len(bool_column_list))
         print("")
@@ -26407,10 +26407,10 @@ class AutoMunge:
     #label columns to designate inclusion in some fractional bucket of the distribution
     #e.g. such as quintiles for instance
     if TrainLabelFreqLevel in [True, 'traintest'] \
-    and labels_column != False:
+    and labels_column is not False:
 
       #printout display progress
-      if printstatus == True:
+      if printstatus is True:
         print("_______________")
         print("Begin label rebalancing")
         print("")
@@ -26430,7 +26430,7 @@ class AutoMunge:
 
 
       #extract trainID
-      if trainID_column != False:
+      if trainID_column is not False:
 
         df_trainID = pd.DataFrame(df_train[trainID_column])
 
@@ -26443,7 +26443,7 @@ class AutoMunge:
 
 
       #printout display progress
-      if printstatus == True:
+      if printstatus is True:
 
         print("")
         print("After rebalancing train set row count = ")
@@ -26455,7 +26455,7 @@ class AutoMunge:
     and labelspresenttest is True:
 
       #printout display progress
-      if printstatus == True:
+      if printstatus is True:
         print("_______________")
         print("Begin test set label rebalancing")
         print("")
@@ -26490,7 +26490,7 @@ class AutoMunge:
           del df_test[IDcolumn]
           
       #printout display progress
-      if printstatus == True:
+      if printstatus is True:
 
         print("")
         print("After rebalancing test set row count = ")
@@ -26499,15 +26499,15 @@ class AutoMunge:
         
 
     #then if shuffle was elected perform here    
-    if shuffletrain == True or shuffletrain == 'traintest':
+    if shuffletrain is True or shuffletrain == 'traintest':
       
       #shuffle training set and labels
       df_train = shuffle(df_train, random_state = answer)
       
-      if labels_column != False:
+      if labels_column is not False:
         df_labels = shuffle(df_labels, random_state = answer)
 
-      if trainID_column != False:
+      if trainID_column is not False:
         df_trainID = shuffle(df_trainID, random_state = answer)
       
       
@@ -26518,7 +26518,7 @@ class AutoMunge:
       if labelspresenttest is True:
         df_testlabels = shuffle(df_testlabels, random_state = answer)
 
-      if testID_column != False:
+      if testID_column is not False:
         df_testID = shuffle(df_testID, random_state = answer)
       
 
@@ -26550,18 +26550,18 @@ class AutoMunge:
       df_test.columns = [column[:-5] if postprocess_dict['column_dict'][column]['category'] == 'excl' \
                          else column for column in df_test.columns]
       
-    if labels_column != False and excl_suffix is False:
+    if labels_column is not False and excl_suffix is False:
       df_labels.columns = [column[:-5] if postprocess_dict['column_dict'][column]['category'] == 'excl' \
                            else column for column in df_labels.columns]
 
-    if labelspresenttest == True and excl_suffix is False:
+    if labelspresenttest is True and excl_suffix is False:
       df_testlabels.columns = [column[:-5] if postprocess_dict['column_dict'][column]['category'] == 'excl' \
                                else column for column in df_testlabels.columns]
 
     #this is admiuttedly kind of a weird spot to put this, we had introduced earlier
     #convention of a dummy testlabels set, here we'll delete if no labels in test set
     #(seems as good a place as any)
-    elif labelspresenttest == False:
+    elif labelspresenttest is False:
       df_testlabels = pd.DataFrame()
 
 
@@ -26573,7 +26573,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.82'
+    automungeversion = '3.83'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -26649,7 +26649,7 @@ class AutoMunge:
     if totalvalidationratio > 0:
 
       #printout display progress
-      if printstatus == True:
+      if printstatus is True:
         print("_______________")
         print("Begin Validation set processing with Postmunge")
         print("")
@@ -26675,7 +26675,7 @@ class AutoMunge:
       if val2ratio > 0.0:
 
 
-        if labels_column != False:
+        if labels_column is not False:
           #split validation2 sets from training and labels
           df_validation1, df_validation2, df_validationlabels1, df_validationlabels2 = \
           train_test_split(df_validation1, df_validationlabels1, test_size=val2ratio, \
@@ -26689,7 +26689,7 @@ class AutoMunge:
 
           df_validationlabels2 = pd.DataFrame()
 
-        if trainID_column != False:
+        if trainID_column is not False:
           df_validationID1, df_validationID2 = \
           train_test_split(df_validationID1, test_size=val2ratio, random_state = answer)
         else:
@@ -26711,7 +26711,7 @@ class AutoMunge:
       df_validationID2 = pd.DataFrame()
 
 
-    if testID_column != False:
+    if testID_column is not False:
       df_testID = df_testID
     else:
       df_testID = pd.DataFrame()
@@ -26721,24 +26721,24 @@ class AutoMunge:
 
     #now if user never passed a test set and we just created a dummy set 
     #then reset returned test sets to empty
-    if test_plug_marker == True:
+    if test_plug_marker is True:
       df_test = pd.DataFrame()
       df_testID = pd.DataFrame()    
 
     #now we'll apply the floatprecision transformation
     if floatprecision != 64:
       df_train = self.floatprecision_transform(df_train, finalcolumns_train, floatprecision)
-      if test_plug_marker == False:
+      if test_plug_marker is False:
         df_test = self.floatprecision_transform(df_test, finalcolumns_train, floatprecision)
-      if labels_column != False:
+      if labels_column is not False:
         finalcolumns_labels = list(df_labels)
         df_labels = self.floatprecision_transform(df_labels, finalcolumns_labels, floatprecision)
-        if labelspresenttest == True:
+        if labelspresenttest is True:
           df_testlabels = self.floatprecision_transform(df_testlabels, finalcolumns_labels, floatprecision)
 
 
     #printout display progress
-    if printstatus == True:
+    if printstatus is True:
 
       print("______")
       print("")
@@ -26750,7 +26750,7 @@ class AutoMunge:
       print(list(df_train))
       print("")
 
-      if df_labels.empty == False:
+      if df_labels.empty is False:
         print("Automunge returned label column set: ")
         print(list(df_labels))
         print("")
@@ -26805,7 +26805,7 @@ class AutoMunge:
 
 
     #printout display progress
-    if printstatus == True:
+    if printstatus is True:
 
       print("_______________")
       print("Automunge Complete")
@@ -26903,7 +26903,7 @@ class AutoMunge:
     #if we had replacement transformations performed on downstream generation \
     #then delete the associated parent column 
     for columndict_column in postprocess_dict['column_dict']:
-      if postprocess_dict['column_dict'][columndict_column]['deletecolumn'] == True:
+      if postprocess_dict['column_dict'][columndict_column]['deletecolumn'] is True:
 
         #first we'll remove the column from columnslists 
         for columnslistcolumn in postprocess_dict['column_dict'][columndict_column]['columnslist']:
@@ -27848,7 +27848,7 @@ class AutoMunge:
     
     #this second method for normkey retrieval addresses outlier scenarios when 
     #no unique valuies in test set match those in train set
-    if normkey == False:
+    if normkey is False:
 
       if column in postprocess_dict['origcolumn']:
 
@@ -27868,7 +27868,7 @@ class AutoMunge:
 
             normkey = columnkey
           
-    if normkey != False:
+    if normkey is not False:
 
       #textcolumns = postprocess_dict['column_dict'][columnkey]['columnslist']
       textcolumns = postprocess_dict['column_dict'][normkey]['categorylist']
@@ -28086,7 +28086,7 @@ class AutoMunge:
 
           normkey = columnkey
         
-    if normkey != False:
+    if normkey is not False:
 
       #great now we can grab normalization parameters
       overlap_dict = \
@@ -28191,7 +28191,7 @@ class AutoMunge:
 
     normkey = column + '_spl2'
         
-    if normkey != False:
+    if normkey is not False:
 
       #great now we can grab normalization parameters
       overlap_dict = \
@@ -28316,7 +28316,7 @@ class AutoMunge:
 
     normkey = column + '_spl5'
         
-    if normkey != False:
+    if normkey is not False:
 
       #great now we can grab normalization parameters
       overlap_dict = \
@@ -28448,7 +28448,7 @@ class AutoMunge:
 
     normkey = column + '_spl7'
         
-    if normkey != False:
+    if normkey is not False:
 
       #great now we can grab normalization parameters
       overlap_dict = \
@@ -28584,7 +28584,7 @@ class AutoMunge:
 
           normkey = columnkey
         
-    if normkey != False:
+    if normkey is not False:
 
       #great now we can grab normalization parameters
       overlap_dict = \
@@ -28695,7 +28695,7 @@ class AutoMunge:
 
     normkey = column + '_spl9'
         
-    if normkey != False:
+    if normkey is not False:
 
       #great now we can grab normalization parameters
       overlap_dict = \
@@ -28850,7 +28850,7 @@ class AutoMunge:
 
     normkey = column + '_sp10'
         
-    if normkey != False:
+    if normkey is not False:
 
       #great now we can grab normalization parameters
       overlap_dict = \
@@ -29010,7 +29010,7 @@ class AutoMunge:
 
           normkey = columnkey
         
-    if normkey != False:
+    if normkey is not False:
 
       #great now we can grab normalization parameters
       overlap_dict = \
@@ -29126,7 +29126,7 @@ class AutoMunge:
 
           normkey = columnkey
         
-    if normkey != False:
+    if normkey is not False:
 
       #great now we can grab normalization parameters
       overlap_dict = \
@@ -29343,7 +29343,7 @@ class AutoMunge:
 
                     test_overlap_dict.update({unique : float(extract)})
                   
-              if in_dict == False:
+              if in_dict is False:
 
                 test_overlap_dict.update({unique : np.nan})
 
@@ -29510,7 +29510,7 @@ class AutoMunge:
 
                     test_overlap_dict.update({unique : float(extract)})
                   
-              if in_dict == False:
+              if in_dict is False:
 
                 test_overlap_dict.update({unique : np.nan})
 
@@ -31381,13 +31381,13 @@ class AutoMunge:
       if (column + '_10^' + power) in postprocess_dict['column_dict']:
         if (column + '_10^' + power) in postprocess_dict['column_dict'][(column + '_10^' + power)]['normalization_dict']:
             normkey = (column + '_10^' + power)
-    if normkey == False:
+    if normkey is False:
       for power in range(-20, 20):
         power = str(power)
         if (column + '_-10^' + power) in postprocess_dict['column_dict']:
           if (column + '_-10^' + power) in postprocess_dict['column_dict'][(column + '_-10^' + power)]['normalization_dict']:
             normkey = (column + '_-10^' + power)
-    if normkey != False:
+    if normkey is not False:
 
       #normkey = columnkey
 
@@ -32193,7 +32193,7 @@ class AutoMunge:
 
             normkey = columnkey
         
-    if normkey != False:
+    if normkey is not False:
       
       mean = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binsmean']
       bn_min = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_min']
@@ -32287,7 +32287,7 @@ class AutoMunge:
 
             normkey = columnkey
         
-    if normkey != False:
+    if normkey is not False:
       
       mean = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binsmean']
       bn_min = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_min']
@@ -32382,7 +32382,7 @@ class AutoMunge:
 
             normkey = columnkey
         
-    if normkey != False:
+    if normkey is not False:
       
       mean = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binsmean']
       bn_min = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_min']
@@ -32639,7 +32639,7 @@ class AutoMunge:
 
             normkey = columnkey
         
-    if normkey != False:
+    if normkey is not False:
       
       mean = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binsmean']
       bn_min = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_min']
@@ -32738,7 +32738,7 @@ class AutoMunge:
 
             normkey = columnkey
         
-    if normkey != False:
+    if normkey is not False:
       
       mean = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binsmean']
       bn_min = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_min']
@@ -32838,7 +32838,7 @@ class AutoMunge:
 
             normkey = columnkey
         
-    if normkey != False:
+    if normkey is not False:
       
       mean = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binsmean']
       bn_min = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_min']
@@ -33140,7 +33140,7 @@ class AutoMunge:
 
             normkey = columnkey
         
-    if normkey != False:
+    if normkey is not False:
       
       mean = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binsmean']
       bn_min = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_min']
@@ -33270,7 +33270,7 @@ class AutoMunge:
             normkey = columnkey
           
         
-    if normkey != False:
+    if normkey is not False:
       
       mean = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binsmean']
       buckets = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['buckets_bkt1']
@@ -33358,7 +33358,7 @@ class AutoMunge:
 
             normkey = columnkey
         
-    if normkey != False:
+    if normkey is not False:
       
       mean = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binsmean']
       buckets = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['buckets_bkt2']
@@ -33620,7 +33620,7 @@ class AutoMunge:
   #       #concatinate with the NArows
   #       df_train_filllabel = pd.concat([df_train_filllabel, trainNArows], axis=1)
   #       #drop rows corresponding to True
-  #       df_train_filllabel = df_train_filllabel[df_train_filllabel[trainNArows.columns[0]] == False]
+  #       df_train_filllabel = df_train_filllabel[df_train_filllabel[trainNArows.columns[0]] is False]
 
   #       #delete the NArows column
   #       df_train_filllabel = df_train_filllabel.drop([trainNArows.columns[0]], axis=1)
@@ -33677,7 +33677,7 @@ class AutoMunge:
   #       #concatinate with the NArows
   #       df_train_filllabel = pd.concat([df_train_filllabel, trainNArows], axis=1)
   #       #drop rows corresponding to True
-  #       df_train_filllabel = df_train_filllabel[df_train_filllabel[trainNArows.columns[0]] == False]
+  #       df_train_filllabel = df_train_filllabel[df_train_filllabel[trainNArows.columns[0]] is False]
 
   #       #now delete columns = noncategorylist from this df
   #       df_train_filltrain = df_train_filltrain.drop(noncategorylist, axis=1)
@@ -33759,8 +33759,8 @@ class AutoMunge:
   #   if df_train_fillfeatures.shape[0] > 0:
     #since we don't have df_train_fillfeatures to work with we'll look at the 
     #model which will be set to False if there was no infill model trained
-    #if model[0] != False:
-    if model != False:
+    #if model[0] is not False:
+    if model is not False:
 
       #if category in ['nmbr', 'bxcx', 'nbr2']:
       if MLinfilltype in ['numeric']:
@@ -33946,7 +33946,7 @@ class AutoMunge:
     #possible future extension
     '''
     
-    if postprocess_dict['column_dict'][column]['infillcomplete'] == False:
+    if postprocess_dict['column_dict'][column]['infillcomplete'] is False:
 
       columnslist = postprocess_dict['column_dict'][column]['columnslist']
       categorylist = postprocess_dict['column_dict'][column]['categorylist']
@@ -33968,8 +33968,8 @@ class AutoMunge:
                              postprocess_dict, columnslist = categorylist)
 
       
-      #if model != False:
-      if postprocess_dict['column_dict'][column]['infillmodel'] != False:
+      #if model is not False:
+      if postprocess_dict['column_dict'][column]['infillmodel'] is not False:
 
         df_test = self.insertinfill(df_test, column, df_testinfill, category, \
                                pd.DataFrame(masterNArows_test[origcolumn+'_NArows']), \
@@ -34080,7 +34080,7 @@ class AutoMunge:
     
         
     #printout display progress
-    if printstatus == True:
+    if printstatus is True:
       print("_______________")
       print("Begin Feature Importance evaluation")
       print("")
@@ -34090,7 +34090,7 @@ class AutoMunge:
       FSmodel = False
       
       #printout display progress
-      if printstatus == True:
+      if printstatus is True:
         print("_______________")
         print("No labels_column passed, Feature Importance halted")
         print("")
@@ -34157,7 +34157,7 @@ class AutoMunge:
         FSmodel = False
         
         #printout display progress
-        if printstatus == True:
+        if printstatus is True:
           print("_______________")
           print("No labels returned from postmunge(.), Feature Importance halted")
           print("")
@@ -34197,7 +34197,7 @@ class AutoMunge:
 
 
         #printout display progress
-        if printstatus == True:
+        if printstatus is True:
           print("_______________")
           print("Training feature importance evaluation model")
           print("")
@@ -34216,7 +34216,7 @@ class AutoMunge:
           FS_origcolumns = list(FSpostprocess_dict['origcolumn'])
           
           #printout display progress
-          if printstatus == True:
+          if printstatus is True:
             print("_______________")
             print("No model returned from training, Feature Importance halted")
             print("")
@@ -34260,7 +34260,7 @@ class AutoMunge:
                                             'metric2' : None}})
 
           #printout display progress
-          if printstatus == True:
+          if printstatus is True:
             print("_______________")
             print("Evaluating feature importances")
             print("")
@@ -34270,8 +34270,8 @@ class AutoMunge:
           for column in am_train_columns:
 
 #             if FSpostprocess_dict['column_dict'][column]['category'] != 'NArw' \
-#             and FScolumn_dict[column]['FScomplete'] == False:
-            if FScolumn_dict[column]['FScomplete'] == False:
+#             and FScolumn_dict[column]['FScomplete'] is False:
+            if FScolumn_dict[column]['FScomplete'] is False:
 
               #categorylist = FScolumn_dict[column]['categorylist']
               #update version 1.80, let's perform FS on columnslist instead of categorylist
@@ -34368,13 +34368,13 @@ class AutoMunge:
 
           del am_train, _1, am_labels, labelsencoding_dict, finalcolumns_train, am_validation1, am_validationlabels1
 
-          if printstatus == True:
+          if printstatus is True:
             print("_______________")
             print("Feature Importance results:")
             print("")
 
           #to inspect values returned in featureimportance object one could run
-          if printstatus == True:
+          if printstatus is True:
             for keys,values in FScolumn_dict.items():
               print(keys)
               print('metric = ', values['metric'])
@@ -34433,7 +34433,7 @@ class AutoMunge:
           FS_sorted['metric2_column_key'][key1].update({FS_sorted['metric2_key'][key1][key2][entry_index] : key2})
         
     
-    if printstatus == True:
+    if printstatus is True:
       print()
       print("______________________")
       print("sorted metric results:")
@@ -34461,7 +34461,7 @@ class AutoMunge:
       FScolumn_dict = {}
     
     #printout display progress
-    if printstatus == True:
+    if printstatus is True:
       
       print("")
       print("_______________")
@@ -34484,7 +34484,7 @@ class AutoMunge:
     #calculated normalziation parameters and a report of the results
     """
     
-    if printstatus == True:
+    if printstatus is True:
       print("_______________")
       print("Preparing Drift Report:")
       print("")
@@ -34504,7 +34504,7 @@ class AutoMunge:
       returnedcolumns = postprocess_dict['origcolumn'][drift_column]['columnkeylist']
       returnedcolumns.sort()
       
-      if printstatus == True:
+      if printstatus is True:
         print("______")
         print("Preparing drift report for columns derived from: ", drift_column)
         print("")
@@ -34580,7 +34580,7 @@ class AutoMunge:
       #if drift_ppd['origcolumn'][drift_column]['columnkey'] not in drift_ppd['column_dict']:
       if len(columnkeylist) == 0:
         
-        if printstatus == True:
+        if printstatus is True:
           print("no new returned columns:")
           print("")
         
@@ -34596,7 +34596,7 @@ class AutoMunge:
 
         newreturnedcolumns.sort()
 
-        if printstatus == True:
+        if printstatus is True:
           print("new returned columns:")
           print(newreturnedcolumns)
           print("")
@@ -34606,7 +34606,7 @@ class AutoMunge:
       
       for origreturnedcolumn in returnedcolumns:
         if origreturnedcolumn not in newreturnedcolumns:
-          if printstatus == True:
+          if printstatus is True:
             print("___")
             print("original derived column not in new returned column: ", origreturnedcolumn)
             print("")
@@ -34623,13 +34623,13 @@ class AutoMunge:
         {returnedcolumn:{'orignormparam':{}, 'newnormparam':{}}})
         
         
-        if printstatus == True:
+        if printstatus is True:
           print("___")
           print("derived column: ", returnedcolumn)
           print("")
           
         if returnedcolumn in returnedcolumns:
-          if printstatus == True:
+          if printstatus is True:
             print("original automunge normalization parameters:")
             
             print(postprocess_dict['column_dict'][returnedcolumn]['normalization_dict'][returnedcolumn])
@@ -34640,14 +34640,14 @@ class AutoMunge:
           = postprocess_dict['column_dict'][returnedcolumn]['normalization_dict'][returnedcolumn]
           
         else:
-          if printstatus == True:
+          if printstatus is True:
             print("new derived column not in original returned columns: ", returnedcolumn)
             print("")
             
           drift_report[drift_column]['newnotinorig'].update({returnedcolumn:{'newnormparam':\
           drift_ppd['column_dict'][returnedcolumn]['normalization_dict'][returnedcolumn]}})
           
-        if printstatus == True:
+        if printstatus is True:
           print("new postmunge normalization parameters:")
           print(drift_ppd['column_dict'][returnedcolumn]['normalization_dict'][returnedcolumn])
           print("")
@@ -34659,7 +34659,7 @@ class AutoMunge:
       #free up some memory
       del df_test2_temp, df_test3_temp, returnedcolumns
       
-    if printstatus == True:
+    if printstatus is True:
       print("")
       print("_______________")
       print("Drift Report Complete")
@@ -34696,16 +34696,16 @@ class AutoMunge:
     
 
     #printout display progress
-    if printstatus == True:
+    if printstatus is True:
       print("_______________")
       print("Begin Postmunge processing")
       print("")
     
     
     #feature selection analysis performed here if elected
-    if featureeval == True:
+    if featureeval is True:
 
-      if labelscolumn == False:
+      if labelscolumn is False:
         print("featureselection not available without labels_column in training set")
         
         madethecut = []
@@ -34755,7 +34755,7 @@ class AutoMunge:
 
 #     transform_dict = self.assembletransformdict(binstransform, NArw_marker)
 
-#     if bool(postprocess_dict['transformdict']) != False:
+#     if bool(postprocess_dict['transformdict']) is not False:
 #       transform_dict.update(postprocess_dict['transformdict'])
 
 #     process_dict = self.assembleprocessdict()
@@ -34765,7 +34765,7 @@ class AutoMunge:
 
 #     assign_param = self.assembleassignparam()
 
-#     if bool(postprocess_dict['assignparam']) != False:
+#     if bool(postprocess_dict['assignparam']) is not False:
 #       assign_param.update(postprocess_dict['assignparam'])
       
     assign_param = postprocess_dict['assign_param']
@@ -34788,7 +34788,7 @@ class AutoMunge:
         else:
           print("error, non integer index passed without columns named")
       else:
-        if testID_column == False:
+        if testID_column is False:
           testID_column = []
         elif isinstance(testID_column, str):
           testID_column = [testID_column]
@@ -34798,12 +34798,12 @@ class AutoMunge:
         df_test = df_test.reset_index(drop=False)
 
 
-    if labelscolumn != False:
+    if labelscolumn is not False:
       labels_column = postprocess_dict['labels_column']
 #       if labels_column in list(df_test):
 #         df_test = df_test.dropna(subset=[labels_column])
 
-      if labelscolumn != True:
+      if labelscolumn is not True:
         if labelscolumn != labels_column:
           print("error, labelscolumn in test set passed to postmunge must have same column")
           print("labeling convention, labels column from automunge was: ", labels_column)
@@ -34829,9 +34829,9 @@ class AutoMunge:
     if testID_column is not False:
       
       testIDcolumn = postprocess_dict['testID_column_orig']
-      if testID_column == True:
+      if testID_column is True:
         testID_column = testIDcolumn
-      if testID_column != True:
+      if testID_column is not True:
         if testID_column != testIDcolumn:
           print("please note the ID column(s) passed to postmunge is different than the ID column(s)")
           print("that was originally passed to automunge. That's ok as long as the test set columns")
@@ -34897,7 +34897,7 @@ class AutoMunge:
     df_testlabels = self.convert_inf_to_nan(df_testlabels)
 
     #here we'll perform drift report if elected
-    #if driftreport == True:
+    #if driftreport is True:
     if driftreport in [True, 'report_full']:
 
       #returns a new partially populated postpr4ocess_dict containing
@@ -34912,7 +34912,7 @@ class AutoMunge:
       
       postdrift_dict = {}
 
-      if printstatus == True:
+      if printstatus is True:
         print("_______________")
         print("Preparing Source Column Drift Report:")
         print("")
@@ -34921,7 +34921,7 @@ class AutoMunge:
 
         if column in postprocess_dict['drift_dict']:
 
-          if printstatus == True:
+          if printstatus is True:
             print("______")
             print("Preparing source column drift report for column: ", column)
             print("")
@@ -34934,7 +34934,7 @@ class AutoMunge:
           _1, postdrift_dict = \
           self.getNArows(df_test, column, category, postprocess_dict, postdrift_dict, True)
 
-          if printstatus == True:
+          if printstatus is True:
             print("new drift stats:")
             print(postdrift_dict[column])
             print("")
@@ -34942,7 +34942,7 @@ class AutoMunge:
       postreports_dict.update({'sourcecolumn_drift' : {'orig_driftstats' : postprocess_dict['drift_dict'], \
                                                        'new_driftstats' : postdrift_dict}})
 
-      if printstatus == True:
+      if printstatus is True:
         print("_______________")
         print("Source Column Drift Report Complete")
         print("")
@@ -34978,7 +34978,7 @@ class AutoMunge:
       category = traincategory
 
       #printout display progress
-      if printstatus == True:
+      if printstatus is True:
         print("______")
         print("")
         print("processing column: ", column)
@@ -34999,7 +34999,7 @@ class AutoMunge:
           testNArows, postdrift_dict = \
           self.getNArows(df_test, column, category, postprocess_dict, postdrift_dict, True)
 
-          if printstatus == True:
+          if printstatus is True:
             print("original source column drift stats:")
             print(postprocess_dict['drift_dict'][column])
             print("")
@@ -35031,7 +35031,7 @@ class AutoMunge:
         df_test = self.floatprecision_transform(df_test, columnkeylist, floatprecision)
 
         #printout display progress
-        if printstatus == True:
+        if printstatus is True:
           print(" returned columns:")
           print(postprocess_dict['origcolumn'][column]['columnkeylist'])
           print("")
@@ -35064,7 +35064,7 @@ class AutoMunge:
       #traincategory = postprocess_dict['column_dict'][columnkey]['origcategory']
       labelscategory = postprocess_dict['origcolumn'][labels_column]['category']
 
-      if printstatus == True:
+      if printstatus is True:
         #printout display progress
         print("______")
         print("")
@@ -35113,9 +35113,9 @@ class AutoMunge:
         #for column in label columns
         for labelsmoothingcolumn in postprocess_dict['origcolumn'][labels_column]['columnkeylist']:
           
-          if categorycomplete_dict[labelsmoothingcolumn] == False:
+          if categorycomplete_dict[labelsmoothingcolumn] is False:
             
-            if match_testLS_to_train == False:
+            if match_testLS_to_train is False:
             
               label_categorylist = postprocess_dict['column_dict'][labelsmoothingcolumn]['categorylist']
               label_category = postprocess_dict['column_dict'][labelsmoothingcolumn]['category']
@@ -35132,7 +35132,7 @@ class AutoMunge:
         
 
       #printout display progress
-      if printstatus == True:
+      if printstatus is True:
         print(" returned columns:")
         print(postprocess_dict['origcolumn'][labels_column]['columnkeylist'])
         print("")
@@ -35150,7 +35150,7 @@ class AutoMunge:
     #using infill to derive plug values for the previously missing cells
     
     #printout display progress
-    if printstatus == True:
+    if printstatus is True:
       print("______")
       print("")
     
@@ -35167,7 +35167,7 @@ class AutoMunge:
 
 
     #trim branches associated with feature selection
-    if postprocess_dict['featureselection'] == True:
+    if postprocess_dict['featureselection'] is True:
 
 
       #get list of columns currently included
@@ -35179,7 +35179,7 @@ class AutoMunge:
 
       if len(trimcolumns) > 0:
         #printout display progress
-        if printstatus == True:
+        if printstatus is True:
           print("_______________")
           print("Begin feature importance dimensionality reduction")
           print("")
@@ -35216,7 +35216,7 @@ class AutoMunge:
         self.postcreatePCAsets(df_test, postprocess_dict)
 
         #printout display progress
-        if printstatus == True:
+        if printstatus is True:
           print("_______________")
           print("Applying PCA dimensionality reduction")
           print("")
@@ -35236,7 +35236,7 @@ class AutoMunge:
         df_test = pd.concat([PCAset_test.set_index(df_test.index), df_test[PCAexcl_posttransform]], axis=1)
 
         #printout display progress
-        if printstatus == True:
+        if printstatus is True:
           print("returned PCA columns: ")
           print(list(PCAset_test))
           print("")
@@ -35247,7 +35247,7 @@ class AutoMunge:
     if postprocess_dict['Binary'] in [True, 'retain']:
       
       #printout display progress
-      if printstatus == True:
+      if printstatus is True:
         print("_______________")
         print("Begin Binary dimensionality reduction")
         print("")
@@ -35261,7 +35261,7 @@ class AutoMunge:
       df_test = self.postBinary_convert(df_test, Binary_dict, Binary)
       
       #printout display progress
-      if printstatus == True:
+      if printstatus is True:
         print("Boolean column count = ")
         print(len(Binary_dict['bool_column_list']))
         print("")
@@ -35276,11 +35276,11 @@ class AutoMunge:
     #a future extension will include numerical labels by adding supplemental 
     #label columns to designate inclusion in some fractional bucket of the distribution
     #e.g. such as quintiles for instance
-    if TrainLabelFreqLevel == True \
-    and labelscolumn != False:
+    if TrainLabelFreqLevel is True \
+    and labelscolumn is not False:
 
       #printout display progress
-      if printstatus == True:
+      if printstatus is True:
         print("_______________")
         print("Begin label rebalancing")
         print("")
@@ -35291,7 +35291,7 @@ class AutoMunge:
 
   #       train_df = pd.DataFrame(np_train, columns = finalcolumns_train)
   #       labels_df = pd.DataFrame(np_labels, columns = finalcolumns_labels)
-      if testID_column != False:
+      if testID_column is not False:
   #         trainID_df = pd.DataFrame(np_trainID, columns = [trainID_column])
         #add trainID set to train set for consistent processing
   #         train_df = pd.concat([train_df, trainID_df], axis=1)                        
@@ -35306,7 +35306,7 @@ class AutoMunge:
 
 
       #extract trainID
-      if testID_column != False:
+      if testID_column is not False:
 
         df_testID = pd.DataFrame(df_test[testID_column])
 
@@ -35319,7 +35319,7 @@ class AutoMunge:
         #del df_train[trainID_column]
 
       #printout display progress
-      if printstatus == True:
+      if printstatus is True:
         print("After rebalancing row count = ")
         print(df_testlabels.shape[0])
         print("")
@@ -35344,7 +35344,7 @@ class AutoMunge:
       df_test.columns = [column[:-5] if postprocess_dict['column_dict'][column]['category'] == 'excl' \
                          else column for column in df_test.columns]
       
-    if labelscolumn != False and postprocess_dict['excl_suffix'] is False:
+    if labelscolumn is not False and postprocess_dict['excl_suffix'] is False:
       df_testlabels.columns = [column[:-5] if postprocess_dict['column_dict'][column]['category'] == 'excl' \
                                else column for column in df_testlabels.columns]
 
@@ -35360,13 +35360,13 @@ class AutoMunge:
 
 
     #printout display progress
-    if printstatus == True:
+    if printstatus is True:
 
       print("Postmunge returned column set: ")
       print(list(df_test))
       print("")
 
-      if labelscolumn != False:
+      if labelscolumn is not False:
         print("Postmunge returned label column set: ")
         print(list(df_testlabels))
         print("")
@@ -35374,7 +35374,7 @@ class AutoMunge:
     #now we'll apply the floatprecision transformation
     if floatprecision != 64:
       df_test = self.floatprecision_transform(df_test, finalcolumns_test, floatprecision)
-      if labelscolumn != False:
+      if labelscolumn is not False:
         finalcolumns_labels = list(df_testlabels)
         df_testlabels = self.floatprecision_transform(df_testlabels, finalcolumns_labels, floatprecision)
 
@@ -35423,7 +35423,7 @@ class AutoMunge:
 
 
     #printout display progress
-    if printstatus == True:
+    if printstatus is True:
 
       print("_______________")
       print("Postmunge Complete")
