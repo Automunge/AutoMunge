@@ -2381,6 +2381,7 @@ for identified overlap entries.
   - default infill: mean
   - default NArowtype: parsenumeric
   - suffix appender: '_nmrc'
+  - assignparam parameters accepted: none
   - driftreport postmunge metrics: overlap_dict / mean / maximum / minimum
 * nmcm/nmc2/nmc3: similar to nmrc, but recognizes numbers with commas, returns numbers stripped of commas
   - default infill: mean
