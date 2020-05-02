@@ -2374,8 +2374,10 @@ within the overlaps
 for identified overlap entries.
   - default infill: none
   - default NArowtype: justNaN
-  - suffix appender: '_srch_##*##' where ##*## is target identified search string
+  - suffix appender: '\_srch_##*##' where ##*## is target identified search string
   - assignparam parameters accepted: 'search': a list of strings, defaults as empty set
+				     'case': bool to indicate case sensitivity of search, defaults True
+				     (note that 'case' not yet built into src2 varient)
   - driftreport postmunge metrics: overlap_dict / splt_newcolumns_splt / minsplit
 * nmrc/nmr2/nmr3: parses strings and returns any number groupings, prioritized by longest length
   - default infill: mean
