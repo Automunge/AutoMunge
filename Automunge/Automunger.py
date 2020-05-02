@@ -18599,18 +18599,11 @@ class AutoMunge:
     #partly inspired by stack overflow discussion 
     #https://stackoverflow.com/questions/354038/how-do-i-check-if-a-string-is-a-number-float
     """
-    test = False
-    if s in ['True', 'False']:
+    try:
+      s = float(s)
+    except ValueError:
       return False
-    else:
-      try:
-        float(s)
-        #strips out commas
-        #float(s.replace(',',''))
-        #return True
-      except ValueError:
-        return False
-    if float(s) == float(s):
+    if s == s and not np.isinf(s):
       return True
     else:
       #(nan will be subject to infill)
@@ -18621,20 +18614,15 @@ class AutoMunge:
     """
     #support function for numeric parsing
     #tests if a string s is numeric after stripping out commas
-    #inspired by stack overflow discussion 
+    #partly inspired by stack overflow discussion 
     #https://stackoverflow.com/questions/354038/how-do-i-check-if-a-string-is-a-number-float
     """
-    if s in ['True', 'False']:
+    try:
+      #strips out commas
+      s = float(s.replace(',',''))
+    except ValueError:
       return False
-    else:
-      try:
-        #float(s)
-        #strips out commas
-        float(s.replace(',',''))
-        #return True
-      except ValueError:
-        return False
-    if float(s.replace(',','')) == float(s.replace(',','')):
+    if s == s and not np.isinf(s):
       return True
     else:
       #(nan will be subject to infill)
@@ -26573,7 +26561,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.83'
+    automungeversion = '3.84'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
