@@ -8267,7 +8267,6 @@ class AutoMunge:
     
     return mdf_train, mdf_test, column_dict_list
   
-  
   def process_srch_class(self, mdf_train, mdf_test, column, category, \
                          postprocess_dict, params = {}):
     """
@@ -8277,11 +8276,21 @@ class AutoMunge:
     #string parses unique entries to identify overlaps with search strings
     #when overlap found returns a column with boolean activation identifiers
     
+    #note this differs from original srch in that makes use of pandas str.contains
+    #which is expected to be more efficient for unbounded sets
+    
     #for example, if a categoical set consisted of unique values 
     #['west', 'north', 'northwest']
     #and a user passed the search parameter as ['west']
     #then a new column would be returned 
     #with activations corresponding to entries of 'west' and 'northwest'
+    
+    #note this returns all zeros in a column if search value not found
+    
+    #note returned coluymns are named by search term, e
+    #e.g. column + '_srch_' + str(search)
+    
+    #note that search terms are converted to strings and compared to columns cast as strings
 
     #missing values are ignored by default
     """
@@ -8290,121 +8299,42 @@ class AutoMunge:
       search = params['search']
     else:
       search = []
-    
-    #first we find overlaps from mdf_train
-    
-    unique_list = list(mdf_train[column].unique())
-
-    unique_list = list(map(str, unique_list))
-    
-#     maxlength = max(len(x) for x in unique_list)
-    
-#     overlap_lengths = list(range(maxlength - 1, minsplit, -1))
-
-    
-
-    #we'll populate overlap_dict as
-    #{search_string : [list of associate categories with that overlap found]}
-
-    
-    overlap_dict = {}
-    
-    for search_string in search:
       
-      overlap_dict.update({search_string : []})
-    
-    
-    
-    for search_string in search:
+    if 'case' in params:
+      case = params['case']
+    else:
+      case = True
       
-      len_search_string = len(search_string)
-    
-      for unique in unique_list:
-        
-        len_unique = len(unique)
-        
-        if len_unique >= len_search_string:
-          
-          nbr_iterations = len_unique - len_search_string
-          
-          for i in range(nbr_iterations + 1):
-            
-            extract = unique[i:(len_search_string+i)]
-            
-            if extract in search:
-              
-              overlap_dict[extract].append(unique)
-
-
-                        
-    #now for mdf_test
-    
-    unique_list_test = list(mdf_test[column].unique())
-
-    unique_list_test = list(map(str, unique_list_test))
-
-    test_overlap_dict = {}
-    
-    for search_string in search:
-      
-      test_overlap_dict.update({search_string : []})
-    
-
-    train_keys = list(overlap_dict)
-
-    train_keys.sort(key = len, reverse=True)
-
-    for dict_key in train_keys:
-
-      for unique_test in unique_list_test:
-
-        len_key = len(dict_key)
-
-        if len(unique_test) >= len_key:
-
-          nbr_iterations4 = len(unique_test) - len_key
-
-          for l in range(nbr_iterations4 + 1):
-
-            extract4 = unique_test[l:(len_key+l)]
-
-            if extract4 == dict_key:
-
-              test_overlap_dict[dict_key].append(unique_test)
-                        
-                        
     
     newcolumns = []
-
-    for dict_key in overlap_dict:
+    search_dict = {}
+    for searchitem in search:
+      search_dict.update({column + '_srch_' + str(searchitem) : str(searchitem)})
       
-      if len(overlap_dict[dict_key]) > 0:
-
-        newcolumn = column + '_srch_' + dict_key
-
-        mdf_train[newcolumn] = mdf_train[column].copy()
-        mdf_test[newcolumn] = mdf_test[column].copy()
-
-        mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
-        mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
-
-        mdf_train[newcolumn] = mdf_train[newcolumn].isin(overlap_dict[dict_key])
-        mdf_train[newcolumn] = mdf_train[newcolumn].astype(np.int8)
-
-        mdf_test[newcolumn] = mdf_test[newcolumn].isin(test_overlap_dict[dict_key])
-        mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
-
-        newcolumns.append(newcolumn)
+    for newcolumn in search_dict:
+      mdf_train[newcolumn] = \
+      np.where(mdf_train[column].astype(str).str.contains(search_dict[newcolumn], case=case, regex=False), 1, 0)
+      
+      mdf_test[newcolumn] = \
+      np.where(mdf_test[column].astype(str).str.contains(search_dict[newcolumn], case=case, regex=False), 1, 0)
+                        
     
+    newcolumns = list(search_dict)
+
+    for newcolumn in newcolumns:
+
+      mdf_train[newcolumn] = mdf_train[newcolumn].astype(np.int8)
+      mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
     
     
     column_dict_list = []
 
     for tc in newcolumns:
 
-      textnormalization_dict = {tc : {'overlap_dict' : overlap_dict, \
+      textnormalization_dict = {tc : {'search_dict' : search_dict, \
                                       'srch_newcolumns_srch'   : newcolumns, \
-                                      'search' : search}}
+                                      'search' : search, \
+                                      'case' : case}}
       
       column_dict = {tc : {'category' : 'srch', \
                            'origcategory' : category, \
@@ -8424,6 +8354,7 @@ class AutoMunge:
       column_dict_list = []
     
     return mdf_train, mdf_test, column_dict_list
+  
   
   
   def process_src2_class(self, mdf_train, mdf_test, column, category, \
@@ -8586,6 +8517,7 @@ class AutoMunge:
     
     return mdf_train, mdf_test, column_dict_list
   
+
   
   def process_nmrc_class(self, df, column, category, postprocess_dict, params = {}):
     """
@@ -21156,8 +21088,6 @@ class AutoMunge:
           #perform feature evaluation on each column
           for column in am_train_columns:
 
-#             if FSpostprocess_dict['column_dict'][column]['category'] != 'NArw' \
-#             and FScolumn_dict[column]['FScomplete'] is False:
             if FScolumn_dict[column]['FScomplete'] is False:
 
               #categorylist = FScolumn_dict[column]['categorylist']
@@ -26045,6 +25975,10 @@ class AutoMunge:
       #as a "columnkey" for pulling datas from the postprocess_dict down the road
       #columnkeylist = list(set(templist2) - set(templist1))[0]
       columnkeylist = list(set(templist2) - set(templist1))
+      
+      #now we'll apply the floatprecision transformation
+      df_labels = self.floatprecision_transform(df_labels, columnkeylist, floatprecision)
+      df_testlabels = self.floatprecision_transform(df_testlabels, columnkeylist, floatprecision)
 
       if isinstance(columnkeylist, str):
         columnkey = columnkeylist
@@ -26561,7 +26495,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.84'
+    automungeversion = '3.85'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -28958,6 +28892,7 @@ class AutoMunge:
     
     return mdf_test
   
+  
   def postprocess_srch_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     """
     #process_srch_class(mdf_train, mdf_test, column, category)
@@ -28966,11 +28901,21 @@ class AutoMunge:
     #string parses unique entries to identify overlaps with search strings
     #when overlap found returns a column with boolean activation identifiers
     
+    #note this differs from original srch in that makes use of pandas str.contains
+    #which is expected to be more efficient for unbounded sets
+    
     #for example, if a categoical set consisted of unique values 
     #['west', 'north', 'northwest']
     #and a user passed the search parameter as ['west']
     #then a new column would be returned 
     #with activations corresponding to entries of 'west' and 'northwest'
+    
+    #note this returns all zeros in a column if search value not found
+    
+    #note returned coluymns are named by search term, e
+    #e.g. column + '_srch_' + str(search)
+    
+    #note that search terms are converted to strings and compared to columns cast as strings
 
     #missing values are ignored by default
     """
@@ -29001,75 +28946,30 @@ class AutoMunge:
     if normkey is not False:
 
       #great now we can grab normalization parameters
-      overlap_dict = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['overlap_dict']
+      search_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['search_dict']
 
       newcolumns = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['srch_newcolumns_srch']
       
       search = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['search']
+      
+      case = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['case']
 
       
-      #now for mdf_test
+      for newcolumn in search_dict:
 
-      unique_list_test = list(mdf_test[column].unique())
+        mdf_test[newcolumn] = \
+        np.where(mdf_test[column].astype(str).str.contains(search_dict[newcolumn], case=case, regex=False), 1, 0)
 
-      unique_list_test = list(map(str, unique_list_test))
+      for newcolumn in newcolumns:
 
-      test_overlap_dict = {}
-
-      for search_string in search:
-
-        test_overlap_dict.update({search_string : []})
-
-
-      train_keys = list(overlap_dict)
-
-      train_keys.sort(key = len, reverse=True)
-
-      for dict_key in train_keys:
-
-        for unique_test in unique_list_test:
-
-          len_key = len(dict_key)
-
-          if len(unique_test) >= len_key:
-
-            nbr_iterations4 = len(unique_test) - len_key
-
-            for l in range(nbr_iterations4 + 1):
-
-              extract4 = unique_test[l:(len_key+l)]
-
-              if extract4 == dict_key:
-
-                test_overlap_dict[dict_key].append(unique_test)
-                
-
-
-      newcolumns = []
-
-      for dict_key in overlap_dict:
-        
-        if len(overlap_dict[dict_key]) > 0:
-
-          newcolumn = column + '_srch_' + dict_key
-
-  #         mdf_train[newcolumn] = mdf_train[column].copy()
-          mdf_test[newcolumn] = mdf_test[column].copy()
-
-  #         mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
-          mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
-
-          mdf_test[newcolumn] = mdf_test[newcolumn].isin(test_overlap_dict[dict_key])
-          mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
-
-          newcolumns.append(newcolumn)
+        mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
     
     
     return mdf_test
-  
   
   def postprocess_src2_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     """
@@ -33608,7 +33508,7 @@ class AutoMunge:
   #       #concatinate with the NArows
   #       df_train_filllabel = pd.concat([df_train_filllabel, trainNArows], axis=1)
   #       #drop rows corresponding to True
-  #       df_train_filllabel = df_train_filllabel[df_train_filllabel[trainNArows.columns[0]] is False]
+  #       df_train_filllabel = df_train_filllabel[df_train_filllabel[trainNArows.columns[0]] == False]
 
   #       #delete the NArows column
   #       df_train_filllabel = df_train_filllabel.drop([trainNArows.columns[0]], axis=1)
@@ -33665,7 +33565,7 @@ class AutoMunge:
   #       #concatinate with the NArows
   #       df_train_filllabel = pd.concat([df_train_filllabel, trainNArows], axis=1)
   #       #drop rows corresponding to True
-  #       df_train_filllabel = df_train_filllabel[df_train_filllabel[trainNArows.columns[0]] is False]
+  #       df_train_filllabel = df_train_filllabel[df_train_filllabel[trainNArows.columns[0]] == False]
 
   #       #now delete columns = noncategorylist from this df
   #       df_train_filltrain = df_train_filltrain.drop(noncategorylist, axis=1)
@@ -35071,6 +34971,10 @@ class AutoMunge:
       df_testlabels = \
       self.postcircleoflife(df_testlabels, labels_column, labelscategory, labelscategory, process_dict, \
                             transform_dict, postprocess_dict, columnkey)
+      
+      #now we'll apply the floatprecision transformation
+      columnkeylist = postprocess_dict['origcolumn'][labels_column]['columnkeylist']
+      df_testlabels = self.floatprecision_transform(df_testlabels, columnkeylist, floatprecision)
 
 
       #marker for printouts
