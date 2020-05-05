@@ -35,7 +35,7 @@ requirements of simple data structures. The tool includes options for automated
 feature importance evaluation, automated derivation of infill predictions using 
 machine learning models trained on the set in a fully automated fashion, 
 automated preparation for oversampling for class imbalance in labels, automated 
-dimensionality reductions such as based on feature importance, principle 
+dimensionality reductions such as based on feature importance, principal 
 component analysis (PCA), or binary encoding, automated evaluation of data 
 property drift between training data and subsequent data, and perhaps most 
 importantly the simplest means for consistent processing of additional data with 
@@ -64,7 +64,7 @@ transformations; or alternatively the passing of user-defined custom
 transformation functions incorporating simple data structures such as to allow 
 custom methods to each column while still making use of all of the built-in 
 features of the tool (such as ML infill, feature importance, dimensionality 
-reduction, and most importantly the simplest way for the consistent preperation 
+reduction, and most importantly the simplest way for the consistent preparation 
 of subsequently available data using just a single function call of the 
 postmunge(.) function). Missing data points in the sets are also available to be 
 addressed by either assigning distinct methods to each column or alternatively by 
@@ -256,7 +256,7 @@ time-scale, and also returns binned sets identifying business hours, weekdays, a
 US holidays. For binary categorical data the functions return a single column with 
 1/0 designation. For multimodal categorical data the functions return one-hot 
 encoded sets using the naming convention origname + _ + category. (I believe this 
-automation of the one-hot encoding method to be a particularily useful feature of 
+automation of the one-hot encoding method to be a particularly useful feature of 
 the tool.) For all cases the functions generate a supplemental column (NArw)
 with a boolean identifier for cells that were subject to infill due to missing or 
 improperly formatted data. (Please note that I don't consider the current methods 
@@ -276,7 +276,7 @@ application of the same model in the postmunge function. Alternately, a
 user can pass column headers to assign different infill methods to distinct 
 columns. The method currently makes use of Scikit Random Forest models by 
 default. A user may defer to default hyperparameters or alternatively pass
-hyperparameters via the "ML_cmnd" object, and may also make user of grid 
+hyperparameters via the "ML_cmnd" object, and may also make use of grid 
 or randomized CV hyperparameter tuning by passing the hyperparameters as
 lists, ranges, or distributions of candidate parameters instead of distinct 
 values.
@@ -297,7 +297,7 @@ if elected applies multiples of the feature sets associated with each
 label category in the returned training data so as to enable
 oversampling of those labels which may be underrepresented in the
 training data. This method is available for categorical labels or also
-for numerical labels when the label processing includes binned agregations
+for numerical labels when the label processing includes binned aggregations
 such as standard deviation bins or powers of ten bins. This method is 
 expected to improve downstream model accuracy for training data with uneven 
 distribution of labels. For more on the class imbalance problem see "A 
@@ -305,7 +305,7 @@ systematic study of the class imbalance problem in convolutional neural
 networks" - Buda, Maki, Mazurowski.
 
 The function also can perform dimensionality reduction of the sets via 
-principle component analysis (PCA). The function automatically performs a 
+principal component analysis (PCA). The function automatically performs a 
 transformation when the number of features is more than 50% of the number
 of observations in the train set (this is a somewhat arbitrary heuristic).
 Alternately, the user can pass a desired number of features and their 
@@ -475,7 +475,7 @@ as row identifiers or for pairing tabular data rows with a corresponding
 image file for instance. Also included in this set is a derived column
 titled 'Automunge_index_#' (where # is a 12 digit number stamp specific to 
 each function call), this column serves as an index identifier for order
-of rows as they were recieved in passed data, sucn as may be beneficial
+of rows as they were received in passed data, such as may be beneficial
 when data is shuffled.
 
 * labels: a set of numerically encoded labels corresponding to the
@@ -487,20 +487,20 @@ flattened (e.g. [[1,2,3]] converted to [1,2,3] )
 * validation1: a set of training data carved out from the train set
 that is intended for use in hyperparameter tuning of a downstream model.
 
-* validationID1: the set of ID values coresponding to the validation1
+* validationID1: the set of ID values corresponding to the validation1
 set. Comparable to columns returned in trainID.
 
-* validationlabels1: the set of labels coresponding to the validation1
+* validationlabels1: the set of labels corresponding to the validation1
 set
 
 * validation2: the set of training data carved out from the train set
 that is intended for the final validation of a downstream model (this
 set should not be applied extensively for hyperparameter tuning).
 
-* validationID2: the set of ID values coresponding to the validation2
+* validationID2: the set of ID values corresponding to the validation2
 set. Comparable to columns returned in trainID.
 
-* validationlabels2: the set of labels coresponding to the validation2
+* validationlabels2: the set of labels corresponding to the validation2
 set
 
 * test: the set of features, consistently encoded and normalized as the
@@ -509,7 +509,7 @@ downstream model trained with train. Note that if no test data is
 available during initial address this processing will take place in the
 postmunge(.) function. 
 
-* testID: the set of ID values coresponding to the test set. Comparable 
+* testID: the set of ID values corresponding to the test set. Comparable 
 to columns returned in trainID.
 
 * testlabels: a set of numerically encoded labels corresponding to the
@@ -533,7 +533,7 @@ column.
 * finalcolumns_test: a list of the column headers corresponding to the
 test data. Note that the inclusion of suffix appenders is used to
 identify which feature engineering transformations were applied to each
-column. Note that this list will match the one preceeding.
+column. Note that this list will match the one preceding.
 
 * featureimportance: a dictionary containing summary of feature importance
 ranking and metrics for each of the derived sets. Note that the metric
@@ -630,7 +630,7 @@ am.automunge(df_train, df_test = False, \
 dataset intended for use to subsequently train a machine learning model. 
 The set at a minimum should be 'tidy' meaning a single column per feature 
 and a single row per observation. If desired the set may include one are more
-"ID" columns (intended to be carved out and consitently shuffled or partitioned
+"ID" columns (intended to be carved out and consistently shuffled or partitioned
 such as an index column) and zero or one column intended to be used as labels 
 for a downstream training operation. The tool supports the inclusion of 
 non-index-range column as index or multicolumn index (requires named index 
@@ -641,11 +641,11 @@ numpy array any label column should be the final column.
 * df_test: a pandas dataframe or numpy array containing a structured 
 dataset intended for use to generate predictions from a downstream machine 
 learning model trained from the automunge returned sets. The set must be 
-consistently formated as the train set with consistent column labels and/or
+consistently formatted as the train set with consistent column labels and/or
 order of columns. (This set may optionally contain a labels column if one 
 was included in the train set although it's inclusion is not required). If 
 desired the set may include one or more ID column(s) or column(s) intended 
-for use as labels. A user may pass False if this set not available. The tool 
+for use as labels. A user may pass False if this set is not available. The tool 
 supports the inclusion of non-index-range column as index or multicolumn index 
 (requires named index columns). Such index types are added to the returned 
 "ID" sets which are consistently shuffled and partitioned as the train and 
@@ -654,8 +654,8 @@ test sets.
 * labels_column: a string of the column title for the column from the
 df_train set intended for use as labels in training a downstream machine
 learning model. The function defaults to False for cases where the
-training set does not include a label column. An integer column index may 
-also be passed such as if the source dataset was numpy array. A user can 
+train set does not include a label column. An integer column index may 
+also be passed such as if the source dataset was a numpy array. A user can 
 also pass True in which case the label set will be taken from the final
 column of the train set (including cases of single column in train set).
 
@@ -666,7 +666,7 @@ cases where the training set does not include an ID column. A user can
 also pass a list of string columns titles such as to carve out multiple
 columns to be excluded from processing but consistently shuffled and 
 partitioned. An integer column index or list of integer column indexes 
-may also be passed such as if the source dataset was numpy array.
+may also be passed such as if the source dataset was a numpy array.
 
 * testID_column: a string of the column title for the column from the
 df_test set intended for use as a row identifier value (such as could be
@@ -675,7 +675,7 @@ cases where the training set does not include an ID column. A user can
 also pass a list of string columns titles such as to carve out multiple
 columns to be excluded from processing but consistently shuffled and 
 partitioned. An integer column index or list of integer column indexes 
-may also be passed such as if the source dataset was numpy array.
+may also be passed such as if the source dataset was a numpy array.
 
 * valpercent1: a float value between 0 and 1 which designates the percent
 of the training data which will be set aside for the first validation
@@ -723,7 +723,7 @@ as well. Note that all corresponding returned sets are consistently shuffled
 * TrainLabelFreqLevel: a boolean identifier _(True/False)_ which indicates
 if the TrainLabelFreqLevel method will be applied to prepare for oversampling 
 training data associated with underrepresented labels (aka class imbalance). 
-The method adds multiples to training data rows for those labels with lower 
+The method adds multiples of training data rows for those labels with lower 
 frequency resulting in an (approximately) levelized frequency. This defaults 
 to False. Note that this feature may be applied to numerical label sets if 
 the processing applied to the set includes aggregated bins, such as for example
@@ -735,7 +735,7 @@ train and test sets or be passed as _'test'_ to only apply levelizing to test se
 
 * powertransform: _(False/True/'excl'/'exc2')_, defaults to False, when passed as 
 True an evaluation will be performed of distribution properties to select between
-box-cox, z-score, min-max scaling, or mean absolute deviaiton scaling normalization
+box-cox, z-score, min-max scaling, or mean absolute deviation scaling normalization
 of numerical data. Note that after application of box-cox transform child columns 
 are generated for a subsequent z-score normalization. Please note that
 I don't consider the current means of distribution property evaluation highly
@@ -769,27 +769,27 @@ infill processing are to be performed for purposes of predicting infill.
 The assumption is that for sets with high frequency of missing values
 that multiple applications of ML infill may improve accuracy although
 note this is not an extensively tested hypothesis. This defaults to 1.
-Note that due to the seuqunce of model training / applicaiton, a comparable
-set prepared in automunge nad postmunge with this option may vary slightly in 
-output (as automunge(.) will train seperate models on each iteration and
+Note that due to the sequence of model training / application, a comparable
+set prepared in automunge and postmunge with this option may vary slightly in 
+output (as automunge(.) will train separate models on each iteration and
 postmunge will just apply the final model on each iteration).
 
-* randomseed: a postitive integer used as a seed for randomness throughout 
+* randomseed: a positive integer used as a seed for randomness throughout 
 such as for data set shuffling, ML infill, and feature importance  algorithms. 
 This defaults to 42, a nice round number.
 
 * LabelSmoothing_train / LabelSmoothing_test / LabelSmoothing_val: each of these
 parameters accept float values in range _0.0-1.0_ or the default value of _False_ to 
 turn off. train is for the train set labels, test is for the test set labels, and
-val is for the validation set labels. Label Smoothing refers to the regularaization
+val is for the validation set labels. Label Smoothing refers to the regularization
 tactic of transforming boolean encoded labels from 1/0 designations to some mix of
 reduced/increased threshold - for example passing the float 0.9 would result in the
-conversion from 1/0 to 0.9/#, where # is a function of the number of cateogries in 
+conversion from 1/0 to 0.9/#, where # is a function of the number of categories in 
 the label set - for example for a boolean label it would convert 1/0 to 0.9/0.1, or 
-for the one-hot encoding of a three label set it would be convert 1/0 to 0.9/0.05.
+for the one-hot encoding of a three label set it would convert 1/0 to 0.9/0.05.
 Hat tip for the concept to "Rethinking the Inception Architecture for Computer Vision"
-by Szegedy et al. Note that I believe not all predictive library cklassifiers 
-uniformily accept smoothed labels, but when available the method can at times be useful. 
+by Szegedy et al. Note that I believe not all predictive library classifiers 
+uniformly accept smoothed labels, but when available the method can at times be useful. 
 Note that a user can pass _True_ to either of LabelSmoothing_test / LabelSmoothing_val 
 which will consistently encode to LabelSmoothing_train. Please note that if multiple
 one-hot encoded transformations originate from the same labels source column, the
@@ -844,7 +844,7 @@ columns that "made the cut". This item only used if featuremethod passed as
 are trimmed from the output. Note that this item only used if
 featuremethod passed as 'metric'.
 
-* featuremethod: can be passed as opne of _{'pct', 'metric', 'default',_ 
+* featuremethod: can be passed as one of _{'pct', 'metric', 'default',_ 
 _'report'}_ where 'pct' or 'metric' to select which feature importance method 
 is used for trimming the derived sets as a form of dimensionality reduction. 
 Or can pass as 'default' for ignoring the featurepct/featuremetric parameters 
@@ -925,7 +925,7 @@ ML_cmnd = {'MLinfill_type'    : 'default', \
 
 A user can also assign specific methods for PCA transforms. Current PCA_types
 supported include 'PCA', 'SparsePCA', and 'KernelPCA', all via Scikit-Learn.
-Note that the n_components are passed seperately with the PCAn_components 
+Note that the n_components are passed separately with the PCAn_components 
 argument noted above. A user can also pass parameters to the PCA functions
 through the PCA_cmnd, for example one could pass a kernel type for KernelPCA
 as:
@@ -951,7 +951,7 @@ such as could potentially result in memory savings.
 * assigncat:
 
 ```
-#Here are the current trasnformation options built into our library, which
+#Here are the current transformation options built into our library, which
 #we are continuing to build out. A user may also define their own.
 
 assigncat = {'nmbr':[], 'retn':[], 'mnmx':[], 'mean':[], 'MAD3':[], \
@@ -1009,17 +1009,17 @@ assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[]
                 'modeinfill':[], 'lcinfill':[]}, \
 ```
 A user may add column identifier strings to each of these lists to designate the 
-column-specific infill approach for missing or improperly formated values. The
+column-specific infill approach for missing or improperly formatted values. The
 source column identifier strings may be passed for assignment of common infill 
 approach to all columns derived from same source column, or derived column identifier
 strings (including the suffix appenders from transformations) may be passed to assign 
 infill approach to a specific derived column. Note that passed derived column headers 
-take precidence in case of overlap with passed source column headers. Note that infill
+take precedence in case of overlap with passed source column headers. Note that infill
 defaults to MLinfill if nothing assigned and the MLinfill argument to automunge is set 
 to True. Note that for single entry column assignments a user can just pass the string 
 or integer of the column header without the list brackets.
 ```
-#  - stdrdinfill  : the default infill specified in the libary of transfomations for 
+#  - stdrdinfill  : the default infill specified in the library of transformations for 
 #                   each transform below. 
 #  - MLinfill     : for MLinfill to distinct columns when MLinfill parameter not activated
 #  - zeroinfill   : inserting the integer 0 to missing cells. 
@@ -1030,7 +1030,7 @@ or integer of the column header without the list brackets.
 #                   (Note currently boolean columns derived from numeric are not supported 
 #                   for mean/median and for those cases default to those infill from stdrdinfill.) 
 #  - modeinfill   : inserting the most common value for a set, note that modeinfill 
-#                   supports mulit-column boolean encodings, such as one-hot encoded sets or 
+#                   supports multi-column boolean encodings, such as one-hot encoded sets or 
 #                   binary encoded sets. 
 #  - lcinfill     : comparable to modeinfill but with least common value instead of most. 
 
@@ -1063,7 +1063,7 @@ assignparam = {'category1' : {'column1' : {'param1' : 123}, 'column2' : {'param1
 #The second layer keys are string identifiers for the columns for which the parameters are intended
 #The third layer keys are the parameters whose values are to be passed.
 
-#As an example with actual parameters, consider the trasnformation category 'splt' intended for 'column1',
+#As an example with actual parameters, consider the transformation category 'splt' intended for 'column1',
 #which accepts parameter 'minsplit' for minimum character length of detected overlaps. If we wanted to
 #pass 4 instead of the default of 5:
 assignparam = {'splt' : {'column1' : {'minsplit' : 4}}
@@ -1131,7 +1131,7 @@ the corresponding process function is applied, and if it is passed to a family
 primitive with downstream offspring then those offspring keys are pulled from
 that key's family tree. For example, here mnmx is passed as an auntsuncles which
 means the mnmx processing function is applied with no downstream offspring. The
-bxcx key is passed as a parent which means the bxcx trasnform is applied coupled
+bxcx key is passed as a parent which means the bxcx transform is applied coupled
 with any downstream transforms from the bxcx key family tree, which we also show.
 Note the family primitives tree of transformations can be summarized as:
 ```
@@ -1147,7 +1147,7 @@ Note the family primitives tree of transformations can be summarized as:
 
 ![image](https://user-images.githubusercontent.com/44011748/76485331-a2a24380-63f2-11ea-8559-08bb1c3be395.png)
 
-Note that a user should avoid redundant entries accross a set of upstream or downstream primitives.
+Note that a user should avoid redundant entries across a set of upstream or downstream primitives.
 Since there is recursion involved a user should be careful of creating infinite loops from passing
 downstream primitive entries with offspring whose own offspring coincide with an earlier generation.
 (The presence of infinite loops is tested for to a max depth of 111 offspring, an arbitrary figure.)
@@ -1182,7 +1182,7 @@ processdict =  {'newt' : {'dualprocess' : None, \
 
 #singleprocess: for passing a processing function in which no normalization
 #               parameters are needed from the train set to process the
-#               test set, such that train and test sets processed seperately
+#               test set, such that train and test sets processed separately
 
 #postprocess: for passing a processing function in which normalization 
 #             parameters originally derived from the train set are applied
@@ -1197,12 +1197,12 @@ processdict =  {'newt' : {'dualprocess' : None, \
 # - 'justNaN' for source columns that may have expected entries other than numeric
 # - 'exclude' for source columns that aren't needing NArow columns derived
 # - 'positivenumeric' for source columns with expected positive numeric entries
-# - 'nonnegativenumeric' for source columns with expected non-nbegative numeric (zero allowed)
-# - 'nonzeronumeric' for source columns with allowed postiive and negative but no zero
+# - 'nonnegativenumeric' for source columns with expected non-negative numeric (zero allowed)
+# - 'nonzeronumeric' for source columns with allowed positive and negative but no zero
 # - 'parsenumeric' marks for infill strings that don't contain any numeric character entries
 # - 'parsenumeric_commas' marks for infill strings that don't contain any numeric character 
 #                         entries, recognizes commas
-# - 'datetime' marks for infill cells that arent' recognized as datetime objects
+# - 'datetime' marks for infill cells that aren't recognized as datetime objects
 # ** Note that NArowtype also is used as basis for metrics evaluated in drift assessment of source columns
 # ** Note that by default any np.inf values are converted to NaN for infill
 
@@ -1219,10 +1219,10 @@ processdict =  {'newt' : {'dualprocess' : None, \
 #              '1010'   for multicolumn sets with binary encoding via 1010
 #                        will be converted to onehot for ML
 #              'exclude' for columns which will be excluded from ML infill
-#              'boolexclude' boolean set suitable for Binary transform but exluded from all infill (eg NArw entries)
+#              'boolexclude' boolean set suitable for Binary transform but excluded from all infill (eg NArw entries)
 
 #labelctgy: should be a string entry of a single transform category found as an entry in the root category's family 
-#tree. Used to determine basis of feature selection for cases where labels are returned in multiple configurations.
+#tree. Used to determine a basis of feature selection for cases where labels are returned in multiple configurations.
 #Also used in label frequency levelizer.
 
 ```
@@ -1246,7 +1246,7 @@ And could then be passed to automunge function call such as:
 ```
 evalcat = evalcat
 ```
-I recomend using the evalcategory function defined in master file as starting point. 
+I recommend using the evalcategory function defined in master file as starting point. 
 (Minus the 'self' parameter since defining external to class.) Note that the 
 parameters numbercategoryheuristic, powertransform, and labels are passed as user 
 parameters in automunge(.) call and only used in evalcategory function, so if user wants 
@@ -1317,11 +1317,11 @@ the function.
 training data, that can be used to generate predictions from a model
 trained with the train set from automunge.
 
-* testID: the set of ID values coresponding to the test set. Also included 
+* testID: the set of ID values corresponding to the test set. Also included 
 in this set is a derived column titled 'Automunge_index_#' (where # is a 
 12 digit number stamp specific to original automunge(.) function call), 
 this column serves as an index identifier for order of rows as they were 
-recieved in passed data, sucn as may be beneficial when data is shuffled.
+received in passed data, such as may be beneficial when data is shuffled.
 
 * testlabels: a set of numerically encoded labels corresponding to the
 test set if a label column was passed. Note that the function
@@ -1344,7 +1344,7 @@ column. Note that this list should match the one from automunge.
   - postreports_dict['finalcolumns_test']: list of columns returned from 
   postmunge
   - postreports_dict['driftreport']: results of optional drift report 
-  evaluation tracking properties of postmunge data in comparision to the 
+  evaluation tracking properties of postmunge data in comparison to the 
   original data from automunge call associated with the postprocess_dict 
   presumably used to train a model. Results aggregated by entries for the
   original (pre-transform) list of columns, and include the normalization
@@ -1353,7 +1353,7 @@ column. Note that this list should match the one from automunge.
   in postmunge
   - postreports_dict['sourcecolumn_drift']: results of optional drift report
   evaluation tracking properties of postmunge data derived from source 
-  columns in comparision to the original data from automunge(.) call associated 
+  columns in comparison to the original data from automunge(.) call associated 
   with the postprocess_dict presumably used to train a model. 
   
 ```
@@ -1374,7 +1374,7 @@ postreports_dict = \
                        'new_driftstats' : {(sourcecolumn) : (stats)}}}
 		       
 #the driftreport stats for derived columns are based on the normalization_dict entries from the
-#correspoding processing function associated with that column's derivation
+#corresponding processing function associated with that column's derivation
 
 #here is an example of source column drift assessment statistics for a positive numeric root category:
 postreports_dict['sourcecolumn_drift']['new_driftstats'] = \
@@ -1450,14 +1450,14 @@ cases where the training set does not include an ID column. A user can
 also pass a list of string columns titles such as to carve out multiple
 columns to be excluded from processing but consistently shuffled and 
 partitioned. An integer column index or list of integer column indexes 
-may also be passed such as if the source dataset was numpy array.
+may also be passed such as if the source dataset was a numpy array.
 
 * labelscolumn: default to _False_ indicates that a labels column is not 
 included in the test set passed to postmunge. A user can either pass
 _True_ or the string ID of the labels column, noting that it is a requirement
 that the labels column header string must be consistent with that from
 the original train set. An integer column index may also be passed such
-as if the source dataset was numpy array. A user should take care to set 
+as if the source dataset was a numpy array. A user should take care to set 
 this parameter if they are passing data with labels. Note that True signals
 presence of consistent labels column header as was passed to automunge(.).
 
@@ -1479,7 +1479,7 @@ an (approximately) levelized frequency. This defaults to False. Note that
 this feature may be applied to numerical label sets if the assigncat processing
 applied to the set in automunge(.) had included standard deviation bins, such
 as for example 'exc3' for pass-through numeric with standard deviation bins,
-or 'exc4' for pass-thorugh numeric with powers of ten bins. Note this 
+or 'exc4' for pass-through numeric with powers of ten bins. Note this 
 method requires the inclusion of a designated label column.
 
 * featureeval: a boolean identifier _(True/False)_ to activate a feature
@@ -1523,7 +1523,7 @@ the corresponding automunge(.) call (will override the one passed to postmunge).
 _'test_labels', 'test_ID_labels'}_. Designates the composition of the sets returned
 from a postmunge(.) call. Defaults to True for the full composition of five returned sets.
 With other options postmunge(.) only returns a single set, where for False that set consists 
-of the test set, or for the other options returns the test set concatinated with the ID, 
+of the test set, or for the other options returns the test set concatenated with the ID, 
 labels, or both. For example:
 
 ```
@@ -1629,11 +1629,11 @@ supplemented with a NArw column indicating rows that were subject to infill. Eac
 transformation category has a default infill approach detailed below.
 
 Note that default transformations can be overwritten within an automunge(.) call by way
-of passing custom transformdict family tree defintions which overwrite the family tree 
+of passing custom transformdict family tree definitions which overwrite the family tree 
 of the default root categories listed above. For instance, if a user wishes to process 
 numerical columns with a default mean scaling ('mean') instead of z-score 
 normalization ('nmbr'), the user may copy the transform_dict entries from the code-base 
-for mean root category and assign as a definition of the nmbr root category, and then 
+for 'mean' root category and assign as a definition of the 'nmbr' root category, and then 
 pass that defined transformdict in the automunge call. (Note that we don't need to 
 overwrite the processdict for nmbr if we don't intend to overwrite it's use as an entry 
 in other root category family trees. Also it's good practice to retain any downstream 
@@ -1642,10 +1642,11 @@ category's family tree.) Here's a demonstration.
 
 ```
 #create a transformdict that overwrites the root category definition of nmbr with mean:
+#(assumes that we want to include NArw indicating presence of infill)
 transformdict = {'nmbr' : {'parents' : [], \
                            'siblings': [], \
                            'auntsuncles' : ['mean'], \
-                           'cousins' : [], \
+                           'cousins' : ['NArw'], \
                            'children' : [], \
                            'niecesnephews' : [], \
                            'coworkers' : [], \
@@ -2006,11 +2007,11 @@ bin count defaults to 5/7/9 eg for bne0/bn7o/bn9o
   - assignparam parameters accepted: 'buckets', a list of numbers, to set bucket boundaries
 					   defaults to [0,1,2] (arbitrary plug values)
   - driftreport postmunge metrics: binsmean / buckets / bins_cuts / bins_id / ordl_activations_dict
-* tlbn: returns equal population bins in seperate columns with activations replaced by min-max scaled 
+* tlbn: returns equal population bins in separate columns with activations replaced by min-max scaled 
 values within that segment's range (between 0-1) and other values subject to an infill of -1 
-(intended for use to evaluate feature improtance of different segments of a numerical set's distribution
+(intended for use to evaluate feature importance of different segments of a numerical set's distribution
 with metric2 results from a feature importance evaluation)
-  - default infill: no activation (this is the recomended infill for this transform)
+  - default infill: no activation (this is the recommended infill for this transform)
   - default NArowtype: numeric
   - suffix appender: '_tlbn_#' where # is the bin identifier
   - assignparam parameters accepted: 'bincount' to set number of bins
@@ -2038,10 +2039,10 @@ and d2d2), all returned sets include 'retn' normalization
 * nmdx/nmd2/nmd3/nmd4/nmd5/nmd6: comparable to dxdt but includes upstream of sequential transforms a 
 nmrc numeric string parsing top extract numbers from string sets
 * mmdx/mmd2/mmd3/mmd4/mmd5/mmd6: comparable to dxdt but uses z-score normalizaitons via 'nbr2' instead of 'retn'
-* dddt/ddd2/ddd3/ddd4/ddd5/ddd6: comparable to dxdt but no normalziations applied
-* dedt/ded2/ded3/ded4/ded5/ded6: comparable to dxd2 but no normalziations applied
+* dddt/ddd2/ddd3/ddd4/ddd5/ddd6: comparable to dxdt but no normalizations applied
+* dedt/ded2/ded3/ded4/ded5/ded6: comparable to dxd2 but no normalizations applied
 ### Categorical Set Encodings
-* bnry: converts sets with two values to boolean identifiers. Defaults to assiging
+* bnry: converts sets with two values to boolean identifiers. Defaults to assigning
 1 to most common value and 0 to second most common, unless 1 or 0 is already included
 in most common of the set then defaults to maintaining those designations. If applied 
 to set with >2 entries applies infill to those entries beyond two most common. 
@@ -2050,7 +2051,7 @@ to set with >2 entries applies infill to those entries beyond two most common.
   - suffix appender: '_bnry'
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: missing / 1 / 0 / extravalues / oneratio / zeroratio
-* bnr2: converts sets with two values to boolean identifiers. Defaults to assiging
+* bnr2: converts sets with two values to boolean identifiers. Defaults to assigning
 1 to most common value and 0 to second most common, unless 1 or 0 is already included
 in most common of the set then defaults to maintaining those designations. If applied 
 to set with >2 entries applies infill to those entries beyond two most common. (Same
@@ -2073,14 +2074,14 @@ as bnry except for default infill.)
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: ordinal_dict / ordinal_overlap_replace / ordinal_activations_dict
 * ord3/ord4: converts categorical sets to ordinally encoded set of integer identifiers
-sorted by frequency of category occurance
+sorted by frequency of category occurrence
   - default infill: plug value 'zzzinfill'
   - default NArowtype: justNaN
   - suffix appender: '_ord3'
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: ordinal_dict / ordinal_overlap_replace / ordinal_activations_dict
 * 1010: converts categorical sets of >2 unique values to binary encoding (more memory 
-efficent than one-hot encoding)
+efficient than one-hot encoding)
   - default infill: plug value 'zzzinfill'
   - default NArowtype: justNaN
   - suffix appender: '_1010_#' where # is integer indicating order of 1010 columns
@@ -2088,7 +2089,7 @@ efficent than one-hot encoding)
   - driftreport postmunge metrics: _1010_binary_encoding_dict / _1010_overlap_replace / 
 	                           _1010_binary_column_count / _1010_activations_dict
   (for example if 1010 encoded to three columns based on number of categories <8,
-  it would retuyrn three columns with suffix appenders 1010_1, 1010_2, 1010_3)
+  it would return three columns with suffix appenders 1010_1, 1010_2, 1010_3)
 * ucct: converts categorical sets to a normalized float of unique class count,
 for example, a 10 row train set with two instances of 'circle' would replace 'circle' with 0.2
 and comparable to test set independent of test set row count
@@ -2097,7 +2098,7 @@ and comparable to test set independent of test set row count
   - suffix appender: '_ucct'
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: ordinal_dict / ordinal_overlap_replace / ordinal_activations_dict
-* lngt, lnlg: returtns string length of categoric entries (lngt followed by min/max, lnlg by log)
+* lngt, lnlg: returns string length of categoric entries (lngt followed by min/max, lnlg by log)
   - default infill: plug value of 3 (based on len(str(np.nan)) )
   - default NArowtype: justNaN
   - suffix appender: '_lngt'
@@ -2190,7 +2191,7 @@ holiday
   - default NArowtype: datetime
   - suffix appender: '_hldy'
   - assignparam parameters accepted: 'holiday_list', should be passed as a list of strings
-    of dates of additional holdays to be recognized e.g. ['2020/03/30']
+    of dates of additional holidays to be recognized e.g. ['2020/03/30']
   - driftreport postmunge metrics: activationratio
 ### Misc. Functions
 * null: deletes source column
@@ -2205,7 +2206,7 @@ Note that the excl transform is unique in that it is an in-place operation for e
 so may only be passed in a user defined transformdict as an entry to cousins primitive, although it's 
 application "replaces" the source column. (Note that for any other transform a cousins primitive entry 
 only supplements the source column, 'excl' is the exception to the rule). For comparable functionality 
-elligible for other primitive entries in a passed transformdict please use 'exc6' transform instead. 
+eligible for other primitive entries in a passed transformdict please use 'exc6' transform instead. 
   - default infill: none
   - default NArowtype: exclude
   - suffix appender: None or '_excl' (dependant on automunge(.) excl_suffix parameter)
@@ -2223,7 +2224,7 @@ elligible for other primitive entries in a passed transformdict please use 'exc6
   - suffix appender: '_exc5'
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: none
-* exc6: passes source column un-altered. (Comparable to 'excl' but elligible for entry to full set of 
+* exc6: passes source column un-altered. (Comparable to 'excl' but eligible for entry to full set of 
 family tree primitives in a user-defined transformdict.)
   - default infill: none
   - default NArowtype: exclude
@@ -2233,7 +2234,7 @@ family tree primitives in a user-defined transformdict.)
 * eval: performs data property evaluation consistent with default automation to designated column
   - default infill: based on evaluation
   - default NArowtype: based on evaluation
-  - suffix appender: based on evlauation
+  - suffix appender: based on evaluation
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: none
 * ptfm: performs distribution property evaluation consistent with the automunge powertransform 
@@ -2252,7 +2253,7 @@ than once with different parameters. Does not prepare column for ML on it's own.
   - driftreport postmunge metrics: none
 * shfl: shuffles the values of a column based on passed randomseed (Note that returned data may not 
 be numeric and predictive methods like ML infill and feature selection may not work for that scenario
-unless an additional trasnform is applied downstream.)
+unless an additional transform is applied downstream.)
   - default infill: exclude
   - default NArowtype: justNAN
   - suffix appender: '_shfl'
@@ -2299,7 +2300,7 @@ column with missing or improperly formatted values.
 Please note I recommend caution on using splt/spl2/spl5/spl6 transforms on categorical
 sets that may include scientific units for instance, as prefixes will not be noted
 for overlaps, e.g. this wouldn't distinguish between kilometer and meter for instance.
-Note that overlap lengths below 5 characters are ignored unless that value is overrided
+Note that overlap lengths below 5 characters are ignored unless that value is overridden
 by passing a parameter through assignparam.
 * splt: searches categorical sets for overlaps between strings and returns new boolean column
 for identified overlap categories. Note this treats numeric values as strings eg 1.3 = '1.3'.
@@ -2330,7 +2331,7 @@ entries with the abbreviated string overlap
                                      `[' ', ',', '.', '?', '!', '(', ')']`
   - driftreport postmunge metrics: overlap_dict / spl2_newcolumns / spl2_overlap_dict / spl2_test_overlap_dict / 
                                    minsplit
-* spl5/spl6/ors5/ors6: similar to spl2, but those entries without idenitified string overlap are set to 0,
+* spl5/spl6/ors5/ors6: similar to spl2, but those entries without identified string overlap are set to 0,
 (used in ors5 in conjunction with ord3)
   - default infill: none
   - default NArowtype: justNaN
@@ -2377,7 +2378,7 @@ for identified overlap entries.
   - suffix appender: '\_srch_##*##' where ##*## is target identified search string
   - assignparam parameters accepted: 'search': a list of strings, defaults as empty set
 				     'case': bool to indicate case sensitivity of search, defaults True
-				     (note that 'case' not yet built into src2 varient)
+				     (note that 'case' not yet built into src2 variant)
   - driftreport postmunge metrics: overlap_dict / splt_newcolumns_splt / minsplit
 * nmrc/nmr2/nmr3: parses strings and returns any number groupings, prioritized by longest length
   - default infill: mean
@@ -2414,14 +2415,14 @@ for identified overlap entries.
 ### Multi-tier String Parsing
 * new processing root categories or11 / or12 / or13 / or14 / or15 / or16 / or17 / or18 / or19 / or20
   - or11 / or13 intended for categorical sets that may include multiple tiers of overlaps 
-  and include base binary encoding via 1010 suppplemented by tiers of string parsing for 
+  and include base binary encoding via 1010 supplemented by tiers of string parsing for 
   overlaps using spl2 and spl5, or11 has two tiers of overlap string parsing, or13 has three, 
   each parsing returned with an ordinal encoding sorted by frequency (ord3)
   - or12 / or14 are comparable to or11 / or13 but include an additional supplemental 
   transform of string parsing for numerical entries with nmrc followed by a z-score normalization 
   of returned numbers via nmbr
   - or15 / or16 / or17 / or18 comparable to or11 / or12 / or13 / or14 but incorporate an
-  UPCS transform upstream and make use of spl9/sp10 insteadf of spl2/spl5 for assumption that
+  UPCS transform upstream and make use of spl9/sp10 instead of spl2/spl5 for assumption that
   set of unique values in test set is same or subset of train set for more efficient postmunge
   - or19 / or20 comparable to or16 / or18 but replace the 'nmrc' string parsing for numeric entries
   with nmc8 which allows comma characters in numbers and makes use of consistent assumption to
@@ -2433,7 +2434,7 @@ for identified overlap entries.
 
  ___ 
 ### List of Root Categories
-Here are those root cateogries presented again in a concise sorted list, intended as reference so user can
+Here are those root categories presented again in a concise sorted list, intended as reference so user can
 avoid unintentional duplication.
 - '1010',
 - '101d',
@@ -2690,9 +2691,9 @@ appenders in a single returned column. Provided here is a concise sorted list of
 that any user passing a custom defined transformation can avoid any unintentional duplication.
 
 - '_:;:_temp'
-- '_-10^' + i (where i is an integer coresponding to the source number power of ten)
-- '_10^' + i (where i is an integer coresponding to the source number power of ten)
-- '\_1010_' + i (where i is an integer coresponding to the ith digit of the binary encoding)
+- '\_-10^' + i (where i is an integer corresponding to the source number power of ten)
+- '\_10^' + i (where i is an integer corresponding to the source number power of ten)
+- '\_1010_' + i (where i is an integer corresponding to the ith digit of the binary encoding)
 - '_absl'
 - '_addd'
 - '_bins_s-10'
@@ -5044,13 +5045,13 @@ and incorporate a handful of simple data structures, which we'll demonstrate bel
 
 Let's say we want to recreate the mm3 category which caps outliers at 0.01 and 0.99
 quantiles, but instead make it the 0.001 and 0.999 quantiles. Well we'll call this 
-cateogry mnm8. So in order to pass a custom transformation function, first we'll need 
+category mnm8. So in order to pass a custom transformation function, first we'll need 
 to define a new root category transformdict and a corresponding processdict.
 
 ```
-#Let's creat a really simple family tree for the new root category mnmn8 which
+#Let's create a really simple family tree for the new root category mnmn8 which
 #simply creates a column identifying any rows subject to infill (NArw), performs 
-#a z-score normalization, and seperately performs a version of the new transform
+#a z-score normalization, and separately performs a version of the new transform
 #mnm8 which we'll define below.
 
 transformdict = {'mnm8' : {'parents' : [], \
@@ -5114,7 +5115,7 @@ def process_mnm8_class(mdf_train, mdf_test, column, category, \
   
   
   #perform an initial infill method, here we use mean as a plug, automunge
-  #will seperately perform a infill method per user specifications elsewhere
+  #will separately perform a infill method per user specifications elsewhere
   #convert all values to either numeric or NaN
   mdf_train[column + '_mnm8'] = pd.to_numeric(mdf_train[column + '_mnm8'], errors='coerce')
   mdf_test[column + '_mnm8'] = pd.to_numeric(mdf_test[column + '_mnm8'], errors='coerce')
@@ -5300,9 +5301,9 @@ def postprocess_mnm3_class(mdf_test, column, postprocess_dict, columnkey, params
 
 #One more demonstration, note that if we didn't need to pass any properties
 #between the train and test set, we could have just processed one at a time,
-#and in that case we wouldn't need to define seperate functions for 
+#and in that case we wouldn't need to define separate functions for 
 #dualprocess and postprocess, we could just define what we call a singleprocess 
-#function incorporating similar data strucures but passing only a single dataframe.
+#function incorporating similar data structures but passing only a single dataframe.
 
 #Such as:
 def process_mnm8_class(df, column, category, postprocess_dict, params = {}):
