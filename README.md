@@ -106,7 +106,7 @@ featureimportance, postprocess_dict \
 = am.automunge(df_train)
 ```
 
-or for subsequent consistant processing of train or test data, using the
+or for subsequent consistent processing of train or test data, using the
 dictionary returned from original application of automunge(.), run:
 
 ```
@@ -641,7 +641,7 @@ numpy array any label column should be the final column.
 * df_test: a pandas dataframe or numpy array containing a structured 
 dataset intended for use to generate predictions from a downstream machine 
 learning model trained from the automunge returned sets. The set must be 
-consistantly formated as the train set with consistent column labels and/or
+consistently formated as the train set with consistent column labels and/or
 order of columns. (This set may optionally contain a labels column if one 
 was included in the train set although it's inclusion is not required). If 
 desired the set may include one or more ID column(s) or column(s) intended 
@@ -1435,7 +1435,7 @@ exactly as was used in the original automunge(.) call.
 
 * df_test: a pandas dataframe or numpy array containing a structured 
 dataset intended for use to generate predictions from a machine learning 
-model trained from the automunge returned sets. The set must be consistantly 
+model trained from the automunge returned sets. The set must be consistently 
 formatted as the train set with consistent order of columns and if labels are
 included consistent labels. If desired the set may include an ID column. The 
 tool supports the inclusion of non-index-range column as index or multicolumn 
