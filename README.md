@@ -43,7 +43,7 @@ just a single function call.
 
 > In other words, put simply:<br/>
 >  - **automunge(.)** prepares tabular data for machine learning.<br/>
->  - **postmunge(.)** consistently prepares additional data very effficiently.<br/>
+>  - **postmunge(.)** consistently prepares additional data very efficiently.<br/>
 >  
 > We make machine learning easy.
 
