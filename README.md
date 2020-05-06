@@ -886,7 +886,7 @@ no suffix.
 ML_cmnd = {'MLinfill_type':'default', \
            'MLinfill_cmnd':{'RandomForestClassifier':{}, 'RandomForestRegressor':{}}, \
            'PCA_type':'default', \
-           'PCA_cmnd':{}}, \
+           'PCA_cmnd':{}}
 ```
 The ML_cmnd allows a user to pass parameters to the predictive algorithms
 used for ML infill / feature importance evaluation or PCA. Currently the only
@@ -900,7 +900,7 @@ ML_cmnd = {'MLinfill_type':'default', \
            'MLinfill_cmnd':{'RandomForestClassifier':{'n_estimators':1000}, \
                             'RandomForestRegressor':{'n_estimators':1000}}, \
            'PCA_type':'default', \
-           'PCA_cmnd':{}}, \
+           'PCA_cmnd':{}}
            
 ```
 A user can also perform hyperparameter tuning of the parameters passed to the
@@ -934,7 +934,7 @@ ML_cmnd = {'MLinfill_type':'default', \
            'MLinfill_cmnd':{'RandomForestClassifier':{}, \
                             'RandomForestRegressor':{}}, \
            'PCA_type':'KernelPCA', \
-           'PCA_cmnd':{'kernel':'sigmoid'}}, \
+           'PCA_cmnd':{'kernel':'sigmoid'}}
            
 ```
 Note that the PCA is currently defaulted to active for cases where the 
@@ -1006,7 +1006,7 @@ of the column header without the list brackets.
 #we are continuing to build out.
 assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                 'adjinfill':[], 'meaninfill':[], 'medianinfill':[], \
-                'modeinfill':[], 'lcinfill':[]}, \
+                'modeinfill':[], 'lcinfill':[]}
 ```
 A user may add column identifier strings to each of these lists to designate the 
 column-specific infill approach for missing or improperly formatted values. The
@@ -1654,7 +1654,12 @@ transformdict = {'nmbr' : {'parents' : [], \
                            
 #And then we can simply pass this transformdict to an automunge(.) call.
 
-(returned sets) = \
+train, trainID, labels, \
+validation1, validationID1, validationlabels1, \
+validation2, validationID2, validationlabels2, \
+test, testID, testlabels, \
+labelsencoding_dict, finalcolumns_train, finalcolumns_test, \
+featureimportance, postprocess_dict = \
 am.automunge(df_train, \
              transformdict = transformdict)
 
@@ -1805,7 +1810,6 @@ test set returned values >= 0, such as might be useful for kernel PCA for instan
 * retn: related to min/max scaling but retains +/- of values, based on conditions
 if max>=0 and min<=0, x=x/(max-min), elif max>=0 and min>=0 x=(x-min)/(max-min),
 elif max<=0 and min<=0 x=(x-max)/(max-min)
-![image](https://user-images.githubusercontent.com/44011748/80632143-cbbf7780-8a24-11ea-9bdb-2f7230328247.png)
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '_retn'
