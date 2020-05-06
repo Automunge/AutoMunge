@@ -5106,7 +5106,7 @@ transformdict = {'mnm8' : {'parents' : [], \
                            'children' : [], \
                            'niecesnephews' : [], \
                            'coworkers' : [], \
-                           'friends' : []}, \
+                           'friends' : []}}
 
 #Note that since this mnm8 requires passing normalization parameters derived
 #from the train set to process the test set, we'll need to create two seperate 
@@ -5159,8 +5159,8 @@ def process_mnm8_class(mdf_train, mdf_test, column, category, \
   mdf_test[column + '_mnm8'] = mdf_test[column].copy()
   
   
-  #perform an initial infill method, here we use mean as a plug, automunge
-  #will separately perform a infill method per user specifications elsewhere
+  #perform an initial (default) infill method, here we use mean as a plug, automunge
+  #may separately perform a infill method per user specifications elsewhere
   #convert all values to either numeric or NaN
   mdf_train[column + '_mnm8'] = pd.to_numeric(mdf_train[column + '_mnm8'], errors='coerce')
   mdf_test[column + '_mnm8'] = pd.to_numeric(mdf_test[column + '_mnm8'], errors='coerce')
@@ -5195,7 +5195,7 @@ def process_mnm8_class(mdf_train, mdf_test, column, category, \
   mdf_test.loc[mdf_train[column + '_mnm8'] > quantilemax, (column + '_mnm8')] \
   = quantilemax
   
-  #replace values < quantile10 with quantilemin for both train and test data
+  #replace values < quantilemin with quantilemin for both train and test data
   mdf_train.loc[mdf_train[column + '_mnm8'] < quantilemin, (column + '_mnm8')] \
   = quantilemin
   mdf_test.loc[mdf_train[column + '_mnm8'] < quantilemin, (column + '_mnm8')] \
@@ -5236,6 +5236,7 @@ def process_mnm8_class(mdf_train, mdf_test, column, category, \
   
   #Here we populate the normalization dictionary with any values derived from
   #the train set that we'll need to process the test set.
+  #note any stats collected for driftreport are also saved here.
   nmbrnormalization_dict = {column + '_mnm8' : {'quantilemin' : quantilemin, \
                                                 'quantilemax' : quantilemax, \
                                                 'mean' : mean, \
@@ -5252,7 +5253,8 @@ def process_mnm8_class(mdf_train, mdf_test, column, category, \
   #{'category' : 'mnm8', \ -> identifier of the category fo transform applied
   # 'origcategory' : category, \ -> category of original column in train set, passed in function call
   # 'normalization_dict' : nmbrnormalization_dict, \ -> normalization parameters of train set
-  # 'origcolumn' : column, \ -> ID of original column in train set
+  # 'origcolumn' : column, \ -> ID of original column in train set (just pass as column)
+  # 'inputcolumn' : column, \ -> column serving as input to this transform
   # 'columnslist' : nmbrcolumns, \ -> a list of columns created in this transform, 
   #                                  later fleshed out to include all columns derived from same source column
   # 'categorylist' : [nc], \ -> a list of columns created in this transform
@@ -5296,7 +5298,7 @@ def postprocess_mnm3_class(mdf_test, column, postprocess_dict, columnkey, params
   #postprocess_dict is how we carry packets of data between the 
   #functions in automunge and postmunge
   #columnkey is a key used to access stuff in postprocess_dict if needed
-  #(columnkey is only valid for initial root categories, if you want to use function
+  #(columnkey is only valid for upstream primitive entries, if you also want to use function
   #as a downstream category we have to recreate a columnkey such as follows for normkey)
   #and params are any column specific parameters to be passed by user in assignparam
 
@@ -5314,7 +5316,7 @@ def postprocess_mnm3_class(mdf_test, column, postprocess_dict, columnkey, params
   postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['quantilemax']
   
   #(note that for cases where you might not know the suffix that was appended in advance,
-  #I have a few methods to retrieve a normkey using properties of data structures, contact
+  #there are methods to retrieve a normkey using properties of data structures, contact
   #the author and I can point you to them.)
 
   #copy original column for implementation
