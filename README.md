@@ -140,10 +140,10 @@ am.automunge(df_train, df_test = False, \
                         'MLinfill_cmnd':{'RandomForestClassifier':{}, 'RandomForestRegressor':{}}, \
                         'PCA_type':'default', \
                         'PCA_cmnd':{}}, \
-             assigncat = {'nmbr':[], 'retn':[], 'mnmx':[], 'mean':[], 'MAD3':[], \
+             assigncat = {'nmbr':[], 'retn':[], 'mnmx':[], 'mean':[], 'MAD3':[], 'lgnm':[], \
                           'bins':[], 'bsor':[], 'pwr2':[], 'por2':[], 'bxcx':[], \
                           'addd':[], 'sbtr':[], 'mltp':[], 'divd':[], \
-                          'log0':[], 'log1':[], 'sqrt':[], 'rais':[], 'absl':[], \
+                          'log0':[], 'log1':[], 'logn':[], 'sqrt':[], 'rais':[], 'absl':[], \
                           'bnwd':[], 'bnwK':[], 'bnwM':[], 'bnwo':[], 'bnKo':[], 'bnMo':[], \
                           'bnep':[], 'bne7':[], 'bne9':[], 'bneo':[], 'bn7o':[], 'bn9o':[], \
                           'bkt1':[], 'bkt2':[], 'bkt3':[], 'bkt4':[], \
@@ -367,10 +367,10 @@ am.automunge(df_train, df_test = False, \
                         'MLinfill_cmnd':{'RandomForestClassifier':{}, 'RandomForestRegressor':{}}, \
                         'PCA_type':'default', \
                         'PCA_cmnd':{}}, \
-             assigncat = {'nmbr':[], 'retn':[], 'mnmx':[], 'mean':[], 'MAD3':[], \
+             assigncat = {'nmbr':[], 'retn':[], 'mnmx':[], 'mean':[], 'MAD3':[], 'lgnm':[], \
                           'bins':[], 'bsor':[], 'pwr2':[], 'por2':[], 'bxcx':[], \
                           'addd':[], 'sbtr':[], 'mltp':[], 'divd':[], \
-                          'log0':[], 'log1':[], 'sqrt':[], 'rais':[], 'absl':[], \
+                          'log0':[], 'log1':[], 'logn':[], 'sqrt':[], 'rais':[], 'absl':[], \
                           'bnwd':[], 'bnwK':[], 'bnwM':[], 'bnwo':[], 'bnKo':[], 'bnMo':[], \
                           'bnep':[], 'bne7':[], 'bne9':[], 'bneo':[], 'bn7o':[], 'bn9o':[], \
                           'bkt1':[], 'bkt2':[], 'bkt3':[], 'bkt4':[], \
@@ -590,10 +590,10 @@ am.automunge(df_train, df_test = False, \
                         'MLinfill_cmnd':{'RandomForestClassifier':{}, 'RandomForestRegressor':{}}, \
                         'PCA_type':'default', \
                         'PCA_cmnd':{}}, \
-             assigncat = {'nmbr':[], 'retn':[], 'mnmx':[], 'mean':[], 'MAD3':[], \
+             assigncat = {'nmbr':[], 'retn':[], 'mnmx':[], 'mean':[], 'MAD3':[], 'lgnm':[], \
                           'bins':[], 'bsor':[], 'pwr2':[], 'por2':[], 'bxcx':[], \
                           'addd':[], 'sbtr':[], 'mltp':[], 'divd':[], \
-                          'log0':[], 'log1':[], 'sqrt':[], 'rais':[], 'absl':[], \
+                          'log0':[], 'log1':[], 'logn':[], 'sqrt':[], 'rais':[], 'absl':[], \
                           'bnwd':[], 'bnwK':[], 'bnwM':[], 'bnwo':[], 'bnKo':[], 'bnMo':[], \
                           'bnep':[], 'bne7':[], 'bne9':[], 'bneo':[], 'bn7o':[], 'bn9o':[], \
                           'bkt1':[], 'bkt2':[], 'bkt3':[], 'bkt4':[], \
@@ -954,10 +954,10 @@ such as could potentially result in memory savings.
 #Here are the current transformation options built into our library, which
 #we are continuing to build out. A user may also define their own.
 
-assigncat = {'nmbr':[], 'retn':[], 'mnmx':[], 'mean':[], 'MAD3':[], \
+assigncat = {'nmbr':[], 'retn':[], 'mnmx':[], 'mean':[], 'MAD3':[], 'lgnm':[], \
              'bins':[], 'bsor':[], 'pwr2':[], 'por2':[], 'bxcx':[], \
              'addd':[], 'sbtr':[], 'mltp':[], 'divd':[], \
-             'log0':[], 'log1':[], 'sqrt':[], 'rais':[], 'absl':[], \
+             'log0':[], 'log1':[], 'logn':[], 'sqrt':[], 'rais':[], 'absl':[], \
              'bnwd':[], 'bnwK':[], 'bnwM':[], 'bnwo':[], 'bnKo':[], 'bnMo':[], \
              'bnep':[], 'bne7':[], 'bne9':[], 'bneo':[], 'bn7o':[], 'bn9o':[], \
              'bkt1':[], 'bkt2':[], 'bkt3':[], 'bkt4':[], \
@@ -1833,6 +1833,9 @@ elif max<=0 and min<=0 x=(x-max)/(max-min)
   - suffix appender: '_MAD3'
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: mean / MAD / datamax / maximum / minimum
+* lgnm: normalization intended for lognormal distributed numerical sets
+Achieved by performing a logn transform upstream of a nmbr normalization.
+  - suffix appender: '_logn_nmbr'
 ### Numerical Set Transformations
 * bxcx/bxc2/bxc3/bxc4/bxc5: performs Box-Cox power law transformation. Applies infill to 
 values <= 0. Note we currently have a test for overflow in returned results and if found 
@@ -1843,9 +1846,15 @@ set to 0. Please note that this method makes use of scipy.stats.boxcox.
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: trnsfrm_mean / bxcx_lmbda / bxcxerrorcorrect / mean
 * log0/log1: performs logarithmic transform (base 10). Applies infill to values <= 0.
-  - default infill: mean
+  - default infill: meanlog
   - default NArowtype: positivenumeric
   - suffix appender: '_log0'
+  - assignparam parameters accepted: none
+  - driftreport postmunge metrics: meanlog
+* logn: performs natural logarithmic transform (base e). Applies infill to values <= 0.
+  - default infill: meanlog
+  - default NArowtype: positivenumeric
+  - suffix appender: '_logn'
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: meanlog
 * sqrt: performs square root transform. Applies infill to values < 0.
@@ -2372,7 +2381,7 @@ within the overlaps
                                      `[' ', ',', '.', '?', '!', '(', ')']`
   - driftreport postmunge metrics: overlap_dict / srch_newcolumns_srch / search
 * srch: searches categorical sets for overlaps with user passed search string and returns new boolean column
-for identified overlap entries.
+for identified overlap entries. (There is also src3 variant which I suspect may be more efficient in esoteric scenarios).
   - default infill: none
   - default NArowtype: justNaN
   - suffix appender: '\_srch_##*##' where ##*## is target identified search string
@@ -2549,10 +2558,12 @@ avoid unintentional duplication.
 - 'lbnm',
 - 'lbor',
 - 'lbte',
+- 'lgnm',
 - 'lngt',
 - 'lnlg',
 - 'log0',
 - 'log1',
+- 'logn',
 - 'mdcs',
 - 'mdsn',
 - 'mea2',
@@ -2670,6 +2681,7 @@ avoid unintentional duplication.
 - 'splt',
 - 'sqrt',
 - 'src2',
+- 'src3',
 - 'srch',
 - 'texd',
 - 'text',
@@ -2750,6 +2762,7 @@ that any user passing a custom defined transformation can avoid any unintentiona
 - '_hrsn'
 - '_lngt'
 - '_log0'
+- '_logn'
 - '_MAD3'
 - '_MADn'
 - '_mdcs'
@@ -2796,6 +2809,7 @@ that any user passing a custom defined transformation can avoid any unintentiona
 - '\_splt_' + string (where string is an identified overlap of characters between categorical entries)
 - '_sqrt'
 - '\_src2_' + string (where string is an identified overlap of characters with user passed search string)
+- '\_src3_' + string (where string is an identified overlap of characters with user passed search string)
 - '\_srch_' + string (where string is an identified overlap of characters with user passed search string)
 - '\_tlbn_' + i (where i is identifier of bin)
 - '\_text_' + string (where string is a categorical entry in one-hot encoded set)
@@ -3402,6 +3416,15 @@ If you want to skip to the next section you can click here: [Custom Transformati
     transform_dict.update({'src2' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['src2'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'src3' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['src3'], \
                                      'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
@@ -4513,6 +4536,24 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'logn' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['logn'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+  
+    transform_dict.update({'lgnm' : {'parents' : ['lgnm'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : ['nmbr'], \
                                      'friends' : []}})
     
     transform_dict.update({'sqrt' : {'parents' : [], \
