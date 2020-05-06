@@ -705,6 +705,15 @@ class AutoMunge:
                                      'coworkers' : [], \
                                      'friends' : []}})
     
+    transform_dict.update({'src3' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['src3'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
     transform_dict.update({'nmrc' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['nmrc'], \
@@ -1812,6 +1821,24 @@ class AutoMunge:
                                      'coworkers' : [], \
                                      'friends' : []}})
     
+    transform_dict.update({'logn' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['logn'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+  
+    transform_dict.update({'lgnm' : {'parents' : ['lgnm'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : ['nmbr'], \
+                                     'friends' : []}})
+    
     transform_dict.update({'sqrt' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['sqrt'], \
@@ -2871,6 +2898,12 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'multirt', \
                                   'labelctgy' : 'src2'}})
+    process_dict.update({'src3' : {'dualprocess' : self.process_src3_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_src3_class, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'multirt', \
+                                  'labelctgy' : 'src3'}})
     process_dict.update({'nmrc' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_nmrc_class, \
                                   'postprocess' : None, \
@@ -3477,6 +3510,18 @@ class AutoMunge:
                                   'NArowtype' : 'positivenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'log0'}})
+    process_dict.update({'logn' : {'dualprocess' : self.process_logn_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_logn_class, \
+                                  'NArowtype' : 'positivenumeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'logn'}})
+    process_dict.update({'lgnm' : {'dualprocess' : self.process_logn_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_logn_class, \
+                                  'NArowtype' : 'positivenumeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'nmbr'}})
     process_dict.update({'sqrt' : {'dualprocess' : self.process_sqrt_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_sqrt_class, \
@@ -8354,7 +8399,7 @@ class AutoMunge:
       column_dict_list = []
     
     return mdf_train, mdf_test, column_dict_list
-  
+
   
   
   def process_src2_class(self, mdf_train, mdf_test, column, category, \
@@ -8499,6 +8544,172 @@ class AutoMunge:
                                       'search' : search}}
       
       column_dict = {tc : {'category' : 'src2', \
+                           'origcategory' : category, \
+                           'normalization_dict' : textnormalization_dict, \
+                           'origcolumn' : column, \
+                           'inputcolumn' : column, \
+                           'columnslist' : newcolumns, \
+                           'categorylist' : newcolumns, \
+                           'infillmodel' : False, \
+                           'infillcomplete' : False, \
+                           'deletecolumn' : False}}
+
+      column_dict_list.append(column_dict.copy())
+      
+    if len(newcolumns) == 0:
+      
+      column_dict_list = []
+    
+    return mdf_train, mdf_test, column_dict_list
+  
+  
+  def process_src3_class(self, mdf_train, mdf_test, column, category, \
+                         postprocess_dict, params = {}):
+    """
+    #process_src3_class(mdf_train, mdf_test, column, category)
+    #preprocess column with categorical entries as strings
+    #relies on user passed list of strings in search parameter
+    #string parses unique entries to identify overlaps with search strings
+    #when overlap found returns a column with boolean activation identifiers
+    
+    #for example, if a categoical set consisted of unique values 
+    #['west', 'north', 'northwest']
+    #and a user passed the search parameter as ['west']
+    #then a new column would be returned 
+    #with activations corresponding to entries of 'west' and 'northwest'
+
+    #missing values are ignored by default
+    
+    #where srch is preferred for unbounded range of unique values
+    
+    #and src2 preferred when have bounded range of unique values for both train & test
+    
+    #and speculation is that src3 may be preferred when have a bounded
+    #range of unique values but still want capacity to handle values in 
+    #test set not found in train set
+    """
+        
+    if 'search' in params:
+      search = params['search']
+    else:
+      search = []
+    
+    #first we find overlaps from mdf_train
+    
+    unique_list = list(mdf_train[column].unique())
+
+    unique_list = list(map(str, unique_list))
+    
+#     maxlength = max(len(x) for x in unique_list)
+    
+#     overlap_lengths = list(range(maxlength - 1, minsplit, -1))
+
+    
+
+    #we'll populate overlap_dict as
+    #{search_string : [list of associate categories with that overlap found]}
+
+    
+    overlap_dict = {}
+    
+    for search_string in search:
+      
+      overlap_dict.update({search_string : []})
+    
+    
+    
+    for search_string in search:
+      
+      len_search_string = len(search_string)
+    
+      for unique in unique_list:
+        
+        len_unique = len(unique)
+        
+        if len_unique >= len_search_string:
+          
+          nbr_iterations = len_unique - len_search_string
+          
+          for i in range(nbr_iterations + 1):
+            
+            extract = unique[i:(len_search_string+i)]
+            
+            if extract in search:
+              
+              overlap_dict[extract].append(unique)
+
+
+                        
+    #now for mdf_test
+    
+    unique_list_test = list(mdf_test[column].unique())
+
+    unique_list_test = list(map(str, unique_list_test))
+
+    test_overlap_dict = {}
+    
+    for search_string in search:
+      
+      test_overlap_dict.update({search_string : []})
+    
+
+    train_keys = list(overlap_dict)
+
+    train_keys.sort(key = len, reverse=True)
+
+    for dict_key in train_keys:
+
+      for unique_test in unique_list_test:
+
+        len_key = len(dict_key)
+
+        if len(unique_test) >= len_key:
+
+          nbr_iterations4 = len(unique_test) - len_key
+
+          for l in range(nbr_iterations4 + 1):
+
+            extract4 = unique_test[l:(len_key+l)]
+
+            if extract4 == dict_key:
+
+              test_overlap_dict[dict_key].append(unique_test)
+                        
+                        
+    
+    newcolumns = []
+
+    for dict_key in overlap_dict:
+      
+      if len(overlap_dict[dict_key]) > 0:
+
+        newcolumn = column + '_srch_' + dict_key
+
+        mdf_train[newcolumn] = mdf_train[column].copy()
+        mdf_test[newcolumn] = mdf_test[column].copy()
+
+        mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
+        mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
+
+        mdf_train[newcolumn] = mdf_train[newcolumn].isin(overlap_dict[dict_key])
+        mdf_train[newcolumn] = mdf_train[newcolumn].astype(np.int8)
+
+        mdf_test[newcolumn] = mdf_test[newcolumn].isin(test_overlap_dict[dict_key])
+        mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
+
+        newcolumns.append(newcolumn)
+    
+    
+    
+    column_dict_list = []
+
+    for tc in newcolumns:
+
+      textnormalization_dict = {tc : {'overlap_dict' : overlap_dict, \
+                                      'srch_newcolumns_src3'   : newcolumns, \
+                                      'search' : search}}
+      
+      column_dict = {tc : {'category' : 'srch', \
                            'origcategory' : category, \
                            'normalization_dict' : textnormalization_dict, \
                            'origcolumn' : column, \
@@ -13258,6 +13469,88 @@ class AutoMunge:
     for nc in nmbrcolumns:
 
       column_dict = { nc : {'category' : 'log0', \
+                           'origcategory' : category, \
+                           'normalization_dict' : nmbrnormalization_dict, \
+                           'origcolumn' : column, \
+                           'inputcolumn' : column, \
+                           'columnslist' : nmbrcolumns, \
+                           'categorylist' : [nc], \
+                           'infillmodel' : False, \
+                           'infillcomplete' : False, \
+                           'deletecolumn' : False}}
+
+      column_dict_list.append(column_dict.copy())
+    
+
+        
+    return mdf_train, mdf_test, column_dict_list
+  
+  def process_logn_class(self, mdf_train, mdf_test, column, category, \
+                         postprocess_dict, params = {}):
+    '''
+    #process_logn_class(mdf_train, mdf_test, column, category)
+    #function to apply natural logatrithmic transform
+    #takes as arguement pandas dataframe of training and test data (mdf_train), (mdf_test)\
+    #and the name of the column string ('column') and parent category (category)
+    #applies a logarithmic transform (base e)
+    #replaces zeros, negative, and missing or improperly formatted data with post-log mean as default infill
+    #returns same dataframes with new column of name column + '_logn'
+    '''
+    
+    #copy source column into new column
+    mdf_train[column + '_logn'] = mdf_train[column].copy()
+    mdf_test[column + '_logn'] = mdf_test[column].copy()
+
+    #convert all values to either numeric or NaN
+    mdf_train[column + '_logn'] = pd.to_numeric(mdf_train[column + '_logn'], errors='coerce')
+    mdf_test[column + '_logn'] = pd.to_numeric(mdf_test[column + '_logn'], errors='coerce')
+    
+#     #replace all zeros with nan for the log operation
+#     zeroreplace = {0 : np.nan}
+#     mdf_train[column + '_log0'] = mdf_train[column + '_log0'].replace(zeroreplace)
+#     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].replace(zeroreplace)
+    
+    #replace all non-positive with nan for the log operation
+    mdf_train.loc[mdf_train[column + '_logn'] <= 0, (column + '_logn')] = np.nan
+    mdf_test.loc[mdf_test[column + '_logn'] <= 0, (column + '_logn')] = np.nan
+    
+    
+    #log transform column
+    #note that this replaces negative values with nan which we will infill with mean
+    mdf_train[column + '_logn'] = np.log(mdf_train[column + '_logn'])
+    mdf_test[column + '_logn'] = np.log(mdf_test[column + '_logn'])
+    
+    #get mean of train set
+    meanlog = mdf_train[column + '_logn'].mean()
+    
+    if meanlog != meanlog:
+      meanlog = 0
+
+    #replace missing data with training set mean
+    mdf_train[column + '_logn'] = mdf_train[column + '_logn'].fillna(meanlog)
+    mdf_test[column + '_logn'] = mdf_test[column + '_logn'].fillna(meanlog)
+
+
+#     #replace missing data with 0
+#     mdf_train[column + '_log0'] = mdf_train[column + '_log0'].fillna(0)
+#     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].fillna(0)
+
+#     #change data type for memory savings
+#     mdf_train[column + '_log0'] = mdf_train[column + '_log0'].astype(np.float32)
+#     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].astype(np.float32)
+
+    #create list of columns
+    nmbrcolumns = [column + '_logn']
+
+
+    nmbrnormalization_dict = {column + '_logn' : {'meanlog' : meanlog}}
+
+    #store some values in the nmbr_dict{} for use later in ML infill methods
+    column_dict_list = []
+
+    for nc in nmbrcolumns:
+
+      column_dict = { nc : {'category' : 'logn', \
                            'origcategory' : category, \
                            'normalization_dict' : nmbrnormalization_dict, \
                            'origcolumn' : column, \
@@ -25081,10 +25374,10 @@ class AutoMunge:
                            'MLinfill_cmnd':{'RandomForestClassifier':{}, 'RandomForestRegressor':{}}, \
                            'PCA_type':'default', \
                            'PCA_cmnd':{}}, \
-                assigncat = {'nmbr':[], 'retn':[], 'mnmx':[], 'mean':[], 'MAD3':[], \
+                assigncat = {'nmbr':[], 'retn':[], 'mnmx':[], 'mean':[], 'MAD3':[], 'lgnm':[], \
                              'bins':[], 'bsor':[], 'pwr2':[], 'por2':[], 'bxcx':[], \
                              'addd':[], 'sbtr':[], 'mltp':[], 'divd':[], \
-                             'log0':[], 'log1':[], 'sqrt':[], 'rais':[], 'absl':[], \
+                             'log0':[], 'log1':[], 'logn':[], 'sqrt':[], 'rais':[], 'absl':[], \
                              'bnwd':[], 'bnwK':[], 'bnwM':[], 'bnwo':[], 'bnKo':[], 'bnMo':[], \
                              'bnep':[], 'bne7':[], 'bne9':[], 'bneo':[], 'bn7o':[], 'bn9o':[], \
                              'bkt1':[], 'bkt2':[], 'bkt3':[], 'bkt4':[], \
@@ -26495,7 +26788,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.85'
+    automungeversion = '3.86'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -28970,6 +29263,7 @@ class AutoMunge:
     
     
     return mdf_test
+
   
   def postprocess_src2_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     """
@@ -29079,6 +29373,128 @@ class AutoMunge:
           mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
 
           mdf_test[newcolumn] = mdf_test[newcolumn].isin(overlap_dict[dict_key])
+          mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
+
+          newcolumns.append(newcolumn)
+    
+    
+    return mdf_test
+  
+  
+
+  def postprocess_src3_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+    """
+    #process_src3_class(mdf_train, mdf_test, column, category)
+    #preprocess column with categorical entries as strings
+    #relies on user passed list of strings in search parameter
+    #string parses unique entries to identify overlaps with search strings
+    #when overlap found returns a column with boolean activation identifiers
+    
+    #for example, if a categoical set consisted of unique values 
+    #['west', 'north', 'northwest']
+    #and a user passed the search parameter as ['west']
+    #then a new column would be returned 
+    #with activations corresponding to entries of 'west' and 'northwest'
+
+    #missing values are ignored by default
+    
+    #where srch is preferred for unbounded range of unique values
+    
+    #and src2 preferred when have bounded range of unique values for both train & test
+    
+    #and speculation is that src3 may be preferred when have a bounded
+    #range of unique values but still want capacity to handle values in 
+    #test set not found in train set
+    """
+    
+    #to retrieve the normalization dictionary we're going to use new method since we don't yet 
+    #know what the returned columns titles are yet
+    
+    normkey = False
+    
+    if column in postprocess_dict['origcolumn']:
+      
+      columnkeylist = postprocess_dict['origcolumn'][column]['columnkeylist']
+      
+    else:
+      
+      origcolumn = postprocess_dict['column_dict'][column]['origcolumn']
+      
+      columnkeylist = postprocess_dict['origcolumn'][origcolumn]['columnkeylist']
+    
+    for columnkey in columnkeylist:
+      
+      if column == postprocess_dict['column_dict'][columnkey]['inputcolumn']:
+
+        if 'srch_newcolumns_src3' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
+
+          normkey = columnkey
+        
+    if normkey is not False:
+
+      #great now we can grab normalization parameters
+      overlap_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['overlap_dict']
+
+      newcolumns = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['srch_newcolumns_src3']
+      
+      search = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['search']
+
+      
+      #now for mdf_test
+
+      unique_list_test = list(mdf_test[column].unique())
+
+      unique_list_test = list(map(str, unique_list_test))
+
+      test_overlap_dict = {}
+
+      for search_string in search:
+
+        test_overlap_dict.update({search_string : []})
+
+
+      train_keys = list(overlap_dict)
+
+      train_keys.sort(key = len, reverse=True)
+
+      for dict_key in train_keys:
+
+        for unique_test in unique_list_test:
+
+          len_key = len(dict_key)
+
+          if len(unique_test) >= len_key:
+
+            nbr_iterations4 = len(unique_test) - len_key
+
+            for l in range(nbr_iterations4 + 1):
+
+              extract4 = unique_test[l:(len_key+l)]
+
+              if extract4 == dict_key:
+
+                test_overlap_dict[dict_key].append(unique_test)
+                
+
+
+      newcolumns = []
+
+      for dict_key in overlap_dict:
+        
+        if len(overlap_dict[dict_key]) > 0:
+
+          newcolumn = column + '_srch_' + dict_key
+
+  #         mdf_train[newcolumn] = mdf_train[column].copy()
+          mdf_test[newcolumn] = mdf_test[column].copy()
+
+  #         mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
+          mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
+
+          mdf_test[newcolumn] = mdf_test[newcolumn].isin(test_overlap_dict[dict_key])
           mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
 
           newcolumns.append(newcolumn)
@@ -31089,6 +31505,53 @@ class AutoMunge:
 
     #replace missing data with training set mean
     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].fillna(meanlog)
+
+#     #replace missing data with 0
+#     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].fillna(0)
+
+#     #change data type for memory savings
+#     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].astype(np.float32)
+
+    return mdf_test
+
+  def postprocess_logn_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+        
+    '''
+    #function to apply natural logatrithmic transform
+    #takes as arguement pandas dataframe of training and test data (mdf_train), (mdf_test)\
+    #and the name of the column string ('column') and parent category (category)
+    #applies a logarithmic transform (base e)
+    #replaces zeros, negative, and missing or improperly formatted data with post-log mean as default infill
+    #returns same dataframes with new column of name column + '_logn'
+    '''
+    
+    
+    #retrieve normalizastion parameters from postprocess_dict
+    normkey = column + '_logn'
+    
+    meanlog = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['meanlog']
+
+    #copy original column for implementation
+    mdf_test[column + '_logn'] = mdf_test[column].copy()
+
+
+    #convert all values to either numeric or NaN
+    mdf_test[column + '_logn'] = pd.to_numeric(mdf_test[column + '_logn'], errors='coerce')
+    
+    #replace all non-positive with nan for the log operation
+    mdf_test.loc[mdf_test[column + '_logn'] <= 0, (column + '_logn')] = np.nan
+    
+    #log transform column
+    #note that this replaces negative values with nan which we will infill with meanlog
+    mdf_test[column + '_logn'] = np.log(mdf_test[column + '_logn'])
+    
+
+    #get mean of training data
+    meanlog = meanlog  
+
+    #replace missing data with training set mean
+    mdf_test[column + '_logn'] = mdf_test[column + '_logn'].fillna(meanlog)
 
 #     #replace missing data with 0
 #     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].fillna(0)
