@@ -52,8 +52,6 @@ from sklearn.decomposition import SparsePCA
 from sklearn.decomposition import KernelPCA
 
 #imports for automunge
-from sklearn.utils import shuffle
-from sklearn.model_selection import train_test_split
 import random
 #import datetime as dt
 import types
@@ -18111,7 +18109,8 @@ class AutoMunge:
     #we've introduced that randomseed is now accessible throughout in the postprocess_dict
     random = postprocess_dict['randomseed']
     
-    df[column + '_shfl'] = shuffle(df[column + '_shfl'].values, random_state = random)
+    #uses support function
+    df = self.df_shuffle_series(df, column + '_shfl', random)
     
     
     #we'll do the adjacent cell infill after the shuffle operation
@@ -20986,8 +20985,8 @@ class AutoMunge:
     
     for clcolumn in columnslist:
       
-      #shuffleset[column] = shuffle(shuffleset[column], random_state = randomseed)
-      shuffleset[clcolumn] = shuffle(shuffleset[clcolumn].values, random_state = randomseed)
+      #uses support function
+      shuffleset = self.df_shuffle_series(shuffleset, clcolumn, randomseed)
       
     return shuffleset
 
@@ -21002,8 +21001,8 @@ class AutoMunge:
         
       if clcolumn != column:
             
-        shuffleset2[clcolumn] = shuffle(shuffleset2[clcolumn].values, random_state = randomseed)
-        
+        #uses support function
+        shuffleset2 = self.df_shuffle_series(shuffleset2, clcolumn, randomseed)
     
     return shuffleset2
     
@@ -25360,6 +25359,59 @@ class AutoMunge:
     
     return df
   
+  def df_split(self, df, ratio, shuffle_param, randomseed):
+    """
+    #performs a split of passed dataframe df
+    #based on proportions of ratio where 0<ratio<1
+    #bool shuffle False means rows taken from bottom of set sequentially
+    #bool shuffle True means randomly selected rows 
+    #per seeding of randomseed
+    #(if run on two df's with same number of rows, will return consistent partitioning)
+    #returns two dataframes df1 and df2
+    """
+
+    if ratio > 0 and ratio < 1:
+
+      start = int(df.shape[0] * (1-ratio))
+      end = df.shape[0]
+
+      if shuffle_param is True:
+        df = self.df_shuffle(df, randomseed)
+
+      df1 = df[0:start]
+      df2 = df[start:end]
+
+    else:
+
+      df1 = df
+      df2 = pd.DataFrame()
+
+    return df1, df2
+    
+  
+  def df_shuffle(self, df, randomseed):
+    """
+    #Shuffles the rows of a dataframe
+    #per seeding of randomseed
+    """
+    
+    df = df.sample(frac=1, random_state=randomseed)
+    
+    return df  
+  
+  def df_shuffle_series(self, df, column, randomseed):
+    """
+    #Shuffles single column in a dataframe
+    """
+    
+    df_temp = df[column].copy()
+    df_temp = self.df_shuffle(df_temp, randomseed)
+    df[column] = df_temp.values
+    
+    del df_temp
+    
+    return df
+  
   
   def automunge(self, df_train, df_test = False, \
                 labels_column = False, trainID_column = False, testID_column = False, \
@@ -25787,23 +25839,14 @@ class AutoMunge:
       else:
         shuffle_param=False
 
-      if labels_column is not False:
-        #we'll wait to split out the validation labels
-        df_train, df_validation1 = \
-        train_test_split(df_train, test_size=totalvalidationratio, random_state=answer, shuffle = shuffle_param)
-
-
-      else:
-        df_train, df_validation1 = \
-        train_test_split(df_train, test_size=totalvalidationratio, random_state=answer, shuffle = shuffle_param)
-        df_labels = pd.DataFrame()
-        df_validationlabels1 = pd.DataFrame()
-
+      #we'll wait to split out the validation labels
+      df_train, df_validation1 = \
+      self.df_split(df_train, totalvalidationratio, shuffle_param, randomseed)
 
 
       if trainID_column is not False:
         df_trainID, df_validationID1 = \
-        train_test_split(df_trainID, test_size=totalvalidationratio, random_state=answer, shuffle = shuffle_param)
+        self.df_split(df_trainID, totalvalidationratio, shuffle_param, randomseed)
 
 
       else:
@@ -26717,24 +26760,24 @@ class AutoMunge:
     if shuffletrain is True or shuffletrain == 'traintest':
       
       #shuffle training set and labels
-      df_train = shuffle(df_train, random_state = answer)
+      df_train = self.df_shuffle(df_train, answer)
       
       if labels_column is not False:
-        df_labels = shuffle(df_labels, random_state = answer)
+        df_labels = self.df_shuffle(df_labels, answer)
 
       if trainID_column is not False:
-        df_trainID = shuffle(df_trainID, random_state = answer)
+        df_trainID = self.df_shuffle(df_trainID, answer)
       
       
     if shuffletrain == 'traintest':
       
-      df_test = shuffle(df_test, random_state = answer)
+      df_test = self.df_shuffle(df_test, answer)
       
       if labelspresenttest is True:
-        df_testlabels = shuffle(df_testlabels, random_state = answer)
+        df_testlabels = self.df_shuffle(df_testlabels, answer)
 
       if testID_column is not False:
-        df_testID = shuffle(df_testID, random_state = answer)
+        df_testID = self.df_shuffle(df_testID, answer)
       
 
 
@@ -26788,7 +26831,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.86'
+    automungeversion = '3.87'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -26892,21 +26935,25 @@ class AutoMunge:
 
         if labels_column is not False:
           #split validation2 sets from training and labels
-          df_validation1, df_validation2, df_validationlabels1, df_validationlabels2 = \
-          train_test_split(df_validation1, df_validationlabels1, test_size=val2ratio, \
-                           random_state = answer)
+          
+          df_validation1, df_validation2 = \
+          self.df_split(df_validation1, val2ratio, False, answer)
+          
+          df_validationlabels1, df_validationlabels2 = \
+          self.df_split(df_validationlabels1, val2ratio, False, answer)
+          
 
         else:
 
           df_validation1, df_validation2 = \
-          train_test_split(df_validation1, test_size=val2ratio, \
-                           random_state = answer)
+          self.df_split(df_validation1, val2ratio, False, answer)
 
           df_validationlabels2 = pd.DataFrame()
 
         if trainID_column is not False:
           df_validationID1, df_validationID2 = \
-          train_test_split(df_validationID1, test_size=val2ratio, random_state = answer)
+          self.df_split(df_validationID1, val2ratio, False, answer)
+          
         else:
           df_trainID = pd.DataFrame()
           df_validationID2 = pd.DataFrame()
@@ -26930,9 +26977,7 @@ class AutoMunge:
       df_testID = df_testID
     else:
       df_testID = pd.DataFrame()
-
-
-    df_test = df_test
+      
 
     #now if user never passed a test set and we just created a dummy set 
     #then reset returned test sets to empty
@@ -34493,10 +34538,10 @@ class AutoMunge:
 
       #prepare validaiton sets for FS
       am_train, am_validation1 = \
-      train_test_split(am_train, test_size=totalvalidation, shuffle = False, random_state = randomseed)
+      self.df_split(am_train, totalvalidation, False, randomseed)
 
       am_labels, am_validationlabels1 = \
-      train_test_split(am_labels, test_size=totalvalidation, shuffle = False, random_state = randomseed)
+      self.df_split(am_labels, totalvalidation, False, randomseed)
 
 
       #this is the returned process_dict
@@ -35684,11 +35729,12 @@ class AutoMunge:
     #(postmunge does not default to consistent shuffle as train set, relies on parameter)
     if shuffletrain is True:
       #shuffle training set and labels
-      df_test = shuffle(df_test, random_state = postprocess_dict['randomseed'])
-      df_testlabels = shuffle(df_testlabels, random_state = postprocess_dict['randomseed'])
+      df_test = self.df_shuffle(df_test, postprocess_dict['randomseed'])
+      df_testlabels = self.df_shuffle(df_testlabels, postprocess_dict['randomseed'])
+      
 
       if testID_column is not False:
-        df_testID = shuffle(df_testID, random_state = postprocess_dict['randomseed'])
+        df_testID = self.df_shuffle(df_testID, postprocess_dict['randomseed'])
         
         
 
