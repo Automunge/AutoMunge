@@ -688,17 +688,19 @@ also the notes below for the shuffletrain parameter.  Note that if
 shuffletrain parameter is set to False then any validation sets will be 
 pulled from the bottom x% sequential rows of the df_train dataframe. (Where 
 x% is the sum of validation ratios.) Note that if shuffletrain is set to 
-False although the validations will be pulled from sequential rows, the 
-split between validation1 and validation2 sets will be randomized.
+False the validation2 sets will be pulled from the bottom x% sequential 
+rows of the validation1 sets, and if shuffletrain is True the validation2 
+sets will be randomly selected from the validation1 sets.
 
 * valpercent2: a float value between 0 and 1 which designates the percent
 of the training data which will be set aside for the second validation
 set (generally used for final validation of a model prior to release).
 This value defaults to 0. (Previously the default was set at 0.10 but that 
 is fairly an arbitrary value and a user may wish to deviate for different 
-size sets.) Note that if shuffletrain is set to False although the validations 
-will be pulled from sequential rows, the split between validaiton1 and 
-validation2 sets will be randomized.
+size sets.) Note that if shuffletrain is set to False the validation2 sets 
+will be pulled from the bottom x% sequential rows of the validation1 sets, 
+and if shuffletrain is True the validation2 sets will be randomly selected 
+from the validation1 sets.
 
 * floatprecision: an integer with acceptable values of _16/32/64_ designating
 the memory precision for returned float values. (A tradeoff between memory
