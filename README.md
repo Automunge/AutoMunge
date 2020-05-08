@@ -687,12 +687,9 @@ set is needed (such as may be the case for k-means validation). Please see
 also the notes below for the shuffletrain parameter.  Note that if 
 shuffletrain parameter is set to False then any validation sets will be 
 pulled from the bottom x% sequential rows of the df_train dataframe. (Where 
-x% is the sum of validation ratios.) Note that if this value is set to 
+x% is the sum of validation ratios.) Note that if shuffletrain is set to 
 False although the validations will be pulled from sequential rows, the 
-split between validaiton1 and validation2 sets will be randomized. Note 
-that if desire is instead to pull validation rows from the top x% sequential
-rows one can first reverse the order of the rows such as via 
-df_train = df_train[::-1]
+split between validation1 and validation2 sets will be randomized.
 
 * valpercent2: a float value between 0 and 1 which designates the percent
 of the training data which will be set aside for the second validation
