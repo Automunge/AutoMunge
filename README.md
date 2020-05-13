@@ -859,7 +859,7 @@ as for any new combination of boolean set in the test data the collection
 will be subject to the infill. Pass _True_ to activate, defaults to _False_. 
 (For now also requires passing parameter excl_suffix = True.) Note that
 can also be passed as _'retain'_ to retain the boolean columns that served 
-as basis for encoding.
+as basis for encoding instead of replacing them.
 
 * PCAn_components: defaults to _None_ for no PCA dimensionality reduction performed
 (other than based on the automatic PCA application based on ratio of columns and 
