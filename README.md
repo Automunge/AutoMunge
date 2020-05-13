@@ -1792,7 +1792,7 @@ My intuition says z-score has some benefits but really up to the user which they
   True means floor/cap based on training set min/max, otherwise passed values serve as floor/cap to scaling, 
   noting that if cap<max then max reset to cap and if floor>min then min reset to floor
   cap and floor based on pre-transform values
-  - driftreport postmunge metrics: minimum / maximum / mean / std / cap / floor
+  - driftreport postmunge metrics: minimum / maximum / maxminusmin / mean / std / cap / floor
 * mnm3/mnm4: min-max scaling with outliers capped at 0.01 and 0.99 quantiles
   - default infill: mean
   - default NArowtype: numeric
