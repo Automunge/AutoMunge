@@ -5009,6 +5009,7 @@ class AutoMunge:
 
     nmbrnormalization_dict = {column + '_mnmx' : {'minimum' : minimum, \
                                                   'maximum' : maximum, \
+                                                  'maxminusmin' : maxminusmin, \
                                                   'mean' : mean, \
                                                   'std' : std, \
                                                   'cap' : cap, \
@@ -5755,8 +5756,10 @@ class AutoMunge:
       #this only comes up when caluclating driftreport in postmunge
       if len(valuecounts) > 2:
         for value in extravalues:
-          mdf_train.loc[mdf_train[column + '_bnry'].isin([value]), column + '_bnry'] = binary_missing_plug
-          mdf_test.loc[mdf_test[column + '_bnry'].isin([value]), column + '_bnry'] = binary_missing_plug
+          mdf_train[column + '_bnry'] = \
+          np.where(mdf_train[column + '_bnry'] == value, binary_missing_plug, mdf_train[column + '_bnry'])
+          mdf_test[column + '_bnry'] = \
+          np.where(mdf_test[column + '_bnry'] == value, binary_missing_plug, mdf_test[column + '_bnry'])
 
 
       #replace missing data with specified classification
@@ -5774,15 +5777,12 @@ class AutoMunge:
       uniqueintest = mdf_test[column + '_bnry'].unique()
       for unique in uniqueintest:
         if unique not in [onevalue, zerovalue]:
-          mdf_test.loc[~mdf_test[column + '_bnry'].isin([onevalue, zerovalue]), column + '_bnry'] = binary_missing_plug
-
+          mdf_test[column + '_bnry'] = \
+          np.where(mdf_test[column + '_bnry'] == unique, binary_missing_plug, mdf_test[column + '_bnry'])
 
       #convert column to binary 0/1 classification (replaces scikit LabelBinarizer)
-      mdf_train.loc[mdf_train[column + '_bnry'].isin([onevalue]), column + '_bnry'] = 1
-      mdf_train.loc[mdf_train[column + '_bnry'].isin([zerovalue]), column + '_bnry'] = 0
-
-      mdf_test.loc[mdf_test[column + '_bnry'].isin([onevalue]), column + '_bnry'] = 1
-      mdf_test.loc[mdf_test[column + '_bnry'].isin([zerovalue]), column + '_bnry'] = 0
+      mdf_train[column + '_bnry'] = np.where(mdf_train[column + '_bnry'] == onevalue, 1, 0)
+      mdf_test[column + '_bnry'] = np.where(mdf_test[column + '_bnry'] == onevalue, 1, 0)
 
       #create list of columns
       bnrycolumns = [column + '_bnry']
@@ -5968,8 +5968,10 @@ class AutoMunge:
       #this only comes up when caluclating driftreport in postmunge
       if len(valuecounts) > 2:
         for value in extravalues:
-          mdf_train.loc[mdf_train[column + '_bnr2'].isin([value]), column + '_bnr2'] = binary_missing_plug
-          mdf_test.loc[mdf_test[column + '_bnr2'].isin([value]), column + '_bnr2'] = binary_missing_plug
+          mdf_train[column + '_bnr2'] = \
+          np.where(mdf_train[column + '_bnr2'] == value, binary_missing_plug, mdf_train[column + '_bnr2'])
+          mdf_test[column + '_bnr2'] = \
+          np.where(mdf_test[column + '_bnr2'] == value, binary_missing_plug, mdf_test[column + '_bnr2'])
 
 
       #replace missing data with specified classification
@@ -5987,15 +5989,12 @@ class AutoMunge:
       uniqueintest = mdf_test[column + '_bnr2'].unique()
       for unique in uniqueintest:
         if unique not in [onevalue, zerovalue]:
-          mdf_test.loc[~mdf_test[column + '_bnr2'].isin([onevalue, zerovalue]), column + '_bnr2'] = binary_missing_plug
-
+          mdf_test[column + '_bnr2'] = \
+          np.where(mdf_test[column + '_bnr2'] == unique, binary_missing_plug, mdf_test[column + '_bnr2'])
 
       #convert column to binary 0/1 classification (replaces scikit LabelBinarizer)
-      mdf_train.loc[mdf_train[column + '_bnr2'].isin([onevalue]), column + '_bnr2'] = 1
-      mdf_train.loc[mdf_train[column + '_bnr2'].isin([zerovalue]), column + '_bnr2'] = 0
-
-      mdf_test.loc[mdf_test[column + '_bnr2'].isin([onevalue]), column + '_bnr2'] = 1
-      mdf_test.loc[mdf_test[column + '_bnr2'].isin([zerovalue]), column + '_bnr2'] = 0
+      mdf_train[column + '_bnr2'] = np.where(mdf_train[column + '_bnr2'] == onevalue, 1, 0)
+      mdf_test[column + '_bnr2'] = np.where(mdf_test[column + '_bnr2'] == onevalue, 1, 0)
 
       #create list of columns
       bnrycolumns = [column + '_bnr2']
@@ -26831,7 +26830,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.87'
+    automungeversion = '3.88'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -27953,12 +27952,12 @@ class AutoMunge:
     uniqueintest = mdf_test[column + '_bnry'].unique()
     for unique in uniqueintest:
       if unique not in [onevalue, zerovalue]:
-        mdf_test.loc[~mdf_test[column + '_bnry'].isin([onevalue, zerovalue]), column + '_bnry'] = binary_missing_plug
+        mdf_test[column + '_bnry'] = \
+        np.where(mdf_test[column + '_bnry'] == unique, binary_missing_plug, mdf_test[column + '_bnry'])
    
     
     #convert column to binary 0/1 classification (replaces scikit LabelBinarizer)
-    mdf_test.loc[mdf_test[column + '_bnry'].isin([onevalue]), column + '_bnry'] = 1
-    mdf_test.loc[mdf_test[column + '_bnry'].isin([zerovalue]), column + '_bnry'] = 0
+    mdf_test[column + '_bnry'] = np.where(mdf_test[column + '_bnry'] == onevalue, 1, 0)
 
     #create list of columns
     bnrycolumns = [column + '_bnry']
@@ -28018,12 +28017,11 @@ class AutoMunge:
     uniqueintest = mdf_test[column + '_bnr2'].unique()
     for unique in uniqueintest:
       if unique not in [onevalue, zerovalue]:
-        mdf_test.loc[~mdf_test[column + '_bnr2'].isin([onevalue, zerovalue]), column + '_bnr2'] = binary_missing_plug
-   
+        mdf_test[column + '_bnr2'] = \
+        np.where(mdf_test[column + '_bnr2'] == unique, binary_missing_plug, mdf_test[column + '_bnr2'])
     
     #convert column to binary 0/1 classification (replaces scikit LabelBinarizer)
-    mdf_test.loc[mdf_test[column + '_bnr2'].isin([onevalue]), column + '_bnr2'] = 1
-    mdf_test.loc[mdf_test[column + '_bnr2'].isin([zerovalue]), column + '_bnr2'] = 0
+    mdf_test[column + '_bnr2'] = np.where(mdf_test[column + '_bnr2'] == onevalue, 1, 0)
 
     #create list of columns
     bnrycolumns = [column + '_bnr2']
