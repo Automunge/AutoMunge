@@ -24,7 +24,7 @@
  ___ 
 
 ## Introduction
-Automunge is a platform for preparing tabular data for machine learning. A user
+[Automunge](https://automunge.com) is a platform for preparing tabular data for machine learning. A user
 has options between automated inference of column properties for application of
 appropriate simple feature engineering methods, or may also assign to distinct 
 columns custom feature engineering transformations, custom sets (e.g. "family 
