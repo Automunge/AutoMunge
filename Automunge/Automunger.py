@@ -2407,6 +2407,8 @@ class AutoMunge:
     process_dict.update({'nmbr' : {'dualprocess' : self.process_numerical_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_numerical_class, \
+                                  'inverseprocess' : self.inverseprocess_nmbr, \
+                                  'info_retention' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmbr'}})
@@ -2629,42 +2631,56 @@ class AutoMunge:
     process_dict.update({'nbr2' : {'dualprocess' : self.process_numerical_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_numerical_class, \
+                                  'inverseprocess' : self.inverseprocess_nmbr, \
+                                  'info_retention' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmbr'}})
     process_dict.update({'nbr3' : {'dualprocess' : self.process_numerical_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_numerical_class, \
+                                  'inverseprocess' : self.inverseprocess_nmbr, \
+                                  'info_retention' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmbr'}})
     process_dict.update({'MADn' : {'dualprocess' : self.process_MADn_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_MADn_class, \
+                                  'inverseprocess' : self.inverseprocess_MADn, \
+                                  'info_retention' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'MADn'}})
     process_dict.update({'MAD2' : {'dualprocess' : self.process_MADn_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_MADn_class, \
+                                  'inverseprocess' : self.inverseprocess_MADn, \
+                                  'info_retention' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'MADn'}})
     process_dict.update({'MAD3' : {'dualprocess' : self.process_MAD3_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_MAD3_class, \
+                                  'inverseprocess' : self.inverseprocess_MAD3, \
+                                  'info_retention' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
-                                  'labelctgy' : 'MADn'}})
+                                  'labelctgy' : 'MAD3'}})
     process_dict.update({'mnmx' : {'dualprocess' : self.process_mnmx_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_mnmx_class, \
+                                  'inverseprocess' : self.inverseprocess_mnmx, \
+                                  'info_retention' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mnmx'}})
     process_dict.update({'mnm2' : {'dualprocess' : self.process_mnmx_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_mnmx_class, \
+                                  'inverseprocess' : self.inverseprocess_mnmx, \
+                                  'info_retention' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mnmx'}})
@@ -2701,48 +2717,64 @@ class AutoMunge:
     process_dict.update({'retn' : {'dualprocess' : self.process_retn_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_retn_class, \
+                                  'inverseprocess' : self.inverseprocess_retn, \
+                                  'info_retention' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'retn'}})
     process_dict.update({'mean' : {'dualprocess' : self.process_mean_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_mean_class, \
+                                  'inverseprocess' : self.inverseprocess_mean, \
+                                  'info_retention' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mean'}})
     process_dict.update({'mea2' : {'dualprocess' : self.process_mean_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_mean_class, \
+                                  'inverseprocess' : self.inverseprocess_mean, \
+                                  'info_retention' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mean'}})
     process_dict.update({'mea3' : {'dualprocess' : self.process_mean_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_mean_class, \
+                                  'inverseprocess' : self.inverseprocess_mean, \
+                                  'info_retention' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mean'}})
     process_dict.update({'bnry' : {'dualprocess' : self.process_binary_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_binary_class, \
+                                  'inverseprocess' : self.inverseprocess_bnry, \
+                                  'info_retention' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'binary', \
                                   'labelctgy' : 'bnry'}})
     process_dict.update({'bnr2' : {'dualprocess' : self.process_binary2_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_binary2_class, \
+                                  'inverseprocess' : self.inverseprocess_bnry, \
+                                  'info_retention' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'binary', \
                                   'labelctgy' : 'bnr2'}})
     process_dict.update({'text' : {'dualprocess' : self.process_text_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_text_class, \
+                                  'inverseprocess' : self.inverseprocess_text, \
+                                  'info_retention' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'multirt', \
                                   'labelctgy' : 'text'}})
     process_dict.update({'txt2' : {'dualprocess' : self.process_text_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_text_class, \
+                                  'inverseprocess' : self.inverseprocess_text, \
+                                  'info_retention' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'multirt', \
                                   'labelctgy' : 'text'}})
@@ -3031,18 +3063,24 @@ class AutoMunge:
     process_dict.update({'ordl' : {'dualprocess' : self.process_ordl_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_ordl_class, \
+                                  'inverseprocess' : self.inverseprocess_ordl, \
+                                  'info_retention' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'ordl'}})
     process_dict.update({'ord2' : {'dualprocess' : self.process_ordl_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_ordl_class, \
+                                  'inverseprocess' : self.inverseprocess_ordl, \
+                                  'info_retention' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'mnmx'}})
     process_dict.update({'ord3' : {'dualprocess' : self.process_ord3_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_ord3_class, \
+                                  'inverseprocess' : self.inverseprocess_ord3, \
+                                  'info_retention' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'ord3'}})
@@ -3169,6 +3207,8 @@ class AutoMunge:
     process_dict.update({'1010' : {'dualprocess' : self.process_1010_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_1010_class, \
+                                  'inverseprocess' : self.inverseprocess_1010, \
+                                  'info_retention' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : '1010', \
                                   'labelctgy' : '1010'}})
@@ -3487,102 +3527,136 @@ class AutoMunge:
     process_dict.update({'pwrs' : {'dualprocess' : self.process_pwrs_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_pwrs_class, \
+                                  'inverseprocess' : self.inverseprocess_pwrs, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'positivenumeric', \
                                   'MLinfilltype' : 'multisp', \
                                   'labelctgy' : 'pwrs'}})
     process_dict.update({'pwr2' : {'dualprocess' : self.process_pwr2_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_pwr2_class, \
+                                  'inverseprocess' : self.inverseprocess_pwr2, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'nonzeronumeric', \
                                   'MLinfilltype' : 'multisp', \
                                   'labelctgy' : 'pwrs'}})
     process_dict.update({'log0' : {'dualprocess' : self.process_log0_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_log0_class, \
+                                  'inverseprocess' : self.inverseprocess_log0, \
+                                  'info_retention' : True, \
                                   'NArowtype' : 'positivenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'log0'}})
     process_dict.update({'log1' : {'dualprocess' : self.process_log0_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_log0_class, \
+                                  'inverseprocess' : self.inverseprocess_log0, \
+                                  'info_retention' : True, \
                                   'NArowtype' : 'positivenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'log0'}})
     process_dict.update({'logn' : {'dualprocess' : self.process_logn_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_logn_class, \
+                                  'inverseprocess' : self.inverseprocess_logn, \
+                                  'info_retention' : True, \
                                   'NArowtype' : 'positivenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'logn'}})
     process_dict.update({'lgnm' : {'dualprocess' : self.process_logn_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_logn_class, \
+                                  'inverseprocess' : self.inverseprocess_logn, \
+                                  'info_retention' : True, \
                                   'NArowtype' : 'positivenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmbr'}})
     process_dict.update({'sqrt' : {'dualprocess' : self.process_sqrt_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_sqrt_class, \
+                                  'inverseprocess' : self.inverseprocess_sqrt, \
+                                  'info_retention' : True, \
                                   'NArowtype' : 'nonnegativenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'sqrt'}})
     process_dict.update({'addd' : {'dualprocess' : self.process_addd_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_addd_class, \
+                                  'inverseprocess' : self.inverseprocess_addd, \
+                                  'info_retention' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'addd'}})
     process_dict.update({'sbtr' : {'dualprocess' : self.process_sbtr_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_sbtr_class, \
+                                  'inverseprocess' : self.inverseprocess_sbtr, \
+                                  'info_retention' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'sbtr'}})
     process_dict.update({'mltp' : {'dualprocess' : self.process_mltp_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_mltp_class, \
+                                  'inverseprocess' : self.inverseprocess_mltp, \
+                                  'info_retention' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mltp'}})
     process_dict.update({'divd' : {'dualprocess' : self.process_divd_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_divd_class, \
+                                  'inverseprocess' : self.inverseprocess_divd, \
+                                  'info_retention' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'divd'}})
     process_dict.update({'rais' : {'dualprocess' : self.process_rais_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_rais_class, \
+                                  'inverseprocess' : self.inverseprocess_rais, \
+                                  'info_retention' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'rais'}})
     process_dict.update({'absl' : {'dualprocess' : self.process_absl_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_absl_class, \
+                                  'inverseprocess' : self.inverseprocess_absl, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'absl'}})
     process_dict.update({'bkt1' : {'dualprocess' : self.process_bkt1_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_bkt1_class, \
+                                  'inverseprocess' : self.inverseprocess_bkt1, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'multisp', \
                                   'labelctgy' : 'bkt1'}})
     process_dict.update({'bkt2' : {'dualprocess' : self.process_bkt2_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_bkt2_class, \
+                                  'inverseprocess' : self.inverseprocess_bkt2, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'multisp', \
                                   'labelctgy' : 'bkt2'}})
     process_dict.update({'bkt3' : {'dualprocess' : self.process_bkt3_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_bkt3_class, \
+                                  'inverseprocess' : self.inverseprocess_bkt3, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'bkt3'}})
     process_dict.update({'bkt4' : {'dualprocess' : self.process_bkt4_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_bkt4_class, \
+                                  'inverseprocess' : self.inverseprocess_bkt4, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'bkt4'}})
@@ -3628,93 +3702,124 @@ class AutoMunge:
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'ord3'}})
+    
     process_dict.update({'bins' : {'dualprocess' : self.process_bins_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_bins_class, \
+                                  'inverseprocess' : self.inverseprocess_bins, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'multisp', \
                                   'labelctgy' : 'bins'}})
     process_dict.update({'bint' : {'dualprocess' : self.process_bint_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_bint_class, \
+                                  'inverseprocess' : self.inverseprocess_bint, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'multisp', \
                                   'labelctgy' : 'bint'}})
     process_dict.update({'bsor' : {'dualprocess' : self.process_bsor_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_bsor_class, \
+                                  'inverseprocess' : self.inverseprocess_bsor, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'bsor'}})
     process_dict.update({'bnwd' : {'dualprocess' : self.process_bnwd_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_bnwd_class, \
+                                  'inverseprocess' : self.inverseprocess_bnwd, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'multisp', \
                                   'labelctgy' : 'bnwd'}})
     process_dict.update({'bnwK' : {'dualprocess' : self.process_bnwK_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_bnwK_class, \
+                                  'inverseprocess' : self.inverseprocess_bnwK, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'multisp', \
                                   'labelctgy' : 'bnwK'}})
     process_dict.update({'bnwM' : {'dualprocess' : self.process_bnwM_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_bnwM_class, \
+                                  'inverseprocess' : self.inverseprocess_bnwM, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'multisp', \
                                   'labelctgy' : 'bnwM'}})
     process_dict.update({'bnwo' : {'dualprocess' : self.process_bnwo_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_bnwo_class, \
+                                  'inverseprocess' : self.inverseprocess_bnwo, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'bnwo'}})
     process_dict.update({'bnKo' : {'dualprocess' : self.process_bnKo_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_bnKo_class, \
+                                  'inverseprocess' : self.inverseprocess_bnwo, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'bnwK'}})
     process_dict.update({'bnMo' : {'dualprocess' : self.process_bnMo_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_bnMo_class, \
+                                  'inverseprocess' : self.inverseprocess_bnwo, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'bnwM'}})
     process_dict.update({'bnep' : {'dualprocess' : self.process_bnep_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_bnep_class, \
+                                  'inverseprocess' : self.inverseprocess_bnep, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'multisp', \
                                   'labelctgy' : 'bnep'}})
     process_dict.update({'bne7' : {'dualprocess' : self.process_bne7_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_bne7_class, \
+                                  'inverseprocess' : self.inverseprocess_bnep, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'multisp', \
                                   'labelctgy' : 'bne7'}})
     process_dict.update({'bne9' : {'dualprocess' : self.process_bne9_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_bne9_class, \
+                                  'inverseprocess' : self.inverseprocess_bnep, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'multisp', \
                                   'labelctgy' : 'bne9'}})
     process_dict.update({'bneo' : {'dualprocess' : self.process_bneo_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_bneo_class, \
+                                  'inverseprocess' : self.inverseprocess_bneo, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'bneo'}})
     process_dict.update({'bn7o' : {'dualprocess' : self.process_bn7o_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_bn7o_class, \
+                                  'inverseprocess' : self.inverseprocess_bneo, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'bn7o'}})
     process_dict.update({'bn9o' : {'dualprocess' : self.process_bn9o_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_bn9o_class, \
+                                  'inverseprocess' : self.inverseprocess_bneo, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'bn9o'}})
@@ -3727,12 +3832,16 @@ class AutoMunge:
     process_dict.update({'pwor' : {'dualprocess' : self.process_pwor_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_pwor_class, \
+                                  'inverseprocess' : self.inverseprocess_pwor, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'positivenumeric', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'pwor'}})
     process_dict.update({'por2' : {'dualprocess' : self.process_por2_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_por2_class, \
+                                  'inverseprocess' : self.inverseprocess_por2, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'nonzeronumeric', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'por2'}})
@@ -5662,7 +5771,7 @@ class AutoMunge:
       else:
         #making an executive decision here to deviate from standardinfill of most common value
         #for this edge case where a column evaluated as binary has only single value and NaN's
-        binary_missing_plug = 'plug'
+        binary_missing_plug = 'zzzinfill'
 
 
       #test for nan
@@ -5701,7 +5810,7 @@ class AutoMunge:
       if len(valuecounts) > 1:
         zerovalue = valuecounts[1]
       else:
-        zerovalue = 'plug'
+        zerovalue = 'zzzinfill'
 
       #special case for when the source column is already encoded as 0/1
 
@@ -5716,7 +5825,7 @@ class AutoMunge:
               if len(valuecounts) > 1:
                 onevalue = valuecounts[1]
               else:
-                onevalue = 'plug'
+                onevalue = 'zzzinfill'
 
         if 1 in valuecounts:
           if 0 not in valuecounts:
@@ -5739,7 +5848,7 @@ class AutoMunge:
               if len(valuecounts) > 1:
                 onevalue = valuecounts2[1]
               else:
-                onevalue = 'plug'
+                onevalue = 'zzzinfill'
 
         if 1 in valuecounts2:
           if 0 not in valuecounts2:
@@ -5872,7 +5981,7 @@ class AutoMunge:
       else:
         #making an executive decision here to deviate from standardinfill of most common value
         #for this edge case where a column evaluated as binary has only single value and NaN's
-        binary_missing_plug = 'plug'
+        binary_missing_plug = 'zzzinfill'
 
 
       #test for nan
@@ -5912,7 +6021,7 @@ class AutoMunge:
       if len(valuecounts) > 1:
         zerovalue = valuecounts[1]
       else:
-        zerovalue = 'plug'
+        zerovalue = 'zzzinfill'
 
       #special case for when the source column is already encoded as 0/1
 
@@ -5927,7 +6036,7 @@ class AutoMunge:
               if len(valuecounts) > 1:
                 onevalue = valuecounts[1]
               else:
-                onevalue = 'plug'
+                onevalue = 'zzzinfill'
 
         if 1 in valuecounts:
           if 0 not in valuecounts:
@@ -5950,7 +6059,7 @@ class AutoMunge:
               if len(valuecounts) > 1:
                 onevalue = valuecounts2[1]
               else:
-                onevalue = 'plug'
+                onevalue = 'zzzinfill'
 
         if 1 in valuecounts2:
           if 0 not in valuecounts2:
@@ -6089,14 +6198,14 @@ class AutoMunge:
     mdf_test[tempcolumn] = mdf_test[tempcolumn].astype('category')
 
     #if set is categorical we'll need the plug value for missing values included
-    if ':;:NAr2' not in mdf_train[tempcolumn].cat.categories:
-      mdf_train[tempcolumn] = mdf_train[tempcolumn].cat.add_categories([':;:NAr2'])
-    if ':;:NAr2' not in mdf_test[tempcolumn].cat.categories:
-      mdf_test[tempcolumn] = mdf_test[tempcolumn].cat.add_categories([':;:NAr2'])
+    if 'zzzinfill' not in mdf_train[tempcolumn].cat.categories:
+      mdf_train[tempcolumn] = mdf_train[tempcolumn].cat.add_categories(['zzzinfill'])
+    if 'zzzinfill' not in mdf_test[tempcolumn].cat.categories:
+      mdf_test[tempcolumn] = mdf_test[tempcolumn].cat.add_categories(['zzzinfill'])
 
     #replace NA with a dummy variable
-    mdf_train[tempcolumn] = mdf_train[tempcolumn].fillna(':;:NAr2')
-    mdf_test[tempcolumn] = mdf_test[tempcolumn].fillna(':;:NAr2')
+    mdf_train[tempcolumn] = mdf_train[tempcolumn].fillna('zzzinfill')
+    mdf_test[tempcolumn] = mdf_test[tempcolumn].fillna('zzzinfill')
 
     #replace numerical with string equivalent
     mdf_train[tempcolumn] = mdf_train[tempcolumn].astype(str)
@@ -6147,13 +6256,13 @@ class AutoMunge:
     #delete _NArw column, this will be processed seperately in the processfamily function
     #delete support NArw2 column
 #     columnNArw = column + '_NArw'
-    columnNAr2 = column + '_:;:NAr2'
+    columnNAr2 = column + '_zzzinfill'
     if columnNAr2 in list(mdf_train):
       del mdf_train[columnNAr2]
     if columnNAr2 in list(mdf_test):
       del mdf_test[columnNAr2]
-    if ':;:NAr2' in orig_labels_train:
-      orig_labels_train.remove(':;:NAr2')
+    if 'zzzinfill' in orig_labels_train:
+      orig_labels_train.remove('zzzinfill')
 
     
 #     del mdf_train[column + '_NAr2']    
@@ -10136,9 +10245,9 @@ class AutoMunge:
     #process_1010_class(mdf_train, mdf_test, column, category)
     #preprocess column with categories into binary encoded sets
     #corresponding to (sorted) categories of >2 values
-    #adresses infill with new point which we arbitrarily set as '000000000_infill'
+    #adresses infill with new point which we arbitrarily set as 'zzzinfill'
     #intended to show up as last point in set alphabetically
-    #for categories present in test set not present in train set use this '000000000' category
+    #for categories present in test set not present in train set uses this 'zzzinfill' category
     '''
     
     #create new column for trasnformation
@@ -10150,12 +10259,12 @@ class AutoMunge:
     mdf_test[column + '_1010'] = mdf_test[column + '_1010'].astype('category')
 
     #if set is categorical we'll need the plug value for missing values included
-    mdf_train[column + '_1010'] = mdf_train[column + '_1010'].cat.add_categories(['000000000_infill'])
-    mdf_test[column + '_1010'] = mdf_test[column + '_1010'].cat.add_categories(['000000000_infill'])
+    mdf_train[column + '_1010'] = mdf_train[column + '_1010'].cat.add_categories(['zzzinfill'])
+    mdf_test[column + '_1010'] = mdf_test[column + '_1010'].cat.add_categories(['zzzinfill'])
 
     #replace NA with a dummy variable
-    mdf_train[column + '_1010'] = mdf_train[column + '_1010'].fillna('000000000_infill')
-    mdf_test[column + '_1010'] = mdf_test[column + '_1010'].fillna('000000000_infill')
+    mdf_train[column + '_1010'] = mdf_train[column + '_1010'].fillna('zzzinfill')
+    mdf_test[column + '_1010'] = mdf_test[column + '_1010'].fillna('zzzinfill')
 
     #replace numerical with string equivalent
     mdf_train[column + '_1010'] = mdf_train[column + '_1010'].astype(str)
@@ -10169,11 +10278,11 @@ class AutoMunge:
     labels_test.sort()
 
     #if infill not present in train set, insert
-    if '000000000_infill' not in labels_train:
-      labels_train = labels_train + ['000000000_infill']
+    if 'zzzinfill' not in labels_train:
+      labels_train = labels_train + ['zzzinfill']
       labels_train.sort()
-    if '000000000_infill' not in labels_test:
-      labels_test = labels_test + ['000000000_infill']
+    if 'zzzinfill' not in labels_test:
+      labels_test = labels_test + ['zzzinfill']
       labels_test.sort()
     
     #get length of the list
@@ -10276,7 +10385,7 @@ class AutoMunge:
     testspecificcategories = list(set(labels_test)-set(labels_train))
     
     #so we'll just replace those items with our plug value
-    testplug_dict = dict(zip(testspecificcategories, ['000000000_infill'] * len(testspecificcategories)))
+    testplug_dict = dict(zip(testspecificcategories, ['zzzinfill'] * len(testspecificcategories)))
     mdf_test[column + '_1010'] = mdf_test[column + '_1010'].replace(testplug_dict)    
     
     #now we'll apply the 1010 transformation to the test set
@@ -23837,7 +23946,7 @@ class AutoMunge:
   
   def check_pm_miscparameters(self, pandasoutput, printstatus, TrainLabelFreqLevel, \
                               featureeval, driftreport, LabelSmoothing, LSfit, \
-                              returnedsets, shuffletrain):
+                              returnedsets, shuffletrain, inversion):
     """
     #Performs validation to confirm valid entries of passed postmunge(.) parameters
     #note one parameter not directly passed is df_test, just pass a list of the columns
@@ -23867,6 +23976,23 @@ class AutoMunge:
       print()
       
     pm_miscparameters_results.update({'printstatus_valresult' : printstatus_valresult})
+    
+    
+    #check inversion
+    inversion_valresult = False
+    if inversion not in [False, 'test', 'labels']:
+      inversion_valresult = True
+      print("Error: invalid entry passed for inversion parameter.")
+      print("Acceptable values are one of {False, 'test', 'labels'}")
+      print()
+    elif inversion not in ['test', 'labels'] \
+    and not isinstance(inversion, bool):
+      inversion_valresult = True
+      print("Error: invalid entry passed for inversion parameter.")
+      print("Acceptable values are one of {False, 'test', 'labels'}")
+      print()
+      
+    pm_miscparameters_results.update({'inversion_valresult' : inversion_valresult})
     
     
     #check TrainLabelFreqLevel
@@ -26473,7 +26599,11 @@ class AutoMunge:
                         postprocess_dict, infilliterate, printstatus, infillcolumns_list, \
                         masterNArows_train, masterNArows_test, process_dict, randomseed, ML_cmnd)
 
-
+    
+    #quickly gather a list of columns before any dimensionalioty reductions for populating mirror trees
+    pre_dimred_finalcolumns_train = list(df_train)
+    
+    
     #Here's where we'll trim the columns that were stricken as part of featureselection method
 
     #trim branches here associated with featureselect
@@ -26828,9 +26958,8 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
 
-
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.88'
+    automungeversion = '3.89'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -26841,6 +26970,7 @@ class AutoMunge:
     #as it. will be. used in the postmunge call beow to process validation sets
     postprocess_dict.update({'origtraincolumns' : columns_train, \
                              'finalcolumns_train' : finalcolumns_train, \
+                             'pre_dimred_finalcolumns_train' : pre_dimred_finalcolumns_train, \
                              'labels_column' : labels_column, \
                              'finalcolumns_labels' : list(df_labels), \
                              'single_train_column_labels_case' : single_train_column_labels_case, \
@@ -26901,7 +27031,20 @@ class AutoMunge:
                              'application_timestamp' : application_timestamp, \
                              'version_combined' : version_combined})
 
-
+    
+    #mirror tree assembly functions go here, these mirror the progression of transformation functions
+    #where categorytree is forward pass and inverse_categorytree is backward pass
+    
+    #don't currently use categorytree explicitly but populating in case downstream users find use
+    categorytree = self.populate_categorytree(postprocess_dict)
+    
+    #the inverse tree supports inversion in postmunge
+    inverse_categorytree = self.populate_inverse_categorytree(postprocess_dict)
+    
+    #the trees are returned in postprocess_dict
+    postprocess_dict.update({'categorytree' : categorytree, \
+                             'inverse_categorytree' : inverse_categorytree})
+    
 
     if totalvalidationratio > 0:
 
@@ -28087,10 +28230,10 @@ class AutoMunge:
 #     mdf_test[column] = mdf_test[column].fillna('NArw')
     
     #if set is categorical we'll need the plug value for missing values included
-    mdf_test[tempcolumn] = mdf_test[tempcolumn].cat.add_categories([':;:NAr2'])
+    mdf_test[tempcolumn] = mdf_test[tempcolumn].cat.add_categories(['zzzinfill'])
 
     #replace NA with a dummy variable
-    mdf_test[tempcolumn] = mdf_test[tempcolumn].fillna(':;:NAr2')
+    mdf_test[tempcolumn] = mdf_test[tempcolumn].fillna('zzzinfill')
 
     #replace numerical with string equivalent
     #mdf_train[column] = mdf_train[column].astype(str)
@@ -28178,7 +28321,7 @@ class AutoMunge:
       del mdf_test[tempcolumn]
 
       #delete support NArw2 column
-      columnNAr2 = column + '_:;:NAr2'
+      columnNAr2 = column + '_zzzinfill'
       if columnNAr2 in list(mdf_test):
         del mdf_test[columnNAr2]
 
@@ -28237,10 +28380,10 @@ class AutoMunge:
 #     mdf_test[column] = mdf_test[column].fillna('NArw')
     
     #if set is categorical we'll need the plug value for missing values included
-    mdf_test[tempcolumn] = mdf_test[tempcolumn].cat.add_categories([':;:NAr2'])
+    mdf_test[tempcolumn] = mdf_test[tempcolumn].cat.add_categories(['zzzinfill'])
 
     #replace NA with a dummy variable
-    mdf_test[tempcolumn] = mdf_test[tempcolumn].fillna(':;:NAr2')
+    mdf_test[tempcolumn] = mdf_test[tempcolumn].fillna('zzzinfill')
 
     #replace numerical with string equivalent
     #mdf_train[column] = mdf_train[column].astype(str)
@@ -28293,7 +28436,7 @@ class AutoMunge:
     del mdf_test[tempcolumn]
     
     #delete support NArw2 column
-    columnNAr2 = column + '_:;:NAr2'
+    columnNAr2 = column + '_zzzinfill'
     if columnNAr2 in list(mdf_test):
       del mdf_test[columnNAr2]
     
@@ -30134,10 +30277,10 @@ class AutoMunge:
       mdf_test[column + '_1010'] = mdf_test[column + '_1010'].astype('category')
 
       #if set is categorical we'll need the plug value for missing values included
-      mdf_test[column + '_1010'] = mdf_test[column + '_1010'].cat.add_categories(['000000000_infill'])
+      mdf_test[column + '_1010'] = mdf_test[column + '_1010'].cat.add_categories(['zzzinfill'])
 
       #replace NA with a dummy variable
-      mdf_test[column + '_1010'] = mdf_test[column + '_1010'].fillna('000000000_infill')
+      mdf_test[column + '_1010'] = mdf_test[column + '_1010'].fillna('zzzinfill')
 
       #replace numerical with string equivalent
       mdf_test[column + '_1010'] = mdf_test[column + '_1010'].astype(str)
@@ -30151,11 +30294,11 @@ class AutoMunge:
       labels_test.sort()
 
       #if infill not present in train set, insert
-      if '000000000_infill' not in labels_train:
-        labels_train = labels_train + ['000000000_infill']
+      if 'zzzinfill' not in labels_train:
+        labels_train = labels_train + ['zzzinfill']
         labels_train.sort()
-      if '000000000_infill' not in labels_test:
-        labels_test = labels_test + ['000000000_infill']
+      if 'zzzinfill' not in labels_test:
+        labels_test = labels_test + ['zzzinfill']
         labels_test.sort()    
 
       #here we replace the overlaps with version with jibberish suffix
@@ -30167,7 +30310,7 @@ class AutoMunge:
       testspecificcategories = list(set(labels_test)-set(labels_train))
 
       #so we'll just replace those items with our plug value
-      testplug_dict = dict(zip(testspecificcategories, ['000000000_infill'] * len(testspecificcategories)))
+      testplug_dict = dict(zip(testspecificcategories, ['zzzinfill'] * len(testspecificcategories)))
       mdf_test[column + '_1010'] = mdf_test[column + '_1010'].replace(testplug_dict)    
 
       #now we'll apply the 1010 transformation to the test set
@@ -35066,7 +35209,7 @@ class AutoMunge:
                 testID_column = False, labelscolumn = False, \
                 pandasoutput = False, printstatus = True, \
                 TrainLabelFreqLevel = False, featureeval = False, driftreport = False, \
-                LabelSmoothing = False, LSfit = False, \
+                LabelSmoothing = False, LSfit = False, inversion = False, \
                 returnedsets = True, shuffletrain = False):
     """
     #This function documented in READ ME, available online at:
@@ -35086,7 +35229,7 @@ class AutoMunge:
     pm_miscparameters_results = \
     self.check_pm_miscparameters(pandasoutput, printstatus, TrainLabelFreqLevel, \
                                 featureeval, driftreport, LabelSmoothing, LSfit, \
-                                returnedsets, shuffletrain)
+                                returnedsets, shuffletrain, inversion)
     
 
     #printout display progress
@@ -35099,8 +35242,18 @@ class AutoMunge:
     #feature selection analysis performed here if elected
     if featureeval is True:
 
-      if labelscolumn is False:
+      if inversion is not False:
+        print("featureselection not available when performing inversion")
+        print()
+        
+        madethecut = []
+        FSmodel = False
+        FScolumn_dict = {}
+        FS_sorted = {}
+      
+      elif labelscolumn is False:
         print("featureselection not available without labels_column in training set")
+        print()
         
         madethecut = []
         FSmodel = False
@@ -35171,6 +35324,122 @@ class AutoMunge:
 #     elif inplace is True:
 #       pass
 
+
+    #____________
+    #here is where inversion is performed if selected
+    if inversion is not False:
+      
+      
+      if inversion == 'test':
+        
+        #this is to handle edge case of excl transforms
+        #which after processing have their suffix removed from header
+        columns_train = postprocess_dict['finalcolumns_train']
+        source_columns = postprocess_dict['origtraincolumns']
+        
+        columns_train = [str(c)+'_excl' if c in source_columns else c for c in columns_train]
+        
+        #confirm consistency of train an test sets
+
+        #check number of columns is consistent
+        if len(columns_train)!= df_test.shape[1]:
+          print("error, different number of returned columns in train and test sets")
+          return
+        
+        #check order of column headers are consistent
+        columns_test = list(df_test)
+        if set(columns_train) == set(columns_test):
+          if columns_train != columns_test:
+            print("error, different order of column labels in the train and test set")
+            return
+        #this is for excl edge case again in case we had any updates to finalcolumns_labels above
+        elif set(postprocess_dict['finalcolumns_train']) == set(columns_test):
+          if postprocess_dict['finalcolumns_train'] != columns_test:
+            print("error, different order of column labels in the train and test set")
+            return
+
+        #assign labels to column headers if they weren't passed
+        if columns_train != columns_test:
+          df_test.columns = columns_train
+        
+        
+        if printstatus is True:
+          print("Performing inversion recovery of original columns for test set.")
+          print()
+
+        df_test, recovered_list, inversion_info_dict = \
+        self.df_inversion_meta(df_test, postprocess_dict['origtraincolumns'], postprocess_dict, printstatus)
+        
+        if printstatus is True:
+          print("Inversion succeeded in recovering original form for columns:")
+          print(recovered_list)
+          print()
+        
+        if pandasoutput is False:
+          
+          df_test = df_test.values
+          
+        return df_test, recovered_list, inversion_info_dict
+        
+        
+      if inversion == 'labels':
+        
+        #this is to handle edge case of excl transforms
+        #which after processing have their suffix removed from header
+        finalcolumns_labels = postprocess_dict['finalcolumns_labels']
+        source_columns = postprocess_dict['origtraincolumns']
+        
+        columns_train = [str(c)+'_excl' if c in source_columns else c for c in finalcolumns_labels]
+        
+        #confirm consistency of label sets
+
+        #check number of columns is consistent
+        if len(finalcolumns_labels)!= df_test.shape[1]:
+          print("error, different number of returned label columns in train and test sets")
+          return
+        
+        #check order of column headers are consistent
+        columns_test = list(df_test)
+        if set(finalcolumns_labels) == set(columns_test):
+          if finalcolumns_labels != columns_test:
+            print("error, different order of column labels in the train and test set")
+            return
+        #this is for excl edge case again in case we had any updates to finalcolumns_labels above
+        elif set(postprocess_dict['finalcolumns_labels']) == set(columns_test):
+          if postprocess_dict['finalcolumns_labels'] != columns_test:
+            print("error, different order of column labels in the train and test set")
+            return
+        
+        #assign labels to column headers if they weren't passed
+        if finalcolumns_labels != columns_test:
+          df_test.columns = finalcolumns_labels
+          
+        if printstatus is True:
+          print("Performing inversion recovery of original columns for label set.")
+          print()
+          
+        #first revert any label smoothing to one-hot encoding, LabelSmoothing can be passed as True
+        #for basis of LabelSmoothing_train passed to automunge, or float 0-1 matching activation setting 
+        #assumes if labels encoded in multiple smoothed configurations they have consistent activations
+        df_test = self.meta_LS_invert(LabelSmoothing, df_test, postprocess_dict)
+          
+        df_test, recovered_list, inversion_info_dict = \
+        self.df_inversion_meta(df_test, [postprocess_dict['labels_column']], postprocess_dict, printstatus)
+        
+        if printstatus is True:
+          print("Inversion succeeded in recovering original form for columns:")
+          print(recovered_list)
+          print()
+          
+        if pandasoutput is False:
+          
+          df_test = df_test.values
+          
+        return df_test, recovered_list, inversion_info_dict
+    
+    
+    #end inversion option sequence
+    #____________
 
     if type(df_test.index) != pd.RangeIndex:
       #if df_train.index.names == [None]:
@@ -35836,4 +36105,1895 @@ class AutoMunge:
       
       return df_test
     
+  def populate_categorytree(self, postprocess_dict):
+    """
+    #Populates mirror tree of transformations
+    #to facilitate translation between transformation category space 
+    #and suffix appender space
     
+    #As an example of a populated tree for bxcx root cateogry transform 
+    #which returns columns ['column_bxcx_nmbr', 'column_NArw']
+    
+    categorytree = \
+    {'__root__' : \
+    ['__root__', '', ['__root__'], {'NArw': ['sup', inputcol, categorylist, {}], \
+                                    'bxcx': ['rep', inputcol, categorylist, \
+                                            {'nmbr': ['rep', inputcol, categorylist, {}]}]}]}
+    
+    #here 'sup'/'rep' refers to distinction between supplement and replace primitives
+    #and 'root' is for the source column entry
+    
+    #inputcol and categorylist access from column_dict from key of one of entries in categorylist
+    #so we'll search column_dict for key with entries that match category 
+    #and inputcolumn that matches categorylist entry of preceding entry
+    #(convention is we only have downstream transforms applied to single entry categorylists)
+    
+    #Once we have this populated, we'll translate it to an inverse
+    #with returned columns in the root and root in each final
+    #such as to facilitate any translation from returned sets to source sets
+    #(such as for converting predictions back to original label formatting)
+    
+    #I think this will work let's give it a try
+    """
+    
+    #these are the columns passed to automunge(.) including labels
+    source_columns = list(postprocess_dict['origcolumn'])
+    
+    #these are derived columns including replaced columns and labels
+    produced_columns = list(postprocess_dict['column_dict'])
+    
+    #initialize categorytree
+    categorytree = {'__root__' : {}}
+    
+    for origcolumn in source_columns:
+      
+      categorytree['__root__'].update({origcolumn : ['__root__', '', ['__root__'], {}]})
+      
+      root_category = postprocess_dict['origcolumn'][origcolumn]['category']
+          
+      parents     = postprocess_dict['transform_dict'][root_category]['parents']
+      siblings    = postprocess_dict['transform_dict'][root_category]['siblings']
+      auntsuncles = postprocess_dict['transform_dict'][root_category]['auntsuncles']
+      cousins     = postprocess_dict['transform_dict'][root_category]['cousins']
+      
+      
+      categorytree_entry = self.populate_family(postprocess_dict, categorytree['__root__'][origcolumn][3], origcolumn, '__root__', \
+                                           parents, siblings, auntsuncles, cousins)
+#       categorytree_entry = populate_family(postprocess_dict, categorytree['__root__'][origcolumn][3], origcolumn, '__root__', \
+#                                            parents, siblings, auntsuncles, cousins)
+      
+      categorytree['__root__'][origcolumn][3].update(categorytree_entry)
+      
+    return categorytree
+    
+    
+  
+
+  def populate_family(self, postprocess_dict, categorytree, inputcolumn, inputcategory, \
+                      parents, siblings, auntsuncles, cousins):
+    """
+    #populates categorytree entries from seeding of a source-column and root category
+    
+    #we will run in order of
+    #parents, auntsuncles, siblings, cousins
+    
+    #see also notes for populate_categorytree function
+    """
+    
+    for entry in parents:
+      
+      if entry != None:
+      
+        categorylist = self.get_categorylist(postprocess_dict, inputcolumn, entry)
+#         categorylist = get_categorylist(postprocess_dict, inputcolumn, entry)
+        
+        if entry not in categorytree:
+          categorytree.update({entry : {}})
+
+        #parents have downstream offspring
+        children      = postprocess_dict['transform_dict'][entry]['children']
+        niecesnephews = postprocess_dict['transform_dict'][entry]['niecesnephews']
+        coworkers     = postprocess_dict['transform_dict'][entry]['coworkers']
+        friends       = postprocess_dict['transform_dict'][entry]['friends']
+
+        #convention is downstream offspring only allowed on sets returned with single column categorylist
+        if len(categorylist) == 1:
+
+          parentcolumn = categorylist[0]
+          
+          #parents is replace primitive
+          categorytree[entry].update({parentcolumn : ['rep', inputcolumn, categorylist, {}]})
+
+          categorytree_entry = self.populate_family(postprocess_dict, categorytree[entry][parentcolumn][3], parentcolumn, entry, \
+                                               children, niecesnephews, coworkers, friends)
+#           categorytree_entry = populate_family(postprocess_dict, categorytree[entry][parentcolumn][3], parentcolumn, entry, \
+#                                                children, niecesnephews, coworkers, friends)
+          
+          categorytree[entry][parentcolumn][3].update(categorytree_entry)
+          
+        else:
+          
+          for category_column in categorylist:
+            
+            categorytree[entry].update({category_column : ['rep', inputcolumn, categorylist, {}]})
+          
+        
+    for entry in auntsuncles:
+      
+      if entry != None:
+        
+        if entry not in categorytree:
+          categorytree.update({entry : {}})
+      
+        categorylist = self.get_categorylist(postprocess_dict, inputcolumn, entry)
+#         categorylist = get_categorylist(postprocess_dict, inputcolumn, entry)
+        
+        for category_column in categorylist:
+
+          #auntsuncles is replace primitive
+          categorytree[entry].update({category_column : ['rep', inputcolumn, categorylist, {}]})
+
+          #auntsuncles have no downstream offspring
+      
+    for entry in siblings:
+      
+      if entry != None:
+      
+        categorylist = self.get_categorylist(postprocess_dict, inputcolumn, entry)
+#         categorylist = get_categorylist(postprocess_dict, inputcolumn, entry)
+
+        if entry not in categorytree:
+          categorytree.update({entry : {}})
+
+        #siblings have downstream offspring
+        children      = postprocess_dict['transform_dict'][entry]['children']
+        niecesnephews = postprocess_dict['transform_dict'][entry]['niecesnephews']
+        coworkers     = postprocess_dict['transform_dict'][entry]['coworkers']
+        friends       = postprocess_dict['transform_dict'][entry]['friends']
+
+        #convention is downstream offspring only allowed on sets returned with single column categorylist
+        if len(categorylist) == 1:
+
+          parentcolumn = categorylist[0]
+          
+          #siblings is supplement primitive
+          categorytree[entry].update({parentcolumn : ['sup', inputcolumn, categorylist, {}]})
+
+
+          categorytree_entry = self.populate_family(postprocess_dict, categorytree[entry][parentcolumn][3], parentcolumn, entry, \
+                                               children, niecesnephews, coworkers, friends)
+#           categorytree_entry = populate_family(postprocess_dict, categorytree[entry][parentcolumn][3], parentcolumn, entry, \
+#                                                children, niecesnephews, coworkers, friends)
+          
+          categorytree[entry][parentcolumn][3].update(categorytree_entry)
+          
+        else:
+          for category_column in categorylist:
+            
+            categorytree[entry].update({category_column : ['sup', inputcolumn, categorylist, {}]})
+                    
+        
+    for entry in cousins:
+      
+      if entry != None:
+      
+        categorylist = self.get_categorylist(postprocess_dict, inputcolumn, entry)
+        #categorylist = get_categorylist(postprocess_dict, inputcolumn, entry)
+
+        if entry not in categorytree:
+          categorytree.update({entry : {}})
+
+        #cousins have no downstream offspring
+        
+        for category_column in categorylist:
+
+          #cousins is supplement primitive
+          categorytree[entry].update({category_column : ['sup', inputcolumn, categorylist, {}]})
+
+          #auntsuncles have no downstream offspring
+      
+      
+    return categorytree
+    
+    
+    
+    
+  def get_categorylist(self, postprocess_dict, inputcolumn, category):
+    """
+    #access a returned categorylist
+    #corresponding to the category of transformation applied to an inputcolumn
+    #by searching entries to postprocess_dict['column_dict']
+    """
+    
+    categorylist = []
+    
+    for entry in list(postprocess_dict['column_dict']):
+      
+      if postprocess_dict['column_dict'][entry]['inputcolumn'] == inputcolumn \
+      and postprocess_dict['column_dict'][entry]['category'] == category:
+        
+        categorylist = postprocess_dict['column_dict'][entry]['categorylist']
+          
+        break
+        
+    #this is for edge case when a transform does not return columns
+    if categorylist == None:
+      categorylist = []
+        
+    return categorylist
+      
+  def populate_inverse_categorytree(self, postprocess_dict):
+    """
+    #So this is similar to the categorytree in that we are mirror the transformations
+    #in a populated data structure
+    #but in this inverse version the bottom tier are the conclusion branches
+    #which progress back to the root
+    #note that we'll allow redundant entries in first tiers
+    #such as to aggregate each distinct path by common starting point in list
+    
+    #here we'll want additional data points for:
+    #- depth of branch
+    #- information retention of transform
+    #- availability of inverse transform
+    
+    #As an example of excerpt from a populated tree for bxcx root category transform 
+    #which returns columns ['column_bxcx_nmbr', 'column_NArw']
+    
+    inverse_categorytree['nmbr'] = \
+    {'Age_bxcx_nmbr': ['sup', 'Age_bxcx', ['Age_bxcx_nmbr'], ['Age_bxcx_nmbr', 'Age_NArw'],
+                      2, False, False, \
+                      {'bxcx': {'Age_bxcx': ['rep', 'Age', ['Age_bxcx'], ['Age_bxcx_nmbr', 'Age_NArw'],
+                                             1, False, False, \
+                                             {'__root__': {'Age': ['__root__','__root__','__root__',\
+                                                                   '__root__', 1 , False , False, \
+                                                                    {}]}}]}}]}
+    """
+    
+    #all returned columns including labels
+    returned_columns = \
+    postprocess_dict['pre_dimred_finalcolumns_train'] + postprocess_dict['finalcolumns_labels']
+    
+    #these are all derived columns including replaced columns and labels
+    produced_columns = list(postprocess_dict['column_dict'])
+    
+    #these are the columns passed to automunge(.) including labels
+    source_columns = list(postprocess_dict['origcolumn'])
+    
+    
+    #initialize inverse_categorytree
+    inverse_categorytree = {}
+    
+    for returned_column in returned_columns:
+      
+      category     = postprocess_dict['column_dict'][returned_column]['category']
+      inputcolumn  = postprocess_dict['column_dict'][returned_column]['inputcolumn']
+      origcolumn   = postprocess_dict['column_dict'][returned_column]['origcolumn']
+      columnslist  = postprocess_dict['column_dict'][returned_column]['columnslist']
+      categorylist = postprocess_dict['column_dict'][returned_column]['categorylist']
+      
+#       preceding_category = postprocess_dict['column_dict'][inputcolumn]['category']
+#       preceding_inputcolumn
+      
+      if category not in inverse_categorytree:
+      
+        inverse_categorytree.update(
+        {category : {}}
+        )
+      
+      depth = 1
+      
+      info_retention = False
+      if 'info_retention' in postprocess_dict['process_dict'][category]:
+        if postprocess_dict['process_dict'][category]['info_retention'] is True:
+          info_retention = True
+      
+      transforms_avail = False
+      if 'inverseprocess' in postprocess_dict['process_dict'][category]:
+        if callable(postprocess_dict['process_dict'][category]['inverseprocess']):
+          transforms_avail = True
+      
+      for entry in categorylist:
+        
+        if entry in returned_columns:
+          sup_or_rep = 'sup'
+        else:
+          sup_or_rep = 'rep'
+
+        #note the index number of entries in this list are used to access
+        #so any added points here should be tacked on end (after {})
+        #and mirrored in other function
+        inverse_categorytree[category].update(
+        {entry : [sup_or_rep, 
+                  inputcolumn, 
+                  categorylist, 
+                  columnslist, 
+                  depth, 
+                  info_retention,
+                  transforms_avail,
+                  {}]}
+        )
+        
+        if inputcolumn not in source_columns:
+
+          inverse_categorytree_entry, depth_, info_retention_, transforms_avail_ = \
+          self.populate_inverse_family(
+            postprocess_dict, inverse_categorytree[category][entry][7], inputcolumn,
+            returned_columns, source_columns
+          )
+          
+          inverse_categorytree[category][entry][4] += depth_
+          
+          inverse_categorytree[category][entry][5] = \
+          inverse_categorytree[category][entry][5] and info_retention_
+          
+          inverse_categorytree[category][entry][6] = \
+          inverse_categorytree[category][entry][6] and transforms_avail_
+          
+          
+          inverse_categorytree[category][entry][7].update(inverse_categorytree_entry)
+        
+        
+        else:
+          
+          inverse_categorytree[category][entry][7].update(
+          {'__root__' : {inputcolumn : ['__root__', 
+                                        '__root__', 
+                                        '__root__', 
+                                        '__root__', 
+                                        depth, 
+                                        info_retention,
+                                        transforms_avail,
+                                        {}]}}
+          )
+          
+        
+    return inverse_categorytree
+    
+  
+  def populate_inverse_family(self, postprocess_dict, inverse_categorytree, column, \
+                              returned_columns, source_columns):
+    """
+    #populates inverse_categorytree entries from seeding of an inputcolumn
+    
+    #see also notes for populate_inverse_categorytree function
+    """
+      
+    category     = postprocess_dict['column_dict'][column]['category']
+    inputcolumn  = postprocess_dict['column_dict'][column]['inputcolumn']
+    origcolumn   = postprocess_dict['column_dict'][column]['origcolumn']
+    columnslist  = postprocess_dict['column_dict'][column]['columnslist']
+    categorylist = postprocess_dict['column_dict'][column]['categorylist']
+    
+    
+    
+    if category not in inverse_categorytree:
+    
+      inverse_categorytree.update(
+      {category : {}}
+      )
+    
+    depth = 1
+    
+    info_retention = False
+    if 'info_retention' in postprocess_dict['process_dict'][category]:
+      if postprocess_dict['process_dict'][category]['info_retention'] is True:
+        info_retention = True
+
+    transforms_avail = False
+    if 'inverseprocess' in postprocess_dict['process_dict'][category]:
+      if callable(postprocess_dict['process_dict'][category]['inverseprocess']):
+        transforms_avail = True
+        
+    for entry in categorylist:
+
+      if entry in returned_columns:
+        sup_or_rep = 'sup'
+      else:
+        sup_or_rep = 'rep'
+      
+      #note the index number of entries in this list are used to access
+      #so any added points here should be tacked on end (after {})
+      #and mirrored in other function
+      inverse_categorytree[category].update(
+      {entry : [sup_or_rep, 
+                inputcolumn, 
+                categorylist, 
+                columnslist, 
+                depth, 
+                info_retention,
+                transforms_avail,
+                {}]}
+      )
+      
+      
+      if inputcolumn not in source_columns:
+        
+        inverse_categorytree_entry, depth_, info_retention_, transforms_avail_ = \
+        self.populate_inverse_family(
+          postprocess_dict, inverse_categorytree[category][entry][7], inputcolumn,
+          returned_columns, source_columns
+        )
+  
+        inverse_categorytree[category][entry][4] += depth_
+
+        inverse_categorytree[category][entry][5] = \
+        inverse_categorytree[category][entry][5] and info_retention_
+
+        inverse_categorytree[category][entry][6] = \
+        inverse_categorytree[category][entry][6] and transforms_avail_
+
+
+        inverse_categorytree[category][entry][7].update(inverse_categorytree_entry)
+
+
+      else:
+
+        inverse_categorytree[category][entry][7].update(
+        {'__root__' : {inputcolumn : ['__root__', 
+                                      '__root__', 
+                                      '__root__', 
+                                      '__root__', 
+                                      depth, 
+                                      info_retention,
+                                      transforms_avail,
+                                      {}]}}
+        )
+        
+        
+    depth            = inverse_categorytree[category][entry][4]
+    info_retention   = inverse_categorytree[category][entry][5]
+    transforms_avail = inverse_categorytree[category][entry][6]
+    
+    return inverse_categorytree, depth, info_retention, transforms_avail
+  
+  
+  def LS_invert(self, LabelSmoothing, df, categorylist, postprocess_dict):
+    """
+    #Converts smoothed labels back to one-hot encoding
+    #for a particular categorylist
+    """
+    
+    if LabelSmoothing is True:
+      
+      LabelSmoothing = postprocess_dict['LabelSmoothing_train']
+    
+    if LabelSmoothing > 0 and LabelSmoothing < 1:
+      
+      for categorylist_entry in categorylist:
+        
+        df[categorylist_entry] = np.where(df[categorylist_entry] == LabelSmoothing, 1, 0)
+        
+        df[categorylist_entry] = df[categorylist_entry].astype(int8)
+        
+    return df
+  
+  
+  def meta_LS_invert(self, LabelSmoothing, df, postprocess_dict):
+    """
+    #Performs labels smoothing inversion
+    #Note that label smoothing may have been applied to multiple distinct sets
+    #originating from same source column
+    """
+    
+    if LabelSmoothing is True or (LabelSmoothing > 0 and LabelSmoothing < 1):
+
+      labels_column = postprocess_dict['labels_column']
+
+      labels_root_category = postprocess_dict['origcolumn'][labels_column]['category']
+
+      label_returnedcolumns = postprocess_dict['origcolumn'][labels_column]['columnkeylist']
+
+      inverse_categorytree = postprocess_dict['inverse_categorytree']
+
+      #we'll strike columns from this list if they are in another column's categorylist
+      returnedcolumns_copy = label_returnedcolumns.copy()
+
+      for returnedcolumn in label_returnedcolumns:
+
+        #only continue if not previiously stricken from antoher column's cateogrylist
+        if returnedcolumn in returnedcolumns_copy:
+
+          returned_categorylist = postprocess_dict['column_dict'][returnedcolumn]['categorylist']
+
+          for returned_categorylist_entry in returned_categorylist:
+
+            returnedcolumns_copy.remove(returned_categorylist_entry)
+
+          returned_category = postprocess_dict['column_dict'][returnedcolumn]['category']
+
+          #if column is from a multicolumn boolean MLinfilltype then we'll apply LSinvert
+          if postprocess_dict['process_dict'][returned_category]['MLinfilltype'] in \
+          ['multirt', 'multisp']:
+
+            df = self.LS_invert(LabelSmoothing, df, returned_categorylist, postprocess_dict)
+            
+    return df
+
+
+  #def inverseprocess_nmbr(df, categorylist, postprocess_dict):
+  def inverseprocess_nmbr(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_numerical_class
+    #assumes any relevant parameters were saved in normalization_dict
+    #does not perform infill, assumes clean data
+    """
+    
+    normkey = categorylist[0]
+    
+    mean = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
+    std = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['std']
+    offset = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['offset']
+    multiplier = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['multiplier']
+    
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    
+    df[inputcolumn] = ((df[normkey] - offset) * std / multiplier ) + mean
+    
+    return df, inputcolumn
+  
+  #def inverseprocess_mean(df, categorylist, postprocess_dict):
+  def inverseprocess_mean(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_mean_class
+    #assumes any relevant parameters were saved in normalization_dict
+    #does not perform infill, assumes clean data
+    """
+    
+    normkey = categorylist[0]
+    
+    mean = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
+    maxminusmin = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['maxminusmin']
+    offset = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['offset']
+    multiplier = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['multiplier']
+    
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    
+    df[inputcolumn] = ((df[normkey] - offset) * maxminusmin / multiplier ) + mean
+    
+    return df, inputcolumn
+  
+  #def inverseprocess_MADn(df, categorylist, postprocess_dict):
+  def inverseprocess_MADn(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_MADn_class
+    #assumes any relevant parameters were saved in normalization_dict
+    #does not perform infill, assumes clean data
+    """
+    
+    normkey = categorylist[0]
+    
+    mean = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
+    MAD = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['MAD']
+    
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    
+    df[inputcolumn] = df[normkey] * MAD + mean
+    
+    return df, inputcolumn
+  
+  #def inverseprocess_MAD3(df, categorylist, postprocess_dict):
+  def inverseprocess_MAD3(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_MAD3_class
+    #assumes any relevant parameters were saved in normalization_dict
+    #does not perform infill, assumes clean data
+    """
+    
+    normkey = categorylist[0]
+    
+    mean = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
+    MAD = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['MAD']
+    datamax = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['datamax']
+    
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    
+    df[inputcolumn] = df[normkey] * MAD + datamax
+    
+    return df, inputcolumn
+  
+  #def inverseprocess_mnmx(df, categorylist, postprocess_dict):
+  def inverseprocess_mnmx(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_mnmx_class
+    #assumes any relevant parameters were saved in normalization_dict
+    #does not perform infill, assumes clean data
+    """
+    
+    normkey = categorylist[0]
+    
+    minimum = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['minimum']
+    maximum = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['maximum']
+    maxminusmin = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['maxminusmin']
+    
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    
+    df[inputcolumn] = df[normkey] * maxminusmin + minimum
+    
+    return df, inputcolumn
+  
+  #def inverseprocess_retn(df, categorylist, postprocess_dict):
+  def inverseprocess_retn(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_retn_class
+    #assumes any relevant parameters were saved in normalization_dict
+    #does not perform infill, assumes clean data
+    """
+    
+    normkey = categorylist[0]
+    
+    minimum = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['minimum']
+    maximum = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['maximum']
+    divisor = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['divisor']
+    multiplier = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['multiplier']
+    offset = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['offset']
+
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    
+    if maximum >= 0 and minimum <= 0:
+      
+      df[inputcolumn] = (df[normkey] - offset) * divisor / multiplier
+      
+    elif maximum >= 0 and minimum >= 0:
+      
+      df[inputcolumn] = (df[normkey] - offset) * divisor / multiplier + minimum
+      
+    elif maximum <= 0 and minimum <= 0:
+      
+      df[inputcolumn] = (df[normkey] - offset) * divisor / multiplier + maximum
+    
+    return df, inputcolumn
+  
+  #def inverseprocess_log0(df, categorylist, postprocess_dict):
+  def inverseprocess_log0(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_log0_class
+    #assumes any relevant parameters were saved in normalization_dict
+    #does not perform infill, assumes clean data
+    """
+    
+    normkey = categorylist[0]
+    
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    
+    df[inputcolumn] = 10 ** df[normkey]
+    
+    return df, inputcolumn
+  
+  #def inverseprocess_logn(df, categorylist, postprocess_dict):
+  def inverseprocess_logn(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_logn_class
+    #assumes any relevant parameters were saved in normalization_dict
+    #does not perform infill, assumes clean data
+    """
+    
+    normkey = categorylist[0]
+    
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    
+    df[inputcolumn] = np.e ** df[normkey]
+    
+    return df, inputcolumn
+  
+  #def inverseprocess_addd(df, categorylist, postprocess_dict):
+  def inverseprocess_addd(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_addd_class
+    #assumes any relevant parameters were saved in normalization_dict
+    #does not perform infill, assumes clean data
+    """
+    
+    normkey = categorylist[0]
+    
+    add = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['add']
+    
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    
+    df[inputcolumn] = df[normkey] - add
+    
+    return df, inputcolumn
+  
+  #def inverseprocess_sbtr(df, categorylist, postprocess_dict):
+  def inverseprocess_sbtr(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_sbtr_class
+    #assumes any relevant parameters were saved in normalization_dict
+    #does not perform infill, assumes clean data
+    """
+    
+    normkey = categorylist[0]
+    
+    subtract = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['subtract']
+    
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    
+    df[inputcolumn] = df[normkey] + subtract
+    
+    return df, inputcolumn
+  
+  #def inverseprocess_mltp(df, categorylist, postprocess_dict):
+  def inverseprocess_mltp(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_mltp_class
+    #assumes any relevant parameters were saved in normalization_dict
+    #does not perform infill, assumes clean data
+    """
+    
+    normkey = categorylist[0]
+    
+    multiply = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['multiply']
+    
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    
+    df[inputcolumn] = df[normkey] / multiply
+    
+    return df, inputcolumn
+  
+  #def inverseprocess_divd(df, categorylist, postprocess_dict):
+  def inverseprocess_divd(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_divd_class
+    #assumes any relevant parameters were saved in normalization_dict
+    #does not perform infill, assumes clean data
+    """
+    
+    normkey = categorylist[0]
+    
+    divide = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['divide']
+    
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    
+    df[inputcolumn] = df[normkey] * divide
+    
+    return df, inputcolumn
+  
+  #def inverseprocess_rais(df, categorylist, postprocess_dict):
+  def inverseprocess_rais(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_rais_class
+    #assumes any relevant parameters were saved in normalization_dict
+    #does not perform infill, assumes clean data
+    """
+    
+    normkey = categorylist[0]
+    
+    raiser = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['raiser']
+    
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    
+    df[inputcolumn] = df[normkey] ** (1 / raiser)
+    
+    return df, inputcolumn
+  
+  #def inverseprocess_absl(df, categorylist, postprocess_dict):
+  def inverseprocess_absl(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_absl_class
+    #assumes any relevant parameters were saved in normalization_dict
+    #does not perform infill, assumes clean data
+    
+    #incomplete info retention, no transformation performed
+    #this funciton only populated to support partial info recovery
+    #in case a full info_retention path is not available
+    """
+    
+    normkey = categorylist[0]
+    
+    
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    
+    df[inputcolumn] = df[normkey]
+    
+    return df, inputcolumn
+  
+  #def inverseprocess_sqrt(df, categorylist, postprocess_dict):
+  def inverseprocess_sqrt(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_sqrt_class
+    #assumes any relevant parameters were saved in normalization_dict
+    #does not perform infill, assumes clean data
+    """
+    
+    normkey = categorylist[0]
+    
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    
+    df[inputcolumn] = df[normkey] ** 2
+    
+    return df, inputcolumn
+  
+  
+  #def inverseprocess_pwrs(df, categorylist, postprocess_dict):
+  def inverseprocess_pwrs(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_pwrs_class
+    #assumes any relevant parameters were saved in normalization_dict
+    #does not perform infill, assumes clean data
+    
+    #this only achieves partial information recovery as power level returned to single column
+    
+    #in interest of expediency, building this method to extract power
+    #level from column suffix appender
+    #a potential improvement would be to add an additional entry to pwrs normalization_dict
+    #matching column header to power, eg {'column_10^-1' : -1}
+    #saving that for a future update
+    #(same functionality, but would better match convention of library for use of column headers)
+    """
+    
+    normkey = categorylist[0]
+    
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    
+    df[inputcolumn] = 0
+    
+    for column in categorylist:
+      
+      power = 10 ** int(column.replace(inputcolumn + '_10^', ''))
+      
+      df[inputcolumn] = np.where(df[column] == 1, power, df[inputcolumn])
+    
+    return df, inputcolumn
+  
+  
+  #def inverseprocess_pwr2(df, categorylist, postprocess_dict):
+  def inverseprocess_pwr2(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_pwr2_class
+    #assumes any relevant parameters were saved in normalization_dict
+    #does not perform infill, assumes clean data
+    
+    #note that pwr2 differs from pwrs in that negative numbers are allowed
+    
+    #this only achieves partial information recovery as power level returned to single column
+    
+    #in interest of expediency, building this method to extract power
+    #level from column suffix appender
+    #a potential improvement would be to add an additional entry to pwrs normalization_dict
+    #matching column header to power, eg {'column_10^-1' : -1}
+    #saving that for a future update
+    #(same functionality, but would better match convention of library for use of column headers)
+    """
+    
+    normkey = categorylist[0]
+    
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    
+    df[inputcolumn] = 0
+    
+    #for pwr2 trasnform suffix is either '_10^#' for positive values or '_-10^#' for negative
+    for column in categorylist:
+      
+      if column[len(inputcolumn)+1] == '1':
+      
+        power = int(column.replace(inputcolumn + '_10^', ''))
+      
+        df[inputcolumn] = np.where(df[column] == 1, 10 ** power, df[inputcolumn])
+        
+      if column[len(inputcolumn)+1] == '-':
+        
+        power = int(column.replace(inputcolumn + '_-10^', ''))
+        
+        df[inputcolumn] = np.where(df[column] == 1, -(10 ** power), df[inputcolumn])
+        
+    return df, inputcolumn
+  
+  #def inverseprocess_pwor(df, categorylist, postprocess_dict):
+  def inverseprocess_pwor(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_pwor_class
+    #assumes any relevant parameters were saved in normalization_dict
+    #does not perform infill, assumes clean data
+    """
+    
+    normkey = categorylist[0]
+    
+    ordl_activations_dict = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordl_activations_dict']
+    
+    powers = list(ordl_activations_dict)
+    
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    
+    df[inputcolumn] = 10 ** df[normkey]
+    
+    return df, inputcolumn
+  
+  #def inverseprocess_por2(df, categorylist, postprocess_dict):
+  def inverseprocess_por2(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_por2_class
+    #assumes any relevant parameters were saved in normalization_dict
+    #does not perform infill, assumes clean data
+    """
+    
+    normkey = categorylist[0]
+    
+    #this has keys of pwr2 equivalent column headers and values of ordinal values found in column
+    train_replace_dict = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['train_replace_dict']
+    
+    inverse_train_replace_dict = {value:key for key,value in train_replace_dict.items()}
+    
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    
+    df[inputcolumn] = 0
+        
+    #for pwr2 trasnform suffix is either '_10^#' for positive values or '_-10^#' for negative
+    for column in list(train_replace_dict):
+      
+      #this dictionary is including a nan key entry for infill points, we'll leave these points as 0
+      if column == column:
+
+        if column[len(inputcolumn)+1] == '1':
+
+          power = int(column.replace(inputcolumn + '_10^', ''))
+
+          df[inputcolumn] = np.where(df[normkey] == train_replace_dict[column], 10 ** power, df[inputcolumn])
+
+        if column[len(inputcolumn)+1] == '-':
+
+          power = int(column.replace(inputcolumn + '_-10^', ''))
+
+          df[inputcolumn] = np.where(df[normkey] == train_replace_dict[column], -(10 ** power), df[inputcolumn])
+        
+    return df, inputcolumn
+  
+  
+  #def inverseprocess_bins(df, categorylist, postprocess_dict):
+  def inverseprocess_bins(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_bins_class
+    #assumes any relevant parameters were saved in normalization_dict
+    #does not perform infill, assumes clean data
+    
+    #incomplete information recovery
+    """
+    
+    normkey = categorylist[0]
+    
+    #this has keys of pwr2 equivalent column headers and values of ordinal values found in column
+    binsmean = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binsmean']
+    binsstd = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binsstd']
+    
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    
+    #we'll follow convention that values placed in mid point of buckets
+    #eg for bucket with boundaries mean through mean+stsndard devation
+    #we'll return value mean + 1/2 standard deviation
+    #and for tails we'll arbitraricly follow consistent deltas between buckets
+    #(so this loses a lot of tail distribution information in the inversion)
+    returned_values_dict = {}
+    
+    i = -2.5
+    
+    for bucket in ['s<-2', 's-21', 's-10', 's+01', 's+12', 's>+2']:
+      
+      #relies on suffix appender conventions
+      column = inputcolumn + '_bins_' + bucket
+      value = (i * binsstd + binsmean)
+      
+      returned_values_dict.update({column : value})
+      
+      i += 1
+      
+    
+    df[inputcolumn] = 0
+    
+    for column in categorylist:
+        
+      df[inputcolumn] = np.where(df[column] == 1, returned_values_dict[column], df[inputcolumn])
+      
+        
+    return df, inputcolumn
+  
+  
+  #def inverseprocess_bint(df, categorylist, postprocess_dict):
+  def inverseprocess_bint(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_bint_class
+    #assumes any relevant parameters were saved in normalization_dict
+    #does not perform infill, assumes clean data
+    
+    #incomplete information recovery
+    """
+    
+    normkey = categorylist[0]
+    
+    #this has keys of pwr2 equivalent column headers and values of ordinal values found in column
+#     binsmean = \
+#     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binsmean']
+#     binsstd = \
+#     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binsstd']
+    binsmean = 0
+    binsstd = 1
+    
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    
+    #we'll follow convention that values placed in mid point of buckets
+    #eg for bucket with boundaries mean through mean+stsndard devation
+    #we'll return value mean + 1/2 standard deviation
+    #and for tails we'll arbitraricly follow consistent deltas between buckets
+    #(so this loses a lot of tail distribution information in the inversion)
+    returned_values_dict = {}
+    
+    i = -2.5
+    
+    for bucket in ['t<-2', 't-21', 't-10', 't+01', 't+12', 't>+2']:
+      
+      #relies on suffix appender conventions
+      column = inputcolumn + '_bint_' + bucket
+      value = (i * binsstd + binsmean)
+      
+      returned_values_dict.update({column : value})
+      
+      i += 1
+      
+    
+    df[inputcolumn] = 0
+    
+    for column in categorylist:
+      
+      df[inputcolumn] = np.where(df[column] == 1, returned_values_dict[column], df[inputcolumn])
+      
+    return df, inputcolumn
+  
+  
+  #def inverseprocess_bsor(df, categorylist, postprocess_dict):
+  def inverseprocess_bsor(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_bsor_class
+    #assumes any relevant parameters were saved in normalization_dict
+    #does not perform infill, assumes clean data
+    
+    #incomplete information recovery
+    """
+    
+    normkey = categorylist[0]
+    
+    #this has keys of pwr2 equivalent column headers and values of ordinal values found in column
+    binsmean = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binsmean']
+    binsstd = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binsstd']
+    ordinal_dict = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordinal_dict']
+    
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    
+    #we'll follow convention that values placed in mid point of buckets
+    #eg for bucket with boundaries mean through mean+stsndard devation
+    #we'll return value mean + 1/2 standard deviation
+    #and for tails we'll arbitraricly follow consistent deltas between buckets
+    #(so this loses a lot of tail distribution information in the inversion)
+    returned_values_dict = {}
+    
+    i = -2.5
+    
+    for bucket in [0, 1, 2, 3, 4, 5]:
+      
+      returned_values_dict.update({bucket : (i * binsstd + binsmean)})
+      
+      i += 1
+    
+    df[inputcolumn] = df[normkey].copy()
+    
+    df[inputcolumn] = df[inputcolumn].replace(returned_values_dict)
+
+        
+    return df, inputcolumn
+  
+  
+  #def inverseprocess_bnwd(df, categorylist, postprocess_dict):
+  def inverseprocess_bnwd(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_bnwd_class
+    #assumes any relevant parameters were saved in normalization_dict
+    #does not perform infill, assumes clean data
+    
+    #this only achieves partial information recovery as bins sets aggregated to single value per bin
+    """
+    
+    normkey = categorylist[0]
+    
+    bins_cuts = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_cuts']
+    bn_min = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_min']
+    bn_delta = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_delta']
+    bins_id = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_id']
+    bn_delta = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_delta']
+    bn_width_bnwd = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_width_bnwd']
+    
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    
+    df[inputcolumn] = 0
+    
+    for i in range(len(bins_id)):
+      
+      _id =  bins_id[i]
+      
+      column = inputcolumn + '_bnwd_' + _id
+      
+      if column in list(df):
+      
+        df[inputcolumn] = np.where(df[column] == 1, i * bn_width_bnwd + bn_min, df[inputcolumn])
+      
+    
+    return df, inputcolumn
+  
+  #def inverseprocess_bnwK(df, categorylist, postprocess_dict):
+  def inverseprocess_bnwK(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_bnwK_class
+    #assumes any relevant parameters were saved in normalization_dict
+    #does not perform infill, assumes clean data
+    
+    #this only achieves partial information recovery as bins sets aggregated to single value per bin
+    """
+    
+    normkey = categorylist[0]
+    
+    bins_cuts = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_cuts']
+    bn_min = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_min']
+    bn_delta = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_delta']
+    bins_id = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_id']
+    bn_delta = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_delta']
+    bn_width_bnwK = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_width_bnwK']
+    
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    
+    df[inputcolumn] = 0
+    
+    for i in range(len(bins_id)):
+      
+      _id =  bins_id[i]
+      
+      column = inputcolumn + '_bnwK_' + _id
+      
+      if column in list(df):
+      
+        df[inputcolumn] = np.where(df[column] == 1, i * bn_width_bnwK + bn_min, df[inputcolumn])
+      
+    
+    return df, inputcolumn
+  
+  #def inverseprocess_bnwM(df, categorylist, postprocess_dict):
+  def inverseprocess_bnwM(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_bnwM_class
+    #assumes any relevant parameters were saved in normalization_dict
+    #does not perform infill, assumes clean data
+    
+    #this only achieves partial information recovery as bins sets aggregated to single value per bin
+    """
+    
+    normkey = categorylist[0]
+    
+    bins_cuts = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_cuts']
+    bn_min = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_min']
+    bn_delta = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_delta']
+    bins_id = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_id']
+    bn_delta = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_delta']
+    bn_width_bnwM = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_width_bnwM']
+    
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    
+    df[inputcolumn] = 0
+    
+    for i in range(len(bins_id)):
+      
+      _id =  bins_id[i]
+      
+      column = inputcolumn + '_bnwM_' + _id
+      
+      if column in list(df):
+      
+        df[inputcolumn] = np.where(df[column] == 1, i * bn_width_bnwM + bn_min, df[inputcolumn])
+      
+    
+    return df, inputcolumn
+  
+  #def inverseprocess_bnwo(df, categorylist, postprocess_dict):
+  def inverseprocess_bnwo(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_bnwo_class
+    #assumes any relevant parameters were saved in normalization_dict
+    #does not perform infill, assumes clean data
+    
+    #this only achieves partial information recovery as bins sets aggregated to single value per bin
+    """
+    
+    normkey = categorylist[0]
+    
+    bins_cuts = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_cuts']
+    bn_min = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_min']
+    bn_delta = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_delta']
+    bins_id = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_id']
+    bn_width = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_width']
+    
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    
+    df[inputcolumn] = df[normkey].copy()
+    
+    df[inputcolumn] = df[inputcolumn] * bn_width + bn_min
+    
+    return df, inputcolumn
+  
+  
+  #def inverseprocess_bnep(df, categorylist, postprocess_dict):
+  def inverseprocess_bnep(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_bnep_class
+    #assumes any relevant parameters were saved in normalization_dict
+    #does not perform infill, assumes clean data
+    
+    #this only achieves partial information recovery as bins sets aggregated to single value per bin
+    """
+    
+    normkey = categorylist[0]
+    
+    textcolumns = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['textcolumns']
+    bins_id = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_id']
+    bn_min = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_min']
+    bn_delta = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_delta']
+    bn_count = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_count']
+    bins_cuts = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_cuts']
+    
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    
+    df[inputcolumn] = 0
+    
+    for i in range(len(textcolumns)):
+      
+      column = textcolumns[i]
+      _id = int(bins_id[i])
+      
+      if i == 0:
+        
+        value = bins_cuts[i+1]
+        
+        df[inputcolumn] = np.where(df[column] == 1, value, df[inputcolumn])
+        
+      elif i == len(textcolumns)-1:
+        
+        value = bins_cuts[i]
+        
+        df[inputcolumn] = np.where(df[column] == 1, value, df[inputcolumn])
+        
+      else:
+        
+        value = (bins_cuts[i] + bins_cuts[i+1]) / 2
+        
+        df[inputcolumn] = np.where(df[column] == 1, value, df[inputcolumn])
+    
+    return df, inputcolumn
+  
+  #def inverseprocess_bneo(df, categorylist, postprocess_dict):
+  def inverseprocess_bneo(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_bneo_class
+    #assumes any relevant parameters were saved in normalization_dict
+    #does not perform infill, assumes clean data
+    
+    #this only achieves partial information recovery as bins sets aggregated to single value per bin
+    """
+    
+    normkey = categorylist[0]
+    
+    bins_id = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_id']
+    bn_min = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_min']
+    bn_delta = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_delta']
+    bn_count = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_count']
+    bins_cuts = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_cuts']
+    
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    
+    df[inputcolumn] = 0
+    
+    for i in range(len(bins_id)):
+      
+      _id = int(bins_id[i])
+      
+      if i == 0:
+        
+        value = bins_cuts[i+1]
+        
+        df[inputcolumn] = np.where(df[normkey] == _id, value, df[inputcolumn])
+        
+      elif i == len(bins_id)-1:
+        
+        value = bins_cuts[i]
+        
+        df[inputcolumn] = np.where(df[normkey] == _id, value, df[inputcolumn])
+        
+      else:
+        
+        value = (bins_cuts[i] + bins_cuts[i+1]) / 2
+        
+        df[inputcolumn] = np.where(df[normkey] == _id, value, df[inputcolumn])
+    
+    return df, inputcolumn
+  
+  
+  #def inverseprocess_bkt1(df, categorylist, postprocess_dict):
+  def inverseprocess_bkt1(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_bkt1_class
+    #assumes any relevant parameters were saved in normalization_dict
+    #does not perform infill, assumes clean data
+    
+    #this only achieves partial information recovery as bins sets aggregated to single value per bin
+    """
+    
+    normkey = categorylist[0]
+    
+    textcolumns = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['textcolumns']
+    bins_cuts = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_cuts']
+    bins_id = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_id']
+    buckets_bkt1 = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['buckets_bkt1']
+    
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    
+    #we'll use convention that bucket's replaced with the midpoint value
+    #except for bottom bucket replaced with ceiling and top bucket replaced with floor
+    #so don't have to deal with inf
+    
+    df[inputcolumn] = 0
+    
+    bucket_ids = []
+    for textcolumn in textcolumns:
+      bucket_id = textcolumn.replace(inputcolumn + '_bkt1_', '')
+      bucket_ids.append(int(bucket_id))
+
+    for i in bucket_ids:
+      
+      textcolumn = inputcolumn + '_bkt1_' + str(i)
+      
+      if i == 0:
+        
+        value = buckets_bkt1[i]
+        
+      elif i == bins_id[-1]:
+        
+        value = buckets_bkt1[-1]
+        
+      else:
+        
+        value = (buckets_bkt1[i-1] + buckets_bkt1[i]) / 2
+        
+      df[inputcolumn] = np.where(df[textcolumn] == 1, value, df[inputcolumn])
+    
+    return df, inputcolumn
+  
+  #def inverseprocess_bkt2(df, categorylist, postprocess_dict):
+  def inverseprocess_bkt2(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_bkt2_class
+    #assumes any relevant parameters were saved in normalization_dict
+    #does not perform infill, assumes clean data
+    
+    #this only achieves partial information recovery as bins sets aggregated to single value per bin
+    """
+    
+    normkey = categorylist[0]
+    
+    buckets_bkt2 = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['buckets_bkt2']
+    bins_cuts = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_cuts']
+    bins_id = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_cuts']
+    textcolumns = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['textcolumns']
+    
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    
+    #we'll use convention that bucket's replaced with the midpoint value
+    #except for bottom bucket replaced with ceiling and top bucket replaced with floor
+    #so don't have to deal with inf
+    
+    df[inputcolumn] = 0
+    
+    bucket_ids = []
+    for textcolumn in textcolumns:
+      bucket_id = textcolumn.replace(inputcolumn + '_bkt2_', '')
+      bucket_ids.append(int(bucket_id))
+      
+    for i in bucket_ids:
+      
+      value = (bins_cuts[i] + bins_cuts[i+1]) / 2
+      
+      df[inputcolumn] = np.where(df[inputcolumn + '_bkt2_' + str(i)]==1, value, df[inputcolumn])
+    
+    return df, inputcolumn
+  
+  
+  def inverseprocess_bkt3(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_bkt3_class
+    #assumes any relevant parameters were saved in normalization_dict
+    #does not perform infill, assumes clean data
+    
+    #this only achieves partial information recovery as bins sets aggregated to single value per bin
+    """
+    
+    normkey = categorylist[0]
+    
+    buckets = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['buckets']
+    bins_cuts = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_cuts']
+    bins_id = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_id']
+    ordl_activations_dict = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordl_activations_dict']
+    
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    
+    #we'll use convention that bucket's replaced with the midpoint value
+    #except for bottom bucket replaced with ceiling and top bucket replaced with floor
+    #so don't have to deal with inf
+    
+    df[inputcolumn] = 0
+    
+    for i in bins_id:
+      
+      if i == 0:
+        
+        value = bins_cuts[i+1]
+        
+      elif i == len(bins_id)-1:
+        
+        value = bins_cuts[i]
+        
+      else:
+        
+        value = (bins_cuts[i] + bins_cuts[i+1]) / 2
+        
+      df[inputcolumn] = np.where(df[normkey] == i, value, df[inputcolumn])
+    
+    return df, inputcolumn
+  
+  
+  def inverseprocess_bkt4(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_bkt4_class
+    #assumes any relevant parameters were saved in normalization_dict
+    #does not perform infill, assumes clean data
+    
+    #this only achieves partial information recovery as bins sets aggregated to single value per bin
+    """
+    
+    normkey = categorylist[0]
+    
+    buckets = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['buckets']
+    bins_cuts = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_cuts']
+    bins_id = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_id']
+    
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    
+    #we'll use convention that bucket's replaced with the midpoint value
+    #except for bottom bucket replaced with ceiling and top bucket replaced with floor
+    #so don't have to deal with inf
+    
+    
+    df[inputcolumn] = 0
+    
+    for i in bins_id:
+      
+      value = (bins_cuts[i] + bins_cuts[i+1]) / 2
+        
+      df[inputcolumn] = np.where(df[normkey] == i, value, df[inputcolumn])
+    
+    return df, inputcolumn
+    
+  
+  #def inverseprocess_text(df, categorylist, postprocess_dict):
+  def inverseprocess_text(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_text_class
+    #assumes any relevant parameters were saved in normalization_dict
+    #does not perform infill, assumes clean data
+    #note that this will return numeric entries as str
+    """
+    
+    normkey = categorylist[0]
+    
+    textlabelsdict_text = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['textlabelsdict_text']
+    
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    
+    df[inputcolumn] = 0
+    
+    for categorylist_entry in categorylist:
+      
+      df[inputcolumn] = \
+      np.where(df[categorylist_entry], textlabelsdict_text[categorylist_entry], df[inputcolumn])
+      
+      
+    return df, inputcolumn
+  
+  #def inverseprocess_ordl(df, categorylist, postprocess_dict):
+  def inverseprocess_ordl(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_ordl_class
+    #assumes any relevant parameters were saved in normalization_dict
+    #does not perform infill, assumes clean data
+    #note that this will return numeric entries as str
+    """
+    
+    normkey = categorylist[0]
+    
+    ordinal_dict = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordinal_dict']
+    
+    inverse_ordinal_dict = {value:key for key,value in ordinal_dict.items()}
+    
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    
+    df[inputcolumn] = \
+    df[normkey].replace(inverse_ordinal_dict)
+    
+    
+    return df, inputcolumn
+  
+  #def inverseprocess_ord3(df, categorylist, postprocess_dict):
+  def inverseprocess_ord3(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_ord3_class
+    #assumes any relevant parameters were saved in normalization_dict
+    #does not perform infill, assumes clean data
+    #note that this will return numeric entries as str
+    """
+    
+    normkey = categorylist[0]
+    
+    ordinal_dict = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordinal_dict']
+    
+    inverse_ordinal_dict = {value:key for key,value in ordinal_dict.items()}
+    
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    
+    df[inputcolumn] = \
+    df[normkey].replace(inverse_ordinal_dict)
+    
+    
+    return df, inputcolumn
+  
+  #def inverseprocess_bnry(df, categorylist, postprocess_dict):
+  def inverseprocess_bnry(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_bnry_class
+    #assumes any relevant parameters were saved in normalization_dict
+    #does not perform infill, assumes clean data
+    """
+    
+    normkey = categorylist[0]
+    
+    onevalue = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey][1]
+    zerovalue = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey][0]
+    
+    
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    
+    
+    df[inputcolumn] = \
+    np.where(df[normkey] == 1, onevalue, 0)
+    
+    df[inputcolumn] = \
+    np.where(df[normkey] == 0, zerovalue, df[inputcolumn])
+      
+    
+    return df, inputcolumn
+  
+  #def inverseprocess_1010(df, categorylist, postprocess_dict):
+  def inverseprocess_1010(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_1010_class
+    #assumes any relevant parameters were saved in normalization_dict
+    #does not perform infill, assumes clean data
+    #note that this will return numeric entries as str
+    """
+    
+    normkey = categorylist[0]
+    
+    _1010_binary_encoding_dict = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['_1010_binary_encoding_dict']
+    
+    inverse_binary_encoding_dict = {value:key for key,value in _1010_binary_encoding_dict.items()}
+    
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    
+    
+    for categorylist_entry in categorylist:
+      
+      if categorylist_entry == categorylist[0]:
+        
+        df[inputcolumn] = df[categorylist_entry].astype(str)
+        
+      else:
+        
+        df[inputcolumn] = df[inputcolumn] + df[categorylist_entry].astype(str)
+        
+        
+    df[inputcolumn] = df[inputcolumn].replace(inverse_binary_encoding_dict)
+      
+    return df, inputcolumn
+  
+  def df_inversion(self, categorylist_entry, df_test, postprocess_dict, inverse_categorytree, printstatus):
+    """
+    #support function for df_inversion_meta
+    #this is where the inverseprocess functions are applied
+    """
+    
+    origcolumn = postprocess_dict['column_dict'][categorylist_entry]['origcolumn']
+    category = postprocess_dict['column_dict'][categorylist_entry]['category']
+    categorylist = postprocess_dict['column_dict'][categorylist_entry]['categorylist']
+    
+    columns_before_inversion = set(df_test)
+    
+    if 'inverseprocess' in postprocess_dict['process_dict'][category]:
+      
+      if callable(postprocess_dict['process_dict'][category]['inverseprocess']):
+        
+        df_test, inputcolumn = \
+        postprocess_dict['process_dict'][category]['inverseprocess'](df_test, categorylist, postprocess_dict)
+        #df, categorylist, postprocess_dict
+    
+    columns_after_inversion = set(df_test)
+    
+    #convention is that inversion always returns a single column
+    #(multi-column transformations only performed on final leaf of a forward pass branch)
+    inputcolumn = list(columns_after_inversion - columns_before_inversion)[0]
+    
+    if inputcolumn != origcolumn:
+      
+      df_test, inputcolumn = \
+      self.df_inversion(inputcolumn, df_test, postprocess_dict, inverse_categorytree, printstatus)
+      
+    
+    
+    return df_test, inputcolumn
+    
+    
+  def df_inversion_meta(self, df_test, source_columns, postprocess_dict, printstatus):
+    """
+    #Performs inversion of transformation sets
+    #Relies on optional processdict entries of info_retention and inverseprocess
+    #Uses the inverse_categorytree populated during automunge
+    #For all entries associated with a single source column, 
+    #Selects the returned categorylist with the lowest depth with info retention through the branch
+    #If info retention not available, instead takes the shortest depth with inverse transformations available
+    #If full set of inverse transfomations not available, does not perfgorm inversion for that source column
+    #For each inversion path selected performs the sets of transfomrations in inverse order to the original path's population steps
+    #All returned sets are added to the dataframe, and at conclusion of the function
+    #any columns not matching a source column are removed form the set
+    #also returns a list of the recovered columns
+    #relies of column headers of received df_test matching the column headers of original columns returned from automunge
+    #note that this function may be applied consistently to test or label sets
+    """
+    
+    inverse_categorytree = postprocess_dict['inverse_categorytree']
+    
+    #we'll store the inversion paths info in this dictionary
+    inversion_info_dict = {}
+    
+    #this will be a list of columns successfully recovered
+    recovered_list = []
+    
+    
+    for source_column in source_columns:
+      
+      if printstatus is True:
+        print("Evaluating inversion paths for columns derived from: ", source_column)
+      
+      returned_columns = postprocess_dict['origcolumn'][source_column]['columnkeylist']
+      
+      #we'll just take one of the columns here if it is part of a multicolumn set
+      returned_columns_clean = returned_columns.copy()
+
+      
+      for returned_column in returned_columns:
+        
+        if returned_column in returned_columns_clean:
+        
+          categorylist = postprocess_dict['column_dict'][returned_column]['categorylist']
+
+          for categorylist_entry in categorylist:
+
+            if categorylist_entry != returned_column:
+              
+              #we'll just take one of the columns here if it is part of a multicolumn set
+              returned_columns_clean.remove(categorylist_entry)
+      
+      #initialize for ranking paths of transformation inversions
+      path_depth_eval         = {}
+      inforetention_eval      = {}
+      transformavailable_eval = {}
+      
+      for returned_column in returned_columns_clean:
+        
+        category = postprocess_dict['column_dict'][returned_column]['category']
+        
+        path_depth_eval.update({returned_column : inverse_categorytree[category][returned_column][4]})
+        inforetention_eval.update({returned_column : inverse_categorytree[category][returned_column][5]})
+        transformavailable_eval.update({returned_column : inverse_categorytree[category][returned_column][6]})
+        
+      #now invert the path_depth_eval dictionary for sorting
+      #inverse_path_depth_eval = {value:key for key,value in path_depth_eval.items()}
+      inverse_path_depth_eval = {}
+      for key, value in path_depth_eval.items():
+        if value not in inverse_path_depth_eval:
+          inverse_path_depth_eval.update({value : [key]})
+        else:
+          inverse_path_depth_eval[value].append(key)
+          
+      #and sort it to find shortest depth
+      inverse_path_depth_eval = dict(sorted(inverse_path_depth_eval.items()))
+      
+      #note that this sorted by depth method is based on a heuristic
+      #that the fewest number of transforms will be the most efficient
+      
+      #now let's select our returned column for the path
+      best_path = False
+      info_retention_marker = False
+      
+      for depth in inverse_path_depth_eval:
+        
+        for path in inverse_path_depth_eval[depth]:
+        
+          inforetention = inforetention_eval[path]
+          transformavailable = transformavailable_eval[path]
+
+          if inforetention and transformavailable:
+
+            best_path = path
+            info_retention_marker = True
+
+            break
+
+          elif transformavailable and best_path is False:
+
+            best_path = path
+            
+        if info_retention_marker is True:
+          
+          break
+            
+            
+          
+      if printstatus is True:
+        
+        if best_path is not False:
+          
+          if info_retention_marker is True:
+          
+            print("Inversion path selected based on returned column ", best_path)
+            print("With full recovery.")
+            
+          else:
+            
+            print("Inversion path selected based on returned column ", best_path)
+            print("With partial recovery.")
+          
+        else:
+          
+          print("No inversion path available for source column: ", source_column)
+          print()
+          
+          
+      #great we've selected our path for this source column's inversion
+      inversion_info_dict.update({source_column : {'best_path' : best_path, \
+                                                   'info_retention' : info_retention_marker}})
+      
+      #now let's apply our inversion transforms
+      #if best_path is not False and callable(postprocess_dict['process_dict'][postprocess_dict['column_dict'][best_path]['category']]['inverseprocess']):
+      if best_path is not False:
+        
+        columns_before_inversion = set(df_test)
+        
+        df_test, _1 = self.df_inversion(best_path, df_test, postprocess_dict, inverse_categorytree, printstatus)
+        
+        columns_after_inversion = set(df_test)
+        
+        #this gives, for the target source columns, returned columns, source columns, and intermediate columns
+        full_returned_columns = columns_after_inversion - (columns_before_inversion - set(returned_columns))
+        
+      else:
+        
+        full_returned_columns = returned_columns
+    
+      for column in full_returned_columns:
+
+        if column in source_columns:
+
+          recovered_list += [column]
+
+        else:
+
+          #we're only retaining successfully recovered source columns in the returned df
+          #this deletion is performed sequentially for columns returned from given source column for memory management
+          del df_test[column]
+          
+      if printstatus is True:
+        
+        if best_path is not False:
+          
+          print("Recovered source column: ", source_column)
+          print()
+          
+    
+    return df_test, recovered_list, inversion_info_dict
+  
+  
