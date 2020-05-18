@@ -24719,18 +24719,22 @@ class AutoMunge:
     if isinstance(columnkeylist, str):
       columnkeylist = [columnkeylist]
     
+    #if floatprecision in [16, 32, 64]:
     if floatprecision in [16, 32]:
       
       for columnkey in columnkeylist:
         
-        #if df[columnkey].dtypes == np.float64:
         if pd.api.types.is_float_dtype(df[columnkey]):
           
           if floatprecision == 32:
             df[columnkey] = df[columnkey].astype(np.float32)
             
-          if floatprecision == 16:
+          elif floatprecision == 16:
             df[columnkey] = df[columnkey].astype(np.float16)
+            
+#           elif floatprecision == 64:
+#             df[columnkey] = df[columnkey].astype(np.float64)
+
     
     return df
   
@@ -26959,7 +26963,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.89'
+    automungeversion = '3.90'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -27041,9 +27045,14 @@ class AutoMunge:
     #the inverse tree supports inversion in postmunge
     inverse_categorytree = self.populate_inverse_categorytree(postprocess_dict)
     
+    #we'll create another structure, this one flatted, similar to origcolumn or column_dict
+    #this one as inputcolumn_dict
+    inputcolumn_dict = self.populate_inputcolumn_dict(postprocess_dict)
+    
     #the trees are returned in postprocess_dict
     postprocess_dict.update({'categorytree' : categorytree, \
-                             'inverse_categorytree' : inverse_categorytree})
+                             'inverse_categorytree' : inverse_categorytree, \
+                             'inputcolumn_dict' : inputcolumn_dict})
     
 
     if totalvalidationratio > 0:
@@ -27128,15 +27137,14 @@ class AutoMunge:
       df_testID = pd.DataFrame()    
 
     #now we'll apply the floatprecision transformation
-    if floatprecision != 64:
-      df_train = self.floatprecision_transform(df_train, finalcolumns_train, floatprecision)
-      if test_plug_marker is False:
-        df_test = self.floatprecision_transform(df_test, finalcolumns_train, floatprecision)
-      if labels_column is not False:
-        finalcolumns_labels = list(df_labels)
-        df_labels = self.floatprecision_transform(df_labels, finalcolumns_labels, floatprecision)
-        if labelspresenttest is True:
-          df_testlabels = self.floatprecision_transform(df_testlabels, finalcolumns_labels, floatprecision)
+    df_train = self.floatprecision_transform(df_train, finalcolumns_train, floatprecision)
+    if test_plug_marker is False:
+      df_test = self.floatprecision_transform(df_test, finalcolumns_train, floatprecision)
+    if labels_column is not False:
+      finalcolumns_labels = list(df_labels)
+      df_labels = self.floatprecision_transform(df_labels, finalcolumns_labels, floatprecision)
+      if labelspresenttest is True:
+        df_testlabels = self.floatprecision_transform(df_testlabels, finalcolumns_labels, floatprecision)
 
 
     #printout display progress
@@ -36040,11 +36048,10 @@ class AutoMunge:
         print("")
 
     #now we'll apply the floatprecision transformation
-    if floatprecision != 64:
-      df_test = self.floatprecision_transform(df_test, finalcolumns_test, floatprecision)
-      if labelscolumn is not False:
-        finalcolumns_labels = list(df_testlabels)
-        df_testlabels = self.floatprecision_transform(df_testlabels, finalcolumns_labels, floatprecision)
+    df_test = self.floatprecision_transform(df_test, finalcolumns_test, floatprecision)
+    if labelscolumn is not False:
+      finalcolumns_labels = list(df_testlabels)
+      df_testlabels = self.floatprecision_transform(df_testlabels, finalcolumns_labels, floatprecision)
 
 
     if testID_column is not False:
@@ -36546,6 +36553,41 @@ class AutoMunge:
     
     return inverse_categorytree, depth, info_retention, transforms_avail
   
+
+  def populate_inputcolumn_dict(self, postprocess_dict):
+    """
+    #we'll create another structure, this one flatted, similar to origcolumn or column_dict
+    #this one as inputcolumn_dict
+    
+    #this will populate a strucutre with example entry
+    
+    #inputcolumn_dict = {inputcolumn : {category : {column : column_dict[column]}}}
+    
+    #where inputcolumn is a column serving as input to a specific generation (set) of trasnformtions
+    #such as either entries to parents/siblings/auntsuncles/cousins
+    #or for downstream generations entries to children/niecesnephews/coworkers/friends
+    """
+    
+    inputcolumn_dict = {}
+    
+    for column in postprocess_dict['column_dict']:
+      
+      inputcolumn = postprocess_dict['column_dict'][column]['inputcolumn']
+      
+      if inputcolumn not in inputcolumn_dict:
+        
+        inputcolumn_dict.update({inputcolumn : {}})
+        
+      category = postprocess_dict['column_dict'][column]['category']
+      
+      if category not in inputcolumn_dict[inputcolumn]:
+        
+        inputcolumn_dict[inputcolumn].update({category:{}})
+        
+      inputcolumn_dict[inputcolumn][category].update({column : postprocess_dict['column_dict'][column]})
+      
+    return inputcolumn_dict
+  
   
   def LS_invert(self, LabelSmoothing, df, categorylist, postprocess_dict):
     """
@@ -36563,7 +36605,7 @@ class AutoMunge:
         
         df[categorylist_entry] = np.where(df[categorylist_entry] == LabelSmoothing, 1, 0)
         
-        df[categorylist_entry] = df[categorylist_entry].astype(int8)
+        df[categorylist_entry] = df[categorylist_entry].astype(np.int8)
         
     return df
   
