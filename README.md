@@ -1509,7 +1509,9 @@ The results will also be printed out if printstatus is activated. Defaults to _F
 to turn off Label Smoothing. Note that a user can pass _True_ to LabelSmoothing which 
 will consistently encode to LabelSmoothing_train from the corresponding automunge(.) 
 call, including any application of LSfit based on parameters of transformations 
-derived from the train set labels.
+derived from the train set labels. Note that during an inversion operation may be
+passed as True if activation consistent to automunge(.) call's LabelSmoothing_trian or
+otherwise passed as float value of current set activations.
 
 * LSfit: a _True/False_ indication for basis of label smoothing parameter K. The default
 of False means the assumption will be for level distribution of labels, passing True
