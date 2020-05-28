@@ -610,7 +610,7 @@ class AutoMunge:
                                      'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
-                                     'coworkers' : ['ordl'], \
+                                     'coworkers' : ['ord3'], \
                                      'friends' : []}})
     
     transform_dict.update({'spl3' : {'parents' : ['spl2'], \
@@ -619,7 +619,7 @@ class AutoMunge:
                                      'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
-                                     'coworkers' : ['ord3'], \
+                                     'coworkers' : ['ordl'], \
                                      'friends' : []}})
     
     transform_dict.update({'spl4' : {'parents' : ['spl4'], \
@@ -710,6 +710,24 @@ class AutoMunge:
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'src4' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['src4'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'strn' : {'parents' : ['strn'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : ['ord3'], \
                                      'friends' : []}})
     
     transform_dict.update({'nmrc' : {'parents' : [], \
@@ -2799,6 +2817,8 @@ class AutoMunge:
     process_dict.update({'UPCS' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_UPCS_class, \
                                   'postprocess' : None, \
+                                  'inverseprocess' : self.inverseprocess_UPCS, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'exclude'}})
@@ -2886,9 +2906,9 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'ord3'}})
-    process_dict.update({'spl6' : {'dualprocess' : self.process_spl5_class, \
+    process_dict.update({'spl6' : {'dualprocess' : self.process_spl2_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_spl5_class, \
+                                  'postprocess' : self.postprocess_spl2_class, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'ord3'}})
@@ -2934,6 +2954,18 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'multirt', \
                                   'labelctgy' : 'src3'}})
+    process_dict.update({'src4' : {'dualprocess' : self.process_src4_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_src4_class, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'singlct', \
+                                  'labelctgy' : 'src4'}})
+    process_dict.update({'strn' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_strn_class, \
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'exclude', \
+                                  'labelctgy' : 'ord3'}})
     process_dict.update({'nmrc' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_nmrc_class, \
                                   'postprocess' : None, \
@@ -8436,6 +8468,10 @@ class AutoMunge:
     #then a new column would be returned 
     #with activations corresponding to entries of 'west' and 'northwest'
     
+    #note that search parameter can include lists of search terms embedded in the list
+    #which embedded lists will be aggregated to a single activation
+    #for example if we want single activation for female names could pass search = [['Ms.', 'Miss', 'Mrs']] etc
+    
     #note this returns all zeros in a column if search value not found
     
     #note returned coluymns are named by search term, e
@@ -8456,6 +8492,24 @@ class AutoMunge:
     else:
       case = True
       
+      
+    #we'll create mirror to account for any embdded lists of search terms for aggregation
+    search_preflattening = search.copy()
+    #this is kind of hacky just to reuse code below resetting this list to repopulate
+    search = []
+    aggregated_dict = {}
+    
+    for entry in search_preflattening:
+      if type(entry) != type([]):
+        search.append(str(entry))
+      else:
+        aggregated_dict.update({str(entry[-1]):[]})
+        for entry2 in entry[0:-1]:
+          search.append(entry2)
+          aggregated_dict[str(entry[-1])].append(str(entry2))
+        for entry2 in entry[-1:]:
+          search.append(entry2)
+    
     
     newcolumns = []
     search_dict = {}
@@ -8471,6 +8525,36 @@ class AutoMunge:
                         
     
     newcolumns = list(search_dict)
+    
+    
+    #now we'll address any aggregations fo search terms
+    #from search parameter passed with embedded list of search terms
+          
+    #then after populating activations, we'll put this below
+    #inverse_search_dict has key of search term and value of column for activations
+    inverse_search_dict = {value:key for key,value in search_dict.items()}
+    newcolumns_before_aggregation = newcolumns.copy()
+    
+    #now we consolidate activations
+    #note that this only runs when aggregated_dict was populated with an embedded list of search terms
+    for aggregated_dict_key in aggregated_dict:
+      aggregated_dict_key_column = inverse_search_dict[aggregated_dict_key]
+      
+      for target_for_aggregation in aggregated_dict[aggregated_dict_key]:
+        target_for_aggregation_column = inverse_search_dict[target_for_aggregation]
+        
+        mdf_train[aggregated_dict_key_column] = \
+        np.where(mdf_train[target_for_aggregation_column] == 1, 1, mdf_train[aggregated_dict_key_column])
+        mdf_test[aggregated_dict_key_column] = \
+        np.where(mdf_test[target_for_aggregation_column] == 1, 1, mdf_test[aggregated_dict_key_column])
+        
+        del mdf_train[target_for_aggregation_column]
+        del mdf_test[target_for_aggregation_column]
+        
+        newcolumns.remove(target_for_aggregation_column)
+    
+    
+
 
     for newcolumn in newcolumns:
 
@@ -8483,8 +8567,12 @@ class AutoMunge:
     for tc in newcolumns:
 
       textnormalization_dict = {tc : {'search_dict' : search_dict, \
+                                      'inverse_search_dict' : inverse_search_dict, \
                                       'srch_newcolumns_srch'   : newcolumns, \
+                                      'newcolumns_before_aggregation' : newcolumns_before_aggregation, \
                                       'search' : search, \
+                                      'search_preflattening' : search_preflattening, \
+                                      'aggregated_dict' : aggregated_dict, \
                                       'case' : case}}
       
       column_dict = {tc : {'category' : 'srch', \
@@ -8834,6 +8922,271 @@ class AutoMunge:
     
     return mdf_train, mdf_test, column_dict_list
   
+  
+  def process_src4_class(self, mdf_train, mdf_test, column, category, \
+                         postprocess_dict, params = {}):
+    """
+    #process_src4_class(mdf_train, mdf_test, column, category)
+    #preprocess column with categorical entries as strings
+    #relies on user passed list of strings in search parameter
+    #string parses unique entries to identify overlaps with search strings
+    #when overlap found returns a column with boolean activation identifiers
+    
+    #note this differs from original srch in that makes use of pandas str.contains
+    #which is expected to be more efficient for unbounded sets
+    
+    #for example, if a categoical set consisted of unique values 
+    #['west', 'north', 'northwest']
+    #and a user passed the search parameter as ['west']
+    #then a new column would be returned 
+    #with activations corresponding to entries of 'west' and 'northwest'
+    
+    #note this returns all zeros in a column if search value not found
+    
+    #note returned coluymns are named by search term, e
+    #e.g. column + '_srch_' + str(search)
+    
+    #note that search terms are converted to strings and compared to columns cast as strings
+
+    #missing values are ignored by default
+    
+    #src4 builds on the srch by converting to an ordinal activation
+    #with 0 reserved for no activations
+    #note that if an entry was activated for multiple search terms
+    #the order of entries in search parameter will dictate the final encoding
+    #(e.g. entries at end of list are prioritized over beginning)
+    """
+        
+    if 'search' in params:
+      search = params['search']
+    else:
+      search = []
+      
+    if 'case' in params:
+      case = params['case']
+    else:
+      case = True
+      
+    
+    newcolumns = []
+    search_dict = {}
+    for searchitem in search:
+      search_dict.update({column + '_src4_' + str(searchitem) : str(searchitem)})
+      
+    for newcolumn in search_dict:
+      mdf_train[newcolumn] = \
+      np.where(mdf_train[column].astype(str).str.contains(search_dict[newcolumn], case=case, regex=False), 1, 0)
+      
+      mdf_test[newcolumn] = \
+      np.where(mdf_test[column].astype(str).str.contains(search_dict[newcolumn], case=case, regex=False), 1, 0)
+                        
+    
+    newcolumns = list(search_dict)
+
+#     for newcolumn in newcolumns:
+
+#       mdf_train[newcolumn] = mdf_train[newcolumn].astype(np.int8)
+#       mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
+      
+    #ok now let's convert to ordinal for src4
+    ordl_dict1 = {}
+    ordl_dict2 = {}
+    
+    #reserve zero for no activations
+    i = 1
+    for newcolumn in newcolumns:
+      ordl_dict1.update({i : newcolumn})
+      ordl_dict2.update({newcolumn : i})
+      i += 1
+      
+    mdf_train[column + '_src4'] = 0
+    mdf_test[column + '_src4'] = 0
+    
+    for newcolumn in newcolumns:
+      mdf_train[column + '_src4'] = \
+      np.where(mdf_train[newcolumn] == 1, ordl_dict2[newcolumn], mdf_train[column + '_src4'])
+      mdf_test[column + '_src4'] = \
+      np.where(mdf_test[newcolumn] == 1, ordl_dict2[newcolumn], mdf_test[column + '_src4'])
+      del mdf_train[newcolumn]
+      del mdf_test[newcolumn]
+    
+    #we'll base the integer type on number of ordinal entries
+    if len(ordl_dict1) < 254:
+      mdf_train[column + '_src4'] = mdf_train[column + '_src4'].astype(np.uint8)
+      mdf_test[column + '_src4'] = mdf_test[column + '_src4'].astype(np.uint8)
+    elif len(ordl_dict1) < 65530:
+      mdf_train[column + '_src4'] = mdf_train[column + '_src4'].astype(np.uint16)
+      mdf_test[column + '_src4'] = mdf_test[column + '_src4'].astype(np.uint16)
+    else:
+      mdf_train[column + '_src4'] = mdf_train[column + '_src4'].astype(np.uint32)
+      mdf_test[column + '_src4'] = mdf_test[column + '_src4'].astype(np.uint32)
+    
+    column_dict_list = []
+    
+    #newcolumns are based on the original srch transform
+    #src4_newcolumns are after consolidating to ordinal encoding (single entry)
+    src4_newcolumns = [column + '_src4']
+
+    for tc in src4_newcolumns:
+
+      textnormalization_dict = {tc : {'search_dict' : search_dict, \
+                                      'srch_newcolumns_src4' : newcolumns, \
+                                      'src4_newcolumns' : src4_newcolumns, \
+                                      'search' : search, \
+                                      'case' : case, \
+                                      'ordl_dict1' : ordl_dict1, \
+                                      'ordl_dict2' : ordl_dict2}}
+      
+      column_dict = {tc : {'category' : 'src4', \
+                           'origcategory' : category, \
+                           'normalization_dict' : textnormalization_dict, \
+                           'origcolumn' : column, \
+                           'inputcolumn' : column, \
+                           'columnslist' : src4_newcolumns, \
+                           'categorylist' : src4_newcolumns, \
+                           'infillmodel' : False, \
+                           'infillcomplete' : False, \
+                           'deletecolumn' : False}}
+
+      column_dict_list.append(column_dict.copy())
+
+    
+    return mdf_train, mdf_test, column_dict_list
+  
+  def process_strn_class(self, df, column, category, postprocess_dict, params = {}):
+    """
+    #process_strn_class(df, column, category, postprocess_dict)
+    #parses string entries and if any strings present returns longest string
+    #i.e. character subsets excluding numerical entries
+    #entries without strings present subject to infill
+    """
+    
+    unique_list = list(df[column].unique())
+
+    unique_list = list(map(str, unique_list))
+    
+    maxlength = max(len(x) for x in unique_list)
+    
+    overlap_lengths = list(range(maxlength, 0, -1))
+
+    overlap_dict = {}
+    
+    for overlap_length in overlap_lengths:
+
+      for unique in unique_list:
+        
+        if unique not in overlap_dict:
+
+          len_unique = len(unique)
+
+          if len_unique >= overlap_length:
+            
+            if overlap_length > 1:
+
+              nbr_iterations = len_unique - overlap_length
+
+              for i in range(nbr_iterations + 1):
+                
+                if unique not in overlap_dict:
+
+                  extract = unique[i:(overlap_length+i)]
+                  
+                  has_number = False
+                  
+                  for j in range(len(extract)):
+                    
+                    if self.is_number(extract[j]):
+                      
+                      has_number = True
+
+  #                 extract_already_in_overlap_dict = False
+
+                  if has_number is False:
+
+                    overlap_dict.update({unique : extract})
+                
+            #else if overlap_length == 1    
+            else:
+              
+              nbr_iterations = len_unique - overlap_length
+              
+              in_dict = False
+
+              for i in range(nbr_iterations + 1):
+                
+                if unique not in overlap_dict:
+
+                  extract = unique[i:(overlap_length+i)]
+
+  #                 extract_already_in_overlap_dict = False
+  
+  
+                  has_number = False
+                  
+                  for j in range(len(extract)):
+                    
+                    if self.is_number(extract[j]):
+                      
+                      has_number = True
+
+  #                 extract_already_in_overlap_dict = False
+
+                  if has_number is False:
+      
+                    in_dict = True
+
+                    overlap_dict.update({unique : extract})
+
+                  
+              if in_dict is False:
+
+                overlap_dict.update({unique : np.nan})
+    
+    df[column + '_strn'] = df[column].astype(str)
+    df[column + '_strn'] = df[column + '_strn'].replace(overlap_dict)
+    
+
+    #replace missing data with training set mean as default infill
+    df[column + '_strn'] = df[column + '_strn'].fillna('zzzinfill')
+    
+    
+#     #a few more metrics collected for driftreport
+#     #get maximum value of training column
+#     maximum = df[column + '_nmrc'].max()
+#     #get minimum value of training column
+#     minimum = df[column + '_nmrc'].min()
+    
+    
+    #create list of columns
+    nmbrcolumns = [column + '_strn']
+
+
+    nmbrnormalization_dict = {column + '_strn' : {'overlap_dict' : overlap_dict}}
+#                                                   'mean' : mean, \
+#                                                   'maximum' : maximum, \
+#                                                   'minimum' : minimum }}
+
+    #store some values in the nmbr_dict{} for use later in ML infill methods
+    column_dict_list = []
+
+    
+    for nc in nmbrcolumns:
+
+      column_dict = { nc : {'category' : 'strn', \
+                           'origcategory' : category, \
+                           'normalization_dict' : nmbrnormalization_dict, \
+                           'origcolumn' : column, \
+                           'inputcolumn' : column, \
+                           'columnslist' : nmbrcolumns, \
+                           'categorylist' : nmbrcolumns, \
+                           'infillmodel' : False, \
+                           'infillcomplete' : False, \
+                           'deletecolumn' : False}}
+
+      column_dict_list.append(column_dict.copy())
+    
+        
+    return df, column_dict_list
 
   
   def process_nmrc_class(self, df, column, category, postprocess_dict, params = {}):
@@ -9799,8 +10152,10 @@ class AutoMunge:
     mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype('category')
 
     #if set is categorical we'll need the plug value for missing values included
-    mdf_train[column + '_ordl'] = mdf_train[column + '_ordl'].cat.add_categories(['zzzinfill'])
-    mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].cat.add_categories(['zzzinfill'])
+    if 'zzzinfill' not in mdf_train[column + '_ordl'].cat.categories:
+      mdf_train[column + '_ordl'] = mdf_train[column + '_ordl'].cat.add_categories(['zzzinfill'])
+    if 'zzzinfill' not in mdf_test[column + '_ordl'].cat.categories:
+      mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].cat.add_categories(['zzzinfill'])
 
     #replace NA with a dummy variable
     mdf_train[column + '_ordl'] = mdf_train[column + '_ordl'].fillna('zzzinfill')
@@ -9954,8 +10309,10 @@ class AutoMunge:
     mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype('category')
 
     #if set is categorical we'll need the plug value for missing values included
-    mdf_train[column + '_ord3'] = mdf_train[column + '_ord3'].cat.add_categories(['zzzinfill'])
-    mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].cat.add_categories(['zzzinfill'])
+    if 'zzzinfill' not in mdf_train[column + '_ord3'].cat.categories:
+      mdf_train[column + '_ord3'] = mdf_train[column + '_ord3'].cat.add_categories(['zzzinfill'])
+    if 'zzzinfill' not in mdf_test[column + '_ord3'].cat.categories:
+      mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].cat.add_categories(['zzzinfill'])
 
     #replace NA with a dummy variable
     mdf_train[column + '_ord3'] = mdf_train[column + '_ord3'].fillna('zzzinfill')
@@ -10113,8 +10470,10 @@ class AutoMunge:
     mdf_test[column + '_ucct'] = mdf_test[column + '_ucct'].astype('category')
 
     #if set is categorical we'll need the plug value for missing values included
-    mdf_train[column + '_ucct'] = mdf_train[column + '_ucct'].cat.add_categories(['zzzinfill'])
-    mdf_test[column + '_ucct'] = mdf_test[column + '_ucct'].cat.add_categories(['zzzinfill'])
+    if 'zzzinfill' not in mdf_train[column + '_ucct'].cat.categories:
+      mdf_train[column + '_ucct'] = mdf_train[column + '_ucct'].cat.add_categories(['zzzinfill'])
+    if 'zzzinfill' not in mdf_test[column + '_ucct'].cat.categories:
+      mdf_test[column + '_ucct'] = mdf_test[column + '_ucct'].cat.add_categories(['zzzinfill'])
 
     #replace NA with a dummy variable
     mdf_train[column + '_ucct'] = mdf_train[column + '_ucct'].fillna('zzzinfill')
@@ -10259,8 +10618,10 @@ class AutoMunge:
     mdf_test[column + '_1010'] = mdf_test[column + '_1010'].astype('category')
 
     #if set is categorical we'll need the plug value for missing values included
-    mdf_train[column + '_1010'] = mdf_train[column + '_1010'].cat.add_categories(['zzzinfill'])
-    mdf_test[column + '_1010'] = mdf_test[column + '_1010'].cat.add_categories(['zzzinfill'])
+    if 'zzzinfill' not in mdf_train[column + '_1010'].cat.categories:
+      mdf_train[column + '_1010'] = mdf_train[column + '_1010'].cat.add_categories(['zzzinfill'])
+    if 'zzzinfill' not in mdf_test[column + '_1010'].cat.categories:
+      mdf_test[column + '_1010'] = mdf_test[column + '_1010'].cat.add_categories(['zzzinfill'])
 
     #replace NA with a dummy variable
     mdf_train[column + '_1010'] = mdf_train[column + '_1010'].fillna('zzzinfill')
@@ -25571,7 +25932,8 @@ class AutoMunge:
                              'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
                              'Utxt':[], 'Utx2':[], 'Utx3':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
                              'splt':[], 'spl2':[], 'spl3':[], 'spl4':[], 'spl5':[], 'lngt':[], \
-                             'spl7':[], 'spl8':[], 'spl9':[], 'sp10':[], 'srch':[], 'src2':[], \
+                             'spl7':[], 'spl8':[], 'spl9':[], 'sp10':[], \
+                             'srch':[], 'src2':[], 'src4':[], 'strn':[], \
                              'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
                              'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
                              'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], 'ucct':[], 'Ucct':[], \
@@ -26250,7 +26612,11 @@ class AutoMunge:
       #ok now we're going to pick one of the new entries in templist2 to serve 
       #as a "columnkey" for pulling datas from the postprocess_dict down the road
       #columnkeylist = list(set(templist2) - set(templist1))[0]
-      columnkeylist = list(set(templist2) - set(templist1))
+      #columnkeylist = list(set(templist2) - set(templist1))
+      columnkeylist = []
+      for templist2_entry in templist2:
+        if templist2_entry not in templist1:
+          columnkeylist.append(templist2_entry)
 
       #now we'll apply the floatprecision transformation
       df_train = self.floatprecision_transform(df_train, columnkeylist, floatprecision)
@@ -26439,7 +26805,11 @@ class AutoMunge:
       #ok now we're going to pick one of the new entries in templist2 to serve 
       #as a "columnkey" for pulling datas from the postprocess_dict down the road
       #columnkeylist = list(set(templist2) - set(templist1))[0]
-      columnkeylist = list(set(templist2) - set(templist1))
+      #columnkeylist = list(set(templist2) - set(templist1))
+      columnkeylist = []
+      for templist2_entry in templist2:
+        if templist2_entry not in templist1:
+          columnkeylist.append(templist2_entry)
       
       #now we'll apply the floatprecision transformation
       df_labels = self.floatprecision_transform(df_labels, columnkeylist, floatprecision)
@@ -26963,7 +27333,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.90'
+    automungeversion = '3.91'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -28238,7 +28608,8 @@ class AutoMunge:
 #     mdf_test[column] = mdf_test[column].fillna('NArw')
     
     #if set is categorical we'll need the plug value for missing values included
-    mdf_test[tempcolumn] = mdf_test[tempcolumn].cat.add_categories(['zzzinfill'])
+    if 'zzzinfill' not in mdf_test[tempcolumn].cat.categories:
+      mdf_test[tempcolumn] = mdf_test[tempcolumn].cat.add_categories(['zzzinfill'])
 
     #replace NA with a dummy variable
     mdf_test[tempcolumn] = mdf_test[tempcolumn].fillna('zzzinfill')
@@ -28388,7 +28759,8 @@ class AutoMunge:
 #     mdf_test[column] = mdf_test[column].fillna('NArw')
     
     #if set is categorical we'll need the plug value for missing values included
-    mdf_test[tempcolumn] = mdf_test[tempcolumn].cat.add_categories(['zzzinfill'])
+    if 'zzzinfill' not in mdf_test[tempcolumn].cat.categories:
+      mdf_test[tempcolumn] = mdf_test[tempcolumn].cat.add_categories(['zzzinfill'])
 
     #replace NA with a dummy variable
     mdf_test[tempcolumn] = mdf_test[tempcolumn].fillna('zzzinfill')
@@ -29435,21 +29807,38 @@ class AutoMunge:
       #great now we can grab normalization parameters
       search_dict = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['search_dict']
-
+      inverse_search_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inverse_search_dict']
       newcolumns = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['srch_newcolumns_srch']
-      
-      search = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['search']
-      
+#       newcolumns_before_aggregation = \
+#       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['newcolumns_before_aggregation']
+#       search = \
+#       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['search']
+#       search_preflattening = \
+#       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['search_preflattening']
+      aggregated_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['aggregated_dict']
       case = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['case']
-
       
       for newcolumn in search_dict:
 
         mdf_test[newcolumn] = \
         np.where(mdf_test[column].astype(str).str.contains(search_dict[newcolumn], case=case, regex=False), 1, 0)
+        
+      #now we consolidate activations
+      #note that this only runs when aggregated_dict was populated with an embedded list of search terms
+      for aggregated_dict_key in aggregated_dict:
+        aggregated_dict_key_column = inverse_search_dict[aggregated_dict_key]
+
+        for target_for_aggregation in aggregated_dict[aggregated_dict_key]:
+          target_for_aggregation_column = inverse_search_dict[target_for_aggregation]
+
+          mdf_test[aggregated_dict_key_column] = \
+          np.where(mdf_test[target_for_aggregation_column] == 1, 1, mdf_test[aggregated_dict_key_column])
+
+          del mdf_test[target_for_aggregation_column]
 
       for newcolumn in newcolumns:
 
@@ -29692,6 +30081,95 @@ class AutoMunge:
           mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
 
           newcolumns.append(newcolumn)
+    
+    
+    return mdf_test
+  
+  def postprocess_src4_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+    """
+    #process_srch_class(mdf_train, mdf_test, column, category)
+    #preprocess column with categorical entries as strings
+    #relies on user passed list of strings in search parameter
+    #string parses unique entries to identify overlaps with search strings
+    #when overlap found returns a column with boolean activation identifiers
+    
+    #note this differs from original srch in that makes use of pandas str.contains
+    #which is expected to be more efficient for unbounded sets
+    
+    #for example, if a categoical set consisted of unique values 
+    #['west', 'north', 'northwest']
+    #and a user passed the search parameter as ['west']
+    #then a new column would be returned 
+    #with activations corresponding to entries of 'west' and 'northwest'
+    
+    #note this returns all zeros in a column if search value not found
+    
+    #note returned coluymns are named by search term, e
+    #e.g. column + '_srch_' + str(search)
+    
+    #note that search terms are converted to strings and compared to columns cast as strings
+
+    #missing values are ignored by default
+    
+    #src4 builds on the srch by converting to an ordinal activation
+    #with 0 reserved for no activations
+    #note that if an entry was activated for multiple search terms
+    #the order of entries in search parameter will dictate the final encoding
+    #(e.g. entries at end of list are prioritized over beginning)
+    """
+    
+    #to retrieve the normalization dictionary we're going to use new method since we don't yet 
+    #know what the returned columns titles are yet
+    
+    normkey = column + '_src4'
+
+    #great now we can grab normalization parameters
+    search_dict = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['search_dict']
+
+    newcolumns = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['srch_newcolumns_src4']
+
+    search = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['search']
+
+    case = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['case']
+
+    ordl_dict1 = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordl_dict1']
+
+    ordl_dict2 = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordl_dict2']
+    
+    if len(search_dict) == 0:
+      mdf_test[column + '_src4'] = 0
+      
+    else:
+
+      for newcolumn in search_dict:
+
+        mdf_test[newcolumn] = \
+        np.where(mdf_test[column].astype(str).str.contains(search_dict[newcolumn], case=case, regex=False), 1, 0)
+
+  #     for newcolumn in newcolumns:
+
+  #       mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
+
+      mdf_test[column + '_src4'] = 0
+
+      for newcolumn in newcolumns:
+        mdf_test[column + '_src4'] = \
+        np.where(mdf_test[newcolumn] == 1, ordl_dict2[newcolumn], mdf_test[column + '_src4'])
+        del mdf_test[newcolumn]
+
+      #we'll base the integer type on number of ordinal entries
+      if len(ordl_dict1) < 254:
+        mdf_test[column + '_src4'] = mdf_test[column + '_src4'].astype(np.uint8)
+      elif len(ordl_dict1) < 65530:
+        mdf_test[column + '_src4'] = mdf_test[column + '_src4'].astype(np.uint16)
+      else:
+        mdf_test[column + '_src4'] = mdf_test[column + '_src4'].astype(np.uint32)
     
     
     return mdf_test
@@ -30050,7 +30528,8 @@ class AutoMunge:
     mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype('category')
     
     #if set is categorical we'll need the plug value for missing values included
-    mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].cat.add_categories(['zzzinfill'])
+    if 'zzzinfill' not in mdf_test[column + '_ordl'].cat.categories:
+      mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].cat.add_categories(['zzzinfill'])
 
     #replace NA with a dummy variable
     mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].fillna('zzzinfill')
@@ -30129,7 +30608,8 @@ class AutoMunge:
     mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype('category')
     
     #if set is categorical we'll need the plug value for missing values included
-    mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].cat.add_categories(['zzzinfill'])
+    if 'zzzinfill' not in mdf_test[column + '_ord3'].cat.categories:
+      mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].cat.add_categories(['zzzinfill'])
 
     #replace NA with a dummy variable
     mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].fillna('zzzinfill')
@@ -30210,7 +30690,8 @@ class AutoMunge:
     mdf_test[column + '_ucct'] = mdf_test[column + '_ucct'].astype('category')
     
     #if set is categorical we'll need the plug value for missing values included
-    mdf_test[column + '_ucct'] = mdf_test[column + '_ucct'].cat.add_categories(['zzzinfill'])
+    if 'zzzinfill' not in mdf_test[column + '_ucct'].cat.categories:
+      mdf_test[column + '_ucct'] = mdf_test[column + '_ucct'].cat.add_categories(['zzzinfill'])
 
     #replace NA with a dummy variable
     mdf_test[column + '_ucct'] = mdf_test[column + '_ucct'].fillna('zzzinfill')
@@ -30285,7 +30766,8 @@ class AutoMunge:
       mdf_test[column + '_1010'] = mdf_test[column + '_1010'].astype('category')
 
       #if set is categorical we'll need the plug value for missing values included
-      mdf_test[column + '_1010'] = mdf_test[column + '_1010'].cat.add_categories(['zzzinfill'])
+      if 'zzzinfill' not in mdf_test[column + '_1010'].cat.categories:
+        mdf_test[column + '_1010'] = mdf_test[column + '_1010'].cat.add_categories(['zzzinfill'])
 
       #replace NA with a dummy variable
       mdf_test[column + '_1010'] = mdf_test[column + '_1010'].fillna('zzzinfill')
@@ -36967,6 +37449,21 @@ class AutoMunge:
     inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
     
     df[inputcolumn] = df[normkey] ** 2
+    
+    return df, inputcolumn
+  
+  def inverseprocess_UPCS(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_UPCS_class
+    #is simply a pass-through function, original character cases not retained
+    #does not perform infill, assumes clean data
+    """
+    
+    normkey = categorylist[0]
+    
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    
+    df[inputcolumn] = df[normkey]
     
     return df, inputcolumn
   
