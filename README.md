@@ -2237,7 +2237,7 @@ and comparable to test set independent of test set row count
   - suffix appender: '_UPCS'
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: comparable to functions text / txt2 / txt3 / ordl / ord2 / ord3 / ors6 / 1010
-  - inversion available: pending
+  - inversion available: yes
 ### Date-Time Data Normalizations
 * date/dat2: for datetime formatted data, segregates data by time scale to multiple
 columns (year/month/day/hour/minute/second) and then performs z-score normalization
@@ -2467,7 +2467,7 @@ start at 20 character length and go down to 5 character length.
                                      `[' ', ',', '.', '?', '!', '(', ')']`
   - driftreport postmunge metrics: overlap_dict / splt_newcolumns_splt / minsplit
   - inversion available: no
-* spl2/spl3/spl4/ors2/txt3: similar to splt, but instead of creating new column identifier it replaces categorical 
+* spl2/spl3/spl4/ors2/ors6/txt3: similar to splt, but instead of creating new column identifier it replaces categorical 
 entries with the abbreviated string overlap
   - default infill: none
   - default NArowtype: justNaN
@@ -2482,7 +2482,7 @@ entries with the abbreviated string overlap
   - driftreport postmunge metrics: overlap_dict / spl2_newcolumns / spl2_overlap_dict / spl2_test_overlap_dict / 
                                    minsplit
   - inversion available: no
-* spl5/spl6/ors5/ors6: similar to spl2, but those entries without identified string overlap are set to 0,
+* spl5/spl6/ors5: similar to spl2, but those entries without identified string overlap are set to 0,
 (used in ors5 in conjunction with ord3)
   - default infill: none
   - default NArowtype: justNaN
@@ -2531,6 +2531,18 @@ for identified overlap entries. (There is also src3 variant which I suspect may 
   - default NArowtype: justNaN
   - suffix appender: '\_srch_##*##' where ##*## is target identified search string
   - assignparam parameters accepted: 'search': a list of strings, defaults as empty set
+				     (note search parameter list can included embedded list of terms for 
+				      aggregated activations of terms in that sub list to the list)
+				     'case': bool to indicate case sensitivity of search, defaults True
+				     (note that 'case' not yet built into src2 variant)
+  - driftreport postmunge metrics: overlap_dict / splt_newcolumns_splt / minsplit
+  - inversion available: pending
+* src4: searches categorical sets for overlaps with user passed search string and returns ordinal column
+for identified overlap entries. (Note for multiple activations encoding priority given to end of list entries).
+  - default infill: none
+  - default NArowtype: justNaN
+  - suffix appender: '\_src4'
+  - assignparam parameters accepted: 'search': a list of strings, defaults as empty set
 				     'case': bool to indicate case sensitivity of search, defaults True
 				     (note that 'case' not yet built into src2 variant)
   - driftreport postmunge metrics: overlap_dict / splt_newcolumns_splt / minsplit
@@ -2548,6 +2560,13 @@ for identified overlap entries. (There is also src3 variant which I suspect may 
   - suffix appender: '_nmcm'
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: overlap_dict / mean / maximum / minimum
+  - inversion available: pending
+* strn: parses strings and returns any non-number groupings, prioritized by longest length
+  - default infill: 'zzzinfill'
+  - default NArowtype: justNaN
+  - suffix appender: '_strn'
+  - assignparam parameters accepted: none
+  - driftreport postmunge metrics: overlap_dict
   - inversion available: pending
 ### More Efficient String Parsing
 * new processing functions nmr4/nmr5/nmr6/nmc4/nmc5/nmc6/spl8/spl9/sp10 (spelled sp"ten")/src2:
@@ -2833,7 +2852,9 @@ avoid unintentional duplication.
 - 'sqrt',
 - 'src2',
 - 'src3',
+- 'src4',
 - 'srch',
+- 'strn',
 - 'texd',
 - 'text',
 - 'tlbn',
@@ -2961,7 +2982,9 @@ that any user passing a custom defined transformation can avoid any unintentiona
 - '_sqrt'
 - '\_src2_' + string (where string is an identified overlap of characters with user passed search string)
 - '\_src3_' + string (where string is an identified overlap of characters with user passed search string)
+- '_src4'
 - '\_srch_' + string (where string is an identified overlap of characters with user passed search string)
+- '_strn'
 - '\_tlbn_' + i (where i is identifier of bin)
 - '\_text_' + string (where string is a categorical entry in one-hot encoded set)
 - '_ucct'
@@ -3480,7 +3503,7 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
-                                     'coworkers' : ['ordl'], \
+                                     'coworkers' : ['ord3'], \
                                      'friends' : []}})
     
     transform_dict.update({'spl3' : {'parents' : ['spl2'], \
@@ -3489,7 +3512,7 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
-                                     'coworkers' : ['ord3'], \
+                                     'coworkers' : ['ordl'], \
                                      'friends' : []}})
     
     transform_dict.update({'spl4' : {'parents' : ['spl4'], \
@@ -3580,6 +3603,24 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'children' : [], \
                                      'niecesnephews' : [], \
                                      'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'src4' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['src4'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'strn' : {'parents' : ['strn'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : ['ord3'], \
                                      'friends' : []}})
     
     transform_dict.update({'nmrc' : {'parents' : [], \
