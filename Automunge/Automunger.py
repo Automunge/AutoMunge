@@ -6490,11 +6490,8 @@ class AutoMunge:
     #overlap_lengths = [20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7 , 6, 5]
     
     if 'minsplit' in params:
-        
       minsplit = params['minsplit'] - 1
-    
     else:
-      
       minsplit = 4
       
     if 'space_and_punctuation' in params:
@@ -6506,6 +6503,11 @@ class AutoMunge:
       excluded_characters = params['excluded_characters']
     else:
       excluded_characters = [' ', ',', '.', '?', '!', '(', ')']
+      
+    if 'concurrent_activations' in params:
+      concurrent_activations = params['concurrent_activations']
+    else:
+      concurrent_activations = False
       
     
     #first we find overlaps from mdf_train
@@ -6553,10 +6555,19 @@ class AutoMunge:
                 for k in range(nbr_iterations3 + 1):
 
                   extract3 = key[k:(overlap_length+k)]
+                  
+                  if concurrent_activations is False:
 
-                  if extract == extract3:
+                    if extract == extract3:
 
-                    extract_already_in_overlap_dict = True
+                      extract_already_in_overlap_dict = True
+                      
+                  elif concurrent_activations is True:
+                    
+                    if extract == extract3 and unique in overlap_dict[key]:
+
+                      extract_already_in_overlap_dict = True
+                    
 
             if extract_already_in_overlap_dict is False:
 
@@ -6702,6 +6713,9 @@ class AutoMunge:
       column_dict_list = []
     
     return mdf_train, mdf_test, column_dict_list
+  
+  
+
   
   
   def process_spl2_class(self, mdf_train, mdf_test, column, category, \
@@ -7616,11 +7630,8 @@ class AutoMunge:
     #overlap_lengths = [20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7 , 6, 5]
 
     if 'minsplit' in params:
-        
       minsplit = params['minsplit'] - 1
-    
     else:
-      
       minsplit = 4
       
     if 'space_and_punctuation' in params:
@@ -7632,6 +7643,11 @@ class AutoMunge:
       excluded_characters = params['excluded_characters']
     else:
       excluded_characters = [' ', ',', '.', '?', '!', '(', ')']
+      
+    if 'concurrent_activations' in params:
+      concurrent_activations = params['concurrent_activations']
+    else:
+      concurrent_activations = False
     
     #first we find overlaps from mdf_train
     
@@ -7678,10 +7694,18 @@ class AutoMunge:
                 for k in range(nbr_iterations3 + 1):
 
                   extract3 = key[k:(overlap_length+k)]
+                    
+                  if concurrent_activations is False:
 
-                  if extract == extract3:
+                    if extract == extract3:
 
-                    extract_already_in_overlap_dict = True
+                      extract_already_in_overlap_dict = True
+                      
+                  elif concurrent_activations is True:
+                    
+                    if extract == extract3 and unique in overlap_dict[key]:
+
+                      extract_already_in_overlap_dict = True
 
             if extract_already_in_overlap_dict is False:
 
@@ -27349,7 +27373,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.92'
+    automungeversion = '3.93'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
