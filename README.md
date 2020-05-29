@@ -2469,6 +2469,9 @@ start at 20 character length and go down to 5 character length.
                                      'excluded_characters': a list of strings which are excluded from overlap 
                                      identification when space_and_punctuation set as False, defaults to
                                      `[' ', ',', '.', '?', '!', '(', ')']`
+                                     'concurrent_activations': True/False, defaults to False, when True
+                                     entries may have activations for multiple simultaneous overlaps
+                                     note activating may result in a high dimensionality of returned data
   - driftreport postmunge metrics: overlap_dict / splt_newcolumns_splt / minsplit
   - inversion available: no
 * spl2/spl3/spl4/ors2/ors6/txt3: similar to splt, but instead of creating new column identifier it replaces categorical 
