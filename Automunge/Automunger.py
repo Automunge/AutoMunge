@@ -5794,7 +5794,9 @@ class AutoMunge:
     mdf_test[column + '_bnry'] = mdf_test[column].copy()
 
     #create plug value for missing cells as most common value
-    valuecounts = mdf_train[column + '_bnry'].value_counts().index.tolist()
+    valuecounts = pd.DataFrame(mdf_train[column + '_bnry'].value_counts())
+    valuecounts = valuecounts.rename_axis('zzzinfill').sort_values(by = [column + '_bnry', 'zzzinfill'], ascending = [False, True])
+    valuecounts = list(valuecounts.index)
     
     if len(valuecounts) > 0:
 
@@ -6003,7 +6005,9 @@ class AutoMunge:
     mdf_test[column + '_bnr2'] = mdf_test[column].copy()
 
     #create plug value for missing cells as most common value
-    valuecounts = mdf_train[column + '_bnr2'].value_counts().index.tolist()
+    valuecounts = pd.DataFrame(mdf_train[column + '_bnr2'].value_counts())
+    valuecounts = valuecounts.rename_axis('zzzinfill').sort_values(by = [column + '_bnr2', 'zzzinfill'], ascending = [False, True])
+    valuecounts = list(valuecounts.index)
     
     if len(valuecounts) > 0:
 
@@ -10324,7 +10328,9 @@ class AutoMunge:
     
     #extract categories for column labels
     #with values sorted by frequency of occurance from most to least
-    labels_train = mdf_train[column + '_ord3'].value_counts().index.tolist()
+    labels_train = pd.DataFrame(mdf_train[column + '_ord3'].value_counts())
+    labels_train = labels_train.rename_axis('zzzinfill').sort_values(by = [column + '_ord3', 'zzzinfill'], ascending = [False, True])
+    labels_train = list(labels_train.index)
     
 #     labels_train = list(mdf_train[column + '_ordl'].unique())
 #     labels_train.sort()
@@ -10365,7 +10371,9 @@ class AutoMunge:
       
       #extract categories for column labels
       #note that .unique() extracts the labels as a numpy array
-      labels_train = mdf_train[column + '_ord3'].value_counts().index.tolist()
+      labels_train = pd.DataFrame(mdf_train[column + '_ord3'].value_counts())
+      labels_train = labels_train.rename_axis('zzzinfill').sort_values(by = [column + '_ord3', 'zzzinfill'], ascending = [False, True])
+      labels_train = list(labels_train.index)
       
 #       labels_train = list(mdf_train[column + '_ord2'].unique())
 #       labels_train.sort()
@@ -10485,7 +10493,9 @@ class AutoMunge:
     
     #extract categories for column labels
     #with values sorted by frequency of occurance from most to least
-    labels_train = mdf_train[column + '_ucct'].value_counts().index.tolist()
+    labels_train = pd.DataFrame(mdf_train[column + '_ucct'].value_counts())
+    labels_train = labels_train.rename_axis('zzzinfill').sort_values(by = [column + '_ucct', 'zzzinfill'], ascending = [False, True])
+    labels_train = list(labels_train.index)
     
 #     labels_train = list(mdf_train[column + '_ordl'].unique())
 #     labels_train.sort()
@@ -10526,7 +10536,9 @@ class AutoMunge:
       
       #extract categories for column labels
       #note that .unique() extracts the labels as a numpy array
-      labels_train = mdf_train[column + '_ucct'].value_counts().index.tolist()
+      labels_train = pd.DataFrame(mdf_train[column + '_ucct'].value_counts())
+      labels_train = labels_train.rename_axis('zzzinfill').sort_values(by = [column + '_ucct', 'zzzinfill'], ascending = [False, True])
+      labels_train = list(labels_train.index)
       
 #       labels_train = list(mdf_train[column + '_ord2'].unique())
 #       labels_train.sort()
@@ -23220,6 +23232,8 @@ class AutoMunge:
       del tempdf[NArw_columnname]
       
       #initialize a column to store encodings
+      #note this arbitrary column won't overlap with any
+      #because categorylist all have suffixes with '_' character
       tempdf['onehot'] = ''
 
       #populate column to store aggregated encodings 
@@ -23230,7 +23244,9 @@ class AutoMunge:
 
       #find mode of the aggregation
       #binary_mode = tempdf['onehot'].mode()
-      mode_valuecounts_list = list(tempdf['onehot'].value_counts().index)
+      mode_valuecounts_list = pd.DataFrame(tempdf['onehot'].value_counts())
+      mode_valuecounts_list = mode_valuecounts_list.rename_axis('zzzinfill').sort_values(by = ['onehot', 'zzzinfill'], ascending = [False, True])
+      mode_valuecounts_list = list(mode_valuecounts_list.index)
       if len(mode_valuecounts_list) > 0:
         binary_mode = mode_valuecounts_list[-1]
       else:
@@ -23268,9 +23284,9 @@ class AutoMunge:
 
       
       #calculate mode of remaining rows
-      #mode = tempdf[column].mode()
-#       mode = list(tempdf[column].value_counts().index)[-1]
-      mode_valuecounts_list = list(tempdf[column].value_counts().index)
+      mode_valuecounts_list = pd.DataFrame(tempdf[column].value_counts())
+      mode_valuecounts_list = mode_valuecounts_list.rename_axis('zzzinfill').sort_values(by = [column, 'zzzinfill'], ascending = [False, True])
+      mode_valuecounts_list = list(mode_valuecounts_list.index)
       if len(mode_valuecounts_list) > 0:
         mode = mode_valuecounts_list[-1]
       else:
@@ -27333,7 +27349,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.91'
+    automungeversion = '3.92'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
