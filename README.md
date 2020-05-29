@@ -2197,7 +2197,7 @@ as bnry except for default infill.)
   - driftreport postmunge metrics: ordinal_dict / ordinal_overlap_replace / ordinal_activations_dict
   - inversion available: yes with full recovery
 * ord3/ord4: converts categorical sets to ordinally encoded set of integer identifiers
-sorted by frequency of category occurrence
+sorted first by frequency of category occurrence, second basis for common count entries is alphabetical
   - default infill: plug value 'zzzinfill'
   - default NArowtype: justNaN
   - suffix appender: '_ord3'
