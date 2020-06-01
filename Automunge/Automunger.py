@@ -704,25 +704,7 @@ class AutoMunge:
                                      'coworkers' : ['ord3'], \
                                      'friends' : []}})
     
-    transform_dict.update({'sp13' : {'parents' : [], \
-                                     'siblings': [], \
-                                     'auntsuncles' : ['sp13'], \
-                                     'cousins' : [NArw], \
-                                     'children' : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers' : [], \
-                                     'friends' : []}})
-  
-    transform_dict.update({'sp14' : {'parents' : [], \
-                                     'siblings': [], \
-                                     'auntsuncles' : ['sp14'], \
-                                     'cousins' : [NArw], \
-                                     'children' : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers' : [], \
-                                     'friends' : []}})
-    
-    transform_dict.update({'sp15' : {'parents' : ['sp15'], \
+    transform_dict.update({'sp13' : {'parents' : ['sp13'], \
                                      'siblings': [], \
                                      'auntsuncles' : [], \
                                      'cousins' : [NArw], \
@@ -731,13 +713,31 @@ class AutoMunge:
                                      'coworkers' : ['ord3'], \
                                      'friends' : []}})
     
-    transform_dict.update({'sp16' : {'parents' : ['sp16'], \
+    transform_dict.update({'sp14' : {'parents' : ['sp14'], \
                                      'siblings': [], \
                                      'auntsuncles' : [], \
                                      'cousins' : [NArw], \
                                      'children' : [], \
-                                     'niecesnephews' : ['sp15'], \
+                                     'niecesnephews' : ['sp13'], \
                                      'coworkers' : ['ord3'], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'sp15' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['sp15'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+  
+    transform_dict.update({'sp16' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['sp16'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
                                      'friends' : []}})
     
     transform_dict.update({'srch' : {'parents' : [], \
@@ -2967,30 +2967,30 @@ class AutoMunge:
                                    'NArowtype' : 'justNaN', \
                                    'MLinfilltype' : 'exclude', \
                                    'labelctgy' : 'ord3'}})
-    process_dict.update({'sp13' : {'dualprocess' : self.process_sp13_class, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_sp13_class, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : '1010', \
-                                  'labelctgy' : 'sp13'}})
-    process_dict.update({'sp14' : {'dualprocess' : self.process_sp14_class, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_sp14_class, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : '1010', \
-                                  'labelctgy' : 'sp14'}})
-    process_dict.update({'sp15' : {'dualprocess' : self.process_spl9_class, \
+    process_dict.update({'sp13' : {'dualprocess' : self.process_spl9_class, \
                                    'singleprocess' : None, \
                                    'postprocess' : self.postprocess_spl9_class, \
                                    'NArowtype' : 'justNaN', \
                                    'MLinfilltype' : 'exclude', \
                                    'labelctgy' : 'ord3'}})
-    process_dict.update({'sp16' : {'dualprocess' : self.process_spl9_class, \
+    process_dict.update({'sp14' : {'dualprocess' : self.process_spl9_class, \
                                    'singleprocess' : None, \
                                    'postprocess' : self.postprocess_spl9_class, \
                                    'NArowtype' : 'justNaN', \
                                    'MLinfilltype' : 'exclude', \
                                    'labelctgy' : 'ord3'}})
+    process_dict.update({'sp15' : {'dualprocess' : self.process_sp15_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_sp15_class, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : '1010', \
+                                  'labelctgy' : 'sp15'}})
+    process_dict.update({'sp16' : {'dualprocess' : self.process_sp16_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_sp16_class, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : '1010', \
+                                  'labelctgy' : 'sp16'}})
     process_dict.update({'srch' : {'dualprocess' : self.process_srch_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_srch_class, \
@@ -8527,7 +8527,7 @@ class AutoMunge:
     
     return mdf_train, mdf_test, column_dict_list
   
-  def process_sp13_class(self, mdf_train, mdf_test, column, category, \
+  def process_sp15_class(self, mdf_train, mdf_test, column, category, \
                          postprocess_dict, params = {}):
     '''
     #process_splt_class(mdf_train, mdf_test, column, category)
@@ -8542,7 +8542,7 @@ class AutoMunge:
     #returns as column titled origcolumn_splt_entry    
     #missing values are ignored by default
     
-    #sp13 is comparable to splt but multiple concurrent activations allowed
+    #sp15 is comparable to splt but multiple concurrent activations allowed
     #so requires a different MLinfilltype in processdict
     '''
     
@@ -8735,7 +8735,7 @@ class AutoMunge:
 
     for dict_key in overlap_dict:
 
-      newcolumn = column + '_sp13_' + dict_key
+      newcolumn = column + '_sp15_' + dict_key
       
       mdf_train[newcolumn] = mdf_train[column].copy()
       mdf_test[newcolumn] = mdf_test[column].copy()
@@ -8758,10 +8758,10 @@ class AutoMunge:
     for tc in newcolumns:
 
       textnormalization_dict = {tc : {'overlap_dict' : overlap_dict, \
-                                      'splt_newcolumns_sp13'   : newcolumns, \
+                                      'splt_newcolumns_sp15'   : newcolumns, \
                                       'minsplit' : minsplit}}
       
-      column_dict = {tc : {'category' : 'sp13', \
+      column_dict = {tc : {'category' : 'sp15', \
                            'origcategory' : category, \
                            'normalization_dict' : textnormalization_dict, \
                            'origcolumn' : column, \
@@ -8780,9 +8780,9 @@ class AutoMunge:
     
     return mdf_train, mdf_test, column_dict_list
   
-  def process_sp14_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
+  def process_sp16_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
     '''
-    #process_sp14_class(mdf_train, mdf_test, column, category)
+    #process_sp16_class(mdf_train, mdf_test, column, category)
     #preprocess column with categorical entries as strings
     #identifies overlaps of subsets of those strings and records
     #as a new boolan column
@@ -8797,7 +8797,7 @@ class AutoMunge:
     #assumes that unique values of test set are same or subset of train set
     #for more efficient application in postmunge
     
-    #sp14 is comparable to spl8 but multiple concurrent activations allowed
+    #sp16 is comparable to spl8 but multiple concurrent activations allowed
     #so requires a different MLinfilltype in processdict
     '''
     
@@ -8992,7 +8992,7 @@ class AutoMunge:
 
     for dict_key in overlap_dict:
 
-      newcolumn = column + '_sp14_' + dict_key
+      newcolumn = column + '_sp16_' + dict_key
       
       mdf_train[newcolumn] = mdf_train[column].copy()
       mdf_test[newcolumn] = mdf_test[column].copy()
@@ -9016,10 +9016,10 @@ class AutoMunge:
     for tc in newcolumns:
 
       textnormalization_dict = {tc : {'overlap_dict' : overlap_dict, \
-                                      'splt_newcolumns_sp14'   : newcolumns, \
+                                      'splt_newcolumns_sp16'   : newcolumns, \
                                       'minsplit' : minsplit}}
       
-      column_dict = {tc : {'category' : 'sp14', \
+      column_dict = {tc : {'category' : 'sp16', \
                            'origcategory' : category, \
                            'normalization_dict' : textnormalization_dict, \
                            'origcolumn' : column, \
@@ -26533,8 +26533,8 @@ class AutoMunge:
                              'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
                              'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
                              'Utxt':[], 'Utx2':[], 'Utx3':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
-                             'splt':[], 'spl2':[], 'spl5':[], 'sp13':[], 'lngt':[], \
-                             'spl8':[], 'spl9':[], 'sp10':[], 'sp14':[], \
+                             'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], 'lngt':[], \
+                             'spl8':[], 'spl9':[], 'sp10':[], 'sp16':[], \
                              'srch':[], 'src2':[], 'src4':[], 'strn':[], \
                              'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
                              'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
@@ -27935,7 +27935,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.94'
+    automungeversion = '3.95'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -30353,7 +30353,7 @@ class AutoMunge:
     
     return mdf_test
   
-  def postprocess_sp13_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+  def postprocess_sp15_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #postprocess_splt_class(mdf_test, column, postprocess_dict, category)
     #preprocess column with categorical entries as strings
@@ -30388,7 +30388,7 @@ class AutoMunge:
       
       if column == postprocess_dict['column_dict'][columnkey]['inputcolumn']:
 
-        if 'splt_newcolumns_sp13' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
+        if 'splt_newcolumns_sp15' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
 
           normkey = columnkey
         
@@ -30399,7 +30399,7 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['overlap_dict']
 
       newcolumns = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['splt_newcolumns_sp13']
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['splt_newcolumns_sp15']
 
 
       #now for mdf_test we'll only consider those overlaps already identified from train set
@@ -30441,7 +30441,7 @@ class AutoMunge:
 
       for dict_key in overlap_dict:
 
-        newcolumn = column + '_sp13_' + dict_key
+        newcolumn = column + '_sp15_' + dict_key
         
 #         mdf_train[newcolumn] = mdf_train[column].copy()
         mdf_test[newcolumn] = mdf_test[column].copy()
@@ -30457,9 +30457,9 @@ class AutoMunge:
     
     return mdf_test
   
-  def postprocess_sp14_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+  def postprocess_sp16_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
-    #postprocess_sp14_class(mdf_test, column, postprocess_dict, category)
+    #postprocess_sp16_class(mdf_test, column, postprocess_dict, category)
     #preprocess column with categorical entries as strings
     #identifies overlaps of subsets of those strings and records
     #as a new boolan column
@@ -30476,7 +30476,7 @@ class AutoMunge:
     #assumes that unique values of test set are same or subset of train set
     #for more efficient application in postmunge
     
-    #sp14 is comparable to spl8 but multiple concurrent activations allowed
+    #sp16 is comparable to spl8 but multiple concurrent activations allowed
     #so requires a different MLinfilltype in processdict
     '''
     
@@ -30499,7 +30499,7 @@ class AutoMunge:
       
       if column == postprocess_dict['column_dict'][columnkey]['inputcolumn']:
 
-        if 'splt_newcolumns_sp14' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
+        if 'splt_newcolumns_sp16' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
 
           normkey = columnkey
         
@@ -30510,7 +30510,7 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['overlap_dict']
 
       newcolumns = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['splt_newcolumns_sp14']
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['splt_newcolumns_sp16']
 
 
       #now for mdf_test we'll only consider those overlaps already identified from train set
@@ -30555,7 +30555,7 @@ class AutoMunge:
 
       for dict_key in overlap_dict:
 
-        newcolumn = column + '_sp14_' + dict_key
+        newcolumn = column + '_sp16_' + dict_key
         
 #         mdf_train[newcolumn] = mdf_train[column].copy()
         mdf_test[newcolumn] = mdf_test[column].copy()
