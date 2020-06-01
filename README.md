@@ -2469,9 +2469,22 @@ start at 20 character length and go down to 5 character length.
                                      'excluded_characters': a list of strings which are excluded from overlap 
                                      identification when space_and_punctuation set as False, defaults to
                                      `[' ', ',', '.', '?', '!', '(', ')']`
-                                     'concurrent_activations': True/False, defaults to False, when True
+  - driftreport postmunge metrics: overlap_dict / splt_newcolumns_splt / minsplit
+  - inversion available: no
+* sp13: similar to splt, but allows concurrent activations for multiple detected overlaps
+Note that this version runs risk of high dimensionality of returned data in comparison to splt.
+  - default infill: none
+  - default NArowtype: justNaN
+  - suffix appender: '_splt_##*##' where ##*## is target identified string overlap 
+  - assignparam parameters accepted: 'minsplit': indicating lowest character length for recognized overlaps 
+                                     'space_and_punctuation': True/False, defaults to True, when passed as
+                                     False character overlaps are not recorded which include space or punctuation
+                                     based on characters in excluded_characters parameter
+                                     'excluded_characters': a list of strings which are excluded from overlap 
+                                     identification when space_and_punctuation set as False, defaults to
+                                     `[' ', ',', '.', '?', '!', '(', ')']`
+                                     'concurrent_activations': True/False, defaults to True, when True
                                      entries may have activations for multiple simultaneous overlaps
-                                     note activating may result in a high dimensionality of returned data
   - driftreport postmunge metrics: overlap_dict / splt_newcolumns_splt / minsplit
   - inversion available: no
 * spl2/spl3/spl4/ors2/ors6/txt3: similar to splt, but instead of creating new column identifier it replaces categorical 
@@ -2576,8 +2589,8 @@ for identified overlap entries. (Note for multiple activations encoding priority
   - driftreport postmunge metrics: overlap_dict
   - inversion available: pending
 ### More Efficient String Parsing
-* new processing functions nmr4/nmr5/nmr6/nmc4/nmc5/nmc6/spl8/spl9/sp10 (spelled sp"ten")/src2:
-  - comparable to functions nmrc/nmr2/nmr3/nmcm/nmc2/nmc3/splt/spl2/spl5/srch
+* new processing functions nmr4/nmr5/nmr6/nmc4/nmc5/nmc6/spl8/spl9/sp10 (spelled sp"ten")/sp14/src2:
+  - comparable to functions nmrc/nmr2/nmr3/nmcm/nmc2/nmc3/splt/spl2/spl5/sp13/srch
   - but make use of new assumption that set of unique values in test set is same or a subset of those values 
     from the train set, which allows for a more efficient application (no more string parsing of test sets)
   - default infill: comparable
@@ -2847,6 +2860,8 @@ avoid unintentional duplication.
 - 'sp12',
 - 'sp13',
 - 'sp14',
+- 'sp15',
+- 'sp16',
 - 'spl2',
 - 'spl3',
 - 'spl4',
@@ -2980,6 +2995,8 @@ that any user passing a custom defined transformation can avoid any unintentiona
 - '_scsn'
 - '_shfl'
 - '_sp10'
+- '\_sp13_' + string (where string is an identified overlap of characters between categorical entries)
+- '\_sp14_' + string (where string is an identified overlap of characters between categorical entries)
 - '_spl2'
 - '_spl5'
 - '_spl7'
@@ -3585,6 +3602,61 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'coworkers' : ['ord3'], \
                                      'friends' : []}})
     
+    
+    transform_dict.update({'sp11' : {'parents' : ['sp11'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : ['spl5'], \
+                                     'coworkers' : ['ord3'], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'sp12' : {'parents' : ['sp12'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : ['sp11'], \
+                                     'coworkers' : ['ord3'], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'sp13' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['sp13'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+  
+    transform_dict.update({'sp14' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['sp14'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'sp15' : {'parents' : ['sp15'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : ['sp10'], \
+                                     'coworkers' : ['ord3'], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'sp16' : {'parents' : ['sp16'], \
+                                     'siblings': [], \
+                                     'auntsuncles' : [], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : ['sp15'], \
+                                     'coworkers' : ['ord3'], \
+                                     'friends' : []}})
+    
     transform_dict.update({'srch' : {'parents' : [], \
                                      'siblings': [], \
                                      'auntsuncles' : ['srch'], \
@@ -3953,24 +4025,6 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'niecesnephews' : ['sp14'], \
                                      'coworkers' : ['1010'], \
                                      'friends' : []}})
-    
-    transform_dict.update({'sp13' : {'parents' : ['sp13'], \
-                                     'siblings': [], \
-                                     'auntsuncles' : [], \
-                                     'cousins' : [NArw], \
-                                     'children' : [], \
-                                     'niecesnephews' : ['sp10'], \
-                                     'coworkers' : ['ord3'], \
-                                     'friends' : []}})
-    
-    transform_dict.update({'sp14' : {'parents' : ['sp14'], \
-                                     'siblings': [], \
-                                     'auntsuncles' : [], \
-                                     'cousins' : [NArw], \
-                                     'children' : [], \
-                                     'niecesnephews' : ['sp13'], \
-                                     'coworkers' : ['ord3'], \
-                                     'friends' : []}})
 
     transform_dict.update({'or19' : {'parents' : ['or19'], \
                                      'siblings': [], \
@@ -3988,24 +4042,6 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'children' : ['nmc8'], \
                                      'niecesnephews' : ['sp14'], \
                                      'coworkers' : ['1010'], \
-                                     'friends' : []}})
-    
-    transform_dict.update({'sp11' : {'parents' : ['sp11'], \
-                                     'siblings': [], \
-                                     'auntsuncles' : [], \
-                                     'cousins' : [NArw], \
-                                     'children' : [], \
-                                     'niecesnephews' : ['spl5'], \
-                                     'coworkers' : ['ord3'], \
-                                     'friends' : []}})
-    
-    transform_dict.update({'sp12' : {'parents' : ['sp12'], \
-                                     'siblings': [], \
-                                     'auntsuncles' : [], \
-                                     'cousins' : [NArw], \
-                                     'children' : [], \
-                                     'niecesnephews' : ['sp11'], \
-                                     'coworkers' : ['ord3'], \
                                      'friends' : []}})
     
     transform_dict.update({'om10' : {'parents' : ['ord4'], \
