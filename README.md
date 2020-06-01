@@ -155,8 +155,8 @@ am.automunge(df_train, df_test = False, \
                           'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
                           'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
                           'Utxt':[], 'Utx2':[], 'Utx3':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
-                          'splt':[], 'spl2':[], 'spl5':[], 'lngt':[], \
-                          'spl8':[], 'spl9':[], 'sp10':[], \
+                          'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], 'lngt':[], \
+                          'spl8':[], 'spl9':[], 'sp10':[], 'sp16':[], \
                           'srch':[], 'src2':[], 'src4':[], 'strn':[], \
                           'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
                           'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
@@ -383,8 +383,8 @@ am.automunge(df_train, df_test = False, \
                           'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
                           'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
                           'Utxt':[], 'Utx2':[], 'Utx3':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
-                          'splt':[], 'spl2':[], 'spl5':[], 'lngt':[], \
-                          'spl8':[], 'spl9':[], 'sp10':[], \
+                          'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], 'lngt':[], \
+                          'spl8':[], 'spl9':[], 'sp10':[], 'sp16':[], \
                           'srch':[], 'src2':[], 'src4':[], 'strn':[], \
                           'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
                           'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
@@ -607,8 +607,8 @@ am.automunge(df_train, df_test = False, \
                           'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
                           'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
                           'Utxt':[], 'Utx2':[], 'Utx3':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
-                          'splt':[], 'spl2':[], 'spl5':[], 'lngt':[], \
-                          'spl8':[], 'spl9':[], 'sp10':[], \
+                          'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], 'lngt':[], \
+                          'spl8':[], 'spl9':[], 'sp10':[], 'sp16':[], \
                           'srch':[], 'src2':[], 'src4':[], 'strn':[], \
                           'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
                           'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
@@ -971,8 +971,8 @@ assigncat = {'nmbr':[], 'retn':[], 'mnmx':[], 'mean':[], 'MAD3':[], 'lgnm':[], \
              'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
              'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
              'Utxt':[], 'Utx2':[], 'Utx3':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
-             'splt':[], 'spl2':[], 'spl5':[], 'lngt':[], \
-             'spl8':[], 'spl9':[], 'sp10':[], \
+             'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], 'lngt':[], \
+             'spl8':[], 'spl9':[], 'sp10':[], 'sp16':[], \
              'srch':[], 'src2':[], 'src4':[], 'strn':[], \
              'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
              'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
@@ -2471,7 +2471,7 @@ start at 20 character length and go down to 5 character length.
                                      `[' ', ',', '.', '?', '!', '(', ')']`
   - driftreport postmunge metrics: overlap_dict / splt_newcolumns_splt / minsplit
   - inversion available: no
-* sp13: similar to splt, but allows concurrent activations for multiple detected overlaps
+* sp15: similar to splt, but allows concurrent activations for multiple detected overlaps (spelled sp-fifteen)
 Note that this version runs risk of high dimensionality of returned data in comparison to splt.
   - default infill: none
   - default NArowtype: justNaN
@@ -2589,8 +2589,8 @@ for identified overlap entries. (Note for multiple activations encoding priority
   - driftreport postmunge metrics: overlap_dict
   - inversion available: pending
 ### More Efficient String Parsing
-* new processing functions nmr4/nmr5/nmr6/nmc4/nmc5/nmc6/spl8/spl9/sp10 (spelled sp"ten")/sp14/src2:
-  - comparable to functions nmrc/nmr2/nmr3/nmcm/nmc2/nmc3/splt/spl2/spl5/sp13/srch
+* new processing functions nmr4/nmr5/nmr6/nmc4/nmc5/nmc6/spl8/spl9/sp10 (spelled sp"ten")/sp16/src2:
+  - comparable to functions nmrc/nmr2/nmr3/nmcm/nmc2/nmc3/splt/spl2/spl5/sp15/srch
   - but make use of new assumption that set of unique values in test set is same or a subset of those values 
     from the train set, which allows for a more efficient application (no more string parsing of test sets)
   - default infill: comparable
@@ -2995,8 +2995,8 @@ that any user passing a custom defined transformation can avoid any unintentiona
 - '_scsn'
 - '_shfl'
 - '_sp10'
-- '\_sp13_' + string (where string is an identified overlap of characters between categorical entries)
-- '\_sp14_' + string (where string is an identified overlap of characters between categorical entries)
+- '\_sp15_' + string (where string is an identified overlap of characters between categorical entries)
+- '\_sp16_' + string (where string is an identified overlap of characters between categorical entries)
 - '_spl2'
 - '_spl5'
 - '_spl7'
@@ -3621,25 +3621,7 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'coworkers' : ['ord3'], \
                                      'friends' : []}})
     
-    transform_dict.update({'sp13' : {'parents' : [], \
-                                     'siblings': [], \
-                                     'auntsuncles' : ['sp13'], \
-                                     'cousins' : [NArw], \
-                                     'children' : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers' : [], \
-                                     'friends' : []}})
-  
-    transform_dict.update({'sp14' : {'parents' : [], \
-                                     'siblings': [], \
-                                     'auntsuncles' : ['sp14'], \
-                                     'cousins' : [NArw], \
-                                     'children' : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers' : [], \
-                                     'friends' : []}})
-    
-    transform_dict.update({'sp15' : {'parents' : ['sp15'], \
+    transform_dict.update({'sp13' : {'parents' : ['sp13'], \
                                      'siblings': [], \
                                      'auntsuncles' : [], \
                                      'cousins' : [NArw], \
@@ -3648,13 +3630,31 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'coworkers' : ['ord3'], \
                                      'friends' : []}})
     
-    transform_dict.update({'sp16' : {'parents' : ['sp16'], \
+    transform_dict.update({'sp14' : {'parents' : ['sp14'], \
                                      'siblings': [], \
                                      'auntsuncles' : [], \
                                      'cousins' : [NArw], \
                                      'children' : [], \
-                                     'niecesnephews' : ['sp15'], \
+                                     'niecesnephews' : ['sp13'], \
                                      'coworkers' : ['ord3'], \
+                                     'friends' : []}})
+    
+    transform_dict.update({'sp15' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['sp15'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
+                                     'friends' : []}})
+  
+    transform_dict.update({'sp16' : {'parents' : [], \
+                                     'siblings': [], \
+                                     'auntsuncles' : ['sp16'], \
+                                     'cousins' : [NArw], \
+                                     'children' : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers' : [], \
                                      'friends' : []}})
     
     transform_dict.update({'srch' : {'parents' : [], \
