@@ -1219,6 +1219,9 @@ processdict =  {'newt' : {'dualprocess' : None, \
 #                        predictive algorithms treat as a multi modal classifier
 #              'multisp' for bins multicolumn sets with boolean entries
 #                        (similar to multirt but treated differently in levelizer)
+#              'concurrent_act' for multicolumn sets with boolean entries as may have 
+#                        multiple entries in the same row
+#              'concurrent_nmbr' for multicolumn sets with numerical entries
 #              '1010'   for multicolumn sets with binary encoding via 1010
 #                        will be converted to onehot for ML
 #              'exclude' for columns which will be excluded from ML infill
@@ -2470,7 +2473,7 @@ start at 20 character length and go down to 5 character length.
                                      identification when space_and_punctuation set as False, defaults to
                                      `[' ', ',', '.', '?', '!', '(', ')']`
   - driftreport postmunge metrics: overlap_dict / splt_newcolumns_splt / minsplit
-  - inversion available: no
+  - inversion available: yes with partial recovery
 * sp15: similar to splt, but allows concurrent activations for multiple detected overlaps (spelled sp-fifteen)
 Note that this version runs risk of high dimensionality of returned data in comparison to splt.
   - default infill: none
@@ -2486,7 +2489,7 @@ Note that this version runs risk of high dimensionality of returned data in comp
                                      'concurrent_activations': True/False, defaults to True, when True
                                      entries may have activations for multiple simultaneous overlaps
   - driftreport postmunge metrics: overlap_dict / splt_newcolumns_splt / minsplit
-  - inversion available: no
+  - inversion available: yes with partial recovery
 * spl2/spl3/spl4/ors2/ors6/txt3: similar to splt, but instead of creating new column identifier it replaces categorical 
 entries with the abbreviated string overlap
   - default infill: none
@@ -2501,7 +2504,7 @@ entries with the abbreviated string overlap
                                      `[' ', ',', '.', '?', '!', '(', ')']`
   - driftreport postmunge metrics: overlap_dict / spl2_newcolumns / spl2_overlap_dict / spl2_test_overlap_dict / 
                                    minsplit
-  - inversion available: no
+  - inversion available: yes with partial recovery
 * spl5/spl6/ors5: similar to spl2, but those entries without identified string overlap are set to 0,
 (used in ors5 in conjunction with ord3)
   - default infill: none
@@ -2516,7 +2519,7 @@ entries with the abbreviated string overlap
                                      `[' ', ',', '.', '?', '!', '(', ')']`
   - driftreport postmunge metrics: overlap_dict / spl2_newcolumns / spl2_overlap_dict / spl2_test_overlap_dict / 
                                    spl5_zero_dict / minsplit
-  - inversion available: no
+  - inversion available: yes with partial recovery
 * spl6: similar to spl5, but with a splt performed downstream for identification of overlaps
 within the overlaps
   - default infill: none
@@ -2531,7 +2534,7 @@ within the overlaps
                                      `[' ', ',', '.', '?', '!', '(', ')']`
   - driftreport postmunge metrics: overlap_dict / spl2_newcolumns / spl2_overlap_dict / spl2_test_overlap_dict / 
                                    spl5_zero_dict / minsplit
-  - inversion available: no
+  - inversion available: yes with partial recovery
 * spl7: similar to spl5, but recognizes string character overlaps down to minimum 2 instead of 5
   - default infill: none
   - default NArowtype: justNaN
@@ -2544,43 +2547,44 @@ within the overlaps
                                      identification when space_and_punctuation set as False, defaults to
                                      `[' ', ',', '.', '?', '!', '(', ')']`
   - driftreport postmunge metrics: overlap_dict / srch_newcolumns_srch / search
-  - inversion available: no
+  - inversion available: yes with partial recovery
 * srch: searches categorical sets for overlaps with user passed search string and returns new boolean column
-for identified overlap entries. (There is also src3 variant which I suspect may be more efficient in esoteric scenarios).
+for identified overlap entries.
   - default infill: none
   - default NArowtype: justNaN
   - suffix appender: '\_srch_##*##' where ##*## is target identified search string
   - assignparam parameters accepted: 'search': a list of strings, defaults as empty set
-				     (note search parameter list can included embedded list of terms for 
-				      aggregated activations of terms in that sub list to the list)
+				     (note search parameter list can included embedded lists of terms for 
+				      aggregated activations of terms in the sublist)
 				     'case': bool to indicate case sensitivity of search, defaults True
-				     (note that 'case' not yet built into src2 variant)
   - driftreport postmunge metrics: overlap_dict / splt_newcolumns_splt / minsplit
-  - inversion available: pending
+  - inversion available: yes with partial recovery
 * src4: searches categorical sets for overlaps with user passed search string and returns ordinal column
 for identified overlap entries. (Note for multiple activations encoding priority given to end of list entries).
   - default infill: none
   - default NArowtype: justNaN
   - suffix appender: '\_src4'
   - assignparam parameters accepted: 'search': a list of strings, defaults as empty set
+				     (note search parameter list can included embedded lists of terms for 
+				      aggregated activations of terms in the sublist)
 				     'case': bool to indicate case sensitivity of search, defaults True
 				     (note that 'case' not yet built into src2 variant)
   - driftreport postmunge metrics: overlap_dict / splt_newcolumns_splt / minsplit
-  - inversion available: pending
+  - inversion available: yes with partial recovery
 * nmrc/nmr2/nmr3: parses strings and returns any number groupings, prioritized by longest length
   - default infill: mean
   - default NArowtype: parsenumeric
   - suffix appender: '_nmrc'
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: overlap_dict / mean / maximum / minimum
-  - inversion available: pending
+  - inversion available: yes with full recovery
 * nmcm/nmc2/nmc3: similar to nmrc, but recognizes numbers with commas, returns numbers stripped of commas
   - default infill: mean
   - default NArowtype: parsenumeric_commas
   - suffix appender: '_nmcm'
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: overlap_dict / mean / maximum / minimum
-  - inversion available: pending
+  - inversion available: yes with full recovery
 * strn: parses strings and returns any non-number groupings, prioritized by longest length
   - default infill: 'zzzinfill'
   - default NArowtype: justNaN
@@ -2598,7 +2602,7 @@ for identified overlap entries. (Note for multiple activations encoding priority
   - suffix appender: same format, updated per the new category
   - assignparam parameters accepted: comparable
   - driftreport postmunge metrics: comparable
-  - inversion available: no
+  - inversion available: yes
 * new processing functions nmr7/nmr8/nmr9/nmc7/nmc8/nmc9:
   - comparable to functions nmrc/nmr2/nmr3/nmcm/nmc2/nmc3
   - but implements string parsing only for unique test set entries not found in train set
