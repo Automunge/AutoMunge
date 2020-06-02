@@ -2427,8 +2427,9 @@ class AutoMunge:
     # - 'multisp' for bins multicolumn sets with boolean entries
     #(the two (rt/sp) are treated differently in labelfrequencylevelizer, where
     # multisp are elligeble to serve as basis for levelizing a numerical set via bins)
-    # - 'multime'  for multicolumn sets with boolean entries as may have 
-    #multiple entries in the same row (not currently used, future extension)
+    # - 'concurrent_act' for multicolumn sets with boolean entries as may have 
+    #multiple entries in the same row
+    # - 'concurrent_nmbr' for multicolumn sets with numerical entries
     # - 'exclude' for columns which will be excluded from ML infill
     # - '1010' for binary encoded columns, will be converted to onehot for ML
     # - 'boolexclude' boolean set suitable for Binary transform but exluded from MLinfill
@@ -2818,6 +2819,8 @@ class AutoMunge:
     process_dict.update({'txt3' : {'dualprocess' : self.process_spl2_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_spl2_class, \
+                                  'inverseprocess' : self.inverseprocess_spl2, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'text'}})
@@ -2898,120 +2901,160 @@ class AutoMunge:
     process_dict.update({'splt' : {'dualprocess' : self.process_splt_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_splt_class, \
+                                  'inverseprocess' : self.inverseprocess_splt, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'multirt', \
                                   'labelctgy' : 'splt'}})
     process_dict.update({'spl2' : {'dualprocess' : self.process_spl2_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_spl2_class, \
+                                  'inverseprocess' : self.inverseprocess_spl2, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'ordl'}})
     process_dict.update({'spl3' : {'dualprocess' : self.process_spl2_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_spl2_class, \
+                                  'inverseprocess' : self.inverseprocess_spl2, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'ord3'}})
     process_dict.update({'spl4' : {'dualprocess' : self.process_spl2_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_spl2_class, \
+                                  'inverseprocess' : self.inverseprocess_spl2, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'ord3'}})
     process_dict.update({'spl5' : {'dualprocess' : self.process_spl5_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_spl5_class, \
+                                  'inverseprocess' : self.inverseprocess_spl5, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'ord3'}})
     process_dict.update({'spl6' : {'dualprocess' : self.process_spl2_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_spl2_class, \
+                                  'inverseprocess' : self.inverseprocess_spl2, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'ord3'}})
     process_dict.update({'spl7' : {'dualprocess' : self.process_spl7_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_spl7_class, \
+                                  'inverseprocess' : self.inverseprocess_spl5, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'ord3'}})
     process_dict.update({'spl8' : {'dualprocess' : self.process_spl8_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_spl8_class, \
+                                  'inverseprocess' : self.inverseprocess_spl8, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'multirt', \
                                   'labelctgy' : 'text'}})
     process_dict.update({'spl9' : {'dualprocess' : self.process_spl9_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_spl9_class, \
+                                  'inverseprocess' : self.inverseprocess_spl2, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'ordl'}})
     process_dict.update({'sp10' : {'dualprocess' : self.process_sp10_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_sp10_class, \
+                                  'inverseprocess' : self.inverseprocess_spl5, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'ord3'}})
     process_dict.update({'sp11' : {'dualprocess' : self.process_spl2_class, \
                                    'singleprocess' : None, \
                                    'postprocess' : self.postprocess_spl2_class, \
+                                   'inverseprocess' : self.inverseprocess_spl2, \
+                                   'info_retention' : False, \
                                    'NArowtype' : 'justNaN', \
                                    'MLinfilltype' : 'exclude', \
                                    'labelctgy' : 'ord3'}})
     process_dict.update({'sp12' : {'dualprocess' : self.process_spl2_class, \
                                    'singleprocess' : None, \
                                    'postprocess' : self.postprocess_spl2_class, \
+                                   'inverseprocess' : self.inverseprocess_spl2, \
+                                   'info_retention' : False, \
                                    'NArowtype' : 'justNaN', \
                                    'MLinfilltype' : 'exclude', \
                                    'labelctgy' : 'ord3'}})
     process_dict.update({'sp13' : {'dualprocess' : self.process_spl9_class, \
                                    'singleprocess' : None, \
                                    'postprocess' : self.postprocess_spl9_class, \
+                                   'inverseprocess' : self.inverseprocess_spl2, \
+                                   'info_retention' : False, \
                                    'NArowtype' : 'justNaN', \
                                    'MLinfilltype' : 'exclude', \
                                    'labelctgy' : 'ord3'}})
     process_dict.update({'sp14' : {'dualprocess' : self.process_spl9_class, \
                                    'singleprocess' : None, \
                                    'postprocess' : self.postprocess_spl9_class, \
+                                   'inverseprocess' : self.inverseprocess_spl2, \
+                                   'info_retention' : False, \
                                    'NArowtype' : 'justNaN', \
                                    'MLinfilltype' : 'exclude', \
                                    'labelctgy' : 'ord3'}})
     process_dict.update({'sp15' : {'dualprocess' : self.process_sp15_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_sp15_class, \
+                                  'inverseprocess' : self.inverseprocess_sp15, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : '1010', \
+                                  'MLinfilltype' : 'concurrent_act', \
                                   'labelctgy' : 'sp15'}})
     process_dict.update({'sp16' : {'dualprocess' : self.process_sp16_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_sp16_class, \
+                                  'inverseprocess' : self.inverseprocess_sp16, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : '1010', \
+                                  'MLinfilltype' : 'concurrent_act', \
                                   'labelctgy' : 'sp16'}})
     process_dict.update({'srch' : {'dualprocess' : self.process_srch_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_srch_class, \
+                                   'inverseprocess' : self.inverseprocess_srch, \
+                                   'info_retention' : False, \
                                   'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'multirt', \
+                                  'MLinfilltype' : 'concurrent_act', \
                                   'labelctgy' : 'srch'}})
     process_dict.update({'src2' : {'dualprocess' : self.process_src2_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_src2_class, \
+                                   'inverseprocess' : self.inverseprocess_src2, \
+                                   'info_retention' : False, \
                                   'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'multirt', \
+                                  'MLinfilltype' : 'concurrent_act', \
                                   'labelctgy' : 'src2'}})
     process_dict.update({'src3' : {'dualprocess' : self.process_src3_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_src3_class, \
+                                   'inverseprocess' : self.inverseprocess_src3, \
+                                   'info_retention' : False, \
                                   'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'multirt', \
+                                  'MLinfilltype' : 'concurrent_act', \
                                   'labelctgy' : 'src3'}})
     process_dict.update({'src4' : {'dualprocess' : self.process_src4_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_src4_class, \
+                                   'inverseprocess' : self.inverseprocess_src4, \
+                                   'info_retention' : False, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'src4'}})
@@ -3024,18 +3067,24 @@ class AutoMunge:
     process_dict.update({'nmrc' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_nmrc_class, \
                                   'postprocess' : None, \
+                                  'inverseprocess' : self.inverseprocess_nmrc, \
+                                  'info_retention' : True, \
                                   'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmrc'}})
     process_dict.update({'nmr2' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_nmrc_class, \
                                   'postprocess' : None, \
+                                  'inverseprocess' : self.inverseprocess_nmrc, \
+                                  'info_retention' : True, \
                                   'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmbr'}})
     process_dict.update({'nmr3' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_nmrc_class, \
                                   'postprocess' : None, \
+                                  'inverseprocess' : self.inverseprocess_nmrc, \
+                                  'info_retention' : True, \
                                   'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mnmx'}})
@@ -3078,18 +3127,24 @@ class AutoMunge:
     process_dict.update({'nmcm' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_nmcm_class, \
                                   'postprocess' : None, \
+                                  'inverseprocess' : self.inverseprocess_nmrc, \
+                                  'info_retention' : True, \
                                   'NArowtype' : 'parsenumeric_commas', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmcm'}})
     process_dict.update({'nmc2' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_nmcm_class, \
                                   'postprocess' : None, \
+                                  'inverseprocess' : self.inverseprocess_nmrc, \
+                                  'info_retention' : True, \
                                   'NArowtype' : 'parsenumeric_commas', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmbr'}})
     process_dict.update({'nmc3' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_nmcm_class, \
                                   'postprocess' : None, \
+                                  'inverseprocess' : self.inverseprocess_nmrc, \
+                                  'info_retention' : True, \
                                   'NArowtype' : 'parsenumeric_commas', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mnmx'}})
@@ -3132,18 +3187,24 @@ class AutoMunge:
     process_dict.update({'ors7' : {'dualprocess' : self.process_spl5_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_spl5_class, \
+                                  'inverseprocess' : self.inverseprocess_sp15, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'ord3'}})
     process_dict.update({'ors5' : {'dualprocess' : self.process_spl5_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_spl5_class, \
+                                  'inverseprocess' : self.inverseprocess_sp15, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'ord3'}})
     process_dict.update({'ors6' : {'dualprocess' : self.process_spl5_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_spl5_class, \
+                                  'inverseprocess' : self.inverseprocess_sp15, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'ord3'}})
@@ -3186,6 +3247,8 @@ class AutoMunge:
     process_dict.update({'ors2' : {'dualprocess' : self.process_spl2_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_spl2_class, \
+                                  'inverseprocess' : self.inverseprocess_spl2, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'ord3'}})
@@ -3198,60 +3261,80 @@ class AutoMunge:
     process_dict.update({'or11' : {'dualprocess' : self.process_1010_class, \
                                    'singleprocess' : None, \
                                    'postprocess' : self.postprocess_1010_class, \
+                                   'inverseprocess' : self.inverseprocess_1010, \
+                                   'info_retention' : True, \
                                    'NArowtype' : 'justNaN', \
                                    'MLinfilltype' : '1010', \
                                    'labelctgy' : 'ord3'}})
     process_dict.update({'or12' : {'dualprocess' : self.process_1010_class, \
                                    'singleprocess' : None, \
                                    'postprocess' : self.postprocess_1010_class, \
+                                   'inverseprocess' : self.inverseprocess_1010, \
+                                   'info_retention' : True, \
                                    'NArowtype' : 'justNaN', \
                                    'MLinfilltype' : '1010', \
                                    'labelctgy' : 'ord3'}})
     process_dict.update({'or13' : {'dualprocess' : self.process_1010_class, \
                                    'singleprocess' : None, \
                                    'postprocess' : self.postprocess_1010_class, \
+                                   'inverseprocess' : self.inverseprocess_1010, \
+                                   'info_retention' : True, \
                                    'NArowtype' : 'justNaN', \
                                    'MLinfilltype' : '1010', \
                                    'labelctgy' : 'ord3'}})
     process_dict.update({'or14' : {'dualprocess' : self.process_1010_class, \
                                    'singleprocess' : None, \
                                    'postprocess' : self.postprocess_1010_class, \
+                                   'inverseprocess' : self.inverseprocess_1010, \
+                                   'info_retention' : True, \
                                    'NArowtype' : 'justNaN', \
                                    'MLinfilltype' : '1010', \
                                    'labelctgy' : 'ord3'}})
     process_dict.update({'or15' : {'dualprocess' : None, \
                                    'singleprocess' : self.process_UPCS_class, \
                                    'postprocess' : None, \
+                                   'inverseprocess' : self.inverseprocess_UPCS, \
+                                   'info_retention' : False, \
                                    'NArowtype' : 'justNaN', \
                                    'MLinfilltype' : 'exclude', \
                                    'labelctgy' : 'ord3'}})
     process_dict.update({'or16' : {'dualprocess' : None, \
                                    'singleprocess' : self.process_UPCS_class, \
                                    'postprocess' : None, \
+                                   'inverseprocess' : self.inverseprocess_UPCS, \
+                                   'info_retention' : False, \
                                    'NArowtype' : 'justNaN', \
                                    'MLinfilltype' : 'exclude', \
                                    'labelctgy' : 'ord3'}})
     process_dict.update({'or17' : {'dualprocess' : None, \
                                    'singleprocess' : self.process_UPCS_class, \
                                    'postprocess' : None, \
+                                   'inverseprocess' : self.inverseprocess_UPCS, \
+                                   'info_retention' : False, \
                                    'NArowtype' : 'justNaN', \
                                    'MLinfilltype' : 'exclude', \
                                    'labelctgy' : 'ord3'}})
     process_dict.update({'or18' : {'dualprocess' : None, \
                                    'singleprocess' : self.process_UPCS_class, \
                                    'postprocess' : None, \
+                                   'inverseprocess' : self.inverseprocess_UPCS, \
+                                   'info_retention' : False, \
                                    'NArowtype' : 'justNaN', \
                                    'MLinfilltype' : 'exclude', \
                                    'labelctgy' : 'ord3'}})
     process_dict.update({'or19' : {'dualprocess' : None, \
                                    'singleprocess' : self.process_UPCS_class, \
                                    'postprocess' : None, \
+                                   'inverseprocess' : self.inverseprocess_UPCS, \
+                                   'info_retention' : False, \
                                    'NArowtype' : 'justNaN', \
                                    'MLinfilltype' : 'exclude', \
                                    'labelctgy' : 'ord3'}})
     process_dict.update({'or20' : {'dualprocess' : None, \
                                    'singleprocess' : self.process_UPCS_class, \
                                    'postprocess' : None, \
+                                   'inverseprocess' : self.inverseprocess_UPCS, \
+                                   'info_retention' : False, \
                                    'NArowtype' : 'justNaN', \
                                    'MLinfilltype' : 'exclude', \
                                    'labelctgy' : 'ord3'}})
@@ -3890,7 +3973,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_tlbn_class, \
                                   'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'exclude', \
+                                  'MLinfilltype' : 'concurrent_nmbr', \
                                   'labelctgy' : 'tlbn'}})
     process_dict.update({'pwor' : {'dualprocess' : self.process_pwor_class, \
                                   'singleprocess' : None, \
@@ -8448,17 +8531,11 @@ class AutoMunge:
 #           spl2_test_overlap_dict.update({entry : overlap_key})
     
   
-    #note to self: double check this portion next few lines when get some time
     spl2_test_overlap_dict = deepcopy(spl2_overlap_dict)
     
     unique_list_test = list(mdf_test[column].unique())
     unique_list_test = list(map(str, unique_list_test))
     
-    extra_unique_test = list(set(unique_list_test) - set(unique_list))
-    
-    for extra_unique in extra_unique_test:
-      
-      spl2_test_overlap_dict.update({str(extra_unique) : 0})
     
     #here's where we identify values to set to 0 for spl5
     spl5_test_zero_dict = {}
@@ -9467,7 +9544,7 @@ class AutoMunge:
       
       if len(overlap_dict[dict_key]) > 0:
 
-        newcolumn = column + '_srch_' + dict_key
+        newcolumn = column + '_src3_' + dict_key
 
         mdf_train[newcolumn] = mdf_train[column].copy()
         mdf_test[newcolumn] = mdf_test[column].copy()
@@ -9493,7 +9570,7 @@ class AutoMunge:
                                       'srch_newcolumns_src3'   : newcolumns, \
                                       'search' : search}}
       
-      column_dict = {tc : {'category' : 'srch', \
+      column_dict = {tc : {'category' : 'src3', \
                            'origcategory' : category, \
                            'normalization_dict' : textnormalization_dict, \
                            'origcolumn' : column, \
@@ -9512,7 +9589,7 @@ class AutoMunge:
     
     return mdf_train, mdf_test, column_dict_list
   
-  
+
   def process_src4_class(self, mdf_train, mdf_test, column, category, \
                          postprocess_dict, params = {}):
     """
@@ -9557,6 +9634,23 @@ class AutoMunge:
     else:
       case = True
       
+    #we'll create mirror to account for any embdded lists of search terms for aggregation
+    search_preflattening = search.copy()
+    #this is kind of hacky just to reuse code below resetting this list to repopulate
+    search = []
+    aggregated_dict = {}
+    
+    for entry in search_preflattening:
+      if type(entry) != type([]):
+        search.append(str(entry))
+      else:
+        aggregated_dict.update({str(entry[-1]):[]})
+        for entry2 in entry[0:-1]:
+          search.append(entry2)
+          aggregated_dict[str(entry[-1])].append(str(entry2))
+        for entry2 in entry[-1:]:
+          search.append(entry2)
+      
     
     newcolumns = []
     search_dict = {}
@@ -9599,6 +9693,31 @@ class AutoMunge:
       np.where(mdf_test[newcolumn] == 1, ordl_dict2[newcolumn], mdf_test[column + '_src4'])
       del mdf_train[newcolumn]
       del mdf_test[newcolumn]
+      
+      
+    #now we'll address any aggregations fo search terms
+    #from search parameter passed with embedded list of search terms
+          
+    #then after populating activations, we'll put this below
+    #inverse_search_dict has key of search term and value of column for activations
+    inverse_search_dict = {value:key for key,value in search_dict.items()}
+#     newcolumns_before_aggregation = newcolumns.copy()
+      
+    #now we consolidate activations
+    #note that this only runs when aggregated_dict was populated with an embedded list of search terms
+    for aggregated_dict_key in aggregated_dict:
+      aggregated_dict_key_column = inverse_search_dict[aggregated_dict_key]
+      aggregated_dict_key_encoding = ordl_dict2[aggregated_dict_key_column]
+      
+      for target_for_aggregation in aggregated_dict[aggregated_dict_key]:
+        target_for_aggregation_column = inverse_search_dict[target_for_aggregation]
+        target_for_aggregation_encoding = ordl_dict2[target_for_aggregation_column]
+        
+        mdf_train[column + '_src4'] = \
+        np.where(mdf_train[column + '_src4'] == target_for_aggregation_encoding, aggregated_dict_key_encoding, mdf_train[column + '_src4'])
+        mdf_test[column + '_src4'] = \
+        np.where(mdf_test[column + '_src4'] == target_for_aggregation_encoding, aggregated_dict_key_encoding, mdf_test[column + '_src4'])
+
     
     #we'll base the integer type on number of ordinal entries
     if len(ordl_dict1) < 254:
@@ -9620,9 +9739,12 @@ class AutoMunge:
     for tc in src4_newcolumns:
 
       textnormalization_dict = {tc : {'search_dict' : search_dict, \
+                                      'inverse_search_dict' : inverse_search_dict, \
                                       'srch_newcolumns_src4' : newcolumns, \
                                       'src4_newcolumns' : src4_newcolumns, \
                                       'search' : search, \
+                                      'search_preflattening' : search_preflattening, \
+                                      'aggregated_dict' : aggregated_dict, \
                                       'case' : case, \
                                       'ordl_dict1' : ordl_dict1, \
                                       'ordl_dict2' : ordl_dict2}}
@@ -20525,8 +20647,7 @@ class AutoMunge:
 
     #
     #if a numerical set
-    #if category in ['nmbr', 'nbr2', 'bxcx']:
-    if MLinfilltype in ['numeric']:
+    if MLinfilltype in ['numeric', 'concurrent_nmbr']:
 
       if df_train_filltrain.shape[0] == 0:
         df_traininfill = np.zeros(shape=(1,len(columnslist)))
@@ -20659,7 +20780,7 @@ class AutoMunge:
 
 
     #if category == 'bnry':
-    if MLinfilltype in ['singlct', 'binary']:
+    if MLinfilltype in ['singlct', 'binary', 'concurrent_act']:
 
       if df_train_filltrain.shape[0] == 0:
         df_traininfill = np.zeros(shape=(1,len(columnslist)))
@@ -21173,10 +21294,13 @@ class AutoMunge:
     #if category in ['nmbr', 'bxcx', 'bnry', 'text', 'bins', 'bint']:
     
     #if category in ['nmbr', 'nbr2', 'bxcx', 'bnry', 'text', 'bins', 'bint']:
-    if MLinfilltype in ['numeric', 'singlct', 'binary', 'multirt', 'multisp', '1010']:
+    if MLinfilltype in ['numeric', 'singlct', 'binary', \
+                        'multirt', 'multisp', '1010', \
+                        'concurrent_act', 'concurrent_nmbr']:
 
-      #if this is a single column set (not categorical)
-      if len(categorylist) == 1:
+      #if this is a single column set or concurrent_act
+      if len(categorylist) == 1 or \
+      postprocess_dict['process_dict'][category]['MLinfilltype'] in ['concurrent_act', 'concurrent_nmbr']:
 
         #first concatinate the NArows True/False designations to df_train & df_test
         df_train = pd.concat([df_train, trainNArows], axis=1)
@@ -21291,9 +21415,6 @@ class AutoMunge:
         df_test = df_test.drop([testNArows.columns[0]], axis=1)
 
 
-
-
-    #if category == 'date':
     #if MLinfilltype in ['exclude']:
     else:
 
@@ -21307,7 +21428,6 @@ class AutoMunge:
     
     
     return df_train_filltrain, df_train_filllabel, df_train_fillfeatures, df_test_fillfeatures
-
 
 
 
@@ -21336,10 +21456,13 @@ class AutoMunge:
     NArowcolumn = NArows.columns[0]
 
     #if category in ['nmbr', 'nbr2', 'bxcx', 'bnry', 'text']:
-    if MLinfilltype in ['numeric', 'singlct', 'binary', 'multisp', 'multirt', '1010']:
+    if MLinfilltype in ['numeric', 'singlct', 'binary', \
+                        'multisp', 'multirt', '1010', \
+                        'concurrent_act', 'concurrent_nmbr']:
 
       #if this is a single column set (not categorical)
-      if len(categorylist) == 1 or singlecolumncase is True:
+      if len(categorylist) == 1 or singlecolumncase is True \
+      or MLinfilltype in ['concurrent_act', 'concurrent_nmbr']:
 
         #create new dataframe for infills wherein the infill values are placed in \
         #rows coresponding to NArows True values and rows coresponding to NArows \
@@ -21477,7 +21600,9 @@ class AutoMunge:
       origcolumn = postprocess_dict['column_dict'][column]['origcolumn']
       category = postprocess_dict['column_dict'][column]['category']
       
-      if len(categorylist) == 1:
+      if len(categorylist) == 1 or \
+      postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
+      in ['concurrent_act', 'concurrent_nmbr']:
         #copy the datatype to ensure returned set is consistent
         df_temp_dtype = pd.DataFrame(df_train[column][:0]).copy()
 
@@ -21535,20 +21660,33 @@ class AutoMunge:
                              categorylist = categorylist)
 
       #now change the infillcomplete marker in the text_dict for each \
-      #associated text column
-      for columnname in categorylist:
-        postprocess_dict['column_dict'][columnname]['infillcomplete'] = True
+      #associated text column unless in concurrent_activations MLinfilltype
+      if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
+      in ['concurrent_act', 'concurrent_nmbr']:
+        
+        postprocess_dict['column_dict'][column]['infillcomplete'] = True
 
         #now we'll add our trained text model to the postprocess_dict
-        postprocess_dict['column_dict'][columnname]['infillmodel'] \
+        postprocess_dict['column_dict'][column]['infillmodel'] \
         = model
+        
+      else:
+        
+        for columnname in categorylist:
+          postprocess_dict['column_dict'][columnname]['infillcomplete'] = True
+
+          #now we'll add our trained text model to the postprocess_dict
+          postprocess_dict['column_dict'][columnname]['infillmodel'] \
+          = model
 
 #         #now change the infillcomplete marker in the dict for each associated column
 #         for columnname in categorylist:
 #           postprocess_dict['column_dict'][columnname]['infillcomplete'] = True
 
-      if len(categorylist) == 1:
-        #reset data type to ensure returned data is consistent with what was passed
+      #reset data type to ensure returned data is consistent with what was passed
+      if len(categorylist) == 1 or \
+      postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
+      in ['concurrent_act', 'concurrent_nmbr']:
         df_train[column] = \
         df_train[column].astype({column:df_temp_dtype[column].dtypes})
         
@@ -21557,7 +21695,6 @@ class AutoMunge:
 
       elif len(categorylist) > 1:
         for dtype_column in categorylist:
-          #reset data type to ensure returned data is consistent with what was passed
           df_train[dtype_column] = \
           df_train[dtype_column].astype({dtype_column:df_temp_dtype[dtype_column].dtypes})
           
@@ -21718,6 +21855,8 @@ class AutoMunge:
     #frequency of label occurence in training set (increases the size
     #of the training set by redundant inclusion of rows with lower frequency
     #labels.) Returns train_df, labels_df, trainID_df.
+    #for now have convention that MLinfilltypes of 1010 or concurrent_act
+    #not yet supported (future extension)
     '''
     
     columns_labels = list(labels_df)
@@ -22088,7 +22227,7 @@ class AutoMunge:
     
     
     #if labelscategory in ['nmbr']:
-    if MLinfilltype in ['numeric']:
+    if MLinfilltype in ['numeric', 'concurrent_nmbr']:
           
       #convert dataframes to numpy arrays
       np_shuffleset = np_shuffleset.values
@@ -22111,7 +22250,7 @@ class AutoMunge:
       columnaccuracy = 1 - mean_squared_log_error(np_labels, np_predictions)
       
     #if labelscategory in ['bnry']:
-    if MLinfilltype in ['singlct', 'binary']:
+    if MLinfilltype in ['singlct', 'binary', 'concurrent_act']:
       
       #convert dataframes to numpy arrays
       np_shuffleset = np_shuffleset.values
@@ -22360,6 +22499,15 @@ class AutoMunge:
           if FSpostprocess_dict['column_dict'][am_label_column]['category'] == labelctgy:
 
             am_categorylist = FSpostprocess_dict['column_dict'][am_label_column]['categorylist']
+            
+            #we'll follow convention that if target label category MLinfilltype is concurrent
+            #we'll arbitrarily take the first column and use that as target
+            if FSpostprocess_dict['process_dict'][labelctgy]['MLinfilltype'] \
+            in ['concurrent_act', 'concurrent_nmbr']:
+              
+              am_categorylist = [am_categorylist[0]]
+              
+            break
 
         if len(am_categorylist) == 1:
           am_labels = pd.DataFrame(am_labels[am_categorylist[0]])
@@ -22920,7 +23068,7 @@ class AutoMunge:
                 boolcolumn = False
                 #exclude boolean and ordinal from this infill method
                 if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-                in ['multirt', 'multisp', 'singlct', 'binary', '1010', 'boolexclude']:
+                in ['multirt', 'multisp', 'singlct', 'binary', '1010', 'boolexclude', 'concurrent_act']:
                   boolcolumn = True
 
                 categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
@@ -22955,7 +23103,7 @@ class AutoMunge:
                 boolcolumn = False
                 #exclude boolean and ordinal from this infill method
                 if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-                in ['multirt', 'multisp', 'singlct', 'binary', '1010', 'boolexclude']:
+                in ['multirt', 'multisp', 'singlct', 'binary', '1010', 'boolexclude', 'concurrent_act']:
                   boolcolumn = True
 
                 categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
@@ -22988,9 +23136,10 @@ class AutoMunge:
 
                 #check if column is excluded (variable poorly named, interpret boolcolumn here as excluded)
                 boolcolumn = False
-
+                
+                #seems reasonable to exclude concurrent_nmbr from mode
                 if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-                in ['boolexclude']:
+                in ['boolexclude', 'concurrent_nmbr']:
                   boolcolumn = True
 
 
@@ -23019,8 +23168,9 @@ class AutoMunge:
                 #check if column is excluded (variable poorly named, interpret boolcolumn here as excluded)
                 boolcolumn = False
 
+                #seems reasonable to exclude concurrent_nmbr from mode
                 if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-                in ['boolexclude']:
+                in ['boolexclude', 'concurrent_nmbr']:
                   boolcolumn = True
 
 
@@ -23171,7 +23321,7 @@ class AutoMunge:
               boolcolumn = False
               #exclude boolean and ordinal from this infill method
               if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-              in ['multirt', 'multisp', 'singlct', 'binary', '1010', 'boolexclude']:
+              in ['multirt', 'multisp', 'singlct', 'binary', '1010', 'boolexclude', 'concurrent_act']:
                 boolcolumn = True
 
               categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
@@ -23204,7 +23354,7 @@ class AutoMunge:
               boolcolumn = False
               #exclude boolean and ordinal from this infill method
               if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-              in ['multirt', 'multisp', 'singlct', 'binary', '1010', 'boolexclude']:
+              in ['multirt', 'multisp', 'singlct', 'binary', '1010', 'boolexclude', 'concurrent_act']:
                 boolcolumn = True
 
               categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
@@ -23236,7 +23386,7 @@ class AutoMunge:
               boolcolumn = False
 
               if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-              in ['boolexclude']:
+              in ['boolexclude', 'concurrent_nmbr']:
                 boolcolumn = True
 
 
@@ -23265,7 +23415,7 @@ class AutoMunge:
               boolcolumn = False
 
               if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-              in ['boolexclude']:
+              in ['boolexclude', 'concurrent_nmbr']:
                 boolcolumn = True
 
 
@@ -23672,7 +23822,8 @@ class AutoMunge:
       del binary_mode
       
     
-    #else if columns were not one-hot encoded
+    #else if columns were not multi-column
+    #note this scenario also includes 'concurrent_act' MLinfilltype
     else:
     
       #create df without rows that were subject to infill to dervie mode
@@ -23860,7 +24011,8 @@ class AutoMunge:
       del binary_mode
       
     
-    #else if columns were not one-hot encoded
+    #else if columns were not multi-column
+    #note this scenario also includes 'concurrent_act' MLinfilltype
     else:
     
       #create df without rows that were subject to infill to dervie mode
@@ -24355,7 +24507,7 @@ class AutoMunge:
         #   or set(df[checkcolumn].unique()) == {0} \
         #   or set(df[checkcolumn].unique()) == {1}:
           if postprocess_dict['process_dict'][postprocess_dict['column_dict'][checkcolumn]['category']]['MLinfilltype'] \
-          in ['multirt', 'multisp', 'binary', '1010', 'boolexclude']:
+          in ['multirt', 'multisp', 'binary', '1010', 'boolexclude', 'concurrent_act']:
             if checkcolumn not in PCAexcl:
               PCAexcl.append(checkcolumn)
             bool_PCAexcl.append(checkcolumn)
@@ -24370,7 +24522,7 @@ class AutoMunge:
         #   or set(df[checkcolumn].unique()) == {1} \
         #   or checkcolumn[-5:] == '_ordl':
           if postprocess_dict['process_dict'][postprocess_dict['column_dict'][checkcolumn]['category']]['MLinfilltype'] \
-          in ['singlct', 'binary', 'multirt', 'multisp', '1010', 'boolexclude']:
+          in ['singlct', 'binary', 'multirt', 'multisp', '1010', 'boolexclude', 'concurrent_act']:
             #or isinstance(df[checkcolumn].dtype, pd.api.types.CategoricalDtype):
             if checkcolumn not in PCAexcl:
               PCAexcl.append(checkcolumn)
@@ -26533,9 +26685,9 @@ class AutoMunge:
                              'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
                              'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
                              'Utxt':[], 'Utx2':[], 'Utx3':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
-                             'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], 'lngt':[], \
+                             'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], \
                              'spl8':[], 'spl9':[], 'sp10':[], 'sp16':[], \
-                             'srch':[], 'src2':[], 'src4':[], 'strn':[], \
+                             'srch':[], 'src4':[], 'strn':[], 'lngt':[], \
                              'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
                              'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
                              'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], 'ucct':[], 'Ucct':[], \
@@ -27744,7 +27896,7 @@ class AutoMunge:
           column_category = postprocess_dict['column_dict'][column]['category']
 
           if process_dict[column_category]['MLinfilltype'] in \
-          ['singlect', 'multirt', 'multisp', 'binary', '1010', 'boolexclude']:
+          ['singlect', 'multirt', 'multisp', 'binary', '1010', 'boolexclude', 'concurrent_act']:
 
             bool_column_list.append(column)
           
@@ -27935,7 +28087,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.95'
+    automungeversion = '3.96'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -30311,17 +30463,11 @@ class AutoMunge:
 #         if entry not in spl2_test_overlap_dict:
 #           spl5_test_zero_dict.update({entry : 0})
 
-      #note to self: double check this portion next few lines when get some time
+
       spl2_test_overlap_dict = deepcopy(spl2_overlap_dict)
 
       unique_list_test = list(mdf_test[column].unique())
       unique_list_test = list(map(str, unique_list_test))
-
-      extra_unique_test = list(set(unique_list_test) - set(unique_list))
-
-      for extra_unique in extra_unique_test:
-
-        spl2_test_overlap_dict.update({str(extra_unique) : 0})
 
       #here's where we identify values to set to 0 for spl5
       spl5_test_zero_dict = {}
@@ -30890,7 +31036,7 @@ class AutoMunge:
         
         if len(overlap_dict[dict_key]) > 0:
 
-          newcolumn = column + '_srch_' + dict_key
+          newcolumn = column + '_src3_' + dict_key
 
   #         mdf_train[newcolumn] = mdf_train[column].copy()
           mdf_test[newcolumn] = mdf_test[column].copy()
@@ -30906,6 +31052,7 @@ class AutoMunge:
     
     return mdf_test
   
+
   def postprocess_src4_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     """
     #process_srch_class(mdf_train, mdf_test, column, category)
@@ -30962,6 +31109,12 @@ class AutoMunge:
 
     ordl_dict2 = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordl_dict2']
+
+    aggregated_dict = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['aggregated_dict']
+    
+    inverse_search_dict = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inverse_search_dict']
     
     if len(search_dict) == 0:
       mdf_test[column + '_src4'] = 0
@@ -30983,6 +31136,21 @@ class AutoMunge:
         mdf_test[column + '_src4'] = \
         np.where(mdf_test[newcolumn] == 1, ordl_dict2[newcolumn], mdf_test[column + '_src4'])
         del mdf_test[newcolumn]
+        
+        
+      #now we consolidate activations
+      #note that this only runs when aggregated_dict was populated with an embedded list of search terms
+      for aggregated_dict_key in aggregated_dict:
+        aggregated_dict_key_column = inverse_search_dict[aggregated_dict_key]
+        aggregated_dict_key_encoding = ordl_dict2[aggregated_dict_key_column]
+
+        for target_for_aggregation in aggregated_dict[aggregated_dict_key]:
+          target_for_aggregation_column = inverse_search_dict[target_for_aggregation]
+          target_for_aggregation_encoding = ordl_dict2[target_for_aggregation_column]
+
+          mdf_test[column + '_src4'] = \
+          np.where(mdf_test[column + '_src4'] == target_for_aggregation_encoding, aggregated_dict_key_encoding, mdf_test[column + '_src4'])
+
 
       #we'll base the integer type on number of ordinal entries
       if len(ordl_dict1) < 254:
@@ -35443,11 +35611,13 @@ class AutoMunge:
     MLinfilltype = postprocess_dict['process_dict'][category]['MLinfilltype']
 
     #if category in ['nmbr', 'nbr2', 'bxcx', 'bnry', 'text', 'bins', 'bint']:
-    if MLinfilltype in ['numeric', 'singlct', 'binary', 'multirt', 'multisp', '1010']:
+    if MLinfilltype in ['numeric', 'singlct', 'binary', \
+                        'multirt', 'multisp', '1010', \
+                        'concurrent_act', 'concurrent_nmbr']:
 
-      #if this is a single column set (not categorical)
-      #if categorylist == []:
-      if len(categorylist) == 1:
+      #if this is a single column set or concurrent_act
+      if len(categorylist) == 1 or \
+      postprocess_dict['process_dict'][category]['MLinfilltype'] in ['concurrent_act', 'concurrent_nmbr']:
 
         #first concatinate the NArows True/False designations to df_train & df_test
   #       df_train = pd.concat([df_train, trainNArows], axis=1)
@@ -35577,8 +35747,6 @@ class AutoMunge:
     return df_test_fillfeatures
 
 
-
-
   def predictpostinfill(self, category, model, df_test_fillfeatures, \
                         postprocess_dict, columnslist = []):
     '''
@@ -35611,7 +35779,7 @@ class AutoMunge:
     if model is not False:
 
       #if category in ['nmbr', 'bxcx', 'nbr2']:
-      if MLinfilltype in ['numeric']:
+      if MLinfilltype in ['numeric', 'concurrent_nmbr']:
 
   #       #train linear regression model using scikit-learn for numerical prediction
   #       #model = LinearRegression()
@@ -35664,7 +35832,7 @@ class AutoMunge:
 
 
       #if category == 'bnry':
-      if MLinfilltype in ['singlct', 'binary']:
+      if MLinfilltype in ['singlct', 'binary', 'concurrent_act']:
 
   #       #train logistic regression model using scikit-learn for binary classifier
   #       #model = LogisticRegression()
@@ -35802,6 +35970,16 @@ class AutoMunge:
       category = postprocess_dict['column_dict'][column]['category']
       model = postprocess_dict['column_dict'][column]['infillmodel']
       
+      if len(categorylist) == 1 or \
+      postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
+      in ['concurrent_act', 'concurrent_nmbr']:
+        #copy the datatype to ensure returned set is consistent
+        df_temp_dtype = pd.DataFrame(df_test[column][:0]).copy()
+
+      elif len(categorylist) > 1:
+        #copy the datatype to ensure returned set is consistent
+        df_temp_dtype = pd.DataFrame(df_test[categorylist][:0]).copy()
+      
       #createMLinfillsets
       df_test_fillfeatures = \
       self.createpostMLinfillsets(df_test, column, \
@@ -35824,15 +36002,28 @@ class AutoMunge:
                                postprocess_dict, columnslist = columnslist, \
                                categorylist = categorylist)
 
+          
       #now change the infillcomplete marker in the text_dict for each \
-      #associated text column
-      for columnname in categorylist:
-        postprocess_dict['column_dict'][columnname]['infillcomplete'] = True
-
-
-        #now change the infillcomplete marker in the dict for each associated column
+      #associated text column unless in concurrent_activations MLinfilltype
+      if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
+      in ['concurrent_act', 'concurrent_nmbr']:
+        postprocess_dict['column_dict'][column]['infillcomplete'] = True
+        
+      else:
         for columnname in categorylist:
           postprocess_dict['column_dict'][columnname]['infillcomplete'] = True
+        
+      #reset data type to ensure returned data is consistent with what was passed
+      if len(categorylist) == 1 or \
+      postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
+      in ['concurrent_act', 'concurrent_nmbr']:
+        df_test[column] = \
+        df_test[column].astype({column:df_temp_dtype[column].dtypes})
+
+      elif len(categorylist) > 1:
+        for dtype_column in categorylist:
+          df_test[dtype_column] = \
+          df_test[dtype_column].astype({dtype_column:df_temp_dtype[dtype_column].dtypes})
 
     return df_test, postprocess_dict
 
@@ -36028,6 +36219,15 @@ class AutoMunge:
           if FSpostprocess_dict['column_dict'][am_label_column]['category'] == labelctgy:
 
             am_categorylist = FSpostprocess_dict['column_dict'][am_label_column]['categorylist']
+            
+            #we'll follow convention that if target label category MLinfilltype is concurrent
+            #we'll arbitrarily take the first column and use that as target
+            if FSpostprocess_dict['process_dict'][labelctgy]['MLinfilltype'] \
+            in ['concurrent_act', 'concurrent_nmbr']:
+              
+              am_categorylist = [am_categorylist[0]]
+              
+            break
 
         if len(am_categorylist) == 1:
           am_labels = pd.DataFrame(am_labels[am_categorylist[0]])
@@ -39150,6 +39350,360 @@ class AutoMunge:
     df[inputcolumn] = df[inputcolumn].replace(inverse_binary_encoding_dict)
       
     return df, inputcolumn
+  
+  def inverseprocess_splt(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_splt_class
+    #assumes any relevant parameters were saved in normalization_dict
+    #does not perform infill, assumes clean data
+    
+    #this only achieves partial information recovery, missing entries without overlap
+    
+    #returns the overlaps, not the full entries
+    #since it doesn't know which of the full entries to return
+    """
+    
+    normkey = categorylist[0]
+    
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    
+    newcolumns = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['splt_newcolumns_splt']
+    overlap_dict = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['overlap_dict']
+    
+    df[inputcolumn] = 0
+    
+    for column in newcolumns:
+      
+      overlap = column.replace(inputcolumn + '_splt_', '')
+      
+      df[inputcolumn] = np.where(df[column] == 1, overlap, df[inputcolumn])
+    
+    return df, inputcolumn
+  
+  def inverseprocess_spl8(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_splt_class
+    #assumes any relevant parameters were saved in normalization_dict
+    #does not perform infill, assumes clean data
+    
+    #this only achieves partial information recovery, missing entries without overlap
+    
+    #returns the overlaps, not the full entries
+    #since it doesn't know which of the full entries to return
+    """
+    
+    normkey = categorylist[0]
+    
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    
+    newcolumns = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['splt_newcolumns_spl8']
+    overlap_dict = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['overlap_dict']
+    
+    df[inputcolumn] = 0
+    
+    for column in newcolumns:
+      
+      overlap = column.replace(inputcolumn + '_spl8_', '')
+      
+      df[inputcolumn] = np.where(df[column] == 1, overlap, df[inputcolumn])
+    
+    return df, inputcolumn
+  
+  
+  def inverseprocess_spl2(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_spl2_class
+    #assumes any relevant parameters were saved in normalization_dict
+    #does not perform infill, assumes clean data
+    
+    #this only achieves partial information recovery, missing entries without overlap
+    
+    #returns the overlaps as a passthrough, not the full entries
+    #since it doesn't know which of the full entries to return
+    """
+    
+    normkey = categorylist[0]
+    
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    
+    df[inputcolumn] = df[normkey]
+
+    
+    return df, inputcolumn
+  
+  
+  def inverseprocess_spl5(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_spl5_class
+    #assumes any relevant parameters were saved in normalization_dict
+    #does not perform infill, assumes clean data
+    
+    #this only achieves partial information recovery, missing entries without overlap
+    #also missing entries that didn't have any overlaps identified (returned as 0)
+    
+    #returns the overlaps, not the full entries
+    #since it doesn't know which of the full entries to return
+    
+    #returning zeros from inversion is counter to the convention used in other transforms
+    #So we'll replace zeros with 'zzzinfill'
+    """
+    
+    normkey = categorylist[0]
+    
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    
+    df[inputcolumn] = df[normkey]
+    
+    df[inputcolumn] = np.where(df[inputcolumn] == '0', 'zzzinfill', df[inputcolumn])
+
+    
+    return df, inputcolumn
+  
+  
+  def inverseprocess_sp15(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_sp15_class
+    #assumes any relevant parameters were saved in normalization_dict
+    #does not perform infill, assumes clean data
+    
+    #this only achieves partial information recovery, missing entries without overlap
+    
+    #returns the overlaps, not the full entries
+    #since it doesn't know which of the full entries to return
+    """
+    
+    normkey = categorylist[0]
+    
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    
+    newcolumns = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['splt_newcolumns_sp15']
+    overlap_dict = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['overlap_dict']
+    
+    df[inputcolumn] = 'zzzinfill'
+    
+    for column in newcolumns:
+
+      overlap = column.replace(inputcolumn + '_sp15_', '')
+
+      df[inputcolumn] = np.where((df[column] == 1) & (df[inputcolumn] == 'zzzinfill'), overlap, df[inputcolumn])
+
+    return df, inputcolumn
+  
+  
+  def inverseprocess_sp16(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_sp15_class
+    #assumes any relevant parameters were saved in normalization_dict
+    #does not perform infill, assumes clean data
+    
+    #this only achieves partial information recovery, missing entries without overlap
+    
+    #returns the overlaps, not the full entries
+    #since it doesn't know which of the full entries to return
+    """
+    
+    normkey = categorylist[0]
+    
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    
+    newcolumns = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['splt_newcolumns_sp16']
+#     overlap_dict = \
+#     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['overlap_dict']
+    
+    df[inputcolumn] = 'zzzinfill'
+    
+    for column in newcolumns:
+      
+      overlap = column.replace(inputcolumn + '_sp16_', '')
+      
+      df[inputcolumn] = np.where((df[column] == 1) & (df[inputcolumn] == 'zzzinfill'), overlap, df[inputcolumn])
+    
+    return df, inputcolumn
+  
+  
+  
+  def inverseprocess_srch(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_srch_class
+    #assumes any relevant parameters were saved in normalization_dict
+    #does not perform infill, assumes clean data
+    
+    #this only achieves partial information recovery, missing entries without srch term
+    
+    #returns the search term, not the full entries
+    #since it doesn't know which of the full entries to return
+    """
+    
+    normkey = categorylist[0]
+    
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    
+    search_dict = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['search_dict']
+    
+    df[inputcolumn] = 'zzzinfill'
+    
+    #to match convention of prioritizing search parameter entries at end of list
+    inverse_search = list(search_dict)
+    inverse_search.reverse()
+    
+    for column in inverse_search:
+      
+      search = search_dict[column]
+      
+      if column in list(df):
+
+        df[inputcolumn] = np.where((df[column] == 1) & (df[inputcolumn] == 'zzzinfill'), search, df[inputcolumn])
+    
+    return df, inputcolumn
+  
+  
+  
+  def inverseprocess_src2(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_src2_class
+    #assumes any relevant parameters were saved in normalization_dict
+    #does not perform infill, assumes clean data
+    
+    #this only achieves partial information recovery, missing entries without search term
+    
+    #returns the search term, not the full entries
+    #since it doesn't know which of the full entries to return
+    """
+    
+    normkey = categorylist[0]
+    
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    
+    newcolumns = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['src2_newcolumns_src2']
+#     overlap_dict = \
+#     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['overlap_dict']
+    
+    df[inputcolumn] = 'zzzinfill'
+    
+    #to match convention of prioritizing search parameter entries at end of list
+    newcolumns.reverse()
+    
+    for column in newcolumns:
+      
+      searchterm = column.replace(inputcolumn + '_src2_', '')
+      
+      if column in list(df):
+      
+        df[inputcolumn] = np.where((df[column] == 1) & (df[inputcolumn] == 'zzzinfill'), searchterm, df[inputcolumn])
+    
+    return df, inputcolumn
+  
+  
+  def inverseprocess_src3(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_src3_class
+    #assumes any relevant parameters were saved in normalization_dict
+    #does not perform infill, assumes clean data
+    
+    #this only achieves partial information recovery, missing entries without search term
+    
+    #returns the search term, not the full entries
+    #since it doesn't know which of the full entries to return
+    """
+    
+    normkey = categorylist[0]
+    
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    
+    newcolumns = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['srch_newcolumns_src3']
+#     overlap_dict = \
+#     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['overlap_dict']
+    
+    df[inputcolumn] = 'zzzinfill'
+    
+    #to match convention of prioritizing search parameter entries at end of list
+    newcolumns.reverse()
+    
+    for column in newcolumns:
+      
+      searchterm = column.replace(inputcolumn + '_src3_', '')
+      
+      if column in list(df):
+      
+        df[inputcolumn] = np.where((df[column] == 1) & (df[inputcolumn] == 'zzzinfill'), searchterm, df[inputcolumn])
+    
+    return df, inputcolumn
+  
+  
+  def inverseprocess_src4(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_src4_class
+    #assumes any relevant parameters were saved in normalization_dict
+    #does not perform infill, assumes clean data
+    
+    #this only achieves partial information recovery, missing entries without search term
+    
+    #returns the search term, not the full entries
+    #since it doesn't know which of the full entries to return
+    """
+    
+    normkey = categorylist[0]
+    
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    
+    ordl_dict1 = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordl_dict1']
+    
+    df[inputcolumn] = 'zzzinfill'
+    
+    #to match convention of prioritizing search parameter entries at end of list
+    keys = list(ordl_dict1)
+    keys.reverse()
+    
+    for key in keys:
+      
+      searchterm = ordl_dict1[key].replace(inputcolumn + '_src4_', '')
+      
+      df[inputcolumn] = np.where((df[normkey] == key) & (df[inputcolumn] == 'zzzinfill'), searchterm, df[inputcolumn])
+    
+    return df, inputcolumn
+  
+  
+  def inverseprocess_nmrc(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_nmrc_class
+    #assumes any relevant parameters were saved in normalization_dict
+    #does not perform infill, assumes clean data
+    
+    #this only achieves partial information recovery, missing entries without search term
+    
+    #returns the search term, not the full entries
+    #since it doesn't know which of the full entries to return
+    """
+    
+    normkey = categorylist[0]
+    
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    
+    overlap_dict = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['overlap_dict']
+    
+    df[inputcolumn] = 'zzzinfill'
+    
+    
+    for key in overlap_dict:
+      
+      extract = overlap_dict[key]
+      
+      df[inputcolumn] = np.where((df[normkey] == extract) & (df[inputcolumn] == 'zzzinfill'), key, df[inputcolumn])
+    
+    return df, inputcolumn
+  
   
   def df_inversion(self, categorylist_entry, df_test, postprocess_dict, inverse_categorytree, printstatus):
     """
