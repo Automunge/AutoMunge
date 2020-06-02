@@ -155,9 +155,9 @@ am.automunge(df_train, df_test = False, \
                           'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
                           'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
                           'Utxt':[], 'Utx2':[], 'Utx3':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
-                          'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], 'lngt':[], \
+                          'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], \
                           'spl8':[], 'spl9':[], 'sp10':[], 'sp16':[], \
-                          'srch':[], 'src2':[], 'src4':[], 'strn':[], \
+                          'srch':[], 'src4':[], 'strn':[], 'lngt':[], \
                           'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
                           'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
                           'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], 'ucct':[], 'Ucct':[], \
@@ -383,9 +383,9 @@ am.automunge(df_train, df_test = False, \
                           'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
                           'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
                           'Utxt':[], 'Utx2':[], 'Utx3':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
-                          'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], 'lngt':[], \
+                          'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], \
                           'spl8':[], 'spl9':[], 'sp10':[], 'sp16':[], \
-                          'srch':[], 'src2':[], 'src4':[], 'strn':[], \
+                          'srch':[], 'src4':[], 'strn':[], 'lngt':[], \
                           'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
                           'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
                           'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], 'ucct':[], 'Ucct':[], \
@@ -607,9 +607,9 @@ am.automunge(df_train, df_test = False, \
                           'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
                           'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
                           'Utxt':[], 'Utx2':[], 'Utx3':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
-                          'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], 'lngt':[], \
+                          'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], \
                           'spl8':[], 'spl9':[], 'sp10':[], 'sp16':[], \
-                          'srch':[], 'src2':[], 'src4':[], 'strn':[], \
+                          'srch':[], 'src4':[], 'strn':[], 'lngt':[], \
                           'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
                           'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
                           'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], 'ucct':[], 'Ucct':[], \
@@ -971,9 +971,9 @@ assigncat = {'nmbr':[], 'retn':[], 'mnmx':[], 'mean':[], 'MAD3':[], 'lgnm':[], \
              'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
              'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
              'Utxt':[], 'Utx2':[], 'Utx3':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
-             'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], 'lngt':[], \
+             'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], \
              'spl8':[], 'spl9':[], 'sp10':[], 'sp16':[], \
-             'srch':[], 'src2':[], 'src4':[], 'strn':[], \
+             'srch':[], 'src4':[], 'strn':[], 'lngt':[], \
              'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
              'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
              'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], 'ucct':[], 'Ucct':[], \
@@ -2979,6 +2979,7 @@ that any user passing a custom defined transformation can avoid any unintentiona
 - '_mnts'
 - '_mscs'
 - '_mssn'
+- '_NArows'
 - '_NArw'
 - '_nmbr'
 - '_nmc4'
