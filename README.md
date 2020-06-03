@@ -131,7 +131,7 @@ am.automunge(df_train, df_test = False, \
              labels_column = False, trainID_column = False, testID_column = False, \
              valpercent1=0.0, valpercent2 = 0.0, floatprecision = 32, shuffletrain = True, \
              TrainLabelFreqLevel = False, powertransform = False, binstransform = False, \
-             MLinfill = False, infilliterate=1, randomseed = 42, \
+             MLinfill = False, infilliterate=1, randomseed = 42, eval_ratio = .5, \
              LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, LSfit = False, \
              numbercategoryheuristic = 63, pandasoutput = False, NArw_marker = False, \
              featureselection = False, featurepct = 1.0, featuremetric = 0.0, featuremethod = 'default', \
@@ -359,7 +359,7 @@ am.automunge(df_train, df_test = False, \
              labels_column = False, trainID_column = False, testID_column = False, \
              valpercent1=0.0, valpercent2 = 0.0, floatprecision = 32, shuffletrain = True, \
              TrainLabelFreqLevel = False, powertransform = False, binstransform = False, \
-             MLinfill = False, infilliterate=1, randomseed = 42, \
+             MLinfill = False, infilliterate=1, randomseed = 42, eval_ratio = .5, \
              LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, LSfit = False, \
              numbercategoryheuristic = 63, pandasoutput = False, NArw_marker = False, \
              featureselection = False, featurepct = 1.0, featuremetric = 0.0, featuremethod = 'default', \
@@ -583,7 +583,7 @@ am.automunge(df_train, df_test = False, \
              labels_column = False, trainID_column = False, testID_column = False, \
              valpercent1=0.0, valpercent2 = 0.0, floatprecision = 32, shuffletrain = True, \
              TrainLabelFreqLevel = False, powertransform = False, binstransform = False, \
-             MLinfill = False, infilliterate=1, randomseed = 42, \
+             MLinfill = False, infilliterate=1, randomseed = 42, eval_ratio = .5, \
              LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, LSfit = False, \
              numbercategoryheuristic = 63, pandasoutput = False, NArw_marker = False, \
              featureselection = False, featurepct = 1.0, featuremetric = 0.0, featuremethod = 'default', \
@@ -781,6 +781,10 @@ postmunge will just apply the final model on each iteration).
 * randomseed: a positive integer used as a seed for randomness throughout 
 such as for data set shuffling, ML infill, and feature importance  algorithms. 
 This defaults to 42, a nice round number.
+
+* eval_ratio: a 0-1 float or integer for number of rows, defaults to 0.5, serves
+to reduce the overhead of the category evaluation functions under automation by only
+evaluating this sampled ratio of rows instead fo thte full set. Makes automunge faster.
 
 * LabelSmoothing_train / LabelSmoothing_test / LabelSmoothing_val: each of these
 parameters accept float values in range _0.0-1.0_ or the default value of _False_ to 
@@ -1240,7 +1244,7 @@ of root transformation categories, allowing user to pass custom functions for th
 purpose. Passed functions should follow format:
 
 ```
-def evalcat(df, column, numbercategoryheuristic, powertransform, labels = False):
+def evalcat(df, column, randomseed, eval_ratio, numbercategoryheuristic, powertransform, labels = False):
   """
   #user defined function that takes as input a dataframe df and column id string column
   #evaluates the contents of cells and classifies the column for root category of 
@@ -1256,9 +1260,9 @@ evalcat = evalcat
 ```
 I recommend using the evalcategory function defined in master file as starting point. 
 (Minus the 'self' parameter since defining external to class.) Note that the 
-parameters numbercategoryheuristic, powertransform, and labels are passed as user 
+parameters eval_ratio, numbercategoryheuristic, powertransform, and labels are passed as user 
 parameters in automunge(.) call and only used in evalcategory function, so if user wants 
-to repurpose them totally can do so. (They default to 63, False, False.) Note evalcat 
+to repurpose them totally can do so. (They default to .5, 63, False, False.) Note evalcat 
 defaults to False to use built-in evalcategory function. Note evalcat will only be 
 applied to columns not assigned in assigncat. (Note that columns assigned to 'eval' / 'ptfm'
 in assigncat will be passed to this function for evaluation with powertransform = False / True
