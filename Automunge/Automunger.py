@@ -26951,6 +26951,22 @@ class AutoMunge:
 #     elif inplace is True:
 #       pass
 
+    
+    #we'll have convention that if testID_column=False, if trainID_column in df_test etc
+    trainID_columns_in_df_test = False
+    if testID_column is False:
+      if trainID_column is not False:
+        trainID_columns_in_df_test = True
+        if isinstance(trainID_column, list):
+          for trainIDcolumn in trainID_column:
+            if trainIDcolumn not in list(df_test):
+              trainID_columns_in_df_test = False
+              break
+        elif isinstance(trainID_column, str):
+          if trainID_column not in list(df_test):
+            trainID_columns_in_df_test = False
+    if trainID_columns_in_df_test is True:
+      testID_column = trainID_column
 
 
     if type(df_train.index) != pd.RangeIndex:
@@ -37002,7 +37018,7 @@ class AutoMunge:
     #extract the ID columns from train and test set
     if testID_column is not False:
       
-      testIDcolumn = postprocess_dict['testID_column_orig']
+      testIDcolumn = postprocess_dict['trainID_column_orig']
       if testID_column is True:
         testID_column = testIDcolumn
       if testID_column is not True:
