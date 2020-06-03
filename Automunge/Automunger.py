@@ -19342,7 +19342,8 @@ class AutoMunge:
 
 
 
-  def evalcategory(self, df_source, column, numbercategoryheuristic, powertransform, labels = False):
+  def evalcategory(self, df_source, column, randomseed, eval_ratio, \
+                   numbercategoryheuristic, powertransform, labels = False):
     '''
     #evalcategory(df, column)
     #Function that dakes as input a dataframe and associated column id \
@@ -19384,8 +19385,13 @@ class AutoMunge:
       
       #_____
       
+      if eval_ratio > 0 and eval_ratio <= 1:
+        eval_ratio = eval_ratio
+      else:
+        eval_ratio = eval_ratio / df_source.shape[0]
       
-      df = pd.DataFrame(df_source[column].copy())
+      #take a random sample of rows for evaluation based on eval_ratio heuristic
+      df = pd.DataFrame(df_source[column]).sample(frac=eval_ratio, random_state=randomseed)
 
       #I couldn't find a good pandas tool for evaluating data class, \
       #So will produce an array containing data types of each cell and \
@@ -24645,7 +24651,7 @@ class AutoMunge:
   
   def check_am_miscparameters(self, valpercent1, valpercent2, floatprecision, shuffletrain, \
                              TrainLabelFreqLevel, powertransform, binstransform, MLinfill, \
-                             infilliterate, randomseed, LabelSmoothing_train, LabelSmoothing_test, \
+                             infilliterate, randomseed, eval_ratio, LabelSmoothing_train, LabelSmoothing_test, \
                              LabelSmoothing_val, LSfit, numbercategoryheuristic, pandasoutput, \
                              NArw_marker, featureselection, featurepct, featuremetric, \
                              featuremethod, Binary, PCAn_components, PCAexcl, printstatus, excl_suffix):
@@ -24815,6 +24821,22 @@ class AutoMunge:
       print()
       
     miscparameters_results.update({'randomseed_valresult' : randomseed_valresult})
+    
+    #check eval_ratio
+    eval_ratio_valresult = False
+    if not (isinstance(eval_ratio, (int)) \
+    or isinstance(eval_ratio, (float))):
+      eval_ratio_valresult = True
+      print("Error: invalid entry passed for eval_ratio parameter.")
+      print("Acceptable values are floats 0-1 or integers >1")
+      print()
+    elif eval_ratio < 0:
+      eval_ratio_valresult = True
+      print("Error: invalid entry passed for eval_ratio parameter.")
+      print("Acceptable values are floats 0-1 or integers >1")
+      print()
+      
+    miscparameters_results.update({'eval_ratio_valresult' : eval_ratio_valresult})
     
     #check LabelSmoothing_train
     LabelSmoothing_train_valresult = False
@@ -26661,7 +26683,7 @@ class AutoMunge:
                 labels_column = False, trainID_column = False, testID_column = False, \
                 valpercent1=0.0, valpercent2 = 0.0, floatprecision = 32, shuffletrain = True, \
                 TrainLabelFreqLevel = False, powertransform = False, binstransform = False, \
-                MLinfill = False, infilliterate=1, randomseed = 42, \
+                MLinfill = False, infilliterate=1, randomseed = 42, eval_ratio = .5, \
                 LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, LSfit = False, \
                 numbercategoryheuristic = 63, pandasoutput = False, NArw_marker = False, \
                 featureselection = False, featurepct = 1.0, featuremetric = 0.0, featuremethod = 'default', \
@@ -26738,7 +26760,7 @@ class AutoMunge:
     miscparameters_results = \
     self.check_am_miscparameters(valpercent1, valpercent2, floatprecision, shuffletrain, \
                                  TrainLabelFreqLevel, powertransform, binstransform, MLinfill, \
-                                 infilliterate, randomseed, LabelSmoothing_train, LabelSmoothing_test, \
+                                 infilliterate, randomseed, eval_ratio, LabelSmoothing_train, LabelSmoothing_test, \
                                  LabelSmoothing_val, LSfit, numbercategoryheuristic, pandasoutput, \
                                  NArw_marker, featureselection, featurepct, featuremetric, \
                                  featuremethod, Binary, PCAn_components, PCAexcl, printstatus, excl_suffix)
@@ -27221,14 +27243,13 @@ class AutoMunge:
     masterNArows_train = pd.DataFrame()
     masterNArows_test = pd.DataFrame()
 
-
     #create an empty dictionary to serve as store for categorical transforms lists
     #of associated columns
     multicolumntransform_dict = {}
     
     #create empty dictionary for cases where otherwise not populated with labels
     LSfitparams_dict = {}
-
+    
     #create an empty dictionary to serve as a store of processing variables from \
     #processing that were specific to the train dataset. These can be used for \
     #future processing of a later test set without the need to reprocess the \
@@ -27240,6 +27261,8 @@ class AutoMunge:
                         'printstatus' : printstatus, \
                         'randomseed' : randomseed }
     
+    #mirror assigncat which will populate the returned categories from eval function
+    final_assigncat = deepcopy(assigncat)
     
     #create empty dictionary to serve as store for drift metrics
     drift_dict = {}
@@ -27279,24 +27302,30 @@ class AutoMunge:
             #passing a False for powertransform parameter
             if key in ['eval']:
               if evalcat is False:
-                category = self.evalcategory(df_train, column, numbercategoryheuristic, False, False)
+                category = self.evalcategory(df_train, column, randomseed, eval_ratio, \
+                                             numbercategoryheuristic, False, False)
               elif type(evalcat) == types.FunctionType:
-                category = evalcat(df_train, column, numbercategoryheuristic, False, False)
+                category = evalcat(df_train, column, randomseed, eval_ratio, \
+                                   numbercategoryheuristic, False, False)
               else:
                 print("error: evalcat must be passed as either False or as a defined function per READ ME")
-
+              
               category_test = category
+
             
             #or for 'ptfm' passing a True for powertransform parameter
             if key in ['ptfm']:
               if evalcat is False:
-                category = self.evalcategory(df_train, column, numbercategoryheuristic, True, False)
+                category = self.evalcategory(df_train, column, randomseed, eval_ratio, \
+                                             numbercategoryheuristic, True, False)
               elif type(evalcat) == types.FunctionType:
-                category = evalcat(df_train, column, numbercategoryheuristic, True, False)
+                category = evalcat(df_train, column, randomseed, eval_ratio, \
+                                   numbercategoryheuristic, True, False)
               else:
                 print("error: evalcat must be passed as either False or as a defined function per READ ME")
 
               category_test = category
+
 
       #
       if categorycomplete is False:
@@ -27306,11 +27335,19 @@ class AutoMunge:
           print("evaluating column: ", column)
 
         if evalcat is False:
-          category = self.evalcategory(df_train, column, numbercategoryheuristic, powertransform, False)
+          category = self.evalcategory(df_train, column, randomseed, eval_ratio, \
+                                       numbercategoryheuristic, powertransform, False)
         elif type(evalcat) == types.FunctionType:
-          category = evalcat(df_train, column, numbercategoryheuristic, powertransform, False)
+          category = evalcat(df_train, column, randomseed, eval_ratio, \
+                             numbercategoryheuristic, powertransform, False)
         else:
           print("error: evalcat must be passed as either False or as a defined function per READ ME")
+          
+        #populate the result in the final_assigncat as informational resource
+        if category in final_assigncat:
+          final_assigncat[category].append(column)
+        else:
+          final_assigncat.update({category:[column]})
 
 
       #Previously had a few methods here to validate consistensy of data between train
@@ -27455,9 +27492,11 @@ class AutoMunge:
             #passing a False for powertransform parameter
             if key in ['eval']:
               if evalcat is False:
-                category = self.evalcategory(df_labels, labels_column, numbercategoryheuristic, False, True)
+                category = self.evalcategory(df_labels, labels_column, randomseed, eval_ratio, \
+                                             numbercategoryheuristic, False, True)
               elif type(evalcat) == types.FunctionType:
-                category = evalcat(df_labels, labels_column, numbercategoryheuristic, False, True)
+                category = evalcat(df_labels, labels_column, randomseed, eval_ratio, \
+                                   numbercategoryheuristic, False, True)
               else:
                 print("error: evalcat must be passed as either False or as a defined function per READ ME")
 
@@ -27466,13 +27505,16 @@ class AutoMunge:
             #or for 'ptfm' passing a True for powertransform parameter
             if key in ['ptfm']:
               if evalcat is False:
-                category = self.evalcategory(df_labels, labels_column, numbercategoryheuristic, True, True)
+                category = self.evalcategory(df_labels, labels_column, randomseed, eval_ratio, \
+                                             numbercategoryheuristic, True, True)
               elif type(evalcat) == types.FunctionType:
-                category = evalcat(df_labels, labels_column, numbercategoryheuristic, True, True)
+                category = evalcat(df_labels, labels_column, randomseed, eval_ratio, \
+                                   numbercategoryheuristic, True, True)
               else:
                 print("error: evalcat must be passed as either False or as a defined function per READ ME")
 
               labelscategory = category
+              
 
       if categorycomplete is False:
         
@@ -27496,9 +27538,11 @@ class AutoMunge:
         #we'll follow convention that default powertransform option not applied to labels
         #user can apply instead by passing column to ptfm in assigncat
         if evalcat is False:
-          labelscategory = self.evalcategory(df_labels, labels_column, numbercategoryheuristic, False, True)
+          labelscategory = self.evalcategory(df_labels, labels_column, randomseed, eval_ratio, \
+                                             numbercategoryheuristic, False, True)
         elif type(evalcat) == types.FunctionType:
-          labelscategory = evalcat(df_labels, labels_column, numbercategoryheuristic, False, True)
+          labelscategory = evalcat(df_labels, labels_column, randomseed, eval_ratio, \
+                                   numbercategoryheuristic, False, True)
         else:
           print("error: evalcat must be passed as either False or as a defined function per READ ME")
           
@@ -27506,6 +27550,12 @@ class AutoMunge:
         #label smoothing doesn't work with bnry, needs one hot encoding
         if labelsmoothingpresent and labelscategory == 'bnry':
           labelscategory = 'text'
+          
+        #populate the result in the final_assigncat as informational resource
+        if labelscategory in final_assigncat:
+          final_assigncat[labelscategory].append(labels_column)
+        else:
+          final_assigncat.update({labelscategory:[labels_column]})
         
 
         #this now moved into evalcategory function:
@@ -28103,7 +28153,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.96'
+    automungeversion = '3.98'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -28131,6 +28181,7 @@ class AutoMunge:
                              'TrainLabelFreqLevel' : TrainLabelFreqLevel, \
                              'MLinfill' : MLinfill, \
                              'infilliterate' : infilliterate, \
+                             'eval_ratio' : eval_ratio, \
                              'powertransform' : powertransform, \
                              'binstransform' : binstransform, \
                              'LabelSmoothing_train' : LabelSmoothing_train, \
@@ -28159,6 +28210,7 @@ class AutoMunge:
                              'madethecut' : madethecut, \
                              'excl_suffix' : excl_suffix, \
                              'assigncat' : assigncat, \
+                             'final_assigncat' : final_assigncat, \
                              'assigninfill' : assigninfill, \
                              'transformdict' : transformdict, \
                              'transform_dict' : transform_dict, \
