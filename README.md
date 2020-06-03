@@ -678,7 +678,9 @@ cases where the training set does not include an ID column. A user can
 also pass a list of string columns titles such as to carve out multiple
 columns to be excluded from processing but consistently shuffled and 
 partitioned. An integer column index or list of integer column indexes 
-may also be passed such as if the source dataset was a numpy array.
+may also be passed such as if the source dataset was a numpy array. Note
+that if ID columns are same between a train and test set, can leave this
+as False and trainID_column will be applied to test set automatically.
 
 * valpercent1: a float value between 0 and 1 which designates the percent
 of the training data which will be set aside for the first validation
@@ -1456,7 +1458,8 @@ cases where the training set does not include an ID column. A user can
 also pass a list of string columns titles such as to carve out multiple
 columns to be excluded from processing but consistently shuffled and 
 partitioned. An integer column index or list of integer column indexes 
-may also be passed such as if the source dataset was a numpy array.
+may also be passed such as if the source dataset was a numpy array. This
+can also be passed as True when ID columns are same as automunge train set.
 
 * labelscolumn: default to _False_ indicates that a labels column is not 
 included in the test set passed to postmunge. A user can either pass
