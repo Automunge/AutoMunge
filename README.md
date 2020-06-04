@@ -3548,7 +3548,7 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
-                                     'coworkers' : ['ordl'], \
+                                     'coworkers' : ['ord3'], \
                                      'friends' : []}})
     
     transform_dict.update({'spl4' : {'parents' : ['spl4'], \
@@ -3602,7 +3602,7 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
-                                     'coworkers' : ['ordl'], \
+                                     'coworkers' : ['ord3'], \
                                      'friends' : []}})
 
     transform_dict.update({'sp10' : {'parents' : ['sp10'], \
