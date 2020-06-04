@@ -619,7 +619,7 @@ class AutoMunge:
                                      'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
-                                     'coworkers' : ['ordl'], \
+                                     'coworkers' : ['ord3'], \
                                      'friends' : []}})
     
     transform_dict.update({'spl4' : {'parents' : ['spl4'], \
@@ -673,7 +673,7 @@ class AutoMunge:
                                      'cousins' : [NArw], \
                                      'children' : [], \
                                      'niecesnephews' : [], \
-                                     'coworkers' : ['ordl'], \
+                                     'coworkers' : ['ord3'], \
                                      'friends' : []}})
 
     transform_dict.update({'sp10' : {'parents' : ['sp10'], \
@@ -6685,6 +6685,10 @@ class AutoMunge:
                       extract_already_in_overlap_dict = True
                       
                       break
+                      
+                if extract_already_in_overlap_dict is True:
+                  
+                  break
                     
 
             if extract_already_in_overlap_dict is False:
@@ -6712,15 +6716,27 @@ class AutoMunge:
                           if unique2 not in overlap_dict[extract]:
 
                             overlap_dict[extract].append(unique2)
+                            
+                            if concurrent_activations is False:
+
+                              break
 
                           if unique not in overlap_dict[extract]:
 
                             overlap_dict[extract].append(unique)
+                            
+                            if concurrent_activations is False:
+
+                              break
 
                         #else if we don't have a key for extract
                         else:
 
                           overlap_dict.update({extract : [unique, unique2]})
+                          
+                          if concurrent_activations is False:
+
+                            break
                           
                     elif space_and_punctuation is False:
                       
@@ -6736,15 +6752,27 @@ class AutoMunge:
                           if unique2 not in overlap_dict[extract]:
 
                             overlap_dict[extract].append(unique2)
+                            
+                            if concurrent_activations is False:
+
+                              break
 
                           if unique not in overlap_dict[extract]:
 
                             overlap_dict[extract].append(unique)
+                            
+                            if concurrent_activations is False:
+
+                              break
 
                         #else if we don't have a key for extract
                         else:
 
                           overlap_dict.update({extract : [unique, unique2]})
+                          
+                          if concurrent_activations is False:
+
+                            break
 
                         
     #now for mdf_test we'll only consider those overlaps already identified from train set
@@ -6780,6 +6808,10 @@ class AutoMunge:
             if extract4 == dict_key:
 
               test_overlap_dict[dict_key].append(unique_test)
+              
+              if concurrent_activations is False:
+
+                break
                         
                         
     
@@ -6811,7 +6843,8 @@ class AutoMunge:
 
       textnormalization_dict = {tc : {'overlap_dict' : overlap_dict, \
                                       'splt_newcolumns_splt'   : newcolumns, \
-                                      'minsplit' : minsplit}}
+                                      'minsplit' : minsplit, \
+                                      'concurrent_activations' : concurrent_activations}}
       
       column_dict = {tc : {'category' : 'splt', \
                            'origcategory' : category, \
@@ -6926,6 +6959,10 @@ class AutoMunge:
                     extract_already_in_overlap_dict = True
                     
                     break
+                    
+                if extract_already_in_overlap_dict is True:
+                  
+                  break
 
             if extract_already_in_overlap_dict is False:
 
@@ -6952,15 +6989,21 @@ class AutoMunge:
                           if unique2 not in overlap_dict[extract]:
 
                             overlap_dict[extract].append(unique2)
+                            
+                            break
 
                           if unique not in overlap_dict[extract]:
 
                             overlap_dict[extract].append(unique)
+                            
+                            break
 
                         #else if we don't have a key for extract
                         else:
 
                           overlap_dict.update({extract : [unique, unique2]})
+                          
+                          break
                           
                     elif space_and_punctuation is False:
                       
@@ -6976,15 +7019,21 @@ class AutoMunge:
                           if unique2 not in overlap_dict[extract]:
 
                             overlap_dict[extract].append(unique2)
+                            
+                            break
 
                           if unique not in overlap_dict[extract]:
 
                             overlap_dict[extract].append(unique)
+                            
+                            break
 
                         #else if we don't have a key for extract
                         else:
 
                           overlap_dict.update({extract : [unique, unique2]})
+                          
+                          break
 
                         
     #now for mdf_test we'll only consider those overlaps already identified from train set
@@ -7020,6 +7069,8 @@ class AutoMunge:
             if extract4 == dict_key:
 
               test_overlap_dict[dict_key].append(unique_test)
+              
+              break
                         
     
     
@@ -7218,6 +7269,10 @@ class AutoMunge:
                     extract_already_in_overlap_dict = True
                     
                     break
+                    
+                if extract_already_in_overlap_dict is True:
+                  
+                  break
 
             if extract_already_in_overlap_dict is False:
 
@@ -7244,15 +7299,21 @@ class AutoMunge:
                           if unique2 not in overlap_dict[extract]:
 
                             overlap_dict[extract].append(unique2)
+                            
+                            break
 
                           if unique not in overlap_dict[extract]:
 
                             overlap_dict[extract].append(unique)
+                            
+                            break
 
                         #else if we don't have a key for extract
                         else:
 
                           overlap_dict.update({extract : [unique, unique2]})
+                          
+                          break
                           
                     elif space_and_punctuation is False:
                       
@@ -7268,15 +7329,21 @@ class AutoMunge:
                           if unique2 not in overlap_dict[extract]:
 
                             overlap_dict[extract].append(unique2)
+                            
+                            break
 
                           if unique not in overlap_dict[extract]:
 
                             overlap_dict[extract].append(unique)
+                            
+                            break
 
                         #else if we don't have a key for extract
                         else:
 
                           overlap_dict.update({extract : [unique, unique2]})
+                          
+                          break
 
                         
     #now for mdf_test we'll only consider those overlaps already 
@@ -7313,6 +7380,8 @@ class AutoMunge:
             if extract4 == dict_key:
 
               test_overlap_dict[dict_key].append(unique_test)
+              
+              break
                         
     
     
@@ -7521,6 +7590,10 @@ class AutoMunge:
                     extract_already_in_overlap_dict = True
                     
                     break
+                    
+                if extract_already_in_overlap_dict is True:
+                  
+                  break
 
             if extract_already_in_overlap_dict is False:
 
@@ -7547,15 +7620,21 @@ class AutoMunge:
                           if unique2 not in overlap_dict[extract]:
 
                             overlap_dict[extract].append(unique2)
+                            
+                            break
 
                           if unique not in overlap_dict[extract]:
 
                             overlap_dict[extract].append(unique)
+                            
+                            break
 
                         #else if we don't have a key for extract
                         else:
 
                           overlap_dict.update({extract : [unique, unique2]})
+                          
+                          break
                           
                     elif space_and_punctuation is False:
                       
@@ -7571,15 +7650,21 @@ class AutoMunge:
                           if unique2 not in overlap_dict[extract]:
 
                             overlap_dict[extract].append(unique2)
+                            
+                            break
 
                           if unique not in overlap_dict[extract]:
 
                             overlap_dict[extract].append(unique)
+                            
+                            break
 
                         #else if we don't have a key for extract
                         else:
 
                           overlap_dict.update({extract : [unique, unique2]})
+                          
+                          break
 
                         
     #now for mdf_test we'll only consider those overlaps already 
@@ -7616,6 +7701,8 @@ class AutoMunge:
             if extract4 == dict_key:
 
               test_overlap_dict[dict_key].append(unique_test)
+              
+              break
                         
     
     
@@ -7834,6 +7921,10 @@ class AutoMunge:
                       extract_already_in_overlap_dict = True
                       
                       break
+                      
+                if extract_already_in_overlap_dict is True:
+                  
+                  break
 
             if extract_already_in_overlap_dict is False:
 
@@ -7860,15 +7951,27 @@ class AutoMunge:
                           if unique2 not in overlap_dict[extract]:
 
                             overlap_dict[extract].append(unique2)
+                            
+                            if concurrent_activations is False:
+
+                              break
 
                           if unique not in overlap_dict[extract]:
 
                             overlap_dict[extract].append(unique)
+                            
+                            if concurrent_activations is False:
+
+                              break
 
                         #else if we don't have a key for extract
                         else:
 
                           overlap_dict.update({extract : [unique, unique2]})
+                          
+                          if concurrent_activations is False:
+
+                            break
                           
                     elif space_and_punctuation is False:
                       
@@ -7884,15 +7987,27 @@ class AutoMunge:
                           if unique2 not in overlap_dict[extract]:
 
                             overlap_dict[extract].append(unique2)
+                            
+                            if concurrent_activations is False:
+
+                              break
 
                           if unique not in overlap_dict[extract]:
 
                             overlap_dict[extract].append(unique)
+                            
+                            if concurrent_activations is False:
+
+                              break
 
                         #else if we don't have a key for extract
                         else:
 
                           overlap_dict.update({extract : [unique, unique2]})
+                          
+                          if concurrent_activations is False:
+
+                            break
 
                         
     #now for mdf_test we'll only consider those overlaps already identified from train set
@@ -7964,7 +8079,8 @@ class AutoMunge:
 
       textnormalization_dict = {tc : {'overlap_dict' : overlap_dict, \
                                       'splt_newcolumns_spl8'   : newcolumns, \
-                                      'minsplit' : minsplit}}
+                                      'minsplit' : minsplit, \
+                                      'concurrent_activations' : concurrent_activations}}
       
       column_dict = {tc : {'category' : 'spl8', \
                            'origcategory' : category, \
@@ -8076,6 +8192,10 @@ class AutoMunge:
                     extract_already_in_overlap_dict = True
                     
                     break
+                    
+                if extract_already_in_overlap_dict is True:
+                  
+                  break
 
             if extract_already_in_overlap_dict is False:
 
@@ -8102,15 +8222,21 @@ class AutoMunge:
                           if unique2 not in overlap_dict[extract]:
 
                             overlap_dict[extract].append(unique2)
+                            
+                            break
 
                           if unique not in overlap_dict[extract]:
 
                             overlap_dict[extract].append(unique)
+                            
+                            break
 
                         #else if we don't have a key for extract
                         else:
 
                           overlap_dict.update({extract : [unique, unique2]})
+                          
+                          break
                           
                     elif space_and_punctuation is False:
                       
@@ -8126,15 +8252,21 @@ class AutoMunge:
                           if unique2 not in overlap_dict[extract]:
 
                             overlap_dict[extract].append(unique2)
+                            
+                            break
 
                           if unique not in overlap_dict[extract]:
 
                             overlap_dict[extract].append(unique)
+                            
+                            break
 
                         #else if we don't have a key for extract
                         else:
 
                           overlap_dict.update({extract : [unique, unique2]})
+                          
+                          break
 
                         
     #now for mdf_test we'll only consider those overlaps already identified from train set
@@ -8381,6 +8513,10 @@ class AutoMunge:
                     extract_already_in_overlap_dict = True
                     
                     break
+                    
+                if extract_already_in_overlap_dict is True:
+                  
+                  break
 
             if extract_already_in_overlap_dict is False:
 
@@ -8407,15 +8543,21 @@ class AutoMunge:
                           if unique2 not in overlap_dict[extract]:
 
                             overlap_dict[extract].append(unique2)
+                            
+                            break
 
                           if unique not in overlap_dict[extract]:
 
                             overlap_dict[extract].append(unique)
+                            
+                            break
 
                         #else if we don't have a key for extract
                         else:
 
                           overlap_dict.update({extract : [unique, unique2]})
+                          
+                          break
                           
                     elif space_and_punctuation is False:
                       
@@ -8431,15 +8573,21 @@ class AutoMunge:
                           if unique2 not in overlap_dict[extract]:
 
                             overlap_dict[extract].append(unique2)
+                            
+                            break
 
                           if unique not in overlap_dict[extract]:
 
                             overlap_dict[extract].append(unique)
+                            
+                            break
 
                         #else if we don't have a key for extract
                         else:
 
                           overlap_dict.update({extract : [unique, unique2]})
+                          
+                          break
 
                         
     #now for mdf_test we'll only consider those overlaps already 
@@ -8710,6 +8858,10 @@ class AutoMunge:
                       extract_already_in_overlap_dict = True
                       
                       break
+                      
+                if extract_already_in_overlap_dict is True:
+                  
+                  break
                     
 
             if extract_already_in_overlap_dict is False:
@@ -8737,15 +8889,27 @@ class AutoMunge:
                           if unique2 not in overlap_dict[extract]:
 
                             overlap_dict[extract].append(unique2)
+                            
+                            if concurrent_activations is False:
+
+                              break
 
                           if unique not in overlap_dict[extract]:
 
                             overlap_dict[extract].append(unique)
+                            
+                            if concurrent_activations is False:
+
+                              break
 
                         #else if we don't have a key for extract
                         else:
 
                           overlap_dict.update({extract : [unique, unique2]})
+                          
+                          if concurrent_activations is False:
+
+                            break
                           
                     elif space_and_punctuation is False:
                       
@@ -8761,15 +8925,27 @@ class AutoMunge:
                           if unique2 not in overlap_dict[extract]:
 
                             overlap_dict[extract].append(unique2)
+                            
+                            if concurrent_activations is False:
+
+                              break
 
                           if unique not in overlap_dict[extract]:
 
                             overlap_dict[extract].append(unique)
+                            
+                            if concurrent_activations is False:
+
+                              break
 
                         #else if we don't have a key for extract
                         else:
 
                           overlap_dict.update({extract : [unique, unique2]})
+                          
+                          if concurrent_activations is False:
+
+                            break
 
                         
     #now for mdf_test we'll only consider those overlaps already identified from train set
@@ -8805,6 +8981,10 @@ class AutoMunge:
             if extract4 == dict_key:
 
               test_overlap_dict[dict_key].append(unique_test)
+              
+              if concurrent_activations is False:
+
+                break
                         
                         
     
@@ -8836,7 +9016,8 @@ class AutoMunge:
 
       textnormalization_dict = {tc : {'overlap_dict' : overlap_dict, \
                                       'splt_newcolumns_sp15'   : newcolumns, \
-                                      'minsplit' : minsplit}}
+                                      'minsplit' : minsplit, \
+                                      'concurrent_activations' : concurrent_activations}}
       
       column_dict = {tc : {'category' : 'sp15', \
                            'origcategory' : category, \
@@ -8964,6 +9145,10 @@ class AutoMunge:
                       extract_already_in_overlap_dict = True
                       
                       break
+                      
+                if extract_already_in_overlap_dict is True:
+                  
+                  break
 
             if extract_already_in_overlap_dict is False:
 
@@ -8990,15 +9175,27 @@ class AutoMunge:
                           if unique2 not in overlap_dict[extract]:
 
                             overlap_dict[extract].append(unique2)
+                            
+                            if concurrent_activations is False:
+
+                              break
 
                           if unique not in overlap_dict[extract]:
 
                             overlap_dict[extract].append(unique)
+                            
+                            if concurrent_activations is False:
+
+                              break
 
                         #else if we don't have a key for extract
                         else:
 
                           overlap_dict.update({extract : [unique, unique2]})
+                          
+                          if concurrent_activations is False:
+
+                            break
                           
                     elif space_and_punctuation is False:
                       
@@ -9014,15 +9211,27 @@ class AutoMunge:
                           if unique2 not in overlap_dict[extract]:
 
                             overlap_dict[extract].append(unique2)
+                            
+                            if concurrent_activations is False:
+
+                              break
 
                           if unique not in overlap_dict[extract]:
 
                             overlap_dict[extract].append(unique)
+                            
+                            if concurrent_activations is False:
+
+                              break
 
                         #else if we don't have a key for extract
                         else:
 
                           overlap_dict.update({extract : [unique, unique2]})
+                          
+                          if concurrent_activations is False:
+
+                            break
 
                         
     #now for mdf_test we'll only consider those overlaps already identified from train set
@@ -9094,7 +9303,8 @@ class AutoMunge:
 
       textnormalization_dict = {tc : {'overlap_dict' : overlap_dict, \
                                       'splt_newcolumns_sp16'   : newcolumns, \
-                                      'minsplit' : minsplit}}
+                                      'minsplit' : minsplit, \
+                                      'concurrent_activations' : concurrent_activations}}
       
       column_dict = {tc : {'category' : 'sp16', \
                            'origcategory' : category, \
@@ -9114,7 +9324,7 @@ class AutoMunge:
       column_dict_list = []
 
     
-    return mdf_train, mdf_test, column_dict_list  
+    return mdf_train, mdf_test, column_dict_list
 
   
   def process_srch_class(self, mdf_train, mdf_test, column, category, \
@@ -28153,7 +28363,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.98'
+    automungeversion = '3.99'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -29697,6 +29907,9 @@ class AutoMunge:
 
       newcolumns = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['splt_newcolumns_splt']
+      
+      concurrent_activations = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['concurrent_activations']
 
 
       #now for mdf_test we'll only consider those overlaps already identified from train set
@@ -29732,6 +29945,10 @@ class AutoMunge:
               if extract4 == dict_key:
 
                 test_overlap_dict[dict_key].append(unique_test)
+                
+                if concurrent_activations is False:
+
+                  break
 
 
       newcolumns = []
@@ -29837,6 +30054,8 @@ class AutoMunge:
               if extract4 == dict_key:
 
                 test_overlap_dict[dict_key].append(unique_test)
+                
+                break
                 
                 
       #then we'll populate the spl2 replacement dict
@@ -29962,6 +30181,8 @@ class AutoMunge:
               if extract4 == dict_key:
 
                 test_overlap_dict[dict_key].append(unique_test)
+                
+                break
                 
                 
       #then we'll populate the spl2 replacement dict
@@ -30094,6 +30315,8 @@ class AutoMunge:
               if extract4 == dict_key:
 
                 test_overlap_dict[dict_key].append(unique_test)
+                
+                break
                 
                 
       #then we'll populate the spl2 replacement dict
@@ -30614,6 +30837,10 @@ class AutoMunge:
 
       newcolumns = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['splt_newcolumns_sp15']
+      
+      concurrent_activations = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['concurrent_activations']
+
 
 
       #now for mdf_test we'll only consider those overlaps already identified from train set
@@ -30649,6 +30876,10 @@ class AutoMunge:
               if extract4 == dict_key:
 
                 test_overlap_dict[dict_key].append(unique_test)
+                
+                if concurrent_activations is False:
+
+                  break
 
 
       newcolumns = []
