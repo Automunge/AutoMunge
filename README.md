@@ -157,7 +157,7 @@ am.automunge(df_train, df_test = False, \
                           'Utxt':[], 'Utx2':[], 'Utx3':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
                           'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], \
                           'spl8':[], 'spl9':[], 'sp10':[], 'sp16':[], \
-                          'srch':[], 'src4':[], 'strn':[], 'lngt':[], \
+                          'srch':[], 'src2':[], 'src4':[], 'strn':[], 'lngt':[], \
                           'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
                           'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
                           'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], 'ucct':[], 'Ucct':[], \
@@ -385,7 +385,7 @@ am.automunge(df_train, df_test = False, \
                           'Utxt':[], 'Utx2':[], 'Utx3':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
                           'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], \
                           'spl8':[], 'spl9':[], 'sp10':[], 'sp16':[], \
-                          'srch':[], 'src4':[], 'strn':[], 'lngt':[], \
+                          'srch':[], 'src2':[], 'src4':[], 'strn':[], 'lngt':[], \
                           'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
                           'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
                           'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], 'ucct':[], 'Ucct':[], \
@@ -609,7 +609,7 @@ am.automunge(df_train, df_test = False, \
                           'Utxt':[], 'Utx2':[], 'Utx3':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
                           'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], \
                           'spl8':[], 'spl9':[], 'sp10':[], 'sp16':[], \
-                          'srch':[], 'src4':[], 'strn':[], 'lngt':[], \
+                          'srch':[], 'src2':[], 'src4':[], 'strn':[], 'lngt':[], \
                           'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
                           'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
                           'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], 'ucct':[], 'Ucct':[], \
@@ -979,7 +979,7 @@ assigncat = {'nmbr':[], 'retn':[], 'mnmx':[], 'mean':[], 'MAD3':[], 'lgnm':[], \
              'Utxt':[], 'Utx2':[], 'Utx3':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
              'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], \
              'spl8':[], 'spl9':[], 'sp10':[], 'sp16':[], \
-             'srch':[], 'src4':[], 'strn':[], 'lngt':[], \
+             'srch':[], 'src2':[], 'src4':[], 'strn':[], 'lngt':[], \
              'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
              'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
              'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], 'ucct':[], 'Ucct':[], \
@@ -2564,6 +2564,15 @@ for identified overlap entries.
 				     (note search parameter list can included embedded lists of terms for 
 				      aggregated activations of terms in the sublist)
 				     'case': bool to indicate case sensitivity of search, defaults True
+  - driftreport postmunge metrics: overlap_dict / splt_newcolumns_splt / minsplit
+  - inversion available: yes with partial recovery
+* src2: comparable to srch but expected to be more efficient when target set has narrow range of entries
+  - default infill: none
+  - default NArowtype: justNaN
+  - suffix appender: '\_src2_##*##' where ##*## is target identified search string
+  - assignparam parameters accepted: 'search': a list of strings, defaults as empty set
+				     (note search parameter list can included embedded lists of terms for 
+				      aggregated activations of terms in the sublist)
   - driftreport postmunge metrics: overlap_dict / splt_newcolumns_splt / minsplit
   - inversion available: yes with partial recovery
 * src4: searches categorical sets for overlaps with user passed search string and returns ordinal column
