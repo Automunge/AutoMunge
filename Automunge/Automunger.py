@@ -9474,7 +9474,7 @@ class AutoMunge:
   
   
   def process_src2_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict, params = {}):
+                        postprocess_dict, params = {}):
     """
     #process_src2_class(mdf_train, mdf_test, column, category)
     #preprocess column with categorical entries as strings
@@ -9509,6 +9509,24 @@ class AutoMunge:
     
 #     overlap_lengths = list(range(maxlength - 1, minsplit, -1))
 
+
+    #we'll create mirror to account for any embdded lists of search terms for aggregation
+    search_preflattening = search.copy()
+    #this is kind of hacky just to reuse code below resetting this list to repopulate
+    search = []
+    aggregated_dict = {}
+    
+    for entry in search_preflattening:
+      if type(entry) != type([]):
+        search.append(str(entry))
+      else:
+        aggregated_dict.update({str(entry[-1]):[]})
+        for entry2 in entry[0:-1]:
+          search.append(entry2)
+          aggregated_dict[str(entry[-1])].append(str(entry2))
+        for entry2 in entry[-1:]:
+          search.append(entry2)
+
     
 
     #we'll populate overlap_dict as
@@ -9542,7 +9560,6 @@ class AutoMunge:
             if extract in search:
               
               overlap_dict[extract].append(unique)
-
 
                         
 #     #now for mdf_test
@@ -9597,14 +9614,40 @@ class AutoMunge:
         mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
 
         mdf_train[newcolumn] = mdf_train[newcolumn].isin(overlap_dict[dict_key])
-        mdf_train[newcolumn] = mdf_train[newcolumn].astype(np.int8)
+#         mdf_train[newcolumn] = mdf_train[newcolumn].astype(np.int8)
 
         mdf_test[newcolumn] = mdf_test[newcolumn].isin(overlap_dict[dict_key])
-        mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
+#         mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
 
         newcolumns.append(newcolumn)
+        
     
+    #now in case there are any aggregated activations, inspired by approach in srch
+    inverse_search_dict = dict(zip(search, newcolumns))
+    newcolumns_before_aggregation = newcolumns.copy()
     
+    #now we consolidate activations
+    #note that this only runs when aggregated_dict was populated with an embedded list of search terms
+    for aggregated_dict_key in aggregated_dict:
+      aggregated_dict_key_column = inverse_search_dict[aggregated_dict_key]
+      
+      for target_for_aggregation in aggregated_dict[aggregated_dict_key]:
+        target_for_aggregation_column = inverse_search_dict[target_for_aggregation]
+        
+        mdf_train[aggregated_dict_key_column] = \
+        np.where(mdf_train[target_for_aggregation_column] == 1, 1, mdf_train[aggregated_dict_key_column])
+        mdf_test[aggregated_dict_key_column] = \
+        np.where(mdf_test[target_for_aggregation_column] == 1, 1, mdf_test[aggregated_dict_key_column])
+        
+        del mdf_train[target_for_aggregation_column]
+        del mdf_test[target_for_aggregation_column]
+        
+        newcolumns.remove(target_for_aggregation_column)
+        
+    for newcolumn in newcolumns:
+      mdf_train[newcolumn] = mdf_train[newcolumn].astype(np.int8)
+      mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
+      
     
     column_dict_list = []
 
@@ -9612,7 +9655,11 @@ class AutoMunge:
 
       textnormalization_dict = {tc : {'overlap_dict' : overlap_dict, \
                                       'src2_newcolumns_src2'   : newcolumns, \
-                                      'search' : search}}
+                                      'newcolumns_before_aggregation' : newcolumns_before_aggregation, \
+                                      'search' : search, \
+                                      'inverse_search_dict' : inverse_search_dict, \
+                                      'aggregated_dict' : aggregated_dict, \
+                                      'search_preflattening' : search_preflattening}}
       
       column_dict = {tc : {'category' : 'src2', \
                            'origcategory' : category, \
@@ -26919,7 +26966,7 @@ class AutoMunge:
                              'Utxt':[], 'Utx2':[], 'Utx3':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
                              'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], \
                              'spl8':[], 'spl9':[], 'sp10':[], 'sp16':[], \
-                             'srch':[], 'src4':[], 'strn':[], 'lngt':[], \
+                             'srch':[], 'src2':[], 'src4':[], 'strn':[], 'lngt':[], \
                              'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
                              'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
                              'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], 'ucct':[], 'Ucct':[], \
@@ -28363,7 +28410,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '3.99'
+    automungeversion = '4.00'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -31164,10 +31211,16 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['overlap_dict']
 
       newcolumns = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['src2_newcolumns_src2']
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['newcolumns_before_aggregation']
       
       search = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['search']
+      
+      inverse_search_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inverse_search_dict']
+      
+      aggregated_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['aggregated_dict']
 
       
 #       #now for mdf_test
@@ -31222,10 +31275,29 @@ class AutoMunge:
           mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
 
           mdf_test[newcolumn] = mdf_test[newcolumn].isin(overlap_dict[dict_key])
-          mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
+#           mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
 
           newcolumns.append(newcolumn)
-    
+          
+          
+      #now we consolidate activations
+      #note that this only runs when aggregated_dict was populated with an embedded list of search terms
+      for aggregated_dict_key in aggregated_dict:
+        aggregated_dict_key_column = inverse_search_dict[aggregated_dict_key]
+
+        for target_for_aggregation in aggregated_dict[aggregated_dict_key]:
+          target_for_aggregation_column = inverse_search_dict[target_for_aggregation]
+
+          mdf_test[aggregated_dict_key_column] = \
+          np.where(mdf_test[target_for_aggregation_column] == 1, 1, mdf_test[aggregated_dict_key_column])
+
+          del mdf_test[target_for_aggregation_column]
+
+          newcolumns.remove(target_for_aggregation_column)
+
+      for newcolumn in newcolumns:
+
+        mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
     
     return mdf_test
   
