@@ -4224,37 +4224,45 @@ class AutoMunge:
 
 
   def circleoflife(self, df_train, df_test, column, category, origcategory, process_dict, \
-                    transform_dict, postprocess_dict):
+                    transform_dict, postprocess_dict, templist1):
     '''
     #This function deletes source column for cases where family primitives 
     #included replacement, with maintenance of the associated data structures.
+    
+    #templist1 is the list of df_train columns before processfamily
     '''
 
     #if we had replacement transformations performed on first generation \
     #then delete the original column
     if len(transform_dict[category]['auntsuncles']) \
     + len(transform_dict[category]['parents']) > 0:
-      del df_train[column]
-      del df_test[column]
+      
+      if column in list(df_train):
+        del df_train[column]
+        del df_test[column]
 
     #if we had replacement transformations performed on downstream generation \
     #then delete the associated parent column 
-    for columndict_column in postprocess_dict['column_dict']:
-      if postprocess_dict['column_dict'][columndict_column]['deletecolumn'] is True:
-
-        #first we'll remove the column from columnslists 
-        for columnslistcolumn in postprocess_dict['column_dict'][columndict_column]['columnslist']:
-
-          if columndict_column in postprocess_dict['column_dict'][columnslistcolumn]['columnslist']:
-
-            postprocess_dict['column_dict'][columnslistcolumn]['columnslist'].remove(columndict_column)
-
+    
+    newcolumns = set(df_train) - set(templist1)
+    
+    for newcolumn in newcolumns:
+      
+      if postprocess_dict['column_dict'][newcolumn]['deletecolumn'] is True:
+        
+        for newcolumn2 in newcolumns:
+          
+          if newcolumn in postprocess_dict['column_dict'][newcolumn2]['columnslist']:
+        
+            postprocess_dict['column_dict'][newcolumn2]['columnslist'].remove(newcolumn)
+          
         #now we'll delete column
         #note this only worksa on single column  parents, need to incioroprate categorylist
         #for multicolumn parents (future extension)
-        if columndict_column in list(df_train):
-          del df_train[columndict_column]
-          del df_test[columndict_column]
+        if newcolumn in list(df_train):
+          del df_train[newcolumn]
+          del df_test[newcolumn]
+          
 
     return df_train, df_test, postprocess_dict
 
@@ -27668,7 +27676,7 @@ class AutoMunge:
       #now delete columns that were subject to replacement
       df_train, df_test, postprocess_dict = \
       self.circleoflife(df_train, df_test, column, category, category, process_dict, \
-                        transform_dict, postprocess_dict)
+                        transform_dict, postprocess_dict, templist1)
       ##
       #here's another templist to support the postprocess_dict entry below
       templist2 = list(df_train)
@@ -27874,7 +27882,7 @@ class AutoMunge:
       #now delete columns subject to replacement
       df_labels, df_testlabels, postprocess_dict = \
       self.circleoflife(df_labels, df_testlabels, labels_column, labelscategory, labelscategory, \
-                        labelsprocess_dict, labelstransform_dict, postprocess_dict)
+                        labelsprocess_dict, labelstransform_dict, postprocess_dict, templist1)
 
       #here's another templist to support the postprocess_dict entry below
       templist2 = list(df_labels)
@@ -28410,7 +28418,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.10'
+    automungeversion = '4.11'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
