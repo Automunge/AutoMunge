@@ -776,6 +776,15 @@ class AutoMunge:
                                      'coworkers'     : [], \
                                      'friends'       : []}})
     
+    transform_dict.update({'aggt' : {'parents'       : ['aggt'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['ord3'], \
+                                     'friends'       : []}})
+    
     transform_dict.update({'strn' : {'parents'       : ['strn'], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : [], \
@@ -3058,6 +3067,14 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'src4'}})
+    process_dict.update({'aggt' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_aggt_class, \
+                                  'postprocess' : None, \
+                                  'inverseprocess' : self.inverseprocess_UPCS, \
+                                  'info_retention' : False, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'exclude', \
+                                  'labelctgy' : 'ord3'}})
     process_dict.update({'strn' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_strn_class, \
                                   'postprocess' : None, \
@@ -10030,6 +10047,74 @@ class AutoMunge:
     
     return mdf_train, mdf_test, column_dict_list
   
+  def process_aggt_class(self, df, column, category, postprocess_dict, params = {}):
+    """
+    #process_aggt_class(mdf_train, mdf_test, column, category)
+    #preprocess column with categorical entries as strings
+    #and aggregates differently spelled duplicates into single representation
+    #based on user passed parameter 'aggregate'
+    #which is a list of lists, where sublists are the aggregation groups
+    #and the final representation will be the final item in list
+    #note also supports passing aggregate as a single list of terms without embedded lists
+    """
+    
+    if 'aggregate' in params:
+      aggregate = params['aggregate']
+    else:
+      aggregate = [[]]
+      
+      
+    df[column + '_aggt'] = df[column].copy()
+
+    for sublist in aggregate:
+      
+      if not isinstance(sublist, list):
+        
+        sublist = aggregate
+      
+        length_sublist = len(sublist)
+
+        for i in range(length_sublist-1):
+
+          df[column + '_aggt'] = np.where(df[column + '_aggt'] == sublist[i], sublist[-1], df[column + '_aggt'])
+          
+        break
+      
+      else:
+        
+        length_sublist = len(sublist)
+
+        for i in range(length_sublist-1):
+
+          df[column + '_aggt'] = np.where(df[column + '_aggt'] == sublist[i], sublist[-1], df[column + '_aggt'])
+          
+
+    normalization_dict = {column + '_aggt' : {'aggregate' : aggregate}}
+    
+    nmbrcolumns = [column + '_aggt']
+    
+    #store some values in the nmbr_dict{} for use later in ML infill methods
+    column_dict_list = []
+
+    for nc in nmbrcolumns:
+      
+      column_dict = { nc : {'category' : 'aggt', \
+                           'origcategory' : category, \
+                           'normalization_dict' : normalization_dict, \
+                           'origcolumn' : column, \
+                           'inputcolumn' : column, \
+                           'columnslist' : nmbrcolumns, \
+                           'categorylist' : nmbrcolumns, \
+                           'infillmodel' : False, \
+                           'infillcomplete' : False, \
+                           'deletecolumn' : False}}
+
+      column_dict_list.append(column_dict.copy())
+    
+        
+    return df, column_dict_list
+
+  
   def process_strn_class(self, df, column, category, postprocess_dict, params = {}):
     """
     #process_strn_class(df, column, category, postprocess_dict)
@@ -16115,6 +16200,8 @@ class AutoMunge:
         train_replace_dict.update({train_unique[i] : 0})
       else:
         train_replace_dict.update({train_unique[i] : i+1})
+    if np.nan not in train_replace_dict:
+      train_replace_dict.update({np.nan : 0})
       
     test_replace_dict = {}
     for testunique in test_unique:
@@ -26974,7 +27061,7 @@ class AutoMunge:
                              'Utxt':[], 'Utx2':[], 'Utx3':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
                              'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], \
                              'spl8':[], 'spl9':[], 'sp10':[], 'sp16':[], \
-                             'srch':[], 'src2':[], 'src4':[], 'strn':[], 'lngt':[], \
+                             'srch':[], 'src2':[], 'src4':[], 'strn':[], 'lngt':[], 'aggt':[], \
                              'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
                              'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
                              'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], 'ucct':[], 'Ucct':[], \
@@ -28418,7 +28505,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.11'
+    automungeversion = '4.12'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
