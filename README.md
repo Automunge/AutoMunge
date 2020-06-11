@@ -157,7 +157,7 @@ am.automunge(df_train, df_test = False, \
                           'Utxt':[], 'Utx2':[], 'Utx3':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
                           'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], \
                           'spl8':[], 'spl9':[], 'sp10':[], 'sp16':[], \
-                          'srch':[], 'src2':[], 'src4':[], 'strn':[], 'lngt':[], \
+                          'srch':[], 'src2':[], 'src4':[], 'strn':[], 'lngt':[], 'aggt':[], \
                           'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
                           'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
                           'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], 'ucct':[], 'Ucct':[], \
@@ -385,7 +385,7 @@ am.automunge(df_train, df_test = False, \
                           'Utxt':[], 'Utx2':[], 'Utx3':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
                           'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], \
                           'spl8':[], 'spl9':[], 'sp10':[], 'sp16':[], \
-                          'srch':[], 'src2':[], 'src4':[], 'strn':[], 'lngt':[], \
+                          'srch':[], 'src2':[], 'src4':[], 'strn':[], 'lngt':[], 'aggt':[], \
                           'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
                           'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
                           'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], 'ucct':[], 'Ucct':[], \
@@ -609,7 +609,7 @@ am.automunge(df_train, df_test = False, \
                           'Utxt':[], 'Utx2':[], 'Utx3':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
                           'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], \
                           'spl8':[], 'spl9':[], 'sp10':[], 'sp16':[], \
-                          'srch':[], 'src2':[], 'src4':[], 'strn':[], 'lngt':[], \
+                          'srch':[], 'src2':[], 'src4':[], 'strn':[], 'lngt':[], 'aggt':[], \
                           'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
                           'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
                           'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], 'ucct':[], 'Ucct':[], \
@@ -979,7 +979,7 @@ assigncat = {'nmbr':[], 'retn':[], 'mnmx':[], 'mean':[], 'MAD3':[], 'lgnm':[], \
              'Utxt':[], 'Utx2':[], 'Utx3':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
              'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], \
              'spl8':[], 'spl9':[], 'sp10':[], 'sp16':[], \
-             'srch':[], 'src2':[], 'src4':[], 'strn':[], 'lngt':[], \
+             'srch':[], 'src2':[], 'src4':[], 'strn':[], 'lngt':[], 'aggt':[], \
              'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
              'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
              'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], 'ucct':[], 'Ucct':[], \
@@ -2241,6 +2241,13 @@ and comparable to test set independent of test set row count
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: maximum, minimum, mean, std
   - inversion available: no
+* aggt: consolidate categoric entries based on user passed aggregate parameter
+  - default infill: none
+  - default NArowtype: justNaN
+  - suffix appender: '_aggt'
+  - assignparam parameters accepted: 'aggregate' as a list or as a list of lists of aggregation sets
+  - driftreport postmunge metrics: aggregate
+  - inversion available: yes with partial recovery
 * new processing functions Utxt / Utx2 / Utx3 / Uord / Uor2 / Uor3 / Uor6 / U101 / Ucct
   - comparable to functions text / txt2 / txt3 / ordl / ord2 / ord3 / ors6 / 1010 / Ucct
   - but upstream conversion of all strings to uppercase characters prior to encoding
@@ -2677,6 +2684,7 @@ avoid unintentional duplication.
 - 'Utxt',
 - 'absl',
 - 'addd',
+- 'aggt',
 - 'bins',
 - 'bint',
 - 'bkt1',
@@ -2922,6 +2930,7 @@ that any user passing a custom defined transformation can avoid any unintentiona
 - '\_1010_' + i (where i is an integer corresponding to the ith digit of the binary encoding)
 - '_absl'
 - '_addd'
+- '_aggt'
 - '_bins_s-10'
 - '_bins_s-21'
 - '_bins_s+01'
@@ -3712,6 +3721,15 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'children'      : [], \
                                      'niecesnephews' : [], \
                                      'coworkers'     : [], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'aggt' : {'parents'       : ['aggt'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['ord3'], \
                                      'friends'       : []}})
     
     transform_dict.update({'strn' : {'parents'       : ['strn'], \
