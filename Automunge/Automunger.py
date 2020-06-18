@@ -6675,9 +6675,9 @@ class AutoMunge:
 
         if len_unique >= overlap_length:
 
-          nbr_iterations = len_unique - overlap_length
+          nbr_iterations = len_unique - overlap_length + 1
 
-          for i in range(nbr_iterations + 1):
+          for i in range(nbr_iterations):
 
             extract = unique[i:(overlap_length+i)]
 
@@ -6689,9 +6689,9 @@ class AutoMunge:
 
               if len_key >= overlap_length:
 
-                nbr_iterations3 = len_key - overlap_length
+                nbr_iterations3 = len_key - overlap_length + 1
 
-                for k in range(nbr_iterations3 + 1):
+                for k in range(nbr_iterations3):
 
                   extract3 = key[k:(overlap_length+k)]
                   
@@ -6724,9 +6724,9 @@ class AutoMunge:
 
                   len_unique2 = len(unique2)
 
-                  nbr_iterations2 = len_unique2 - overlap_length
+                  nbr_iterations2 = len_unique2 - overlap_length + 1
 
-                  for j in range(nbr_iterations2 + 1):
+                  for j in range(nbr_iterations2):
 
                     extract2 = unique2[j:(overlap_length+j)]
 
@@ -6824,9 +6824,9 @@ class AutoMunge:
 
         if len(unique_test) >= len_key:
 
-          nbr_iterations4 = len(unique_test) - len_key
+          nbr_iterations4 = len(unique_test) - len_key + 1
 
-          for l in range(nbr_iterations4 + 1):
+          for l in range(nbr_iterations4):
 
             extract4 = unique_test[l:(len_key+l)]
 
@@ -6959,9 +6959,9 @@ class AutoMunge:
 
         if len_unique >= overlap_length:
 
-          nbr_iterations = len_unique - overlap_length
+          nbr_iterations = len_unique - overlap_length + 1
 
-          for i in range(nbr_iterations + 1):
+          for i in range(nbr_iterations):
 
             extract = unique[i:(overlap_length+i)]
 
@@ -6973,9 +6973,9 @@ class AutoMunge:
 
               if len_key >= overlap_length:
 
-                nbr_iterations3 = len_key - overlap_length
+                nbr_iterations3 = len_key - overlap_length + 1
 
-                for k in range(nbr_iterations3 + 1):
+                for k in range(nbr_iterations3):
 
                   extract3 = key[k:(overlap_length+k)]
 
@@ -6997,9 +6997,9 @@ class AutoMunge:
 
                   len_unique2 = len(unique2)
 
-                  nbr_iterations2 = len_unique2 - overlap_length
+                  nbr_iterations2 = len_unique2 - overlap_length + 1
 
-                  for j in range(nbr_iterations2 + 1):
+                  for j in range(nbr_iterations2):
 
                     extract2 = unique2[j:(overlap_length+j)]
 
@@ -7085,9 +7085,9 @@ class AutoMunge:
 
         if len(unique_test) >= len_key:
 
-          nbr_iterations4 = len(unique_test) - len_key
+          nbr_iterations4 = len(unique_test) - len_key + 1
 
-          for l in range(nbr_iterations4 + 1):
+          for l in range(nbr_iterations4):
 
             extract4 = unique_test[l:(len_key+l)]
 
@@ -7269,9 +7269,9 @@ class AutoMunge:
 
         if len_unique >= overlap_length:
 
-          nbr_iterations = len_unique - overlap_length
+          nbr_iterations = len_unique - overlap_length + 1
 
-          for i in range(nbr_iterations + 1):
+          for i in range(nbr_iterations):
 
             extract = unique[i:(overlap_length+i)]
 
@@ -7283,9 +7283,9 @@ class AutoMunge:
 
               if len_key >= overlap_length:
 
-                nbr_iterations3 = len_key - overlap_length
+                nbr_iterations3 = len_key - overlap_length + 1
 
-                for k in range(nbr_iterations3 + 1):
+                for k in range(nbr_iterations3):
 
                   extract3 = key[k:(overlap_length+k)]
 
@@ -7307,9 +7307,9 @@ class AutoMunge:
 
                   len_unique2 = len(unique2)
 
-                  nbr_iterations2 = len_unique2 - overlap_length
+                  nbr_iterations2 = len_unique2 - overlap_length + 1
 
-                  for j in range(nbr_iterations2 + 1):
+                  for j in range(nbr_iterations2):
 
                     extract2 = unique2[j:(overlap_length+j)]
 
@@ -7396,9 +7396,9 @@ class AutoMunge:
 
         if len(unique_test) >= len_key:
 
-          nbr_iterations4 = len(unique_test) - len_key
+          nbr_iterations4 = len(unique_test) - len_key + 1
 
-          for l in range(nbr_iterations4 + 1):
+          for l in range(nbr_iterations4):
 
             extract4 = unique_test[l:(len_key+l)]
 
@@ -7590,9 +7590,9 @@ class AutoMunge:
 
         if len_unique >= overlap_length:
 
-          nbr_iterations = len_unique - overlap_length
+          nbr_iterations = len_unique - overlap_length + 1
 
-          for i in range(nbr_iterations + 1):
+          for i in range(nbr_iterations):
 
             extract = unique[i:(overlap_length+i)]
 
@@ -7604,9 +7604,9 @@ class AutoMunge:
 
               if len_key >= overlap_length:
 
-                nbr_iterations3 = len_key - overlap_length
+                nbr_iterations3 = len_key - overlap_length + 1
 
-                for k in range(nbr_iterations3 + 1):
+                for k in range(nbr_iterations3):
 
                   extract3 = key[k:(overlap_length+k)]
 
@@ -7628,9 +7628,9 @@ class AutoMunge:
 
                   len_unique2 = len(unique2)
 
-                  nbr_iterations2 = len_unique2 - overlap_length
+                  nbr_iterations2 = len_unique2 - overlap_length + 1
 
-                  for j in range(nbr_iterations2 + 1):
+                  for j in range(nbr_iterations2):
 
                     extract2 = unique2[j:(overlap_length+j)]
 
@@ -7717,9 +7717,9 @@ class AutoMunge:
 
         if len(unique_test) >= len_key:
 
-          nbr_iterations4 = len(unique_test) - len_key
+          nbr_iterations4 = len(unique_test) - len_key + 1
 
-          for l in range(nbr_iterations4 + 1):
+          for l in range(nbr_iterations4):
 
             extract4 = unique_test[l:(len_key+l)]
 
@@ -7911,9 +7911,9 @@ class AutoMunge:
 
         if len_unique >= overlap_length:
 
-          nbr_iterations = len_unique - overlap_length
+          nbr_iterations = len_unique - overlap_length + 1
 
-          for i in range(nbr_iterations + 1):
+          for i in range(nbr_iterations):
 
             extract = unique[i:(overlap_length+i)]
 
@@ -7925,9 +7925,9 @@ class AutoMunge:
 
               if len_key >= overlap_length:
 
-                nbr_iterations3 = len_key - overlap_length
+                nbr_iterations3 = len_key - overlap_length + 1
 
-                for k in range(nbr_iterations3 + 1):
+                for k in range(nbr_iterations3):
 
                   extract3 = key[k:(overlap_length+k)]
                     
@@ -7959,9 +7959,9 @@ class AutoMunge:
 
                   len_unique2 = len(unique2)
 
-                  nbr_iterations2 = len_unique2 - overlap_length
+                  nbr_iterations2 = len_unique2 - overlap_length + 1
 
-                  for j in range(nbr_iterations2 + 1):
+                  for j in range(nbr_iterations2):
 
                     extract2 = unique2[j:(overlap_length+j)]
 
@@ -8192,9 +8192,9 @@ class AutoMunge:
 
         if len_unique >= overlap_length:
 
-          nbr_iterations = len_unique - overlap_length
+          nbr_iterations = len_unique - overlap_length + 1
 
-          for i in range(nbr_iterations + 1):
+          for i in range(nbr_iterations):
 
             extract = unique[i:(overlap_length+i)]
 
@@ -8206,9 +8206,9 @@ class AutoMunge:
 
               if len_key >= overlap_length:
 
-                nbr_iterations3 = len_key - overlap_length
+                nbr_iterations3 = len_key - overlap_length + 1
 
-                for k in range(nbr_iterations3 + 1):
+                for k in range(nbr_iterations3):
 
                   extract3 = key[k:(overlap_length+k)]
 
@@ -8230,9 +8230,9 @@ class AutoMunge:
 
                   len_unique2 = len(unique2)
 
-                  nbr_iterations2 = len_unique2 - overlap_length
+                  nbr_iterations2 = len_unique2 - overlap_length + 1
 
-                  for j in range(nbr_iterations2 + 1):
+                  for j in range(nbr_iterations2):
 
                     extract2 = unique2[j:(overlap_length+j)]
 
@@ -8513,9 +8513,9 @@ class AutoMunge:
 
         if len_unique >= overlap_length:
 
-          nbr_iterations = len_unique - overlap_length
+          nbr_iterations = len_unique - overlap_length + 1
 
-          for i in range(nbr_iterations + 1):
+          for i in range(nbr_iterations):
 
             extract = unique[i:(overlap_length+i)]
 
@@ -8527,9 +8527,9 @@ class AutoMunge:
 
               if len_key >= overlap_length:
 
-                nbr_iterations3 = len_key - overlap_length
+                nbr_iterations3 = len_key - overlap_length + 1
 
-                for k in range(nbr_iterations3 + 1):
+                for k in range(nbr_iterations3):
 
                   extract3 = key[k:(overlap_length+k)]
 
@@ -8551,9 +8551,9 @@ class AutoMunge:
 
                   len_unique2 = len(unique2)
 
-                  nbr_iterations2 = len_unique2 - overlap_length
+                  nbr_iterations2 = len_unique2 - overlap_length + 1
 
-                  for j in range(nbr_iterations2 + 1):
+                  for j in range(nbr_iterations2):
 
                     extract2 = unique2[j:(overlap_length+j)]
 
@@ -8848,9 +8848,9 @@ class AutoMunge:
 
         if len_unique >= overlap_length:
 
-          nbr_iterations = len_unique - overlap_length
+          nbr_iterations = len_unique - overlap_length + 1
 
-          for i in range(nbr_iterations + 1):
+          for i in range(nbr_iterations):
 
             extract = unique[i:(overlap_length+i)]
 
@@ -8862,9 +8862,9 @@ class AutoMunge:
 
               if len_key >= overlap_length:
 
-                nbr_iterations3 = len_key - overlap_length
+                nbr_iterations3 = len_key - overlap_length + 1
 
-                for k in range(nbr_iterations3 + 1):
+                for k in range(nbr_iterations3):
 
                   extract3 = key[k:(overlap_length+k)]
                   
@@ -8897,9 +8897,9 @@ class AutoMunge:
 
                   len_unique2 = len(unique2)
 
-                  nbr_iterations2 = len_unique2 - overlap_length
+                  nbr_iterations2 = len_unique2 - overlap_length + 1
 
-                  for j in range(nbr_iterations2 + 1):
+                  for j in range(nbr_iterations2):
 
                     extract2 = unique2[j:(overlap_length+j)]
 
@@ -8997,9 +8997,9 @@ class AutoMunge:
 
         if len(unique_test) >= len_key:
 
-          nbr_iterations4 = len(unique_test) - len_key
+          nbr_iterations4 = len(unique_test) - len_key + 1
 
-          for l in range(nbr_iterations4 + 1):
+          for l in range(nbr_iterations4):
 
             extract4 = unique_test[l:(len_key+l)]
 
@@ -9135,9 +9135,9 @@ class AutoMunge:
 
         if len_unique >= overlap_length:
 
-          nbr_iterations = len_unique - overlap_length
+          nbr_iterations = len_unique - overlap_length + 1
 
-          for i in range(nbr_iterations + 1):
+          for i in range(nbr_iterations):
 
             extract = unique[i:(overlap_length+i)]
 
@@ -9149,9 +9149,9 @@ class AutoMunge:
 
               if len_key >= overlap_length:
 
-                nbr_iterations3 = len_key - overlap_length
+                nbr_iterations3 = len_key - overlap_length + 1
 
-                for k in range(nbr_iterations3 + 1):
+                for k in range(nbr_iterations3):
 
                   extract3 = key[k:(overlap_length+k)]
                     
@@ -9183,9 +9183,9 @@ class AutoMunge:
 
                   len_unique2 = len(unique2)
 
-                  nbr_iterations2 = len_unique2 - overlap_length
+                  nbr_iterations2 = len_unique2 - overlap_length + 1
 
-                  for j in range(nbr_iterations2 + 1):
+                  for j in range(nbr_iterations2):
 
                     extract2 = unique2[j:(overlap_length+j)]
 
@@ -28505,7 +28505,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.12'
+    automungeversion = '4.13'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -30078,9 +30078,9 @@ class AutoMunge:
 
           if len(unique_test) >= len_key:
 
-            nbr_iterations4 = len(unique_test) - len_key
+            nbr_iterations4 = len(unique_test) - len_key + 1
 
-            for l in range(nbr_iterations4 + 1):
+            for l in range(nbr_iterations4):
 
               extract4 = unique_test[l:(len_key+l)]
 
@@ -30187,9 +30187,9 @@ class AutoMunge:
 
           if len(unique_test) >= len_key:
 
-            nbr_iterations4 = len(unique_test) - len_key
+            nbr_iterations4 = len(unique_test) - len_key + 1
 
-            for l in range(nbr_iterations4 + 1):
+            for l in range(nbr_iterations4):
 
               extract4 = unique_test[l:(len_key+l)]
 
@@ -30314,9 +30314,9 @@ class AutoMunge:
 
           if len(unique_test) >= len_key:
 
-            nbr_iterations4 = len(unique_test) - len_key
+            nbr_iterations4 = len(unique_test) - len_key + 1
 
-            for l in range(nbr_iterations4 + 1):
+            for l in range(nbr_iterations4):
 
               extract4 = unique_test[l:(len_key+l)]
 
@@ -30448,9 +30448,9 @@ class AutoMunge:
 
           if len(unique_test) >= len_key:
 
-            nbr_iterations4 = len(unique_test) - len_key
+            nbr_iterations4 = len(unique_test) - len_key + 1
 
-            for l in range(nbr_iterations4 + 1):
+            for l in range(nbr_iterations4):
 
               extract4 = unique_test[l:(len_key+l)]
 
@@ -31009,9 +31009,9 @@ class AutoMunge:
 
           if len(unique_test) >= len_key:
 
-            nbr_iterations4 = len(unique_test) - len_key
+            nbr_iterations4 = len(unique_test) - len_key + 1
 
-            for l in range(nbr_iterations4 + 1):
+            for l in range(nbr_iterations4):
 
               extract4 = unique_test[l:(len_key+l)]
 
