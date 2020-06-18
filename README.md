@@ -2471,7 +2471,7 @@ Please note I recommend caution on using splt/spl2/spl5/spl6 transforms on categ
 sets that may include scientific units for instance, as prefixes will not be noted
 for overlaps, e.g. this wouldn't distinguish between kilometer and meter for instance.
 Note that overlap lengths below 5 characters are ignored unless that value is overridden
-by passing a parameter through assignparam.
+by passing 'minsplit' parameter through assignparam.
 * splt: searches categorical sets for overlaps between strings and returns new boolean column
 for identified overlap categories. Note this treats numeric values as strings eg 1.3 = '1.3'.
 Note that priority is given to overlaps of higher length, and by default overlap searches
