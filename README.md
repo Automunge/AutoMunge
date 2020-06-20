@@ -161,7 +161,7 @@ am.automunge(df_train, df_test = False, \
                           'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
                           'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
                           'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], 'ucct':[], 'Ucct':[], \
-                          'or11':[], 'or12':[], 'or15':[], 'or17':[], 'or19':[], 'or20':[], \
+                          'or15':[], 'or17':[], 'or19':[], 'or20':[], 'or21':[], 'or22':[], \
                           'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
                           'wkds':[], 'wkdo':[], 'mnts':[], 'mnto':[], \
                           'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
@@ -389,7 +389,7 @@ am.automunge(df_train, df_test = False, \
                           'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
                           'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
                           'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], 'ucct':[], 'Ucct':[], \
-                          'or11':[], 'or12':[], 'or15':[], 'or17':[], 'or19':[], 'or20':[], \
+                          'or15':[], 'or17':[], 'or19':[], 'or20':[], 'or21':[], 'or22':[], \
                           'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
                           'wkds':[], 'wkdo':[], 'mnts':[], 'mnto':[], \
                           'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
@@ -613,7 +613,7 @@ am.automunge(df_train, df_test = False, \
                           'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
                           'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
                           'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], 'ucct':[], 'Ucct':[], \
-                          'or11':[], 'or12':[], 'or15':[], 'or17':[], 'or19':[], 'or20':[], \
+                          'or15':[], 'or17':[], 'or19':[], 'or20':[], 'or21':[], 'or22':[], \
                           'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
                           'wkds':[], 'wkdo':[], 'mnts':[], 'mnto':[], \
                           'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
@@ -983,7 +983,7 @@ assigncat = {'nmbr':[], 'retn':[], 'mnmx':[], 'mean':[], 'MAD3':[], 'lgnm':[], \
              'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
              'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
              'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], 'ucct':[], 'Ucct':[], \
-             'or11':[], 'or12':[], 'or15':[], 'or17':[], 'or19':[], 'or20':[], \
+             'or15':[], 'or17':[], 'or19':[], 'or20':[], 'or21':[], 'or22':[], \
              'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
              'wkds':[], 'wkdo':[], 'mnts':[], 'mnto':[], \
              'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
@@ -1075,11 +1075,19 @@ assignparam = {'category1' : {'column1' : {'param1' : 123}, 'column2' : {'param1
 #As an example with actual parameters, consider the transformation category 'splt' intended for 'column1',
 #which accepts parameter 'minsplit' for minimum character length of detected overlaps. If we wanted to
 #pass 4 instead of the default of 5:
-assignparam = {'splt' : {'column1' : {'minsplit' : 4}}
+assignparam = {'splt' : {'column1' : {'minsplit' : 4}}}
 
 #Note that the category identifier should be the category entry to the family tree primitive associated
 #with the transform, which may be different than the root category of the family tree assigned in assigncat.
 #The set of family trees definitions for root categories are included below for reference.
+
+#As example to demonstrate edge case for cases where transformation category does not match transformation function
+#(based on entries to transformdict and processdict). If we want to pass a parameter to turn off UPCS transform 
+#included in or19 family tree for or19 category for instance, we would pass the parameter to or19 instead 
+#of UPCS because assignparam inspects the transformation category instead of the transformation function, and 
+#UPCS fucntion is the processdict entry for or19 category (even though 'activate' is an UPCS transform parameter)
+assignparam = {'or19' : {'column1' : {'activate' : False}}}
+#(This clarification intended for advanced users to avoid ambiguity.)
 
 #Note that column string identifiers may just be the source column string or may include the
 #suffix appenders such as if multiple versions of transformations are applied within the same family tree
@@ -2248,6 +2256,14 @@ and comparable to test set independent of test set row count
   - assignparam parameters accepted: 'aggregate' as a list or as a list of lists of aggregation sets
   - driftreport postmunge metrics: aggregate
   - inversion available: yes with partial recovery
+* UPCS: convert string entries to all uppercase characters
+  - default infill: none
+  - default NArowtype: justNaN
+  - suffix appender: '_UPCS'
+  - assignparam parameters accepted: 'activate', boolean defaults to True, 
+                                     False makes this a passthrough without conversion
+  - driftreport postmunge metrics: activate
+  - inversion available: yes with partial recovery
 * new processing functions Utxt / Utx2 / Utx3 / Uord / Uor2 / Uor3 / Uor6 / U101 / Ucct
   - comparable to functions text / txt2 / txt3 / ordl / ord2 / ord3 / ors6 / 1010 / Ucct
   - but upstream conversion of all strings to uppercase characters prior to encoding
@@ -2651,7 +2667,9 @@ for identified overlap entries. (Note for multiple activations encoding priority
   set of unique values in test set is same or subset of train set for more efficient postmunge
   - or19 / or20 comparable to or16 / or18 but replace the 'nmrc' string parsing for numeric entries
   with nmc8 which allows comma characters in numbers and makes use of consistent assumption to
-  spl9/sp10 that set of unique values in test set is same or subset of train for efficient psotmunge
+  spl9/sp10 that set of unique values in test set is same or subset of train for efficient postmunge
+  - or21 / or22 comparable to or19 / or20 but use spl2/spl5 instead of spl9/sp10, 
+  which allows string parsing to handle test set entries not found in the train set
   - assignparam parameters accepted: 'minsplit': indicating lowest character length for recognized overlaps 
   (note that parameter has to be assigned to specific categories such as spl2/spl5 etc)
   - driftreport postmunge metrics: comparable to constituent functions
@@ -2862,6 +2880,8 @@ avoid unintentional duplication.
 - 'or18',
 - 'or19',
 - 'or20',
+- 'or21',
+- 'or22',
 - 'ord2',
 - 'ord3',
 - 'ord4',
@@ -2890,6 +2910,8 @@ avoid unintentional duplication.
 - 'sp14',
 - 'sp15',
 - 'sp16',
+- 'sp17',
+- 'sp18',
 - 'spl2',
 - 'spl3',
 - 'spl4',
@@ -3687,6 +3709,24 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'coworkers'     : [], \
                                      'friends'       : []}})
     
+    transform_dict.update({'sp17' : {'parents'       : ['sp17'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : ['spl5'], \
+                                     'coworkers'     : ['ord3'], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'sp18' : {'parents'       : ['sp18'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : ['sp17'], \
+                                     'coworkers'     : ['ord3'], \
+                                     'friends'       : []}})
+    
     transform_dict.update({'srch' : {'parents'       : [], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : ['srch'], \
@@ -4080,6 +4120,24 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'cousins'       : [NArw], \
                                      'children'      : ['nmc8'], \
                                      'niecesnephews' : ['sp14'], \
+                                     'coworkers'     : ['1010'], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'or21' : {'parents'       : ['or21'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : ['nmc8'], \
+                                     'niecesnephews' : ['sp17'], \
+                                     'coworkers'     : ['1010'], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'or22' : {'parents'       : ['or22'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : ['nmc8'], \
+                                     'niecesnephews' : ['sp18'], \
                                      'coworkers'     : ['1010'], \
                                      'friends'       : []}})
     
