@@ -740,6 +740,24 @@ class AutoMunge:
                                      'coworkers'     : [], \
                                      'friends'       : []}})
     
+    transform_dict.update({'sp17' : {'parents'       : ['sp17'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : ['spl5'], \
+                                     'coworkers'     : ['ord3'], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'sp18' : {'parents'       : ['sp18'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : ['sp17'], \
+                                     'coworkers'     : ['ord3'], \
+                                     'friends'       : []}})
+    
     transform_dict.update({'srch' : {'parents'       : [], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : ['srch'], \
@@ -1133,6 +1151,24 @@ class AutoMunge:
                                      'cousins'       : [NArw], \
                                      'children'      : ['nmc8'], \
                                      'niecesnephews' : ['sp14'], \
+                                     'coworkers'     : ['1010'], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'or21' : {'parents'       : ['or21'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : ['nmc8'], \
+                                     'niecesnephews' : ['sp17'], \
+                                     'coworkers'     : ['1010'], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'or22' : {'parents'       : ['or22'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : ['nmc8'], \
+                                     'niecesnephews' : ['sp18'], \
                                      'coworkers'     : ['1010'], \
                                      'friends'       : []}})
     
@@ -3035,6 +3071,22 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'concurrent_act', \
                                   'labelctgy' : 'sp16'}})
+    process_dict.update({'sp17' : {'dualprocess' : self.process_spl2_class, \
+                                   'singleprocess' : None, \
+                                   'postprocess' : self.postprocess_spl2_class, \
+                                   'inverseprocess' : self.inverseprocess_spl2, \
+                                   'info_retention' : False, \
+                                   'NArowtype' : 'justNaN', \
+                                   'MLinfilltype' : 'exclude', \
+                                   'labelctgy' : 'ord3'}})
+    process_dict.update({'sp18' : {'dualprocess' : self.process_spl2_class, \
+                                   'singleprocess' : None, \
+                                   'postprocess' : self.postprocess_spl2_class, \
+                                   'inverseprocess' : self.inverseprocess_spl2, \
+                                   'info_retention' : False, \
+                                   'NArowtype' : 'justNaN', \
+                                   'MLinfilltype' : 'exclude', \
+                                   'labelctgy' : 'ord3'}})
     process_dict.update({'srch' : {'dualprocess' : self.process_srch_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_srch_class, \
@@ -3348,6 +3400,22 @@ class AutoMunge:
                                    'MLinfilltype' : 'exclude', \
                                    'labelctgy' : 'ord3'}})
     process_dict.update({'or20' : {'dualprocess' : None, \
+                                   'singleprocess' : self.process_UPCS_class, \
+                                   'postprocess' : None, \
+                                   'inverseprocess' : self.inverseprocess_UPCS, \
+                                   'info_retention' : False, \
+                                   'NArowtype' : 'justNaN', \
+                                   'MLinfilltype' : 'exclude', \
+                                   'labelctgy' : 'ord3'}})
+    process_dict.update({'or21' : {'dualprocess' : None, \
+                                   'singleprocess' : self.process_UPCS_class, \
+                                   'postprocess' : None, \
+                                   'inverseprocess' : self.inverseprocess_UPCS, \
+                                   'info_retention' : False, \
+                                   'NArowtype' : 'justNaN', \
+                                   'MLinfilltype' : 'exclude', \
+                                   'labelctgy' : 'ord3'}})
+    process_dict.update({'or22' : {'dualprocess' : None, \
                                    'singleprocess' : self.process_UPCS_class, \
                                    'postprocess' : None, \
                                    'inverseprocess' : self.inverseprocess_UPCS, \
@@ -6574,20 +6642,26 @@ class AutoMunge:
     #note this is a "singleprocess" function since is applied to single dataframe
     '''
     
+    if 'activate' in params:
+      activate = params['activate']
+    else:
+      activate = True
+    
     #create new column
     df[column + '_UPCS'] = df[column].copy()
     
-    #convert column to string
-    df[column + '_UPCS'] = df[column + '_UPCS'].astype(str)
-    
-    #convert to uppercase string
-    df[column + '_UPCS'] = df[column + '_UPCS'].str.upper()
+    #convert to uppercase string based on activate parameter
+    if activate is True:
+      #convert column to string
+      df[column + '_UPCS'] = df[column + '_UPCS'].astype(str)
+      #convert to uppercase
+      df[column + '_UPCS'] = df[column + '_UPCS'].str.upper()
 
     #create list of columns
     UPCScolumns = [column + '_UPCS']
 
     #create normalization dictionary
-    normalization_dict = {column + '_UPCS' : {}}
+    normalization_dict = {column + '_UPCS' : {'activate' : activate}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -6889,10 +6963,9 @@ class AutoMunge:
       column_dict_list = []
     
     return mdf_train, mdf_test, column_dict_list
-  
-  
 
-  
+
+
   
   def process_spl2_class(self, mdf_train, mdf_test, column, category, \
                          postprocess_dict, params = {}):
@@ -27065,7 +27138,7 @@ class AutoMunge:
                              'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
                              'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
                              'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], 'ucct':[], 'Ucct':[], \
-                             'or11':[], 'or12':[], 'or15':[], 'or17':[], 'or19':[], 'or20':[], \
+                             'or15':[], 'or17':[], 'or19':[], 'or20':[], 'or21':[], 'or22':[], \
                              'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
                              'wkds':[], 'wkdo':[], 'mnts':[], 'mnto':[], \
                              'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
@@ -28505,7 +28578,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.13'
+    automungeversion = '4.14'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
