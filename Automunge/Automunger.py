@@ -20139,9 +20139,23 @@ class AutoMunge:
     if NArowtype in ['justNaN']:
       
       if driftassess is True:
-        drift_dict.update({column : {'unique' : df2[column].unique(), \
-                                     'nunique' : df2[column].nunique(), \
-                                     'nanratio' : pd.isna(df2[column]).sum() / df2[column].shape[0]}})
+        
+        nunique = df2[column].nunique()
+        
+        #this is to ensure postprocess_dict file size doesn't get out of control so 
+        #only collect unique entries in source column drift stats
+        #if number of unique is below a threshold (arbrily set to 500)
+        if nunique < 500:
+
+          drift_dict.update({column : {'unique' : df2[column].unique(), \
+                                       'nunique' : nunique, \
+                                       'nanratio' : pd.isna(df2[column]).sum() / df2[column].shape[0]}})
+          
+        else:
+          
+          drift_dict.update({column : {'nunique' : nunique, \
+                                       'nanratio' : pd.isna(df2[column]).sum() / df2[column].shape[0]}})
+          
       
       #returns dataframe of True and False, where True coresponds to the NaN's
       #renames column name to column + '_NArows'
@@ -20453,7 +20467,7 @@ class AutoMunge:
       #(nan will be subject to infill)
       return False
     
-    
+
   def is_number_comma(self, s):
     """
     #support function for numeric parsing
@@ -28578,7 +28592,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.14'
+    automungeversion = '4.15'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
