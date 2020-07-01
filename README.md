@@ -5744,7 +5744,7 @@ writing I recently completed my first collection of essays titled "From
 the Diaries of John Henry" which is also available on Medium
 [turingsquared.com](https://turingsquared.com).
 
-The Automunge website is helpfully located at URL
+The Automunge website is helpfully located at 
 [automunge.com](https://automunge.com).
 
 ...
