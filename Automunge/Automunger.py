@@ -4300,36 +4300,48 @@ class AutoMunge:
     process_dict.update({'excl' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_excl_class, \
                                   'postprocess' : None, \
+                                  'inverseprocess' : self.inverseprocess_UPCS, \
+                                  'info_retention' : True, \
                                   'NArowtype' : 'exclude', \
                                   'MLinfilltype' : 'boolexclude', \
                                   'labelctgy' : 'excl'}})
     process_dict.update({'exc2' : {'dualprocess' : self.process_exc2_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_exc2_class, \
+                                  'inverseprocess' : self.inverseprocess_UPCS, \
+                                  'info_retention' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'exc2'}})
     process_dict.update({'exc3' : {'dualprocess' : self.process_exc2_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_exc2_class, \
+                                  'inverseprocess' : self.inverseprocess_UPCS, \
+                                  'info_retention' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'exc2'}})
     process_dict.update({'exc4' : {'dualprocess' : self.process_exc2_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_exc2_class, \
+                                  'inverseprocess' : self.inverseprocess_UPCS, \
+                                  'info_retention' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'exc2'}})
     process_dict.update({'exc5' : {'dualprocess' : self.process_exc5_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_exc5_class, \
+                                  'inverseprocess' : self.inverseprocess_UPCS, \
+                                  'info_retention' : True, \
                                   'NArowtype' : 'integer', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'exc5'}})
     process_dict.update({'exc6' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_exc6_class, \
                                   'postprocess' : None, \
+                                  'inverseprocess' : self.inverseprocess_UPCS, \
+                                  'info_retention' : True, \
                                   'NArowtype' : 'exclude', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'excl'}})
@@ -26332,16 +26344,16 @@ class AutoMunge:
     
     #check inversion
     inversion_valresult = False
-    if inversion not in [False, 'test', 'labels']:
+    if inversion not in [False, 'test', 'labels'] and not isinstance(inversion, list):
       inversion_valresult = True
       print("Error: invalid entry passed for inversion parameter.")
-      print("Acceptable values are one of {False, 'test', 'labels'}")
+      print("Acceptable values are one of {False, 'test', 'labels', or a list of columns}")
       print()
-    elif inversion not in ['test', 'labels'] \
+    elif inversion not in ['test', 'labels'] and not isinstance(inversion, list) \
     and not isinstance(inversion, bool):
       inversion_valresult = True
       print("Error: invalid entry passed for inversion parameter.")
-      print("Acceptable values are one of {False, 'test', 'labels'}")
+      print("Acceptable values are one of {False, 'test', 'labels', or a list of columns}")
       print()
       
     pm_miscparameters_results.update({'inversion_valresult' : inversion_valresult})
@@ -29368,7 +29380,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.17'
+    automungeversion = '4.18'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -38389,9 +38401,9 @@ class AutoMunge:
         #this is to handle edge case of excl transforms
         #which after processing have their suffix removed from header
         finalcolumns_labels = postprocess_dict['finalcolumns_labels']
-        source_columns = postprocess_dict['origtraincolumns']
+        source_columns = postprocess_dict['labels_column']
         
-        columns_train = [str(c)+'_excl' if c in source_columns else c for c in finalcolumns_labels]
+        finalcolumns_labels = [str(c)+'_excl' if c in source_columns else c for c in finalcolumns_labels]
         
         #confirm consistency of label sets
 
@@ -38427,6 +38439,52 @@ class AutoMunge:
           
         df_test, recovered_list, inversion_info_dict = \
         self.df_inversion_meta(df_test, [postprocess_dict['labels_column']], postprocess_dict, printstatus)
+        
+        if printstatus is True:
+          print("Inversion succeeded in recovering original form for columns:")
+          print(recovered_list)
+          print()
+          
+        if pandasoutput is False:
+          
+          df_test = df_test.values
+          
+        return df_test, recovered_list, inversion_info_dict
+      
+      if isinstance(inversion, list):
+        
+        #convert list entries to string
+        inversion = [str(entry) for entry in inversion]
+        
+        #this is to handle edge case of excl transforms
+        #which after processing have their suffix removed from header
+        finalcolumns_train = postprocess_dict['finalcolumns_train']
+        source_columns = postprocess_dict['origtraincolumns']
+        
+        inversion = [str(c)+'_excl' if c in source_columns and c in finalcolumns_train else c for c in inversion]
+        
+        finalcolumns_train = [str(c)+'_excl' if c in source_columns else c for c in finalcolumns_train]
+        
+
+        #for inversion need source columns
+        inversion = [postprocess_dict['column_dict'][entry]['origcolumn'] if entry in finalcolumns_train else entry for entry in inversion]
+        
+        #check these are all valid source columns
+        for entry in inversion:
+          
+          if entry not in source_columns:
+            
+            print("error: entry passed to inversion parameter list not matching a source or derived column")
+            print("for entry: ", entry)
+            
+        df_test, recovered_list, inversion_info_dict = \
+        self.df_inversion_meta(df_test, inversion, postprocess_dict, printstatus)
+        
+#         for column in df_test:
+          
+#           if column not in recovered_list:
+            
+#             del df_test[column]
         
         if printstatus is True:
           print("Inversion succeeded in recovering original form for columns:")
