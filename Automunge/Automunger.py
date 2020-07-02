@@ -974,6 +974,87 @@ class AutoMunge:
                                      'coworkers'     : [], \
                                      'friends'       : []}})
     
+    transform_dict.update({'nmEU' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['nmEU'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+  
+    transform_dict.update({'nmE2' : {'parents'       : ['nmE2'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : ['nmbr'], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'nmE3' : {'parents'       : ['nmE3'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : ['mnmx'], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'nmE4' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['nmE4'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+  
+    transform_dict.update({'nmE5' : {'parents'       : ['nmE5'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : ['nmbr'], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'nmE6' : {'parents'       : ['nmE6'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : ['mnmx'], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'nmE7' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['nmE7'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+  
+    transform_dict.update({'nmE8' : {'parents'       : ['nmE8'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : ['nmbr'], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'nmE9' : {'parents'       : ['nmE9'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : ['mnmx'], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+    
     transform_dict.update({'ors7' : {'parents'       : ['spl6', 'nmr2'], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : ['ord3'], \
@@ -2462,6 +2543,8 @@ class AutoMunge:
     # - 'nonzeronumeric' for source columns with allowed postiive and negative but no zero
     # - 'parsenumeric' marks for infill strings that don't contain any numeric character entries
     # - 'parsenumeric_commas' marks for infill strings that don't contain any numeric character entries, recognizes commas
+    # - 'parsenumeric_EU' marks for infill strings that don't contain any numeric character entries, 
+    #            recognizes international standard of period deliminator and comma decimal
     # - 'datetime' marks for infill cells that arent' recognized as datetime objects
     
     #MLinfilltype entries are:
@@ -3220,37 +3303,97 @@ class AutoMunge:
     process_dict.update({'nmc4' : {'dualprocess' : self.process_nmc4_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_nmc4_class, \
-                                  'NArowtype' : 'parsenumeric', \
+                                  'NArowtype' : 'parsenumeric_commas', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmrc'}})
     process_dict.update({'nmc5' : {'dualprocess' : self.process_nmc4_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_nmc4_class, \
-                                  'NArowtype' : 'parsenumeric', \
+                                  'NArowtype' : 'parsenumeric_commas', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmbr'}})
     process_dict.update({'nmc6' : {'dualprocess' : self.process_nmc4_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_nmc4_class, \
-                                  'NArowtype' : 'parsenumeric', \
+                                  'NArowtype' : 'parsenumeric_commas', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mnmx'}})
     process_dict.update({'nmc7' : {'dualprocess' : self.process_nmc7_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_nmc7_class, \
-                                  'NArowtype' : 'parsenumeric', \
+                                  'NArowtype' : 'parsenumeric_commas', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmrc'}})
     process_dict.update({'nmc8' : {'dualprocess' : self.process_nmc7_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_nmc7_class, \
-                                  'NArowtype' : 'parsenumeric', \
+                                  'NArowtype' : 'parsenumeric_commas', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmbr'}})
     process_dict.update({'nmc9' : {'dualprocess' : self.process_nmc7_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_nmc7_class, \
-                                  'NArowtype' : 'parsenumeric', \
+                                  'NArowtype' : 'parsenumeric_commas', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'mnmx'}})
+    process_dict.update({'nmEU' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_nmEU_class, \
+                                  'postprocess' : None, \
+                                  'inverseprocess' : self.inverseprocess_nmrc, \
+                                  'info_retention' : True, \
+                                  'NArowtype' : 'parsenumeric_EU', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'nmrc'}})
+    process_dict.update({'nmE2' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_nmEU_class, \
+                                  'postprocess' : None, \
+                                  'inverseprocess' : self.inverseprocess_nmrc, \
+                                  'info_retention' : True, \
+                                  'NArowtype' : 'parsenumeric_EU', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'nmbr'}})
+    process_dict.update({'nmE3' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_nmEU_class, \
+                                  'postprocess' : None, \
+                                  'inverseprocess' : self.inverseprocess_nmrc, \
+                                  'info_retention' : True, \
+                                  'NArowtype' : 'parsenumeric_EU', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'mnmx'}})
+    process_dict.update({'nmE4' : {'dualprocess' : self.process_nmE4_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_nmE4_class, \
+                                  'NArowtype' : 'parsenumeric_EU', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'nmrc'}})
+    process_dict.update({'nmE5' : {'dualprocess' : self.process_nmE4_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_nmE4_class, \
+                                  'NArowtype' : 'parsenumeric_EU', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'nmbr'}})
+    process_dict.update({'nmE6' : {'dualprocess' : self.process_nmE4_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_nmE4_class, \
+                                  'NArowtype' : 'parsenumeric_EU', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'mnmx'}})
+    process_dict.update({'nmE7' : {'dualprocess' : self.process_nmE7_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_nmE7_class, \
+                                  'NArowtype' : 'parsenumeric_EU', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'nmrc'}})
+    process_dict.update({'nmE8' : {'dualprocess' : self.process_nmE7_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_nmE7_class, \
+                                  'NArowtype' : 'parsenumeric_EU', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'nmbr'}})
+    process_dict.update({'nmE9' : {'dualprocess' : self.process_nmE7_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_nmE7_class, \
+                                  'NArowtype' : 'parsenumeric_EU', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mnmx'}})
     process_dict.update({'ors7' : {'dualprocess' : self.process_spl5_class, \
@@ -11251,6 +11394,487 @@ class AutoMunge:
     for nc in nmbrcolumns:
 
       column_dict = { nc : {'category' : 'nmc7', \
+                           'origcategory' : category, \
+                           'normalization_dict' : nmbrnormalization_dict, \
+                           'origcolumn' : column, \
+                           'inputcolumn' : column, \
+                           'columnslist' : nmbrcolumns, \
+                           'categorylist' : nmbrcolumns, \
+                           'infillmodel' : False, \
+                           'infillcomplete' : False, \
+                           'deletecolumn' : False}}
+
+      column_dict_list.append(column_dict.copy())
+    
+        
+    return mdf_train, mdf_test, column_dict_list
+  
+  
+  def process_nmEU_class(self, df, column, category, postprocess_dict, params = {}):
+    """
+    #process_nmEU_class(df, column, category, postprocess_dict)
+    #parses string entries and if any numbers present returns numbers
+    #the check for numbers strips spaces/periods, replaces commas with periods
+    #such as to recognize international formats
+    #entries without numbers present subject to infill
+    """
+    
+    unique_list = list(df[column].unique())
+
+    unique_list = list(map(str, unique_list))
+    
+    maxlength = max(len(x) for x in unique_list)
+    
+    overlap_lengths = list(range(maxlength, 0, -1))
+
+    overlap_dict = {}
+    
+    for overlap_length in overlap_lengths:
+
+      for unique in unique_list:
+        
+        if unique not in overlap_dict:
+
+          len_unique = len(unique)
+
+          if len_unique >= overlap_length:
+            
+            if overlap_length > 1:
+
+              nbr_iterations = len_unique - overlap_length
+
+              for i in range(nbr_iterations + 1):
+                
+                if unique not in overlap_dict:
+
+                  extract = unique[i:(overlap_length+i)]
+
+  #                 extract_already_in_overlap_dict = False
+
+                  if self.is_number_EU(extract):
+
+                    overlap_dict.update({unique : float(extract.replace('.','').replace(',','.'))})
+                
+            #else if overlap_length == 1    
+            else:
+              
+              nbr_iterations = len_unique - overlap_length
+              
+              in_dict = False
+
+              for i in range(nbr_iterations + 1):
+                
+                if unique not in overlap_dict:
+
+                  extract = unique[i:(overlap_length+i)]
+
+  #                 extract_already_in_overlap_dict = False
+
+                  if self.is_number_EU(extract):
+
+                    in_dict = True
+
+                    overlap_dict.update({unique : float(extract.replace('.','').replace(',','.'))})
+                  
+              if in_dict is False:
+
+                overlap_dict.update({unique : np.nan})
+    
+    df[column + '_nmEU'] = df[column].astype(str)
+    df[column + '_nmEU'] = df[column + '_nmEU'].replace(overlap_dict)
+    
+
+
+    #get mean of training data
+    mean = df[column + '_nmEU'].mean()
+    if mean != mean:
+      mean = 0
+
+    #replace missing data with training set mean as default infill
+    df[column + '_nmEU'] = df[column + '_nmEU'].fillna(mean)
+    
+    
+    #a few more metrics collected for driftreport
+    #get maximum value of training column
+    maximum = df[column + '_nmEU'].max()
+    #get minimum value of training column
+    minimum = df[column + '_nmEU'].min()
+    
+    
+    #create list of columns
+    nmbrcolumns = [column + '_nmEU']
+
+
+    nmbrnormalization_dict = {column + '_nmEU' : {'overlap_dict' : overlap_dict, \
+                                                  'mean' : mean, \
+                                                  'maximum' : maximum, \
+                                                  'minimum' : minimum }}
+
+
+    #store some values in the nmbr_dict{} for use later in ML infill methods
+    column_dict_list = []
+
+    
+    for nc in nmbrcolumns:
+
+      column_dict = { nc : {'category' : 'nmEU', \
+                           'origcategory' : category, \
+                           'normalization_dict' : nmbrnormalization_dict, \
+                           'origcolumn' : column, \
+                           'inputcolumn' : column, \
+                           'columnslist' : nmbrcolumns, \
+                           'categorylist' : nmbrcolumns, \
+                           'infillmodel' : False, \
+                           'infillcomplete' : False, \
+                           'deletecolumn' : False}}
+
+      column_dict_list.append(column_dict.copy())
+    
+        
+    return df, column_dict_list
+  
+  def process_nmE4_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
+    """
+    #process_nmc4_class(df, column, category, postprocess_dict)
+    #parses string entries and if any numbers present returns numbers
+    #the check for numbers strips periods/spaces and replaces commas with periods
+    #such as to recognize international format
+    #entries without numbers present subject to infill
+    #assumes set of entries in test data is same or subset of train data for
+    #more efficient postmunge than vs nmc
+    """
+    
+    unique_list = list(mdf_train[column].unique())
+
+    unique_list = list(map(str, unique_list))
+    
+    maxlength = max(len(x) for x in unique_list)
+    
+    overlap_lengths = list(range(maxlength, 0, -1))
+
+    overlap_dict = {}
+    
+    for overlap_length in overlap_lengths:
+
+      for unique in unique_list:
+        
+        if unique not in overlap_dict:
+
+          len_unique = len(unique)
+
+          if len_unique >= overlap_length:
+            
+            if overlap_length > 1:
+
+              nbr_iterations = len_unique - overlap_length
+
+              for i in range(nbr_iterations + 1):
+                
+                if unique not in overlap_dict:
+
+                  extract = unique[i:(overlap_length+i)]
+
+  #                 extract_already_in_overlap_dict = False
+
+                  if self.is_number_EU(extract):
+
+                    overlap_dict.update({unique : float(extract.replace('.','').replace(',','.'))})
+                
+            #else if overlap_length == 1    
+            else:
+              
+              nbr_iterations = len_unique - overlap_length
+              
+              in_dict = False
+
+              for i in range(nbr_iterations + 1):
+                
+                if unique not in overlap_dict:
+
+                  extract = unique[i:(overlap_length+i)]
+
+  #                 extract_already_in_overlap_dict = False
+
+                  if self.is_number_EU(extract):
+
+                    in_dict = True
+
+                    overlap_dict.update({unique : float(extract.replace('.','').replace(',','.'))})
+                  
+              if in_dict is False:
+
+                overlap_dict.update({unique : np.nan})
+    
+    mdf_train[column + '_nmE4'] = mdf_train[column].astype(str)
+    mdf_train[column + '_nmE4'] = mdf_train[column + '_nmE4'].replace(overlap_dict)
+    
+    
+    #do same for test data
+    #note this assumes that set of entries for test data is same or a subset of train data
+    #any entries not present will be subject to default infill
+    #note that getNArows will not capture these infill for infill with assigninfill
+    
+    test_unique_list = list(mdf_test[column].unique())
+    test_unique_list = list(map(str, test_unique_list))
+    extra_test_unique = list(set(test_unique_list) - set(unique_list))
+    
+    test_overlap_dict = deepcopy(overlap_dict)
+    test_unique_list = list(map(str, test_unique_list))
+    for test_unique in extra_test_unique:
+      test_overlap_dict.update({str(test_unique) : np.nan})
+    
+    mdf_test[column + '_nmE4'] = mdf_test[column].astype(str)
+    mdf_test[column + '_nmE4'] = mdf_test[column + '_nmE4'].replace(test_overlap_dict)
+    
+
+    #get mean of training data
+    mean = mdf_train[column + '_nmE4'].mean()
+    if mean != mean:
+      mean = 0
+
+    #replace missing data with training set mean as default infill
+    mdf_train[column + '_nmE4'] = mdf_train[column + '_nmE4'].fillna(mean)
+    mdf_test[column + '_nmE4'] = mdf_test[column + '_nmE4'].fillna(mean)
+    
+    #a few more metrics collected for driftreport
+    #get maximum value of training column
+    maximum = mdf_train[column + '_nmE4'].max()
+    #get minimum value of training column
+    minimum = mdf_train[column + '_nmE4'].min()
+    
+    
+    #create list of columns
+    nmbrcolumns = [column + '_nmE4']
+
+
+    nmbrnormalization_dict = {column + '_nmE4' : {'overlap_dict' : overlap_dict, \
+                                                  'mean' : mean, \
+                                                  'maximum' : maximum, \
+                                                  'minimum' : minimum, \
+                                                  'unique_list' : unique_list}}
+
+    #store some values in the nmbr_dict{} for use later in ML infill methods
+    column_dict_list = []
+
+    
+    for nc in nmbrcolumns:
+
+      column_dict = { nc : {'category' : 'nmE4', \
+                           'origcategory' : category, \
+                           'normalization_dict' : nmbrnormalization_dict, \
+                           'origcolumn' : column, \
+                           'inputcolumn' : column, \
+                           'columnslist' : nmbrcolumns, \
+                           'categorylist' : nmbrcolumns, \
+                           'infillmodel' : False, \
+                           'infillcomplete' : False, \
+                           'deletecolumn' : False}}
+
+      column_dict_list.append(column_dict.copy())
+    
+        
+    return mdf_train, mdf_test, column_dict_list
+  
+  def process_nmE7_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
+    """
+    #process_nmE7_class(df, column, category, postprocess_dict)
+    #parses string entries and if any numbers present returns numbers
+    #the check for numbers strips periods/spaces and replaces commas with periods
+    #such as to recognize international format
+    #entries without numbers present subject to infill
+    #assumes set of entries in test data is same or subset of train data for
+    #more efficient postmunge than vs nmc
+    #comparable to nmc4 but instead of making blanket assumption that unique values in
+    #test set are found in train set, implements parsing for test set entries not found in train set
+    """
+    
+    unique_list = list(mdf_train[column].unique())
+
+    unique_list = list(map(str, unique_list))
+    
+    maxlength = max(len(x) for x in unique_list)
+    
+    overlap_lengths = list(range(maxlength, 0, -1))
+
+    overlap_dict = {}
+    
+    for overlap_length in overlap_lengths:
+
+      for unique in unique_list:
+        
+        if unique not in overlap_dict:
+
+          len_unique = len(unique)
+
+          if len_unique >= overlap_length:
+            
+            if overlap_length > 1:
+
+              nbr_iterations = len_unique - overlap_length
+
+              for i in range(nbr_iterations + 1):
+                
+                if unique not in overlap_dict:
+
+                  extract = unique[i:(overlap_length+i)]
+
+  #                 extract_already_in_overlap_dict = False
+
+                  if self.is_number_EU(extract):
+
+                    overlap_dict.update({unique : float(extract.replace('.','').replace(',','.'))})
+                
+            #else if overlap_length == 1    
+            else:
+              
+              nbr_iterations = len_unique - overlap_length
+              
+              in_dict = False
+
+              for i in range(nbr_iterations + 1):
+                
+                if unique not in overlap_dict:
+
+                  extract = unique[i:(overlap_length+i)]
+
+  #                 extract_already_in_overlap_dict = False
+
+                  if self.is_number_EU(extract):
+
+                    in_dict = True
+
+                    overlap_dict.update({unique : float(extract.replace('.','').replace(',','.'))})
+                  
+              if in_dict is False:
+
+                overlap_dict.update({unique : np.nan})
+    
+    mdf_train[column + '_nmE7'] = mdf_train[column].astype(str)
+    mdf_train[column + '_nmE7'] = mdf_train[column + '_nmE7'].replace(overlap_dict)
+    
+    
+    #do same for test data
+    #note this assumes that set of entries for test data is same or a subset of train data
+    #any entries not present will be subject to default infill
+    #note that getNArows will not capture these infill for infill with assigninfill
+    
+    test_unique_list = list(mdf_test[column].unique())
+    test_unique_list = list(map(str, test_unique_list))
+    extra_test_unique = list(set(test_unique_list) - set(unique_list))
+    
+    test_overlap_dict = deepcopy(overlap_dict)
+#     for test_unique in extra_test_unique:
+#       test_overlap_dict.update({str(test_unique) : np.nan})
+
+
+#     unique_list = list(mdf_train[column].unique())
+
+#     unique_list = list(map(str, unique_list))
+    
+    testmaxlength = max(len(x) for x in unique_list)
+    
+    if testmaxlength > maxlength:
+      maxlength = testmaxlength
+    
+    overlap_lengths = list(range(maxlength, 0, -1))
+
+#     overlap_dict = {}
+    
+    for overlap_length in overlap_lengths:
+
+      for unique in extra_test_unique:
+        
+        if unique not in test_overlap_dict:
+
+          len_unique = len(unique)
+
+          if len_unique >= overlap_length:
+            
+            if overlap_length > 1:
+
+              nbr_iterations = len_unique - overlap_length
+
+              for i in range(nbr_iterations + 1):
+                
+                if unique not in test_overlap_dict:
+
+                  extract = unique[i:(overlap_length+i)]
+
+  #                 extract_already_in_overlap_dict = False
+
+                  if self.is_number(extract):
+
+                    test_overlap_dict.update({unique : float(extract.replace('.','').replace(',','.'))})
+                
+            #else if overlap_length == 1    
+            else:
+              
+              nbr_iterations = len_unique - overlap_length
+              
+              in_dict = False
+
+              for i in range(nbr_iterations + 1):
+                
+                if unique not in test_overlap_dict:
+
+                  extract = unique[i:(overlap_length+i)]
+
+  #                 extract_already_in_overlap_dict = False
+
+                  if self.is_number(extract):
+
+                    in_dict = True
+
+                    test_overlap_dict.update({unique : float(extract.replace('.','').replace(',','.'))})
+                  
+              if in_dict is False:
+
+                test_overlap_dict.update({unique : np.nan})
+    
+    
+#     for test_unique in extra_test_unique:
+#       test_overlap_dict.update({str(test_unique) : np.nan})
+    
+
+    
+    mdf_test[column + '_nmE7'] = mdf_test[column].astype(str)
+    mdf_test[column + '_nmE7'] = mdf_test[column + '_nmE7'].replace(test_overlap_dict)
+    
+
+    #get mean of training data
+    mean = mdf_train[column + '_nmE7'].mean()
+    if mean != mean:
+      mean = 0
+
+    #replace missing data with training set mean as default infill
+    mdf_train[column + '_nmE7'] = mdf_train[column + '_nmE7'].fillna(mean)
+    mdf_test[column + '_nmE7'] = mdf_test[column + '_nmE7'].fillna(mean)
+    
+    #a few more metrics collected for driftreport
+    #get maximum value of training column
+    maximum = mdf_train[column + '_nmE7'].max()
+    #get minimum value of training column
+    minimum = mdf_train[column + '_nmE7'].min()
+    
+    
+    #create list of columns
+    nmbrcolumns = [column + '_nmE7']
+
+
+    nmbrnormalization_dict = {column + '_nmE7' : {'overlap_dict' : overlap_dict, \
+                                                  'mean' : mean, \
+                                                  'maximum' : maximum, \
+                                                  'minimum' : minimum, \
+                                                  'unique_list' : unique_list, \
+                                                  'maxlength' : maxlength}}
+
+    #store some values in the nmbr_dict{} for use later in ML infill methods
+    column_dict_list = []
+
+    
+    for nc in nmbrcolumns:
+
+      column_dict = { nc : {'category' : 'nmE7', \
                            'origcategory' : category, \
                            'normalization_dict' : nmbrnormalization_dict, \
                            'origcolumn' : column, \
@@ -20396,6 +21020,10 @@ class AutoMunge:
       
       NArows = self.parsenumeric_commas(df2, column)
       
+    if NArowtype in ['parsenumeric_EU']:
+      
+      NArows = self.parsenumeric_EU(df2, column)
+      
     if NArowtype in ['datetime']:
       
       df2[column] = pd.to_datetime(df2[column], errors = 'coerce')
@@ -20478,6 +21106,29 @@ class AutoMunge:
     try:
       #strips out commas
       s = float(s.replace(',',''))
+    except ValueError:
+      return False
+    if s == s and not np.isinf(s):
+      return True
+    else:
+      #(nan will be subject to infill)
+      return False
+    
+  def is_number_EU(self, s):
+    """
+    #support function for numeric parsing
+    #tests if a string s is numeric after stripping out periods
+    #and replacing commas with periods
+    #such as to convert from international conventions to US
+    #this is relavent for cases where working with international data on US OS
+    #I expect if working on international OS a different convention may be appropriate
+    #based on what is recognized as a float
+    """
+    try:
+      #strips out periods
+      s = s.replace('.','')
+      #replaces commas with periods
+      s = float(s.replace(',','.'))
     except ValueError:
       return False
     if s == s and not np.isinf(s):
@@ -20634,6 +21285,89 @@ class AutoMunge:
   #                 extract_already_in_overlap_dict = False
 
                   if self.is_number_comma(extract):
+
+                    in_dict = True
+
+                    overlap_dict.update({unique : False})
+                  
+              if in_dict is False:
+
+                overlap_dict.update({unique : True})
+    
+    df[column] = df[column].astype(str)
+    df[column] = df[column].replace(overlap_dict)
+#     df[column] = df[column].astype(np.int8)
+    
+    NArows = pd.DataFrame(df[column].copy())
+    
+    NArows.columns = [column+'_NArows']
+    
+    
+    return NArows
+  
+  def parsenumeric_EU(self, df, column):
+    """
+    #support function for process_nmEU and NArows
+    #parses string entries and returns a column with boolean identification
+    #for entries that include numeric string portions (after converting from international format)
+    #wherein activations are 0 if a number is present and 1 if not
+    #treats numeric entries as number as well
+    """
+    
+    #first we find overlaps from mdf_train
+    
+    unique_list = list(df[column].unique())
+
+    unique_list = list(map(str, unique_list))
+    
+    maxlength = max(len(x) for x in unique_list)
+    
+    overlap_lengths = list(range(maxlength, 0, -1))
+
+    overlap_dict = {}
+    
+    for overlap_length in overlap_lengths:
+
+      for unique in unique_list:
+        
+        if unique not in overlap_dict:
+
+          len_unique = len(unique)
+
+          if len_unique >= overlap_length:
+            
+            if overlap_length > 1:
+
+              nbr_iterations = len_unique - overlap_length
+
+              for i in range(nbr_iterations + 1):
+                
+                if unique not in overlap_dict:
+
+                  extract = unique[i:(overlap_length+i)]
+
+  #                 extract_already_in_overlap_dict = False
+
+                  if self.is_number_EU(extract):
+
+                    overlap_dict.update({unique : False})
+                
+            #else if overlap_length == 1    
+            else:
+              
+              nbr_iterations = len_unique - overlap_length
+              
+              in_dict = False
+
+              for i in range(nbr_iterations + 1):
+                
+                if unique not in overlap_dict:
+
+                  extract = unique[i:(overlap_length+i)]
+
+  #                 extract_already_in_overlap_dict = False
+
+                  if self.is_number_EU(extract):
 
                     in_dict = True
 
@@ -27149,8 +27883,8 @@ class AutoMunge:
                              'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], \
                              'spl8':[], 'spl9':[], 'sp10':[], 'sp16':[], \
                              'srch':[], 'src2':[], 'src4':[], 'strn':[], 'lngt':[], 'aggt':[], \
-                             'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
-                             'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
+                             'nmrc':[], 'nmr2':[], 'nmcm':[], 'nmc2':[], 'nmEU':[], 'nmE2':[], \
+                             'nmr7':[], 'nmr8':[], 'nmc7':[], 'nmc8':[], 'nmE7':[], 'nmE8':[], \
                              'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], 'ucct':[], 'Ucct':[], \
                              'or15':[], 'or17':[], 'or19':[], 'or20':[], 'or21':[], 'or22':[], \
                              'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
@@ -28592,7 +29326,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.15'
+    automungeversion = '4.16'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -32003,9 +32737,9 @@ class AutoMunge:
 
   #                 extract_already_in_overlap_dict = False
 
-                  if self.is_number(extract):
+                  if self.is_number_comma(extract):
 
-                    test_overlap_dict.update({unique : float(extract)})
+                    test_overlap_dict.update({unique : float(extract.replace(',',''))})
                 
             #else if overlap_length == 1    
             else:
@@ -32022,11 +32756,11 @@ class AutoMunge:
 
   #                 extract_already_in_overlap_dict = False
 
-                  if self.is_number(extract):
+                  if self.is_number_comma(extract):
 
                     in_dict = True
 
-                    test_overlap_dict.update({unique : float(extract)})
+                    test_overlap_dict.update({unique : float(extract.replace(',',''))})
                   
               if in_dict is False:
 
@@ -32039,6 +32773,168 @@ class AutoMunge:
 
     #replace missing data with training set mean as default infill
     mdf_test[column + '_nmc7'] = mdf_test[column + '_nmc7'].fillna(mean)
+    
+        
+    return mdf_test
+  
+  def postprocess_nmE4_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+    """
+    #process_nmE4_class(df, column, category, postprocess_dict)
+    #the check for numbers strips periods/spaces and replaces commas with periods
+    #such as to recognize international format
+    #entries without numbers present subject to infill
+    #assumes set of entries in test data is same or subset of train data for
+    #more efficient postmunge than vs nmc
+    """
+    
+    #get normkey
+    normkey = column + '_nmE4'
+    
+    #retrieve normalization parameters
+    mean = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
+
+    unique_list = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['unique_list']
+    
+    overlap_dict = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['overlap_dict']
+
+    
+    
+    #note this assumes that set of entries for test data is same or a subset of train data
+    #any entries not present will be subject to default infill (mean)
+    #note that getNArows will not capture these infill for infill with assigninfill
+    
+    test_unique_list = list(mdf_test[column].unique())
+    test_unique_list = list(map(str, test_unique_list))
+    extra_test_unique = list(set(test_unique_list) - set(unique_list))
+    
+    test_overlap_dict = deepcopy(overlap_dict)
+    for test_unique in extra_test_unique:
+      test_overlap_dict.update({str(test_unique) : np.nan})
+    
+    mdf_test[column + '_nmE4'] = mdf_test[column].astype(str)
+    mdf_test[column + '_nmE4'] = mdf_test[column + '_nmE4'].replace(test_overlap_dict)
+    
+
+    #replace missing data with training set mean as default infill
+    mdf_test[column + '_nmE4'] = mdf_test[column + '_nmE4'].fillna(mean)
+    
+        
+    return mdf_test
+  
+  def postprocess_nmE7_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+    """
+    #process_nmE7_class(df, column, category, postprocess_dict)
+    #parses string entries and if any numbers present returns numbers
+    #entries without numbers present subject to infill
+    #comparable to nmE4 but instead of making blanket assumption that unique values in
+    #test set are found in train set, implements parsing for test set entries not found in train set
+    """
+    
+    #get normkey
+    normkey = column + '_nmE7'
+    
+    #retrieve normalization parameters
+    mean = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
+
+    unique_list = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['unique_list']
+    
+    overlap_dict = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['overlap_dict']
+    
+    maxlength = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['maxlength']
+
+    
+    
+    #note this assumes that set of entries for test data is same or a subset of train data
+    #any entries not present will be subject to default infill (mean)
+    #note that getNArows will not capture these infill for infill with assigninfill
+    
+    test_unique_list = list(mdf_test[column].unique())
+    test_unique_list = list(map(str, test_unique_list))
+    extra_test_unique = list(set(test_unique_list) - set(unique_list))
+    
+    test_overlap_dict = deepcopy(overlap_dict)
+#     for test_unique in extra_test_unique:
+#       test_overlap_dict.update({str(test_unique) : np.nan})
+
+
+#     unique_list = list(mdf_train[column].unique())
+
+#     unique_list = list(map(str, unique_list))
+    
+    testmaxlength = max(len(x) for x in unique_list)
+    
+    if testmaxlength > maxlength:
+      maxlength = testmaxlength
+    
+    overlap_lengths = list(range(maxlength, 0, -1))
+
+#     overlap_dict = {}
+    
+    for overlap_length in overlap_lengths:
+
+      for unique in extra_test_unique:
+        
+        if unique not in test_overlap_dict:
+
+          len_unique = len(unique)
+
+          if len_unique >= overlap_length:
+            
+            if overlap_length > 1:
+
+              nbr_iterations = len_unique - overlap_length
+
+              for i in range(nbr_iterations + 1):
+                
+                if unique not in test_overlap_dict:
+
+                  extract = unique[i:(overlap_length+i)]
+
+  #                 extract_already_in_overlap_dict = False
+
+                  if self.is_number_EU(extract):
+
+                    test_overlap_dict.update({unique : float(extract.replace('.','').replace(',','.'))})
+                
+            #else if overlap_length == 1    
+            else:
+              
+              nbr_iterations = len_unique - overlap_length
+              
+              in_dict = False
+
+              for i in range(nbr_iterations + 1):
+                
+                if unique not in test_overlap_dict:
+
+                  extract = unique[i:(overlap_length+i)]
+
+  #                 extract_already_in_overlap_dict = False
+
+                  if self.is_number_EU(extract):
+
+                    in_dict = True
+
+                    test_overlap_dict.update({unique : float(extract.replace('.','').replace(',','.'))})
+                  
+              if in_dict is False:
+
+                test_overlap_dict.update({unique : np.nan})
+
+    
+    mdf_test[column + '_nmE7'] = mdf_test[column].astype(str)
+    mdf_test[column + '_nmE7'] = mdf_test[column + '_nmE7'].replace(test_overlap_dict)
+    
+
+    #replace missing data with training set mean as default infill
+    mdf_test[column + '_nmE7'] = mdf_test[column + '_nmE7'].fillna(mean)
     
         
     return mdf_test
