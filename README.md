@@ -1544,11 +1544,12 @@ the smoothing factor to specific cells based on the activated column and target 
 Note that if LabelSmoothing passed as True the LSfit will be based on the basis from
 the corresponding automunge(.) call (will override the one passed to postmunge).
 
-* inversion: defaults to False, may be passed as one of {False, ‘test’, ‘labels’}, where 
-‘test’ or ‘labels’ activate an inversion operation to recover, by a set of transformations 
+* inversion: defaults to False, may be passed as one of {False, ‘test’, ‘labels’, or a list}, 
+where ‘test’ or ‘labels’ activate an inversion operation to recover, by a set of transformations 
 mirroring the inversion of those applied in automunge(.), the form of test data or labels 
-data to consistency with the source columns as were originally passed to automunge(.). The 
-inversion operation is supported by the optional process_dict entries ‘info_retention’ and 
+data to consistency with the source columns as were originally passed to automunge(.). When 
+passed as a list, accepts list of source column or returned column headers for inversion target. 
+The inversion operation is supported by the optional process_dict entries ‘info_retention’ and 
 ‘inverseprocess’. Note that columns are only returned for those sets in which a path of 
 inversion was available by processdict inverseprocess entries. Note that the path of 
 inversion is prioritized to those returned sets with information retention and availability 
