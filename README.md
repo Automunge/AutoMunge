@@ -2626,7 +2626,7 @@ for identified overlap entries. (Note for multiple activations encoding priority
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: overlap_dict / mean / maximum / minimum
   - inversion available: yes with full recovery
-* nmEU/nmE2/nmE3: similar to nmcm, but recognizes numbers with period deliminator and comma decimal
+* nmEU/nmE2/nmE3: similar to nmcm, but recognizes numbers with period or space thousands deliminator and comma decimal
   - default infill: mean
   - default NArowtype: parsenumeric_EU
   - suffix appender: '_nmEU'
