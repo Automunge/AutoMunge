@@ -158,8 +158,8 @@ am.automunge(df_train, df_test = False, \
                           'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], \
                           'spl8':[], 'spl9':[], 'sp10':[], 'sp16':[], \
                           'srch':[], 'src2':[], 'src4':[], 'strn':[], 'lngt':[], 'aggt':[], \
-                          'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
-                          'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
+                          'nmrc':[], 'nmr2':[], 'nmcm':[], 'nmc2':[], 'nmEU':[], 'nmE2':[], \
+                          'nmr7':[], 'nmr8':[], 'nmc7':[], 'nmc8':[], 'nmE7':[], 'nmE8':[], \
                           'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], 'ucct':[], 'Ucct':[], \
                           'or15':[], 'or17':[], 'or19':[], 'or20':[], 'or21':[], 'or22':[], \
                           'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
@@ -386,8 +386,8 @@ am.automunge(df_train, df_test = False, \
                           'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], \
                           'spl8':[], 'spl9':[], 'sp10':[], 'sp16':[], \
                           'srch':[], 'src2':[], 'src4':[], 'strn':[], 'lngt':[], 'aggt':[], \
-                          'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
-                          'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
+                          'nmrc':[], 'nmr2':[], 'nmcm':[], 'nmc2':[], 'nmEU':[], 'nmE2':[], \
+                          'nmr7':[], 'nmr8':[], 'nmc7':[], 'nmc8':[], 'nmE7':[], 'nmE8':[], \
                           'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], 'ucct':[], 'Ucct':[], \
                           'or15':[], 'or17':[], 'or19':[], 'or20':[], 'or21':[], 'or22':[], \
                           'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
@@ -610,8 +610,8 @@ am.automunge(df_train, df_test = False, \
                           'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], \
                           'spl8':[], 'spl9':[], 'sp10':[], 'sp16':[], \
                           'srch':[], 'src2':[], 'src4':[], 'strn':[], 'lngt':[], 'aggt':[], \
-                          'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
-                          'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
+                          'nmrc':[], 'nmr2':[], 'nmcm':[], 'nmc2':[], 'nmEU':[], 'nmE2':[], \
+                          'nmr7':[], 'nmr8':[], 'nmc7':[], 'nmc8':[], 'nmE7':[], 'nmE8':[], \
                           'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], 'ucct':[], 'Ucct':[], \
                           'or15':[], 'or17':[], 'or19':[], 'or20':[], 'or21':[], 'or22':[], \
                           'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
@@ -980,8 +980,8 @@ assigncat = {'nmbr':[], 'retn':[], 'mnmx':[], 'mean':[], 'MAD3':[], 'lgnm':[], \
              'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], \
              'spl8':[], 'spl9':[], 'sp10':[], 'sp16':[], \
              'srch':[], 'src2':[], 'src4':[], 'strn':[], 'lngt':[], 'aggt':[], \
-             'nmrc':[], 'nmr2':[], 'nmr3':[], 'nmcm':[], 'nmc2':[], 'nmc3':[], \
-             'nmr7':[], 'nmr8':[], 'nmr9':[], 'nmc7':[], 'nmc8':[], 'nmc9':[], \
+             'nmrc':[], 'nmr2':[], 'nmcm':[], 'nmc2':[], 'nmEU':[], 'nmE2':[], \
+             'nmr7':[], 'nmr8':[], 'nmc7':[], 'nmc8':[], 'nmE7':[], 'nmE8':[], \
              'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], 'ucct':[], 'Ucct':[], \
              'or15':[], 'or17':[], 'or19':[], 'or20':[], 'or21':[], 'or22':[], \
              'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
@@ -1219,6 +1219,8 @@ processdict =  {'newt' : {'dualprocess' : None, \
 # - 'parsenumeric' marks for infill strings that don't contain any numeric character entries
 # - 'parsenumeric_commas' marks for infill strings that don't contain any numeric character 
 #                         entries, recognizes commas
+# - 'parsenumeric_EU' marks for infill strings that don't contain any numeric character entries,
+#                         recognizes international standard of period deliminator and comma decimal
 # - 'datetime' marks for infill cells that aren't recognized as datetime objects
 # ** Note that NArowtype also is used as basis for metrics evaluated in drift assessment of source columns
 # ** Note that by default any np.inf values are converted to NaN for infill
@@ -2624,6 +2626,13 @@ for identified overlap entries. (Note for multiple activations encoding priority
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: overlap_dict / mean / maximum / minimum
   - inversion available: yes with full recovery
+* nmEU/nmE2/nmE3: similar to nmcm, but recognizes numbers with period deliminator and comma decimal
+  - default infill: mean
+  - default NArowtype: parsenumeric_EU
+  - suffix appender: '_nmEU'
+  - assignparam parameters accepted: none
+  - driftreport postmunge metrics: overlap_dict / mean / maximum / minimum
+  - inversion available: yes with full recovery
 * strn: parses strings and returns any non-number groupings, prioritized by longest length
   - default infill: 'zzzinfill'
   - default NArowtype: justNaN
@@ -2632,8 +2641,8 @@ for identified overlap entries. (Note for multiple activations encoding priority
   - driftreport postmunge metrics: overlap_dict
   - inversion available: pending
 ### More Efficient String Parsing
-* new processing functions nmr4/nmr5/nmr6/nmc4/nmc5/nmc6/spl8/spl9/sp10 (spelled sp"ten")/sp16/src2:
-  - comparable to functions nmrc/nmr2/nmr3/nmcm/nmc2/nmc3/splt/spl2/spl5/sp15/srch
+* new processing functions nmr4/nmr5/nmr6/nmc4/nmc5/nmc6/nmE4/nmE5/nmE6/spl8/spl9/sp10 (spelled sp"ten")/sp16/src2:
+  - comparable to functions nmrc/nmr2/nmr3/nmcm/nmc2/nmc3/nmEU/nmE2/nmE3/splt/spl2/spl5/sp15/srch
   - but make use of new assumption that set of unique values in test set is same or a subset of those values 
     from the train set, which allows for a more efficient application (no more string parsing of test sets)
   - default infill: comparable
@@ -2642,8 +2651,8 @@ for identified overlap entries. (Note for multiple activations encoding priority
   - assignparam parameters accepted: comparable
   - driftreport postmunge metrics: comparable
   - inversion available: yes
-* new processing functions nmr7/nmr8/nmr9/nmc7/nmc8/nmc9:
-  - comparable to functions nmrc/nmr2/nmr3/nmcm/nmc2/nmc3
+* new processing functions nmr7/nmr8/nmr9/nmc7/nmc8/nmc9/nmE7/nmE8/nmE9:
+  - comparable to functions nmrc/nmr2/nmr3/nmcm/nmc2/nmc3/nmEU/nmE2/nmE3
   - but implements string parsing only for unique test set entries not found in train set
   - for more efficient test set processing in automunge and postmunge
   - (less efficient than nmr4/nmc4 etc but captures outlier points as may not be unusual in continuous distributions)
@@ -2857,6 +2866,15 @@ avoid unintentional duplication.
 - 'nmd5',
 - 'nmd6',
 - 'nmdx',
+- 'nmE2',
+- 'nmE3',
+- 'nmE4',
+- 'nmE5',
+- 'nmE6',
+- 'nmE7',
+- 'nmE8',
+- 'nmE9',
+- 'nmEm',
 - 'nmr2',
 - 'nmr3',
 - 'nmr4',
@@ -3032,6 +3050,9 @@ that any user passing a custom defined transformation can avoid any unintentiona
 - '_nmc4'
 - '_nmc7'
 - '_nmcm'
+- '_nmE4'
+- '_nmE7'
+- '_nmEU'
 - '_nmr4'
 - '_nmr7'
 - '_nmrc'
@@ -3935,6 +3956,87 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'friends'       : []}})
     
     transform_dict.update({'nmc9' : {'parents'       : ['nmc9'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : ['mnmx'], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'nmEU' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['nmEU'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+  
+    transform_dict.update({'nmE2' : {'parents'       : ['nmE2'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : ['nmbr'], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'nmE3' : {'parents'       : ['nmE3'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : ['mnmx'], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'nmE4' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['nmE4'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+  
+    transform_dict.update({'nmE5' : {'parents'       : ['nmE5'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : ['nmbr'], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'nmE6' : {'parents'       : ['nmE6'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : ['mnmx'], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'nmE7' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['nmE7'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+  
+    transform_dict.update({'nmE8' : {'parents'       : ['nmE8'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : ['nmbr'], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'nmE9' : {'parents'       : ['nmE9'], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : [], \
                                      'cousins'       : [NArw], \
