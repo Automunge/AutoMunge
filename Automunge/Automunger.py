@@ -3228,7 +3228,7 @@ class AutoMunge:
                                   'singleprocess' : self.process_nmrc_class, \
                                   'postprocess' : None, \
                                   'inverseprocess' : self.inverseprocess_nmrc, \
-                                  'info_retention' : True, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmbr'}})
@@ -3236,43 +3236,55 @@ class AutoMunge:
                                   'singleprocess' : self.process_nmrc_class, \
                                   'postprocess' : None, \
                                   'inverseprocess' : self.inverseprocess_nmrc, \
-                                  'info_retention' : True, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mnmx'}})
     process_dict.update({'nmr4' : {'dualprocess' : self.process_nmr4_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_nmr4_class, \
+                                  'inverseprocess' : self.inverseprocess_nmrc, \
+                                  'info_retention' : True, \
                                   'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmrc'}})
     process_dict.update({'nmr5' : {'dualprocess' : self.process_nmr4_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_nmr4_class, \
+                                  'inverseprocess' : self.inverseprocess_nmrc, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmbr'}})
     process_dict.update({'nmr6' : {'dualprocess' : self.process_nmr4_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_nmr4_class, \
+                                  'inverseprocess' : self.inverseprocess_nmrc, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mnmx'}})
     process_dict.update({'nmr7' : {'dualprocess' : self.process_nmr7_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_nmr7_class, \
+                                  'inverseprocess' : self.inverseprocess_nmrc, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmrc'}})
     process_dict.update({'nmr8' : {'dualprocess' : self.process_nmr7_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_nmr7_class, \
+                                  'inverseprocess' : self.inverseprocess_nmrc, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmbr'}})
     process_dict.update({'nmr9' : {'dualprocess' : self.process_nmr7_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_nmr7_class, \
+                                  'inverseprocess' : self.inverseprocess_nmrc, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mnmx'}})
@@ -3288,7 +3300,7 @@ class AutoMunge:
                                   'singleprocess' : self.process_nmcm_class, \
                                   'postprocess' : None, \
                                   'inverseprocess' : self.inverseprocess_nmrc, \
-                                  'info_retention' : True, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'parsenumeric_commas', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmbr'}})
@@ -3296,43 +3308,55 @@ class AutoMunge:
                                   'singleprocess' : self.process_nmcm_class, \
                                   'postprocess' : None, \
                                   'inverseprocess' : self.inverseprocess_nmrc, \
-                                  'info_retention' : True, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'parsenumeric_commas', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mnmx'}})
     process_dict.update({'nmc4' : {'dualprocess' : self.process_nmc4_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_nmc4_class, \
+                                  'inverseprocess' : self.inverseprocess_nmrc, \
+                                  'info_retention' : True, \
                                   'NArowtype' : 'parsenumeric_commas', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmrc'}})
     process_dict.update({'nmc5' : {'dualprocess' : self.process_nmc4_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_nmc4_class, \
+                                  'inverseprocess' : self.inverseprocess_nmrc, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'parsenumeric_commas', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmbr'}})
     process_dict.update({'nmc6' : {'dualprocess' : self.process_nmc4_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_nmc4_class, \
+                                  'inverseprocess' : self.inverseprocess_nmrc, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'parsenumeric_commas', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mnmx'}})
     process_dict.update({'nmc7' : {'dualprocess' : self.process_nmc7_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_nmc7_class, \
+                                  'inverseprocess' : self.inverseprocess_nmrc, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'parsenumeric_commas', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmrc'}})
     process_dict.update({'nmc8' : {'dualprocess' : self.process_nmc7_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_nmc7_class, \
+                                  'inverseprocess' : self.inverseprocess_nmrc, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'parsenumeric_commas', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmbr'}})
     process_dict.update({'nmc9' : {'dualprocess' : self.process_nmc7_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_nmc7_class, \
+                                  'inverseprocess' : self.inverseprocess_nmrc, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'parsenumeric_commas', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mnmx'}})
@@ -3348,7 +3372,7 @@ class AutoMunge:
                                   'singleprocess' : self.process_nmEU_class, \
                                   'postprocess' : None, \
                                   'inverseprocess' : self.inverseprocess_nmrc, \
-                                  'info_retention' : True, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'parsenumeric_EU', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmbr'}})
@@ -3356,43 +3380,55 @@ class AutoMunge:
                                   'singleprocess' : self.process_nmEU_class, \
                                   'postprocess' : None, \
                                   'inverseprocess' : self.inverseprocess_nmrc, \
-                                  'info_retention' : True, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'parsenumeric_EU', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mnmx'}})
     process_dict.update({'nmE4' : {'dualprocess' : self.process_nmE4_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_nmE4_class, \
+                                  'inverseprocess' : self.inverseprocess_nmrc, \
+                                  'info_retention' : True, \
                                   'NArowtype' : 'parsenumeric_EU', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmrc'}})
     process_dict.update({'nmE5' : {'dualprocess' : self.process_nmE4_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_nmE4_class, \
+                                  'inverseprocess' : self.inverseprocess_nmrc, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'parsenumeric_EU', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmbr'}})
     process_dict.update({'nmE6' : {'dualprocess' : self.process_nmE4_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_nmE4_class, \
+                                  'inverseprocess' : self.inverseprocess_nmrc, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'parsenumeric_EU', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mnmx'}})
     process_dict.update({'nmE7' : {'dualprocess' : self.process_nmE7_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_nmE7_class, \
+                                  'inverseprocess' : self.inverseprocess_nmrc, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'parsenumeric_EU', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmrc'}})
     process_dict.update({'nmE8' : {'dualprocess' : self.process_nmE7_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_nmE7_class, \
+                                  'inverseprocess' : self.inverseprocess_nmrc, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'parsenumeric_EU', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmbr'}})
     process_dict.update({'nmE9' : {'dualprocess' : self.process_nmE7_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_nmE7_class, \
+                                  'inverseprocess' : self.inverseprocess_nmrc, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'parsenumeric_EU', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mnmx'}})
@@ -11453,7 +11489,7 @@ class AutoMunge:
 
                   if self.is_number_EU(extract):
 
-                    overlap_dict.update({unique : float(extract.replace('.','').replace(',','.'))})
+                    overlap_dict.update({unique : float(extract[0] + extract[1:-1].replace(' ','').replace('.','').replace(',','.') + extract[-1])})
                 
             #else if overlap_length == 1    
             else:
@@ -11474,7 +11510,7 @@ class AutoMunge:
 
                     in_dict = True
 
-                    overlap_dict.update({unique : float(extract.replace('.','').replace(',','.'))})
+                    overlap_dict.update({unique : float(extract[0] + extract[1:-1].replace(' ','').replace('.','').replace(',','.') + extract[-1])})
                   
               if in_dict is False:
 
@@ -11578,7 +11614,7 @@ class AutoMunge:
 
                   if self.is_number_EU(extract):
 
-                    overlap_dict.update({unique : float(extract.replace('.','').replace(',','.'))})
+                    overlap_dict.update({unique : float(extract[0] + extract[1:-1].replace(' ','').replace('.','').replace(',','.') + extract[-1])})
                 
             #else if overlap_length == 1    
             else:
@@ -11599,7 +11635,7 @@ class AutoMunge:
 
                     in_dict = True
 
-                    overlap_dict.update({unique : float(extract.replace('.','').replace(',','.'))})
+                    overlap_dict.update({unique : float(extract[0] + extract[1:-1].replace(' ','').replace('.','').replace(',','.') + extract[-1])})
                   
               if in_dict is False:
 
@@ -11722,7 +11758,7 @@ class AutoMunge:
 
                   if self.is_number_EU(extract):
 
-                    overlap_dict.update({unique : float(extract.replace('.','').replace(',','.'))})
+                    overlap_dict.update({unique : float(extract[0] + extract[1:-1].replace(' ','').replace('.','').replace(',','.') + extract[-1])})
                 
             #else if overlap_length == 1    
             else:
@@ -11743,7 +11779,7 @@ class AutoMunge:
 
                     in_dict = True
 
-                    overlap_dict.update({unique : float(extract.replace('.','').replace(',','.'))})
+                    overlap_dict.update({unique : float(extract[0] + extract[1:-1].replace(' ','').replace('.','').replace(',','.') + extract[-1])})
                   
               if in_dict is False:
 
@@ -11804,7 +11840,7 @@ class AutoMunge:
 
                   if self.is_number(extract):
 
-                    test_overlap_dict.update({unique : float(extract.replace('.','').replace(',','.'))})
+                    test_overlap_dict.update({unique : float(extract[0] + extract[1:-1].replace(' ','').replace('.','').replace(',','.') + extract[-1])})
                 
             #else if overlap_length == 1    
             else:
@@ -11825,7 +11861,7 @@ class AutoMunge:
 
                     in_dict = True
 
-                    test_overlap_dict.update({unique : float(extract.replace('.','').replace(',','.'))})
+                    test_overlap_dict.update({unique : float(extract[0] + extract[1:-1].replace(' ','').replace('.','').replace(',','.') + extract[-1])})
                   
               if in_dict is False:
 
@@ -21014,15 +21050,23 @@ class AutoMunge:
     if NArowtype in ['parsenumeric']:
       
       NArows = self.parsenumeric(df2, column)
-      
+
+      drift_dict.update({column : {'nunique' : df2[column].nunique(), \
+                                   'nanratio' : pd.isna(df2[column]).sum() / df2[column].shape[0]}})      
       
     if NArowtype in ['parsenumeric_commas']:
       
       NArows = self.parsenumeric_commas(df2, column)
+
+      drift_dict.update({column : {'nunique' : df2[column].nunique(), \
+                                   'nanratio' : pd.isna(df2[column]).sum() / df2[column].shape[0]}})
       
     if NArowtype in ['parsenumeric_EU']:
       
       NArows = self.parsenumeric_EU(df2, column)
+
+      drift_dict.update({column : {'nunique' : df2[column].nunique(), \
+                                   'nanratio' : pd.isna(df2[column]).sum() / df2[column].shape[0]}})
       
     if NArowtype in ['datetime']:
       
@@ -21125,10 +21169,8 @@ class AutoMunge:
     #based on what is recognized as a float
     """
     try:
-      #strips out periods
-      s = s.replace('.','')
-      #replaces commas with periods
-      s = float(s.replace(',','.'))
+      #strips out spaces, periods other than first and last character, replaces commas with periods, cast as float
+      s = float(s[0] + s[1:-1].replace(' ','').replace('.','').replace(',','.') + s[-1])
     except ValueError:
       return False
     if s == s and not np.isinf(s):
@@ -29326,7 +29368,7 @@ class AutoMunge:
 
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.16'
+    automungeversion = '4.17'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -32901,7 +32943,7 @@ class AutoMunge:
 
                   if self.is_number_EU(extract):
 
-                    test_overlap_dict.update({unique : float(extract.replace('.','').replace(',','.'))})
+                    test_overlap_dict.update({unique : float(extract[0] + extract[1:-1].replace(' ','').replace('.','').replace(',','.') + extract[-1])})
                 
             #else if overlap_length == 1    
             else:
@@ -32922,7 +32964,7 @@ class AutoMunge:
 
                     in_dict = True
 
-                    test_overlap_dict.update({unique : float(extract.replace('.','').replace(',','.'))})
+                    test_overlap_dict.update({unique : float(extract[0] + extract[1:-1].replace(' ','').replace('.','').replace(',','.') + extract[-1])})
                   
               if in_dict is False:
 
