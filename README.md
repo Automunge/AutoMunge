@@ -886,7 +886,8 @@ any application of PCA
 
 * excl_suffix: boolean selector _{True, False}_ for whether columns headers from 'excl' 
 transform are returned with suffix appender '\_excl' included. Defaults to False for
-no suffix.
+no suffix. For advanced users setting this to True makes navigating data structures a 
+little easier at small cost of aesthetics of any 'excl' pass-through column headers.
 
 * ML_cmnd: 
 
