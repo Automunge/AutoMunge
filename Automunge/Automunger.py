@@ -458,6 +458,15 @@ class AutoMunge:
                                      'coworkers'     : [], \
                                      'friends'       : []}})
 
+    transform_dict.update({'onht' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['onht'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+    
     transform_dict.update({'text' : {'parents'       : [], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : ['text'], \
@@ -510,6 +519,15 @@ class AutoMunge:
                                      'children'      : [], \
                                      'niecesnephews' : [], \
                                      'coworkers'     : [], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'Unht' : {'parents'       : ['Unht'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['onht'], \
                                      'friends'       : []}})
   
     transform_dict.update({'Utxt' : {'parents'       : ['Utxt'], \
@@ -2922,6 +2940,14 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'binary', \
                                   'labelctgy' : 'bnr2'}})
+    process_dict.update({'onht' : {'dualprocess' : self.process_onht_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_onht_class, \
+                                  'inverseprocess' : self.inverseprocess_onht, \
+                                  'info_retention' : True, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'multirt', \
+                                  'labelctgy' : 'onht'}})
     process_dict.update({'text' : {'dualprocess' : self.process_text_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_text_class, \
@@ -2966,57 +2992,83 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'exclude'}})
+    process_dict.update({'Unht' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_UPCS_class, \
+                                  'postprocess' : None, \
+                                  'inverseprocess' : self.inverseprocess_UPCS, \
+                                  'info_retention' : False, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'exclude', \
+                                  'labelctgy' : 'onht'}})
     process_dict.update({'Utxt' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_UPCS_class, \
                                   'postprocess' : None, \
+                                  'inverseprocess' : self.inverseprocess_UPCS, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'text'}})
     process_dict.update({'Utx2' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_UPCS_class, \
                                   'postprocess' : None, \
+                                  'inverseprocess' : self.inverseprocess_UPCS, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'text'}})
     process_dict.update({'Utx3' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_UPCS_class, \
                                   'postprocess' : None, \
+                                  'inverseprocess' : self.inverseprocess_UPCS, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'text'}})
     process_dict.update({'Ucct' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_UPCS_class, \
                                   'postprocess' : None, \
+                                  'inverseprocess' : self.inverseprocess_UPCS, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'ucct'}})
     process_dict.update({'Uord' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_UPCS_class, \
                                   'postprocess' : None, \
+                                  'inverseprocess' : self.inverseprocess_UPCS, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'ordl'}})
     process_dict.update({'Uor2' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_UPCS_class, \
                                   'postprocess' : None, \
+                                  'inverseprocess' : self.inverseprocess_UPCS, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'mnmx'}})
     process_dict.update({'Uor3' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_UPCS_class, \
                                   'postprocess' : None, \
+                                  'inverseprocess' : self.inverseprocess_UPCS, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'ord3'}})
     process_dict.update({'Uor6' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_UPCS_class, \
                                   'postprocess' : None, \
+                                  'inverseprocess' : self.inverseprocess_UPCS, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'ord3'}})
     process_dict.update({'U101' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_UPCS_class, \
                                   'postprocess' : None, \
+                                  'inverseprocess' : self.inverseprocess_UPCS, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : '1010'}})
@@ -6474,6 +6526,165 @@ class AutoMunge:
 
     #return mdf, bnrycolumns, categorylist, column_dict_list
     return mdf_train, mdf_test, column_dict_list
+  
+  def process_onht_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
+    '''
+    #process_onht_class(mdf_train, mdf_test, column, category, postprocess_dict, params = {})
+    #preprocess column with one hot encoding
+    #same as 'text' transform except labels returned column with integer instead of entry appender
+    '''
+    
+    tempcolumn = column + '_:;:_temp'
+    
+    #store original column for later retrieval
+    mdf_train[tempcolumn] = mdf_train[column].copy()
+    mdf_test[tempcolumn] = mdf_test[column].copy()
+
+    #convert column to category
+    mdf_train[tempcolumn] = mdf_train[tempcolumn].astype('category')
+    mdf_test[tempcolumn] = mdf_test[tempcolumn].astype('category')
+
+    #if set is categorical we'll need the plug value for missing values included
+    if 'zzzinfill' not in mdf_train[tempcolumn].cat.categories:
+      mdf_train[tempcolumn] = mdf_train[tempcolumn].cat.add_categories(['zzzinfill'])
+    if 'zzzinfill' not in mdf_test[tempcolumn].cat.categories:
+      mdf_test[tempcolumn] = mdf_test[tempcolumn].cat.add_categories(['zzzinfill'])
+
+    #replace NA with a dummy variable
+    mdf_train[tempcolumn] = mdf_train[tempcolumn].fillna('zzzinfill')
+    mdf_test[tempcolumn] = mdf_test[tempcolumn].fillna('zzzinfill')
+
+    #replace numerical with string equivalent
+    mdf_train[tempcolumn] = mdf_train[tempcolumn].astype(str)
+    mdf_test[tempcolumn] = mdf_test[tempcolumn].astype(str)
+
+    #extract categories for column labels
+    #note that .unique() extracts the labels as a numpy array
+    labels_train = mdf_train[tempcolumn].unique()
+    labels_train.sort(axis=0)
+    labels_train = list(labels_train)
+    orig_labels_train = list(labels_train.copy())
+    labels_test = mdf_test[tempcolumn].unique()
+    labels_test.sort(axis=0)
+    labels_test = list(labels_test)
+
+    #pandas one hot encoder
+    df_train_cat = pd.get_dummies(mdf_train[tempcolumn])
+    df_test_cat = pd.get_dummies(mdf_test[tempcolumn])
+
+    #append column header name to each category listing
+    labels_train = [column + '_' + entry for entry in labels_train]
+    labels_test = [column + '_' + entry for entry in labels_test]
+    
+    labels_dict = {}
+    i = 0
+    for entry in labels_train:
+      labels_dict.update({entry : column + '_onht_' + str(i)})
+      i += 1
+    
+    #convert sparse array to pandas dataframe with column labels
+    df_train_cat.columns = labels_train
+    df_test_cat.columns = labels_test
+
+    #Get missing columns in test set that are present in training set
+    missing_cols = set( df_train_cat.columns ) - set( df_test_cat.columns )
+
+    #Add a missing column in test set with default value equal to 0
+    for c in missing_cols:
+        df_test_cat[c] = 0
+    #Ensure the order of column in the test set is in the same order than in train set
+    #Note this also removes categories in test set that aren't present in training set
+    df_test_cat = df_test_cat[df_train_cat.columns]
+
+    #concatinate the sparse set with the rest of our training data
+    mdf_train = pd.concat([df_train_cat, mdf_train], axis=1)
+    mdf_test = pd.concat([df_test_cat, mdf_test], axis=1)
+
+    del mdf_train[tempcolumn]    
+    del mdf_test[tempcolumn]
+    
+    #delete _NArw column, this will be processed seperately in the processfamily function
+    #delete support NArw2 column
+#     columnNArw = column + '_NArw'
+    columnNAr2 = column + '_zzzinfill'
+    if columnNAr2 in list(mdf_train):
+      del mdf_train[columnNAr2]
+    if columnNAr2 in list(mdf_test):
+      del mdf_test[columnNAr2]
+    if 'zzzinfill' in orig_labels_train:
+      orig_labels_train.remove('zzzinfill')
+
+#     del mdf_train[column + '_NAr2']    
+#     del mdf_test[column + '_NAr2']
+    
+    #create output of a list of the created column names
+    NAcolumn = columnNAr2
+    labels_train = list(df_train_cat)
+    if NAcolumn in labels_train:
+      labels_train.remove(NAcolumn)
+    textcolumns = labels_train
+    
+    #now we'll creaate a dicitonary of the columns : categories for later reference
+    #reminder here is list of. unque values from original column
+    #labels_train
+    
+    normalizationdictvalues = labels_train
+    normalizationdictkeys = textcolumns
+    
+    normalizationdictkeys.sort()
+    normalizationdictvalues.sort()
+    
+    #textlabelsdict = dict(zip(normalizationdictkeys, normalizationdictvalues))
+    textlabelsdict = dict(zip(normalizationdictvalues, orig_labels_train))
+    
+    #change data types to 8-bit (1 byte) integers for memory savings
+    for textcolumn in textcolumns:
+      mdf_train[textcolumn] = mdf_train[textcolumn].astype(np.int8)
+      mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.int8)
+
+    #store some values in the text_dict{} for use later in ML infill methods
+    column_dict_list = []
+
+    categorylist = textcolumns.copy()
+#     categorylist.remove(columnNArw)
+
+    #now convert coloumn headers from text convention to onht convention
+    mdf_train = mdf_train.rename(columns=labels_dict)
+    mdf_test  = mdf_test.rename(columns=labels_dict)
+    
+    textcolumns = [labels_dict[entry] for entry in textcolumns]
+    
+    inverse_labels_dict = {value:key for key,value in labels_dict.items()}
+    for key in inverse_labels_dict:
+      inverse_labels_dict[key] = inverse_labels_dict[key][len(column) + 1:]
+
+
+    for tc in textcolumns:
+    
+      #new parameter collected for driftreport
+      tc_ratio = tc + '_ratio'
+      tcratio = mdf_train[tc].sum() / mdf_train[tc].shape[0]
+
+      textnormalization_dict = {tc : {'textlabelsdict_onht' : textlabelsdict, \
+                                      tc_ratio : tcratio, \
+                                      'labels_dict' : labels_dict, \
+                                      'inverse_labels_dict' : inverse_labels_dict, \
+                                      'text_categorylist' : categorylist}}
+      
+      column_dict = {tc : {'category' : 'onht', \
+                           'origcategory' : category, \
+                           'normalization_dict' : textnormalization_dict, \
+                           'origcolumn' : column, \
+                           'inputcolumn' : column, \
+                           'columnslist' : textcolumns, \
+                           'categorylist' : textcolumns, \
+                           'infillmodel' : False, \
+                           'infillcomplete' : False, \
+                           'deletecolumn' : False}}
+
+      column_dict_list.append(column_dict.copy())
+    
+    return mdf_train, mdf_test, column_dict_list
 
   def process_text_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
     '''
@@ -6524,18 +6735,19 @@ class AutoMunge:
     #note that .unique() extracts the labels as a numpy array
     labels_train = mdf_train[tempcolumn].unique()
     labels_train.sort(axis=0)
+    labels_train = list(labels_train)
     orig_labels_train = list(labels_train.copy())
     labels_test = mdf_test[tempcolumn].unique()
     labels_test.sort(axis=0)
+    labels_test = list(labels_test)
 
     #pandas one hot encoder
     df_train_cat = pd.get_dummies(mdf_train[tempcolumn])
     df_test_cat = pd.get_dummies(mdf_test[tempcolumn])
 
     #append column header name to each category listing
-    #note the iteration is over a numpy array hence the [...] approach
-    labels_train[...] = column + '_' + labels_train[...]
-    labels_test[...] = column + '_' + labels_test[...]
+    labels_train = [column + '_' + entry for entry in labels_train]
+    labels_test = [column + '_' + entry for entry in labels_test]
     
     #convert sparse array to pandas dataframe with column labels
     df_train_cat.columns = labels_train
@@ -6702,10 +6914,12 @@ class AutoMunge:
     
     #convert to uppercase string based on activate parameter
     if activate is True:
-      #convert column to string
-      df[column + '_UPCS'] = df[column + '_UPCS'].astype(str)
+      #convert column to string except for nan infill points
+      df[column + '_UPCS'] = \
+      np.where(df[column + '_UPCS'] == df[column + '_UPCS'], df[column + '_UPCS'].astype(str), df[column + '_UPCS'])
       #convert to uppercase
-      df[column + '_UPCS'] = df[column + '_UPCS'].str.upper()
+      df[column + '_UPCS'] = \
+      np.where(df[column + '_UPCS'] == df[column + '_UPCS'], df[column + '_UPCS'].str.upper(), df[column + '_UPCS'])
 
     #create list of columns
     UPCScolumns = [column + '_UPCS']
@@ -25844,6 +26058,7 @@ class AutoMunge:
 
     required_unique_normalization_dict_entries = \
     {'textlabelsdict_text'  : 'text', \
+     'textlabelsdict_onht'  : 'onht', \
      'splt_newcolumns_splt' : 'splt', \
      'splt_newcolumns_spl8' : 'spl8', \
      'splt_newcolumns_sp15' : 'sp15', \
@@ -26657,9 +26872,9 @@ class AutoMunge:
                              'mea2':[], 'mea3':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
                              'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
                              'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
-                             'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
+                             'bnry':[], 'onht':[], 'text':[], 'txt2':[], '1010':[], 'or10':[], \
                              'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
-                             'Utxt':[], 'Utx2':[], 'Utx3':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
+                             'Unht':[], 'Utxt':[], 'Utx2':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
                              'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], \
                              'spl8':[], 'spl9':[], 'sp10':[], 'sp16':[], \
                              'srch':[], 'src2':[], 'src4':[], 'strn':[], 'lngt':[], 'aggt':[], \
@@ -28028,7 +28243,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.19'
+    automungeversion = '4.20'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -29170,6 +29385,136 @@ class AutoMunge:
 
     return mdf_test
   
+  def postprocess_onht_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+    '''
+    #process_onht_class(mdf_train, mdf_test, column, category, postprocess_dict, params = {})
+    #preprocess column with one hot encoding
+    #same as 'text' transform except labels returned column with integer instead of entry appender
+    '''
+    
+    tempcolumn = column + '_:;:_temp'
+    
+    #create copy of original column for later retrieval
+    mdf_test[tempcolumn] = mdf_test[column].copy()
+
+    #convert column to category
+    mdf_test[tempcolumn] = mdf_test[tempcolumn].astype('category')
+
+#     #if set is categorical we'll need the plug value for missing values included
+#     mdf_test[column] = mdf_test[column].cat.add_categories(['NArw'])
+
+#     #replace NA with a dummy variable
+#     mdf_test[column] = mdf_test[column].fillna('NArw')
+    
+    #if set is categorical we'll need the plug value for missing values included
+    if 'zzzinfill' not in mdf_test[tempcolumn].cat.categories:
+      mdf_test[tempcolumn] = mdf_test[tempcolumn].cat.add_categories(['zzzinfill'])
+
+    #replace NA with a dummy variable
+    mdf_test[tempcolumn] = mdf_test[tempcolumn].fillna('zzzinfill')
+
+    #replace numerical with string equivalent
+    #mdf_train[column] = mdf_train[column].astype(str)
+    mdf_test[tempcolumn] = mdf_test[tempcolumn].astype(str)
+    
+    #moved this to after the initial infill
+    #new method for retrieving a columnkey
+    normkey = False
+#     for unique in mdf_test[tempcolumn].unique():
+#       if column + '_' + str(unique) in postprocess_dict['column_dict']:
+#         normkey = column + '_' + str(unique)
+#         break
+    
+    #this second method for normkey retrieval addresses outlier scenarios when 
+    #no unique valuies in test set match those in train set
+    if normkey is False:
+
+      if column in postprocess_dict['origcolumn']:
+
+        columnkeylist = postprocess_dict['origcolumn'][column]['columnkeylist']
+
+      else:
+
+        origcolumn = postprocess_dict['column_dict'][column]['origcolumn']
+
+        columnkeylist = postprocess_dict['origcolumn'][origcolumn]['columnkeylist']
+
+      for columnkey in columnkeylist:
+        
+        if column == postprocess_dict['column_dict'][columnkey]['inputcolumn']:
+
+          if 'textlabelsdict_onht' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
+
+            normkey = columnkey
+          
+    if normkey is not False:
+
+      #textcolumns = postprocess_dict['column_dict'][columnkey]['columnslist']
+      textcolumns = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['text_categorylist']
+      
+      labels_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['labels_dict']
+
+      #extract categories for column labels
+      #note that .unique() extracts the labels as a numpy array
+
+      #we'll get the category names from the textcolumns array by stripping the \
+      #prefixes of column name + '_'
+      prefixlength = len(column)+1
+      labels_train = textcolumns[:]
+      for textcolumn in labels_train:
+        textcolumn = textcolumn[prefixlength :]
+      #labels_train.sort(axis=0)
+      labels_train.sort()
+      labels_test = mdf_test[tempcolumn].unique()
+      labels_test.sort(axis=0)
+      labels_test = list(labels_test)
+
+      #apply onehotencoding
+      df_test_cat = pd.get_dummies(mdf_test[tempcolumn])
+
+      #append column header name to each category listing
+      labels_test = [column + '_' + entry for entry in labels_test]
+
+      #convert sparse array to pandas dataframe with column labels
+      df_test_cat.columns = labels_test
+
+      #Get missing columns in test set that are present in training set
+      missing_cols = set( textcolumns ) - set( df_test_cat.columns )
+
+      #Add a missing column in test set with default value equal to 0
+      for c in missing_cols:
+          df_test_cat[c] = 0
+
+      #Ensure the order of column in the test set is in the same order than in train set
+      #Note this also removes categories in test set that aren't present in training set
+      df_test_cat = df_test_cat[textcolumns]
+
+      #concatinate the sparse set with the rest of our training data
+      mdf_test = pd.concat([df_test_cat, mdf_test], axis=1)
+
+      del mdf_test[tempcolumn]
+
+      #delete support NArw2 column
+      columnNAr2 = column + '_zzzinfill'
+      if columnNAr2 in list(mdf_test):
+        del mdf_test[columnNAr2]
+
+      #change data types to 8-bit (1 byte) integers for memory savings
+      for textcolumn in textcolumns:
+
+        mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.int8)
+        
+      #now convert coloumn headers from text convention to onht convention
+      mdf_test  = mdf_test.rename(columns=labels_dict)
+
+    else:
+      
+      del mdf_test[tempcolumn]
+    
+    return mdf_test
+  
   def postprocess_text_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #postprocess_text_class(mdf_test, column, postprocess_dict, columnkey)
@@ -29190,21 +29535,6 @@ class AutoMunge:
     #returns two transformed dataframe (mdf_train, mdf_test) \
     #and a list of the new column names (textcolumns)
     '''
-    
-    #note it is kind of a hack here to create a column for missing values with \
-    #two underscores (__) in the column name to ensure appropriate order for cases\
-    #where NaN present in test data but not train data, if a category starts with|
-    #an underscore such that it preceeds '__missing' alphabetically in this scenario\
-    #this might create error due to different order of columns, address of this \
-    #potential issue will be a future extension
-
-#     #add _NArw to textcolumns to ensure a column gets populated even if no missing
-#     textcolumns = [column + '_NArw'] + textcolumns
-
-    #note this will need to be revised in a future extension where 
-    #downstream transforms are performed on multicolumn parents 
-    #by pulling the categorylist instead of columnslist (noting that will require
-    #a more exact evaluation for columnkey somehow)
     
     tempcolumn = column + '_:;:_temp'
     
@@ -29279,13 +29609,13 @@ class AutoMunge:
       labels_train.sort()
       labels_test = mdf_test[tempcolumn].unique()
       labels_test.sort(axis=0)
+      labels_test = list(labels_test)
 
       #apply onehotencoding
       df_test_cat = pd.get_dummies(mdf_test[tempcolumn])
 
       #append column header name to each category listing
-      #note the iteration is over a numpy array hence the [...] approach
-      labels_test[...] = column + '_' + labels_test[...]
+      labels_test = [column + '_' + entry for entry in labels_test]
 
       #convert sparse array to pandas dataframe with column labels
       df_test_cat.columns = labels_test
@@ -29329,21 +29659,6 @@ class AutoMunge:
     #other methods.
     '''
     
-    #note it is kind of a hack here to create a column for missing values with \
-    #two underscores (__) in the column name to ensure appropriate order for cases\
-    #where NaN present in test data but not train data, if a category starts with|
-    #an underscore such that it preceeds '__missing' alphabetically in this scenario\
-    #this might create error due to different order of columns, address of this \
-    #potential issue will be a future extension
-
-#     #add _NArw to textcolumns to ensure a column gets populated even if no missing
-#     textcolumns = [column + '_NArw'] + textcolumns
-
-    #note this will need to be revised in a future extension where 
-    #downstream transforms are performed on multicolumn parents 
-    #by pulling the categorylist instead of columnslist (noting that will require
-    #a more exact evaluation for columnkey somehow)
-    
     #textcolumns = postprocess_dict['column_dict'][columnkey]['columnslist']
     textcolumns = postprocess_dict['column_dict'][columnkey]['categorylist']
     
@@ -29385,13 +29700,13 @@ class AutoMunge:
     labels_train.sort()
     labels_test = mdf_test[tempcolumn].unique()
     labels_test.sort(axis=0)
+    labels_test = list(labels_test)
 
     #apply onehotencoding
     df_test_cat = pd.get_dummies(mdf_test[tempcolumn])
     
     #append column header name to each category listing
-    #note the iteration is over a numpy array hence the [...] approach
-    labels_test[...] = column + '_' + labels_test[...]
+    labels_test = [column + '_' + entry for entry in labels_test]
     
     #convert sparse array to pandas dataframe with column labels
     df_test_cat.columns = labels_test
@@ -38806,6 +39121,30 @@ class AutoMunge:
         
       df[inputcolumn] = np.where(df[normkey] == i, value, df[inputcolumn])
     
+    return df, inputcolumn
+  
+  def inverseprocess_onht(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_text_class
+    #assumes any relevant parameters were saved in normalization_dict
+    #does not perform infill, assumes clean data
+    #note that this will return numeric entries as str
+    """
+    
+    normkey = categorylist[0]
+    
+    inverse_labels_dict = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inverse_labels_dict']
+    
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    
+    df[inputcolumn] = 'zzzinfill'
+    
+    for categorylist_entry in categorylist:
+      
+      df[inputcolumn] = \
+      np.where(df[categorylist_entry], inverse_labels_dict[categorylist_entry], df[inputcolumn])
+      
     return df, inputcolumn
     
   def inverseprocess_text(self, df, categorylist, postprocess_dict):
