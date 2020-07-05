@@ -152,9 +152,9 @@ am.automunge(df_train, df_test = False, \
                           'mea2':[], 'mea3':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
                           'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
                           'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
-                          'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
+                          'bnry':[], 'onht':[], 'text':[], 'txt2':[], '1010':[], 'or10':[], \
                           'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
-                          'Utxt':[], 'Utx2':[], 'Utx3':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
+                          'Unht':[], 'Utxt':[], 'Utx2':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
                           'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], \
                           'spl8':[], 'spl9':[], 'sp10':[], 'sp16':[], \
                           'srch':[], 'src2':[], 'src4':[], 'strn':[], 'lngt':[], 'aggt':[], \
@@ -380,9 +380,9 @@ am.automunge(df_train, df_test = False, \
                           'mea2':[], 'mea3':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
                           'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
                           'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
-                          'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
+                          'bnry':[], 'onht':[], 'text':[], 'txt2':[], '1010':[], 'or10':[], \
                           'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
-                          'Utxt':[], 'Utx2':[], 'Utx3':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
+                          'Unht':[], 'Utxt':[], 'Utx2':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
                           'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], \
                           'spl8':[], 'spl9':[], 'sp10':[], 'sp16':[], \
                           'srch':[], 'src2':[], 'src4':[], 'strn':[], 'lngt':[], 'aggt':[], \
@@ -604,9 +604,9 @@ am.automunge(df_train, df_test = False, \
                           'mea2':[], 'mea3':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
                           'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
                           'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
-                          'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
+                          'bnry':[], 'onht':[], 'text':[], 'txt2':[], '1010':[], 'or10':[], \
                           'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
-                          'Utxt':[], 'Utx2':[], 'Utx3':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
+                          'Unht':[], 'Utxt':[], 'Utx2':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
                           'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], \
                           'spl8':[], 'spl9':[], 'sp10':[], 'sp16':[], \
                           'srch':[], 'src2':[], 'src4':[], 'strn':[], 'lngt':[], 'aggt':[], \
@@ -975,9 +975,9 @@ assigncat = {'nmbr':[], 'retn':[], 'mnmx':[], 'mean':[], 'MAD3':[], 'lgnm':[], \
              'mea2':[], 'mea3':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
              'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
              'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
-             'bnry':[], 'text':[], 'txt2':[], 'txt3':[], '1010':[], 'or10':[], \
+             'bnry':[], 'onht':[], 'text':[], 'txt2':[], '1010':[], 'or10':[], \
              'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
-             'Utxt':[], 'Utx2':[], 'Utx3':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
+             'Unht':[], 'Utxt':[], 'Utx2':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
              'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], \
              'spl8':[], 'spl9':[], 'sp10':[], 'sp16':[], \
              'srch':[], 'src2':[], 'src4':[], 'strn':[], 'lngt':[], 'aggt':[], \
@@ -2211,6 +2211,15 @@ as bnry except for default infill.)
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: textlabelsdict_text / <column> + '_ratio' (column specific)
   - inversion available: yes with full recovery
+* onht: converts categorical sets to one-hot encoded set of boolean identifiers 
+(like text but different convention for returned column headers)
+  - default infill: all entries zero
+  - default NArowtype: justNaN
+  - suffix appender: '_onht_#' where # integer corresponds to the target entry of a column
+  - assignparam parameters accepted: none
+  - driftreport postmunge metrics: textlabelsdict_text / <column> + '_ratio' (column specific)
+			           text_categorylist is key between columns and target entries
+  - inversion available: yes with full recovery
 * ordl/ord2: converts categorical sets to ordinally encoded set of integer identifiers
   - default infill: plug value 'zzzinfill'
   - default NArowtype: justNaN
@@ -2268,8 +2277,8 @@ and comparable to test set independent of test set row count
                                      False makes this a passthrough without conversion
   - driftreport postmunge metrics: activate
   - inversion available: yes with partial recovery
-* new processing functions Utxt / Utx2 / Utx3 / Uord / Uor2 / Uor3 / Uor6 / U101 / Ucct
-  - comparable to functions text / txt2 / txt3 / ordl / ord2 / ord3 / ors6 / 1010 / Ucct
+* new processing functions Unht / Utxt / Utx2 / Utx3 / Uord / Uor2 / Uor3 / Uor6 / U101 / Ucct
+  - comparable to functions onht / text / txt2 / txt3 / ordl / ord2 / ord3 / ors6 / 1010 / Ucct
   - but upstream conversion of all strings to uppercase characters prior to encoding
   - (e.g. 'USA' and 'usa' would be consistently encoded)
   - default infill: in uppercase conversion NaN's are assigned distinct encoding 'NAN'
@@ -2704,6 +2713,7 @@ avoid unintentional duplication.
 - 'U101',
 - 'Ucct',
 - 'UPCS',
+- 'Unht',
 - 'Uor2',
 - 'Uor3',
 - 'Uor6',
@@ -2889,6 +2899,7 @@ avoid unintentional duplication.
 - 'nuld',
 - 'null',
 - 'om10',
+- 'onht',
 - 'or10',
 - 'or11',
 - 'or12',
@@ -3058,6 +3069,7 @@ that any user passing a custom defined transformation can avoid any unintentiona
 - '_nmr4'
 - '_nmr7'
 - '_nmrc'
+- '\_onht_' + # (where # is integer associated with entry for activations)
 - '_ord3'
 - '_ordl'
 - '_por2'
@@ -3452,6 +3464,15 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'coworkers'     : [], \
                                      'friends'       : []}})
 
+    transform_dict.update({'onht' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['onht'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+    
     transform_dict.update({'text' : {'parents'       : [], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : ['text'], \
@@ -3504,6 +3525,15 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'children'      : [], \
                                      'niecesnephews' : [], \
                                      'coworkers'     : [], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'Unht' : {'parents'       : ['Unht'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['onht'], \
                                      'friends'       : []}})
   
     transform_dict.update({'Utxt' : {'parents'       : ['Utxt'], \
