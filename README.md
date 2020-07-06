@@ -2014,7 +2014,7 @@ set to 0. Please note that this method makes use of scipy.stats.boxcox.
   - inversion available: yes with partial recovery
 ### Numercial Set Bins and Grainings
 * pwrs: bins groupings by powers of 10
-  - default infill: mean (ie log(mean))
+  - default infill: no activation
   - default NArowtype: positivenumeric
   - suffix appender: '_10^#' where # is integer indicating target powers of 10 for column
   - assignparam parameters accepted: 'negvalues', boolean defaults to False, True bins values <0
