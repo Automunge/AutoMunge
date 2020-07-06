@@ -16239,7 +16239,7 @@ class AutoMunge:
       tc_ratio = pc + '_ratio'
       tcratio = mdf_train[pc].sum() / mdf_train[pc].shape[0]
 
-      powernormalization_dict = {pc : {'powerlabelsdict' : powerlabelsdict, \
+      powernormalization_dict = {pc : {'powerlabelsdict_pwrs' : powerlabelsdict, \
                                        'labels_train' : labels_train, \
                                        'missing_cols' : missing_cols, \
                                        'negvalues' : negvalues, \
@@ -16642,7 +16642,7 @@ class AutoMunge:
       tc_ratio = pc + '_ratio'
       tcratio = mdf_train[pc].sum() / mdf_train[pc].shape[0]
 
-      powernormalization_dict = {pc : {'powerlabelsdict' : powerlabelsdict, \
+      powernormalization_dict = {pc : {'powerlabelsdict_pwr2' : powerlabelsdict, \
                                        'labels_train' : labels_train, \
                                        'missing_cols' : missing_cols, \
                                        tc_ratio : tcratio}}
@@ -26270,6 +26270,8 @@ class AutoMunge:
     required_unique_normalization_dict_entries = \
     {'textlabelsdict_text'  : 'text', \
      'textlabelsdict_onht'  : 'onht', \
+     'powerlabelsdict_pwrs' : 'pwrs', \
+     'powerlabelsdict_pwr2' : 'pwr2', \
      'splt_newcolumns_splt' : 'splt', \
      'splt_newcolumns_spl8' : 'spl8', \
      'splt_newcolumns_sp15' : 'sp15', \
@@ -28454,7 +28456,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.21'
+    automungeversion = '4.22'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -33663,22 +33665,30 @@ class AutoMunge:
     
     #retrieve normalization parameters from postprocess_dict
     normkey = False
-    for power in range(-20, 20):
-      power = str(power)
-      if (column + '_10^' + power) in postprocess_dict['column_dict']:
-        if (column + '_10^' + power) in postprocess_dict['column_dict'][(column + '_10^' + power)]['normalization_dict']:
-            normkey = (column + '_10^' + power)
-    if normkey is False:
-      for power in range(-20, 20):
-        power = str(power)
-        if (column + '_-10^' + power) in postprocess_dict['column_dict']:
-          if (column + '_-10^' + power) in postprocess_dict['column_dict'][(column + '_-10^' + power)]['normalization_dict']:
-            normkey = (column + '_-10^' + power)
+    
+    if column in postprocess_dict['origcolumn']:
+      
+      columnkeylist = postprocess_dict['origcolumn'][column]['columnkeylist']
+      
+    else:
+      
+      origcolumn = postprocess_dict['column_dict'][column]['origcolumn']
+      
+      columnkeylist = postprocess_dict['origcolumn'][origcolumn]['columnkeylist']
+    
+    for columnkey in columnkeylist:
+      
+      if column == postprocess_dict['column_dict'][columnkey]['inputcolumn']:
+
+        if 'powerlabelsdict_pwrs' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
+
+          normkey = columnkey
+        
     if normkey is not False:
 
       #normkey = columnkey
 
-      powerlabelsdict = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['powerlabelsdict']
+      powerlabelsdict = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['powerlabelsdict_pwrs']
       labels_train = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['labels_train']
       negvalues = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['negvalues']
 
@@ -33913,22 +33923,30 @@ class AutoMunge:
     
     #retrieve normalization parameters from postprocess_dict
     normkey = False
-    for power in range(-20, 20):
-      power = str(power)
-      if (column + '_10^' + power) in postprocess_dict['column_dict']:
-        if (column + '_10^' + power) in postprocess_dict['column_dict'][(column + '_10^' + power)]['normalization_dict']:
-            normkey = (column + '_10^' + power)
-    if normkey is False:
-      for power in range(-20, 20):
-        power = str(power)
-        if (column + '_-10^' + power) in postprocess_dict['column_dict']:
-          if (column + '_-10^' + power) in postprocess_dict['column_dict'][(column + '_-10^' + power)]['normalization_dict']:
-            normkey = (column + '_-10^' + power)
+    
+    if column in postprocess_dict['origcolumn']:
+      
+      columnkeylist = postprocess_dict['origcolumn'][column]['columnkeylist']
+      
+    else:
+      
+      origcolumn = postprocess_dict['column_dict'][column]['origcolumn']
+      
+      columnkeylist = postprocess_dict['origcolumn'][origcolumn]['columnkeylist']
+    
+    for columnkey in columnkeylist:
+      
+      if column == postprocess_dict['column_dict'][columnkey]['inputcolumn']:
+
+        if 'powerlabelsdict_pwr2' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
+
+          normkey = columnkey
+        
     if normkey is not False:
 
       #normkey = columnkey
 
-      powerlabelsdict = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['powerlabelsdict']
+      powerlabelsdict = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['powerlabelsdict_pwr2']
       labels_train = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['labels_train']
 
       textcolumns = postprocess_dict['column_dict'][normkey]['categorylist']
