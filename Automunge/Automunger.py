@@ -3535,6 +3535,8 @@ class AutoMunge:
     process_dict.update({'ord4' : {'dualprocess' : self.process_ord3_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_ord3_class, \
+                                  'inverseprocess' : self.inverseprocess_ord3, \
+                                  'info_retention' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'mnmx'}})
@@ -3983,7 +3985,7 @@ class AutoMunge:
     process_dict.update({'pwrs' : {'dualprocess' : self.process_pwrs_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_pwrs_class, \
-                                  'inverseprocess' : self.inverseprocess_pwrs, \
+                                  'inverseprocess' : self.inverseprocess_pwr2, \
                                   'info_retention' : False, \
                                   'NArowtype' : 'positivenumeric', \
                                   'MLinfilltype' : 'multisp', \
@@ -4288,7 +4290,7 @@ class AutoMunge:
     process_dict.update({'pwor' : {'dualprocess' : self.process_pwor_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_pwor_class, \
-                                  'inverseprocess' : self.inverseprocess_pwor, \
+                                  'inverseprocess' : self.inverseprocess_por2, \
                                   'info_retention' : False, \
                                   'NArowtype' : 'positivenumeric', \
                                   'MLinfilltype' : 'singlct', \
@@ -4406,24 +4408,32 @@ class AutoMunge:
     process_dict.update({'101d' : {'dualprocess' : self.process_1010_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_1010_class, \
+                                  'inverseprocess' : self.inverseprocess_1010, \
+                                  'info_retention' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : '1010', \
                                   'labelctgy' : '1010'}})
     process_dict.update({'ordd' : {'dualprocess' : self.process_ord3_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_ord3_class, \
+                                  'inverseprocess' : self.inverseprocess_ord3, \
+                                  'info_retention' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'ord3'}})
     process_dict.update({'texd' : {'dualprocess' : self.process_text_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_text_class, \
+                                  'inverseprocess' : self.inverseprocess_text, \
+                                  'info_retention' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'multirt', \
                                   'labelctgy' : 'text'}})
     process_dict.update({'bnrd' : {'dualprocess' : self.process_binary_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_binary_class, \
+                                  'inverseprocess' : self.inverseprocess_bnry, \
+                                  'info_retention' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'binary', \
                                   'labelctgy' : 'bnry'}})
@@ -4448,24 +4458,32 @@ class AutoMunge:
     process_dict.update({'lb10' : {'dualprocess' : self.process_text_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_text_class, \
+                                  'inverseprocess' : self.inverseprocess_text, \
+                                  'info_retention' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'multirt', \
                                   'labelctgy' : 'text'}})
     process_dict.update({'lbor' : {'dualprocess' : self.process_ord3_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_ord3_class, \
+                                  'inverseprocess' : self.inverseprocess_ord3, \
+                                  'info_retention' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'ord3'}})
     process_dict.update({'lbte' : {'dualprocess' : self.process_text_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_text_class, \
+                                  'inverseprocess' : self.inverseprocess_text, \
+                                  'info_retention' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'multirt', \
                                   'labelctgy' : 'text'}})
     process_dict.update({'lbbn' : {'dualprocess' : self.process_binary_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_binary_class, \
+                                  'inverseprocess' : self.inverseprocess_bnry, \
+                                  'info_retention' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'binary', \
                                   'labelctgy' : 'bnry'}})
@@ -16032,16 +16050,25 @@ class AutoMunge:
         
     return mdf_train, mdf_test, column_dict_list
 
-  def process_pwrs_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict, params = {}):
+  def process_pwrs_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
     '''
-    #processes a numerical set by creating bins coresponding to powers
+    #processes a numerical set by creating bins corresponding to powers
     #of ten in one hot encoded columns
     
     #pwrs will be intended for a raw set that is not yet normalized
     
-    #we'll use an initial plug value of 0
+    #postiive values encoded under column 'column' + '_10^#' where # is power of 10
+    #0 and negative values considered infill with no activations
+    
+    #if all values are infill no columns returned
+    
+    #accepts boolean 'negvalues' parameter, defaults False, True activates encoding for values <0
     '''
+    
+    if 'negvalues' in params:
+      negvalues = params['negvalues']
+    else:
+      negvalues = False
     
     tempcolumn = column + '_:;:_temp'
 
@@ -16053,6 +16080,17 @@ class AutoMunge:
     mdf_train[tempcolumn] = pd.to_numeric(mdf_train[tempcolumn], errors='coerce')
     mdf_test[tempcolumn] = pd.to_numeric(mdf_test[tempcolumn], errors='coerce')
     
+    #create copy with negative values
+    negtempcolumn = column + '_negtemp'
+    mdf_train[negtempcolumn] = mdf_train[tempcolumn].copy()
+    mdf_test[negtempcolumn] = mdf_test[tempcolumn].copy()
+    
+    #convert all values in negtempcolumn >= 0 to Nan
+    mdf_train[negtempcolumn] = \
+    np.where(mdf_train[negtempcolumn] >= 0, np.nan, mdf_train[negtempcolumn].values)
+    mdf_test[negtempcolumn] = \
+    np.where(mdf_test[negtempcolumn] >= 0, np.nan, mdf_test[negtempcolumn].values)
+    
     #convert all values <= 0 to Nan
     mdf_train[tempcolumn] = \
     np.where(mdf_train[tempcolumn] <= 0, np.nan, mdf_train[tempcolumn].values)
@@ -16060,51 +16098,94 @@ class AutoMunge:
     np.where(mdf_test[tempcolumn] <= 0, np.nan, mdf_test[tempcolumn].values)
     
     #log transform column
-    #note that this replaces negative values with nan which we will infill with meanlog
-#     mdf_train[column] = np.floor(np.log10(mdf_train[column]))
-#     mdf_test[column] = np.floor(np.log10(mdf_test[column]))
+    
+    #take abs value of negtempcolumn
+    mdf_train[negtempcolumn] = mdf_train[negtempcolumn].abs()
+    mdf_test[negtempcolumn] = mdf_test[negtempcolumn].abs()
+    
+    mdf_train[negtempcolumn] = \
+    np.where(mdf_train[negtempcolumn] != np.nan, np.floor(np.log10(mdf_train[negtempcolumn])), mdf_train[negtempcolumn].values)
+    mdf_test[negtempcolumn] = \
+    np.where(mdf_test[negtempcolumn] != np.nan, np.floor(np.log10(mdf_test[negtempcolumn])), mdf_test[negtempcolumn].values)
+    
+    train_neg_dict = {}
+    newunique_list = []
+    negunique = mdf_train[negtempcolumn].unique()
+    for unique in negunique:
+      if unique != unique:
+        newunique = np.nan
+      else:
+        #this is update for difference between pwr2 and pwrs
+        if negvalues:
+          newunique = column + '_-10^' + str(int(unique))
+        else:
+          newunique = np.nan
+      train_neg_dict.update({unique : newunique})
+      newunique_list.append(newunique)
+      
+    test_neg_dict = {}
+    negunique = mdf_test[negtempcolumn].unique()
+    for unique in negunique:
+      if unique != unique:
+        newunique = np.nan
+      else:
+        #this is update for difference between pwr2 and pwrs
+        if negvalues:
+          newunique = column + '_-10^' + str(int(unique))
+        else:
+          newunique = np.nan
+      if newunique in newunique_list and newunique == newunique:
+        test_neg_dict.update({unique : newunique})
+      else:
+        test_neg_dict.update({unique : np.nan})
+        
+    mdf_train[negtempcolumn] = mdf_train[negtempcolumn].replace(train_neg_dict)
+    mdf_test[negtempcolumn] = mdf_test[negtempcolumn].replace(test_neg_dict)
+    
+    #now log trasnform positive values in column column 
+
     mdf_train[tempcolumn] = \
     np.where(mdf_train[tempcolumn] != np.nan, np.floor(np.log10(mdf_train[tempcolumn])), mdf_train[tempcolumn].values)
     mdf_test[tempcolumn] = \
     np.where(mdf_test[tempcolumn] != np.nan, np.floor(np.log10(mdf_test[tempcolumn])), mdf_test[tempcolumn].values)
 
-    #get mean of train set
-    meanlog = np.floor(mdf_train[tempcolumn].mean())
+    train_pos_dict = {}
+    newposunique_list = []
+    posunique = mdf_train[tempcolumn].unique()
+    for unique in posunique:
+      if unique != unique:
+        newunique = np.nan
+      else:
+        newunique = column + '_10^' + str(int(unique))
+      train_pos_dict.update({unique : newunique})
+      newposunique_list.append(newunique)
+      
+    test_pos_dict = {}
+    posunique = mdf_test[tempcolumn].unique()
+    for unique in posunique:
+      if unique != unique:
+        newunique = np.nan
+      else:
+        newunique = column + '_10^' + str(int(unique))
+      if newunique in newposunique_list and newunique == newunique:
+        test_pos_dict.update({unique : newunique})
+      else:
+        test_pos_dict.update({unique : np.nan})
     
-    #get max of train set
-    maxlog = max(mdf_train[tempcolumn])
+    mdf_train[tempcolumn] = mdf_train[tempcolumn].replace(train_pos_dict)
+    mdf_test[tempcolumn] = mdf_test[tempcolumn].replace(test_pos_dict)
     
-#     #replace missing data with training set mean
-#     mdf_train[column + '_log0'] = mdf_train[column + '_log0'].fillna(meanlog)
-#     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].fillna(meanlog)
-
-    #replace missing data with 0
-    mdf_train[tempcolumn] = mdf_train[tempcolumn].fillna(0)
-    mdf_test[tempcolumn] = mdf_test[tempcolumn].fillna(0)
-    
-    #replace numerical with string equivalent
-    mdf_train[tempcolumn] = mdf_train[tempcolumn].astype(int).astype(str)
-    mdf_test[tempcolumn] = mdf_test[tempcolumn].astype(int).astype(str)
-    
-    #extract categories for column labels
-    #note that .unique() extracts the labels as a numpy array
-    labels_train = mdf_train[tempcolumn].unique()
-    labels_train.sort(axis=0)
-    labels_test = mdf_test[tempcolumn].unique()
-    labels_test.sort(axis=0)
+    #combine the two columns
+    mdf_train[tempcolumn] = mdf_train[negtempcolumn].where(mdf_train[negtempcolumn] == mdf_train[negtempcolumn], mdf_train[tempcolumn])
+    mdf_test[tempcolumn] = mdf_test[negtempcolumn].where(mdf_test[negtempcolumn] == mdf_test[negtempcolumn], mdf_test[tempcolumn])
     
     #pandas one hot encoder
     df_train_cat = pd.get_dummies(mdf_train[tempcolumn])
     df_test_cat = pd.get_dummies(mdf_test[tempcolumn])
     
-    #append column header name to each category listing
-    labels_train[...] = column + '_10^' + labels_train[...]
-    labels_test[...] = column + '_10^' + labels_test[...]
-    
-    #convert sparse array to pandas dataframe with column labels
-    df_train_cat.columns = labels_train
-    df_test_cat.columns = labels_test
-    
+    labels_train = list(df_train_cat)
+    labels_test = list(df_test_cat)
+
     #Get missing columns in test set that are present in training set
     missing_cols = set( df_train_cat.columns ) - set( df_test_cat.columns )
     
@@ -16118,7 +16199,12 @@ class AutoMunge:
     #concatinate the sparse set with the rest of our training data
     mdf_train = pd.concat([df_train_cat, mdf_train], axis=1)
     mdf_test = pd.concat([df_test_cat, mdf_test], axis=1)
-
+    
+    #replace original column from training data
+    
+    del mdf_train[negtempcolumn]    
+    del mdf_test[negtempcolumn]
+    
     del mdf_train[tempcolumn]    
     del mdf_test[tempcolumn]
     
@@ -16142,11 +16228,6 @@ class AutoMunge:
     
     powerlabelsdict = dict(zip(normalizationdictkeys, normalizationdictvalues))
     
-    #change data types to 8-bit (1 byte) integers for memory savings
-    for powercolumn in powercolumns:
-      mdf_train[powercolumn] = mdf_train[powercolumn].astype(np.int8)
-      mdf_test[powercolumn] = mdf_test[powercolumn].astype(np.int8)
-        
     #store some values in the text_dict{} for use later in ML infill methods
     column_dict_list = []
     
@@ -16159,8 +16240,9 @@ class AutoMunge:
       tcratio = mdf_train[pc].sum() / mdf_train[pc].shape[0]
 
       powernormalization_dict = {pc : {'powerlabelsdict' : powerlabelsdict, \
-                                       'meanlog' : meanlog, \
-                                       'maxlog' : maxlog, \
+                                       'labels_train' : labels_train, \
+                                       'missing_cols' : missing_cols, \
+                                       'negvalues' : negvalues, \
                                        tc_ratio : tcratio}}
     
       column_dict = {pc : {'category' : 'pwrs', \
@@ -16181,12 +16263,19 @@ class AutoMunge:
   def process_pwor_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
     '''
     #processes a numerical set by creating bins coresponding to powers
-    #of ten in one hot encoded columns
+    #of ten in ordinal encoded columns
     
     #pwrs will be intended for a raw set that is not yet normalized
     
-    #we'll use an initial plug value of 0
+    #infill has 0, other designations are based on the data
+    
+    #negative values based on negvalues parameter, makes comparable to por2
     '''
+    
+    if 'negvalues' in params:
+      negvalues = params['negvalues']
+    else:
+      negvalues = False
     
     pworcolumn = column + '_pwor'
 
@@ -16198,27 +16287,148 @@ class AutoMunge:
     mdf_train[pworcolumn] = pd.to_numeric(mdf_train[pworcolumn], errors='coerce')
     mdf_test[pworcolumn] = pd.to_numeric(mdf_test[pworcolumn], errors='coerce')
     
-    #convert all values <= 0 to Nan
+    #copy set for negative values
+    negtempcolumn = column + '_negtempcolumn'
+    
+    mdf_train[negtempcolumn] = mdf_train[pworcolumn].copy()
+    mdf_test[negtempcolumn] = mdf_test[pworcolumn].copy()
+    
+    #convert all values >= 0 to Nan
+    mdf_train[negtempcolumn] = \
+    np.where(mdf_train[negtempcolumn] >= 0, np.nan, mdf_train[negtempcolumn].values)
+    mdf_test[negtempcolumn] = \
+    np.where(mdf_test[negtempcolumn] >= 0, np.nan, mdf_test[negtempcolumn].values)
+    
+    #take abs value of negtempcolumn
+    mdf_train[negtempcolumn] = mdf_train[negtempcolumn].abs()
+    mdf_test[negtempcolumn] = mdf_test[negtempcolumn].abs()
+    
+    #convert all values <= 0 in column to Nan
     mdf_train[pworcolumn] = \
     np.where(mdf_train[pworcolumn] <= 0, np.nan, mdf_train[pworcolumn].values)
     mdf_test[pworcolumn] = \
     np.where(mdf_test[pworcolumn] <= 0, np.nan, mdf_test[pworcolumn].values)
-    
-    #get mean of train set
-    meanlog = np.floor(mdf_train[pworcolumn].mean())
-    
-    #get max of train set
-    maxlog = max(mdf_train[pworcolumn])
 
     mdf_train[pworcolumn] = \
     np.where(mdf_train[pworcolumn] != np.nan, np.floor(np.log10(mdf_train[pworcolumn])), mdf_train[pworcolumn].values)
     mdf_test[pworcolumn] = \
     np.where(mdf_test[pworcolumn] != np.nan, np.floor(np.log10(mdf_test[pworcolumn])), mdf_test[pworcolumn].values)
     
-    #replace missing data with 0
-    mdf_train[pworcolumn] = mdf_train[pworcolumn].fillna(0)
-    mdf_test[pworcolumn] = mdf_test[pworcolumn].fillna(0)
+    #do same for negtempcolumn
+    mdf_train[negtempcolumn] = \
+    np.where(mdf_train[negtempcolumn] != np.nan, np.floor(np.log10(mdf_train[negtempcolumn])), mdf_train[negtempcolumn].values)
+    mdf_test[negtempcolumn] = \
+    np.where(mdf_test[negtempcolumn] != np.nan, np.floor(np.log10(mdf_test[negtempcolumn])), mdf_test[negtempcolumn].values)
+
+    train_neg_dict = {}
+    newunique_list = []
+    negunique = mdf_train[negtempcolumn].unique()
+    for unique in negunique:
+      if unique != unique:
+        newunique = np.nan
+      else:
+        #this is update for difference between pwr2 and pwrs
+        if negvalues:
+          newunique = column + '_-10^' + str(int(unique))
+        else:
+          newunique = np.nan
+      train_neg_dict.update({unique : newunique})
+      newunique_list.append(newunique)
+      
+    test_neg_dict = {}
+    negunique = mdf_test[negtempcolumn].unique()
+    for unique in negunique:
+      if unique != unique:
+        newunique = np.nan
+      else:
+        #this is update for difference between pwr2 and pwrs
+        if negvalues:
+          newunique = column + '_-10^' + str(int(unique))
+        else:
+          newunique = np.nan
+      if newunique in newunique_list and newunique == newunique:
+        test_neg_dict.update({unique : newunique})
+      else:
+        test_neg_dict.update({unique : np.nan})
+        
+    mdf_train[negtempcolumn] = mdf_train[negtempcolumn].replace(train_neg_dict)
+    mdf_test[negtempcolumn] = mdf_test[negtempcolumn].replace(test_neg_dict)
     
+    #now do same for column
+    train_pos_dict = {}
+    newposunique_list = []
+    posunique = mdf_train[pworcolumn].unique()
+    for unique in posunique:
+      if unique != unique:
+        newunique = np.nan
+      else:
+        newunique = column + '_10^' + str(int(unique))
+      train_pos_dict.update({unique : newunique})
+      newposunique_list.append(newunique)
+      
+    test_pos_dict = {}
+    posunique = mdf_test[pworcolumn].unique()
+    for unique in posunique:
+      if unique != unique:
+        newunique = np.nan
+      else:
+        newunique = column + '_10^' + str(int(unique))
+      if newunique in newposunique_list and newunique == newunique:
+        test_pos_dict.update({unique : newunique})
+      else:
+        test_pos_dict.update({unique : np.nan})
+    
+    mdf_train[pworcolumn] = mdf_train[pworcolumn].replace(train_pos_dict)
+    mdf_test[pworcolumn] = mdf_test[pworcolumn].replace(test_pos_dict)
+    
+    #combine the two columns
+    mdf_train[pworcolumn] = mdf_train[negtempcolumn].where(mdf_train[negtempcolumn] == mdf_train[negtempcolumn], mdf_train[pworcolumn])
+    mdf_test[pworcolumn] = mdf_test[negtempcolumn].where(mdf_test[negtempcolumn] == mdf_test[negtempcolumn], mdf_test[pworcolumn])
+    
+    train_unique = mdf_train[pworcolumn].unique()
+    test_unique = mdf_test[pworcolumn].unique()
+  
+    #Get missing entries in test set that are present in training set
+    missing_cols = set( list(train_unique) ) - set( list(test_unique) )
+    
+    extra_cols = set( list(test_unique) ) - set( list(train_unique) )
+    
+    train_replace_dict = {}
+    train_len = len(train_unique)
+    for i in range(train_len):
+      if train_unique[i] != train_unique[i]:
+        train_replace_dict.update({train_unique[i] : 0})
+      else:
+        train_replace_dict.update({train_unique[i] : i+1})
+    if np.nan not in train_replace_dict:
+      train_replace_dict.update({np.nan : 0})
+      
+    test_replace_dict = {}
+    for testunique in test_unique:
+      if testunique in train_unique:
+        test_replace_dict.update({testunique : train_replace_dict[testunique]})
+      else:
+        test_replace_dict.update({testunique : 0})
+    
+#     pworcolumn = column + '_por2'
+#     mdf_train[pworcolumn] = mdf_train[column].copy()
+#     mdf_test[pworcolumn] = mdf_test[column].copy()
+    
+    mdf_train[pworcolumn] = mdf_train[pworcolumn].replace(train_replace_dict)
+    mdf_test[pworcolumn] = mdf_test[pworcolumn].replace(test_replace_dict)
+    
+    #replace original column from training data
+    del mdf_train[negtempcolumn]    
+    del mdf_test[negtempcolumn]    
+    
+#     del mdf_train[column]    
+#     del mdf_test[column]
+    
+#     mdf_train[column] = mdf_train[column + '_temp'].copy()
+#     mdf_test[column] = mdf_test[column + '_temp'].copy()
+
+#     del mdf_train[column + '_temp']    
+#     del mdf_test[column + '_temp']
         
     #store some values in the text_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -16236,9 +16446,10 @@ class AutoMunge:
     
     for pc in powercolumns:
 
-      powernormalization_dict = {pc : {'meanlog' : meanlog, \
-                                       'maxlog' : maxlog, \
-                                       'ordl_activations_dict' : ordl_activations_dict}}
+      powernormalization_dict = {pc : {'train_replace_dict' : train_replace_dict, \
+                                       'test_replace_dict' : test_replace_dict, \
+                                       'ordl_activations_dict' : ordl_activations_dict, \
+                                       'negvalues' : negvalues}}
     
       column_dict = {pc : {'category' : 'pwor', \
                            'origcategory' : category, \
@@ -26861,7 +27072,7 @@ class AutoMunge:
                            'PCA_type':'default', \
                            'PCA_cmnd':{}}, \
                 assigncat = {'nmbr':[], 'retn':[], 'mnmx':[], 'mean':[], 'MAD3':[], 'lgnm':[], \
-                             'bins':[], 'bsor':[], 'pwr2':[], 'por2':[], 'bxcx':[], \
+                             'bins':[], 'bsor':[], 'pwrs':[], 'pwr2':[], 'por2':[], 'bxcx':[], \
                              'addd':[], 'sbtr':[], 'mltp':[], 'divd':[], \
                              'log0':[], 'log1':[], 'logn':[], 'sqrt':[], 'rais':[], 'absl':[], \
                              'bnwd':[], 'bnwK':[], 'bnwM':[], 'bnwo':[], 'bnKo':[], 'bnMo':[], \
@@ -28243,7 +28454,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.20'
+    automungeversion = '4.21'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -33437,144 +33648,250 @@ class AutoMunge:
   
   def postprocess_pwrs_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
-    #processes a numerical set by creating bins coresponding to powers
+    #processes a numerical set by creating bins corresponding to powers
     #of ten in one hot encoded columns
     
     #pwrs will be intended for a raw set that is not yet normalized
     
-    #we'll use an initial plug value of 0
+    #postiive values encoded under column 'column' + '_10^#' where # is power of 10
+    #0 and negative values considered infill with no activations
+    
+    #if all values are infill no columns returned
+    
+    #accepts boolean 'negvalues' parameter, defaults False, True activates encoding for values <0
     '''
     
     #retrieve normalization parameters from postprocess_dict
-    for power in range(20):
+    normkey = False
+    for power in range(-20, 20):
       power = str(power)
       if (column + '_10^' + power) in postprocess_dict['column_dict']:
         if (column + '_10^' + power) in postprocess_dict['column_dict'][(column + '_10^' + power)]['normalization_dict']:
             normkey = (column + '_10^' + power)
-    
-    #normkey = columnkey
-    
-    meanlog = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['meanlog']
-    maxlog = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['maxlog']
-    powerlabelsdict = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['powerlabelsdict']
-    
-    textcolumns = postprocess_dict['column_dict'][normkey]['categorylist']
-    
-    tempcolumn = column + '_:;:_temp'
-    
-    #store original column for later reversion
-    mdf_test[tempcolumn] = mdf_test[column].copy()
-    
-    #convert all values to either numeric or NaN
-    mdf_test[tempcolumn] = pd.to_numeric(mdf_test[tempcolumn], errors='coerce')
-    
-    #convert all values <= 0 to Nan
-    mdf_test[tempcolumn] = \
-    np.where(mdf_test[tempcolumn] <= 0, np.nan, mdf_test[tempcolumn].values)
-    
-    #log transform column
-    #note that this replaces negative values with nan which we will infill with meanlog
-#     mdf_test[column] = np.floor(np.log10(mdf_test[column]))
-    mdf_test[tempcolumn] = \
-    np.where(mdf_test[tempcolumn] != np.nan, np.floor(np.log10(mdf_test[tempcolumn])), mdf_test[tempcolumn].values)
-    
-#     #replace missing data with training set mean
-#     mdf_test[column] = mdf_test[column].fillna(meanlog)
+    if normkey is False:
+      for power in range(-20, 20):
+        power = str(power)
+        if (column + '_-10^' + power) in postprocess_dict['column_dict']:
+          if (column + '_-10^' + power) in postprocess_dict['column_dict'][(column + '_-10^' + power)]['normalization_dict']:
+            normkey = (column + '_-10^' + power)
+    if normkey is not False:
 
-    #replace missing data with 0
-    mdf_test[tempcolumn] = mdf_test[tempcolumn].fillna(0)
-    
-    #replace numerical with string equivalent
-    mdf_test[tempcolumn] = mdf_test[tempcolumn].astype(int).astype(str)
-    
-    #extract categories for column labels
-    #note that .unique() extracts the labels as a numpy array
+      #normkey = columnkey
 
-    #we'll get the category names from the textcolumns array by stripping the \
-    #prefixes of column name + '_'
-    prefixlength = len(column)+1
-    labels_train = textcolumns[:]
-    for textcolumn in labels_train:
-      textcolumn = textcolumn[prefixlength :]
-    #labels_train.sort(axis=0)
-    labels_train.sort()
-    labels_test = mdf_test[tempcolumn].unique()
-    labels_test.sort(axis=0)
-    
-    #apply onehotencoding
-    df_test_cat = pd.get_dummies(mdf_test[tempcolumn])
-    
-    #append column header name to each category listing
-    #note the iteration is over a numpy array hence the [...] approach
-    labels_test[...] = column + '_10^' + labels_test[...]
-    
-    #convert sparse array to pandas dataframe with column labels
-    df_test_cat.columns = labels_test
-    
-    #Get missing columns in test set that are present in training set
-    missing_cols = set( textcolumns ) - set( df_test_cat.columns )
-    
-    #Add a missing column in test set with default value equal to 0
-    for c in missing_cols:
-        df_test_cat[c] = 0
+      powerlabelsdict = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['powerlabelsdict']
+      labels_train = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['labels_train']
+      negvalues = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['negvalues']
 
-    #Ensure the order of column in the test set is in the same order than in train set
-    #Note this also removes categories in test set that aren't present in training set
-    df_test_cat = df_test_cat[textcolumns]
+      textcolumns = postprocess_dict['column_dict'][normkey]['categorylist']
 
-    #concatinate the sparse set with the rest of our training data
-    mdf_test = pd.concat([df_test_cat, mdf_test], axis=1)
-
-    del mdf_test[tempcolumn]
-    
-#     #delete support NArw2 column
-#     columnNAr2 = column + '_NAr2'
-#     if columnNAr2 in list(mdf_test):
-#       del mdf_test[columnNAr2]
-    
-    #change data types to 8-bit (1 byte) integers for memory savings
-    for textcolumn in textcolumns:
+      tempcolumn = column + '_:;:_temp'
       
-      mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.int8)
+      #store original column for later reversion
+      mdf_test[tempcolumn] = mdf_test[column].copy()
+
+      #convert all values to either numeric or NaN
+      mdf_test[tempcolumn] = pd.to_numeric(mdf_test[tempcolumn], errors='coerce')
+
+
+      #create copy with negative values
+      negtempcolumn = column + '_negtemp'
+      mdf_test[negtempcolumn] = mdf_test[tempcolumn].copy()
+
+      #convert all values in negtempcolumn >= 0 to Nan
+      mdf_test[negtempcolumn] = \
+      np.where(mdf_test[negtempcolumn] >= 0, np.nan, mdf_test[negtempcolumn].values)
+
+      #convert all values <= 0 to Nan
+      mdf_test[tempcolumn] = \
+      np.where(mdf_test[tempcolumn] <= 0, np.nan, mdf_test[tempcolumn].values)
+
+      #log transform column
+
+      #take abs value of negtempcolumn
+      mdf_test[negtempcolumn] = mdf_test[negtempcolumn].abs()
+
+      mdf_test[negtempcolumn] = \
+      np.where(mdf_test[negtempcolumn] != np.nan, np.floor(np.log10(mdf_test[negtempcolumn])), mdf_test[negtempcolumn].values)
+
+      test_neg_dict = {}
+      negunique = mdf_test[negtempcolumn].unique()
+      for unique in negunique:
+        if unique != unique:
+          newunique = np.nan
+        else:
+          #this is update for difference between pwr2 and pwrs
+          if negvalues:
+            newunique = column + '_-10^' + str(int(unique))
+          else:
+            newunique = np.nan
+        if newunique in labels_train and newunique == newunique:
+          test_neg_dict.update({unique : newunique})
+        else:
+          test_neg_dict.update({unique : np.nan})
+
+      mdf_test[negtempcolumn] = mdf_test[negtempcolumn].replace(test_neg_dict)
+
+      #now log trasnform positive values in column column 
+      mdf_test[tempcolumn] = \
+      np.where(mdf_test[tempcolumn] != np.nan, np.floor(np.log10(mdf_test[tempcolumn])), mdf_test[tempcolumn].values)
+
+      test_pos_dict = {}
+      posunique = mdf_test[tempcolumn].unique()
+      for unique in posunique:
+        if unique != unique:
+          newunique = np.nan
+        else:
+          newunique = column + '_10^' + str(int(unique))
+        if newunique in labels_train and newunique == newunique:
+          test_pos_dict.update({unique : newunique})
+        else:
+          test_pos_dict.update({unique : np.nan})
+
+      mdf_test[tempcolumn] = mdf_test[tempcolumn].replace(test_pos_dict)    
+
+      #combine the two columns
+      mdf_test[tempcolumn] = mdf_test[negtempcolumn].where(mdf_test[negtempcolumn] == mdf_test[negtempcolumn], mdf_test[tempcolumn])
+
+      #apply onehotencoding
+      df_test_cat = pd.get_dummies(mdf_test[tempcolumn])
+
+      #Get missing columns in test set that are present in training set
+      missing_cols = set( textcolumns ) - set( df_test_cat.columns )
+
+      #Add a missing column in test set with default value equal to 0
+      for c in missing_cols:
+          df_test_cat[c] = 0
+
+      #Ensure the order of column in the test set is in the same order than in train set
+      #Note this also removes categories in test set that aren't present in training set
+      df_test_cat = df_test_cat[textcolumns]
+
+      #concatinate the sparse set with the rest of our training data
+      mdf_test = pd.concat([df_test_cat, mdf_test], axis=1)
+
+      #replace original column
+      del mdf_test[negtempcolumn]
+
+      del mdf_test[tempcolumn]
+
+      #change data types to 8-bit (1 byte) integers for memory savings
+      for textcolumn in textcolumns:
+
+        mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.int8)
 
     return mdf_test
   
   def postprocess_pwor_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #processes a numerical set by creating bins coresponding to powers
-    #of ten in one hot encoded columns
+    #of ten in ordinal encoded columns
     
     #pwrs will be intended for a raw set that is not yet normalized
     
-    #we'll use an initial plug value of 0
+    #infill has 0, other designations are based on the data
+    
+    #negative values allows, comparable to pwr2
     '''
-            
+    
+    #get normkey
     normkey = column + '_pwor'
     
-    #normkey = columnkey
-    
-    meanlog = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['meanlog']
-    maxlog = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['maxlog']
+    #retrieve stuff from normalization dictionary
+    train_replace_dict = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['train_replace_dict']
+    negvalues = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['negvalues']
     
     pworcolumn = column + '_pwor'
-    
+
     #store original column for later reversion
     mdf_test[pworcolumn] = mdf_test[column].copy()
-    
+
     #convert all values to either numeric or NaN
     mdf_test[pworcolumn] = pd.to_numeric(mdf_test[pworcolumn], errors='coerce')
     
-    #convert all values <= 0 to Nan
+    #copy set for negative values
+    negtempcolumn = column + '_negtempcolumn'
+    
+    mdf_test[negtempcolumn] = mdf_test[pworcolumn].copy()
+    
+    #convert all values >= 0 to Nan
+    mdf_test[negtempcolumn] = \
+    np.where(mdf_test[negtempcolumn] >= 0, np.nan, mdf_test[negtempcolumn].values)
+    
+    #take abs value of negtempcolumn
+    mdf_test[negtempcolumn] = mdf_test[negtempcolumn].abs()
+    
+    #convert all values <= 0 in column to Nan
     mdf_test[pworcolumn] = \
     np.where(mdf_test[pworcolumn] <= 0, np.nan, mdf_test[pworcolumn].values)
-    
-    #log transform column
+
     mdf_test[pworcolumn] = \
     np.where(mdf_test[pworcolumn] != np.nan, np.floor(np.log10(mdf_test[pworcolumn])), mdf_test[pworcolumn].values)
+    
+    #do same for negtempcolumn
+    mdf_test[negtempcolumn] = \
+    np.where(mdf_test[negtempcolumn] != np.nan, np.floor(np.log10(mdf_test[negtempcolumn])), mdf_test[negtempcolumn].values)
 
-    #replace missing data with 0
-    mdf_test[pworcolumn] = mdf_test[pworcolumn].fillna(0)
+    newunique_list = list(train_replace_dict)
+      
+    test_neg_dict = {}
+    negunique = mdf_test[negtempcolumn].unique()
+    for unique in negunique:
+      if unique != unique:
+        newunique = np.nan
+      else:
+        #this is update for difference between pwr2 and pwrs
+        if negvalues:
+          newunique = column + '_-10^' + str(int(unique))
+        else:
+          newunique = np.nan
+      if newunique in newunique_list and newunique == newunique:
+        test_neg_dict.update({unique : newunique})
+      else:
+        test_neg_dict.update({unique : np.nan})
+        
+    mdf_test[negtempcolumn] = mdf_test[negtempcolumn].replace(test_neg_dict)
+    
+    #now do same for column
+ 
+    test_pos_dict = {}
+    posunique = mdf_test[pworcolumn].unique()
+    for unique in posunique:
+      if unique != unique:
+        newunique = np.nan
+      else:
+        newunique = column + '_10^' + str(int(unique))
+      if newunique in newunique_list and newunique == newunique:
+        test_pos_dict.update({unique : newunique})
+      else:
+        test_pos_dict.update({unique : np.nan})
+    
+    mdf_test[pworcolumn] = mdf_test[pworcolumn].replace(test_pos_dict)
+    
+    #combine the two columns
+    mdf_test[pworcolumn] = mdf_test[negtempcolumn].where(mdf_test[negtempcolumn] == mdf_test[negtempcolumn], mdf_test[pworcolumn])
+    
+    test_unique = mdf_test[pworcolumn].unique()
+  
+    #Get missing entries in test set that are present in training set
+    missing_cols = set( list(newunique_list) ) - set( list(test_unique) )
+    
+    extra_cols = set( list(test_unique) ) - set( list(newunique_list) )
+      
+    test_replace_dict = {}
+    for testunique in test_unique:
+      if testunique in newunique_list:
+        test_replace_dict.update({testunique : train_replace_dict[testunique]})
+      else:
+        test_replace_dict.update({testunique : 0})
+    
+#     pworcolumn = column + '_por2'
+#     mdf_test[pworcolumn] = mdf_test[column].copy()
+    
+    mdf_test[pworcolumn] = mdf_test[pworcolumn].replace(test_replace_dict)
 
+    #replace original column from training data
+    del mdf_test[negtempcolumn]    
+    
     return mdf_test
   
   def postprocess_pwr2_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
@@ -38434,36 +38751,6 @@ class AutoMunge:
     
     return df, inputcolumn
   
-  def inverseprocess_pwrs(self, df, categorylist, postprocess_dict):
-    """
-    #inverse transform corresponding to process_pwrs_class
-    #assumes any relevant parameters were saved in normalization_dict
-    #does not perform infill, assumes clean data
-    
-    #this only achieves partial information recovery as power level returned to single column
-    
-    #in interest of expediency, building this method to extract power
-    #level from column suffix appender
-    #a potential improvement would be to add an additional entry to pwrs normalization_dict
-    #matching column header to power, eg {'column_10^-1' : -1}
-    #saving that for a future update
-    #(same functionality, but would better match convention of library for use of column headers)
-    """
-    
-    normkey = categorylist[0]
-    
-    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
-    
-    df[inputcolumn] = 0
-    
-    for column in categorylist:
-      
-      power = 10 ** int(column.replace(inputcolumn + '_10^', ''))
-      
-      df[inputcolumn] = np.where(df[column] == 1, power, df[inputcolumn])
-    
-    return df, inputcolumn
-  
   def inverseprocess_pwr2(self, df, categorylist, postprocess_dict):
     """
     #inverse transform corresponding to process_pwr2_class
@@ -38503,26 +38790,6 @@ class AutoMunge:
         
         df[inputcolumn] = np.where(df[column] == 1, -(10 ** power), df[inputcolumn])
         
-    return df, inputcolumn
-  
-  def inverseprocess_pwor(self, df, categorylist, postprocess_dict):
-    """
-    #inverse transform corresponding to process_pwor_class
-    #assumes any relevant parameters were saved in normalization_dict
-    #does not perform infill, assumes clean data
-    """
-    
-    normkey = categorylist[0]
-    
-    ordl_activations_dict = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordl_activations_dict']
-    
-    powers = list(ordl_activations_dict)
-    
-    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
-    
-    df[inputcolumn] = 10 ** df[normkey]
-    
     return df, inputcolumn
   
   def inverseprocess_por2(self, df, categorylist, postprocess_dict):
