@@ -141,7 +141,7 @@ am.automunge(df_train, df_test = False, \
                         'PCA_type':'default', \
                         'PCA_cmnd':{}}, \
              assigncat = {'nmbr':[], 'retn':[], 'mnmx':[], 'mean':[], 'MAD3':[], 'lgnm':[], \
-                          'bins':[], 'bsor':[], 'pwr2':[], 'por2':[], 'bxcx':[], \
+                          'bins':[], 'bsor':[], 'pwrs':[], 'pwr2':[], 'por2':[], 'bxcx':[], \
                           'addd':[], 'sbtr':[], 'mltp':[], 'divd':[], \
                           'log0':[], 'log1':[], 'logn':[], 'sqrt':[], 'rais':[], 'absl':[], \
                           'bnwd':[], 'bnwK':[], 'bnwM':[], 'bnwo':[], 'bnKo':[], 'bnMo':[], \
@@ -369,7 +369,7 @@ am.automunge(df_train, df_test = False, \
                         'PCA_type':'default', \
                         'PCA_cmnd':{}}, \
              assigncat = {'nmbr':[], 'retn':[], 'mnmx':[], 'mean':[], 'MAD3':[], 'lgnm':[], \
-                          'bins':[], 'bsor':[], 'pwr2':[], 'por2':[], 'bxcx':[], \
+                          'bins':[], 'bsor':[], 'pwrs':[], 'pwr2':[], 'por2':[], 'bxcx':[], \
                           'addd':[], 'sbtr':[], 'mltp':[], 'divd':[], \
                           'log0':[], 'log1':[], 'logn':[], 'sqrt':[], 'rais':[], 'absl':[], \
                           'bnwd':[], 'bnwK':[], 'bnwM':[], 'bnwo':[], 'bnKo':[], 'bnMo':[], \
@@ -593,7 +593,7 @@ am.automunge(df_train, df_test = False, \
                         'PCA_type':'default', \
                         'PCA_cmnd':{}}, \
              assigncat = {'nmbr':[], 'retn':[], 'mnmx':[], 'mean':[], 'MAD3':[], 'lgnm':[], \
-                          'bins':[], 'bsor':[], 'pwr2':[], 'por2':[], 'bxcx':[], \
+                          'bins':[], 'bsor':[], 'pwrs':[], 'pwr2':[], 'por2':[], 'bxcx':[], \
                           'addd':[], 'sbtr':[], 'mltp':[], 'divd':[], \
                           'log0':[], 'log1':[], 'logn':[], 'sqrt':[], 'rais':[], 'absl':[], \
                           'bnwd':[], 'bnwK':[], 'bnwM':[], 'bnwo':[], 'bnKo':[], 'bnMo':[], \
@@ -964,7 +964,7 @@ such as could potentially result in memory savings.
 #we are continuing to build out. A user may also define their own.
 
 assigncat = {'nmbr':[], 'retn':[], 'mnmx':[], 'mean':[], 'MAD3':[], 'lgnm':[], \
-             'bins':[], 'bsor':[], 'pwr2':[], 'por2':[], 'bxcx':[], \
+             'bins':[], 'bsor':[], 'pwrs':[], 'pwr2':[], 'por2':[], 'bxcx':[], \
              'addd':[], 'sbtr':[], 'mltp':[], 'divd':[], \
              'log0':[], 'log1':[], 'logn':[], 'sqrt':[], 'rais':[], 'absl':[], \
              'bnwd':[], 'bnwK':[], 'bnwM':[], 'bnwo':[], 'bnKo':[], 'bnMo':[], \
@@ -2017,10 +2017,11 @@ set to 0. Please note that this method makes use of scipy.stats.boxcox.
   - default infill: mean (ie log(mean))
   - default NArowtype: positivenumeric
   - suffix appender: '_10^#' where # is integer indicating target powers of 10 for column
+  - assignparam parameters accepted: 'negvalues', boolean defaults to False, True bins values <0
   - driftreport postmunge metrics: powerlabelsdict / meanlog / maxlog / 
 	                           <column> + '_ratio' (column specific)
   - inversion available: yes with partial recovery
-* pwr2: bins groupings by powers of 10
+* pwr2: bins groupings by powers of 10 (comparable to pwrs with negvalues parameter activated)
   - default infill: no activation
   - default NArowtype: nonzeronumeric
   - suffix appender: '_10^#' or '_-10^#' where # is integer indicating target powers of 10 for column
@@ -2033,10 +2034,11 @@ value fell with respect to powers of 10
   - default infill: zero
   - default NArowtype: positivenumeric
   - suffix appender: '_pwor'
+  - assignparam parameters accepted: 'negvalues', boolean defaults to False, True bins values <0
   - driftreport postmunge metrics: meanlog / maxlog / ordl_activations_dict
   - inversion available: yes with partial recovery
 * por2: for numerical sets, outputs an ordinal encoding indicating where a
-value fell with respect to powers of 10
+value fell with respect to powers of 10 (comparable to pwor with negvalues parameter activated)
   - default infill: zero (a distinct encoding)
   - default NArowtype: nonzeronumeric
   - suffix appender: '_por2'
