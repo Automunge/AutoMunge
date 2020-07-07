@@ -860,7 +860,7 @@ or can pass as 'report' to return the featureimportance results with no further
 processing (other returned sets are empty). Defaults to 'default'.
 
 * Binary: a dimensionality reduction technique whereby the set of columns
-with binary encodings are collectively encoded with binary encoding such
+with boolean encodings are collectively encoded with binary encoding such
 as may drastically reduce the column count. This has many benefits such as
 memory bandwidth and energy cost for inference I suspect, however, there 
 may be tradeoffs associated with ability of the model to handle outliers,
@@ -868,7 +868,15 @@ as for any new combination of boolean set in the test data the collection
 will be subject to the infill. Pass _True_ to activate, defaults to _False_. 
 (For now also requires passing parameter excl_suffix = True.) Note that
 can also be passed as _'retain'_ to retain the boolean columns that served 
-as basis for encoding instead of replacing them.
+as basis for encoding instead of replacing them. To only convert a portion
+of the boolean columns, can pass this as a list of column headers, which may
+include source column headers and/or returned column headers (source headers
+convert all boolean columns derviewdw from a source column, returned headers 
+allow to only convert a portion, note it is ok to pass non-boolean columns
+they will be ignored). When passing a list of headers, the default is that 
+the binary transform will replace those target columns. For a retain option
+user can pass False as first item in list, e.g. for partial set retention, 
+can pass Binary = [False, 'target_column_1', 'target_column_2'].
 
 * PCAn_components: defaults to _None_ for no PCA dimensionality reduction performed
 (other than based on the automatic PCA application based on ratio of columns and 
