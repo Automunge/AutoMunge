@@ -25607,16 +25607,17 @@ class AutoMunge:
   
     #check Binary
     Binary_valresult = False
-    if Binary not in [True, False, 'retain']:
+    if Binary not in [True, False, 'retain'] and not isinstance(Binary, list):
       Binary_valresult = True
       print("Error: invalid entry passed for Binary parameter.")
-      print("Acceptable values are one of {True, False, 'retain'}")
+      print("Acceptable values are one of {True, False, 'retain', [list]}")
       print()
     elif Binary not in ['retain'] \
-    and not isinstance(Binary, bool):
+    and not isinstance(Binary, bool) \
+    and not isinstance(Binary, list):
       Binary_valresult = True
       print("Error: invalid entry passed for Binary parameter.")
-      print("Acceptable values are one of {True, False, 'retain'}")
+      print("Acceptable values are one of {True, False, 'retain', [list]}")
       
     miscparameters_results.update({'Binary_valresult' : Binary_valresult})
     
@@ -28261,7 +28262,7 @@ class AutoMunge:
     
     #we'll only apply to training and test data not labels
     #making an executive decvision for now that ordinal encoded columns will be excluded
-    if Binary in [True, 'retain']:
+    if Binary in [True, 'retain'] or isinstance(Binary, list):
       
       #printout display progress
       if printstatus is True:
@@ -28272,9 +28273,39 @@ class AutoMunge:
         print(df_train.shape[1])
         print("")
       
+      if isinstance(Binary, list):
+        
+        temp_Binary = True
+        
+        #check for any first entry signaling replace vs retain, 
+        #True is replace, False is retain, no boolean first entry defaults to replace
+        if isinstance(Binary[0], bool):
+          if Binary[0] is True:  
+            temp_Binary = True
+          else:
+            temp_Binary = 'retain'
+          del Binary[0]
+        
+        #for Binary need returned columns
+        Binary_copy = Binary.copy()
+        for entry in Binary_copy:
+          if entry in columns_train:
+            Binary.remove(entry)
+            Binary += postprocess_dict['origcolumn'][entry]['columnkeylist']
+        
+        #consolidate any redundancies
+        Binary = list(set(Binary))
+        
+        Binary_target_columns = Binary.copy()
+        Binary = temp_Binary
+      
+      else:
+        
+        Binary_target_columns = list(df_train)
+        
       bool_column_list = []
       
-      for column in list(df_train):
+      for column in Binary_target_columns:
         
         if column in postprocess_dict['column_dict']:
 
@@ -28456,7 +28487,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.22'
+    automungeversion = '4.23'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
