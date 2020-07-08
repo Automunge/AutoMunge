@@ -876,7 +876,9 @@ allow to only convert a portion, note it is ok to pass non-boolean columns
 they will be ignored). When passing a list of headers, the default is that 
 the binary transform will replace those target columns. For a retain option
 user can pass False as first item in list, e.g. for partial set retention, 
-can pass Binary = [False, 'target_column_1', 'target_column_2'].
+can pass Binary = [False, 'target_column_1', 'target_column_2']. Note that
+when applied a column named 'Binary' is used in derivation, thus this is a 
+reserved column header when applying this transform.
 
 * PCAn_components: defaults to _None_ for no PCA dimensionality reduction performed
 (other than based on the automatic PCA application based on ratio of columns and 
@@ -1562,8 +1564,8 @@ The inversion operation is supported by the optional process_dict entries ‘inf
 ‘inverseprocess’. Note that columns are only returned for those sets in which a path of 
 inversion was available by processdict inverseprocess entries. Note that the path of 
 inversion is prioritized to those returned sets with information retention and availability 
-of inverseprocess functions. Note that recovery support is pending for train or test sets 
-in which a dimensionality reduction operation was performed. Note that recovery of label 
+of inverseprocess functions. Note that Binary dimensionality reduction is supported, support 
+is pending for other dimensionality reduction operations. Note that recovery of label 
 sets with label smoothing is supported. Note that during an inversion operation the 
 postmunge function only considers the parameters postprocess_dict, df_test, inversion, 
 LabelSmoothing, pandasoutput, and/or printstatus. Note that in an inversion operation the 
