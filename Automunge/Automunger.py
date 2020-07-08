@@ -26920,6 +26920,11 @@ class AutoMunge:
     #on train set (but yes on test set)
     """
     
+    if 'Binary' in list(df_train):
+      #(this will only happen when a column with header 'Binary' was passed to 'excl')
+      print("error: column header 'Binary' present in set")
+      print("Binary is a reserved column header when applying Binary transform")
+    
     df_train['Binary'] = ''
     df_test['Binary'] = ''
   
@@ -26928,9 +26933,9 @@ class AutoMunge:
       df_train['Binary'] = df_train['Binary'] + df_train[column].astype(str)
       df_test['Binary'] = df_test['Binary'] + df_test[column].astype(str)
       
-    #this step ensures thqt infill is all zeros since we rely on sort
-    df_train['Binary'] = 'B_' + df_train['Binary']
-    df_test['Binary'] = 'B_' + df_test['Binary']
+#     #this step ensures thqt infill is all zeros since we rely on sort
+#     df_train['Binary'] = 'B_' + df_train['Binary']
+#     df_test['Binary'] = 'B_' + df_test['Binary']
     
     #now we'll apply process_1010_class
     df_train, df_test, Binary_column_dict_list = \
@@ -26978,8 +26983,8 @@ class AutoMunge:
   
       df_test['Binary'] = df_test['Binary'] + df_test[column].astype(str)
     
-    #this step ensures thqt infill is all zeros since we rely on sort
-    df_test['Binary'] = 'B_' + df_test['Binary']
+#     #this step ensures thqt infill is all zeros since we rely on sort
+#     df_test['Binary'] = 'B_' + df_test['Binary']
     
     #now we'll apply postprocess_1010_class
     df_test = self.postprocess_1010_class(df_test, 'Binary', Binary_dict, 'columnkey', {})
@@ -26995,6 +27000,64 @@ class AutoMunge:
         del df_test[column]
     
     return df_test
+  
+  def meta_inverseprocess_Binary(self, df, postprocess_dict):
+    """
+    #converts string boolean integers returned from inverseprocess_Binary to int
+    #cleans up columns
+    """
+    
+    Binary_returned_columns = list(postprocess_dict['Binary_dict']['column_dict'])
+    
+    df, inputcolumn = \
+    self.inverseprocess_Binary(df, Binary_returned_columns, postprocess_dict)
+    
+    Binary_source_columns = postprocess_dict['Binary_dict']['bool_column_list']
+    
+    i=0
+    for Binary_source_column in Binary_source_columns:
+      df[Binary_source_column] = df[inputcolumn].str.slice(start=i, stop=i+1)
+      df[Binary_source_column] = df[Binary_source_column].astype(np.int8)
+      i += 1
+      
+    #we'll have convention that the Binary columns not returned from inversion
+    for Binary_returned_column in Binary_returned_columns:
+      del df[Binary_returned_column]
+      
+    del df[inputcolumn]
+    
+    return df
+    
+  def inverseprocess_Binary(self, df, Binary_columns, postprocess_dict):
+    """
+    #inverse transform similar to process_1010_class
+    #assumes any relevant parameters were saved in normalization_dict
+    #does not perform infill, assumes clean data
+    #note that this will return numeric entries as str
+    """
+    
+    normkey = Binary_columns[0]
+    
+    _1010_binary_encoding_dict = \
+    postprocess_dict['Binary_dict']['column_dict'][normkey]['normalization_dict'][normkey]['_1010_binary_encoding_dict']
+    
+    inverse_binary_encoding_dict = {value:key for key,value in _1010_binary_encoding_dict.items()}
+    
+    inputcolumn = 'Binary'
+    
+    for Binary_column in Binary_columns:
+      
+      if Binary_column == Binary_columns[0]:
+        
+        df[inputcolumn] = df[Binary_column].astype(str)
+        
+      else:
+        
+        df[inputcolumn] = df[inputcolumn] + df[Binary_column].astype(str)
+        
+    df[inputcolumn] = df[inputcolumn].replace(inverse_binary_encoding_dict)
+      
+    return df, inputcolumn
   
   def convert_inf_to_nan(self, df):
     """
@@ -28294,7 +28357,11 @@ class AutoMunge:
             Binary += postprocess_dict['origcolumn'][entry]['columnkeylist']
         
         #consolidate any redundancies
-        Binary = list(set(Binary))
+        Binary_copy = Binary.copy()
+        Binary = []
+        for entry in Binary_copy:
+          if entry not in Binary:
+            Binary.append(entry)
         
         Binary_target_columns = Binary.copy()
         Binary = temp_Binary
@@ -28487,7 +28554,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.23'
+    automungeversion = '4.24'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -37179,27 +37246,82 @@ class AutoMunge:
     #here is where inversion is performed if selected
     if inversion is not False:
       
+      if inversion == 'test' and postprocess_dict['PCAmodel'] is not None:
+        print("error: full test set inversion not currently supported with PCA.")
+        print("user can pass partial list of columns to inversion parameter instead")
+        print()
+        inversion = False
+      
+      if isinstance(inversion, list):
+        #convert list entries to string
+        inversion = [str(entry) for entry in inversion]
+        
+      #initialize objects that may be adjusted in case of Binary
+      Binary_finalcolumns_train = postprocess_dict['finalcolumns_train']
+      Binary_inversion_marker = False
+      
+      #if Binary was performed, treatment depends on whether it was a replace or retain
+      if len(list(postprocess_dict['Binary_dict']['column_dict'])) > 0:
+        #if Binary was a 'retain' call then we don't need these columns for inversion
+        if postprocess_dict['Binary'] == 'retain' and inversion == 'test':
+          inversion = list(df_test)
+          for entry in list(postprocess_dict['Binary_dict']['column_dict']):
+            if entry in inversion:
+              inversion.remove(entry)
+        if postprocess_dict['Binary'] == 'retain' and isinstance(inversion, list):
+          #we'll have convention that if Binary didn't replace columns 
+          #partial inversion only available for Binary source columns
+          for entry in list(postprocess_dict['Binary_dict']['column_dict']):
+            if entry in inversion:
+              print("please note partial inversion lists only supported for columns not returned from Binary")
+              print("when Binary was not performed with replacement")
+              inversion.remove(entry)
+        if postprocess_dict['Binary'] == True and inversion == 'test':
+          Binary_inversion_marker = True
+        if postprocess_dict['Binary'] == True and isinstance(inversion, list):
+          if set(list(postprocess_dict['Binary_dict']['column_dict'])).issubset(set(inversion)):
+            Binary_inversion_marker = True
+            for entry in list(postprocess_dict['Binary_dict']['column_dict']):
+              inversion.remove(entry)
+            inversion += postprocess_dict['Binary_dict']['bool_column_list']
+          elif bool(set(postprocess_dict['Binary_dict']['column_dict']) & set(inversion)):
+            print("error: partial inversion lists only supported for columns returned from Binary")
+            print("when entire set of Binary columns are included in the inversion list")
+            
+      if Binary_inversion_marker is True:
+        
+        print("Recovering columns from Binary dimensionality reduction.")
+          
+        df_test = self.meta_inverseprocess_Binary(df_test, postprocess_dict)
+        
+        for entry in list(postprocess_dict['Binary_dict']['column_dict']):
+          Binary_finalcolumns_train.remove(entry)
+        Binary_finalcolumns_train += postprocess_dict['Binary_dict']['bool_column_list']
+        
+        print("Recovered columns:")
+        print(postprocess_dict['Binary_dict']['bool_column_list'])
+        print()
       
       if inversion == 'test':
         
         #this is to handle edge case of excl transforms
         #which after processing have their suffix removed from header
-        columns_train = postprocess_dict['finalcolumns_train']
+        finalcolumns_labels = Binary_finalcolumns_train
         source_columns = postprocess_dict['origtraincolumns']
         
-        columns_train = [str(c)+'_excl' if c in source_columns else c for c in columns_train]
+        finalcolumns_labels = [str(c)+'_excl' if c in source_columns else c for c in finalcolumns_labels]
         
         #confirm consistency of train an test sets
 
         #check number of columns is consistent
-        if len(columns_train)!= df_test.shape[1]:
+        if len(finalcolumns_labels)!= df_test.shape[1]:
           print("error, different number of returned columns in train and test sets")
           return
         
         #check order of column headers are consistent
         columns_test = list(df_test)
-        if set(columns_train) == set(columns_test):
-          if columns_train != columns_test:
+        if set(finalcolumns_labels) == set(columns_test):
+          if finalcolumns_labels != columns_test:
             print("error, different order of column labels in the train and test set")
             return
         #this is for excl edge case again in case we had any updates to finalcolumns_labels above
@@ -37209,8 +37331,8 @@ class AutoMunge:
             return
 
         #assign labels to column headers if they weren't passed
-        if columns_train != columns_test:
-          df_test.columns = columns_train
+        if finalcolumns_labels != columns_test:
+          df_test.columns = finalcolumns_labels
         
         
         if printstatus is True:
@@ -37288,9 +37410,6 @@ class AutoMunge:
       
       if isinstance(inversion, list):
         
-        #convert list entries to string
-        inversion = [str(entry) for entry in inversion]
-        
         #this is to handle edge case of excl transforms
         #which after processing have their suffix removed from header
         finalcolumns_train = postprocess_dict['finalcolumns_train']
@@ -37307,7 +37426,11 @@ class AutoMunge:
         inversion = [postprocess_dict['column_dict'][entry]['origcolumn'] if entry in finalcolumns_train or entry in postprocess_dict['excl_columns_with_suffix'] else entry for entry in inversion]
         
         #consolidate redundancies
-        inversion = list(set(inversion))
+        inversion_copy = inversion.copy()
+        inversion = []
+        for entry in inversion_copy:
+          if entry not in inversion:
+            inversion.append(entry)
         
         #check these are all valid source columns
         for entry in inversion:
@@ -39478,7 +39601,7 @@ class AutoMunge:
     
     inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
     
-    df[inputcolumn] = 0
+    df[inputcolumn] = 'zzzinfill'
     
     for categorylist_entry in categorylist:
       
