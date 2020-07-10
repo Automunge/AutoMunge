@@ -23045,7 +23045,7 @@ class AutoMunge:
     return columnaccuracy
   
   def assemblemadethecut(self, FScolumn_dict, featurepct, featuremetric, featuremethod, \
-                         am_subset_columns):
+                         am_subset_columns, FSprocess_dict):
     '''
     takes as input the FScolumn_dict and the passed automunge argument featurepct
     and a list of the columns from automunge application in featureselect
@@ -23120,6 +23120,14 @@ class AutoMunge:
     #generate list of rows making the cut
     madethecut = candidatefeaturerows[:numbermakingcut]
     
+    #this is to retain full sets if any 1010 sets returned
+    madethecut_copy = madethecut.copy()
+    for entry in madethecut_copy:
+      if not set(FScolumn_dict[entry]['categorylist']).issubset(set(madethecut)):
+        if FSprocess_dict[FScolumn_dict[entry]['category']]['MLinfilltype'] == '1010':
+          for entry2 in FScolumn_dict[entry]['categorylist']:
+            if entry2 not in madethecut:
+              madethecut.append(entry2)
     
     return madethecut
 
@@ -23315,6 +23323,9 @@ class AutoMunge:
                                             'baseaccuracy' : baseaccuracy, \
                                             'metric' : None, \
                                             'metric2' : None}})
+            
+          #this is for assemblemadethecut
+          FSprocess_dict = FSpostprocess_dict['process_dict']
 
           #printout display progress
           if printstatus is True:
@@ -23378,7 +23389,7 @@ class AutoMunge:
             FScolumn_dict[column]['metric2'] = metric2
           
           madethecut = self.assemblemadethecut(FScolumn_dict, featurepct, featuremetric, \
-                                           featuremethod, am_train_columns)
+                                           featuremethod, am_train_columns, FSprocess_dict)
     
     #if the only column left in madethecut from origin column is a NArw, delete from the set
     #(this is going to lean on the column ID string naming conventions)
@@ -28555,7 +28566,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.25'
+    automungeversion = '4.26'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
