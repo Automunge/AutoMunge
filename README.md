@@ -857,10 +857,7 @@ _'report'}_ where 'pct' or 'metric' to select which feature importance method
 is used for trimming the derived sets as a form of dimensionality reduction. 
 Or can pass as 'default' for ignoring the featurepct/featuremetric parameters 
 or can pass as 'report' to return the featureimportance results with no further
-processing (other returned sets are empty). Defaults to 'default'. Note that
-when running the feature importance dimensionality reduction it is recomended to
-replace the default '1010' categoric transform to 'text' such as by overwriting
-the transform functions with a passed processdict entry.
+processing (other returned sets are empty). Defaults to 'default'.
 
 * Binary: a dimensionality reduction technique whereby the set of columns
 with boolean encodings are collectively encoded with binary encoding such
