@@ -23123,8 +23123,8 @@ class AutoMunge:
     #this is to retain full sets if any 1010 sets returned
     madethecut_copy = madethecut.copy()
     for entry in madethecut_copy:
-      if not set(FScolumn_dict[entry]['categorylist']).issubset(set(madethecut)):
-        if FSprocess_dict[FScolumn_dict[entry]['category']]['MLinfilltype'] == '1010':
+      if FSprocess_dict[FScolumn_dict[entry]['category']]['MLinfilltype'] == '1010':
+        if not set(FScolumn_dict[entry]['categorylist']).issubset(set(madethecut)):
           for entry2 in FScolumn_dict[entry]['categorylist']:
             if entry2 not in madethecut:
               madethecut.append(entry2)
@@ -28208,10 +28208,9 @@ class AutoMunge:
       if featuremethod in ['default', 'report'] or FSmodel is False \
       or (featuremethod in ['pct'] and featurepct == 1.0):
         madethecut = currentcolumns
-      
+
       #get list of columns to trim
-      madethecutset = set(madethecut)
-      trimcolumns = [b for b in currentcolumns if b not in madethecutset]
+      trimcolumns = [b for b in currentcolumns if b not in madethecut]
 
       if len(trimcolumns) > 0:
         #printout display progress
@@ -28232,15 +28231,18 @@ class AutoMunge:
           print("trimmed columns: ")
           print(trimcolumns)
           print("")
-          print("returned columns: ")
-          print(madethecut)
-          print("")
 
       #trim columns
       for trimmee in trimcolumns:
 
         del df_train[trimmee]
         del df_test[trimmee]
+        
+      if len(trimcolumns) > 0:
+        if printstatus is True:
+          print("returned columns: ")
+          print(list(df_train))
+          print("")
 
     prePCAcolumns = list(df_train)
     
@@ -28394,6 +28396,11 @@ class AutoMunge:
           ['singlect', 'multirt', 'multisp', 'binary', '1010', 'boolexclude', 'concurrent_act']:
 
             bool_column_list.append(column)
+            
+      if printstatus is True:
+        print("Consolidating boolean columns:")
+        print(bool_column_list)
+        print()
           
       df_train, df_test, Binary_dict = self.Binary_convert(df_train, df_test, bool_column_list, Binary)
       
@@ -28566,7 +28573,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.26'
+    automungeversion = '4.27'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -37179,16 +37186,16 @@ class AutoMunge:
         print("featureselection not available when performing inversion")
         print()
         
-        madethecut = []
+        madethecut = postprocess_dict['madethecut']
         FSmodel = False
         FScolumn_dict = {}
         FS_sorted = {}
       
-      elif labelscolumn is False:
+      elif postprocess_dict['labels_column'] is False:
         print("featureselection not available without labels_column in training set")
         print()
         
-        madethecut = []
+        madethecut = postprocess_dict['madethecut']
         FSmodel = False
         FScolumn_dict = {}
         FS_sorted = {}
@@ -37200,7 +37207,7 @@ class AutoMunge:
 
     else:
 
-      madethecut = []
+      madethecut = postprocess_dict['madethecut']
       FSmodel = None
       FScolumn_dict = {}
       FS_sorted = {}
@@ -37639,8 +37646,7 @@ class AutoMunge:
       currentcolumns = list(df_test)
 
       #get list of columns to trim
-      madethecutset = set(postprocess_dict['madethecut'])
-      trimcolumns = [b for b in currentcolumns if b not in madethecutset]
+      trimcolumns = [b for b in currentcolumns if b not in madethecut]
 
       if len(trimcolumns) > 0:
         #printout display progress
@@ -37657,13 +37663,16 @@ class AutoMunge:
           print("trimmed columns: ")
           print(trimcolumns)
           print("")
-          print("returned columns: ")
-          print(postprocess_dict['madethecut'])
-          print("")
 
-      #trim columns manually
-      for trimmee in trimcolumns:
-        del df_test[trimmee]
+        #trim columns manually
+        for trimmee in trimcolumns:
+          del df_test[trimmee]
+        
+      if len(trimcolumns) > 0:
+        if printstatus is True:
+          print("returned columns: ")
+          print(list(df_test))
+          print("")
 
     #first this check allows for backward compatibility with published demonstrations
     if 'PCAn_components' in postprocess_dict:
@@ -37718,6 +37727,11 @@ class AutoMunge:
       
       Binary_dict = postprocess_dict['Binary_dict']
       Binary = postprocess_dict['Binary']
+      
+      if printstatus is True:
+        print("Consolidating boolean columns:")
+        print(Binary_dict['bool_column_list'])
+        print()
           
       df_test = self.postBinary_convert(df_test, Binary_dict, Binary)
       
@@ -37811,7 +37825,7 @@ class AutoMunge:
 
     #printout display progress
     if printstatus is True:
-
+      print("_______________")
       print("Postmunge returned column set: ")
       print(list(df_test))
       print("")
