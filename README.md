@@ -857,7 +857,10 @@ _'report'}_ where 'pct' or 'metric' to select which feature importance method
 is used for trimming the derived sets as a form of dimensionality reduction. 
 Or can pass as 'default' for ignoring the featurepct/featuremetric parameters 
 or can pass as 'report' to return the featureimportance results with no further
-processing (other returned sets are empty). Defaults to 'default'.
+processing (other returned sets are empty). Defaults to 'default'. Note that
+when running the feature importance dimensionality reduciton it is recomended to
+replace the default '1010' categoric transform to 'text' such as by overwriting
+the transform functions with a passed processdict entry.
 
 * Binary: a dimensionality reduction technique whereby the set of columns
 with boolean encodings are collectively encoded with binary encoding such
@@ -1564,8 +1567,8 @@ The inversion operation is supported by the optional process_dict entries ‘inf
 ‘inverseprocess’. Note that columns are only returned for those sets in which a path of 
 inversion was available by processdict inverseprocess entries. Note that the path of 
 inversion is prioritized to those returned sets with information retention and availability 
-of inverseprocess functions. Note that Binary dimensionality reduction is supported, support 
-is pending for other dimensionality reduction operations. Note that recovery of label 
+of inverseprocess functions. Note that both feature importance and Binary dimensionality 
+reduction is supported, support is not expected for PCA. Note that recovery of label 
 sets with label smoothing is supported. Note that during an inversion operation the 
 postmunge function only considers the parameters postprocess_dict, df_test, inversion, 
 LabelSmoothing, pandasoutput, and/or printstatus. Note that in an inversion operation the 
