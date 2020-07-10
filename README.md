@@ -842,15 +842,15 @@ size of validationratios if passed are used in this method, otherwise
 defaults to 0.2.) Note that sorted feature importance results are returned
 in postprocess_dict['FS_sorted'], including columns sorted by metric and metric2.
 
-* featurepct: the percentage of derived sets that are kept in the output
+* featurepct: the percentage of derived columns that are kept in the output
 based on the feature importance evaluation. Accepts float in the range 0-1.
 Note that NArw columns are only retained for those sets corresponding to 
 columns that "made the cut". This item only used if featuremethod passed as 
 'pct'.
 
-* featuremetric: the feature importance metric below which derived sets
-are trimmed from the output. Note that this item only used if
-featuremethod passed as 'metric'.
+* featuremetric: the feature importance metric below which derived columns
+are trimmed from the output. Note that this item only used if featuremethod 
+passed as 'metric'.
 
 * featuremethod: can be passed as one of _{'pct', 'metric', 'default',_ 
 _'report'}_ where 'pct' or 'metric' to select which feature importance method 
