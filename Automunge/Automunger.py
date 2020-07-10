@@ -23120,6 +23120,7 @@ class AutoMunge:
     #generate list of rows making the cut
     madethecut = candidatefeaturerows[:numbermakingcut]
     
+    
     return madethecut
 
   def featureselect(self, df_train, labels_column, trainID_column, \
@@ -28554,7 +28555,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.24'
+    automungeversion = '4.25'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -37242,220 +37243,14 @@ class AutoMunge:
 #     elif inplace is True:
 #       pass
 
-    #____________
     #here is where inversion is performed if selected
     if inversion is not False:
       
-      if inversion == 'test' and postprocess_dict['PCAmodel'] is not None:
-        print("error: full test set inversion not currently supported with PCA.")
-        print("user can pass partial list of columns to inversion parameter instead")
-        print()
-        inversion = False
+      df_test, recovered_list, inversion_info_dict = \
+      self.inversion_parent(inversion, df_test, postprocess_dict, printstatus, \
+                            pandasoutput, LabelSmoothing)
       
-      if isinstance(inversion, list):
-        #convert list entries to string
-        inversion = [str(entry) for entry in inversion]
-        
-      #initialize objects that may be adjusted in case of Binary
-      Binary_finalcolumns_train = postprocess_dict['finalcolumns_train']
-      Binary_inversion_marker = False
-      
-      #if Binary was performed, treatment depends on whether it was a replace or retain
-      if len(list(postprocess_dict['Binary_dict']['column_dict'])) > 0:
-        #if Binary was a 'retain' call then we don't need these columns for inversion
-        if postprocess_dict['Binary'] == 'retain' and inversion == 'test':
-          inversion = list(df_test)
-          for entry in list(postprocess_dict['Binary_dict']['column_dict']):
-            if entry in inversion:
-              inversion.remove(entry)
-        if postprocess_dict['Binary'] == 'retain' and isinstance(inversion, list):
-          #we'll have convention that if Binary didn't replace columns 
-          #partial inversion only available for Binary source columns
-          for entry in list(postprocess_dict['Binary_dict']['column_dict']):
-            if entry in inversion:
-              print("please note partial inversion lists only supported for columns not returned from Binary")
-              print("when Binary was not performed with replacement")
-              inversion.remove(entry)
-        if postprocess_dict['Binary'] == True and inversion == 'test':
-          Binary_inversion_marker = True
-        if postprocess_dict['Binary'] == True and isinstance(inversion, list):
-          if set(list(postprocess_dict['Binary_dict']['column_dict'])).issubset(set(inversion)):
-            Binary_inversion_marker = True
-            for entry in list(postprocess_dict['Binary_dict']['column_dict']):
-              inversion.remove(entry)
-            inversion += postprocess_dict['Binary_dict']['bool_column_list']
-          elif bool(set(postprocess_dict['Binary_dict']['column_dict']) & set(inversion)):
-            print("error: partial inversion lists only supported for columns returned from Binary")
-            print("when entire set of Binary columns are included in the inversion list")
-            
-      if Binary_inversion_marker is True:
-        
-        print("Recovering columns from Binary dimensionality reduction.")
-          
-        df_test = self.meta_inverseprocess_Binary(df_test, postprocess_dict)
-        
-        for entry in list(postprocess_dict['Binary_dict']['column_dict']):
-          Binary_finalcolumns_train.remove(entry)
-        Binary_finalcolumns_train += postprocess_dict['Binary_dict']['bool_column_list']
-        
-        print("Recovered columns:")
-        print(postprocess_dict['Binary_dict']['bool_column_list'])
-        print()
-      
-      if inversion == 'test':
-        
-        #this is to handle edge case of excl transforms
-        #which after processing have their suffix removed from header
-        finalcolumns_labels = Binary_finalcolumns_train
-        source_columns = postprocess_dict['origtraincolumns']
-        
-        finalcolumns_labels = [str(c)+'_excl' if c in source_columns else c for c in finalcolumns_labels]
-        
-        #confirm consistency of train an test sets
-
-        #check number of columns is consistent
-        if len(finalcolumns_labels)!= df_test.shape[1]:
-          print("error, different number of returned columns in train and test sets")
-          return
-        
-        #check order of column headers are consistent
-        columns_test = list(df_test)
-        if set(finalcolumns_labels) == set(columns_test):
-          if finalcolumns_labels != columns_test:
-            print("error, different order of column labels in the train and test set")
-            return
-        #this is for excl edge case again in case we had any updates to finalcolumns_labels above
-        elif set(postprocess_dict['finalcolumns_train']) == set(columns_test):
-          if postprocess_dict['finalcolumns_train'] != columns_test:
-            print("error, different order of column labels in the train and test set")
-            return
-
-        #assign labels to column headers if they weren't passed
-        if finalcolumns_labels != columns_test:
-          df_test.columns = finalcolumns_labels
-        
-        
-        if printstatus is True:
-          print("Performing inversion recovery of original columns for test set.")
-          print()
-          
-        df_test, recovered_list, inversion_info_dict = \
-        self.df_inversion_meta(df_test, postprocess_dict['origtraincolumns'], postprocess_dict, printstatus)
-        
-        if printstatus is True:
-          print("Inversion succeeded in recovering original form for columns:")
-          print(recovered_list)
-          print()
-        
-        if pandasoutput is False:
-          
-          df_test = df_test.values
-          
-        return df_test, recovered_list, inversion_info_dict
-        
-      if inversion == 'labels':
-        
-        #this is to handle edge case of excl transforms
-        #which after processing have their suffix removed from header
-        finalcolumns_labels = postprocess_dict['finalcolumns_labels']
-        source_columns = postprocess_dict['labels_column']
-        
-        finalcolumns_labels = [str(c)+'_excl' if c in source_columns else c for c in finalcolumns_labels]
-        
-        #confirm consistency of label sets
-
-        #check number of columns is consistent
-        if len(finalcolumns_labels)!= df_test.shape[1]:
-          print("error, different number of returned label columns in train and test sets")
-          return
-        
-        #check order of column headers are consistent
-        columns_test = list(df_test)
-        if set(finalcolumns_labels) == set(columns_test):
-          if finalcolumns_labels != columns_test:
-            print("error, different order of column labels in the train and test set")
-            return
-        #this is for excl edge case again in case we had any updates to finalcolumns_labels above
-        elif set(postprocess_dict['finalcolumns_labels']) == set(columns_test):
-          if postprocess_dict['finalcolumns_labels'] != columns_test:
-            print("error, different order of column labels in the train and test set")
-            return
-        
-        #assign labels to column headers if they weren't passed
-        if finalcolumns_labels != columns_test:
-          df_test.columns = finalcolumns_labels
-          
-        if printstatus is True:
-          print("Performing inversion recovery of original columns for label set.")
-          print()
-          
-        #first revert any label smoothing to one-hot encoding, LabelSmoothing can be passed as True
-        #for basis of LabelSmoothing_train passed to automunge, or float 0-1 matching activation setting 
-        #assumes if labels encoded in multiple smoothed configurations they have consistent activations
-        df_test = self.meta_LS_invert(LabelSmoothing, df_test, postprocess_dict)
-          
-        df_test, recovered_list, inversion_info_dict = \
-        self.df_inversion_meta(df_test, [postprocess_dict['labels_column']], postprocess_dict, printstatus)
-        
-        if printstatus is True:
-          print("Inversion succeeded in recovering original form for columns:")
-          print(recovered_list)
-          print()
-          
-        if pandasoutput is False:
-          
-          df_test = df_test.values
-          
-        return df_test, recovered_list, inversion_info_dict
-      
-      if isinstance(inversion, list):
-        
-        #this is to handle edge case of excl transforms
-        #which after processing have their suffix removed from header
-        finalcolumns_train = postprocess_dict['finalcolumns_train']
-        source_columns = postprocess_dict['origtraincolumns']
-        
-        inversion = [str(c)+'_excl' if c in source_columns and c in finalcolumns_train else c for c in inversion]
-        
-        finalcolumns_train = [str(c)+'_excl' if c in source_columns else c for c in finalcolumns_train]
-        
-#         #for inversion need source columns
-#         inversion = [postprocess_dict['column_dict'][entry]['origcolumn'] if entry in finalcolumns_train else entry for entry in inversion]
-        
-        #for inversion need source columns
-        inversion = [postprocess_dict['column_dict'][entry]['origcolumn'] if entry in finalcolumns_train or entry in postprocess_dict['excl_columns_with_suffix'] else entry for entry in inversion]
-        
-        #consolidate redundancies
-        inversion_copy = inversion.copy()
-        inversion = []
-        for entry in inversion_copy:
-          if entry not in inversion:
-            inversion.append(entry)
-        
-        #check these are all valid source columns
-        for entry in inversion:
-          
-          if entry not in source_columns:
-            
-            print("error: entry passed to inversion parameter list not matching a source or derived column")
-            print("for entry: ", entry)
-            
-        df_test, recovered_list, inversion_info_dict = \
-        self.df_inversion_meta(df_test, inversion, postprocess_dict, printstatus)
-        
-        if printstatus is True:
-          print("Inversion succeeded in recovering original form for columns:")
-          print(recovered_list)
-          print()
-          
-        if pandasoutput is False:
-          
-          df_test = df_test.values
-          
-        return df_test, recovered_list, inversion_info_dict
-    
-    #end inversion option sequence
-    #____________
+      return df_test, recovered_list, inversion_info_dict
 
     if type(df_test.index) != pd.RangeIndex:
       #if df_train.index.names == [None]:
@@ -40191,6 +39986,14 @@ class AutoMunge:
           
           break
           
+      if best_path is not False:
+        #check that best path has all categorylist entries present
+        if not set(postprocess_dict['column_dict'][best_path]['categorylist']).issubset(set(df_test)):
+          if printstatus is True:
+            print("Inversion path selected based on returned column ", best_path)
+            print("Inversion not available due to incomplete set of categorylist entries.")
+          best_path = False
+          
       if printstatus is True:
         
         if best_path is not False:
@@ -40241,7 +40044,8 @@ class AutoMunge:
 
           #we're only retaining successfully recovered source columns in the returned df
           #this deletion is performed sequentially for columns returned from given source column for memory management
-          del df_test[column]
+          if column in list(df_test):
+            del df_test[column]
           
       if printstatus is True:
         
@@ -40258,3 +40062,219 @@ class AutoMunge:
         recovered_list.append(column)
     
     return df_test, recovered_list, inversion_info_dict
+  
+  def inversion_parent(self, inversion, df_test, postprocess_dict, printstatus, \
+                       pandasoutput, LabelSmoothing):
+    
+    if inversion == 'test' and postprocess_dict['PCAmodel'] is not None:
+      print("error: full test set inversion not currently supported with PCA.")
+      print("user can pass partial list of columns to inversion parameter instead")
+      print()
+      inversion = False
+
+    if isinstance(inversion, list):
+      #convert list entries to string
+      inversion = [str(entry) for entry in inversion]
+
+    #initialize objects that may be adjusted in case of Binary
+    Binary_finalcolumns_train = postprocess_dict['finalcolumns_train']
+    Binary_inversion_marker = False
+
+    #if Binary was performed, treatment depends on whether it was a replace or retain
+    if len(list(postprocess_dict['Binary_dict']['column_dict'])) > 0:
+      #if Binary was a 'retain' call then we don't need these columns for inversion
+      if postprocess_dict['Binary'] == 'retain' and inversion == 'test':
+        inversion = list(df_test)
+        for entry in list(postprocess_dict['Binary_dict']['column_dict']):
+          if entry in inversion:
+            inversion.remove(entry)
+      if postprocess_dict['Binary'] == 'retain' and isinstance(inversion, list):
+        #we'll have convention that if Binary didn't replace columns 
+        #partial inversion only available for Binary source columns
+        for entry in list(postprocess_dict['Binary_dict']['column_dict']):
+          if entry in inversion:
+            print("please note partial inversion lists only supported for columns not returned from Binary")
+            print("when Binary was not performed with replacement")
+            inversion.remove(entry)
+      if postprocess_dict['Binary'] == True and inversion == 'test':
+        Binary_inversion_marker = True
+      if postprocess_dict['Binary'] == True and isinstance(inversion, list):
+        if set(list(postprocess_dict['Binary_dict']['column_dict'])).issubset(set(inversion)):
+          Binary_inversion_marker = True
+          for entry in list(postprocess_dict['Binary_dict']['column_dict']):
+            inversion.remove(entry)
+          inversion += postprocess_dict['Binary_dict']['bool_column_list']
+        elif bool(set(postprocess_dict['Binary_dict']['column_dict']) & set(inversion)):
+          print("error: partial inversion lists only supported for columns returned from Binary")
+          print("when entire set of Binary columns are included in the inversion list")
+
+    if Binary_inversion_marker is True:
+
+      print("Recovering columns from Binary dimensionality reduction.")
+
+      df_test = self.meta_inverseprocess_Binary(df_test, postprocess_dict)
+
+      for entry in list(postprocess_dict['Binary_dict']['column_dict']):
+        Binary_finalcolumns_train.remove(entry)
+      Binary_finalcolumns_train += postprocess_dict['Binary_dict']['bool_column_list']
+
+      print("Recovered columns:")
+      print(postprocess_dict['Binary_dict']['bool_column_list'])
+      print()
+      
+    #this is relevant for when feature importance dimensionality reduction was performed
+    if inversion == 'test':
+      if set(Binary_finalcolumns_train).issubset(set(postprocess_dict['pre_dimred_finalcolumns_train'])):
+        inversion = Binary_finalcolumns_train
+        
+    if inversion == 'test':
+
+      #this is to handle edge case of excl transforms
+      #which after processing have their suffix removed from header
+      finalcolumns_labels = Binary_finalcolumns_train
+      source_columns = postprocess_dict['origtraincolumns']
+
+      finalcolumns_labels = [str(c)+'_excl' if c in source_columns else c for c in finalcolumns_labels]
+
+      #confirm consistency of train an test sets
+
+      #check number of columns is consistent
+      if len(finalcolumns_labels)!= df_test.shape[1]:
+        print("error, different number of returned columns in train and test sets")
+        return
+
+      #check order of column headers are consistent
+      columns_test = list(df_test)
+      if set(finalcolumns_labels) == set(columns_test):
+        if finalcolumns_labels != columns_test:
+          print("error, different order of column labels in the train and test set")
+          return
+      #this is for excl edge case again in case we had any updates to finalcolumns_labels above
+      elif set(postprocess_dict['finalcolumns_train']) == set(columns_test):
+        if postprocess_dict['finalcolumns_train'] != columns_test:
+          print("error, different order of column labels in the train and test set")
+          return
+
+      #assign labels to column headers if they weren't passed
+      if finalcolumns_labels != columns_test:
+        df_test.columns = finalcolumns_labels
+
+
+      if printstatus is True:
+        print("Performing inversion recovery of original columns for test set.")
+        print()
+
+      df_test, recovered_list, inversion_info_dict = \
+      self.df_inversion_meta(df_test, postprocess_dict['origtraincolumns'], postprocess_dict, printstatus)
+
+      if printstatus is True:
+        print("Inversion succeeded in recovering original form for columns:")
+        print(recovered_list)
+        print()
+
+      if pandasoutput is False:
+
+        df_test = df_test.values
+
+      return df_test, recovered_list, inversion_info_dict
+
+    if inversion == 'labels':
+
+      #this is to handle edge case of excl transforms
+      #which after processing have their suffix removed from header
+      finalcolumns_labels = postprocess_dict['finalcolumns_labels']
+      source_columns = postprocess_dict['labels_column']
+
+      finalcolumns_labels = [str(c)+'_excl' if c in source_columns else c for c in finalcolumns_labels]
+
+      #confirm consistency of label sets
+
+      #check number of columns is consistent
+      if len(finalcolumns_labels)!= df_test.shape[1]:
+        print("error, different number of returned label columns in train and test sets")
+        return
+
+      #check order of column headers are consistent
+      columns_test = list(df_test)
+      if set(finalcolumns_labels) == set(columns_test):
+        if finalcolumns_labels != columns_test:
+          print("error, different order of column labels in the train and test set")
+          return
+      #this is for excl edge case again in case we had any updates to finalcolumns_labels above
+      elif set(postprocess_dict['finalcolumns_labels']) == set(columns_test):
+        if postprocess_dict['finalcolumns_labels'] != columns_test:
+          print("error, different order of column labels in the train and test set")
+          return
+
+      #assign labels to column headers if they weren't passed
+      if finalcolumns_labels != columns_test:
+        df_test.columns = finalcolumns_labels
+
+      if printstatus is True:
+        print("Performing inversion recovery of original columns for label set.")
+        print()
+
+      #first revert any label smoothing to one-hot encoding, LabelSmoothing can be passed as True
+      #for basis of LabelSmoothing_train passed to automunge, or float 0-1 matching activation setting 
+      #assumes if labels encoded in multiple smoothed configurations they have consistent activations
+      df_test = self.meta_LS_invert(LabelSmoothing, df_test, postprocess_dict)
+
+      df_test, recovered_list, inversion_info_dict = \
+      self.df_inversion_meta(df_test, [postprocess_dict['labels_column']], postprocess_dict, printstatus)
+
+      if printstatus is True:
+        print("Inversion succeeded in recovering original form for columns:")
+        print(recovered_list)
+        print()
+
+      if pandasoutput is False:
+
+        df_test = df_test.values
+
+      return df_test, recovered_list, inversion_info_dict
+
+    if isinstance(inversion, list):
+
+      #this is to handle edge case of excl transforms
+      #which after processing have their suffix removed from header
+      finalcolumns_train = postprocess_dict['finalcolumns_train']
+      source_columns = postprocess_dict['origtraincolumns']
+
+      inversion = [str(c)+'_excl' if c in source_columns and c in finalcolumns_train else c for c in inversion]
+
+      finalcolumns_train = [str(c)+'_excl' if c in source_columns else c for c in finalcolumns_train]
+
+#         #for inversion need source columns
+#         inversion = [postprocess_dict['column_dict'][entry]['origcolumn'] if entry in finalcolumns_train else entry for entry in inversion]
+
+      #for inversion need source columns
+      inversion = [postprocess_dict['column_dict'][entry]['origcolumn'] if entry in finalcolumns_train or entry in postprocess_dict['excl_columns_with_suffix'] else entry for entry in inversion]
+
+      #consolidate redundancies
+      inversion_copy = inversion.copy()
+      inversion = []
+      for entry in inversion_copy:
+        if entry not in inversion:
+          inversion.append(entry)
+
+      #check these are all valid source columns
+      for entry in inversion:
+
+        if entry not in source_columns:
+
+          print("error: entry passed to inversion parameter list not matching a source or derived column")
+          print("for entry: ", entry)
+
+      df_test, recovered_list, inversion_info_dict = \
+      self.df_inversion_meta(df_test, inversion, postprocess_dict, printstatus)
+
+      if printstatus is True:
+        print("Inversion succeeded in recovering original form for columns:")
+        print(recovered_list)
+        print()
+
+      if pandasoutput is False:
+
+        df_test = df_test.values
+
+      return df_test, recovered_list, inversion_info_dict
