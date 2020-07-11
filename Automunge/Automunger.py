@@ -7002,6 +7002,11 @@ class AutoMunge:
       concurrent_activations = params['concurrent_activations']
     else:
       concurrent_activations = False
+      
+    if 'int_headers' in params:
+      int_headers = params['int_headers']
+    else:
+      int_headers = False
     
     #first we find overlaps from mdf_train
     
@@ -7209,6 +7214,30 @@ class AutoMunge:
       mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
 
       newcolumns.append(newcolumn)
+      
+    preint_newcolumns = newcolumns.copy()
+      
+    if int_headers is True:
+      
+      int_labels_dict = {}
+      i = 0
+      for entry in newcolumns:
+        int_labels_dict.update({entry : column + '_splt_' + str(i)})
+        i += 1
+        
+      #now convert column headers from string to int convention
+      mdf_train = mdf_train.rename(columns=int_labels_dict)
+      mdf_test  = mdf_test.rename(columns=int_labels_dict)
+
+      newcolumns = [int_labels_dict[entry] for entry in newcolumns]
+
+      inverse_int_labels_dict = {value:key for key,value in int_labels_dict.items()}
+      for key in inverse_int_labels_dict:
+        inverse_int_labels_dict[key] = inverse_int_labels_dict[key][len(column) + 1:]
+        
+    else:
+      int_labels_dict = False
+      inverse_int_labels_dict = False
     
     column_dict_list = []
 
@@ -7217,7 +7246,11 @@ class AutoMunge:
       textnormalization_dict = {tc : {'overlap_dict' : overlap_dict, \
                                       'splt_newcolumns_splt'   : newcolumns, \
                                       'minsplit' : minsplit, \
-                                      'concurrent_activations' : concurrent_activations}}
+                                      'concurrent_activations' : concurrent_activations, \
+                                      'preint_newcolumns' : preint_newcolumns, \
+                                      'int_headers' : int_headers, \
+                                      'int_labels_dict' : int_labels_dict, \
+                                      'inverse_int_labels_dict' : inverse_int_labels_dict}}
       
       column_dict = {tc : {'category' : 'splt', \
                            'origcategory' : category, \
@@ -8198,6 +8231,11 @@ class AutoMunge:
       concurrent_activations = params['concurrent_activations']
     else:
       concurrent_activations = False
+      
+    if 'int_headers' in params:
+      int_headers = params['int_headers']
+    else:
+      int_headers = False
     
     #first we find overlaps from mdf_train
     
@@ -8407,6 +8445,30 @@ class AutoMunge:
       mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
 
       newcolumns.append(newcolumn)
+      
+    preint_newcolumns = newcolumns.copy()
+      
+    if int_headers is True:
+      
+      int_labels_dict = {}
+      i = 0
+      for entry in newcolumns:
+        int_labels_dict.update({entry : column + '_spl8_' + str(i)})
+        i += 1
+        
+      #now convert column headers from string to int convention
+      mdf_train = mdf_train.rename(columns=int_labels_dict)
+      mdf_test  = mdf_test.rename(columns=int_labels_dict)
+
+      newcolumns = [int_labels_dict[entry] for entry in newcolumns]
+
+      inverse_int_labels_dict = {value:key for key,value in int_labels_dict.items()}
+      for key in inverse_int_labels_dict:
+        inverse_int_labels_dict[key] = inverse_int_labels_dict[key][len(column) + 1:]
+        
+    else:
+      int_labels_dict = False
+      inverse_int_labels_dict = False
     
     column_dict_list = []
 
@@ -8415,7 +8477,11 @@ class AutoMunge:
       textnormalization_dict = {tc : {'overlap_dict' : overlap_dict, \
                                       'splt_newcolumns_spl8'   : newcolumns, \
                                       'minsplit' : minsplit, \
-                                      'concurrent_activations' : concurrent_activations}}
+                                      'concurrent_activations' : concurrent_activations, \
+                                      'preint_newcolumns' : preint_newcolumns, \
+                                      'int_headers' : int_headers, \
+                                      'int_labels_dict' : int_labels_dict, \
+                                      'inverse_int_labels_dict' : inverse_int_labels_dict}}
       
       column_dict = {tc : {'category' : 'spl8', \
                            'origcategory' : category, \
@@ -9065,7 +9131,7 @@ class AutoMunge:
       column_dict_list = []
 
     return mdf_train, mdf_test, column_dict_list
-  
+
   def process_sp15_class(self, mdf_train, mdf_test, column, category, \
                          postprocess_dict, params = {}):
     '''
@@ -9101,6 +9167,11 @@ class AutoMunge:
       excluded_characters = params['excluded_characters']
     else:
       excluded_characters = [' ', ',', '.', '?', '!', '(', ')']
+      
+    if 'int_headers' in params:
+      int_headers = params['int_headers']
+    else:
+      int_headers = False
       
     #note that same MLinfilltype in processdict ('1010')
     #may be used for both configurations but applying concurrent_activations = False
@@ -9316,6 +9387,30 @@ class AutoMunge:
       mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
 
       newcolumns.append(newcolumn)
+      
+    preint_newcolumns = newcolumns.copy()
+      
+    if int_headers is True:
+      
+      int_labels_dict = {}
+      i = 0
+      for entry in newcolumns:
+        int_labels_dict.update({entry : column + '_sp15_' + str(i)})
+        i += 1
+        
+      #now convert column headers from string to int convention
+      mdf_train = mdf_train.rename(columns=int_labels_dict)
+      mdf_test  = mdf_test.rename(columns=int_labels_dict)
+
+      newcolumns = [int_labels_dict[entry] for entry in newcolumns]
+
+      inverse_int_labels_dict = {value:key for key,value in int_labels_dict.items()}
+      for key in inverse_int_labels_dict:
+        inverse_int_labels_dict[key] = inverse_int_labels_dict[key][len(column) + 1:]
+        
+    else:
+      int_labels_dict = False
+      inverse_int_labels_dict = False
     
     column_dict_list = []
 
@@ -9324,7 +9419,11 @@ class AutoMunge:
       textnormalization_dict = {tc : {'overlap_dict' : overlap_dict, \
                                       'splt_newcolumns_sp15'   : newcolumns, \
                                       'minsplit' : minsplit, \
-                                      'concurrent_activations' : concurrent_activations}}
+                                      'concurrent_activations' : concurrent_activations, \
+                                      'preint_newcolumns' : preint_newcolumns, \
+                                      'int_headers' : int_headers, \
+                                      'int_labels_dict' : int_labels_dict, \
+                                      'inverse_int_labels_dict' : inverse_int_labels_dict}}
       
       column_dict = {tc : {'category' : 'sp15', \
                            'origcategory' : category, \
@@ -9344,7 +9443,7 @@ class AutoMunge:
       column_dict_list = []
     
     return mdf_train, mdf_test, column_dict_list
-  
+
   def process_sp16_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
     '''
     #process_sp16_class(mdf_train, mdf_test, column, category)
@@ -9382,6 +9481,11 @@ class AutoMunge:
       excluded_characters = params['excluded_characters']
     else:
       excluded_characters = [' ', ',', '.', '?', '!', '(', ')']
+      
+    if 'int_headers' in params:
+      int_headers = params['int_headers']
+    else:
+      int_headers = False
       
     #note that same MLinfilltype in processdict ('1010')
     #may be used for both configurations but applying concurrent_activations = False
@@ -9596,6 +9700,30 @@ class AutoMunge:
       mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
 
       newcolumns.append(newcolumn)
+      
+    preint_newcolumns = newcolumns.copy()
+      
+    if int_headers is True:
+      
+      int_labels_dict = {}
+      i = 0
+      for entry in newcolumns:
+        int_labels_dict.update({entry : column + '_sp16_' + str(i)})
+        i += 1
+        
+      #now convert column headers from string to int convention
+      mdf_train = mdf_train.rename(columns=int_labels_dict)
+      mdf_test  = mdf_test.rename(columns=int_labels_dict)
+
+      newcolumns = [int_labels_dict[entry] for entry in newcolumns]
+
+      inverse_int_labels_dict = {value:key for key,value in int_labels_dict.items()}
+      for key in inverse_int_labels_dict:
+        inverse_int_labels_dict[key] = inverse_int_labels_dict[key][len(column) + 1:]
+        
+    else:
+      int_labels_dict = False
+      inverse_int_labels_dict = False
     
     column_dict_list = []
 
@@ -9604,7 +9732,11 @@ class AutoMunge:
       textnormalization_dict = {tc : {'overlap_dict' : overlap_dict, \
                                       'splt_newcolumns_sp16'   : newcolumns, \
                                       'minsplit' : minsplit, \
-                                      'concurrent_activations' : concurrent_activations}}
+                                      'concurrent_activations' : concurrent_activations, \
+                                      'preint_newcolumns' : preint_newcolumns, \
+                                      'int_headers' : int_headers, \
+                                      'int_labels_dict' : int_labels_dict, \
+                                      'inverse_int_labels_dict' : inverse_int_labels_dict}}
       
       column_dict = {tc : {'category' : 'sp16', \
                            'origcategory' : category, \
@@ -28573,7 +28705,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.27'
+    automungeversion = '4.28'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -30068,7 +30200,7 @@ class AutoMunge:
       mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.int8)
 
     return mdf_test
-  
+
   def postprocess_splt_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #postprocess_splt_class(mdf_test, column, postprocess_dict, category)
@@ -30113,10 +30245,12 @@ class AutoMunge:
       #great now we can grab normalization parameters
       overlap_dict = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['overlap_dict']
-
       newcolumns = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['splt_newcolumns_splt']
-      
+      int_headers = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['int_headers']
+      int_labels_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['int_labels_dict']
       concurrent_activations = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['concurrent_activations']
 
@@ -30174,6 +30308,10 @@ class AutoMunge:
         mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
 
         newcolumns.append(newcolumn)
+        
+      #now convert coloumn headers from string to int convention
+      if int_headers is True:
+        mdf_test  = mdf_test.rename(columns=int_labels_dict)
     
     return mdf_test
   
@@ -30604,9 +30742,12 @@ class AutoMunge:
       #great now we can grab normalization parameters
       overlap_dict = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['overlap_dict']
-
       newcolumns = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['splt_newcolumns_spl8']
+      int_headers = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['int_headers']
+      int_labels_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['int_labels_dict']
 
       #now for mdf_test we'll only consider those overlaps already identified from train set
       
@@ -30662,6 +30803,10 @@ class AutoMunge:
         mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
 
         newcolumns.append(newcolumn)
+        
+      #now convert coloumn headers from string to int convention
+      if int_headers is True:
+        mdf_test  = mdf_test.rename(columns=int_labels_dict)
     
     return mdf_test
   
@@ -30961,7 +31106,7 @@ class AutoMunge:
 #       newcolumns.append(newcolumn)
     
     return mdf_test
-  
+
   def postprocess_sp15_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #postprocess_splt_class(mdf_test, column, postprocess_dict, category)
@@ -31006,10 +31151,12 @@ class AutoMunge:
       #great now we can grab normalization parameters
       overlap_dict = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['overlap_dict']
-
       newcolumns = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['splt_newcolumns_sp15']
-      
+      int_headers = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['int_headers']
+      int_labels_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['int_labels_dict']
       concurrent_activations = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['concurrent_activations']
 
@@ -31067,9 +31214,13 @@ class AutoMunge:
         mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
 
         newcolumns.append(newcolumn)
+        
+      #now convert coloumn headers from string to int convention
+      if int_headers is True:
+        mdf_test  = mdf_test.rename(columns=int_labels_dict)
     
     return mdf_test
-  
+
   def postprocess_sp16_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #postprocess_sp16_class(mdf_test, column, postprocess_dict, category)
@@ -31121,9 +31272,12 @@ class AutoMunge:
       #great now we can grab normalization parameters
       overlap_dict = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['overlap_dict']
-
       newcolumns = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['splt_newcolumns_sp16']
+      int_headers = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['int_headers']
+      int_labels_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['int_labels_dict']
 
       #now for mdf_test we'll only consider those overlaps already identified from train set
       
@@ -31179,6 +31333,10 @@ class AutoMunge:
         mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
 
         newcolumns.append(newcolumn)
+        
+      #now convert coloumn headers from string to int convention
+      if int_headers is True:
+        mdf_test  = mdf_test.rename(columns=int_labels_dict)
     
     return mdf_test
   
@@ -39528,7 +39686,7 @@ class AutoMunge:
     df[inputcolumn] = df[inputcolumn].replace(inverse_binary_encoding_dict)
       
     return df, inputcolumn
-  
+
   def inverseprocess_splt(self, df, categorylist, postprocess_dict):
     """
     #inverse transform corresponding to process_splt_class
@@ -39547,19 +39705,38 @@ class AutoMunge:
     
     newcolumns = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['splt_newcolumns_splt']
+    preint_newcolumns = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['preint_newcolumns']
     overlap_dict = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['overlap_dict']
+    int_headers = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['int_headers']
     
-    df[inputcolumn] = 0
+    df[inputcolumn] = 'zzzinfill'
     
-    for column in newcolumns:
+    if int_headers is False:
+
+      for column in preint_newcolumns:
+
+        overlap = column.replace(inputcolumn + '_splt_', '')
+
+        df[inputcolumn] = np.where(df[column] == 1, overlap, df[inputcolumn])
+    
+    else:
       
-      overlap = column.replace(inputcolumn + '_splt_', '')
-      
-      df[inputcolumn] = np.where(df[column] == 1, overlap, df[inputcolumn])
+      i = 0
+      for column in preint_newcolumns:
+        
+        newcolumn = newcolumns[i]
+        
+        overlap = column.replace(inputcolumn + '_splt_', '')
+        
+        df[inputcolumn] = np.where(df[newcolumn] == 1, overlap, df[inputcolumn])
+        
+        i += 1
     
     return df, inputcolumn
-  
+
   def inverseprocess_spl8(self, df, categorylist, postprocess_dict):
     """
     #inverse transform corresponding to process_splt_class
@@ -39578,17 +39755,36 @@ class AutoMunge:
     
     newcolumns = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['splt_newcolumns_spl8']
+    preint_newcolumns = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['preint_newcolumns']
     overlap_dict = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['overlap_dict']
+    int_headers = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['int_headers']
     
-    df[inputcolumn] = 0
+    df[inputcolumn] = 'zzzinfill'
     
-    for column in newcolumns:
+    if int_headers is False:
+
+      for column in preint_newcolumns:
+
+        overlap = column.replace(inputcolumn + '_spl8_', '')
+
+        df[inputcolumn] = np.where(df[column] == 1, overlap, df[inputcolumn])
+    
+    else:
       
-      overlap = column.replace(inputcolumn + '_spl8_', '')
+      i = 0
+      for column in preint_newcolumns:
+        
+        newcolumn = newcolumns[i]
+        
+        overlap = column.replace(inputcolumn + '_spl8_', '')
+        
+        df[inputcolumn] = np.where(df[newcolumn] == 1, overlap, df[inputcolumn])
+        
+        i += 1
       
-      df[inputcolumn] = np.where(df[column] == 1, overlap, df[inputcolumn])
-    
     return df, inputcolumn
   
   def inverseprocess_spl2(self, df, categorylist, postprocess_dict):
@@ -39637,7 +39833,7 @@ class AutoMunge:
     df[inputcolumn] = np.where(df[inputcolumn] == '0', 'zzzinfill', df[inputcolumn])
   
     return df, inputcolumn
-  
+
   def inverseprocess_sp15(self, df, categorylist, postprocess_dict):
     """
     #inverse transform corresponding to process_sp15_class
@@ -39656,19 +39852,40 @@ class AutoMunge:
     
     newcolumns = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['splt_newcolumns_sp15']
+    preint_newcolumns = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['preint_newcolumns']
     overlap_dict = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['overlap_dict']
+    int_headers = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['int_headers']
     
     df[inputcolumn] = 'zzzinfill'
     
-    for column in newcolumns:
+    column_conversion_dict = dict(zip(preint_newcolumns, newcolumns))
+    
+    preint_newcolumns = sorted(preint_newcolumns, reverse = False, key=len)
+    
+    if int_headers is False:
 
-      overlap = column.replace(inputcolumn + '_sp15_', '')
+      for column in preint_newcolumns:
 
-      df[inputcolumn] = np.where((df[column] == 1) & (df[inputcolumn] == 'zzzinfill'), overlap, df[inputcolumn])
+        overlap = column.replace(inputcolumn + '_sp15_', '')
+
+        df[inputcolumn] = np.where(df[column] == 1, overlap, df[inputcolumn])
+    
+    else:
+
+      for column in preint_newcolumns:
+        
+        newcolumn = column_conversion_dict[column]
+        
+        overlap = column.replace(inputcolumn + '_sp15_', '')
+        
+        df[inputcolumn] = np.where(df[newcolumn] == 1, overlap, df[inputcolumn])
+
 
     return df, inputcolumn
-  
+
   def inverseprocess_sp16(self, df, categorylist, postprocess_dict):
     """
     #inverse transform corresponding to process_sp15_class
@@ -39687,16 +39904,38 @@ class AutoMunge:
     
     newcolumns = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['splt_newcolumns_sp16']
+    preint_newcolumns = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['preint_newcolumns']
+    overlap_dict = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['overlap_dict']
+    int_headers = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['int_headers']
 #     overlap_dict = \
 #     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['overlap_dict']
     
     df[inputcolumn] = 'zzzinfill'
     
-    for column in newcolumns:
+    column_conversion_dict = dict(zip(preint_newcolumns, newcolumns))
+    
+    preint_newcolumns = sorted(preint_newcolumns, reverse = False, key=len)
+    
+    if int_headers is False:
+
+      for column in preint_newcolumns:
+
+        overlap = column.replace(inputcolumn + '_sp16_', '')
+
+        df[inputcolumn] = np.where(df[column] == 1, overlap, df[inputcolumn])
+    
+    else:
       
-      overlap = column.replace(inputcolumn + '_sp16_', '')
-      
-      df[inputcolumn] = np.where((df[column] == 1) & (df[inputcolumn] == 'zzzinfill'), overlap, df[inputcolumn])
+      for column in preint_newcolumns:
+        
+        newcolumn = column_conversion_dict[column]
+        
+        overlap = column.replace(inputcolumn + '_sp16_', '')
+        
+        df[inputcolumn] = np.where(df[newcolumn] == 1, overlap, df[inputcolumn])
     
     return df, inputcolumn
   
