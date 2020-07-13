@@ -2168,6 +2168,7 @@ with metric2 results from a feature importance evaluation)
 			           bins_cuts / bincount_tlbn / textcolumns / <column> + '_ratio' (column specific)
   - inversion available: no
 ### Sequential Numerical Set Transformations
+Please note that sequential transforms assume the forward progression of time towards direction of bottom of dataframe.
 * dxdt/d2dt/d3dt/d4dt/d5dt/d6dt: rate of change (row value minus value in preceding row), high orders 
 return lower orders (eg d2dt returns original set, dxdt, and d2dt), all returned sets include 'retn' 
 normalization which scales data with min/max while retaining +/- sign
