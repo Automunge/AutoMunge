@@ -4396,7 +4396,7 @@ class AutoMunge:
     process_dict.update({'shfl' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_shfl_class, \
                                   'postprocess' : None, \
-                                  'NArowtype' : 'justNaN', \
+                                  'NArowtype' : 'exclude', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'shfl'}})
     process_dict.update({'nmbd' : {'dualprocess' : self.process_numerical_class, \
@@ -5092,11 +5092,7 @@ class AutoMunge:
     df[column + '_dxdt'] = df[column + '_dxdt'].fillna(method='ffill')
     
     #we'll follow with a bfill just in case first row had a nan
-    df[column + '_dxdt'] = df[column + '_dxdt'].fillna(method='bfill')
-    
-    #(still a potential bug if both first and last row had a nan, we'll address with 
-    #apply ffill to replace NArows with value from adjacent cell in pre4ceding row
-    df[column + '_dxdt'] = df[column + '_dxdt'].fillna(method='ffill')   
+    df[column + '_dxdt'] = df[column + '_dxdt'].fillna(method='bfill') 
     
     #subtract preceding row
     df[column + '_dxdt'] = df[column + '_dxdt'] - df[column + '_dxdt'].shift(periods = periods)
@@ -5187,11 +5183,7 @@ class AutoMunge:
     df[column + '_dxd2'] = df[column + '_dxd2'].fillna(method='ffill')
     
     #we'll follow with a bfill just in case first row had a nan
-    df[column + '_dxd2'] = df[column + '_dxd2'].fillna(method='bfill')
-    
-    #(still a potential bug if both first and last row had a nan, we'll address with 
-    #apply ffill to replace NArows with value from adjacent cell in pre4ceding row
-    df[column + '_dxd2'] = df[column + '_dxd2'].fillna(method='ffill')   
+    df[column + '_dxd2'] = df[column + '_dxd2'].fillna(method='bfill')  
     
 #     #we're going to take difference of average of last two rows with two rows preceding
 #     df[column + '_dxd2'] = (df[column + '_dxd2'] + df[column + '_dxd2'].shift()) / 2 \
@@ -28705,7 +28697,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.28'
+    automungeversion = '4.29'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
