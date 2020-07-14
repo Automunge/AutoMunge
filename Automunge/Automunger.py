@@ -2564,9 +2564,6 @@ class AutoMunge:
     # - 'singlct' for single column sets with ordinal entries (integers)
     # - 'binary' for single column sets with boolean entries (0/1)
     # - 'multirt' for categorical multicolumn sets with boolean entries (0/1)
-    # - 'multisp' for bins multicolumn sets with boolean entries
-    #(the two (rt/sp) are treated differently in labelfrequencylevelizer, where
-    # multisp are elligeble to serve as basis for levelizing a numerical set via bins)
     # - 'concurrent_act' for multicolumn sets with boolean entries as may have 
     #multiple entries in the same row
     # - 'concurrent_nmbr' for multicolumn sets with numerical entries
@@ -3988,7 +3985,7 @@ class AutoMunge:
                                   'inverseprocess' : self.inverseprocess_pwr2, \
                                   'info_retention' : False, \
                                   'NArowtype' : 'positivenumeric', \
-                                  'MLinfilltype' : 'multisp', \
+                                  'MLinfilltype' : 'multirt', \
                                   'labelctgy' : 'pwrs'}})
     process_dict.update({'pwr2' : {'dualprocess' : self.process_pwr2_class, \
                                   'singleprocess' : None, \
@@ -3996,7 +3993,7 @@ class AutoMunge:
                                   'inverseprocess' : self.inverseprocess_pwr2, \
                                   'info_retention' : False, \
                                   'NArowtype' : 'nonzeronumeric', \
-                                  'MLinfilltype' : 'multisp', \
+                                  'MLinfilltype' : 'multirt', \
                                   'labelctgy' : 'pwrs'}})
     process_dict.update({'log0' : {'dualprocess' : self.process_log0_class, \
                                   'singleprocess' : None, \
@@ -4092,7 +4089,7 @@ class AutoMunge:
                                   'inverseprocess' : self.inverseprocess_bkt1, \
                                   'info_retention' : False, \
                                   'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'multisp', \
+                                  'MLinfilltype' : 'multirt', \
                                   'labelctgy' : 'bkt1'}})
     process_dict.update({'bkt2' : {'dualprocess' : self.process_bkt2_class, \
                                   'singleprocess' : None, \
@@ -4100,7 +4097,7 @@ class AutoMunge:
                                   'inverseprocess' : self.inverseprocess_bkt2, \
                                   'info_retention' : False, \
                                   'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'multisp', \
+                                  'MLinfilltype' : 'multirt', \
                                   'labelctgy' : 'bkt2'}})
     process_dict.update({'bkt3' : {'dualprocess' : self.process_bkt3_class, \
                                   'singleprocess' : None, \
@@ -4167,7 +4164,7 @@ class AutoMunge:
                                   'inverseprocess' : self.inverseprocess_bins, \
                                   'info_retention' : False, \
                                   'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'multisp', \
+                                  'MLinfilltype' : 'multirt', \
                                   'labelctgy' : 'bins'}})
     process_dict.update({'bint' : {'dualprocess' : self.process_bint_class, \
                                   'singleprocess' : None, \
@@ -4175,7 +4172,7 @@ class AutoMunge:
                                   'inverseprocess' : self.inverseprocess_bint, \
                                   'info_retention' : False, \
                                   'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'multisp', \
+                                  'MLinfilltype' : 'multirt', \
                                   'labelctgy' : 'bint'}})
     process_dict.update({'bsor' : {'dualprocess' : self.process_bsor_class, \
                                   'singleprocess' : None, \
@@ -4191,7 +4188,7 @@ class AutoMunge:
                                   'inverseprocess' : self.inverseprocess_bnwd, \
                                   'info_retention' : False, \
                                   'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'multisp', \
+                                  'MLinfilltype' : 'multirt', \
                                   'labelctgy' : 'bnwd'}})
     process_dict.update({'bnwK' : {'dualprocess' : self.process_bnwK_class, \
                                   'singleprocess' : None, \
@@ -4199,7 +4196,7 @@ class AutoMunge:
                                   'inverseprocess' : self.inverseprocess_bnwK, \
                                   'info_retention' : False, \
                                   'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'multisp', \
+                                  'MLinfilltype' : 'multirt', \
                                   'labelctgy' : 'bnwK'}})
     process_dict.update({'bnwM' : {'dualprocess' : self.process_bnwM_class, \
                                   'singleprocess' : None, \
@@ -4207,7 +4204,7 @@ class AutoMunge:
                                   'inverseprocess' : self.inverseprocess_bnwM, \
                                   'info_retention' : False, \
                                   'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'multisp', \
+                                  'MLinfilltype' : 'multirt', \
                                   'labelctgy' : 'bnwM'}})
     process_dict.update({'bnwo' : {'dualprocess' : self.process_bnwo_class, \
                                   'singleprocess' : None, \
@@ -4239,7 +4236,7 @@ class AutoMunge:
                                   'inverseprocess' : self.inverseprocess_bnep, \
                                   'info_retention' : False, \
                                   'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'multisp', \
+                                  'MLinfilltype' : 'multirt', \
                                   'labelctgy' : 'bnep'}})
     process_dict.update({'bne7' : {'dualprocess' : self.process_bne7_class, \
                                   'singleprocess' : None, \
@@ -4247,7 +4244,7 @@ class AutoMunge:
                                   'inverseprocess' : self.inverseprocess_bnep, \
                                   'info_retention' : False, \
                                   'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'multisp', \
+                                  'MLinfilltype' : 'multirt', \
                                   'labelctgy' : 'bne7'}})
     process_dict.update({'bne9' : {'dualprocess' : self.process_bne9_class, \
                                   'singleprocess' : None, \
@@ -4255,7 +4252,7 @@ class AutoMunge:
                                   'inverseprocess' : self.inverseprocess_bnep, \
                                   'info_retention' : False, \
                                   'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'multisp', \
+                                  'MLinfilltype' : 'multirt', \
                                   'labelctgy' : 'bne9'}})
     process_dict.update({'bneo' : {'dualprocess' : self.process_bneo_class, \
                                   'singleprocess' : None, \
@@ -21868,7 +21865,7 @@ class AutoMunge:
 #       print(df_traininfill)
 
     #if category in ['text', 'bins', 'bint']:
-    if MLinfilltype in ['multirt', 'multisp']:
+    if MLinfilltype in ['multirt']:
 
       if df_train_filltrain.shape[0] == 0:
         df_traininfill = np.zeros(shape=(1,len(columnslist)))
@@ -22225,7 +22222,7 @@ class AutoMunge:
     
     #if category in ['nmbr', 'nbr2', 'bxcx', 'bnry', 'text', 'bins', 'bint']:
     if MLinfilltype in ['numeric', 'singlct', 'binary', \
-                        'multirt', 'multisp', '1010', \
+                        'multirt', '1010', \
                         'concurrent_act', 'concurrent_nmbr']:
 
       #if this is a single column set or concurrent_act
@@ -22368,7 +22365,7 @@ class AutoMunge:
 
     #if category in ['nmbr', 'nbr2', 'bxcx', 'bnry', 'text']:
     if MLinfilltype in ['numeric', 'singlct', 'binary', \
-                        'multisp', 'multirt', '1010', \
+                        'multirt', '1010', \
                         'concurrent_act', 'concurrent_nmbr']:
 
       #if this is a single column set (not categorical)
@@ -22730,8 +22727,8 @@ class AutoMunge:
     return df
 
   def LabelFrequencyLevelizer(self, train_df, labels_df, labelsencoding_dict, \
-                              postprocess_dict, process_dict, LabelSmoothing):
-    '''
+                                postprocess_dict, process_dict, LabelSmoothing):
+    """
     #LabelFrequencyLevelizer(.)
     #takes as input dataframes for train set, labels, and label category
     #combines them to single df, then creates sets for each label category
@@ -22741,7 +22738,7 @@ class AutoMunge:
     #labels.) Returns train_df, labels_df, trainID_df.
     #for now have convention that MLinfilltypes of 1010 or concurrent_act
     #not yet supported (future extension)
-    '''
+    """
     
     columns_labels = list(labels_df)
     
@@ -22847,22 +22844,21 @@ class AutoMunge:
         del train_df[singlctcolumn]
 
       #if labelscategory in ['nmbr', 'bxcx']:
-      if MLinfilltype in ['numeric', 'multisp']:
+      if MLinfilltype in ['numeric']:
 
         columns_labels = []
         for label in list(labels_df):
-          for label in list(labels_df):
-            #here we're checking if the column is a numneric set aggregated bins
-            #for support of additional types of numerical set bins just add the
-            #category to this list
-            if postprocess_dict['column_dict'][label]['category'] \
-            in ['pwrs', 'pwr2', 'bins', 'bint', 'bnwd', 'bnwK', 'bnwM', \
-                'bnep', 'bne7', 'bne9', 'bkt1', 'bkt2']:
-            
-              columns_labels.append(label)
+          #here we're checking if the column is a numneric set aggregated bins
+          #for support of additional types of numerical set bins just add the
+          #category to this list
+          if postprocess_dict['column_dict'][label]['category'] \
+          in ['pwrs', 'pwr2', 'bins', 'bint', 'bnwd', 'bnwK', 'bnwM', \
+              'bnep', 'bne7', 'bne9', 'bkt1', 'bkt2']:
+          
+            columns_labels.append(label)
             
       #if labelscategory in ['text', 'nmbr', 'bxcx']:
-      if MLinfilltype in ['numeric', 'multisp', 'multirt']:
+      if MLinfilltype in ['numeric', 'multirt']:
         if columns_labels != []:
           
           #note for. label smoothing activation values won't be 1
@@ -22875,13 +22871,14 @@ class AutoMunge:
           i=0
           #for label in labels:
           for label in columns_labels:
-                
+            
             column = columns_labels[i]
             #derive set of labels dataframe for counting length
             df = self.LabelSetGenerator(labels_df, column, level_activation)
-        
+            
             #append length onto list
             setlength = df.shape[0]
+            
             #setlengthlist = setlengthlist.append(setlength)
             setlengthlist.append(setlength)
 
@@ -22932,95 +22929,13 @@ class AutoMunge:
             i+=1
 
           columns_labels = list(labels_df)
-            
+
           #now seperate the labels df from the train df
           labels_df = train_df[columns_labels]
           #now delete the labels column from train set
           train_df = train_df.drop(columns_labels, axis=1)
   
     return train_df, labels_df
-  
-  def dictupdatetrim(self, column, postprocess_dict):
-    '''
-    dictupdatetrim addresses the maintenance of postprocess_dict for cases where
-    a feature is struck due to the feature selection mechanism. Speciifcally, the
-    function is intended to:
-    - remove column entry from every case where it is included in a columnslist
-    i.e. column in postprocess_dict['comlumn_dict'][key1]['columnslist'] for all key1
-    - remove column entry from every case where it is included in a categorylist
-    i.e. column in postprocess_dict['comlumn_dict'][key1]['categorylist'] for all key1
-    - trim column's postprocess_dict['column_dict'][column]
-    As a reminder, a columnslist is a list of every column that originated from the
-    same source, such that we will need to edit the columnslist for every dervied
-    column that originated from the same source.
-    As a reminder, a categorylist is a list of every column derived as part of the 
-    same single or multi-column transformation, such that we will need to edit the
-    categorylist for every derived column that originated from the same transformation
-    as the column we are trimming
-    Trimming the postprocess_dict['column_dict'][column] is fairly strainghtforward
-    Note that since we cant' edit a dictionary as we are cycling through it, we
-    will use some helper objects to store details of the edits.
-    For some reason creating this function was harder than it should have been.
-    Sometimes it helps to just sketch it out again from scratch.
-    '''
-
-    #initialize helper objects
-    helper1_dict = {}
-    helper2_dict = {}
-    helper3_list = []
-
-    #this if probably isn't neccesary but just going to throw it in
-    if column in postprocess_dict['column_dict']:
-
-      #for every column_dict
-      for key in postprocess_dict['column_dict']:
-
-        #if key originates from the same source column as our column argument
-        if postprocess_dict['column_dict'][key]['origcolumn'] == \
-        postprocess_dict['column_dict'][key]['origcolumn']:
-
-          #then we'll be editting the columnslist for key, first we'll store in helper1_dict
-          helper1_dict.update({key : column})
-
-          #now we'll check if key shares the same categorylist as column
-          if column in postprocess_dict['column_dict'][key]['categorylist']:
-
-            #if so we'll be removing column from key's categorylist entry, first
-            #we'll store in helper2_dict
-            helper2_dict.update({key : column})
-
-      #now we'll strike the column's column_dict, firtst we'll store in helper3_list
-      helper3_list = helper3_list + [column]
-
-    #ok here we'll do the trimming associated with helper1_dict for columnslists
-    for key1 in helper1_dict:
-      if helper1_dict[key1] in postprocess_dict['column_dict'][key1]['columnslist']:
-        postprocess_dict['column_dict'][key1]['columnslist'].remove(helper1_dict[key1])
-
-    #ok here we'll do the trimming associated with helper2_dict for categorylists
-    for key2 in helper2_dict:
-      if helper2_dict[key2] in postprocess_dict['column_dict'][key2]['categorylist']:
-        postprocess_dict['column_dict'][key2]['categorylist'].remove(helper2_dict[key2])
-
-    #and finally we'll trim the column_dict for the column
-    for column3 in helper3_list:
-
-      del postprocess_dict['column_dict'][column3]
-    
-#     #here we'll address the postprocess_dict['origcolumn'] entry for columnkey
-#     #basically if we trim the column associated with the columnkey, we'll need
-#     #to assign a new columnkey for use in postmunge which has not been previously trimmed
-    
-#     origcolumn = postprocess_dict['column_dict'][column]['origcolumn']
-#     newcolumnkey = ''
-#     if column = postprocess_dict['origcolumn'][origcolumn]['columnkey']:
-#       for potentialcolumnkey in postprocess_dict['origcolumn'][origcolumn]['columnkey']:
-#         if potentialcolumnkey in list(postprocess_dict['column_dict'][column]['columnlist']):
-#             newcolumnkey = potentialcolumnkey
-#             postprocess_dict['origcolumn'][origcolumn]['columnkey'] = newcolumnkey
-#             break
-
-    return postprocess_dict
   
   def trainFSmodel(self, am_subset, am_labels, randomseed, labelsencoding_dict, \
                    process_dict, postprocess_dict, labelctgy, ML_cmnd):
@@ -23130,7 +23045,7 @@ class AutoMunge:
       columnaccuracy = accuracy_score(np_labels, np_predictions)
       
     #if labelscategory in ['text']:
-    if MLinfilltype in ['multirt', 'multisp']:
+    if MLinfilltype in ['multirt']:
       
       #convert dataframes to numpy arrays
       np_shuffleset = np_shuffleset.values
@@ -23908,7 +23823,7 @@ class AutoMunge:
                 boolcolumn = False
                 #exclude boolean and ordinal from this infill method
                 if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-                in ['multirt', 'multisp', 'singlct', 'binary', '1010', 'boolexclude', 'concurrent_act']:
+                in ['multirt', 'singlct', 'binary', '1010', 'boolexclude', 'concurrent_act']:
                   boolcolumn = True
 
                 categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
@@ -23941,7 +23856,7 @@ class AutoMunge:
                 boolcolumn = False
                 #exclude boolean and ordinal from this infill method
                 if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-                in ['multirt', 'multisp', 'singlct', 'binary', '1010', 'boolexclude', 'concurrent_act']:
+                in ['multirt', 'singlct', 'binary', '1010', 'boolexclude', 'concurrent_act']:
                   boolcolumn = True
 
                 categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
@@ -24143,7 +24058,7 @@ class AutoMunge:
               boolcolumn = False
               #exclude boolean and ordinal from this infill method
               if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-              in ['multirt', 'multisp', 'singlct', 'binary', '1010', 'boolexclude', 'concurrent_act']:
+              in ['multirt', 'singlct', 'binary', '1010', 'boolexclude', 'concurrent_act']:
                 boolcolumn = True
 
               categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
@@ -24173,7 +24088,7 @@ class AutoMunge:
               boolcolumn = False
               #exclude boolean and ordinal from this infill method
               if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-              in ['multirt', 'multisp', 'singlct', 'binary', '1010', 'boolexclude', 'concurrent_act']:
+              in ['multirt', 'singlct', 'binary', '1010', 'boolexclude', 'concurrent_act']:
                 boolcolumn = True
 
               categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
@@ -24543,7 +24458,7 @@ class AutoMunge:
     #deriving a mode for one-hot encoded sets requires a different approach
     if len(postprocess_dict['column_dict'][column]['categorylist']) > 1 \
     and postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-    in ['multirt', 'multisp']:
+    in ['multirt']:
       
       categorylist = postprocess_dict['column_dict'][column]['categorylist']
       
@@ -24713,7 +24628,7 @@ class AutoMunge:
     #deriving a mode for one-hot encoded sets requires a different approach
     if len(postprocess_dict['column_dict'][column]['categorylist']) > 1 \
     and postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-    in ['multirt', 'multisp']:
+    in ['multirt']:
       
       categorylist = postprocess_dict['column_dict'][column]['categorylist']
       
@@ -25256,7 +25171,7 @@ class AutoMunge:
         #   or set(df[checkcolumn].unique()) == {0} \
         #   or set(df[checkcolumn].unique()) == {1}:
           if postprocess_dict['process_dict'][postprocess_dict['column_dict'][checkcolumn]['category']]['MLinfilltype'] \
-          in ['multirt', 'multisp', 'binary', '1010', 'boolexclude', 'concurrent_act']:
+          in ['multirt', 'binary', '1010', 'boolexclude', 'concurrent_act']:
             if checkcolumn not in PCAexcl:
               PCAexcl.append(checkcolumn)
             bool_PCAexcl.append(checkcolumn)
@@ -25271,7 +25186,7 @@ class AutoMunge:
         #   or set(df[checkcolumn].unique()) == {1} \
         #   or checkcolumn[-5:] == '_ordl':
           if postprocess_dict['process_dict'][postprocess_dict['column_dict'][checkcolumn]['category']]['MLinfilltype'] \
-          in ['singlct', 'binary', 'multirt', 'multisp', '1010', 'boolexclude', 'concurrent_act']:
+          in ['singlct', 'binary', 'multirt', '1010', 'boolexclude', 'concurrent_act']:
             #or isinstance(df[checkcolumn].dtype, pd.api.types.CategoricalDtype):
             if checkcolumn not in PCAexcl:
               PCAexcl.append(checkcolumn)
@@ -28517,7 +28432,7 @@ class AutoMunge:
           column_category = postprocess_dict['column_dict'][column]['category']
 
           if process_dict[column_category]['MLinfilltype'] in \
-          ['singlect', 'multirt', 'multisp', 'binary', '1010', 'boolexclude', 'concurrent_act']:
+          ['singlect', 'multirt', 'binary', '1010', 'boolexclude', 'concurrent_act']:
 
             bool_column_list.append(column)
             
@@ -28697,7 +28612,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.29'
+    automungeversion = '4.30'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -36253,7 +36168,7 @@ class AutoMunge:
 
     #if category in ['nmbr', 'nbr2', 'bxcx', 'bnry', 'text', 'bins', 'bint']:
     if MLinfilltype in ['numeric', 'singlct', 'binary', \
-                        'multirt', 'multisp', '1010', \
+                        'multirt', '1010', \
                         'concurrent_act', 'concurrent_nmbr']:
 
       #if this is a single column set or concurrent_act
@@ -36480,7 +36395,7 @@ class AutoMunge:
 
 
       #if category in ['text', 'bins', 'bint']:
-      if MLinfilltype in ['multirt', 'multisp']:
+      if MLinfilltype in ['multirt']:
 
   #       #train logistic regression model using scikit-learn for binary classifier
   #       #with multi_class argument activated
@@ -38545,7 +38460,7 @@ class AutoMunge:
 
           #if column is from a multicolumn boolean MLinfilltype then we'll apply LSinvert
           if postprocess_dict['process_dict'][returned_category]['MLinfilltype'] in \
-          ['multirt', 'multisp']:
+          ['multirt']:
 
             df = self.LS_invert(LabelSmoothing, df, returned_categorylist, postprocess_dict)
             
