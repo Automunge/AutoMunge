@@ -1236,7 +1236,7 @@ processdict =  {'newt' : {'dualprocess' : None, \
 # ** Note that NArowtype also is used as basis for metrics evaluated in drift assessment of source columns
 # ** Note that by default any np.inf values are converted to NaN for infill
 
-#MLinfilltype: can be entries {'numeric', 'singlct', 'binary', 'multirt', 'multisp', '1010',
+#MLinfilltype: can be entries {'numeric', 'singlct', 'binary', 'multirt', '1010',
 #                              'exclude', 'boolexclude'}
 #              'numeric' refers to columns where predictive algorithms treat
 #                        as a regression for numeric sets
@@ -1244,8 +1244,6 @@ processdict =  {'newt' : {'dualprocess' : None, \
 #              'binary'  single column sets with boolean entries (0/1)
 #              'multirt' refers to category returning multiple columns where 
 #                        predictive algorithms treat as a multi modal classifier
-#              'multisp' for bins multicolumn sets with boolean entries
-#                        (similar to multirt but treated differently in levelizer)
 #              'concurrent_act' for multicolumn sets with boolean entries as may have 
 #                        multiple entries in the same row
 #              'concurrent_nmbr' for multicolumn sets with numerical entries
