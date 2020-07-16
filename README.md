@@ -1509,7 +1509,7 @@ data associated with underrepresented labels. The method adds multiples
 to test data rows for those labels with lower frequency resulting in
 an (approximately) levelized frequency. This defaults to False. Note that
 this feature may be applied to numerical label sets if the assigncat processing
-applied to the set in automunge(.) had included standard deviation bins, such
+applied to the set in automunge(.) had included aggregated bins, such
 as for example 'exc3' for pass-through numeric with standard deviation bins,
 or 'exc4' for pass-through numeric with powers of ten bins. Note this 
 method requires the inclusion of a designated label column.
