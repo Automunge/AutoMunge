@@ -724,11 +724,11 @@ is comparable to True for the training set and shuffles the returned test sets
 as well. Note that all corresponding returned sets are consistently shuffled 
 (such as between train/labels/trainID sets).
 
-* TrainLabelFreqLevel: a boolean identifier _(True/False)_ which indicates
-if the TrainLabelFreqLevel method will be applied to prepare for oversampling 
-training data associated with underrepresented labels (aka class imbalance). 
-The method adds multiples of training data rows for those labels with lower 
-frequency resulting in an (approximately) levelized frequency. This defaults 
+* TrainLabelFreqLevel: a boolean identifier _(True/False/_'traintest'_/_'test'_)_ 
+which indicates if the TrainLabelFreqLevel method will be applied to prepare for 
+oversampling training data associated with underrepresented labels (aka class 
+imbalance). The method adds multiples of training data rows for those labels with 
+lower frequency resulting in an (approximately) levelized frequency. This defaults 
 to False. Note that this feature may be applied to numerical label sets if 
 the processing applied to the set includes aggregated bins, such as for example
 by passing a label column to the 'exc3' category in assigncat for pass-through
