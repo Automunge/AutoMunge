@@ -22849,11 +22849,8 @@ class AutoMunge:
         columns_labels = []
         for label in list(labels_df):
           #here we're checking if the column is a numneric set aggregated bins
-          #for support of additional types of numerical set bins just add the
-          #category to this list
-          if postprocess_dict['column_dict'][label]['category'] \
-          in ['pwrs', 'pwr2', 'bins', 'bint', 'bnwd', 'bnwK', 'bnwM', \
-              'bnep', 'bne7', 'bne9', 'bkt1', 'bkt2']:
+          if postprocess_dict['process_dict'][postprocess_dict['column_dict'][label]['category']]['MLinfilltype'] \
+          in ['multirt', 'concurrent_act']:
           
             columns_labels.append(label)
             
@@ -28612,7 +28609,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.30'
+    automungeversion = '4.31'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
