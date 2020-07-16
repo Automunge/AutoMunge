@@ -22757,7 +22757,7 @@ class AutoMunge:
     
     #labels = list(labelsencoding_dict[labelscategory].keys())
     labels = list(labels_df)
-    labels.sort()
+    #labels.sort()
     
     if labels != []:
 
@@ -22839,9 +22839,10 @@ class AutoMunge:
           i+=1
 
         #now seperate the labels df from the train df
-        labels_df = pd.DataFrame(train_df[singlctcolumn].copy())
+        labels_df = pd.DataFrame(train_df[labels].copy())
         #now delete the labels column from train set
-        del train_df[singlctcolumn]
+        for labelcolumn in labels:
+          del train_df[labelcolumn]
 
       #if labelscategory in ['nmbr', 'bxcx']:
       if MLinfilltype in ['numeric']:
@@ -22931,7 +22932,7 @@ class AutoMunge:
           labels_df = train_df[columns_labels]
           #now delete the labels column from train set
           train_df = train_df.drop(columns_labels, axis=1)
-  
+
     return train_df, labels_df
   
   def trainFSmodel(self, am_subset, am_labels, randomseed, labelsencoding_dict, \
@@ -28609,7 +28610,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.31'
+    automungeversion = '4.32'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
