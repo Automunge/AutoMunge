@@ -152,6 +152,7 @@ am.automunge(df_train, df_test = False, \
                           'mea2':[], 'mea3':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
                           'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
                           'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
+                          'shft':[], 'shf2':[], 'shf3':[], 'shf4':[], 'shf5':[], 'shf6':[], \
                           'bnry':[], 'onht':[], 'text':[], 'txt2':[], '1010':[], 'or10':[], \
                           'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
                           'Unht':[], 'Utxt':[], 'Utx2':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
@@ -380,6 +381,7 @@ am.automunge(df_train, df_test = False, \
                           'mea2':[], 'mea3':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
                           'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
                           'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
+                          'shft':[], 'shf2':[], 'shf3':[], 'shf4':[], 'shf5':[], 'shf6':[], \
                           'bnry':[], 'onht':[], 'text':[], 'txt2':[], '1010':[], 'or10':[], \
                           'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
                           'Unht':[], 'Utxt':[], 'Utx2':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
@@ -604,6 +606,7 @@ am.automunge(df_train, df_test = False, \
                           'mea2':[], 'mea3':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
                           'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
                           'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
+                          'shft':[], 'shf2':[], 'shf3':[], 'shf4':[], 'shf5':[], 'shf6':[], \
                           'bnry':[], 'onht':[], 'text':[], 'txt2':[], '1010':[], 'or10':[], \
                           'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
                           'Unht':[], 'Utxt':[], 'Utx2':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
@@ -985,6 +988,7 @@ assigncat = {'nmbr':[], 'retn':[], 'mnmx':[], 'mean':[], 'MAD3':[], 'lgnm':[], \
              'mea2':[], 'mea3':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
              'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
              'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
+             'shft':[], 'shf2':[], 'shf3':[], 'shf4':[], 'shf5':[], 'shf6':[], \
              'bnry':[], 'onht':[], 'text':[], 'txt2':[], '1010':[], 'or10':[], \
              'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
              'Unht':[], 'Utxt':[], 'Utx2':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
@@ -2193,6 +2197,16 @@ nmrc numeric string parsing top extract numbers from string sets
 * dddt/ddd2/ddd3/ddd4/ddd5/ddd6: comparable to dxdt but no normalizations applied
 * dedt/ded2/ded3/ded4/ded5/ded6: comparable to dxd2 but no normalizations applied
   - inversion available: no
+* shft/shf2/shf3: shifted data forward by a period number of time steps defaulting to 1/2/3
+  - default infill: adjacent cells
+  - default NArowtype: numeric
+  - suffix appender: '_shft' / '_shf2' / '_shf3'
+  - assignparam parameters accepted: 'periods' sets number of time steps offset to evaluate
+                                     defaults to 1/2/3
+                                     'suffix' sets the suffix appender of returned column
+                                     as may be useful to disginguish if applying this multiple times
+  - driftreport postmunge metrics: positiveratio / negativeratio / zeroratio / minimum / maximum / mean / std
+  - inversion available: yes
 ### Categorical Set Encodings
 * bnry: converts sets with two values to boolean identifiers. Defaults to assigning
 1 to most common value and 0 to second most common, unless 1 or 0 is already included
@@ -2948,7 +2962,13 @@ avoid unintentional duplication.
 - 'scn2',
 - 'scnd',
 - 'scsn',
+- 'shf2',
+- 'shf3',
+- 'shf4',
+- 'shf5',
+- 'shf6',
 - 'shfl',
+- 'shft',
 - 'sp10',
 - 'sp11',
 - 'sp12',
@@ -3095,7 +3115,13 @@ that any user passing a custom defined transformation can avoid any unintentiona
 - '_sccs'
 - '_scnd'
 - '_scsn'
+- '_shf2'
+- '_shf3'
+- '_shf4'
+- '_shf5'
+- '_shf6'
 - '_shfl'
+- '_shft'
 - '_sp10'
 - '\_sp15_' + string (where string is an identified overlap of characters between categorical entries)
 - '\_sp16_' + string (where string is an identified overlap of characters between categorical entries)
@@ -3459,6 +3485,60 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'children'      : [], \
                                      'niecesnephews' : ['ded5'], \
                                      'coworkers'     : [], \
+                                     'friends'       : []}})
+
+    transform_dict.update({'shft' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['shft'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+  
+    transform_dict.update({'shf2' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['shf2'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'shf3' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['shf3'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+
+    transform_dict.update({'shf4' : {'parents'       : ['shf4'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['retn'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['retn'], \
+                                     'friends'       : []}})
+  
+    transform_dict.update({'shf5' : {'parents'       : ['shf5'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['retn'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['retn'], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'shf6' : {'parents'       : ['shf6'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['retn'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['retn'], \
                                      'friends'       : []}})
 
     transform_dict.update({'bnry' : {'parents'       : [], \
