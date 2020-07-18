@@ -440,6 +440,60 @@ class AutoMunge:
                                      'coworkers'     : [], \
                                      'friends'       : []}})
 
+    transform_dict.update({'shft' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['shft'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+  
+    transform_dict.update({'shf2' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['shf2'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'shf3' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['shf3'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+
+    transform_dict.update({'shf4' : {'parents'       : ['shf4'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['retn'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['retn'], \
+                                     'friends'       : []}})
+  
+    transform_dict.update({'shf5' : {'parents'       : ['shf5'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['retn'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['retn'], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'shf6' : {'parents'       : ['shf6'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['retn'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['retn'], \
+                                     'friends'       : []}})
+
     transform_dict.update({'bnry' : {'parents'       : [], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : ['bnry'], \
@@ -2803,6 +2857,54 @@ class AutoMunge:
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'dxd2'}})
+    process_dict.update({'shft' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_shft_class, \
+                                  'postprocess' : None, \
+                                  'inverseprocess' : self.inverseprocess_shft, \
+                                  'info_retention' : True, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'shft'}})
+    process_dict.update({'shf2' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_shf2_class, \
+                                  'postprocess' : None, \
+                                  'inverseprocess' : self.inverseprocess_shft, \
+                                  'info_retention' : True, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'shf2'}})
+    process_dict.update({'shf3' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_shf3_class, \
+                                  'postprocess' : None, \
+                                  'inverseprocess' : self.inverseprocess_shft, \
+                                  'info_retention' : True, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'shf3'}})
+    process_dict.update({'shf4' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_shft_class, \
+                                  'postprocess' : None, \
+                                  'inverseprocess' : self.inverseprocess_shft, \
+                                  'info_retention' : True, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'retn'}})
+    process_dict.update({'shf5' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_shf2_class, \
+                                  'postprocess' : None, \
+                                  'inverseprocess' : self.inverseprocess_shft, \
+                                  'info_retention' : True, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'retn'}})
+    process_dict.update({'shf6' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_shf3_class, \
+                                  'postprocess' : None, \
+                                  'inverseprocess' : self.inverseprocess_shft, \
+                                  'info_retention' : True, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'retn'}})
     process_dict.update({'nbr2' : {'dualprocess' : self.process_numerical_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_numerical_class, \
@@ -2862,24 +2964,32 @@ class AutoMunge:
     process_dict.update({'mnm3' : {'dualprocess' : self.process_mnm3_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_mnm3_class, \
+                                  'inverseprocess' : self.inverseprocess_mnm3, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mnm3'}})
     process_dict.update({'mnm4' : {'dualprocess' : self.process_mnm3_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_mnm3_class, \
+                                  'inverseprocess' : self.inverseprocess_mnm3, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mnm3'}})
     process_dict.update({'mnm5' : {'dualprocess' : self.process_mnmx_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_mnmx_class, \
+                                  'inverseprocess' : self.inverseprocess_mnmx, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mnmx'}})
     process_dict.update({'mnm6' : {'dualprocess' : self.process_mnm6_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_mnm6_class, \
+                                  'inverseprocess' : self.inverseprocess_mnmx, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mnm6'}})
@@ -3712,6 +3822,8 @@ class AutoMunge:
     process_dict.update({'year' : {'dualprocess' : self.process_year_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_year_class, \
+                                  'inverseprocess' : self.inverseprocess_year, \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'year'}})
@@ -4339,6 +4451,8 @@ class AutoMunge:
     process_dict.update({'copy' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_copy_class, \
                                   'postprocess' : None, \
+                                  'inverseprocess' : self.inverseprocess_excl, \
+                                  'info_retention' : True, \
                                   'NArowtype' : 'exclude', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'copy'}})
@@ -4399,6 +4513,8 @@ class AutoMunge:
     process_dict.update({'nmbd' : {'dualprocess' : self.process_numerical_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_numerical_class, \
+                                  'inverseprocess' : self.inverseprocess_nmbr, \
+                                  'info_retention' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmbr'}})
@@ -4449,6 +4565,8 @@ class AutoMunge:
     process_dict.update({'lbnm' : {'dualprocess' : self.process_exc2_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_exc2_class, \
+                                  'inverseprocess' : self.inverseprocess_UPCS, \
+                                  'info_retention' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'exc2'}})
@@ -5260,6 +5378,282 @@ class AutoMunge:
         
     return df, column_dict_list
 
+  def process_shft_class(self, df, column, category, postprocess_dict, params = {}):
+    '''
+    #process_shft_class(df, column, category, postprocess_dict)
+    #function to shift a sequential set forward by one or more time steps    
+    #for missing values, uses adjacent cell infill as default
+    #accepts parameter 'periods' for number of time steps, defaults to one
+    #accepts parameter 'suffix' for column suffix appender
+    #such as may be useful if applying this transform to the same column more than once
+    '''
+    
+    #initialize parameters
+    if 'periods' in params:
+      periods = params['periods']
+    else:
+      periods = 1
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'shft'
+      
+    shft_column = column + '_' + suffix
+    
+    #copy source column into new column
+    df[shft_column] = df[column].copy()
+    
+    #convert all values to either numeric or NaN
+    df[shft_column] = pd.to_numeric(df[shft_column], errors='coerce')
+    
+    #apply ffill to replace NArows with value from adjacent cell in pre4ceding row
+    df[shft_column] = df[shft_column].fillna(method='ffill')
+    
+    #we'll follow with a bfill just in case first row had a nan
+    df[shft_column] = df[shft_column].fillna(method='bfill') 
+    
+    #shift from preceding row
+    df[shft_column] = df[shft_column].shift(periods = periods)
+    
+    #first row will have a nan so just one more backfill
+    df[shft_column] = df[shft_column].fillna(method='bfill')
+    
+    #then one more infill with to address scenario when data wasn't numeric
+    #get arbitrary cell value, if one is nan then all will be
+    value = df[shft_column].values[0]
+    if value != value:
+      value = 0
+
+      df[shft_column] = df[shft_column].fillna(value)
+    
+    #create list of columns
+    nmbrcolumns = [shft_column]
+
+    #grab some driftreport metrics
+    #note that if this function implemented for data streams at scale it may be appropriate
+    #to consider creating an alternate to dxdt without the driftreport metrics for postmunge efficiency
+    positiveratio = df[df[shft_column] >= 0].shape[0] / df[shft_column].shape[0]
+    negativeratio = df[df[shft_column] < 0].shape[0] / df[shft_column].shape[0]
+    zeroratio = df[df[shft_column] == 0].shape[0] / df[shft_column].shape[0]
+    minimum = df[shft_column].min()
+    maximum = df[shft_column].max()
+    mean = df[shft_column].mean()
+    std = df[shft_column].std()
+
+    nmbrnormalization_dict = {shft_column :      {'positiveratio' : positiveratio, \
+                                                  'negativeratio' : negativeratio, \
+                                                  'zeroratio' : zeroratio, \
+                                                  'minimum' : minimum, \
+                                                  'maximum' : maximum, \
+                                                  'mean' : mean, \
+                                                  'std' : std, \
+                                                  'periods' : periods, \
+                                                  'suffix' : suffix}}
+
+    #store some values in the nmbr_dict{} for use later in ML infill methods
+    column_dict_list = []
+
+    for nc in nmbrcolumns:
+      
+      column_dict = { nc : {'category' : 'shft', \
+                           'origcategory' : category, \
+                           'normalization_dict' : nmbrnormalization_dict, \
+                           'origcolumn' : column, \
+                           'inputcolumn' : column, \
+                           'columnslist' : nmbrcolumns, \
+                           'categorylist' : nmbrcolumns, \
+                           'infillmodel' : False, \
+                           'infillcomplete' : False, \
+                           'deletecolumn' : False}}
+
+      column_dict_list.append(column_dict.copy())
+        
+    return df, column_dict_list
+  
+  def process_shf2_class(self, df, column, category, postprocess_dict, params = {}):
+    '''
+    #process_shft_class(df, column, category, postprocess_dict)
+    #function to shift a sequential set forward by one or more time steps    
+    #for missing values, uses adjacent cell infill as default
+    #accepts parameter 'periods' for number of time steps, defaults to one
+    #accepts parameter 'suffix' for column suffix appender
+    #such as may be useful if applying this transform to the same column more than once
+    '''
+    
+    #initialize parameters
+    if 'periods' in params:
+      periods = params['periods']
+    else:
+      periods = 2
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'shf2'
+      
+    shft_column = column + '_' + suffix
+    
+    #copy source column into new column
+    df[shft_column] = df[column].copy()
+    
+    #convert all values to either numeric or NaN
+    df[shft_column] = pd.to_numeric(df[shft_column], errors='coerce')
+    
+    #apply ffill to replace NArows with value from adjacent cell in pre4ceding row
+    df[shft_column] = df[shft_column].fillna(method='ffill')
+    
+    #we'll follow with a bfill just in case first row had a nan
+    df[shft_column] = df[shft_column].fillna(method='bfill') 
+    
+    #shift from preceding row
+    df[shft_column] = df[shft_column].shift(periods = periods)
+    
+    #first row will have a nan so just one more backfill
+    df[shft_column] = df[shft_column].fillna(method='bfill')
+    
+    #then one more infill with to address scenario when data wasn't numeric
+    #get arbitrary cell value, if one is nan then all will be
+    value = df[shft_column].values[0]
+    if value != value:
+      value = 0
+
+      df[shft_column] = df[shft_column].fillna(value)
+    
+    #create list of columns
+    nmbrcolumns = [shft_column]
+
+    #grab some driftreport metrics
+    #note that if this function implemented for data streams at scale it may be appropriate
+    #to consider creating an alternate to dxdt without the driftreport metrics for postmunge efficiency
+    positiveratio = df[df[shft_column] >= 0].shape[0] / df[shft_column].shape[0]
+    negativeratio = df[df[shft_column] < 0].shape[0] / df[shft_column].shape[0]
+    zeroratio = df[df[shft_column] == 0].shape[0] / df[shft_column].shape[0]
+    minimum = df[shft_column].min()
+    maximum = df[shft_column].max()
+    mean = df[shft_column].mean()
+    std = df[shft_column].std()
+
+    nmbrnormalization_dict = {shft_column :      {'positiveratio' : positiveratio, \
+                                                  'negativeratio' : negativeratio, \
+                                                  'zeroratio' : zeroratio, \
+                                                  'minimum' : minimum, \
+                                                  'maximum' : maximum, \
+                                                  'mean' : mean, \
+                                                  'std' : std, \
+                                                  'periods' : periods, \
+                                                  'suffix' : suffix}}
+
+    #store some values in the nmbr_dict{} for use later in ML infill methods
+    column_dict_list = []
+
+    for nc in nmbrcolumns:
+      
+      column_dict = { nc : {'category' : 'shf2', \
+                           'origcategory' : category, \
+                           'normalization_dict' : nmbrnormalization_dict, \
+                           'origcolumn' : column, \
+                           'inputcolumn' : column, \
+                           'columnslist' : nmbrcolumns, \
+                           'categorylist' : nmbrcolumns, \
+                           'infillmodel' : False, \
+                           'infillcomplete' : False, \
+                           'deletecolumn' : False}}
+
+      column_dict_list.append(column_dict.copy())
+        
+    return df, column_dict_list
+  
+  def process_shf3_class(self, df, column, category, postprocess_dict, params = {}):
+    '''
+    #process_shft_class(df, column, category, postprocess_dict)
+    #function to shift a sequential set forward by one or more time steps    
+    #for missing values, uses adjacent cell infill as default
+    #accepts parameter 'periods' for number of time steps, defaults to one
+    #accepts parameter 'suffix' for column suffix appender
+    #such as may be useful if applying this transform to the same column more than once
+    '''
+    
+    #initialize parameters
+    if 'periods' in params:
+      periods = params['periods']
+    else:
+      periods = 3
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'shf3'
+      
+    shft_column = column + '_' + suffix
+    
+    #copy source column into new column
+    df[shft_column] = df[column].copy()
+    
+    #convert all values to either numeric or NaN
+    df[shft_column] = pd.to_numeric(df[shft_column], errors='coerce')
+    
+    #apply ffill to replace NArows with value from adjacent cell in pre4ceding row
+    df[shft_column] = df[shft_column].fillna(method='ffill')
+    
+    #we'll follow with a bfill just in case first row had a nan
+    df[shft_column] = df[shft_column].fillna(method='bfill') 
+    
+    #shift from preceding row
+    df[shft_column] = df[shft_column].shift(periods = periods)
+    
+    #first row will have a nan so just one more backfill
+    df[shft_column] = df[shft_column].fillna(method='bfill')
+    
+    #then one more infill with to address scenario when data wasn't numeric
+    #get arbitrary cell value, if one is nan then all will be
+    value = df[shft_column].values[0]
+    if value != value:
+      value = 0
+
+      df[shft_column] = df[shft_column].fillna(value)
+    
+    #create list of columns
+    nmbrcolumns = [shft_column]
+
+    #grab some driftreport metrics
+    #note that if this function implemented for data streams at scale it may be appropriate
+    #to consider creating an alternate to dxdt without the driftreport metrics for postmunge efficiency
+    positiveratio = df[df[shft_column] >= 0].shape[0] / df[shft_column].shape[0]
+    negativeratio = df[df[shft_column] < 0].shape[0] / df[shft_column].shape[0]
+    zeroratio = df[df[shft_column] == 0].shape[0] / df[shft_column].shape[0]
+    minimum = df[shft_column].min()
+    maximum = df[shft_column].max()
+    mean = df[shft_column].mean()
+    std = df[shft_column].std()
+
+    nmbrnormalization_dict = {shft_column :      {'positiveratio' : positiveratio, \
+                                                  'negativeratio' : negativeratio, \
+                                                  'zeroratio' : zeroratio, \
+                                                  'minimum' : minimum, \
+                                                  'maximum' : maximum, \
+                                                  'mean' : mean, \
+                                                  'std' : std, \
+                                                  'periods' : periods, \
+                                                  'suffix' : suffix}}
+
+    #store some values in the nmbr_dict{} for use later in ML infill methods
+    column_dict_list = []
+
+    for nc in nmbrcolumns:
+      
+      column_dict = { nc : {'category' : 'shf3', \
+                           'origcategory' : category, \
+                           'normalization_dict' : nmbrnormalization_dict, \
+                           'origcolumn' : column, \
+                           'inputcolumn' : column, \
+                           'columnslist' : nmbrcolumns, \
+                           'categorylist' : nmbrcolumns, \
+                           'infillmodel' : False, \
+                           'infillcomplete' : False, \
+                           'deletecolumn' : False}}
+
+      column_dict_list.append(column_dict.copy())
+        
+    return df, column_dict_list
+
   def process_MADn_class(self, mdf_train, mdf_test, column, category, \
                               postprocess_dict, params = {}):
     '''
@@ -5656,6 +6050,7 @@ class AutoMunge:
 
     nmbrnormalization_dict = {column + '_mnm3' : {'quantilemin' : quantilemin, \
                                                   'quantilemax' : quantilemax, \
+                                                  'maxminusmin' : maxminusmin, \
                                                   'mean' : mean, \
                                                   'std' : std, \
                                                   'qmax' : qmax, \
@@ -5752,6 +6147,7 @@ class AutoMunge:
 
     nmbrnormalization_dict = {column + '_mnm6' : {'minimum' : minimum, \
                                                   'maximum' : maximum, \
+                                                  'maxminusmin' : maxminusmin, \
                                                   'mean' : mean, \
                                                   'std' : std}}
 
@@ -27198,6 +27594,7 @@ class AutoMunge:
                              'mea2':[], 'mea3':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
                              'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
                              'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
+                             'shft':[], 'shf2':[], 'shf3':[], 'shf4':[], 'shf5':[], 'shf6':[], \
                              'bnry':[], 'onht':[], 'text':[], 'txt2':[], '1010':[], 'or10':[], \
                              'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
                              'Unht':[], 'Utxt':[], 'Utx2':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
@@ -28610,7 +29007,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.32'
+    automungeversion = '4.33'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -38487,6 +38884,26 @@ class AutoMunge:
     df[inputcolumn] = ((df[normkey] - offset) * std / multiplier ) + mean
     
     return df, inputcolumn
+
+  def inverseprocess_year(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_year_class
+    #assumes any relevant parameters were saved in normalization_dict
+    #does not perform infill, assumes clean data
+    """
+    
+    normkey = categorylist[0]
+    
+    mean = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['meanyear']
+    std = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['stdyear']
+    
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    
+    df[inputcolumn] = ((df[normkey]) * std + mean )
+    
+    return df, inputcolumn
   
   def inverseprocess_mean(self, df, categorylist, postprocess_dict):
     """
@@ -38575,6 +38992,28 @@ class AutoMunge:
     df[inputcolumn] = df[normkey] * maxminusmin + minimum
     
     return df, inputcolumn
+
+  def inverseprocess_mnm3(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_mnmx_class
+    #assumes any relevant parameters were saved in normalization_dict
+    #does not perform infill, assumes clean data
+    """
+    
+    normkey = categorylist[0]
+    
+    minimum = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['quantilemin']
+    maximum = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['quantilemax']
+    maxminusmin = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['maxminusmin']
+    
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    
+    df[inputcolumn] = df[normkey] * maxminusmin + minimum
+    
+    return df, inputcolumn
   
   def inverseprocess_retn(self, df, categorylist, postprocess_dict):
     """
@@ -38610,6 +39049,26 @@ class AutoMunge:
       
       df[inputcolumn] = (df[normkey] - offset) * divisor / multiplier + maximum
     
+    return df, inputcolumn
+
+  def inverseprocess_shft(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_shft_class
+    #assumes any relevant parameters were saved in normalization_dict
+    #applies zzzinfill infill
+    """
+    
+    normkey = categorylist[0]
+    
+    periods = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['periods']
+    
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    
+    df[inputcolumn] = df[normkey].shift(periods = -periods)
+    
+    df[inputcolumn] = df[inputcolumn].fillna('zzzinfill')
+        
     return df, inputcolumn
   
   def inverseprocess_log0(self, df, categorylist, postprocess_dict):
