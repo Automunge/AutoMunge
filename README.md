@@ -152,7 +152,7 @@ am.automunge(df_train, df_test = False, \
                           'mea2':[], 'mea3':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
                           'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
                           'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
-                          'shft':[], 'shf2':[], 'shf3':[], 'shf4':[], 'shf5':[], 'shf6':[], \
+                          'shft':[], 'shf2':[], 'shf3':[], 'shf4':[], 'shf7':[], 'shf8':[], \
                           'bnry':[], 'onht':[], 'text':[], 'txt2':[], '1010':[], 'or10':[], \
                           'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
                           'Unht':[], 'Utxt':[], 'Utx2':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
@@ -381,7 +381,7 @@ am.automunge(df_train, df_test = False, \
                           'mea2':[], 'mea3':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
                           'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
                           'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
-                          'shft':[], 'shf2':[], 'shf3':[], 'shf4':[], 'shf5':[], 'shf6':[], \
+                          'shft':[], 'shf2':[], 'shf3':[], 'shf4':[], 'shf7':[], 'shf8':[], \
                           'bnry':[], 'onht':[], 'text':[], 'txt2':[], '1010':[], 'or10':[], \
                           'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
                           'Unht':[], 'Utxt':[], 'Utx2':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
@@ -606,7 +606,7 @@ am.automunge(df_train, df_test = False, \
                           'mea2':[], 'mea3':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
                           'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
                           'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
-                          'shft':[], 'shf2':[], 'shf3':[], 'shf4':[], 'shf5':[], 'shf6':[], \
+                          'shft':[], 'shf2':[], 'shf3':[], 'shf4':[], 'shf7':[], 'shf8':[], \
                           'bnry':[], 'onht':[], 'text':[], 'txt2':[], '1010':[], 'or10':[], \
                           'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
                           'Unht':[], 'Utxt':[], 'Utx2':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
@@ -869,16 +869,15 @@ memory bandwidth and energy cost for inference I suspect, however, there
 may be tradeoffs associated with ability of the model to handle outliers,
 as for any new combination of boolean set in the test data the collection
 will be subject to the infill. Pass _True_ to activate, defaults to _False_. 
-(For now also requires passing parameter excl_suffix = True.) Note that
-can also be passed as _'retain'_ to retain the boolean columns that served 
-as basis for encoding instead of replacing them. To only convert a portion
-of the boolean columns, can pass this as a list of column headers, which may
-include source column headers and/or returned column headers (source headers
-convert all boolean columns derived from a source column, returned headers 
-allow to only convert a portion, note it is ok to pass non-boolean columns
-they will be ignored). When passing a list of headers, the default is that 
-the binary transform will replace those target columns. For a retain option
-user can pass False as first item in list, e.g. for partial set retention, 
+Note that can also be passed as _'retain'_ to retain the boolean columns that 
+served as basis for encoding instead of replacing them. To only convert a 
+portion of the boolean columns, can pass this as a list of column headers, 
+which may include source column headers and/or returned column headers (source 
+headers convert all boolean columns derived from a source column, returned 
+headers allow to only convert a portion, note it is ok to pass non-boolean 
+columns they will be ignored). When passing a list of headers, the default is 
+that the binary transform will replace those target columns. For a retain 
+option user can pass False as first item in list, e.g. for partial set retention, 
 can pass Binary = [False, 'target_column_1', 'target_column_2']. Note that
 when applied a column named 'Binary' is used in derivation, thus this is a 
 reserved column header when applying this transform.
@@ -988,7 +987,7 @@ assigncat = {'nmbr':[], 'retn':[], 'mnmx':[], 'mean':[], 'MAD3':[], 'lgnm':[], \
              'mea2':[], 'mea3':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
              'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
              'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
-             'shft':[], 'shf2':[], 'shf3':[], 'shf4':[], 'shf5':[], 'shf6':[], \
+             'shft':[], 'shf2':[], 'shf3':[], 'shf4':[], 'shf7':[], 'shf8':[], \
              'bnry':[], 'onht':[], 'text':[], 'txt2':[], '1010':[], 'or10':[], \
              'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
              'Unht':[], 'Utxt':[], 'Utx2':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
@@ -2171,6 +2170,7 @@ with metric2 results from a feature importance evaluation)
   - inversion available: no
 ### Sequential Numerical Set Transformations
 Please note that sequential transforms assume the forward progression of time towards direction of bottom of dataframe.
+Please note that only stdrdinfill / adjinfill are supported for sequential transforms.
 * dxdt/d2dt/d3dt/d4dt/d5dt/d6dt: rate of change (row value minus value in preceding row), high orders 
 return lower orders (eg d2dt returns original set, dxdt, and d2dt), all returned sets include 'retn' 
 normalization which scales data with min/max while retaining +/- sign
@@ -2967,6 +2967,8 @@ avoid unintentional duplication.
 - 'shf4',
 - 'shf5',
 - 'shf6',
+- 'shf7',
+- 'shf8',
 - 'shfl',
 - 'shft',
 - 'sp10',
@@ -3533,6 +3535,24 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'friends'       : []}})
     
     transform_dict.update({'shf6' : {'parents'       : ['shf6'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['retn'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['retn'], \
+                                     'friends'       : []}})
+
+    transform_dict.update({'shf7' : {'parents'       : ['shf4', 'shf5'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['retn'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['retn'], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'shf8' : {'parents'       : ['shf4', 'shf5', 'shf6'], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : ['retn'], \
                                      'cousins'       : [NArw], \
