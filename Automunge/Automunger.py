@@ -494,6 +494,23 @@ class AutoMunge:
                                      'coworkers'     : ['retn'], \
                                      'friends'       : []}})
 
+    transform_dict.update({'shf7' : {'parents'       : ['shf4', 'shf5'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['retn'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['retn'], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'shf8' : {'parents'       : ['shf4', 'shf5', 'shf6'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['retn'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['retn'], \
+
     transform_dict.update({'bnry' : {'parents'       : [], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : ['bnry'], \
@@ -2905,6 +2922,22 @@ class AutoMunge:
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'retn'}})
+    process_dict.update({'shf7' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_shft_class, \
+                                  'postprocess' : None, \
+                                  'inverseprocess' : self.inverseprocess_shft, \
+                                  'info_retention' : True, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'retn'}})
+    process_dict.update({'shf8' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_shft_class, \
+                                  'postprocess' : None, \
+                                  'inverseprocess' : self.inverseprocess_shft, \
+                                  'info_retention' : True, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'retn'}})
     process_dict.update({'nbr2' : {'dualprocess' : self.process_numerical_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_numerical_class, \
@@ -2981,7 +3014,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_mnmx_class, \
                                   'inverseprocess' : self.inverseprocess_mnmx, \
-                                  'info_retention' : False, \
+                                  'info_retention' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mnmx'}})
@@ -24077,6 +24110,9 @@ class AutoMunge:
 
     if 'oneinfill' not in postprocess_assigninfill_dict:
       postprocess_assigninfill_dict['oneinfill'] = []
+      
+    if 'naninfill' not in postprocess_assigninfill_dict:
+      postprocess_assigninfill_dict['naninfill'] = []
 
     if 'adjinfill' not in postprocess_assigninfill_dict:
       postprocess_assigninfill_dict['adjinfill'] = []
@@ -24185,6 +24221,25 @@ class AutoMunge:
 
                 df_test = \
                 self.oneinfillfunction(df_test, column, postprocess_dict, \
+                                       masterNArows_test)
+                
+              #naninfill
+              if column in postprocess_assigninfill_dict['naninfill']:
+
+                #printout display progress
+                if printstatus is True:
+                  print("infill to column: ", column)
+                  print("     infill type: naninfill")
+                  print("")
+
+                categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
+
+                df_train = \
+                self.naninfillfunction(df_train, column, postprocess_dict, \
+                                       masterNArows_train)
+
+                df_test = \
+                self.naninfillfunction(df_test, column, postprocess_dict, \
                                        masterNArows_test)
 
               #adjinfill
@@ -24426,6 +24481,19 @@ class AutoMunge:
               self.oneinfillfunction(df_test, column, postprocess_dict, \
                                      masterNArows_test)
               
+            #naninfill
+            if column in postprocess_assigninfill_dict['naninfill']:
+
+              #printout display progress
+              if printstatus is True:
+                print("infill to column: ", column)
+                print("     infill type: naninfill")
+                print("")
+
+              df_test = \
+              self.naninfillfunction(df_test, column, postprocess_dict, \
+                                     masterNArows_test)
+              
             #adjinfill:
             if column in postprocess_assigninfill_dict['adjinfill']:
 
@@ -24617,6 +24685,40 @@ class AutoMunge:
     NAcount = len(masterNArows[masterNArows[NArw_columnname] == 1])
 
     infill = pd.DataFrame(np.ones((NAcount, 1)), columns=[column])
+    
+    category = postprocess_dict['column_dict'][column]['category']
+    columnslist = postprocess_dict['column_dict'][column]['columnslist']
+    categorylist = postprocess_dict['column_dict'][column]['categorylist']
+
+    #insert infill
+    df = self.insertinfill(df, column, infill, category, \
+                           pd.DataFrame(masterNArows[NArw_columnname]), \
+                           postprocess_dict, columnslist = columnslist, \
+                           categorylist = categorylist, singlecolumncase=True)
+
+    #reset data type to ensure returned data is consistent with what was passed
+    df[column] = \
+    df[column].astype({column:df_temp_dtype[column].dtypes})
+    
+    return df
+    
+  def naninfillfunction(self, df, column, postprocess_dict, \
+                        masterNArows):
+
+    #copy the datatype to ensure returned set is consistent
+    df_temp_dtype = pd.DataFrame(df[column][:1]).copy()
+    
+
+    #create infill dataframe of all zeros with number of rows corepsonding to the
+    #number of 1's found in masterNArows
+    NArw_columnname = \
+    postprocess_dict['column_dict'][column]['origcolumn'] + '_NArows'
+
+    NAcount = len(masterNArows[masterNArows[NArw_columnname] == 1])
+
+    infill = pd.DataFrame(np.ones((NAcount, 1)), columns=[column])
+    
+    infill = pd.DataFrame(np.where(infill[column] == 1, np.nan, infill[column]))
     
     category = postprocess_dict['column_dict'][column]['category']
     columnslist = postprocess_dict['column_dict'][column]['columnslist']
@@ -27594,7 +27696,7 @@ class AutoMunge:
                              'mea2':[], 'mea3':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
                              'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
                              'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
-                             'shft':[], 'shf2':[], 'shf3':[], 'shf4':[], 'shf5':[], 'shf6':[], \
+                             'shft':[], 'shf2':[], 'shf3':[], 'shf4':[], 'shf7':[], 'shf8':[], \
                              'bnry':[], 'onht':[], 'text':[], 'txt2':[], '1010':[], 'or10':[], \
                              'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
                              'Unht':[], 'Utxt':[], 'Utx2':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
@@ -27613,7 +27715,7 @@ class AutoMunge:
                              'null':[], 'copy':[], 'shfl':[], 'eval':[], 'ptfm':[]}, \
                 assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                                 'adjinfill':[], 'meaninfill':[], 'medianinfill':[], \
-                                'modeinfill':[], 'lcinfill':[]}, \
+                                'modeinfill':[], 'lcinfill':[], 'naninfill':[]}, \
                 assignparam = {'default_assignparam' : {'(category)' : {'(parameter)' : 42}}, \
                                         '(category)' : {'(column)'   : {'(parameter)' : 42}}}, \
                 transformdict = {}, processdict = {}, evalcat = False, \
@@ -28981,19 +29083,23 @@ class AutoMunge:
                                                 deepcopy(postprocess_dict['column_dict'][excl_column_with_suffix])})
     
     #(we won't perform this step to train and test sets if PCA was applied)
-    if PCA_applied is False and excl_suffix is False:
-      df_train.columns = [column[:-5] if postprocess_dict['column_dict'][column]['category'] == 'excl' \
+    if excl_suffix is False:
+      df_train.columns = [column[:-5] if column in postprocess_dict['column_dict'] and \
+                          postprocess_dict['column_dict'][column]['category'] == 'excl' \
                           else column for column in df_train.columns]
-      df_test.columns = [column[:-5] if postprocess_dict['column_dict'][column]['category'] == 'excl' \
+      df_test.columns = [column[:-5] if column in postprocess_dict['column_dict'] and \
+                         postprocess_dict['column_dict'][column]['category'] == 'excl' \
                          else column for column in df_test.columns]
       
     if labels_column is not False and excl_suffix is False:
-      df_labels.columns = [column[:-5] if postprocess_dict['column_dict'][column]['category'] == 'excl' \
-                           else column for column in df_labels.columns]
+      df_labels.columns = [column[:-5] if column in postprocess_dict['column_dict'] and \
+                          postprocess_dict['column_dict'][column]['category'] == 'excl' \
+                          else column for column in df_labels.columns]
 
     if labelspresenttest is True and excl_suffix is False:
-      df_testlabels.columns = [column[:-5] if postprocess_dict['column_dict'][column]['category'] == 'excl' \
-                               else column for column in df_testlabels.columns]
+      df_testlabels.columns = [column[:-5] if column in postprocess_dict['column_dict'] and \
+                              postprocess_dict['column_dict'][column]['category'] == 'excl' \
+                              else column for column in df_testlabels.columns]
 
     #this is admiuttedly kind of a weird spot to put this, we had introduced earlier
     #convention of a dummy testlabels set, here we'll delete if no labels in test set
@@ -29007,7 +29113,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.33'
+    automungeversion = '4.34'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -38266,13 +38372,15 @@ class AutoMunge:
     #a special case, those columns that we completely excluded from processing via excl
     #we'll scrub the suffix appender
     #(we won't perform this step to test data if PCA was applied)
-    if postprocess_dict['PCA_applied'] is False and postprocess_dict['excl_suffix'] is False:
-      df_test.columns = [column[:-5] if postprocess_dict['column_dict'][column]['category'] == 'excl' \
+    if postprocess_dict['excl_suffix'] is False:
+      df_test.columns = [column[:-5] if column in postprocess_dict['column_dict'] and \
+                         postprocess_dict['column_dict'][column]['category'] == 'excl' \
                          else column for column in df_test.columns]
       
     if labelscolumn is not False and postprocess_dict['excl_suffix'] is False:
-      df_testlabels.columns = [column[:-5] if postprocess_dict['column_dict'][column]['category'] == 'excl' \
-                               else column for column in df_testlabels.columns]
+      df_testlabels.columns = [column[:-5] if column in postprocess_dict['column_dict'] and \
+                              postprocess_dict['column_dict'][column]['category'] == 'excl' \
+                              else column for column in df_testlabels.columns]
 
     #here's a list of final column names saving here since the translation to \
     #numpy arrays scrubs the column names
