@@ -510,6 +510,7 @@ class AutoMunge:
                                      'children'      : [], \
                                      'niecesnephews' : [], \
                                      'coworkers'     : ['retn'], \
+                                     'friends'       : []}})
 
     transform_dict.update({'bnry' : {'parents'       : [], \
                                      'siblings'      : [], \
