@@ -171,7 +171,7 @@ am.automunge(df_train, df_test = False, \
                           'null':[], 'copy':[], 'shfl':[], 'eval':[], 'ptfm':[]}, \
              assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                              'adjinfill':[], 'meaninfill':[], 'medianinfill':[], \
-                             'modeinfill':[], 'lcinfill':[]}, \
+                             'modeinfill':[], 'lcinfill':[], 'naninfill':[]}, \
              assignparam = {'default_assignparam' : {'(category)' : {'(parameter)' : 42}}, \
                                      '(category)' : {'(column)'   : {'(parameter)' : 42}}}, \
              transformdict = {}, processdict = {}, evalcat = False, \
@@ -400,7 +400,7 @@ am.automunge(df_train, df_test = False, \
                           'null':[], 'copy':[], 'shfl':[], 'eval':[], 'ptfm':[]}, \
              assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                              'adjinfill':[], 'meaninfill':[], 'medianinfill':[], \
-                             'modeinfill':[], 'lcinfill':[]}, \
+                             'modeinfill':[], 'lcinfill':[], 'naninfill':[]}, \
              assignparam = {'default_assignparam' : {'(category)' : {'(parameter)' : 42}}, \
                                      '(category)' : {'(column)'   : {'(parameter)' : 42}}}, \
              transformdict = {}, processdict = {}, evalcat = False, \
@@ -625,7 +625,7 @@ am.automunge(df_train, df_test = False, \
                           'null':[], 'copy':[], 'shfl':[], 'eval':[], 'ptfm':[]}, \
              assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                              'adjinfill':[], 'meaninfill':[], 'medianinfill':[], \
-                             'modeinfill':[], 'lcinfill':[]}, \
+                             'modeinfill':[], 'lcinfill':[], 'naninfill':[]}, \
              assignparam = {'default_assignparam' : {'(category)' : {'(parameter)' : 42}}, \
                                      '(category)' : {'(column)'   : {'(parameter)' : 42}}}, \
              transformdict = {}, processdict = {}, evalcat = False, \
@@ -1029,7 +1029,7 @@ of the column header without the list brackets.
 #we are continuing to build out.
 assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                 'adjinfill':[], 'meaninfill':[], 'medianinfill':[], \
-                'modeinfill':[], 'lcinfill':[]}
+                'modeinfill':[], 'lcinfill':[], 'naninfill':[]}
 ```
 A user may add column identifier strings to each of these lists to designate the 
 column-specific infill approach for missing or improperly formatted values. The
@@ -1056,6 +1056,7 @@ or integer of the column header without the list brackets.
 #                   supports multi-column boolean encodings, such as one-hot encoded sets or 
 #                   binary encoded sets. 
 #  - lcinfill     : comparable to modeinfill but with least common value instead of most. 
+#  - naninfill    : inserting NaN to missing cells. 
 
 #an example of passing columns to assign infill via assigninfill:
 #for source column 'column1', which hypothetically is returned through automunge(.) as
