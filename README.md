@@ -2171,7 +2171,7 @@ with metric2 results from a feature importance evaluation)
   - inversion available: no
 ### Sequential Numerical Set Transformations
 Please note that sequential transforms assume the forward progression of time towards direction of bottom of dataframe.
-Please note that only stdrdinfill / adjinfill are supported for shft transforms.
+Please note that only stdrdinfill (adjinfill) are supported for shft transforms.
 * dxdt/d2dt/d3dt/d4dt/d5dt/d6dt: rate of change (row value minus value in preceding row), high orders 
 return lower orders (eg d2dt returns original set, dxdt, and d2dt), all returned sets include 'retn' 
 normalization which scales data with min/max while retaining +/- sign
