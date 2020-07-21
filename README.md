@@ -2171,7 +2171,7 @@ with metric2 results from a feature importance evaluation)
   - inversion available: no
 ### Sequential Numerical Set Transformations
 Please note that sequential transforms assume the forward progression of time towards direction of bottom of dataframe.
-Please note that only stdrdinfill / adjinfill are supported for sequential transforms.
+Please note that only stdrdinfill / adjinfill are supported for shft transforms.
 * dxdt/d2dt/d3dt/d4dt/d5dt/d6dt: rate of change (row value minus value in preceding row), high orders 
 return lower orders (eg d2dt returns original set, dxdt, and d2dt), all returned sets include 'retn' 
 normalization which scales data with min/max while retaining +/- sign
@@ -2198,7 +2198,8 @@ nmrc numeric string parsing top extract numbers from string sets
 * dddt/ddd2/ddd3/ddd4/ddd5/ddd6: comparable to dxdt but no normalizations applied
 * dedt/ded2/ded3/ded4/ded5/ded6: comparable to dxd2 but no normalizations applied
   - inversion available: no
-* shft/shf2/shf3: shifted data forward by a period number of time steps defaulting to 1/2/3
+* shft/shf2/shf3: shifted data forward by a period number of time steps defaulting to 1/2/3. Note that NArw aggregation
+not supported for shift transforms, infill only available as adjacent cell
   - default infill: adjacent cells
   - default NArowtype: numeric
   - suffix appender: '_shft' / '_shf2' / '_shf3'
@@ -3493,7 +3494,7 @@ If you want to skip to the next section you can click here: [Custom Transformati
     transform_dict.update({'shft' : {'parents'       : [], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : ['shft'], \
-                                     'cousins'       : [NArw], \
+                                     'cousins'       : [], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
                                      'coworkers'     : [], \
@@ -3502,7 +3503,7 @@ If you want to skip to the next section you can click here: [Custom Transformati
     transform_dict.update({'shf2' : {'parents'       : [], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : ['shf2'], \
-                                     'cousins'       : [NArw], \
+                                     'cousins'       : [], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
                                      'coworkers'     : [], \
@@ -3511,7 +3512,7 @@ If you want to skip to the next section you can click here: [Custom Transformati
     transform_dict.update({'shf3' : {'parents'       : [], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : ['shf3'], \
-                                     'cousins'       : [NArw], \
+                                     'cousins'       : [], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
                                      'coworkers'     : [], \
@@ -3520,7 +3521,7 @@ If you want to skip to the next section you can click here: [Custom Transformati
     transform_dict.update({'shf4' : {'parents'       : ['shf4'], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : ['retn'], \
-                                     'cousins'       : [NArw], \
+                                     'cousins'       : [], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
                                      'coworkers'     : ['retn'], \
@@ -3529,7 +3530,7 @@ If you want to skip to the next section you can click here: [Custom Transformati
     transform_dict.update({'shf5' : {'parents'       : ['shf5'], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : ['retn'], \
-                                     'cousins'       : [NArw], \
+                                     'cousins'       : [], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
                                      'coworkers'     : ['retn'], \
@@ -3538,7 +3539,7 @@ If you want to skip to the next section you can click here: [Custom Transformati
     transform_dict.update({'shf6' : {'parents'       : ['shf6'], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : ['retn'], \
-                                     'cousins'       : [NArw], \
+                                     'cousins'       : [], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
                                      'coworkers'     : ['retn'], \
@@ -3547,7 +3548,7 @@ If you want to skip to the next section you can click here: [Custom Transformati
     transform_dict.update({'shf7' : {'parents'       : ['shf4', 'shf5'], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : ['retn'], \
-                                     'cousins'       : [NArw], \
+                                     'cousins'       : [], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
                                      'coworkers'     : ['retn'], \
@@ -3556,7 +3557,7 @@ If you want to skip to the next section you can click here: [Custom Transformati
     transform_dict.update({'shf8' : {'parents'       : ['shf4', 'shf5', 'shf6'], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : ['retn'], \
-                                     'cousins'       : [NArw], \
+                                     'cousins'       : [], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
                                      'coworkers'     : ['retn'], \
