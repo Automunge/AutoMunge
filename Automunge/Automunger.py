@@ -443,7 +443,7 @@ class AutoMunge:
     transform_dict.update({'shft' : {'parents'       : [], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : ['shft'], \
-                                     'cousins'       : [NArw], \
+                                     'cousins'       : [], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
                                      'coworkers'     : [], \
@@ -452,7 +452,7 @@ class AutoMunge:
     transform_dict.update({'shf2' : {'parents'       : [], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : ['shf2'], \
-                                     'cousins'       : [NArw], \
+                                     'cousins'       : [], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
                                      'coworkers'     : [], \
@@ -461,7 +461,7 @@ class AutoMunge:
     transform_dict.update({'shf3' : {'parents'       : [], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : ['shf3'], \
-                                     'cousins'       : [NArw], \
+                                     'cousins'       : [], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
                                      'coworkers'     : [], \
@@ -470,7 +470,7 @@ class AutoMunge:
     transform_dict.update({'shf4' : {'parents'       : ['shf4'], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : ['retn'], \
-                                     'cousins'       : [NArw], \
+                                     'cousins'       : [], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
                                      'coworkers'     : ['retn'], \
@@ -479,7 +479,7 @@ class AutoMunge:
     transform_dict.update({'shf5' : {'parents'       : ['shf5'], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : ['retn'], \
-                                     'cousins'       : [NArw], \
+                                     'cousins'       : [], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
                                      'coworkers'     : ['retn'], \
@@ -488,7 +488,7 @@ class AutoMunge:
     transform_dict.update({'shf6' : {'parents'       : ['shf6'], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : ['retn'], \
-                                     'cousins'       : [NArw], \
+                                     'cousins'       : [], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
                                      'coworkers'     : ['retn'], \
@@ -497,7 +497,7 @@ class AutoMunge:
     transform_dict.update({'shf7' : {'parents'       : ['shf4', 'shf5'], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : ['retn'], \
-                                     'cousins'       : [NArw], \
+                                     'cousins'       : [], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
                                      'coworkers'     : ['retn'], \
@@ -506,7 +506,7 @@ class AutoMunge:
     transform_dict.update({'shf8' : {'parents'       : ['shf4', 'shf5', 'shf6'], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : ['retn'], \
-                                     'cousins'       : [NArw], \
+                                     'cousins'       : [], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
                                      'coworkers'     : ['retn'], \
@@ -2880,7 +2880,7 @@ class AutoMunge:
                                   'postprocess' : None, \
                                   'inverseprocess' : self.inverseprocess_shft, \
                                   'info_retention' : True, \
-                                  'NArowtype' : 'numeric', \
+                                  'NArowtype' : 'exclude', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'shft'}})
     process_dict.update({'shf2' : {'dualprocess' : None, \
@@ -2888,7 +2888,7 @@ class AutoMunge:
                                   'postprocess' : None, \
                                   'inverseprocess' : self.inverseprocess_shft, \
                                   'info_retention' : True, \
-                                  'NArowtype' : 'numeric', \
+                                  'NArowtype' : 'exclude', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'shf2'}})
     process_dict.update({'shf3' : {'dualprocess' : None, \
@@ -2896,7 +2896,7 @@ class AutoMunge:
                                   'postprocess' : None, \
                                   'inverseprocess' : self.inverseprocess_shft, \
                                   'info_retention' : True, \
-                                  'NArowtype' : 'numeric', \
+                                  'NArowtype' : 'exclude', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'shf3'}})
     process_dict.update({'shf4' : {'dualprocess' : None, \
@@ -2904,7 +2904,7 @@ class AutoMunge:
                                   'postprocess' : None, \
                                   'inverseprocess' : self.inverseprocess_shft, \
                                   'info_retention' : True, \
-                                  'NArowtype' : 'numeric', \
+                                  'NArowtype' : 'exclude', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'retn'}})
     process_dict.update({'shf5' : {'dualprocess' : None, \
@@ -2912,7 +2912,7 @@ class AutoMunge:
                                   'postprocess' : None, \
                                   'inverseprocess' : self.inverseprocess_shft, \
                                   'info_retention' : True, \
-                                  'NArowtype' : 'numeric', \
+                                  'NArowtype' : 'exclude', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'retn'}})
     process_dict.update({'shf6' : {'dualprocess' : None, \
@@ -2920,7 +2920,7 @@ class AutoMunge:
                                   'postprocess' : None, \
                                   'inverseprocess' : self.inverseprocess_shft, \
                                   'info_retention' : True, \
-                                  'NArowtype' : 'numeric', \
+                                  'NArowtype' : 'exclude', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'retn'}})
     process_dict.update({'shf7' : {'dualprocess' : None, \
@@ -2928,7 +2928,7 @@ class AutoMunge:
                                   'postprocess' : None, \
                                   'inverseprocess' : self.inverseprocess_shft, \
                                   'info_retention' : True, \
-                                  'NArowtype' : 'numeric', \
+                                  'NArowtype' : 'exclude', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'retn'}})
     process_dict.update({'shf8' : {'dualprocess' : None, \
@@ -2936,7 +2936,7 @@ class AutoMunge:
                                   'postprocess' : None, \
                                   'inverseprocess' : self.inverseprocess_shft, \
                                   'info_retention' : True, \
-                                  'NArowtype' : 'numeric', \
+                                  'NArowtype' : 'exclude', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'retn'}})
     process_dict.update({'nbr2' : {'dualprocess' : self.process_numerical_class, \
@@ -29114,7 +29114,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.34'
+    automungeversion = '4.35'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
