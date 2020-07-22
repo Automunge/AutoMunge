@@ -1688,7 +1688,7 @@ instead be by 'ord3' which is an ordinal (integer) encoding sorted by most commo
 - lbte: for categorical data of 3 unique values excluding infill (eg NaN), the 
 column is encoded via one-hot encoding.
 - lbbn: for categorical data of <=2 unique values excluding infill (eg NaN), the 
-column is encoded to 0/1. Note that numerical sets with <= 2 unique values default to bnry.
+column is encoded via one-hot encoding. Note applies to numerical sets with <= 2 unique values.
 - lbda: for time-series data, a set of derivations are performed returning
 'year', 'mdsn', 'mdcs', 'hmss', 'hmsc', 'bshr', 'wkdy', 'hldy' (these are defined 
 in next section)
