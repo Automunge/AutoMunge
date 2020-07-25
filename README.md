@@ -1790,6 +1790,7 @@ columns in assigncat by using corresponding alternates of (nmbd/101d/ordd/texd/b
 * [Multi-tier String Parsing](https://github.com/Automunge/AutoMunge/blob/master/README.md#multi-tier-string-parsing)
 * [List of Root Categories](https://github.com/Automunge/AutoMunge/blob/master/README.md#list-of-root-categories)
 * [List of Suffix Appenders](https://github.com/Automunge/AutoMunge/blob/master/README.md#list-of-suffix-appenders)
+* [Other Reserved Strings](https://github.com/Automunge/AutoMunge/blob/master/README.md#other-reserved-strings)
 * [Root Category Family Tree Definitions](https://github.com/Automunge/AutoMunge/blob/master/README.md#root-category-family-tree-definitions)
  ___ 
 ### Intro
@@ -3148,7 +3149,17 @@ that any user passing a custom defined transformation can avoid any unintentiona
 - '_wkds'
 - '_wkdy'
 - '_year'
-
+ ___ 
+### Other Reserved Strings
+- 'zzzinfill': a reserved string entry to data sets that is used in many places as an infill values such as for categorical encodings.
+Note that when inversion is performed those entries without recovery are returned with this value.
+- 'Binary': a reserved column header for cases where a Binary transform is applied with the automunge(.) Binary parameter. 
+- 'Binary_1010_#': The columns returned from Binary transform have headers per this convention.
+- 'PCAcol#': when PCA dimensionality reduction is performed, returned columns have headers per this convention.
+- 'Automunge_index_############': a reserved column header for index columns. When automunge(.) is run the returned ID sets are
+populated with an index matching order of rows from original returned set, such as may be useful under shuffling, with column
+header 'Automunge_index_' + a 12 digit integer associated with the application number, a random number generated for each application.
+(This integer is intended to serve as randomness to avoid overlap with this column header from multiple runs).
  ___ 
 ### Root Category Family Tree Definitions
 And here are the family tree definitions for root categories currently built into the internal 
