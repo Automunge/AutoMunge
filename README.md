@@ -3160,6 +3160,10 @@ Note that when inversion is performed those entries without recovery are returne
 populated with an index matching order of rows from original returned set, such as may be useful under shuffling, with column
 header 'Automunge_index_' + a 12 digit integer associated with the application number, a random number generated for each application.
 (This integer is intended to serve as randomness to avoid overlap with this column header from multiple runs).
+
+Note that results of various validation checks such as for column header overlaps and other potential bugs are returned from 
+automunge(.) in the postprocess_dict as postprocess_dict['miscparameters_results'], and returned from postmunge(.) in the postreports_dict
+as postreports_dict['pm_miscparameters_results']. (If the function fails to compile check the printouts.)
  ___ 
 ### Root Category Family Tree Definitions
 And here are the family tree definitions for root categories currently built into the internal 
