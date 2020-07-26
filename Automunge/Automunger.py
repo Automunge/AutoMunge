@@ -26873,6 +26873,55 @@ class AutoMunge:
       print("")
       
     return result
+
+  def check_Binary_string(self, df_train_list):
+    """
+    runs a validation to check for presence of column headers 
+    that may overlap with those created in Binary transform
+    """
+    
+    check_Binary_string_result = False
+    
+    #we don't know how many columns will be returned from Binary, the 0-8 is arbitrary
+    #Note although 'Binary' is not returned it is used in the derivation
+    overlap_results = {'Binary', 'Binary_1010', 'Binary_1010_0', 'Binary_1010_1', 'Binary_1010_2', 'Binary_1010_3', \
+                      'Binary_1010_4', 'Binary_1010_5', 'Binary_1010_6', 'Binary_1010_7', 'Binary_1010_8'} \
+                      & set(df_train_list)
+    
+    if len(overlap_results) > 0:
+      
+      check_Binary_string_result = True
+      
+      print("error warning: ")
+      print("potential column header overlap for Binary transform")
+      print("for recieved column headers:")
+      print(overlap_results)
+      
+    return check_Binary_string_result
+
+  def check_PCA_string(self, df_train_list):
+    """
+    runs a validation to check for presence of column headers 
+    that may overlap with those created in PCA transform
+    """
+    
+    check_PCA_string_result = False
+    
+    #we don't know how many columns will be returned from PCA, the 0-8 is arbitrary
+    overlap_results = {'PCAcol0', 'PCAcol1', 'PCAcol2', 'PCAcol3', \
+                      'PCAcol4', 'PCAcol5', 'PCAcol6', 'PCAcol7', 'PCAcol8'} \
+                      & set(df_train_list)
+    
+    if len(overlap_results) > 0:
+      
+      check_PCA_string_result = True
+      
+      print("error warning: ")
+      print("potential column header overlap for PCA transform")
+      print("for recieved column headers:")
+      print(overlap_results)
+      
+    return check_PCA_string_result
   
   def assigncat_str_convert(self, assigncat):
     """
@@ -27800,11 +27849,8 @@ class AutoMunge:
     process_dict = self.assembleprocessdict()
     
     #Special case if we are running Binary dimensionality reduction for boolean sets
-    #we can replace all '1010' with 'text'
-    #I think this may have efficiency improvements but not positive, 
-    #(need to run some tests to validate though, pending)
     if Binary is True:
-      transform_dict['1010'] = transform_dict['text']
+      #transform_dict['1010'] = transform_dict['text']
       
       #we'll also have default that if running Binary transform boolean columns 
       #excluded from any PCA unless otherwise specified
@@ -28833,6 +28879,9 @@ class AutoMunge:
             print("columns excluded from PCA: ")
             print(bool_PCAexcl)
             print("")
+
+        check_PCA_string_result = self.check_PCA_string(list(df_train))
+        miscparameters_results.update({'check_PCA_string_result' : check_PCA_string_result})
         
         #PCA applied marker set to true
         PCA_applied = True
@@ -28938,6 +28987,9 @@ class AutoMunge:
         print("Consolidating boolean columns:")
         print(bool_column_list)
         print()
+
+      check_Binary_string_result = self.check_Binary_string(list(df_train))
+      miscparameters_results.update({'check_Binary_string_result' : check_Binary_string_result})
           
       df_train, df_test, Binary_dict = self.Binary_convert(df_train, df_test, bool_column_list, Binary)
       
@@ -29114,7 +29166,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.36'
+    automungeversion = '4.37'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
