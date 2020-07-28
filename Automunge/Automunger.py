@@ -4634,8 +4634,8 @@ class AutoMunge:
                                   'inverseprocess' : self.inverseprocess_bnry, \
                                   'info_retention' : True, \
                                   'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'binary', \
-                                  'labelctgy' : 'bnry'}})
+                                  'MLinfilltype' : 'multirt', \
+                                  'labelctgy' : 'text'}})
     process_dict.update({'lbda' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
@@ -29166,7 +29166,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.37'
+    automungeversion = '4.38'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
