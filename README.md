@@ -1040,7 +1040,8 @@ infill approach to a specific derived column. Note that passed derived column he
 take precedence in case of overlap with passed source column headers. Note that infill
 defaults to MLinfill if nothing assigned and the MLinfill argument to automunge is set 
 to True. Note that for single entry column assignments a user can just pass the string 
-or integer of the column header without the list brackets.
+or integer of the column header without the list brackets. Note that the infilled cells
+are based on the rows corresponding to activations from the NArw_marker parameter.
 ```
 #  - stdrdinfill  : the default infill specified in the library of transformations for 
 #                   each transform below. 
