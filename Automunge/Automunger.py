@@ -7034,8 +7034,8 @@ class AutoMunge:
     df_test_cat = df_test_cat[df_train_cat.columns]
 
     #concatinate the sparse set with the rest of our training data
-    mdf_train = pd.concat([df_train_cat, mdf_train], axis=1)
-    mdf_test = pd.concat([df_test_cat, mdf_test], axis=1)
+    mdf_train = pd.concat([mdf_train, df_train_cat], axis=1)
+    mdf_test = pd.concat([mdf_test, df_test_cat], axis=1)
 
     del mdf_train[tempcolumn]    
     del mdf_test[tempcolumn]
@@ -7201,8 +7201,8 @@ class AutoMunge:
     df_test_cat = df_test_cat[df_train_cat.columns]
 
     #concatinate the sparse set with the rest of our training data
-    mdf_train = pd.concat([df_train_cat, mdf_train], axis=1)
-    mdf_test = pd.concat([df_test_cat, mdf_test], axis=1)
+    mdf_train = pd.concat([mdf_train, df_train_cat], axis=1)
+    mdf_test = pd.concat([mdf_test, df_test_cat], axis=1)
 
     del mdf_train[tempcolumn]    
     del mdf_test[tempcolumn]
@@ -16748,8 +16748,8 @@ class AutoMunge:
     df_test_cat = df_test_cat[df_train_cat.columns]
     
     #concatinate the sparse set with the rest of our training data
-    mdf_train = pd.concat([df_train_cat, mdf_train], axis=1)
-    mdf_test = pd.concat([df_test_cat, mdf_test], axis=1)
+    mdf_train = pd.concat([mdf_train, df_train_cat], axis=1)
+    mdf_test = pd.concat([mdf_test, df_test_cat], axis=1)
     
     #replace original column from training data
     
@@ -17151,8 +17151,8 @@ class AutoMunge:
     df_test_cat = df_test_cat[df_train_cat.columns]
     
     #concatinate the sparse set with the rest of our training data
-    mdf_train = pd.concat([df_train_cat, mdf_train], axis=1)
-    mdf_test = pd.concat([df_test_cat, mdf_test], axis=1)
+    mdf_train = pd.concat([mdf_train, df_train_cat], axis=1)
+    mdf_test = pd.concat([mdf_test, df_test_cat], axis=1)
     
     #replace original column from training data
     
@@ -29166,7 +29166,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.38'
+    automungeversion = '4.39'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -30415,7 +30415,7 @@ class AutoMunge:
       df_test_cat = df_test_cat[textcolumns]
 
       #concatinate the sparse set with the rest of our training data
-      mdf_test = pd.concat([df_test_cat, mdf_test], axis=1)
+      mdf_test = pd.concat([mdf_test, df_test_cat], axis=1)
 
       del mdf_test[tempcolumn]
 
@@ -30555,7 +30555,7 @@ class AutoMunge:
       df_test_cat = df_test_cat[textcolumns]
 
       #concatinate the sparse set with the rest of our training data
-      mdf_test = pd.concat([df_test_cat, mdf_test], axis=1)
+      mdf_test = pd.concat([mdf_test, df_test_cat], axis=1)
 
       del mdf_test[tempcolumn]
 
@@ -30646,7 +30646,7 @@ class AutoMunge:
     df_test_cat = df_test_cat[textcolumns]
 
     #concatinate the sparse set with the rest of our training data
-    mdf_test = pd.concat([df_test_cat, mdf_test], axis=1)
+    mdf_test = pd.concat([mdf_test, df_test_cat], axis=1)
 
     del mdf_test[tempcolumn]
     
@@ -34513,7 +34513,7 @@ class AutoMunge:
       df_test_cat = df_test_cat[textcolumns]
 
       #concatinate the sparse set with the rest of our training data
-      mdf_test = pd.concat([df_test_cat, mdf_test], axis=1)
+      mdf_test = pd.concat([mdf_test, df_test_cat], axis=1)
 
       #replace original column
       del mdf_test[negtempcolumn]
@@ -34766,7 +34766,7 @@ class AutoMunge:
       df_test_cat = df_test_cat[textcolumns]
 
       #concatinate the sparse set with the rest of our training data
-      mdf_test = pd.concat([df_test_cat, mdf_test], axis=1)
+      mdf_test = pd.concat([mdf_test, df_test_cat], axis=1)
 
       #replace original column
       del mdf_test[negtempcolumn]
