@@ -2027,7 +2027,7 @@ set to 0. Please note that this method makes use of scipy.stats.boxcox.
   - driftreport postmunge metrics: mean
   - inversion available: yes with partial recovery
 ### Numercial Set Bins and Grainings
-* pwrs: bins groupings by powers of 10
+* pwrs: bins groupings by powers of 10 (for values >0)
   - default infill: no activation
   - default NArowtype: positivenumeric
   - suffix appender: '_10^#' where # is integer indicating target powers of 10 for column
@@ -2035,7 +2035,7 @@ set to 0. Please note that this method makes use of scipy.stats.boxcox.
   - driftreport postmunge metrics: powerlabelsdict / meanlog / maxlog / 
 	                           <column> + '_ratio' (column specific)
   - inversion available: yes with partial recovery
-* pwr2: bins groupings by powers of 10 (comparable to pwrs with negvalues parameter activated)
+* pwr2: bins groupings by powers of 10 (comparable to pwrs with negvalues parameter activated for values >0 & <0)
   - default infill: no activation
   - default NArowtype: nonzeronumeric
   - suffix appender: '_10^#' or '_-10^#' where # is integer indicating target powers of 10 for column
@@ -2236,7 +2236,7 @@ as bnry except for default infill.)
 * text/txt2: converts categorical sets to one-hot encoded set of boolean identifiers
   - default infill: all entries zero
   - default NArowtype: justNaN
-  - suffix appender: '_(category)' where category is the target of the column
+  - suffix appender: '_(category)' where category is the categoric entry target of column activations
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: textlabelsdict_text / <column> + '_ratio' (column specific)
   - inversion available: yes with full recovery
@@ -2244,7 +2244,7 @@ as bnry except for default infill.)
 (like text but different convention for returned column headers)
   - default infill: all entries zero
   - default NArowtype: justNaN
-  - suffix appender: '_onht_#' where # integer corresponds to the target entry of a column
+  - suffix appender: '_onht\_#' where # integer corresponds to the target entry of a column
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: textlabelsdict_text / <column> + '_ratio' (column specific)
 			           text_categorylist is key between columns and target entries
