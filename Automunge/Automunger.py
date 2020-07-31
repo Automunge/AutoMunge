@@ -538,6 +538,15 @@ class AutoMunge:
                                      'niecesnephews' : [], \
                                      'coworkers'     : [], \
                                      'friends'       : []}})
+
+    transform_dict.update({'onh2' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['onht'], \
+                                     'cousins'       : ['NArw'], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
     
     transform_dict.update({'text' : {'parents'       : [], \
                                      'siblings'      : [], \
@@ -3082,6 +3091,14 @@ class AutoMunge:
                                   'MLinfilltype' : 'binary', \
                                   'labelctgy' : 'bnr2'}})
     process_dict.update({'onht' : {'dualprocess' : self.process_onht_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_onht_class, \
+                                  'inverseprocess' : self.inverseprocess_onht, \
+                                  'info_retention' : True, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'multirt', \
+                                  'labelctgy' : 'onht'}})
+    process_dict.update({'onh2' : {'dualprocess' : self.process_onht_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_onht_class, \
                                   'inverseprocess' : self.inverseprocess_onht, \
@@ -6971,7 +6988,7 @@ class AutoMunge:
     #same as 'text' transform except labels returned column with integer instead of entry appender
     '''
     
-    tempcolumn = column + '_:;:_temp'
+    tempcolumn = column + '_onht_'
     
     #store original column for later retrieval
     mdf_train[tempcolumn] = mdf_train[column].copy()
@@ -7144,7 +7161,9 @@ class AutoMunge:
     #if only have training but not test data handy, use same training data for both dataframe inputs
     '''
     
-    tempcolumn = column + '_:;:_temp'
+    tempsuffix = str(mdf_train[column].unique()[0])
+    
+    tempcolumn = column + '_' + tempsuffix
     
     #store original column for later retrieval
     mdf_train[tempcolumn] = mdf_train[column].copy()
@@ -7200,12 +7219,12 @@ class AutoMunge:
     #Note this also removes categories in test set that aren't present in training set
     df_test_cat = df_test_cat[df_train_cat.columns]
 
+    del mdf_train[tempcolumn]    
+    del mdf_test[tempcolumn]
+    
     #concatinate the sparse set with the rest of our training data
     mdf_train = pd.concat([mdf_train, df_train_cat], axis=1)
     mdf_test = pd.concat([mdf_test, df_test_cat], axis=1)
-
-    del mdf_train[tempcolumn]    
-    del mdf_test[tempcolumn]
     
     #delete _NArw column, this will be processed seperately in the processfamily function
     #delete support NArw2 column
@@ -16621,7 +16640,7 @@ class AutoMunge:
     else:
       negvalues = False
     
-    tempcolumn = column + '_:;:_temp'
+    tempcolumn = column + '_-10^'
 
     #store original column for later reversion
     mdf_train[tempcolumn] = mdf_train[column].copy()
@@ -17032,7 +17051,7 @@ class AutoMunge:
     #if all values are infill no columns returned
     '''
     
-    tempcolumn = column + '_:;:_temp'
+    tempcolumn = column + '_-10^'
 
     #store original column for later reversion
     mdf_train[tempcolumn] = mdf_train[column].copy()
@@ -26368,6 +26387,46 @@ class AutoMunge:
     
     return pm_miscparameters_results
 
+  def check_FSmodel(self, featureselection, FSmodel):
+    """
+    If feature importance applied confirms that a model was successfully trained
+    """
+    
+    check_FSmodel_result = False
+    
+    if featureselection is True:
+      if FSmodel is False:
+        check_FSmodel_result = True
+        
+        print("error: Feature importance model was not successfully trained")
+        print()
+        
+    return check_FSmodel_result
+
+  def check_np_shape(self, df_train, df_test):
+    """
+    Validates any passed numpy arrays are tabular (1D or 2D)
+    """
+    
+    check_np_shape_train_result = False
+    check_np_shape_test_result = False
+    
+    checknp = np.array([])
+    
+    if isinstance(checknp, type(df_train)):
+      if len(df_train.shape) > 2:
+        check_np_shape_train_result = True
+        print("error: numpy array passed to df_train is not tabular (>2D dimensions)")
+        print()
+        
+    if isinstance(checknp, type(df_test)):
+      if len(df_test.shape) > 2:
+        check_np_shape_test_result = True
+        print("error: numpy array passed to df_test is not tabular (>2D dimensions)")
+        print()
+        
+    return check_np_shape_train_result, check_np_shape_test_result
+
   def check_assigncat(self, assigncat):
     """
     #Here we'll do a quick check for any redundant column assignments in the
@@ -27928,6 +27987,10 @@ class AutoMunge:
       FScolumn_dict = {}
       FS_sorted = {}
 
+    #validate that a model was trained
+    check_FSmodel_result = self.check_FSmodel(featureselection, FSmodel)
+    miscparameters_results.update({'check_FSmodel_result' : check_FSmodel_result})
+
     #printout display progress
     if printstatus is True:
       print("_______________")
@@ -27937,6 +28000,16 @@ class AutoMunge:
     #functionality to support passed numpy arrays
     #if passed object was a numpy array, convert to pandas dataframe
     checknp = np.array([])
+
+    #first validate numpy data is tabular
+    if isinstance(checknp, type(df_train)):
+      check_np_shape_train_result, check_np_shape_test_result = \
+      self.check_np_shape(df_train, df_test)
+    else:
+      check_np_shape_train_result, check_np_shape_test_result = False, False
+    miscparameters_results.update({'check_np_shape_train_result' : check_np_shape_train_result, \
+                                   'check_np_shape_test_result' : check_np_shape_test_result})
+
     if isinstance(checknp, type(df_train)):
       df_train = pd.DataFrame(df_train)
     if isinstance(checknp, type(df_test)):
@@ -29166,7 +29239,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.39'
+    automungeversion = '4.40'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -30315,41 +30388,9 @@ class AutoMunge:
     #same as 'text' transform except labels returned column with integer instead of entry appender
     '''
     
-    tempcolumn = column + '_:;:_temp'
-    
-    #create copy of original column for later retrieval
-    mdf_test[tempcolumn] = mdf_test[column].copy()
-
-    #convert column to category
-    mdf_test[tempcolumn] = mdf_test[tempcolumn].astype('category')
-
-#     #if set is categorical we'll need the plug value for missing values included
-#     mdf_test[column] = mdf_test[column].cat.add_categories(['NArw'])
-
-#     #replace NA with a dummy variable
-#     mdf_test[column] = mdf_test[column].fillna('NArw')
-    
-    #if set is categorical we'll need the plug value for missing values included
-    if 'zzzinfill' not in mdf_test[tempcolumn].cat.categories:
-      mdf_test[tempcolumn] = mdf_test[tempcolumn].cat.add_categories(['zzzinfill'])
-
-    #replace NA with a dummy variable
-    mdf_test[tempcolumn] = mdf_test[tempcolumn].fillna('zzzinfill')
-
-    #replace numerical with string equivalent
-    #mdf_train[column] = mdf_train[column].astype(str)
-    mdf_test[tempcolumn] = mdf_test[tempcolumn].astype(str)
-    
-    #moved this to after the initial infill
-    #new method for retrieving a columnkey
+    #retrieve a columnkey
     normkey = False
-#     for unique in mdf_test[tempcolumn].unique():
-#       if column + '_' + str(unique) in postprocess_dict['column_dict']:
-#         normkey = column + '_' + str(unique)
-#         break
-    
-    #this second method for normkey retrieval addresses outlier scenarios when 
-    #no unique valuies in test set match those in train set
+
     if normkey is False:
 
       if column in postprocess_dict['origcolumn']:
@@ -30371,6 +30412,25 @@ class AutoMunge:
             normkey = columnkey
           
     if normkey is not False:
+      
+      tempcolumn = column + '_onht_'
+
+      #create copy of original column for later retrieval
+      mdf_test[tempcolumn] = mdf_test[column].copy()
+
+      #convert column to category
+      mdf_test[tempcolumn] = mdf_test[tempcolumn].astype('category')
+
+      #if set is categorical we'll need the plug value for missing values included
+      if 'zzzinfill' not in mdf_test[tempcolumn].cat.categories:
+        mdf_test[tempcolumn] = mdf_test[tempcolumn].cat.add_categories(['zzzinfill'])
+
+      #replace NA with a dummy variable
+      mdf_test[tempcolumn] = mdf_test[tempcolumn].fillna('zzzinfill')
+
+      #replace numerical with string equivalent
+      #mdf_train[column] = mdf_train[column].astype(str)
+      mdf_test[tempcolumn] = mdf_test[tempcolumn].astype(str)
 
       #textcolumns = postprocess_dict['column_dict'][columnkey]['columnslist']
       textcolumns = \
@@ -30414,10 +30474,10 @@ class AutoMunge:
       #Note this also removes categories in test set that aren't present in training set
       df_test_cat = df_test_cat[textcolumns]
 
+      del mdf_test[tempcolumn]
+      
       #concatinate the sparse set with the rest of our training data
       mdf_test = pd.concat([mdf_test, df_test_cat], axis=1)
-
-      del mdf_test[tempcolumn]
 
       #delete support NArw2 column
       columnNAr2 = column + '_zzzinfill'
@@ -30431,10 +30491,6 @@ class AutoMunge:
         
       #now convert coloumn headers from text convention to onht convention
       mdf_test  = mdf_test.rename(columns=labels_dict)
-
-    else:
-      
-      del mdf_test[tempcolumn]
     
     return mdf_test
   
@@ -30459,41 +30515,8 @@ class AutoMunge:
     #and a list of the new column names (textcolumns)
     '''
     
-    tempcolumn = column + '_:;:_temp'
-    
-    #create copy of original column for later retrieval
-    mdf_test[tempcolumn] = mdf_test[column].copy()
-
-    #convert column to category
-    mdf_test[tempcolumn] = mdf_test[tempcolumn].astype('category')
-
-#     #if set is categorical we'll need the plug value for missing values included
-#     mdf_test[column] = mdf_test[column].cat.add_categories(['NArw'])
-
-#     #replace NA with a dummy variable
-#     mdf_test[column] = mdf_test[column].fillna('NArw')
-    
-    #if set is categorical we'll need the plug value for missing values included
-    if 'zzzinfill' not in mdf_test[tempcolumn].cat.categories:
-      mdf_test[tempcolumn] = mdf_test[tempcolumn].cat.add_categories(['zzzinfill'])
-
-    #replace NA with a dummy variable
-    mdf_test[tempcolumn] = mdf_test[tempcolumn].fillna('zzzinfill')
-
-    #replace numerical with string equivalent
-    #mdf_train[column] = mdf_train[column].astype(str)
-    mdf_test[tempcolumn] = mdf_test[tempcolumn].astype(str)
-    
-    #moved this to after the initial infill
-    #new method for retrieving a columnkey
+    #retrieve normkey
     normkey = False
-#     for unique in mdf_test[tempcolumn].unique():
-#       if column + '_' + str(unique) in postprocess_dict['column_dict']:
-#         normkey = column + '_' + str(unique)
-#         break
-    
-    #this second method for normkey retrieval addresses outlier scenarios when 
-    #no unique valuies in test set match those in train set
     if normkey is False:
 
       if column in postprocess_dict['origcolumn']:
@@ -30515,6 +30538,27 @@ class AutoMunge:
             normkey = columnkey
           
     if normkey is not False:
+    
+      tempsuffix = str(mdf_test[column].unique()[0])
+
+      tempcolumn = column + '_' + tempsuffix
+
+      #create copy of original column for later retrieval
+      mdf_test[tempcolumn] = mdf_test[column].copy()
+
+      #convert column to category
+      mdf_test[tempcolumn] = mdf_test[tempcolumn].astype('category')
+
+      #if set is categorical we'll need the plug value for missing values included
+      if 'zzzinfill' not in mdf_test[tempcolumn].cat.categories:
+        mdf_test[tempcolumn] = mdf_test[tempcolumn].cat.add_categories(['zzzinfill'])
+
+      #replace NA with a dummy variable
+      mdf_test[tempcolumn] = mdf_test[tempcolumn].fillna('zzzinfill')
+
+      #replace numerical with string equivalent
+      #mdf_train[column] = mdf_train[column].astype(str)
+      mdf_test[tempcolumn] = mdf_test[tempcolumn].astype(str)
 
       #textcolumns = postprocess_dict['column_dict'][columnkey]['columnslist']
       textcolumns = postprocess_dict['column_dict'][normkey]['categorylist']
@@ -30554,10 +30598,10 @@ class AutoMunge:
       #Note this also removes categories in test set that aren't present in training set
       df_test_cat = df_test_cat[textcolumns]
 
+      del mdf_test[tempcolumn]
+      
       #concatinate the sparse set with the rest of our training data
       mdf_test = pd.concat([mdf_test, df_test_cat], axis=1)
-
-      del mdf_test[tempcolumn]
 
       #delete support NArw2 column
       columnNAr2 = column + '_zzzinfill'
@@ -30568,10 +30612,6 @@ class AutoMunge:
       for textcolumn in textcolumns:
 
         mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.int8)
-
-    else:
-      
-      del mdf_test[tempcolumn]
     
     return mdf_test
   
@@ -30585,7 +30625,10 @@ class AutoMunge:
     #textcolumns = postprocess_dict['column_dict'][columnkey]['columnslist']
     textcolumns = postprocess_dict['column_dict'][columnkey]['categorylist']
     
-    tempcolumn = column + '_:;:_temp'
+    if len(textcolumns) > 0:
+      tempcolumn = textcolumns[0]
+    else:
+      tempcolumn = column + '_onht'
     
     #create copy of original column for later retrieval
     mdf_test[tempcolumn] = mdf_test[column].copy()
@@ -30644,11 +30687,11 @@ class AutoMunge:
     #Ensure the order of column in the test set is in the same order than in train set
     #Note this also removes categories in test set that aren't present in training set
     df_test_cat = df_test_cat[textcolumns]
+    
+    del mdf_test[tempcolumn]
 
     #concatinate the sparse set with the rest of our training data
     mdf_test = pd.concat([mdf_test, df_test_cat], axis=1)
-
-    del mdf_test[tempcolumn]
     
     #delete support NArw2 column
     columnNAr2 = column + '_zzzinfill'
@@ -34430,7 +34473,7 @@ class AutoMunge:
 
       textcolumns = postprocess_dict['column_dict'][normkey]['categorylist']
 
-      tempcolumn = column + '_:;:_temp'
+      tempcolumn = column + '_-10^'
       
       #store original column for later reversion
       mdf_test[tempcolumn] = mdf_test[column].copy()
@@ -34687,7 +34730,7 @@ class AutoMunge:
 
       textcolumns = postprocess_dict['column_dict'][normkey]['categorylist']
 
-      tempcolumn = column + '_:;:_temp'
+      tempcolumn = column + '_-10^'
       
       #store original column for later reversion
       mdf_test[tempcolumn] = mdf_test[column].copy()
@@ -37830,6 +37873,9 @@ class AutoMunge:
       FSmodel = None
       FScolumn_dict = {}
       FS_sorted = {}
+
+    check_FSmodel_result = self.check_FSmodel(featureeval, FSmodel)
+    pm_miscparameters_results.update({'FSmodel_valresult' : check_FSmodel_result})
 
     #initialize postreports_dict
     postreports_dict = {'featureimportance':FScolumn_dict, \
