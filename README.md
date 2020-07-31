@@ -3022,6 +3022,7 @@ whose family trees include multiple generations, there may be multiple inclusion
 appenders in a single returned column. Provided here is a concise sorted list of all suffix appenders so 
 that any user passing a custom defined transformation can avoid any unintentional duplication.
 
+- '\_-10^'
 - '\_-10^' + i (where i is an integer corresponding to the source number power of ten)
 - '\_10^' + i (where i is an integer corresponding to the source number power of ten)
 - '\_1010_' + i (where i is an integer corresponding to the ith digit of the binary encoding)
@@ -3113,6 +3114,7 @@ that any user passing a custom defined transformation can avoid any unintentiona
 - '_nmr4'
 - '_nmr7'
 - '_nmrc'
+- '\_onht'
 - '\_onht_' + # (where # is integer associated with entry for activations)
 - '_ord3'
 - '_ordl'
