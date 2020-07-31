@@ -2038,7 +2038,7 @@ set to 0. Please note that this method makes use of scipy.stats.boxcox.
 * pwr2: bins groupings by powers of 10 (comparable to pwrs with negvalues parameter activated for values >0 & <0)
   - default infill: no activation
   - default NArowtype: nonzeronumeric
-  - suffix appender: '_10^#' or '_-10^#' where # is integer indicating target powers of 10 for column
+  - suffix appender: '\_10^#' or '\_-10^#' where # is integer indicating target powers of 10 for column
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: powerlabelsdict / labels_train / missing_cols / 
 			           <column> + '_ratio' (column specific)
@@ -2064,7 +2064,7 @@ value fell with respect to number of standard deviations from the mean of the
 set (i.e. <-2, -2-1, -10, 01, 12, >2)
   - default infill: mean
   - default NArowtype: numeric
-  - suffix appender: '_bins_####' where #### is one of set (s<-2, s-21, s-10, s+01, s+12, s>+2)
+  - suffix appender: '\_bins\_####' where #### is one of set (s<-2, s-21, s-10, s+01, s+12, s>+2)
   which indicate column target for number of standard deviations from the mean
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: binsmean / binsstd / <column> + '_ratio' (column specific)
@@ -2072,7 +2072,7 @@ set (i.e. <-2, -2-1, -10, 01, 12, >2)
 * bint: comparable to bins but assumes data has already been z-score normalized
   - default infill: mean
   - default NArowtype: numeric
-  - suffix appender: '_bint_####' where #### is one of set (t<-2, t-21, t-10, t+01, t+12, t>+2)
+  - suffix appender: '\_bint\_####' where #### is one of set (t<-2, t-21, t-10, t+01, t+12, t>+2)
   which indicate column target for number of standard deviations from the mean
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: binsmean / binsstd / <column> + '_ratio' (column specific)
@@ -2091,7 +2091,7 @@ set (i.e. <-2:0, -2-1:1, -10:2, 01:3, 12:4, >2:5)
 bins default to width of 1/1000/1000000 eg for bnwd/bnwK/bnwM
   - default infill: mean
   - default NArowtype: numeric
-  - suffix appender: '_bswd_#1_#2' where #1 is the width and #2 is the bin identifier (# from min)
+  - suffix appender: '\_bswd\_#1\_#2' where #1 is the width and #2 is the bin identifier (# from min)
   - assignparam parameters accepted: 'width' to set bin width
   - driftreport postmunge metrics: binsmean / bn_min / bn_max / bn_delta / bn_count / bins_id / 
 			           bins_cuts / bn_width_bnwd (or bnwK/bnwM) / textcolumns / 
@@ -2111,7 +2111,7 @@ bins default to width of 1/1000/1000000 eg for bnwd/bnwK/bnwM
 bin count defaults to 5/7/9 eg for bnep/bne7/bne9
   - default infill: no activation
   - default NArowtype: numeric
-  - suffix appender: '_bnep_#1' where #1 is the bin identifier (# from min) (or bne7/bne9 instead of bnep)
+  - suffix appender: '\_bnep\_#1' where #1 is the bin identifier (# from min) (or bne7/bne9 instead of bnep)
   - assignparam parameters accepted: 'bincount' to set number of bins
   - driftreport postmunge metrics: binsmean / bn_min / bn_max / bn_delta / bn_count / bins_id / 
                                    bins_cuts / bincount_bnep (or bne7/bne9) / textcolumns / 
@@ -2121,7 +2121,7 @@ bin count defaults to 5/7/9 eg for bnep/bne7/bne9
 bin count defaults to 5/7/9 eg for bne0/bn7o/bn9o
   - default infill: adjacent cell
   - default NArowtype: numeric
-  - suffix appender: '_bnep_#1' where #1 is the bin identifier (# from min) (or bn7o/bn9o)
+  - suffix appender: '\_bne0' (or bn7o/bn9o)
   - assignparam parameters accepted: 'bincount' to set number of bins
   - driftreport postmunge metrics: binsmean / bn_min / bn_max / bn_delta / bn_count / bins_id / 
 			           bins_cuts / bincount / ordl_activations_dict
@@ -2129,7 +2129,7 @@ bin count defaults to 5/7/9 eg for bne0/bn7o/bn9o
 * bkt1: for numerical set graining to user specified encoded bins. First and last bins unconstrained.
   - default infill: mean
   - default NArowtype: numeric
-  - suffix appender: '_bkt1_#1' where #1 is the bin identifier (# from min)
+  - suffix appender: '\_bkt1\_#1' where #1 is the bin identifier (# from min)
   - assignparam parameters accepted: 'buckets', a list of numbers, to set bucket boundaries (leave out +/-'inf')
 					   defaults to [0,1,2] (arbitrary plug values)
   - driftreport postmunge metrics: binsmean / buckets_bkt1 / bins_cuts / bins_id / textcolumns / 
@@ -2138,7 +2138,7 @@ bin count defaults to 5/7/9 eg for bne0/bn7o/bn9o
 * bkt2: for numerical set graining to user specified encoded bins. First and last bins bounded.
   - default infill: mean
   - default NArowtype: numeric
-  - suffix appender: '_bkt2_#1' where #1 is the bin identifier (# from min)
+  - suffix appender: '\_bkt2\_#1' where #1 is the bin identifier (# from min)
   - assignparam parameters accepted: 'buckets', a list of numbers, to set bucket boundaries
 					   defaults to [0,1,2] (arbitrary plug values)
   - driftreport postmunge metrics: binsmean / buckets_bkt2 / bins_cuts / bins_id / textcolumns / 
@@ -2166,7 +2166,7 @@ values within that segment's range (between 0-1) and other values subject to an 
 with metric2 results from a feature importance evaluation)
   - default infill: no activation (this is the recommended infill for this transform)
   - default NArowtype: numeric
-  - suffix appender: '_tlbn_#' where # is the bin identifier
+  - suffix appender: '\_tlbn\_#' where # is the bin identifier
   - assignparam parameters accepted: 'bincount' to set number of bins
   - driftreport postmunge metrics: binsmean / bn_min / bn_max / bn_delta / bn_count / bins_id / 
 			           bins_cuts / bincount_tlbn / textcolumns / <column> + '_ratio' (column specific)
@@ -2268,7 +2268,7 @@ sorted first by frequency of category occurrence, second basis for common count 
 efficient than one-hot encoding)
   - default infill: plug value 'zzzinfill'
   - default NArowtype: justNaN
-  - suffix appender: '_1010_#' where # is integer indicating order of 1010 columns
+  - suffix appender: '\_1010\_#' where # is integer indicating order of 1010 columns
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: _1010_binary_encoding_dict / _1010_overlap_replace / 
 	                           _1010_binary_column_count / _1010_activations_dict
@@ -2536,7 +2536,7 @@ Note that priority is given to overlaps of higher length, and by default overlap
 start at 20 character length and go down to 5 character length.
   - default infill: none
   - default NArowtype: justNaN
-  - suffix appender: '_splt_##*##' where ##*## is target identified string overlap 
+  - suffix appender: '\_splt\_##*##' where ##*## is target identified string overlap 
   - assignparam parameters accepted: 'minsplit': indicating lowest character length for recognized overlaps 
                                      'space_and_punctuation': True/False, defaults to True, when passed as
                                      False character overlaps are not recorded which include space or punctuation
@@ -2552,7 +2552,7 @@ start at 20 character length and go down to 5 character length.
 Note that this version runs risk of high dimensionality of returned data in comparison to splt.
   - default infill: none
   - default NArowtype: justNaN
-  - suffix appender: '_splt_##*##' where ##*## is target identified string overlap 
+  - suffix appender: '\_splt\_##*##' where ##*## is target identified string overlap 
   - assignparam parameters accepted: 'minsplit': indicating lowest character length for recognized overlaps 
                                      'space_and_punctuation': True/False, defaults to True, when passed as
                                      False character overlaps are not recorded which include space or punctuation
@@ -2628,7 +2628,7 @@ within the overlaps
 for identified overlap entries.
   - default infill: none
   - default NArowtype: justNaN
-  - suffix appender: '\_srch_##*##' where ##*## is target identified search string
+  - suffix appender: '\_srch\_##*##' where ##*## is target identified search string
   - assignparam parameters accepted: 'search': a list of strings, defaults as empty set
 				     (note search parameter list can included embedded lists of terms for 
 				      aggregated activations of terms in the sublist)
