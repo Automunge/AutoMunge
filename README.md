@@ -769,7 +769,10 @@ rest of the set. This defaults to False. Note that ML infill may alternatively
 be assigned to distinct columns in assigninfill. Note that even if sets passed
 to automunge(.) have no points needing infill, when MLinfill is activated 
 machine learning models will still be trained for potential use of predicting 
-infill to subsequent data passed through the postmunge(.) function.
+infill to subsequent data passed through the postmunge(.) function. ML infill
+by default applies Random Forest machine learning models to predict infill.
+Parameters may be passed to the model training as demonstrated with ML_cmnd
+parameter.
 
 * infilliterate: an integer indicating how many applications of the ML
 infill processing are to be performed for purposes of predicting infill.
@@ -2242,7 +2245,7 @@ as bnry except for default infill.)
   - inversion available: yes with full recovery
 * onht: converts categorical sets to one-hot encoded set of boolean identifiers 
 (like text but different convention for returned column headers)
-  - default infill: all entries zero
+  - default infill: all entries zero (for dedicated column signalling infill / activations in every row use onh2)
   - default NArowtype: justNaN
   - suffix appender: '_onht\_#' where # integer corresponds to the target entry of a column
   - assignparam parameters accepted: none
@@ -2933,6 +2936,7 @@ avoid unintentional duplication.
 - 'null',
 - 'om10',
 - 'onht',
+- 'onh2',
 - 'or10',
 - 'or11',
 - 'or12',
@@ -3018,7 +3022,6 @@ whose family trees include multiple generations, there may be multiple inclusion
 appenders in a single returned column. Provided here is a concise sorted list of all suffix appenders so 
 that any user passing a custom defined transformation can avoid any unintentional duplication.
 
-- '_:;:_temp'
 - '\_-10^' + i (where i is an integer corresponding to the source number power of ten)
 - '\_10^' + i (where i is an integer corresponding to the source number power of ten)
 - '\_1010_' + i (where i is an integer corresponding to the ith digit of the binary encoding)
@@ -3601,6 +3604,15 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'siblings'      : [], \
                                      'auntsuncles'   : ['onht'], \
                                      'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+
+    transform_dict.update({'onh2' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['onht'], \
+                                     'cousins'       : ['NArw'], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
                                      'coworkers'     : [], \
@@ -5652,7 +5664,7 @@ If you want to skip to the next section you can click here: [Custom Transformati
     
     transform_dict.update({'lbbn' : {'parents'       : [], \
                                      'siblings'      : [], \
-                                     'auntsuncles'   : ['bnry'], \
+                                     'auntsuncles'   : ['text'], \
                                      'cousins'       : [], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
