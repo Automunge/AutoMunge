@@ -20698,15 +20698,11 @@ class AutoMunge:
       #evaluate for most common variable using the collections library
 
       type1_df = df[column].apply(lambda x: type(x)).values
-
+      
       c = collections.Counter(type1_df)
-      mc = c.most_common(1)
       mc2 = c.most_common(2)
-
-      #this is to address scenario where only one value so we can still call mc2[1][0]
-      if len(mc2) == len(mc):
-        mc2 = mc + mc
-
+      mc = [mc2[0]]
+      
       #count number of unique values
       nunique = df[column].nunique()
 
@@ -20829,87 +20825,90 @@ class AutoMunge:
       #(I suspect the below might have a bug somewhere but is working on my current 
       #tests so will leave be for now)
       #elif df[column].isna().sum() >= df.shape[0] / 2:
-      if df[column].isna().sum() >= df.shape[0] / 2:
+      if len(mc2) > 1:
+      
+        if df[column].isna().sum() >= df.shape[0] / 2:
 
-        #if 2nd most common in column is string and two values, set category to binary
-        if isinstance(checkstring, mc2[1][0]) and nunique == 2:
-          category = 'bnry'
 
-        #if 2nd most common in column is string and > two values, set category to text
-        if isinstance(checkstring, mc2[1][0]) and nunique > 2:
-          category = defaultcategorical
+          #if 2nd most common in column is string and two values, set category to binary
+          if isinstance(checkstring, mc2[1][0]) and nunique == 2:
+            category = 'bnry'
 
-        #if 2nd most common is date, set category to date   
-        if isinstance(df_checkdate['checkdate'][0], datemc2[1][0]):
-          category = defaultdatetime
+          #if 2nd most common in column is string and > two values, set category to text
+          if isinstance(checkstring, mc2[1][0]) and nunique > 2:
+            category = defaultcategorical
 
-        #if 2nd most common in column is integer and > two values, set category to number
-        if isinstance(checkint, mc2[1][0]) and nunique > 2:
+          #if 2nd most common is date, set category to date   
+          if isinstance(df_checkdate['checkdate'][0], datemc2[1][0]):
+            category = defaultdatetime
 
-          if df[column].dtype.name == 'category':
-            if nunique <= 2:
-              category = 'bnry'
+          #if 2nd most common in column is integer and > two values, set category to number
+          if isinstance(checkint, mc2[1][0]) and nunique > 2:
+
+            if df[column].dtype.name == 'category':
+              if nunique <= 2:
+                category = 'bnry'
+              else:
+                category = defaultcategorical
+
+    #         #take account for numbercategoryheuristic
+    #         #if df[column].nunique() / df[column].shape[0] < numbercategoryheuristic:
+            if nunique <= 3:
+
+              if nunique == 3:
+                category = defaultcategorical
+              else:
+                category = 'bnry'
+
+    #         if True is False:
+    #           pass
+
             else:
-              category = defaultcategorical
 
-  #         #take account for numbercategoryheuristic
-  #         #if df[column].nunique() / df[column].shape[0] < numbercategoryheuristic:
-          if nunique <= 3:
+              category = defaultnumerical
 
-            if nunique == 3:
-              category = defaultcategorical
+          #if 2nd most common in column is float, set category to number
+          if isinstance(checkfloat, mc2[1][0]):
+
+    #         #take account for numbercategoryheuristic
+    #         #if df[column].nunique() / df[column].shape[0] < numbercategoryheuristic:
+    #         if df[column].nunique() < numbercategoryheuristic:
+
+    #           category = 'text'
+
+    #         else:
+
+            if df[column].dtype.name == 'category':
+              if nunique <= 2:
+                category = 'bnry'
+              else:
+                category = defaultcategorical
+
+            if df[column].nunique() <= 3:
+
+              if nunique == 3:
+                category = 'text'
+              else:
+                category = 'bnry'
+
             else:
-              category = 'bnry'
 
-  #         if True is False:
-  #           pass
+              category = defaultnumerical
 
-          else:
+          #if 2nd most common in column is integer and <= two values, set category to binary
+          if isinstance(checkint, mc2[1][0]) and nunique <= 2:
+            category = 'bnry'
 
-            category = defaultnumerical
-
-        #if 2nd most common in column is float, set category to number
-        if isinstance(checkfloat, mc2[1][0]):
-
-  #         #take account for numbercategoryheuristic
-  #         #if df[column].nunique() / df[column].shape[0] < numbercategoryheuristic:
-  #         if df[column].nunique() < numbercategoryheuristic:
-
-  #           category = 'text'
-
-  #         else:
-
-          if df[column].dtype.name == 'category':
-            if nunique <= 2:
-              category = 'bnry'
-            else:
-              category = defaultcategorical
-
-          if df[column].nunique() <= 3:
-
-            if nunique == 3:
-              category = 'text'
-            else:
-              category = 'bnry'
-
-          else:
-
-            category = defaultnumerical
-
-        #if 2nd most common in column is integer and <= two values, set category to binary
-        if isinstance(checkint, mc2[1][0]) and nunique <= 2:
-          category = 'bnry'
-
-        #if 2nd most common in column is string and <= two values, set category to binary
-        if isinstance(checkstring, mc2[1][0]) and nunique <= 2:
-          category = 'bnry'
+          #if 2nd most common in column is string and <= two values, set category to binary
+          if isinstance(checkstring, mc2[1][0]) and nunique <= 2:
+            category = 'bnry'
 
       if df[column].isna().sum() == df.shape[0]:
         category = 'null'
 
       #if category == 'text':
       if category == defaultcategorical:
-        if df[column].nunique() > numbercategoryheuristic:
+        if nunique > numbercategoryheuristic:
           category = defaultordinal
 
       #new statistical tests for numerical sets from v2.25
@@ -29239,7 +29238,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.40'
+    automungeversion = '4.41'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
