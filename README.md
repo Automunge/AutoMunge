@@ -1293,7 +1293,7 @@ to repurpose them totally can do so. (They default to .5, 63, False, False.) Not
 defaults to False to use built-in evalcategory function. Note evalcat will only be 
 applied to columns not assigned in assigncat. (Note that columns assigned to 'eval' / 'ptfm'
 in assigncat will be passed to this function for evaluation with powertransform = False / True
-respectively.)
+respectively.) Note that function currently uses python collections library and datetime as dt.
 
 * printstatus: user can pass _True/False_ indicating whether the function will print 
 status of processing during operation. Defaults to True.
