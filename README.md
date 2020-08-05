@@ -1085,43 +1085,55 @@ assignparam = {'default_assignparam' : {'(category)' : {'(parameter)' : 42}}, \
 #example:
 assignparam = {'category1' : {'column1' : {'param1' : 123}, 'column2' : {'param1' : 456}}, \
                'cateogry2' : {'column3' : {'param2' : 'abc', 'param3' : 'def'}}}
+```
 
-#In other words:
-#The first layer keys are the transformation category for which parameters are intended
-#The second layer keys are string identifiers for the columns for which the parameters are intended
-#The third layer keys are the parameters whose values are to be passed.
+In other words: The first layer keys are the transformation category for 
+which parameters are intended. The second layer keys are string identifiers 
+for the columns for which the parameters are intended. The third layer keys 
+are the parameters whose values are to be passed.
 
-#As an example with actual parameters, consider the transformation category 'splt' intended for 'column1',
-#which accepts parameter 'minsplit' for minimum character length of detected overlaps. If we wanted to
-#pass 4 instead of the default of 5:
+As an example with actual parameters, consider the transformation category 
+'splt' intended for 'column1', which accepts parameter 'minsplit' for minimum 
+character length of detected overlaps. If we wanted to pass 4 instead of the 
+default of 5:
+```
 assignparam = {'splt' : {'column1' : {'minsplit' : 4}}}
+```
 
-#Note that the category identifier should be the category entry to the family tree primitive associated
-#with the transform, which may be different than the root category of the family tree assigned in assigncat.
-#The set of family trees definitions for root categories are included below for reference.
+Note that the category identifier should be the category entry to the family 
+tree primitive associated with the transform, which may be different than the 
+root category of the family tree assigned in assigncat. The set of family 
+trees definitions for root categories are included below for reference.
 
-#As example to demonstrate edge case for cases where transformation category does not match transformation function
-#(based on entries to transformdict and processdict). If we want to pass a parameter to turn off UPCS transform 
-#included in or19 family tree for or19 category for instance, we would pass the parameter to or19 instead 
-#of UPCS because assignparam inspects the transformation category instead of the transformation function, and 
-#UPCS fucntion is the processdict entry for or19 category (even though 'activate' is an UPCS transform parameter)
+As example to demonstrate edge case for cases where transformation category 
+does not match transformation function (based on entries to transformdict and 
+processdict). If we want to pass a parameter to turn off UPCS transform included 
+in or19 family tree for or19 category for instance, we would pass the parameter 
+to or19 instead of UPCS because assignparam inspects the transformation category 
+instead of the transformation function, and UPCS fucntion is the processdict 
+entry for or19 category (even though 'activate' is an UPCS transform parameter).
+(This clarification intended for advanced users to avoid ambiguity.)
+```
 assignparam = {'or19' : {'column1' : {'activate' : False}}}
-#(This clarification intended for advanced users to avoid ambiguity.)
+```
 
-#Note that column string identifiers may just be the source column string or may include the
-#suffix appenders such as if multiple versions of transformations are applied within the same family tree
-#If more than one column identifier matches a column, the longest character length key which matches
-#will be applied (such as may include suffix appenders).
+Note that column string identifiers may just be the source column string or may 
+include the suffix appenders such as if multiple versions of transformations 
+are applied within the same family tree. If more than one column identifier 
+matches a column, the longest character length key which matches will be 
+applied (such as may include suffix appenders).
 
-#Note that if a user wishes to overwrite the default parameters for all columns without specifying
-#them individually they can pass a 'default_assignparam' entry as follows (this only overwrites those 
-#parameters that are not otherwise specified in assignparam)
+Note that if a user wishes to overwrite the default parameters for all columns 
+without specifying them individually they can pass a 'default_assignparam' entry 
+as follows (this only overwrites those parameters that are not otherwise 
+specified in assignparam)
+```
 assignparam = {'category1' : {'column1' : {'param1' : 123}, 'column2' : {'param1' : 456}}, \
                'cateogry2' : {'column3' : {'param2' : 'abc', 'param3' : 'def'}}, \
                'default_assignparam' : {'category3' : {'param4' : 789}}}
-
 ```
-See the Library of Transformations section below for those transformations that accept parameters.
+See the Library of Transformations section below for those transformations that 
+accept parameters.
 
 
 * transformdict: allows a user to pass a custom tree of transformations.
