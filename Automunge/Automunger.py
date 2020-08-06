@@ -2024,6 +2024,33 @@ class AutoMunge:
                                      'niecesnephews' : [], \
                                      'coworkers'     : ['nbr2', 'bins'], \
                                      'friends'       : []}})
+
+    transform_dict.update({'ntgr' : {'parents'       : ['ntgr'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['retn', '1010', 'ordl'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['mnmx'], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'ntg2' : {'parents'       : ['ntg2'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['retn', '1010', 'ordl', 'pwr2'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['mnmx'], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'ntg3' : {'parents'       : ['ntg3'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['retn', 'ordl', 'por2'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['mnmx'], \
+                                     'friends'       : []}})
     
     transform_dict.update({'pwrs' : {'parents'       : [], \
                                      'siblings'      : [], \
@@ -4108,6 +4135,30 @@ class AutoMunge:
                                   'NArowtype' : 'positivenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmbr'}})
+    process_dict.update({'ntgr' : {'dualprocess' : self.process_ord3_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_ord3_class, \
+                                  'inverseprocess' : self.inverseprocess_ord3, \
+                                  'info_retention' : True, \
+                                  'NArowtype' : 'integer', \
+                                  'MLinfilltype' : 'singlct', \
+                                  'labelctgy' : 'mnmx'}})
+    process_dict.update({'ntg2' : {'dualprocess' : self.process_ord3_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_ord3_class, \
+                                  'inverseprocess' : self.inverseprocess_ord3, \
+                                  'info_retention' : True, \
+                                  'NArowtype' : 'integer', \
+                                  'MLinfilltype' : 'singlct', \
+                                  'labelctgy' : 'mnmx'}})
+    process_dict.update({'ntg3' : {'dualprocess' : self.process_ord3_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_ord3_class, \
+                                  'inverseprocess' : self.inverseprocess_ord3, \
+                                  'info_retention' : True, \
+                                  'NArowtype' : 'integer', \
+                                  'MLinfilltype' : 'singlct', \
+                                  'labelctgy' : 'mnmx'}})
     process_dict.update({'pwrs' : {'dualprocess' : self.process_pwrs_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_pwrs_class, \
@@ -24718,8 +24769,9 @@ class AutoMunge:
                            categorylist = categorylist, singlecolumncase=True)
 
     #reset data type to ensure returned data is consistent with what was passed
-    df[column] = \
-    df[column].astype({column:df_temp_dtype[column].dtypes})
+    #(we won't do this for naninfill since nan may be different data type)
+    # df[column] = \
+    # df[column].astype({column:df_temp_dtype[column].dtypes})
     
     return df
 
@@ -27769,7 +27821,7 @@ class AutoMunge:
                              'bkt1':[], 'bkt2':[], 'bkt3':[], 'bkt4':[], \
                              'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'tlbn':[], \
                              'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[], \
-                             'mea2':[], 'mea3':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
+                             'ntgr':[], 'ntg2':[], 'ntg3':[], 'mea2':[], 'mea3':[], 'bxc2':[], \
                              'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
                              'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
                              'shft':[], 'shf2':[], 'shf3':[], 'shf4':[], 'shf7':[], 'shf8':[], \
@@ -29206,7 +29258,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.42'
+    automungeversion = '4.43'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
