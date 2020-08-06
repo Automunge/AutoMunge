@@ -3794,24 +3794,6 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'coworkers'     : ['ord3'], \
                                      'friends'       : []}})
     
-    transform_dict.update({'spl3' : {'parents'       : ['spl2'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['ord3'], \
-                                     'friends'       : []}})
-    
-    transform_dict.update({'spl4' : {'parents'       : ['spl4'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : ['spl3'], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
-                                     'friends'       : []}})
-    
     transform_dict.update({'spl5' : {'parents'       : ['spl5'], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : [], \
@@ -4308,7 +4290,7 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'coworkers'     : ['mnmx'], \
                                      'friends'       : []}})
     
-    transform_dict.update({'ors2' : {'parents'       : ['spl3'], \
+    transform_dict.update({'ors2' : {'parents'       : ['spl2'], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : ['ord3'], \
                                      'cousins'       : [NArw], \
@@ -5086,9 +5068,9 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'siblings'      : [], \
                                      'auntsuncles'   : [], \
                                      'cousins'       : [NArw], \
-                                     'children'      : [], \
+                                     'children'      : ['nmbr'], \
                                      'niecesnephews' : [], \
-                                     'coworkers'     : ['nmbr'], \
+                                     'coworkers'     : [], \
                                      'friends'       : []}})
     
     transform_dict.update({'bxc2' : {'parents'       : ['bxc2'], \
@@ -5468,19 +5450,19 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'niecesnephews' : [], \
                                      'coworkers'     : [], \
                                      'friends'       : []}})
-    
-    transform_dict.update({'tlbn' : {'parents'       : [], \
+
+    transform_dict.update({'bn9o' : {'parents'       : [], \
                                      'siblings'      : [], \
-                                     'auntsuncles'   : ['tlbn'], \
+                                     'auntsuncles'   : ['bn9o'], \
                                      'cousins'       : [NArw], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
                                      'coworkers'     : [], \
                                      'friends'       : []}})
-
-    transform_dict.update({'bn9o' : {'parents'       : [], \
+    
+    transform_dict.update({'tlbn' : {'parents'       : [], \
                                      'siblings'      : [], \
-                                     'auntsuncles'   : ['bn9o'], \
+                                     'auntsuncles'   : ['tlbn'], \
                                      'cousins'       : [NArw], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
