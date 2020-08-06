@@ -25,7 +25,7 @@ from scipy import stats
 from pandas.tseries.holiday import USFederalHolidayCalendar
 
 #imports for evalcategory, getNArows
-import collections
+from collections import Counter
 import datetime as dt
 from scipy.stats import shapiro
 from scipy.stats import skew
@@ -710,24 +710,6 @@ class AutoMunge:
                                      'coworkers'     : ['ord3'], \
                                      'friends'       : []}})
     
-    transform_dict.update({'spl3' : {'parents'       : ['spl2'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['ord3'], \
-                                     'friends'       : []}})
-    
-    transform_dict.update({'spl4' : {'parents'       : ['spl4'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : ['spl3'], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
-                                     'friends'       : []}})
-    
     transform_dict.update({'spl5' : {'parents'       : ['spl5'], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : [], \
@@ -1224,7 +1206,7 @@ class AutoMunge:
                                      'coworkers'     : ['mnmx'], \
                                      'friends'       : []}})
     
-    transform_dict.update({'ors2' : {'parents'       : ['spl3'], \
+    transform_dict.update({'ors2' : {'parents'       : ['spl2'], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : ['ord3'], \
                                      'cousins'       : [NArw], \
@@ -2002,9 +1984,9 @@ class AutoMunge:
                                      'siblings'      : [], \
                                      'auntsuncles'   : [], \
                                      'cousins'       : [NArw], \
-                                     'children'      : [], \
+                                     'children'      : ['nmbr'], \
                                      'niecesnephews' : [], \
-                                     'coworkers'     : ['nmbr'], \
+                                     'coworkers'     : [], \
                                      'friends'       : []}})
     
     transform_dict.update({'bxc2' : {'parents'       : ['bxc2'], \
@@ -2384,19 +2366,19 @@ class AutoMunge:
                                      'niecesnephews' : [], \
                                      'coworkers'     : [], \
                                      'friends'       : []}})
-    
-    transform_dict.update({'tlbn' : {'parents'       : [], \
+
+    transform_dict.update({'bn9o' : {'parents'       : [], \
                                      'siblings'      : [], \
-                                     'auntsuncles'   : ['tlbn'], \
+                                     'auntsuncles'   : ['bn9o'], \
                                      'cousins'       : [NArw], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
                                      'coworkers'     : [], \
                                      'friends'       : []}})
-
-    transform_dict.update({'bn9o' : {'parents'       : [], \
+    
+    transform_dict.update({'tlbn' : {'parents'       : [], \
                                      'siblings'      : [], \
-                                     'auntsuncles'   : ['bn9o'], \
+                                     'auntsuncles'   : ['tlbn'], \
                                      'cousins'       : [NArw], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
@@ -3239,22 +3221,6 @@ class AutoMunge:
                                   'MLinfilltype' : 'multirt', \
                                   'labelctgy' : 'splt'}})
     process_dict.update({'spl2' : {'dualprocess' : self.process_spl2_class, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_spl2_class, \
-                                  'inverseprocess' : self.inverseprocess_spl2, \
-                                  'info_retention' : False, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'singlct', \
-                                  'labelctgy' : 'ordl'}})
-    process_dict.update({'spl3' : {'dualprocess' : self.process_spl2_class, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_spl2_class, \
-                                  'inverseprocess' : self.inverseprocess_spl2, \
-                                  'info_retention' : False, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'singlct', \
-                                  'labelctgy' : 'ord3'}})
-    process_dict.update({'spl4' : {'dualprocess' : self.process_spl2_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_spl2_class, \
                                   'inverseprocess' : self.inverseprocess_spl2, \
@@ -20699,7 +20665,8 @@ class AutoMunge:
 
       type1_df = df[column].apply(lambda x: type(x)).values
       
-      c = collections.Counter(type1_df)
+      #c = collections.Counter(type1_df)
+      c = Counter(type1_df)
       mc2 = c.most_common(2)
       mc = [mc2[0]]
       
@@ -20721,7 +20688,8 @@ class AutoMunge:
       #df['typecolumn2'] = df[column].apply(lambda x: type(pd.to_datetime(x, errors = 'coerce')))
       type2_df = df[column].apply(lambda x: type(pd.to_datetime(x, errors = 'coerce'))).values
 
-      datec = collections.Counter(type2_df)
+      #datec = collections.Counter(type2_df)
+      datec = Counter(type2_df)
       datemc = datec.most_common(1)
       datemc2 = datec.most_common(2)
 
@@ -29238,7 +29206,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.41'
+    automungeversion = '4.42'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
