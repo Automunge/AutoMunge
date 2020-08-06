@@ -2182,7 +2182,7 @@ with metric2 results from a feature importance evaluation)
   - default infill: no activation (this is the recommended infill for this transform)
   - default NArowtype: numeric
   - suffix appender: '\_tlbn\_#' where # is the bin identifier
-  - assignparam parameters accepted: 'bincount' to set number of bins
+  - assignparam parameters accepted: 'bincount' to set number of bins (defaults to 9)
   - driftreport postmunge metrics: binsmean / bn_min / bn_max / bn_delta / bn_count / bins_id / 
 			           bins_cuts / bincount_tlbn / textcolumns / <column> + '_ratio' (column specific)
   - inversion available: no
