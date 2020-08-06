@@ -149,7 +149,7 @@ am.automunge(df_train, df_test = False, \
                           'bkt1':[], 'bkt2':[], 'bkt3':[], 'bkt4':[], \
                           'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'tlbn':[], \
                           'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[], \
-                          'mea2':[], 'mea3':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
+                          'ntgr':[], 'ntg2':[], 'ntg3':[], 'mea2':[], 'mea3':[], 'bxc2':[], \
                           'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
                           'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
                           'shft':[], 'shf2':[], 'shf3':[], 'shf4':[], 'shf7':[], 'shf8':[], \
@@ -378,7 +378,7 @@ am.automunge(df_train, df_test = False, \
                           'bkt1':[], 'bkt2':[], 'bkt3':[], 'bkt4':[], \
                           'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'tlbn':[], \
                           'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[], \
-                          'mea2':[], 'mea3':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
+                          'ntgr':[], 'ntg2':[], 'ntg3':[], 'mea2':[], 'mea3':[], 'bxc2':[], \
                           'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
                           'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
                           'shft':[], 'shf2':[], 'shf3':[], 'shf4':[], 'shf7':[], 'shf8':[], \
@@ -603,7 +603,7 @@ am.automunge(df_train, df_test = False, \
                           'bkt1':[], 'bkt2':[], 'bkt3':[], 'bkt4':[], \
                           'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'tlbn':[], \
                           'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[], \
-                          'mea2':[], 'mea3':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
+                          'ntgr':[], 'ntg2':[], 'ntg3':[], 'mea2':[], 'mea3':[], 'bxc2':[], \
                           'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
                           'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
                           'shft':[], 'shf2':[], 'shf3':[], 'shf4':[], 'shf7':[], 'shf8':[], \
@@ -987,7 +987,7 @@ assigncat = {'nmbr':[], 'retn':[], 'mnmx':[], 'mean':[], 'MAD3':[], 'lgnm':[], \
              'bkt1':[], 'bkt2':[], 'bkt3':[], 'bkt4':[], \
              'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'tlbn':[], \
              'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[], \
-             'mea2':[], 'mea3':[], 'bxc2':[], 'bxc3':[], 'bxc4':[], \
+             'ntgr':[], 'ntg2':[], 'ntg3':[], 'mea2':[], 'mea3':[], 'bxc2':[], \
              'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
              'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
              'shft':[], 'shf2':[], 'shf3':[], 'shf4':[], 'shf7':[], 'shf8':[], \
@@ -2332,6 +2332,11 @@ and comparable to test set independent of test set row count
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: comparable to functions text / txt2 / txt3 / ordl / ord2 / ord3 / ors6 / 1010
   - inversion available: yes
+* ntgr/ntg2/ntg3: sets of transformations intended for application to integer sets of unknown interpretation
+(such as may be continuous variables, discrete relational variables, or categoric). The ntgr family encodes
+in multiple forms appropriate for each of these different types, such as to allow the ML training to identify
+which is most useful. Reference the family trees below for composition details.
+  - default NArowtype: 'integer'
 ### Date-Time Data Normalizations
 * date/dat2: for datetime formatted data, segregates data by time scale to multiple
 columns (year/month/day/hour/minute/second) and then performs z-score normalization
@@ -2581,7 +2586,7 @@ Note that this version runs risk of high dimensionality of returned data in comp
                                      are encoded with integers, such as for privacy preserving of data contents
   - driftreport postmunge metrics: overlap_dict / splt_newcolumns_splt / minsplit
   - inversion available: yes with partial recovery
-* spl2/spl3/spl4/ors2/ors6/txt3: similar to splt, but instead of creating new column identifier it replaces categorical 
+* spl2/ors2/ors6/txt3: similar to splt, but instead of creating new column identifier it replaces categorical 
 entries with the abbreviated string overlap
   - default infill: none
   - default NArowtype: justNaN
@@ -2944,6 +2949,9 @@ avoid unintentional duplication.
 - 'nmr8',
 - 'nmr9',
 - 'nmrc',
+- 'ntg2',
+- 'ntg3',
+- 'ntgr',
 - 'nuld',
 - 'null',
 - 'om10',
@@ -3001,8 +3009,6 @@ avoid unintentional duplication.
 - 'sp17',
 - 'sp18',
 - 'spl2',
-- 'spl3',
-- 'spl4',
 - 'spl5',
 - 'spl6',
 - 'spl7',
@@ -5107,6 +5113,33 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'children'      : [], \
                                      'niecesnephews' : [], \
                                      'coworkers'     : ['nbr2', 'bins'], \
+                                     'friends'       : []}})
+
+    transform_dict.update({'ntgr' : {'parents'       : ['ntgr'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['retn', '1010', 'ordl'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['mnmx'], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'ntg2' : {'parents'       : ['ntg2'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['retn', '1010', 'ordl', 'pwr2'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['mnmx'], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'ntg3' : {'parents'       : ['ntg3'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['retn', 'ordl', 'por2'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['mnmx'], \
                                      'friends'       : []}})
     
     transform_dict.update({'pwrs' : {'parents'       : [], \
