@@ -167,7 +167,7 @@ am.automunge(df_train, df_test = False, \
                           'wkds':[], 'wkdo':[], 'mnts':[], 'mnto':[], \
                           'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
                           'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
-                          'DPnm':[], 'DPbn':[], 'DPod':[], 'DP10':[], 'DPoh':[], \
+                          'DPnm':[], 'DPnb':[], 'DPbn':[], 'DPod':[], 'DP10':[], 'DPoh':[], \
                           'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[], 'exc6':[], \
                           'null':[], 'copy':[], 'shfl':[], 'eval':[], 'ptfm':[]}, \
              assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
@@ -397,7 +397,7 @@ am.automunge(df_train, df_test = False, \
                           'wkds':[], 'wkdo':[], 'mnts':[], 'mnto':[], \
                           'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
                           'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
-                          'DPnm':[], 'DPbn':[], 'DPod':[], 'DP10':[], 'DPoh':[], \
+                          'DPnm':[], 'DPnb':[], 'DPbn':[], 'DPod':[], 'DP10':[], 'DPoh':[], \
                           'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[], 'exc6':[], \
                           'null':[], 'copy':[], 'shfl':[], 'eval':[], 'ptfm':[]}, \
              assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
@@ -623,7 +623,7 @@ am.automunge(df_train, df_test = False, \
                           'wkds':[], 'wkdo':[], 'mnts':[], 'mnto':[], \
                           'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
                           'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
-                          'DPnm':[], 'DPbn':[], 'DPod':[], 'DP10':[], 'DPoh':[], \
+                          'DPnm':[], 'DPnb':[], 'DPbn':[], 'DPod':[], 'DP10':[], 'DPoh':[], \
                           'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[], 'exc6':[], \
                           'null':[], 'copy':[], 'shfl':[], 'eval':[], 'ptfm':[]}, \
              assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
@@ -1008,7 +1008,7 @@ assigncat = {'nmbr':[], 'retn':[], 'mnmx':[], 'mean':[], 'MAD3':[], 'lgnm':[], \
              'wkds':[], 'wkdo':[], 'mnts':[], 'mnto':[], \
              'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
              'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
-             'DPnm':[], 'DPbn':[], 'DPod':[], 'DP10':[], 'DPoh':[], \
+             'DPnm':[], 'DPnb':[], 'DPbn':[], 'DPod':[], 'DP10':[], 'DPoh':[], \
              'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[], 'exc6':[], \
              'null':[], 'copy':[], 'shfl':[], 'eval':[], 'ptfm':[]}
 ```         
@@ -2451,7 +2451,19 @@ from a Gaussian which defaults to 0 mu and 0.06 sigma.
   - suffix appender: '_nmbr_DPnm'
   - assignparam parameters accepted: 'mu' for noise mean and 'sigma' for noise standard deviation
 	                             (defaults to 0, 0.06 respectively), parameters should be
-	                             passed to 'DPn2' transformation category from family tree
+	                             passed to 'DPnm' transformation category from family tree
+  - driftreport postmunge metrics: mu, sigma for DPnm, upstream z score via nmbr for others
+  - inversion available: yes
+* DPnb: applies a z-score normalization followed by a noise injection to train data sampled
+from a Gaussian which defaults to 0 mu and 0.06 sigma, but only to a subset of the data based
+on flip_prob parameter.
+  - default infill: the DP function does not apply a default infill assume upstream nmbr cleans data
+  - default NArowtype: numeric
+  - suffix appender: '_nmbr_DPnb'
+  - assignparam parameters accepted: 'flip_prob' for percent of values with noise injection
+	                             'mu' for noise mean and 'sigma' for noise standard deviation
+	                             (defaults to 0.03, 0, 0.06 respectively), parameters should be
+	                             passed to 'DPnb' transformation category from family tree
   - driftreport postmunge metrics: mu, sigma for DPnm, upstream z score via nmbr for others
   - inversion available: yes
 * DPbn: applies a two value binary encoding (bnry) followed by a noise injection to train data which
@@ -2461,7 +2473,7 @@ flips the activation per parameter flip_prob which defaults to 0.03
   - suffix appender: '_bnry_DPbn'
   - assignparam parameters accepted: 'flip_prob' for percent of activation flips
 	                             (defaults to 0.06), parameters should be
-	                             passed to 'DPb2' transformation category from family tree
+	                             passed to 'DPbn' transformation category from family tree
   - driftreport postmunge metrics: flip_prob for DPbn, upstream binary via bnry for others
   - inversion available: yes
 * DPod: applies an ordinal encoding (ord3) followed by a noise injection to train data which
@@ -2473,7 +2485,7 @@ on number of activations)
   - suffix appender: '_ord3_DPod'
   - assignparam parameters accepted: 'flip_prob' for percent of activation flips
 	                             (defaults to 0.06), parameters should be
-	                             passed to 'DPo4' transformation category from family tree
+	                             passed to 'DPod' transformation category from family tree
   - driftreport postmunge metrics: flip_prob for DPod, upstream ordinal via ord3 for others
   - inversion available: yes
 * DPoh: applies an ordinal encoding (ord3) followed by a noise injection to train data which
@@ -2829,11 +2841,17 @@ avoid unintentional duplication.
 - '1010',
 - '101d',
 - 'DP10',
+- 'DPb2',
 - 'DPbn',
+- 'DPn2',
+- 'DPn3',
+- 'DPnb',
 - 'DPnm',
 - 'DPo2',
 - 'DPo3',
 - 'DPo4',
+- 'DPo5',
+- 'DPo6',
 - 'DPod',
 - 'DPoh',
 - 'MAD2',
@@ -3168,6 +3186,7 @@ that any user passing a custom defined transformation can avoid any unintentiona
 - '_divd'
 - '_DP10'
 - '_DPbn'
+- '_DPnb'
 - '_DPnm'
 - '_DPod'
 - '_DPod_tmp1'
@@ -5608,34 +5627,88 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'coworkers'     : [], \
                                      'friends'       : []}})
 
-    transform_dict.update({'DPnm' : {'parents'       : ['DPnm'], \
+    transform_dict.update({'DPnm' : {'parents'       : ['DPn2'], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : [], \
                                      'cousins'       : [NArw], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
-                                     'coworkers'     : ['DPn2'], \
+                                     'coworkers'     : [], \
                                      'friends'       : []}})
   
-    transform_dict.update({'DPbn' : {'parents'       : ['DPbn'], \
+    transform_dict.update({'DPn2' : {'parents'       : ['DPn2'], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : [], \
                                      'cousins'       : [NArw], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
-                                     'coworkers'     : ['DPb2'], \
+                                     'coworkers'     : ['DPnm'], \
                                      'friends'       : []}})
-    
-    transform_dict.update({'DPod' : {'parents'       : ['DPod'], \
+
+    transform_dict.update({'DPnb' : {'parents'       : ['DPn3'], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : [], \
                                      'cousins'       : [NArw], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
-                                     'coworkers'     : ['DPo4'], \
+                                     'coworkers'     : [], \
                                      'friends'       : []}})
     
-    transform_dict.update({'DPoh' : {'parents'       : ['DPoh'], \
+    transform_dict.update({'DPn3' : {'parents'       : ['DPn3'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['DPnb'], \
+                                     'friends'       : []}})
+  
+    transform_dict.update({'DPbn' : {'parents'       : ['DPb2'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'DPb2' : {'parents'       : ['DPb2'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['DPbn'], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'DPod' : {'parents'       : ['DPo4'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'DPo4' : {'parents'       : ['DPo4'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['DPod'], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'DPoh' : {'parents'       : ['DPo5'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : ['onht'], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'DPo5' : {'parents'       : ['DPo5'], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : [], \
                                      'cousins'       : [NArw], \
@@ -5653,7 +5726,16 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'coworkers'     : ['onht'], \
                                      'friends'       : []}})
     
-    transform_dict.update({'DP10' : {'parents'       : ['DP10'], \
+    transform_dict.update({'DP10' : {'parents'       : ['DP06'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : ['1010'], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'DP06' : {'parents'       : ['DP06'], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : [], \
                                      'cousins'       : [NArw], \
