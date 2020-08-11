@@ -2429,6 +2429,69 @@ class AutoMunge:
                                      'niecesnephews' : [], \
                                      'coworkers'     : [], \
                                      'friends'       : []}})
+
+    transform_dict.update({'DPnm' : {'parents'       : ['DPnm'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['DPn2'], \
+                                     'friends'       : []}})
+  
+    transform_dict.update({'DPbn' : {'parents'       : ['DPbn'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['DPb2'], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'DPod' : {'parents'       : ['DPod'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['DPo4'], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'DPoh' : {'parents'       : ['DPoh'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : ['DPo2'], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'DPo2' : {'parents'       : ['DPo2'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['onht'], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'DP10' : {'parents'       : ['DP10'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : ['DPo3'], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'DPo3' : {'parents'       : ['DPo3'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['1010'], \
+                                     'friends'       : []}})
     
     transform_dict.update({'copy' : {'parents'       : [], \
                                      'siblings'      : [], \
@@ -4480,6 +4543,86 @@ class AutoMunge:
                                   'NArowtype' : 'nonzeronumeric', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'por2'}})
+    process_dict.update({'DPnm' : {'dualprocess' : self.process_numerical_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_numerical_class, \
+                                  'inverseprocess' : self.inverseprocess_nmbr, \
+                                  'info_retention' : True, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'DPnm'}})
+    process_dict.update({'DPn2' : {'dualprocess' : self.process_DPnm_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_DPnm_class, \
+                                  'inverseprocess' : self.inverseprocess_UPCS, \
+                                  'info_retention' : True, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'DPnm'}})
+    process_dict.update({'DPbn' : {'dualprocess' : self.process_binary_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_binary_class, \
+                                  'inverseprocess' : self.inverseprocess_bnry, \
+                                  'info_retention' : True, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'binary', \
+                                  'labelctgy' : 'DPbn'}})
+    process_dict.update({'DPb2' : {'dualprocess' : self.process_DPbn_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_DPbn_class, \
+                                  'inverseprocess' : self.inverseprocess_UPCS, \
+                                  'info_retention' : True, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'binary', \
+                                  'labelctgy' : 'DPbn'}})
+    process_dict.update({'DPod' : {'dualprocess' : self.process_ord3_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_ord3_class, \
+                                  'inverseprocess' : self.inverseprocess_ord3, \
+                                  'info_retention' : True, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'singlct', \
+                                  'labelctgy' : 'DPod'}})
+    process_dict.update({'DPo4' : {'dualprocess' : self.process_DPod_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_DPod_class, \
+                                  'inverseprocess' : self.inverseprocess_UPCS, \
+                                  'info_retention' : True, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'singlct', \
+                                  'labelctgy' : 'DPod'}})
+    process_dict.update({'DPoh' : {'dualprocess' : self.process_ord3_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_ord3_class, \
+                                  'inverseprocess' : self.inverseprocess_ord3, \
+                                  'info_retention' : True, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'singlct', \
+                                  'labelctgy' : 'onht'}})
+    process_dict.update({'DPo2' : {'dualprocess' : self.process_DPod_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_DPod_class, \
+                                  'inverseprocess' : self.inverseprocess_UPCS, \
+                                  'info_retention' : True, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'singlct', \
+                                  'labelctgy' : 'onht'}})
+    process_dict.update({'DP10' : {'dualprocess' : self.process_ord3_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_ord3_class, \
+                                  'inverseprocess' : self.inverseprocess_ord3, \
+                                  'info_retention' : True, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'singlct', \
+                                  'labelctgy' : '1010'}})
+    process_dict.update({'DPo3' : {'dualprocess' : self.process_DPod_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_DPod_class, \
+                                  'inverseprocess' : self.inverseprocess_UPCS, \
+                                  'info_retention' : True, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'singlct', \
+                                  'labelctgy' : '1010'}})
     process_dict.update({'NArw' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_NArw_class, \
                                   'postprocess' : None, \
@@ -10850,6 +10993,7 @@ class AutoMunge:
                                       'aggregated_dict' : aggregated_dict, \
                                       'case' : case, \
                                       'ordl_dict1' : ordl_dict1, \
+                                      'activations_list' : list(ordl_dict1), \
                                       'ordl_dict2' : ordl_dict2}}
       
       column_dict = {tc : {'category' : 'src4', \
@@ -12545,6 +12689,9 @@ class AutoMunge:
       sumcalc = (mdf_train[column+'_ordl'] == ordinal_dict[key]).sum() 
       ratio = sumcalc / mdf_train[column+'_ordl'].shape[0]
       ordl_activations_dict.update({key:ratio})
+
+    inverse_ordinal_dict = {value:key for key,value in ordinal_dict.items()}
+    activations_list = list(inverse_ordinal_dict)
     
     categorylist = [column + '_ordl']  
         
@@ -12553,6 +12700,8 @@ class AutoMunge:
     for tc in categorylist:
         
       normalization_dict = {tc : {'ordinal_dict' : ordinal_dict, \
+                                  'inverse_ordinal_dict' : inverse_ordinal_dict, \
+                                  'activations_list' : activations_list, \
                                   'ordinal_overlap_replace' : overlap_replace, \
                                   'ordl_activations_dict' : ordl_activations_dict}}
     
@@ -12706,6 +12855,9 @@ class AutoMunge:
       sumcalc = (mdf_train[column+'_ord3'] == ordinal_dict[key]).sum() 
       ratio = sumcalc / mdf_train[column+'_ord3'].shape[0]
       ordl_activations_dict.update({key:ratio})
+
+    inverse_ordinal_dict = {value:key for key,value in ordinal_dict.items()}
+    activations_list = list(inverse_ordinal_dict)
     
     categorylist = [column + '_ord3']  
         
@@ -12714,6 +12866,8 @@ class AutoMunge:
     for tc in categorylist:
         
       normalization_dict = {tc : {'ordinal_dict' : ordinal_dict, \
+                                  'inverse_ordinal_dict' : inverse_ordinal_dict, \
+                                  'activations_list' : activations_list, \
                                   'ordinal_overlap_replace' : overlap_replace, \
                                   'ordl_activations_dict' : ordl_activations_dict}}
     
@@ -17030,10 +17184,15 @@ class AutoMunge:
       sumcalc = (mdf_train[pworcolumn] == unique).sum() 
       ratio = sumcalc / mdf_train[pworcolumn].shape[0]
       ordl_activations_dict.update({unique:ratio})
+
+    inverse_train_replace_dict = {value:key for key,value in train_replace_dict.items()}
+    activations_list = list(inverse_train_replace_dict)
     
     for pc in powercolumns:
 
       powernormalization_dict = {pc : {'train_replace_dict' : train_replace_dict, \
+                                       'inverse_train_replace_dict' : inverse_train_replace_dict, \
+                                       'activations_list' : activations_list, \
                                        'test_replace_dict' : test_replace_dict, \
                                        'ordl_activations_dict' : ordl_activations_dict, \
                                        'negvalues' : negvalues}}
@@ -17421,10 +17580,15 @@ class AutoMunge:
       sumcalc = (mdf_train[pworcolumn] == unique).sum() 
       ratio = sumcalc / mdf_train[pworcolumn].shape[0]
       ordl_activations_dict.update({unique:ratio})
+
+    inverse_train_replace_dict = {value:key for key,value in train_replace_dict.items()}
+    activations_list = list(inverse_train_replace_dict)
     
     for pc in powercolumns:
 
       powernormalization_dict = {pc : {'train_replace_dict' : train_replace_dict, \
+                                       'inverse_train_replace_dict' : inverse_train_replace_dict, \
+                                       'activations_list' : activations_list, \
                                        'test_replace_dict' : test_replace_dict, \
                                        'ordl_activations_dict' : ordl_activations_dict}}
     
@@ -17740,6 +17904,9 @@ class AutoMunge:
       ratio = sumcalc / mdf_train[binscolumn].shape[0]
       ordl_activations_dict.update({key:ratio})
 
+    inverse_ordinal_dict = {value:key for key,value in ordinal_dict.items()}
+    activations_list = list(inverse_ordinal_dict)
+
     #create list of columns
     nmbrcolumns = [binscolumn]
 
@@ -17752,6 +17919,8 @@ class AutoMunge:
     for nc in nmbrcolumns:
 
       nmbrnormalization_dict = {nc : {'ordinal_dict' : ordinal_dict, \
+                                      'inverse_ordinal_dict' : inverse_ordinal_dict, \
+                                      'activations_list' : activations_list, \
                                       'ordl_activations_dict' : ordl_activations_dict, \
                                       'binsmean' : mean, \
                                       'binsstd' : std}}
@@ -18288,6 +18457,7 @@ class AutoMunge:
       ratio = sumcalc / mdf_train[binscolumn].shape[0]
       ordl_activations_dict.update({unique:ratio})
 
+    activations_list = list(ordl_activations_dict)
 
     #nmbrnormalization_dict = {'mean' : mean, 'std' : std}
 
@@ -18304,6 +18474,7 @@ class AutoMunge:
                                       'bins_id' : bins_id, \
                                       'bins_cuts' : bins_cuts, \
                                       'bn_width' : bn_width, \
+                                      'activations_list' : activations_list, \
                                       'ordl_activations_dict' : ordl_activations_dict}}
 
       if nc in nmbrcolumns:
@@ -18402,6 +18573,8 @@ class AutoMunge:
       ratio = sumcalc / mdf_train[binscolumn].shape[0]
       ordl_activations_dict.update({unique:ratio})
 
+    activations_list = list(ordl_activations_dict)
+
     #nmbrnormalization_dict = {'mean' : mean, 'std' : std}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
@@ -18417,6 +18590,7 @@ class AutoMunge:
                                       'bins_id' : bins_id, \
                                       'bins_cuts' : bins_cuts, \
                                       'bn_width' : bn_width, \
+                                      'activations_list' : activations_list, \
                                       'ordl_activations_dict' : ordl_activations_dict}}
 
       if nc in nmbrcolumns:
@@ -18515,6 +18689,8 @@ class AutoMunge:
       ratio = sumcalc / mdf_train[binscolumn].shape[0]
       ordl_activations_dict.update({unique:ratio})
 
+    activations_list = list(ordl_activations_dict)
+
     #nmbrnormalization_dict = {'mean' : mean, 'std' : std}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
@@ -18530,6 +18706,7 @@ class AutoMunge:
                                       'bins_id' : bins_id, \
                                       'bins_cuts' : bins_cuts, \
                                       'bn_width' : bn_width, \
+                                      'activations_list' : activations_list, \
                                       'ordl_activations_dict' : ordl_activations_dict}}
 
       if nc in nmbrcolumns:
@@ -19277,6 +19454,7 @@ class AutoMunge:
                                       'bn_delta' : bn_delta, \
                                       'bn_count' : bn_count, \
                                       'bins_id' : bins_id, \
+                                      'activations_list' : bins_id, \
                                       'bins_cuts' : bins_cuts, \
                                       'bincount' : bincount, \
                                       'ordl_activations_dict' : ordl_activations_dict}}
@@ -19446,6 +19624,7 @@ class AutoMunge:
                                       'bn_delta' : bn_delta, \
                                       'bn_count' : bn_count, \
                                       'bins_id' : bins_id, \
+                                      'activations_list' : bins_id, \
                                       'bins_cuts' : bins_cuts, \
                                       'bincount' : bincount, \
                                       'ordl_activations_dict' : ordl_activations_dict}}
@@ -19615,6 +19794,7 @@ class AutoMunge:
                                       'bn_delta' : bn_delta, \
                                       'bn_count' : bn_count, \
                                       'bins_id' : bins_id, \
+                                      'activations_list' : bins_id, \
                                       'bins_cuts' : bins_cuts, \
                                       'bincount' : bincount, \
                                       'ordl_activations_dict' : ordl_activations_dict}}
@@ -20230,6 +20410,7 @@ class AutoMunge:
                                       'buckets' : buckets, \
                                       'bins_cuts' : bins_cuts, \
                                       'bins_id' : bins_id, \
+                                      'activations_list' : bins_id, \
                                       'ordl_activations_dict' : ordl_activations_dict}}
 
       if nc in nmbrcolumns:
@@ -20347,6 +20528,7 @@ class AutoMunge:
                                       'buckets' : buckets, \
                                       'bins_cuts' : bins_cuts, \
                                       'bins_id' : bins_id, \
+                                      'activations_list' : bins_id, \
                                       'ordl_activations_dict' : ordl_activations_dict}}
 
       if nc in nmbrcolumns:
@@ -20364,6 +20546,208 @@ class AutoMunge:
 
         column_dict_list.append(column_dict.copy())
 
+    return mdf_train, mdf_test, column_dict_list
+
+  def process_DPnm_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
+    '''
+    #process_DPnb_class(mdf_train, mdf_test, column, category, postprocess_dict, params = {})
+    #function to inject noise to training data, such as for differential privacy purposes
+    #assumes input is numeric data with z-score normalization to mean 0 and sigma 1
+    #adds data sampled from normal distribution with mean 0 and sigma 0.06 by default
+    #the noise properties may be customized with parameters 'mu', 'sigma'
+    #note that the noise is only injected into the designated training data of df_train
+    #for test data this is a pass-through operation
+    #note this assumes clean data as input since this will be intended for downstream applicaiton
+    #in family trees, so no infill is performed
+    #note that for postprocess function in postmunge, determination of whether to treat
+    #df_test as train or test data is based on the traindata entry in postprocess_dict
+    #in automunge df_test is treated as test data by default
+    '''
+    
+    #initialize parameters
+    if 'mu' in params:
+      mu = params['mu']
+    else:
+      mu = 0.0
+      
+    if 'sigma' in params:
+      sigma = params['sigma']
+    else:
+      sigma = 0.06
+      
+    DPnm_column = column + '_DPnm'
+      
+    #first we'll derive our sampled noise for injection
+    normal_samples = np.random.normal(loc=mu, scale=sigma, size=(mdf_train.shape[0]))
+    
+    mdf_train[DPnm_column] = pd.DataFrame(normal_samples)
+    
+    #now inject noise
+    mdf_train[DPnm_column] = mdf_train[DPnm_column] + mdf_train[column]
+    
+    #for test data is just pass-through
+    mdf_test[DPnm_column] = mdf_test[column]
+    
+    #create list of columns
+    nmbrcolumns = [DPnm_column]
+
+    nmbrnormalization_dict = {DPnm_column : {'mu' : mu, 'sigma' : sigma}}
+
+    #store some values in the nmbr_dict{} for use later in ML infill methods
+    column_dict_list = []
+
+    for nc in nmbrcolumns:
+
+      column_dict = { nc : {'category' : 'DPnm', \
+                           'origcategory' : category, \
+                           'normalization_dict' : nmbrnormalization_dict, \
+                           'origcolumn' : column, \
+                           'inputcolumn' : column, \
+                           'columnslist' : nmbrcolumns, \
+                           'categorylist' : nmbrcolumns, \
+                           'infillmodel' : False, \
+                           'infillcomplete' : False, \
+                           'deletecolumn' : False}}
+
+      column_dict_list.append(column_dict.copy())
+        
+    return mdf_train, mdf_test, column_dict_list
+
+  def process_DPbn_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
+    '''
+    #process_DPbn_class(mdf_train, mdf_test, column, category, postprocess_dict, params = {})
+    #function to inject noise to training data, such as for differential privacy purposes
+    #assumes input is bnry encoded data (i.e. boolean integers in single column)
+    #adds data sampled from Bernoulli distribution with flip_prob 0.03 by default
+    #the noise properties may be customized with parameter 'flip_prob'
+    #note that the noise is only injected into the designated training data of df_train
+    #for test data this is a pass-through operation
+    #note this assumes clean data as input since this will be intended for downstream applicaiton
+    #in family trees, so no infill is performed
+    #note that for postprocess function in postmunge, determination of whether to treat
+    #df_test as train or test data is based on the traindata entry in postprocess_dict
+    #in automunge df_test is treated as test data by default
+    '''
+    
+    #initialize parameters
+    if 'flip_prob' in params:
+      flip_prob = params['flip_prob']
+    else:
+      flip_prob = 0.03
+      
+    DPbn_column = column + '_DPbn'
+      
+    #first we'll derive our sampled noise for injection
+    mdf_train[DPbn_column] = pd.DataFrame(np.random.binomial(n=1, p=flip_prob, size=(mdf_train.shape[0])))
+    
+    #now inject noise
+    mdf_train[DPbn_column] = abs(mdf_train[column] - mdf_train[DPbn_column])
+    
+    #for test data is just pass-through
+    mdf_test[DPbn_column] = mdf_test[column]
+    
+    #create list of columns
+    nmbrcolumns = [DPbn_column]
+
+    nmbrnormalization_dict = {DPbn_column : {'flip_prob' : flip_prob}}
+
+    #store some values in the nmbr_dict{} for use later in ML infill methods
+    column_dict_list = []
+
+    for nc in nmbrcolumns:
+
+      column_dict = { nc : {'category' : 'DPbn', \
+                           'origcategory' : category, \
+                           'normalization_dict' : nmbrnormalization_dict, \
+                           'origcolumn' : column, \
+                           'inputcolumn' : column, \
+                           'columnslist' : nmbrcolumns, \
+                           'categorylist' : nmbrcolumns, \
+                           'infillmodel' : False, \
+                           'infillcomplete' : False, \
+                           'deletecolumn' : False}}
+
+      column_dict_list.append(column_dict.copy())
+        
+    return mdf_train, mdf_test, column_dict_list
+
+  def process_DPod_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
+    '''
+    #process_DPod_class(mdf_train, mdf_test, column, category, postprocess_dict, params = {})
+    #function to inject noise to training data, such as for differential privacy purposes
+    #assumes input is ordinal encoded data (i.e. categoric by integer in single column)
+    #adds data sampled from Bernoulli distribution with flip_prob 0.03 by default
+    #the noise properties may be customized with parameter 'flip_prob'
+    #when flip activated selects from the set of encodings per level random draw
+    #(including potenitally the current encoding for no flip)
+    #note that the noise is only injected into the designated training data of df_train
+    #for test data this is a pass-through operation
+    #note this assumes clean data as input since this will be intended for downstream applicaiton
+    #in family trees, so no infill is performed
+    #note that for postprocess function in postmunge, determination of whether to treat
+    #df_test as train or test data is based on the traindata entry in postprocess_dict
+    #in automunge df_test is treated as test data by default
+    '''
+    
+    #initialize parameters
+    if 'flip_prob' in params:
+      flip_prob = params['flip_prob']
+    else:
+      flip_prob = 0.03
+      
+    DPod_column = column + '_DPod'
+    DPod_tempcolumn1 = column + '_DPod_tmp1'
+    DPod_tempcolumn2 = column + '_DPod_tmp2'
+    
+    #we'll want to know the set of activations present in column, for automunge this is unique values
+    ord_encodings = mdf_train[column].unique()
+      
+    #first we'll derive our sampled noise for injection
+    mdf_train[DPod_tempcolumn1] = pd.DataFrame(np.random.binomial(n=1, p=flip_prob, size=(mdf_train.shape[0])))
+    mdf_train[DPod_tempcolumn2] = pd.DataFrame(np.random.choice(ord_encodings, size=(mdf_train.shape[0])))
+    
+    #now inject noise
+    
+    #initialize return column
+    mdf_train[DPod_column] = 0
+    
+    for entry in list(ord_encodings):
+      
+      #this returns column value when DPod_tempcolumn1 is 0 or DPod_tempcolumn2 when DPod_tempcolumn1 is 1
+      mdf_train[DPod_column] = \
+      np.where(mdf_train[column] == entry, \
+               mdf_train[column] * (1 - mdf_train[DPod_tempcolumn1]) + mdf_train[DPod_tempcolumn1] * mdf_train[DPod_tempcolumn2], \
+               mdf_train[DPod_column])
+      
+    del mdf_train[DPod_tempcolumn1]
+    del mdf_train[DPod_tempcolumn2]
+    
+    #for test data is just pass-through
+    mdf_test[DPod_column] = mdf_test[column]
+    
+    #create list of columns
+    nmbrcolumns = [DPod_column]
+
+    nmbrnormalization_dict = {DPod_column : {'flip_prob' : flip_prob}}
+
+    #store some values in the nmbr_dict{} for use later in ML infill methods
+    column_dict_list = []
+
+    for nc in nmbrcolumns:
+
+      column_dict = { nc : {'category' : 'DPod', \
+                           'origcategory' : category, \
+                           'normalization_dict' : nmbrnormalization_dict, \
+                           'origcolumn' : column, \
+                           'inputcolumn' : column, \
+                           'columnslist' : nmbrcolumns, \
+                           'categorylist' : nmbrcolumns, \
+                           'infillmodel' : False, \
+                           'infillcomplete' : False, \
+                           'deletecolumn' : False}}
+
+      column_dict_list.append(column_dict.copy())
+        
     return mdf_train, mdf_test, column_dict_list
   
   def process_null_class(self, df, column, category, postprocess_dict, params = {}):
@@ -27839,6 +28223,7 @@ class AutoMunge:
                              'wkds':[], 'wkdo':[], 'mnts':[], 'mnto':[], \
                              'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
                              'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
+                             'DPnm':[], 'DPbn':[], 'DPod':[], 'DP10':[], 'DPoh':[], \
                              'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[], 'exc6':[], \
                              'null':[], 'copy':[], 'shfl':[], 'eval':[], 'ptfm':[]}, \
                 assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
@@ -29258,7 +29643,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.43'
+    automungeversion = '4.44'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -29314,6 +29699,7 @@ class AutoMunge:
                              'prePCAcolumns' : prePCAcolumns, \
                              'madethecut' : madethecut, \
                              'excl_suffix' : excl_suffix, \
+                             'traindata' : False, \
                              'assigncat' : assigncat, \
                              'final_assigncat' : final_assigncat, \
                              'assigninfill' : assigninfill, \
@@ -36706,6 +37092,166 @@ class AutoMunge:
     
     return mdf_test
 
+  def postprocess_DPnm_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+    '''
+    #postprocess_numerical_class(mdf_test, column, postprocess_dict, columnkey)
+    #function to normalize data to mean of 0 and standard deviation of 1 from training distribution
+    #takes as arguement pandas dataframe of training and test data (mdf_train), (mdf_test)\
+    #and the name of the column string ('column'), and the mean and std from the train set \
+    #stored in postprocess_dict
+    #replaces missing or improperly formatted data with mean of remaining values
+    #leaves original specified column in dataframe
+    #returns transformed dataframe
+    #expect this approach works better when the numerical distribution is thin tailed
+    #if only have training but not test data handy, use same training data for both dataframe inputs
+    '''
+    
+    #retrieve normalizastion parameters from postprocess_dict
+    normkey = column + '_DPnm'
+    
+    mu = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mu']
+    sigma = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['sigma']
+
+    DPnm_column = column + '_DPnm'
+    
+    #check if df_test is to be treated as train or test data
+    traindata = postprocess_dict['traindata']
+    
+    if traindata is True:
+      
+      #first we'll derive our sampled noise for injection
+      normal_samples = np.random.normal(loc=mu, scale=sigma, size=(mdf_test.shape[0]))
+      
+      mdf_test[DPnm_column] = pd.DataFrame(normal_samples)
+    
+      #now inject noise
+      mdf_test[DPnm_column] = mdf_test[DPnm_column] + mdf_test[column]
+      
+    elif traindata is False:
+      
+      #for test data is just pass-through
+      mdf_test[DPnm_column] = mdf_test[column]
+
+    return mdf_test
+
+  def postprocess_DPbn_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+    '''
+    #process_DPbn_class(mdf_train, mdf_test, column, category, postprocess_dict, params = {})
+    #function to inject noise to training data, such as for differential privacy purposes
+    #assumes input is bnry encoded data (i.e. boolean integers in single column)
+    #adds data sampled from Bernoulli distribution with flip_prob 0.03 by default
+    #the noise properties may be customized with parameter 'flip_prob'
+    #note that the noise is only injected into the designated training data of df_train
+    #for test data this is a pass-through operation
+    #note this assumes clean data as input since this will be intended for downstream applicaiton
+    #in family trees, so no infill is performed
+    #note that for postprocess function in postmunge, determination of whether to treat
+    #df_test as train or test data is based on the traindata entry in postprocess_dict
+    #in automunge df_test is treated as test data by default
+    '''
+    
+    #retrieve normalizastion parameters from postprocess_dict
+    normkey = column + '_DPbn'
+    
+    flip_prob = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['flip_prob']
+
+    DPbn_column = column + '_DPbn'
+    
+    #check if df_test is to be treated as train or test data
+    traindata = postprocess_dict['traindata']
+    
+    if traindata is True:
+      
+      #first we'll derive our sampled noise for injection
+      mdf_test[DPbn_column] = pd.DataFrame(np.random.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0])))
+    
+      #now inject noise
+      mdf_test[DPbn_column] = abs(mdf_test[column] - mdf_test[DPbn_column])
+      
+    elif traindata is False:
+      
+      #for test data is just pass-through
+      mdf_test[DPbn_column] = mdf_test[column]
+
+    return mdf_test
+
+  def postprocess_DPod_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+    '''
+    #process_DPod_class(mdf_train, mdf_test, column, category, postprocess_dict, params = {})
+    #function to inject noise to training data, such as for differential privacy purposes
+    #assumes input is ordinal encoded data (i.e. categoric by integer in single column)
+    #adds data sampled from Bernoulli distribution with flip_prob 0.03 by default
+    #the noise properties may be customized with parameter 'flip_prob'
+    #when flip activated selects from the set of encodings per level random draw
+    #(including potenitally the current encoding for no flip)
+    #note that the noise is only injected into the designated training data of df_train
+    #for test data this is a pass-through operation
+    #note this assumes clean data as input since this will be intended for downstream applicaiton
+    #in family trees, so no infill is performed
+    #note that for postprocess function in postmunge, determination of whether to treat
+    #df_test as train or test data is based on the traindata entry in postprocess_dict
+    #in automunge df_test is treated as test data by default
+    '''
+    
+    #retrieve normalizastion parameters from postprocess_dict
+    normkey = column + '_DPod'
+    
+    flip_prob = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['flip_prob']
+
+    DPod_column = column + '_DPod'
+    DPod_tempcolumn1 = column + '_DPod_tmp1'
+    DPod_tempcolumn2 = column + '_DPod_tmp2'
+    
+    #check if df_test is to be treated as train or test data
+    traindata = postprocess_dict['traindata']
+    
+    if traindata is True:
+      
+      ord_encodings = False
+      
+      #we'll suplement a dif approach to grab ordinal encodings in postmunge
+      #since all activations may not be present in test set
+      #so we'll rely on convention that ordinal sets have a list of activations in norm_dict
+      #saved as 'activations_list'
+      if column in postprocess_dict['column_dict']:
+        if 'activations_list' in postprocess_dict['column_dict'][column]['normalization_dict'][column]:
+          ord_encodings = np.array(postprocess_dict['column_dict'][column]['normalization_dict'][column]['activations_list'])
+      
+      #else just grab set of unique entries
+      if ord_encodings is False:
+        ord_encodings = mdf_test[column].unique()
+      
+      #now we'll derive our sampled noise for injection
+      mdf_test[DPod_tempcolumn1] = pd.DataFrame(np.random.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0])))
+      mdf_test[DPod_tempcolumn2] = pd.DataFrame(np.random.choice(ord_encodings, size=(mdf_test.shape[0])))
+    
+      #now inject noise
+    
+      #initialize return column
+      mdf_test[DPod_column] = 0
+    
+      for entry in list(ord_encodings):
+        
+        #this returns column value when DPod_tempcolumn1 is 0 or DPod_tempcolumn2 when DPod_tempcolumn1 is 1
+        mdf_test[DPod_column] = \
+        np.where(mdf_test[column] == entry, \
+                 mdf_test[column] * (1 - mdf_test[DPod_tempcolumn1]) + mdf_test[DPod_tempcolumn1] * mdf_test[DPod_tempcolumn2], \
+                 mdf_test[DPod_column])
+      
+      del mdf_test[DPod_tempcolumn1]
+      del mdf_test[DPod_tempcolumn2]
+      
+    elif traindata is False:
+      
+      #for test data is just pass-through
+      mdf_test[DPod_column] = mdf_test[column]
+
+    return mdf_test
+
   def postprocess_exc2_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #here we'll address any columns that returned a 'excl' category
@@ -37833,12 +38379,24 @@ class AutoMunge:
                 testID_column = False, labelscolumn = False, \
                 pandasoutput = False, printstatus = True, \
                 TrainLabelFreqLevel = False, featureeval = False, driftreport = False, \
-                LabelSmoothing = False, LSfit = False, inversion = False, \
+                LabelSmoothing = False, LSfit = False, inversion = False, traindata = False, \
                 returnedsets = True, shuffletrain = False):
     """
     #This function documented in READ ME, available online at:
     # https://github.com/Automunge/AutoMunge/blob/master/README.md
     """
+
+    # #copy postprocess_dict into internal state so don't edit external object
+    # #(going to leave this out for now in case has large memory overhead impact
+    # #as in some scenarios postprocess_dict can be a large file)
+    # postprocess_dict = deepcopy(postprocess_dict)
+
+    #traindata only matters when transforms apply different methods for train vs test
+    #such as for noise injection to train data for differential privacy
+    if traindata is True:
+      postprocess_dict['traindata'] = True
+    else:
+      postprocess_dict['traindata'] = False
 
     indexcolumn = postprocess_dict['indexcolumn']
     testID_column_orig = testID_column
