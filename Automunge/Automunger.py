@@ -2430,34 +2430,88 @@ class AutoMunge:
                                      'coworkers'     : [], \
                                      'friends'       : []}})
 
-    transform_dict.update({'DPnm' : {'parents'       : ['DPnm'], \
+    transform_dict.update({'DPnm' : {'parents'       : ['DPn2'], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : [], \
                                      'cousins'       : [NArw], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
-                                     'coworkers'     : ['DPn2'], \
+                                     'coworkers'     : [], \
                                      'friends'       : []}})
   
-    transform_dict.update({'DPbn' : {'parents'       : ['DPbn'], \
+    transform_dict.update({'DPn2' : {'parents'       : ['DPn2'], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : [], \
                                      'cousins'       : [NArw], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
-                                     'coworkers'     : ['DPb2'], \
+                                     'coworkers'     : ['DPnm'], \
                                      'friends'       : []}})
-    
-    transform_dict.update({'DPod' : {'parents'       : ['DPod'], \
+
+    transform_dict.update({'DPnb' : {'parents'       : ['DPn3'], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : [], \
                                      'cousins'       : [NArw], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
-                                     'coworkers'     : ['DPo4'], \
+                                     'coworkers'     : [], \
                                      'friends'       : []}})
     
-    transform_dict.update({'DPoh' : {'parents'       : ['DPoh'], \
+    transform_dict.update({'DPn3' : {'parents'       : ['DPn3'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['DPnb'], \
+                                     'friends'       : []}})
+  
+    transform_dict.update({'DPbn' : {'parents'       : ['DPb2'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'DPb2' : {'parents'       : ['DPb2'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['DPbn'], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'DPod' : {'parents'       : ['DPo4'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'DPo4' : {'parents'       : ['DPo4'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['DPod'], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'DPoh' : {'parents'       : ['DPo5'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : ['onht'], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'DPo5' : {'parents'       : ['DPo5'], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : [], \
                                      'cousins'       : [NArw], \
@@ -2475,7 +2529,16 @@ class AutoMunge:
                                      'coworkers'     : ['onht'], \
                                      'friends'       : []}})
     
-    transform_dict.update({'DP10' : {'parents'       : ['DP10'], \
+    transform_dict.update({'DP10' : {'parents'       : ['DP06'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : ['1010'], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'DP06' : {'parents'       : ['DP06'], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : [], \
                                      'cousins'       : [NArw], \
@@ -4543,7 +4606,7 @@ class AutoMunge:
                                   'NArowtype' : 'nonzeronumeric', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'por2'}})
-    process_dict.update({'DPnm' : {'dualprocess' : self.process_numerical_class, \
+    process_dict.update({'DPn2' : {'dualprocess' : self.process_numerical_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_numerical_class, \
                                   'inverseprocess' : self.inverseprocess_nmbr, \
@@ -4551,7 +4614,7 @@ class AutoMunge:
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'DPnm'}})
-    process_dict.update({'DPn2' : {'dualprocess' : self.process_DPnm_class, \
+    process_dict.update({'DPnm' : {'dualprocess' : self.process_DPnm_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_DPnm_class, \
                                   'inverseprocess' : self.inverseprocess_UPCS, \
@@ -4559,7 +4622,23 @@ class AutoMunge:
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'DPnm'}})
-    process_dict.update({'DPbn' : {'dualprocess' : self.process_binary_class, \
+    process_dict.update({'DPn3' : {'dualprocess' : self.process_numerical_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_numerical_class, \
+                                  'inverseprocess' : self.inverseprocess_nmbr, \
+                                  'info_retention' : True, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'DPnb'}})
+    process_dict.update({'DPnb' : {'dualprocess' : self.process_DPnb_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_DPnb_class, \
+                                  'inverseprocess' : self.inverseprocess_UPCS, \
+                                  'info_retention' : True, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'DPnb'}})
+    process_dict.update({'DPb2' : {'dualprocess' : self.process_binary_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_binary_class, \
                                   'inverseprocess' : self.inverseprocess_bnry, \
@@ -4567,7 +4646,7 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'binary', \
                                   'labelctgy' : 'DPbn'}})
-    process_dict.update({'DPb2' : {'dualprocess' : self.process_DPbn_class, \
+    process_dict.update({'DPbn' : {'dualprocess' : self.process_DPbn_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_DPbn_class, \
                                   'inverseprocess' : self.inverseprocess_UPCS, \
@@ -4575,7 +4654,7 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'binary', \
                                   'labelctgy' : 'DPbn'}})
-    process_dict.update({'DPod' : {'dualprocess' : self.process_ord3_class, \
+    process_dict.update({'DPo4' : {'dualprocess' : self.process_ord3_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_ord3_class, \
                                   'inverseprocess' : self.inverseprocess_ord3, \
@@ -4583,7 +4662,7 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'DPod'}})
-    process_dict.update({'DPo4' : {'dualprocess' : self.process_DPod_class, \
+    process_dict.update({'DPod' : {'dualprocess' : self.process_DPod_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_DPod_class, \
                                   'inverseprocess' : self.inverseprocess_UPCS, \
@@ -4591,7 +4670,7 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'DPod'}})
-    process_dict.update({'DPoh' : {'dualprocess' : self.process_ord3_class, \
+    process_dict.update({'DPo5' : {'dualprocess' : self.process_ord3_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_ord3_class, \
                                   'inverseprocess' : self.inverseprocess_ord3, \
@@ -4607,7 +4686,23 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'onht'}})
-    process_dict.update({'DP10' : {'dualprocess' : self.process_ord3_class, \
+    process_dict.update({'DPoh' : {'dualprocess' : self.process_DPod_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_DPod_class, \
+                                  'inverseprocess' : self.inverseprocess_UPCS, \
+                                  'info_retention' : True, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'singlct', \
+                                  'labelctgy' : 'onht'}})
+    process_dict.update({'DP10' : {'dualprocess' : self.process_DPod_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_DPod_class, \
+                                  'inverseprocess' : self.inverseprocess_UPCS, \
+                                  'info_retention' : True, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'singlct', \
+                                  'labelctgy' : '1010'}})
+    process_dict.update({'DP06' : {'dualprocess' : self.process_ord3_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_ord3_class, \
                                   'inverseprocess' : self.inverseprocess_ord3, \
@@ -20613,6 +20708,78 @@ class AutoMunge:
         
     return mdf_train, mdf_test, column_dict_list
 
+  def process_DPnb_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
+    '''
+    #process_DPnb_class(mdf_train, mdf_test, column, category, postprocess_dict, params = {})
+    #function to inject noise to training data, such as for differential privacy purposes
+    #assumes input is numeric data with z-score normalization to mean 0 and sigma 1
+    #adds data sampled from normal distribution with mean 0 and sigma 0.06 by default
+    #where noise only injected to a subset of data based on flip_prob defaulting to 0.03
+    #the noise properties may be customized with parameters 'mu', 'sigma', 'flip_prob'
+    #note that the noise is only injected into the designated training data of df_train
+    #for test data this is a pass-through operation
+    #note this assumes clean data as input since this will be intended for downstream applicaiton
+    #in family trees, so no infill is performed
+    #note that for postprocess function in postmunge, determination of whether to treat
+    #df_test as train or test data is based on the traindata entry in postprocess_dict
+    #in automunge df_test is treated as test data by default
+    '''
+    
+    #initialize parameters
+    if 'mu' in params:
+      mu = params['mu']
+    else:
+      mu = 0.0
+      
+    if 'sigma' in params:
+      sigma = params['sigma']
+    else:
+      sigma = 0.06
+      
+    if 'flip_prob' in params:
+      flip_prob = params['flip_prob']
+    else:
+      flip_prob = 0.03
+      
+    DPnm_column = column + '_DPnb'
+      
+    #first we'll derive our sampled noise for injection
+    normal_samples = np.random.normal(loc=mu, scale=sigma, size=(mdf_train.shape[0]))
+    binomial_samples = np.random.binomial(n=1, p=flip_prob, size=(mdf_train.shape[0]))
+    
+    mdf_train[DPnm_column] = pd.DataFrame(normal_samples) * pd.DataFrame(binomial_samples)
+    
+    #now inject noise
+    mdf_train[DPnm_column] = mdf_train[DPnm_column] + mdf_train[column]
+    
+    #for test data is just pass-through
+    mdf_test[DPnm_column] = mdf_test[column]
+    
+    #create list of columns
+    nmbrcolumns = [DPnm_column]
+
+    nmbrnormalization_dict = {DPnm_column : {'mu' : mu, 'sigma' : sigma, 'flip_prob' : flip_prob}}
+
+    #store some values in the nmbr_dict{} for use later in ML infill methods
+    column_dict_list = []
+
+    for nc in nmbrcolumns:
+
+      column_dict = { nc : {'category' : 'DPnb', \
+                           'origcategory' : category, \
+                           'normalization_dict' : nmbrnormalization_dict, \
+                           'origcolumn' : column, \
+                           'inputcolumn' : column, \
+                           'columnslist' : nmbrcolumns, \
+                           'categorylist' : nmbrcolumns, \
+                           'infillmodel' : False, \
+                           'infillcomplete' : False, \
+                           'deletecolumn' : False}}
+
+      column_dict_list.append(column_dict.copy())
+        
+    return mdf_train, mdf_test, column_dict_list
+
   def process_DPbn_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
     '''
     #process_DPbn_class(mdf_train, mdf_test, column, category, postprocess_dict, params = {})
@@ -26648,7 +26815,7 @@ class AutoMunge:
     
   def check_pm_miscparameters(self, pandasoutput, printstatus, TrainLabelFreqLevel, \
                               featureeval, driftreport, LabelSmoothing, LSfit, \
-                              returnedsets, shuffletrain, inversion):
+                              returnedsets, shuffletrain, inversion, traindata):
     """
     #Performs validation to confirm valid entries of passed postmunge(.) parameters
     #note one parameter not directly passed is df_test, just pass a list of the columns
@@ -26730,7 +26897,6 @@ class AutoMunge:
       
     pm_miscparameters_results.update({'driftreport_valresult' : driftreport_valresult})
     
-    
     #check LabelSmoothing
     LabelSmoothing_valresult = False
     if not isinstance(LabelSmoothing, (float, bool)):
@@ -26787,6 +26953,16 @@ class AutoMunge:
       print()
       
     pm_miscparameters_results.update({'shuffletrain_valresult' : shuffletrain_valresult})
+
+    #check traindata
+    traindata_valresult = False
+    if traindata not in [True, False] or not isinstance(pandasoutput, bool):
+      traindata_valresult = True
+      print("Error: invalid entry passed for traindata parameter.")
+      print("Acceptable values are one of {True, False}")
+      print()
+      
+    pm_miscparameters_results.update({'traindata_valresult' : traindata_valresult})
     
     return pm_miscparameters_results
 
@@ -28223,7 +28399,7 @@ class AutoMunge:
                              'wkds':[], 'wkdo':[], 'mnts':[], 'mnto':[], \
                              'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
                              'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
-                             'DPnm':[], 'DPbn':[], 'DPod':[], 'DP10':[], 'DPoh':[], \
+                             'DPnm':[], 'DPnb':[], 'DPbn':[], 'DPod':[], 'DP10':[], 'DPoh':[], \
                              'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[], 'exc6':[], \
                              'null':[], 'copy':[], 'shfl':[], 'eval':[], 'ptfm':[]}, \
                 assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
@@ -29643,7 +29819,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.44'
+    automungeversion = '4.45'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -37136,6 +37312,56 @@ class AutoMunge:
 
     return mdf_test
 
+  def postprocess_DPnb_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+    '''
+    #process_DPnb_class(mdf_train, mdf_test, column, category, postprocess_dict, params = {})
+    #function to inject noise to training data, such as for differential privacy purposes
+    #assumes input is numeric data with z-score normalization to mean 0 and sigma 1
+    #adds data sampled from normal distribution with mean 0 and sigma 0.06 by default
+    #where noise only injected to a subset of data based on flip_prob defaulting to 0.03
+    #the noise properties may be customized with parameters 'mu', 'sigma', 'flip_prob'
+    #note that the noise is only injected into the designated training data of df_train
+    #for test data this is a pass-through operation
+    #note this assumes clean data as input since this will be intended for downstream applicaiton
+    #in family trees, so no infill is performed
+    #note that for postprocess function in postmunge, determination of whether to treat
+    #df_test as train or test data is based on the traindata entry in postprocess_dict
+    #in automunge df_test is treated as test data by default
+    '''
+    
+    #retrieve normalizastion parameters from postprocess_dict
+    normkey = column + '_DPnb'
+    
+    mu = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mu']
+    sigma = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['sigma']
+    flip_prob = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['flip_prob']
+
+    DPnm_column = column + '_DPnb'
+    
+    #check if df_test is to be treated as train or test data
+    traindata = postprocess_dict['traindata']
+    
+    if traindata is True:
+      
+      #first we'll derive our sampled noise for injection
+      normal_samples = np.random.normal(loc=mu, scale=sigma, size=(mdf_test.shape[0]))
+      binomial_samples = np.random.binomial(n=1, p=flip_prob, size=(mdf_train.shape[0]))
+      
+      mdf_test[DPnm_column] = pd.DataFrame(normal_samples) * pd.DataFrame(binomial_samples)
+    
+      #now inject noise
+      mdf_test[DPnm_column] = mdf_test[DPnm_column] + mdf_test[column]
+      
+    elif traindata is False:
+      
+      #for test data is just pass-through
+      mdf_test[DPnm_column] = mdf_test[column]
+
+    return mdf_test
+
   def postprocess_DPbn_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #process_DPbn_class(mdf_train, mdf_test, column, category, postprocess_dict, params = {})
@@ -38410,7 +38636,7 @@ class AutoMunge:
     pm_miscparameters_results = \
     self.check_pm_miscparameters(pandasoutput, printstatus, TrainLabelFreqLevel, \
                                 featureeval, driftreport, LabelSmoothing, LSfit, \
-                                returnedsets, shuffletrain, inversion)
+                                returnedsets, shuffletrain, inversion, traindata)
     
     #printout display progress
     if printstatus is True:
