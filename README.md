@@ -1279,7 +1279,31 @@ processdict =  {'newt' : {'dualprocess' : None, \
 #labelctgy: should be a string entry of a single transform category found as an entry in the root category's family 
 #tree. Used to determine a basis of feature selection for cases where labels are returned in multiple configurations.
 #Also used in label frequency levelizer.
+```
 
+Optionally, some additional values can be incorporated into the processdict to 
+support inversion for a transformation category:
+```
+#for example 
+processdict =  {'newt' : {'dualprocess' : None, \
+                          'singleprocess' : None, \
+                          'postprocess' : None, \
+                          'inverseprocess' : None, \
+                          'info_retention' : False, \
+                          'NArowtype' : 'numeric', \
+                          'MLinfilltype' : 'numeric', \
+                          'labelctgy' : 'mnmx'}}
+			  
+#Where 'inverseprocess' is a function to invert the forward pass transformation.
+#And 'info_retention' is boolean to signal whether there will be any information
+#loss to recovered data from inversion. For format of inverseprocess functions
+#please refer to the code base.
+
+#For advanced users:
+#Note that when populating a processdict for a transformation category, the
+#inversion function should be consistent with the transformation category that
+#was populated in the column_dict data structure as part of the forward pass
+#transformations in the dualprocess or singleprocess processdict entries.
 ```
 
 * evalcat: modularizes the automated evaluation of column properties for assignment 
