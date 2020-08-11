@@ -1212,10 +1212,12 @@ demonstrate here:
 * processdict: allows a user to define their own processing functions 
 corresponding to new transformdict keys. We'll describe the entries here:
 ```
-#for example 
-processdict =  {'newt' : {'dualprocess' : None, \
+#for example, to populate a custom transformation category 'newt' that uses
+#internal defined transformation functions:
+
+processdict =  {'newt' : {'dualprocess' : am.process_mnmx_class, \
                           'singleprocess' : None, \
-                          'postprocess' : None, \
+                          'postprocess' : am.postprocess_mnmx_class, \
                           'NArowtype' : 'numeric', \
                           'MLinfilltype' : 'numeric', \
                           'labelctgy' : 'mnmx'}}
@@ -1285,10 +1287,10 @@ Optionally, some additional values can be incorporated into the processdict to
 support inversion for a transformation category:
 ```
 #for example 
-processdict =  {'newt' : {'dualprocess' : None, \
+processdict =  {'newt' : {'dualprocess' : am.process_mnmx_class, \
                           'singleprocess' : None, \
-                          'postprocess' : None, \
-                          'inverseprocess' : None, \
+                          'postprocess' : am.postprocess_mnmx_class, \
+                          'inverseprocess' : am.inverseprocess_mnmx, \
                           'info_retention' : False, \
                           'NArowtype' : 'numeric', \
                           'MLinfilltype' : 'numeric', \
