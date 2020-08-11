@@ -167,6 +167,7 @@ am.automunge(df_train, df_test = False, \
                           'wkds':[], 'wkdo':[], 'mnts':[], 'mnto':[], \
                           'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
                           'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
+			  'DPnm':[], 'DPbn':[], 'DPod':[], 'DP10':[], 'DPoh':[], \
                           'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[], 'exc6':[], \
                           'null':[], 'copy':[], 'shfl':[], 'eval':[], 'ptfm':[]}, \
              assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
@@ -208,7 +209,7 @@ am.postmunge(postprocess_dict, df_test, \
              testID_column = False, labelscolumn = False, \
              pandasoutput = False, printstatus = True, \
              TrainLabelFreqLevel = False, featureeval = False, driftreport = False, \
-             LabelSmoothing = False, LSfit = False, inversion = False, \
+             LabelSmoothing = False, LSfit = False, inversion = False, traindata = False, \
              returnedsets = True, shuffletrain = False)
 ```
 
@@ -396,6 +397,7 @@ am.automunge(df_train, df_test = False, \
                           'wkds':[], 'wkdo':[], 'mnts':[], 'mnto':[], \
                           'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
                           'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
+			  'DPnm':[], 'DPbn':[], 'DPod':[], 'DP10':[], 'DPoh':[], \
                           'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[], 'exc6':[], \
                           'null':[], 'copy':[], 'shfl':[], 'eval':[], 'ptfm':[]}, \
              assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
@@ -440,7 +442,7 @@ am.postmunge(postprocess_dict, df_test, \
              testID_column = False, labelscolumn = False, \
              pandasoutput = False, printstatus = True, \
              TrainLabelFreqLevel = False, featureeval = False, driftreport = False, \
-             LabelSmoothing = False, LSfit = False, inversion = False, \
+             LabelSmoothing = False, LSfit = False, inversion = False, traindata = False, \
              returnedsets = True, shuffletrain = False)
 ```
 
@@ -621,6 +623,7 @@ am.automunge(df_train, df_test = False, \
                           'wkds':[], 'wkdo':[], 'mnts':[], 'mnto':[], \
                           'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
                           'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
+			  'DPnm':[], 'DPbn':[], 'DPod':[], 'DP10':[], 'DPoh':[], \
                           'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[], 'exc6':[], \
                           'null':[], 'copy':[], 'shfl':[], 'eval':[], 'ptfm':[]}, \
              assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
@@ -1005,6 +1008,7 @@ assigncat = {'nmbr':[], 'retn':[], 'mnmx':[], 'mean':[], 'MAD3':[], 'lgnm':[], \
              'wkds':[], 'wkdo':[], 'mnts':[], 'mnto':[], \
              'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
              'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
+	     'DPnm':[], 'DPbn':[], 'DPod':[], 'DP10':[], 'DPoh':[], \
              'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[], 'exc6':[], \
              'null':[], 'copy':[], 'shfl':[], 'eval':[], 'ptfm':[]}
 ```         
@@ -1345,7 +1349,7 @@ am.postmunge(postprocess_dict, df_test, \
              testID_column = False, labelscolumn = False, \
              pandasoutput = False, printstatus = True, \
              TrainLabelFreqLevel = False, featureeval = False, driftreport = False, \
-             LabelSmoothing = False, LSfit = False, inversion = False, \
+             LabelSmoothing = False, LSfit = False, inversion = False, traindata = False, \
              returnedsets = True, shuffletrain = False)
 ```
 
@@ -1471,7 +1475,7 @@ am.postmunge(postprocess_dict, df_test, \
              testID_column = False, labelscolumn = False, \
              pandasoutput = False, printstatus = True, \
              TrainLabelFreqLevel = False, featureeval = False, driftreport = False, \
-             LabelSmoothing = False, LSfit = False, inversion = False, \
+             LabelSmoothing = False, LSfit = False, inversion = False, traindata = False, \
              returnedsets = True, shuffletrain = False)
 ```
 
@@ -1637,6 +1641,12 @@ to a process_dict entry:
     return df, inputcolumn
 ```
 
+* traindata: boolean _{True, False}_, defaults to False. Only inspected when a transformation
+is called that treats train data different than test data (currently only relevant to 
+DP family of transforms for differential privacy noise injection to train sets). When passed 
+as True treats df_test as a train set for purposes of these specific transforms, otherwise
+default of False treats df_test as a test set (which turns off noise injection for DP).
+
 * returnedsets: Can be passed as one of _{True, False, 'test_ID', _
 _'test_labels', 'test_ID_labels'}_. Designates the composition of the sets returned
 from a postmunge(.) call. Defaults to True for the full composition of five returned sets.
@@ -1800,6 +1810,7 @@ columns in assigncat by using corresponding alternates of (nmbd/101d/ordd/texd/b
 * [Categorical Set Encodings](https://github.com/Automunge/AutoMunge/blob/master/README.md#categorical-set-encodings)
 * [Date-Time Data Normalizations](https://github.com/Automunge/AutoMunge/blob/master/README.md#date-time-data-normalizations)
 * [Date-Time Data Bins](https://github.com/Automunge/AutoMunge/blob/master/README.md#date-time-data-bins)
+* [Differential Privacy Noise Injections](https://github.com/Automunge/AutoMunge/blob/master/README.md#differential-privacy-noise-injections)
 * [Misc. Functions](https://github.com/Automunge/AutoMunge/blob/master/README.md#misc-functions)
 * [String Parsing](https://github.com/Automunge/AutoMunge/blob/master/README.md#string-parsing)
 * [More Efficient String Parsing](https://github.com/Automunge/AutoMunge/blob/master/README.md#more-efficient-string-parsing)
@@ -2427,6 +2438,68 @@ holiday
     of dates of additional holidays to be recognized e.g. ['2020/03/30']
   - driftreport postmunge metrics: activationratio
   - inversion available: pending
+### Differential Privacy Noise Injections
+The DP family of transforms are special in that they treat train sets different than test sets, 
+specifically they apply a noise injection to train sets such as may benefit differential privacy.
+Note that if desired to treat data passed to postmunge as a train set can apply the traindata
+parameter to postmunge. Note that when passing parameters to these functions, the transformation
+category associated with the transformation function may be different than the root category.
+* DPnm: applies a z-score normalization followed by a noise injection to train data sampled
+from a Gaussian which defaults to 0 mu and 0.06 sigma.
+  - default infill: the DP function does not apply a default infill assume upstream nmbr cleans data
+  - default NArowtype: numeric
+  - suffix appender: '_nmbr_DPnm'
+  - assignparam parameters accepted: 'mu' for noise mean and 'sigma' for noise standard deviation
+	                             (defaults to 0, 0.06 respectively), parameters should be
+	                             passed to 'DPn2' transformation category from family tree
+  - driftreport postmunge metrics: mu, sigma for DPnm, upstream z score via nmbr for others
+  - inversion available: yes
+* DPbn: applies a two value binary encoding (bnry) followed by a noise injection to train data which
+flips the activation per parameter flip_prob which defaults to 0.03
+  - default infill: the DP function does not apply a default infill assume upstream bnry cleans data
+  - default NArowtype: justNaN
+  - suffix appender: '_bnry_DPbn'
+  - assignparam parameters accepted: 'flip_prob' for percent of activation flips
+	                             (defaults to 0.06), parameters should be
+	                             passed to 'DPb2' transformation category from family tree
+  - driftreport postmunge metrics: flip_prob for DPbn, upstream binary via bnry for others
+  - inversion available: yes
+* DPod: applies an ordinal encoding (ord3) followed by a noise injection to train data which
+flips the activations per parameter flip_prob which defaults to 0.03 to a random draw from the
+set of activations (including the current activation so actual flip percent is < flip_prob based
+on number of activations)
+  - default infill: the DP function does not apply a default infill assume upstream ord3 cleans data
+  - default NArowtype: justNaN
+  - suffix appender: '_ord3_DPod'
+  - assignparam parameters accepted: 'flip_prob' for percent of activation flips
+	                             (defaults to 0.06), parameters should be
+	                             passed to 'DPo4' transformation category from family tree
+  - driftreport postmunge metrics: flip_prob for DPod, upstream ordinal via ord3 for others
+  - inversion available: yes
+* DPoh: applies an ordinal encoding (ord3) followed by a noise injection to train data which
+flips the activations per parameter flip_prob which defaults to 0.03 to a random draw from the
+set of activations (including the current activation so actual flip percent is < flip_prob based
+on number of activations), followed by a one-hot encoding
+  - default infill: the DP function does not apply a default infill assume upstream ord3 cleans data
+  - default NArowtype: justNaN
+  - suffix appender: '_ord3_DPod_onht_#' where # is integer for each categoric entry
+  - assignparam parameters accepted: 'flip_prob' for percent of activation flips
+	                             (defaults to 0.06), parameters should be
+	                             passed to 'DPo2' transformation category from family tree
+  - driftreport postmunge metrics: flip_prob for DPod, upstream ordinal via ord3 and downstream onht for others
+  - inversion available: yes
+* DP10: applies an ordinal encoding (ord3) followed by a noise injection to train data which
+flips the activations per parameter flip_prob which defaults to 0.03 to a random draw from the
+set of activations (including the current activation so actual flip percent is < flip_prob based
+on number of activations), followed by a 1010 binary encoding
+  - default infill: the DP function does not apply a default infill assume upstream ord3 cleans data
+  - default NArowtype: justNaN
+  - suffix appender: '_ord3_DPod_1010_#' where # is integer for each column which collectively encode categoric entries
+  - assignparam parameters accepted: 'flip_prob' for percent of activation flips
+	                             (defaults to 0.06), parameters should be
+	                             passed to 'DPo3' transformation category from family tree
+  - driftreport postmunge metrics: flip_prob for DPod, upstream ordinal via ord3 and downstream 1010 for others
+  - inversion available: yes
 ### Misc. Functions
 * null: deletes source column
   - default infill: none
@@ -2755,6 +2828,14 @@ Here are those root categories presented again in a concise sorted list, intende
 avoid unintentional duplication.
 - '1010',
 - '101d',
+- 'DP10',
+- 'DPbn',
+- 'DPnm',
+- 'DPo2',
+- 'DPo3',
+- 'DPo4',
+- 'DPod',
+- 'DPoh',
 - 'MAD2',
 - 'MAD3',
 - 'MADn',
@@ -3085,6 +3166,13 @@ that any user passing a custom defined transformation can avoid any unintentiona
 - '_dhmc'
 - '_dhms'
 - '_divd'
+- '_DP10'
+- '_DPbn'
+- '_DPnm'
+- '_DPod'
+- '_DPod_tmp1'
+- '_DPod_tmp2'
+- '_DPoh'
 - '_dxd2'
 - '_dxdt'
 - '_dycs'
@@ -5518,6 +5606,69 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'children'      : [], \
                                      'niecesnephews' : [], \
                                      'coworkers'     : [], \
+                                     'friends'       : []}})
+
+    transform_dict.update({'DPnm' : {'parents'       : ['DPnm'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['DPn2'], \
+                                     'friends'       : []}})
+  
+    transform_dict.update({'DPbn' : {'parents'       : ['DPbn'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['DPb2'], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'DPod' : {'parents'       : ['DPod'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['DPo4'], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'DPoh' : {'parents'       : ['DPoh'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : ['DPo2'], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'DPo2' : {'parents'       : ['DPo2'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['onht'], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'DP10' : {'parents'       : ['DP10'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : ['DPo3'], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'DPo3' : {'parents'       : ['DPo3'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['1010'], \
                                      'friends'       : []}})
     
     transform_dict.update({'copy' : {'parents'       : [], \
