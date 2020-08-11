@@ -2482,7 +2482,7 @@ set of activations (including the current activation so actual flip percent is <
 on number of activations), followed by a one-hot encoding
   - default infill: the DP function does not apply a default infill assume upstream ord3 cleans data
   - default NArowtype: justNaN
-  - suffix appender: '_ord3_DPod_onht_#' where # is integer for each categoric entry
+  - suffix appender: '\_ord3\_DPod\_onht\_#' where # is integer for each categoric entry
   - assignparam parameters accepted: 'flip_prob' for percent of activation flips
 	                             (defaults to 0.06), parameters should be
 	                             passed to 'DPo2' transformation category from family tree
@@ -2494,7 +2494,7 @@ set of activations (including the current activation so actual flip percent is <
 on number of activations), followed by a 1010 binary encoding
   - default infill: the DP function does not apply a default infill assume upstream ord3 cleans data
   - default NArowtype: justNaN
-  - suffix appender: '_ord3_DPod_1010_#' where # is integer for each column which collectively encode categoric entries
+  - suffix appender: '\_ord3\_DPod\_1010\_#' where # is integer for each column which collectively encode categoric entries
   - assignparam parameters accepted: 'flip_prob' for percent of activation flips
 	                             (defaults to 0.06), parameters should be
 	                             passed to 'DPo3' transformation category from family tree
