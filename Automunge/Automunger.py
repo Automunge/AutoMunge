@@ -2465,6 +2465,24 @@ class AutoMunge:
                                      'niecesnephews' : [], \
                                      'coworkers'     : ['DPnb'], \
                                      'friends'       : []}})
+
+    transform_dict.update({'DPmm' : {'parents'       : ['DPm2'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+  
+    transform_dict.update({'DPm2' : {'parents'       : ['DPm2'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['DPmm'], \
+                                     'friends'       : []}})
   
     transform_dict.update({'DPbn' : {'parents'       : ['DPb2'], \
                                      'siblings'      : [], \
@@ -4638,6 +4656,22 @@ class AutoMunge:
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'DPnb'}})
+    process_dict.update({'DPm2' : {'dualprocess' : self.process_mnmx_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_mnmx_class, \
+                                  'inverseprocess' : self.inverseprocess_mnmx, \
+                                  'info_retention' : True, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'DPmm'}})
+    process_dict.update({'DPmm' : {'dualprocess' : self.process_DPmm_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_DPmm_class, \
+                                  'inverseprocess' : self.inverseprocess_UPCS, \
+                                  'info_retention' : True, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'DPmm'}})
     process_dict.update({'DPb2' : {'dualprocess' : self.process_binary_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_binary_class, \
@@ -20739,7 +20773,7 @@ class AutoMunge:
     if 'flip_prob' in params:
       flip_prob = params['flip_prob']
     else:
-      flip_prob = 0.03
+      flip_prob = 1.0
       
     DPnm_column = column + '_DPnb'
       
@@ -20766,6 +20800,108 @@ class AutoMunge:
     for nc in nmbrcolumns:
 
       column_dict = { nc : {'category' : 'DPnb', \
+                           'origcategory' : category, \
+                           'normalization_dict' : nmbrnormalization_dict, \
+                           'origcolumn' : column, \
+                           'inputcolumn' : column, \
+                           'columnslist' : nmbrcolumns, \
+                           'categorylist' : nmbrcolumns, \
+                           'infillmodel' : False, \
+                           'infillcomplete' : False, \
+                           'deletecolumn' : False}}
+
+      column_dict_list.append(column_dict.copy())
+        
+    return mdf_train, mdf_test, column_dict_list
+
+  def process_DPmm_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
+    '''
+    #process_DPmm_class(mdf_train, mdf_test, column, category, postprocess_dict, params = {})
+    #function to inject noise to training data, such as for differential privacy purposes
+    #assumes input is numeric data min-max scaled within range 0-1
+    #adds data sampled from normal distribution with mean 0 and sigma 0.03 by default
+    #the noise properties may be customized with parameters 'mu', 'sigma'
+    #also accepts parameter 'flip_prob' for ratio of data that will be adjusted (defaults to 1.)
+    #noise is scaled based on the recieved points to keep within range 0-1
+    #(e.g. for recieved data point 0.1, noise is scaled so as not to fall below -0.1)
+    #gaussian noise source is also capped to maintain the range -0.5 to 0.5 (rare outlier points)
+    #note that the noise is only injected into the designated training data of df_train
+    #for test data this is a pass-through operation
+    #note this assumes clean data as input since this will be intended for downstream applicaiton
+    #in family trees, so no infill is performed
+    #note that for postprocess function in postmunge, determination of whether to treat
+    #df_test as train or test data is based on the traindata entry in postprocess_dict
+    #in automunge df_test is treated as test data by default
+    '''
+    
+    #initialize parameters
+    if 'mu' in params:
+      mu = params['mu']
+    else:
+      mu = 0.0
+      
+    if 'sigma' in params:
+      sigma = params['sigma']
+    else:
+      sigma = 0.03
+      
+    if 'flip_prob' in params:
+      flip_prob = params['flip_prob']
+    else:
+      flip_prob = 1.
+      
+    DPmm_column = column + '_DPmm'
+    DPmm_column_temp1 = column + '_DPmm' + '_tmp1'
+      
+    #first we'll derive our sampled noise for injection
+    normal_samples = np.random.normal(loc=mu, scale=sigma, size=(mdf_train.shape[0]))
+    binomial_samples = np.random.binomial(n=1, p=flip_prob, size=(mdf_train.shape[0]))
+    
+    mdf_train[DPmm_column] = pd.DataFrame(normal_samples) * pd.DataFrame(binomial_samples)
+    
+    #cap outliers
+    mdf_train[DPmm_column] = np.where(mdf_train[DPmm_column] < -0.5, np.nan, mdf_train[DPmm_column])
+    mdf_train[DPmm_column] = np.where(mdf_train[DPmm_column] > 0.5, np.nan, mdf_train[DPmm_column])
+    
+    #adjacent cell infill
+    mdf_train[DPmm_column] = mdf_train[DPmm_column].fillna(method='ffill')
+    mdf_train[DPmm_column] = mdf_train[DPmm_column].fillna(method='bfill')
+    
+    #support column to signal sign of noise, 0 is neg, 1 is pos
+    mdf_train[DPmm_column_temp1] = 0
+    mdf_train[DPmm_column_temp1] = np.where(mdf_train[DPmm_column] >= 0., 1, mdf_train[DPmm_column_temp1])
+    
+    #now inject noise, with scaled noise to maintain range 0-1
+    #(so if mnmx value <0.5, and neg noise, we scale noise to maintain ratio as if minmax was 0.5, similarly for >0.5 mnmx)
+    mdf_train[DPmm_column] = np.where(mdf_train[column] < 0.5, \
+                                      mdf_train[column] + \
+                                      (1 - mdf_train[DPmm_column_temp1]) * (mdf_train[DPmm_column] * mdf_train[column] / 0.5) + \
+                                      (mdf_train[DPmm_column_temp1]) * (mdf_train[DPmm_column]), \
+                                      mdf_train[DPmm_column])
+    
+    mdf_train[DPmm_column] = np.where(mdf_train[column] >= 0.5, \
+                                      mdf_train[column] + \
+                                      (1 - mdf_train[DPmm_column_temp1]) * (mdf_train[DPmm_column]) + \
+                                      (mdf_train[DPmm_column_temp1]) * (mdf_train[DPmm_column] * (1 - mdf_train[column]) / 0.5), \
+                                      mdf_train[DPmm_column])
+    
+    #remove support column
+    del mdf_train[DPmm_column_temp1]
+    
+    #for test data is just pass-through
+    mdf_test[DPmm_column] = mdf_test[column]
+    
+    #create list of columns
+    nmbrcolumns = [DPmm_column]
+
+    nmbrnormalization_dict = {DPmm_column : {'mu' : mu, 'sigma' : sigma, 'flip_prob' : flip_prob}}
+
+    #store some values in the nmbr_dict{} for use later in ML infill methods
+    column_dict_list = []
+
+    for nc in nmbrcolumns:
+
+      column_dict = { nc : {'category' : 'DPmm', \
                            'origcategory' : category, \
                            'normalization_dict' : nmbrnormalization_dict, \
                            'origcolumn' : column, \
@@ -28399,7 +28535,7 @@ class AutoMunge:
                              'wkds':[], 'wkdo':[], 'mnts':[], 'mnto':[], \
                              'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
                              'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
-                             'DPnm':[], 'DPnb':[], 'DPbn':[], 'DPod':[], 'DP10':[], 'DPoh':[], \
+                             'DPnb':[], 'DPmm':[], 'DPbn':[], 'DPod':[], 'DP10':[], 'DPoh':[], \
                              'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[], 'exc6':[], \
                              'null':[], 'copy':[], 'shfl':[], 'eval':[], 'ptfm':[]}, \
                 assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
@@ -37270,16 +37406,17 @@ class AutoMunge:
 
   def postprocess_DPnm_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
-    #postprocess_numerical_class(mdf_test, column, postprocess_dict, columnkey)
-    #function to normalize data to mean of 0 and standard deviation of 1 from training distribution
-    #takes as arguement pandas dataframe of training and test data (mdf_train), (mdf_test)\
-    #and the name of the column string ('column'), and the mean and std from the train set \
-    #stored in postprocess_dict
-    #replaces missing or improperly formatted data with mean of remaining values
-    #leaves original specified column in dataframe
-    #returns transformed dataframe
-    #expect this approach works better when the numerical distribution is thin tailed
-    #if only have training but not test data handy, use same training data for both dataframe inputs
+    #function to inject noise to training data, such as for differential privacy purposes
+    #assumes input is numeric data with z-score normalization to mean 0 and sigma 1
+    #adds data sampled from normal distribution with mean 0 and sigma 0.06 by default
+    #the noise properties may be customized with parameters 'mu', 'sigma'
+    #note that the noise is only injected into the designated training data of df_train
+    #for test data this is a pass-through operation
+    #note this assumes clean data as input since this will be intended for downstream applicaiton
+    #in family trees, so no infill is performed
+    #note that for postprocess function in postmunge, determination of whether to treat
+    #df_test as train or test data is based on the traindata entry in postprocess_dict
+    #in automunge df_test is treated as test data by default
     '''
     
     #retrieve normalizastion parameters from postprocess_dict
@@ -37359,6 +37496,86 @@ class AutoMunge:
       
       #for test data is just pass-through
       mdf_test[DPnm_column] = mdf_test[column]
+
+    return mdf_test
+
+  def postprocess_DPmm_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+    '''
+    #process_DPmm_class(mdf_train, mdf_test, column, category, postprocess_dict, params = {})
+    #function to inject noise to training data, such as for differential privacy purposes
+    #assumes input is numeric data min-max scaled within range 0-1
+    #adds data sampled from normal distribution with mean 0 and sigma 0.03 by default
+    #the noise properties may be customized with parameters 'mu', 'sigma'
+    #also accepts parameter 'flip_prob' for ratio of data that will be adjusted (defaults to 1.)
+    #noise is scaled based on the recieved points to keep within range 0-1
+    #(e.g. for recieved data point 0.1, noise is scaled so as not to fall below -0.1)
+    #gaussian noise source is also capped to maintain the range -0.5 to 0.5 (rare outlier points)
+    #note that the noise is only injected into the designated training data of df_train
+    #for test data this is a pass-through operation
+    #note this assumes clean data as input since this will be intended for downstream applicaiton
+    #in family trees, so no infill is performed
+    #note that for postprocess function in postmunge, determination of whether to treat
+    #df_test as train or test data is based on the traindata entry in postprocess_dict
+    #in automunge df_test is treated as test data by default
+    '''
+    
+    #retrieve normalizastion parameters from postprocess_dict
+    normkey = column + '_DPmm'
+    
+    mu = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mu']
+    sigma = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['sigma']
+    flip_prob = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['flip_prob']    
+
+    DPmm_column = column + '_DPmm'
+    DPmm_column_temp1 = column + '_DPmm' + '_tmp1'
+    
+    #check if df_test is to be treated as train or test data
+    traindata = postprocess_dict['traindata']
+    
+    if traindata is True:
+      
+      #first we'll derive our sampled noise for injection
+      normal_samples = np.random.normal(loc=mu, scale=sigma, size=(mdf_test.shape[0]))
+      binomial_samples = np.random.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0]))
+
+      mdf_test[DPmm_column] = pd.DataFrame(normal_samples) * pd.DataFrame(binomial_samples)
+
+      #cap outliers
+      mdf_test[DPmm_column] = np.where(mdf_test[DPmm_column] < -0.5, np.nan, mdf_test[DPmm_column])
+      mdf_test[DPmm_column] = np.where(mdf_test[DPmm_column] > 0.5, np.nan, mdf_test[DPmm_column])
+
+      #adjacent cell infill
+      mdf_test[DPmm_column] = mdf_test[DPmm_column].fillna(method='ffill')
+      mdf_test[DPmm_column] = mdf_test[DPmm_column].fillna(method='bfill')
+
+      #support column to signal sign of noise, 0 is neg, 1 is pos
+      mdf_test[DPmm_column_temp1] = 0
+      mdf_test[DPmm_column_temp1] = np.where(mdf_test[DPmm_column] >= 0., 1, mdf_test[DPmm_column_temp1])
+      
+      #now inject noise, with scaled noise to maintain range 0-1
+      #(so if mnmx value <0.5, and neg noise, we scale noise to maintain ratio as if minmax was 0.5, similarly for >0.5 mnmx)
+      mdf_test[DPmm_column] = np.where(mdf_test[column] < 0.5, \
+                                        mdf_test[column] + \
+                                        (1 - mdf_test[DPmm_column_temp1]) * (mdf_test[DPmm_column] * mdf_test[column] / 0.5) + \
+                                        (mdf_test[DPmm_column_temp1]) * (mdf_test[DPmm_column]), \
+                                        mdf_test[DPmm_column])
+
+      mdf_test[DPmm_column] = np.where(mdf_test[column] >= 0.5, \
+                                        mdf_test[column] + \
+                                        (1 - mdf_test[DPmm_column_temp1]) * (mdf_test[DPmm_column]) + \
+                                        (mdf_test[DPmm_column_temp1]) * (mdf_test[DPmm_column] * (1 - mdf_test[column]) / 0.5), \
+                                        mdf_test[DPmm_column])
+
+      #remove support column
+      del mdf_test[DPmm_column_temp1]
+
+    elif traindata is False:
+      
+      #for test data is just pass-through
+      mdf_test[DPmm_column] = mdf_test[column]
 
     return mdf_test
 
