@@ -167,7 +167,7 @@ am.automunge(df_train, df_test = False, \
                           'wkds':[], 'wkdo':[], 'mnts':[], 'mnto':[], \
                           'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
                           'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
-                          'DPnm':[], 'DPnb':[], 'DPbn':[], 'DPod':[], 'DP10':[], 'DPoh':[], \
+                          'DPnb':[], 'DPmm':[], 'DPbn':[], 'DPod':[], 'DP10':[], 'DPoh':[], \
                           'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[], 'exc6':[], \
                           'null':[], 'copy':[], 'shfl':[], 'eval':[], 'ptfm':[]}, \
              assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
@@ -397,7 +397,7 @@ am.automunge(df_train, df_test = False, \
                           'wkds':[], 'wkdo':[], 'mnts':[], 'mnto':[], \
                           'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
                           'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
-                          'DPnm':[], 'DPnb':[], 'DPbn':[], 'DPod':[], 'DP10':[], 'DPoh':[], \
+                          'DPnb':[], 'DPmm':[], 'DPbn':[], 'DPod':[], 'DP10':[], 'DPoh':[], \
                           'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[], 'exc6':[], \
                           'null':[], 'copy':[], 'shfl':[], 'eval':[], 'ptfm':[]}, \
              assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
@@ -623,7 +623,7 @@ am.automunge(df_train, df_test = False, \
                           'wkds':[], 'wkdo':[], 'mnts':[], 'mnto':[], \
                           'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
                           'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
-                          'DPnm':[], 'DPnb':[], 'DPbn':[], 'DPod':[], 'DP10':[], 'DPoh':[], \
+                          'DPnb':[], 'DPmm':[], 'DPbn':[], 'DPod':[], 'DP10':[], 'DPoh':[], \
                           'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[], 'exc6':[], \
                           'null':[], 'copy':[], 'shfl':[], 'eval':[], 'ptfm':[]}, \
              assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
@@ -1008,7 +1008,7 @@ assigncat = {'nmbr':[], 'retn':[], 'mnmx':[], 'mean':[], 'MAD3':[], 'lgnm':[], \
              'wkds':[], 'wkdo':[], 'mnts':[], 'mnto':[], \
              'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
              'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
-             'DPnm':[], 'DPnb':[], 'DPbn':[], 'DPod':[], 'DP10':[], 'DPoh':[], \
+             'DPnb':[], 'DPmm':[], 'DPbn':[], 'DPod':[], 'DP10':[], 'DPoh':[], \
              'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[], 'exc6':[], \
              'null':[], 'copy':[], 'shfl':[], 'eval':[], 'ptfm':[]}
 ```         
@@ -2470,16 +2470,6 @@ specifically they apply a noise injection to train sets such as may benefit diff
 Note that if desired to treat data passed to postmunge as a train set can apply the traindata
 parameter to postmunge. Note that when passing parameters to these functions, the transformation
 category associated with the transformation function may be different than the root category.
-* DPnm: applies a z-score normalization followed by a noise injection to train data sampled
-from a Gaussian which defaults to 0 mu and 0.06 sigma.
-  - default infill: the DP function does not apply a default infill assume upstream nmbr cleans data
-  - default NArowtype: numeric
-  - suffix appender: '_nmbr_DPnm'
-  - assignparam parameters accepted: 'mu' for noise mean and 'sigma' for noise standard deviation
-	                             (defaults to 0, 0.06 respectively), parameters should be
-	                             passed to 'DPnm' transformation category from family tree
-  - driftreport postmunge metrics: mu, sigma for DPnm, upstream z score via nmbr for others
-  - inversion available: yes
 * DPnb: applies a z-score normalization followed by a noise injection to train data sampled
 from a Gaussian which defaults to 0 mu and 0.06 sigma, but only to a subset of the data based
 on flip_prob parameter.
@@ -2488,9 +2478,20 @@ on flip_prob parameter.
   - suffix appender: '_nmbr_DPnb'
   - assignparam parameters accepted: 'flip_prob' for percent of values with noise injection
 	                             'mu' for noise mean and 'sigma' for noise standard deviation
-	                             (defaults to 0.03, 0, 0.06 respectively), parameters should be
+	                             (defaults to 0.03, 0, 1.0 respectively), parameters should be
 	                             passed to 'DPnb' transformation category from family tree
   - driftreport postmunge metrics: mu, sigma for DPnm, upstream z score via nmbr for others
+  - inversion available: yes
+* DPmm: applies a min-max scaling followed by a noise injection to train data sampled
+from a Gaussian which defaults to 0 mu and 0.06 sigma. Note that noise is scaled to ensure output
+remains in range 0-1 (by scaling neg noise when input <0.5 and scaling pos noise when input >0.5)
+  - default infill: the DP function does not apply a default infill assume upstream mnmx cleans data
+  - default NArowtype: numeric
+  - suffix appender: '_mnmx_DPmm'
+  - assignparam parameters accepted: 'mu' for noise mean and 'sigma' for noise standard deviation
+	                             (defaults to 0, 0.06 respectively), parameters should be
+	                             passed to 'DPmm' transformation category from family tree
+  - driftreport postmunge metrics: mu, sigma for DPnm, upstream minmax via mnmx for others
   - inversion available: yes
 * DPbn: applies a two value binary encoding (bnry) followed by a noise injection to train data which
 flips the activation per parameter flip_prob which defaults to 0.03
@@ -2869,6 +2870,8 @@ avoid unintentional duplication.
 - 'DP10',
 - 'DPb2',
 - 'DPbn',
+- 'DPm2',
+- 'DPmm',
 - 'DPn2',
 - 'DPn3',
 - 'DPnb',
@@ -3212,6 +3215,7 @@ that any user passing a custom defined transformation can avoid any unintentiona
 - '_divd'
 - '_DP10'
 - '_DPbn'
+- '_DPmm'
 - '_DPnb'
 - '_DPnm'
 - '_DPod'
@@ -5687,6 +5691,24 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'children'      : [], \
                                      'niecesnephews' : [], \
                                      'coworkers'     : ['DPnb'], \
+                                     'friends'       : []}})
+
+    transform_dict.update({'DPmm' : {'parents'       : ['DPm2'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+  
+    transform_dict.update({'DPm2' : {'parents'       : ['DPm2'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['DPmm'], \
                                      'friends'       : []}})
   
     transform_dict.update({'DPbn' : {'parents'       : ['DPb2'], \
