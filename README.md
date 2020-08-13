@@ -530,6 +530,8 @@ convert a one-hot encoded set back to a single categorical set).
 labelsencoding_dict = \
 {'(label root category)' : {'(label column header)' : {(normalization parameters)}}
 ```
+(Note that a much easier way to invert encodings is now to make use of the
+inversion parameter option in postmunge(.) function.)
 
 * finalcolumns_train: a list of the column headers corresponding to the
 training data. Note that the inclusion of suffix appenders is used to
@@ -1411,7 +1413,9 @@ that if the labels set is a single column a returned numpy array is
 flattened (e.g. [[1,2,3]] converted to [1,2,3] )
 
 * labelsencoding_dict: this is the same labelsencoding_dict returned from
-automunge, it's used in case one wants to reverse encode predicted labels
+automunge, it's used in case one wants to reverse encode predicted labels.
+(Note that a much easier way to invert encodings is now to make use of the
+inversion parameter option in postmunge(.) function.)
 
 * finalcolumns_test: a list of the column headers corresponding to the
 test data. Note that the inclusion of suffix appenders is used to
