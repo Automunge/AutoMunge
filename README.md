@@ -1016,7 +1016,7 @@ assigncat = {'nmbr':[], 'retn':[], 'mnmx':[], 'mean':[], 'MAD3':[], 'lgnm':[], \
 ```         
 
 Descriptions of these transformations are provided in document below (in section
-titled "Library of Transformations").
+titled "Library of Transformations"). [Library of Transformations](https://github.com/Automunge/AutoMunge#library-of-transformations)
 
 A user may add column header identifier strings to each of these lists to assign 
 a distinct specific processing approach to any column (including labels). Note 
@@ -2493,9 +2493,22 @@ remains in range 0-1 (by scaling neg noise when input <0.5 and scaling pos noise
   - default NArowtype: numeric
   - suffix appender: '_mnmx_DPmm'
   - assignparam parameters accepted: 'mu' for noise mean and 'sigma' for noise standard deviation
-	                             (defaults to 0, 0.06 respectively), parameters should be
+	                             (defaults to 0, 0.03 respectively), parameters should be
 	                             passed to 'DPmm' transformation category from family tree
   - driftreport postmunge metrics: mu, sigma for DPnm, upstream minmax via mnmx for others
+  - inversion available: yes
+* DPrt: applies a retn normalization with a noise injection to train data sampled
+from a Gaussian which defaults to 0 mu and 0.03 sigma. Note that noise is scaled to ensure output
+remains in range 0-1 (by scaling neg noise when input <0.5 and scaling pos noise when input >0.5)
+  - default infill: comparable to retn with mean (calculated before noise injection)
+  - suffix appender: '_DPrt'
+  - assignparam parameters accepted: parameters comparable to retn divisor / offset / multiplier / 
+                                     cap / floor defaulting to 'minmax'/0/1/False/False
+                                     'mu' for noise mean and 'sigma' for noise standard deviation
+                                     (defaults to 0, 0.03 respectively), parameters should be
+                                     passed to 'DPmm' transformation category from family tree
+                                     also 'flip_prob' for ratio of data with injections (defaults to 1.0)
+  - driftreport postmunge metrics: mu, sigma, flip_prob for DPrt, also metrics comparable to retn
   - inversion available: yes
 * DPbn: applies a two value binary encoding (bnry) followed by a noise injection to train data which
 flips the activation per parameter flip_prob which defaults to 0.03
@@ -2887,6 +2900,7 @@ avoid unintentional duplication.
 - 'DPo6',
 - 'DPod',
 - 'DPoh',
+- 'DPrt',
 - 'MAD2',
 - 'MAD3',
 - 'MADn',
@@ -3227,6 +3241,9 @@ that any user passing a custom defined transformation can avoid any unintentiona
 - '_DPod_tmp1'
 - '_DPod_tmp2'
 - '_DPoh'
+- '_DPrt'
+- '_DPrt_tmp1'
+- '_DPrt_tmp2'
 - '_dxd2'
 - '_dxdt'
 - '_dycs'
@@ -5714,6 +5731,15 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'children'      : [], \
                                      'niecesnephews' : [], \
                                      'coworkers'     : ['DPmm'], \
+                                     'friends'       : []}})
+
+    transform_dict.update({'DPrt' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['DPrt'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
                                      'friends'       : []}})
   
     transform_dict.update({'DPbn' : {'parents'       : ['DPb2'], \
