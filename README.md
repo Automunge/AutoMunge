@@ -524,14 +524,14 @@ assumes the label column is originally included in the train set.
 
 * labelsencoding_dict: a dictionary that can be used to reverse encode
 predictions that were generated from a downstream model (such as to
-convert a one-hot encoded set back to a single categorical set).
+convert a one-hot encoded set back to a single categorical set). (Note 
+that a much easier way to invert encodings is now to make use of the
+inversion parameter option in postmunge(.) function.)
 ```
 #Note that the labelsencoding_dict follows format:
 labelsencoding_dict = \
 {'(label root category)' : {'(label column header)' : {(normalization parameters)}}
 ```
-(Note that a much easier way to invert encodings is now to make use of the
-inversion parameter option in postmunge(.) function.)
 
 * finalcolumns_train: a list of the column headers corresponding to the
 training data. Note that the inclusion of suffix appenders is used to
