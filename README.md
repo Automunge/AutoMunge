@@ -2480,9 +2480,9 @@ on flip_prob parameter.
   - default infill: the DP function does not apply a default infill assume upstream nmbr cleans data
   - default NArowtype: numeric
   - suffix appender: '_nmbr_DPnb'
-  - assignparam parameters accepted: 'flip_prob' for percent of values with noise injection
+  - assignparam parameters accepted: 'flip_prob' for percent of values with noise injection,
 	                             'mu' for noise mean and 'sigma' for noise standard deviation
-	                             (defaults to 0.03, 0, 1.0 respectively), parameters should be
+	                             (defaults to 1.0, 0.03, 0, 1.0 respectively), parameters should be
 	                             passed to 'DPnb' transformation category from family tree
   - driftreport postmunge metrics: mu, sigma for DPnm, upstream z score via nmbr for others
   - inversion available: yes
@@ -2492,8 +2492,9 @@ remains in range 0-1 (by scaling neg noise when input <0.5 and scaling pos noise
   - default infill: the DP function does not apply a default infill assume upstream mnmx cleans data
   - default NArowtype: numeric
   - suffix appender: '_mnmx_DPmm'
-  - assignparam parameters accepted: 'mu' for noise mean and 'sigma' for noise standard deviation
-	                             (defaults to 0, 0.03 respectively), parameters should be
+  - assignparam parameters accepted: 'flip_prob' for percent of values with noise injection,
+                                     'mu' for noise mean and 'sigma' for noise standard deviation
+	                             (defaults to 1.0, 0, 0.03 respectively), parameters should be
 	                             passed to 'DPmm' transformation category from family tree
   - driftreport postmunge metrics: mu, sigma for DPnm, upstream minmax via mnmx for others
   - inversion available: yes
