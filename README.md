@@ -166,7 +166,7 @@ am.automunge(df_train, df_test = False, \
                           'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
                           'wkds':[], 'wkdo':[], 'mnts':[], 'mnto':[], \
                           'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
-                          'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
+                          'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], 'DPrt':[], \
                           'DPnb':[], 'DPmm':[], 'DPbn':[], 'DPod':[], 'DP10':[], 'DPoh':[], \
                           'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[], 'exc6':[], \
                           'null':[], 'copy':[], 'shfl':[], 'eval':[], 'ptfm':[]}, \
@@ -396,7 +396,7 @@ am.automunge(df_train, df_test = False, \
                           'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
                           'wkds':[], 'wkdo':[], 'mnts':[], 'mnto':[], \
                           'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
-                          'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
+                          'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], 'DPrt':[], \
                           'DPnb':[], 'DPmm':[], 'DPbn':[], 'DPod':[], 'DP10':[], 'DPoh':[], \
                           'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[], 'exc6':[], \
                           'null':[], 'copy':[], 'shfl':[], 'eval':[], 'ptfm':[]}, \
@@ -624,7 +624,7 @@ am.automunge(df_train, df_test = False, \
                           'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
                           'wkds':[], 'wkdo':[], 'mnts':[], 'mnto':[], \
                           'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
-                          'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
+                          'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], 'DPrt':[], \
                           'DPnb':[], 'DPmm':[], 'DPbn':[], 'DPod':[], 'DP10':[], 'DPoh':[], \
                           'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[], 'exc6':[], \
                           'null':[], 'copy':[], 'shfl':[], 'eval':[], 'ptfm':[]}, \
@@ -1009,7 +1009,7 @@ assigncat = {'nmbr':[], 'retn':[], 'mnmx':[], 'mean':[], 'MAD3':[], 'lgnm':[], \
              'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
              'wkds':[], 'wkdo':[], 'mnts':[], 'mnto':[], \
              'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
-             'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
+             'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], 'DPrt':[], \
              'DPnb':[], 'DPmm':[], 'DPbn':[], 'DPod':[], 'DP10':[], 'DPoh':[], \
              'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[], 'exc6':[], \
              'null':[], 'copy':[], 'shfl':[], 'eval':[], 'ptfm':[]}
