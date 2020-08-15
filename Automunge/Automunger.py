@@ -28843,7 +28843,7 @@ class AutoMunge:
                              'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
                              'wkds':[], 'wkdo':[], 'mnts':[], 'mnto':[], \
                              'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
-                             'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], \
+                             'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], 'DPrt':[], \
                              'DPnb':[], 'DPmm':[], 'DPbn':[], 'DPod':[], 'DP10':[], 'DPoh':[], \
                              'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[], 'exc6':[], \
                              'null':[], 'copy':[], 'shfl':[], 'eval':[], 'ptfm':[]}, \
@@ -30264,7 +30264,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.47'
+    automungeversion = '4.48'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -38000,6 +38000,7 @@ class AutoMunge:
     #check if df_test is to be treated as train or test data
     traindata = postprocess_dict['traindata']
     
+    #if this is train data we'll inject noise
     if traindata is True:
       
       #first we'll derive our sampled noise for injection
@@ -38053,11 +38054,6 @@ class AutoMunge:
         mdf_test[DPrt_column] = (mdf_test[DPrt_column]) * multiplier + offset
       elif scalingapproach == 'mxmn':
         mdf_test[DPrt_column] = (mdf_test[DPrt_column] - (maximum - minimum) / divisor) * multiplier + offset
-      
-    elif traindata is False:
-      
-      #for test data is just pass-through
-      mdf_test[DPrt_column] = mdf_test[column]
 
     return mdf_test
 
