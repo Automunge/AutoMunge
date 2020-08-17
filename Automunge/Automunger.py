@@ -27724,7 +27724,6 @@ class AutoMunge:
 
     return result1, result2
   
-  #
   def check_haltingproblem(self, transformdict, transform_dict, max_check_count = 111):
     """
     #evaluates user passed transformdict entries to check for infinite loops
@@ -27794,8 +27793,7 @@ class AutoMunge:
               break
     
     return haltingproblem_result
-  
-  #
+
   def check_offspring(self, transform_dict, root_category, orig_root_category, \
                       upstream_list, check_count, max_check_count):
     """
@@ -27850,6 +27848,54 @@ class AutoMunge:
             break
     
     return offspring_result, check_count
+
+  def check_assignnan(self, assignnan, transform_dict, df_train_list):
+    """
+    #validates automunge parameter assignnan
+    #which accepts form:
+    #assignnan = {'categories':{'cat1':[], 'cat2':[]}, 'columns':{'col1':[], 'col2':[]}, 'global':[]}
+    
+    #where 'cat1' / 'cat2' are examples of root categories
+    #and 'col1' / 'col2' are examples of recieved source columns
+    #and the lists contain entries for those source columns or root categories
+    #which are to be converted to nan for purposes of infill
+    
+    #this function confirms only entries for 'cat' or 'col' in first tier
+    #and that entries within cat are valid root categories from transform_dict
+    #and that entries within col are valid column headers from df_train
+    """
+    
+    check_assignnan_result = False
+    
+    for entry1 in assignnan:
+      
+      if entry1 not in ['categories', 'columns', 'global']:
+        
+        check_assignnan_result = True
+        print("error: assignparam parameter valid entries for first tier are 'categories', 'columns', and 'global'")
+        print()
+        
+    if 'categories' in assignnan:
+      
+      for entry2 in assignnan['categories']:        
+        
+        if entry2 not in transform_dict:
+          
+          check_assignnan_result = True
+          print("error: assignparam parameter valid entries under 'categories' must be root categories defined in transform_dict")
+          print()
+          
+    if 'columns' in assignnan:
+      
+      for entry2 in assignnan['columns']:        
+        
+        if entry2 not in df_train_list:
+          
+          check_assignnan_result = True
+          print("error: assignparam parameter valid entries under 'columns' must be source columns from passed df_train")
+          print()
+
+    return check_assignnan_result
 
   def check_ML_cmnd(self, ML_cmnd):
     """
@@ -28092,6 +28138,57 @@ class AutoMunge:
           assignparam[categorykey][str(columnkey)] = assignparam[categorykey].pop(columnkey)
           
     return assignparam
+
+  def assignnan_str_convert(self, assignnan):
+    """
+    #convention is that user can pass integers to column assignments
+    #and they are converted to strings
+    """
+    
+    if 'columns' in assignnan:
+      
+      columns_copy = deepcopy(assignnan['columns'])
+      
+      for entry in columns_copy:
+        
+        if isinstance(entry, int):
+          
+          assignnan['columns'].update({str(entry) : assignnan['columns'][entry]})
+          
+          del assignnan['columns'][entry]
+          
+    return assignnan
+
+  def assignnan_list_convert(self, assignnan):
+    """
+    #converts any passed infill values to lists in case passed as single value
+    """
+    
+    if 'categories' in assignnan:
+      
+      #convert any entries to lists
+      for entry1 in assignnan['categories']:
+        
+        if not isinstance(assignnan['categories'][entry1], list):
+          
+          assignnan['categories'][entry1] = [assignnan['categories'][entry1]]
+          
+    if 'columns' in assignnan:
+      
+      #convert any entries to lists
+      for entry2 in assignnan['columns']:
+        
+        if not isinstance(assignnan['columns'][entry2], list):
+          
+          assignnan['columns'][entry2] = [assignnan['columns'][entry2]]
+          
+    if 'global' in assignnan:
+      
+      if not isinstance(assignnan['global'], list):
+        
+        assignnan['global'] = [assignnan['global']]
+          
+    return assignnan
   
   def floatprecision_transform(self, df, columnkeylist, floatprecision):
     """
@@ -28739,16 +28836,72 @@ class AutoMunge:
       
     return df, inputcolumn
   
-  def convert_inf_to_nan(self, df):
+  def convert_inf_to_nan(self, df, column):
     """
     #converts all np.inf values in a dataframe to np.nan
     #similar to pandas pd.options.mode.use_inf_as_na = True
     #except that it works
     """
     
-    df[df == np.inf] = np.nan
-    df[df == -np.inf] = np.nan
+    df[column] = np.where(df[column] == np.inf, np.nan, df[column])
+    df[column] = np.where(df[column] == -np.inf, np.nan, df[column])
     
+    return df
+
+  def assignnan_convert(self, df, column, category, assignnan):
+    """
+    #assignnan is automunge(.) parameter that allows user to designate values that will
+    #be given infill treatment for a given root category or source column
+    #such as to supplement processdict NArowtype entries with values that may be 
+    #special for a data set
+    #as an example, in some cases datasets may not be recieved with NaN for infill, 
+    #and may instead be a designated value such as a number or string such as 'unknown'
+    #assignnan_convert addresses this scenario by simply converting those designations to nan
+
+    #where values are passed in automunge(.) parameter assignnan
+    #assignnan = {'categories':{'cat1':[], 'cat2':[]}, 'columns':{'col1':[], 'col2':[]}, 'global':[]}
+    
+    #where in case of specification redundancy column designation takes precedence
+    #and where category is reffering to the root category associated with a column
+    """
+    
+    nanpoints = []
+    
+    cat_process = False
+    
+    if 'categories' in assignnan:
+      
+      if category in assignnan['categories']:
+        
+        cat_process = True
+        
+        if 'columns' in assignnan:
+          
+          if column in assignnan['columns']:
+            
+            cat_process = False
+            
+        if cat_process is True:
+          
+          nanpoints = assignnan['categories'][category]
+          
+    if cat_process is False:
+      
+      if 'columns' in assignnan:
+        
+        if column in assignnan['columns']:
+          
+          nanpoints = assignnan['columns'][column]
+            
+    if 'global' in assignnan:
+      
+      nanpoints += assignnan['global']
+          
+    #great we've got our designated infill values, now just convert to nan
+    for entry in nanpoints:
+      
+      df[column] = np.where(df[column] == entry, np.nan, df[column])
+      
     return df
   
   def df_split(self, df, ratio, shuffle_param, randomseed):
@@ -28847,13 +29000,13 @@ class AutoMunge:
                              'DPnb':[], 'DPmm':[], 'DPbn':[], 'DPod':[], 'DP10':[], 'DPoh':[], \
                              'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[], 'exc6':[], \
                              'null':[], 'copy':[], 'shfl':[], 'eval':[], 'ptfm':[]}, \
+                assignparam = {'default_assignparam' : {'(category)' : {'(parameter)' : 42}}, \
+                                        '(category)' : {'(column)'   : {'(parameter)' : 42}}}, \
                 assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                                 'adjinfill':[], 'meaninfill':[], 'medianinfill':[], \
                                 'modeinfill':[], 'lcinfill':[], 'naninfill':[]}, \
-                assignparam = {'default_assignparam' : {'(category)' : {'(parameter)' : 42}}, \
-                                        '(category)' : {'(column)'   : {'(parameter)' : 42}}}, \
-                transformdict = {}, processdict = {}, evalcat = False, \
-                printstatus = True):
+                assignnan = {'categories':{}, 'columns':{}, 'global':[]}, \
+                transformdict = {}, processdict = {}, evalcat = False, printstatus = True):
     """
     #This function documented in READ ME, available online at:
     # https://github.com/Automunge/AutoMunge/blob/master/README.md
@@ -28869,11 +29022,15 @@ class AutoMunge:
     assigncat = self.assigncat_str_convert(assigncat)
     assigninfill = self.assigninfill_str_convert(assigninfill)
     assignparam = self.assignparam_str_convert(assignparam)
+    assignnan = self.assignnan_str_convert(assignnan)
 
     #similarily, quick conversion of any passed column idenitfiers to str
     labels_column = self.parameter_str_convert(labels_column)
     trainID_column = self.parameter_str_convert(trainID_column)
     testID_column = self.parameter_str_convert(testID_column)
+
+    #convert assignnan if not recieved as lists in bottom tiers
+    assignnan = self.assignnan_list_convert(assignnan)
 
     #quick check to ensure each column only assigned once in assigncat and assigninfill
     check_assigncat_result = self.check_assigncat(assigncat)
@@ -29051,6 +29208,12 @@ class AutoMunge:
     self.check_columnheaders(list(df_train))
 
     miscparameters_results.update({'check_columnheaders_result' : check_columnheaders_result})
+
+    #validate assignnan has valid root categories and source columns
+    #note this takes place before any label column split from df_train
+    check_assignnan_result = self.check_assignnan(assignnan, transform_dict, list(df_train))
+    
+    miscparameters_results.update({'check_assignnan_result' : check_assignnan_result})
         
     #if user passes as True labels_column passed based on final column (including single column scenario)
     #labels_column = True
@@ -29370,13 +29533,6 @@ class AutoMunge:
     #create empty dictionary to serve as store for drift metrics
     drift_dict = {}
     
-    #Automunge currently is based on convention that all np.inf are treated as np.nan
-    #for purposes of infill
-    df_train = self.convert_inf_to_nan(df_train)
-    df_labels = self.convert_inf_to_nan(df_labels)
-    df_test = self.convert_inf_to_nan(df_test)
-    df_testlabels = self.convert_inf_to_nan(df_testlabels)
-    
     #For each column, determine appropriate processing function
     #processing function will be based on evaluation of train set
     for column in columns_train:
@@ -29459,6 +29615,22 @@ class AutoMunge:
       #to support the postprocess_dict entry below, let's first create a temp
       #list of columns
       templist1 = list(df_train)
+
+      #Before calling getNArows, we'll allow user to designate either by category or column 
+      #designated source column values that will be treated as infill
+      #where in case of specification redundancy column designation takes precedence
+      #and where category is reffering to the root category associated with a column
+      #and global just means this value treated universally as nan
+      #where values are passed in automunge(.) parameter assignnan
+      #assignnan = {'categories':{'cat1':[], 'cat2':[]}, 'columns':{'col1':[], 'col2':[]}, 'global':[]}
+      
+      df_train = self.assignnan_convert(df_train, column, category, assignnan)
+      df_test = self.assignnan_convert(df_test, column, category, assignnan)
+      
+      #we also have convention that infinity values are by default subjected to infill
+      #based on understanding that ML libraries in general do not accept thesae kind of values
+      df_train = self.convert_inf_to_nan(df_train, column)
+      df_test = self.convert_inf_to_nan(df_test, column)
 
       #create NArows (column of True/False where True coresponds to missing data)
       trainNArows, drift_dict = self.getNArows(df_train, column, category, postprocess_dict, drift_dict=drift_dict, driftassess=True)
@@ -29657,6 +29829,14 @@ class AutoMunge:
   #         #we forgo z-score normalization, here let's make that distinction
   #         if labelscategory in ['nmbr']:
   #           labelscategory = 'exc3'
+
+      #apply assignnan_convert
+      df_labels = self.assignnan_convert(df_labels, labels_column, labelscategory, assignnan)
+      df_testlabels = self.assignnan_convert(df_testlabels, labels_column, labelscategory, assignnan)
+      
+      #apply convert_inf_to_nan
+      df_labels = self.convert_inf_to_nan(df_labels, labels_column)
+      df_testlabels = self.convert_inf_to_nan(df_testlabels, labels_column)
 
       #printout display progress
       if printstatus is True:
@@ -30264,7 +30444,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.48'
+    automungeversion = '4.49'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -30331,6 +30511,7 @@ class AutoMunge:
                              'postprocess_assigninfill_dict' : postprocess_assigninfill_dict, \
                              'assignparam' : assignparam, \
                              'assign_param' : assign_param, \
+                             'assignnan' : assignnan, \
                              'ML_cmnd' : ML_cmnd, \
                              'miscparameters_results' : miscparameters_results, \
                              'printstatus' : printstatus, \
@@ -39542,11 +39723,6 @@ class AutoMunge:
       print("error, different order of column labels in the train and test set")
       return
 
-    #Automunge currently is based on convention that all np.inf are treated as np.nan
-    #for purposes of infill
-    df_test = self.convert_inf_to_nan(df_test)
-    df_testlabels = self.convert_inf_to_nan(df_testlabels)
-
     #here we'll perform drift report if elected
     #if driftreport is True:
     if driftreport in [True, 'report_full']:
@@ -39641,6 +39817,12 @@ class AutoMunge:
       #so if we didn't delete the column let's proceed
       else:
 
+        #assignnan application
+        df_test = self.assignnan_convert(df_test, column, category, postprocess_dict['assignnan'])
+
+        #we also have convention that infinity values are by default subjected to infill
+        df_test = self.convert_inf_to_nan(df_test, column)
+
         #create NArows (column of True/False where True coresponds to missing data)
         if driftreport in ['efficient', True]:
           testNArows, postdrift_dict = \
@@ -39703,6 +39885,12 @@ class AutoMunge:
       columnkey = postprocess_dict['origcolumn'][labels_column]['columnkey']        
       #traincategory = postprocess_dict['column_dict'][columnkey]['origcategory']
       labelscategory = postprocess_dict['origcolumn'][labels_column]['category']
+
+      #apply assignnan_convert
+      df_testlabels = self.assignnan_convert(df_testlabels, labels_column, labelscategory, postprocess_dict['assignnan'])
+      
+      #apply convert_inf_to_nan
+      df_testlabels = self.convert_inf_to_nan(df_testlabels, labels_column)
 
       if printstatus is True:
         #printout display progress
