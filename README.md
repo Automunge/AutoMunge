@@ -170,13 +170,13 @@ am.automunge(df_train, df_test = False, \
                           'DPnb':[], 'DPmm':[], 'DPbn':[], 'DPod':[], 'DP10':[], 'DPoh':[], \
                           'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[], 'exc6':[], \
                           'null':[], 'copy':[], 'shfl':[], 'eval':[], 'ptfm':[]}, \
+             assignparam = {'default_assignparam' : {'(category)' : {'(parameter)' : 42}}, \
+                                     '(category)' : {'(column)'   : {'(parameter)' : 42}}}, \
              assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                              'adjinfill':[], 'meaninfill':[], 'medianinfill':[], \
                              'modeinfill':[], 'lcinfill':[], 'naninfill':[]}, \
-             assignparam = {'default_assignparam' : {'(category)' : {'(parameter)' : 42}}, \
-                                     '(category)' : {'(column)'   : {'(parameter)' : 42}}}, \
-             transformdict = {}, processdict = {}, evalcat = False, \
-             printstatus = True)
+             assignnan = {'categories':{}, 'columns':{}, 'global':[]}, \
+             transformdict = {}, processdict = {}, evalcat = False, printstatus = True)
 ```
 
 Please remember to save the automunge(.) returned object postprocess_dict 
@@ -400,13 +400,13 @@ am.automunge(df_train, df_test = False, \
                           'DPnb':[], 'DPmm':[], 'DPbn':[], 'DPod':[], 'DP10':[], 'DPoh':[], \
                           'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[], 'exc6':[], \
                           'null':[], 'copy':[], 'shfl':[], 'eval':[], 'ptfm':[]}, \
+             assignparam = {'default_assignparam' : {'(category)' : {'(parameter)' : 42}}, \
+                                     '(category)' : {'(column)'   : {'(parameter)' : 42}}}, \
              assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                              'adjinfill':[], 'meaninfill':[], 'medianinfill':[], \
                              'modeinfill':[], 'lcinfill':[], 'naninfill':[]}, \
-             assignparam = {'default_assignparam' : {'(category)' : {'(parameter)' : 42}}, \
-                                     '(category)' : {'(column)'   : {'(parameter)' : 42}}}, \
-             transformdict = {}, processdict = {}, evalcat = False, \
-             printstatus = True)
+             assignnan = {'categories':{}, 'columns':{}, 'global':[]}, \
+             transformdict = {}, processdict = {}, evalcat = False, printstatus = True)
 ```
 
 Or for the postmunge function:
@@ -628,13 +628,13 @@ am.automunge(df_train, df_test = False, \
                           'DPnb':[], 'DPmm':[], 'DPbn':[], 'DPod':[], 'DP10':[], 'DPoh':[], \
                           'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[], 'exc6':[], \
                           'null':[], 'copy':[], 'shfl':[], 'eval':[], 'ptfm':[]}, \
+             assignparam = {'default_assignparam' : {'(category)' : {'(parameter)' : 42}}, \
+                                     '(category)' : {'(column)'   : {'(parameter)' : 42}}}, \
              assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                              'adjinfill':[], 'meaninfill':[], 'medianinfill':[], \
                              'modeinfill':[], 'lcinfill':[], 'naninfill':[]}, \
-             assignparam = {'default_assignparam' : {'(category)' : {'(parameter)' : 42}}, \
-                                     '(category)' : {'(column)'   : {'(parameter)' : 42}}}, \
-             transformdict = {}, processdict = {}, evalcat = False, \
-             printstatus = True)
+             assignnan = {'categories':{}, 'columns':{}, 'global':[]}, \
+             transformdict = {}, processdict = {}, evalcat = False, printstatus = True)
 ```
 
 * df_train: a pandas dataframe or numpy array containing a structured 
@@ -1032,52 +1032,6 @@ assigncat = {'nbr2':['nmbrcolumn1', 'nmbrcolumn2']}
 Note that for single entry column assignments a user can just pass the string or integer 
 of the column header without the list brackets.
 
-* assigninfill 
-```
-#Here are the current infill options built into our library, which
-#we are continuing to build out.
-assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
-                'adjinfill':[], 'meaninfill':[], 'medianinfill':[], \
-                'modeinfill':[], 'lcinfill':[], 'naninfill':[]}
-```
-A user may add column identifier strings to each of these lists to designate the 
-column-specific infill approach for missing or improperly formatted values. The
-source column identifier strings may be passed for assignment of common infill 
-approach to all columns derived from same source column, or derived column identifier
-strings (including the suffix appenders from transformations) may be passed to assign 
-infill approach to a specific derived column. Note that passed derived column headers 
-take precedence in case of overlap with passed source column headers. Note that infill
-defaults to MLinfill if nothing assigned and the MLinfill argument to automunge is set 
-to True. Note that for single entry column assignments a user can just pass the string 
-or integer of the column header without the list brackets. Note that the infilled cells
-are based on the rows corresponding to activations from the NArw_marker parameter.
-```
-#  - stdrdinfill  : the default infill specified in the library of transformations for 
-#                   each transform below. 
-#  - MLinfill     : for MLinfill to distinct columns when MLinfill parameter not activated
-#  - zeroinfill   : inserting the integer 0 to missing cells. 
-#  - oneinfill    : inserting the integer 1. 
-#  - adjinfill    : passing the value from the preceding row to missing cells. 
-#  - meaninfill   : inserting the mean derived from the train set to numeric columns. 
-#  - medianinfill : inserting the median derived from the train set to numeric columns. 
-#                   (Note currently boolean columns derived from numeric are not supported 
-#                   for mean/median and for those cases default to those infill from stdrdinfill.) 
-#  - modeinfill   : inserting the most common value for a set, note that modeinfill 
-#                   supports multi-column boolean encodings, such as one-hot encoded sets or 
-#                   binary encoded sets. 
-#  - lcinfill     : comparable to modeinfill but with least common value instead of most. 
-#  - naninfill    : inserting NaN to missing cells. 
-
-#an example of passing columns to assign infill via assigninfill:
-#for source column 'column1', which hypothetically is returned through automunge(.) as
-#'column1_nmbr', 'column1_mnmx', 'column1_bxcx_nmbr'
-#we can assign MLinfill to 'column1_bxcx_nmbr' and meaninfill to the other two by passing 
-#to an automunge call: 
-
-assigninfill = {'MLinfill':['column1_bxcx_nmbr'], 'meaninfill':['column1']}
-```
-Please note that support of assigninfill to label columns is intended as a future extension.
-
 * assignparam
 A user may pass column-specific parameters to those transformation functions
 that accept parameters. Any parameters passed to automunge(.) will be saved in
@@ -1141,6 +1095,74 @@ assignparam = {'category1' : {'column1' : {'param1' : 123}, 'column2' : {'param1
 See the Library of Transformations section below for those transformations that 
 accept parameters.
 
+* assigninfill 
+```
+#Here are the current infill options built into our library, which
+#we are continuing to build out.
+assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
+                'adjinfill':[], 'meaninfill':[], 'medianinfill':[], \
+                'modeinfill':[], 'lcinfill':[], 'naninfill':[]}
+```
+A user may add column identifier strings to each of these lists to designate the 
+column-specific infill approach for missing or improperly formatted values. The
+source column identifier strings may be passed for assignment of common infill 
+approach to all columns derived from same source column, or derived column identifier
+strings (including the suffix appenders from transformations) may be passed to assign 
+infill approach to a specific derived column. Note that passed derived column headers 
+take precedence in case of overlap with passed source column headers. Note that infill
+defaults to MLinfill if nothing assigned and the MLinfill argument to automunge is set 
+to True. Note that for single entry column assignments a user can just pass the string 
+or integer of the column header without the list brackets. Note that the infilled cells
+are based on the rows corresponding to activations from the NArw_marker parameter.
+```
+#  - stdrdinfill  : the default infill specified in the library of transformations for 
+#                   each transform below. 
+#  - MLinfill     : for MLinfill to distinct columns when MLinfill parameter not activated
+#  - zeroinfill   : inserting the integer 0 to missing cells. 
+#  - oneinfill    : inserting the integer 1. 
+#  - adjinfill    : passing the value from the preceding row to missing cells. 
+#  - meaninfill   : inserting the mean derived from the train set to numeric columns. 
+#  - medianinfill : inserting the median derived from the train set to numeric columns. 
+#                   (Note currently boolean columns derived from numeric are not supported 
+#                   for mean/median and for those cases default to those infill from stdrdinfill.) 
+#  - modeinfill   : inserting the most common value for a set, note that modeinfill 
+#                   supports multi-column boolean encodings, such as one-hot encoded sets or 
+#                   binary encoded sets. 
+#  - lcinfill     : comparable to modeinfill but with least common value instead of most. 
+#  - naninfill    : inserting NaN to missing cells. 
+
+#an example of passing columns to assign infill via assigninfill:
+#for source column 'column1', which hypothetically is returned through automunge(.) as
+#'column1_nmbr', 'column1_mnmx', 'column1_bxcx_nmbr'
+#we can assign MLinfill to 'column1_bxcx_nmbr' and meaninfill to the other two by passing 
+#to an automunge call: 
+
+assigninfill = {'MLinfill':['column1_bxcx_nmbr'], 'meaninfill':['column1']}
+```
+Please note that support of assigninfill to label columns is intended as a future extension.
+
+* assignnan: for use to designate data set entries that will be targets for infill, such as 
+may be entries not covered by NArowtype definitions from processdict. For example, we have 
+general convention that NaN is a target for infill, but a data set may be passed with a custom 
+string signal for infill, such as 'unknown'. This assignment operator saves the step of manual 
+munging prior to passing data to functions by allowing user to specify custom targets for infill.
+
+assignnan accepts following form, populated in first tier with any of 'categories'/'columns'/'global'
+```
+assignnan = {'categories':{}, 'columns':{}, 'global':[]}
+```
+Note that global takes entry as a list, while categories and columns take entries as a dictionary 
+with values of the target assignments and corresponding lists of terms, which could be populated 
+with entries as e.g.:
+```
+assignnan = {'categories' : {'cat1' : ['unknown1']}, \
+             'columns' : {'col1' : ['unknown2']}, \
+	     'global' : ['unknown3']}
+```
+Where 'cat1' is example of root category, 'col1' is example of source column header, and 'unknown1'/2/3 
+are examples of entries intended for infill corresponding to each. In cases of redundant specification, 
+global takes precendence over columns which takes precedence over categories. Note that lists of terms 
+can also be passed as single values such as string / number for internal conversion to list.
 
 * transformdict: allows a user to pass a custom tree of transformations.
 Note that a user may define their own (traditionally 4 character) string "root"
