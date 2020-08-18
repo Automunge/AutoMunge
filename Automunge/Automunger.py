@@ -2813,6 +2813,7 @@ class AutoMunge:
     # - 'exclude' for columns which will be excluded from ML infill
     # - '1010' for binary encoded columns, will be converted to onehot for ML
     # - 'boolexclude' boolean set suitable for Binary transform but exluded from MLinfill
+    # - 'totalexclude' sets excluded from all methods that inspect MLinfill, such as for excl category
     '''
     
     process_dict = {}
@@ -4819,7 +4820,7 @@ class AutoMunge:
                                   'inverseprocess' : self.inverseprocess_excl, \
                                   'info_retention' : True, \
                                   'NArowtype' : 'exclude', \
-                                  'MLinfilltype' : 'boolexclude', \
+                                  'MLinfilltype' : 'totalexclude', \
                                   'labelctgy' : 'excl'}})
     process_dict.update({'exc2' : {'dualprocess' : self.process_exc2_class, \
                                   'singleprocess' : None, \
@@ -4859,7 +4860,7 @@ class AutoMunge:
                                   'inverseprocess' : self.inverseprocess_UPCS, \
                                   'info_retention' : True, \
                                   'NArowtype' : 'exclude', \
-                                  'MLinfilltype' : 'exclude', \
+                                  'MLinfilltype' : 'totalexclude', \
                                   'labelctgy' : 'excl'}})
     process_dict.update({'shfl' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_shfl_class, \
@@ -22299,7 +22300,7 @@ class AutoMunge:
 #       NArows = self.parsedate(df2, column)
       
     #if category in ['excl']:
-    if NArowtype in ['exclude', 'boolexclude']:
+    if NArowtype in ['exclude', 'boolexclude', 'totalexclude']:
       
       if driftassess is True:
         drift_dict.update({column : {}})
@@ -23641,7 +23642,7 @@ class AutoMunge:
       df_testinfill = pd.DataFrame(df_testinfill, columns = columnslist)
 
     #if category in ['date', 'NArw', 'null']:
-    if MLinfilltype in ['exclude', 'boolexclude']:
+    if MLinfilltype in ['exclude', 'boolexclude', 'totalexclude']:
 
       #create empty sets for now
       #an extension of this method would be to implement a comparable infill \
@@ -23925,7 +23926,7 @@ class AutoMunge:
           df = df.drop(['tempindex1'], axis=1)
 
     #if category == 'date':
-    if MLinfilltype in ['exclude', 'boolexclude']:
+    if MLinfilltype in ['exclude', 'boolexclude', 'totalexclude']:
       #this spot reserved for future update to incorporate address of datetime\
       #category data
       df = df
@@ -25206,7 +25207,7 @@ class AutoMunge:
         if column in postprocess_dict['column_dict']:
           
           if process_dict[postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-          != 'boolexclude':
+          not in ['boolexclude', 'totalexclude']:
 
             if iteration == 0:
               
@@ -25476,7 +25477,7 @@ class AutoMunge:
       for column in infillcolumns_list:
         
         if process_dict[postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-        != 'boolexclude':
+        not in ['boolexclude', 'totalexclude']:
 
           if iteration == 0:
             
@@ -26702,7 +26703,7 @@ class AutoMunge:
         #   or set(df[checkcolumn].unique()) == {0} \
         #   or set(df[checkcolumn].unique()) == {1}:
           if postprocess_dict['process_dict'][postprocess_dict['column_dict'][checkcolumn]['category']]['MLinfilltype'] \
-          in ['multirt', 'binary', '1010', 'boolexclude', 'concurrent_act']:
+          in ['multirt', 'binary', '1010', 'boolexclude', 'concurrent_act', 'totalexclude']:
             if checkcolumn not in PCAexcl:
               PCAexcl.append(checkcolumn)
             bool_PCAexcl.append(checkcolumn)
@@ -26717,7 +26718,7 @@ class AutoMunge:
         #   or set(df[checkcolumn].unique()) == {1} \
         #   or checkcolumn[-5:] == '_ordl':
           if postprocess_dict['process_dict'][postprocess_dict['column_dict'][checkcolumn]['category']]['MLinfilltype'] \
-          in ['singlct', 'binary', 'multirt', '1010', 'boolexclude', 'concurrent_act']:
+          in ['singlct', 'binary', 'multirt', '1010', 'boolexclude', 'concurrent_act', 'totalexclude']:
             #or isinstance(df[checkcolumn].dtype, pd.api.types.CategoricalDtype):
             if checkcolumn not in PCAexcl:
               PCAexcl.append(checkcolumn)
@@ -27865,13 +27866,15 @@ class AutoMunge:
     #and that entries within col are valid column headers from df_train
     """
     
-    check_assignnan_result = False
+    check_assignnan_toplevelentries_result = False
+    check_assignnan_categories_result = False
+    check_assignnan_columns_result = False
     
     for entry1 in assignnan:
       
       if entry1 not in ['categories', 'columns', 'global']:
         
-        check_assignnan_result = True
+        check_assignnan_toplevelentries_result = True
         print("error: assignparam parameter valid entries for first tier are 'categories', 'columns', and 'global'")
         print()
         
@@ -27881,7 +27884,7 @@ class AutoMunge:
         
         if entry2 not in transform_dict:
           
-          check_assignnan_result = True
+          check_assignnan_categories_result = True
           print("error: assignparam parameter valid entries under 'categories' must be root categories defined in transform_dict")
           print()
           
@@ -27891,11 +27894,11 @@ class AutoMunge:
         
         if entry2 not in df_train_list:
           
-          check_assignnan_result = True
+          check_assignnan_columns_result = True
           print("error: assignparam parameter valid entries under 'columns' must be source columns from passed df_train")
           print()
 
-    return check_assignnan_result
+    return check_assignnan_toplevelentries_result, check_assignnan_categories_result, check_assignnan_columns_result
 
   def check_ML_cmnd(self, ML_cmnd):
     """
@@ -28848,7 +28851,7 @@ class AutoMunge:
     
     return df
 
-  def assignnan_convert(self, df, column, category, assignnan):
+  def assignnan_convert(self, df, column, category, assignnan, postprocess_dict):
     """
     #assignnan is automunge(.) parameter that allows user to designate values that will
     #be given infill treatment for a given root category or source column
@@ -28866,36 +28869,41 @@ class AutoMunge:
     """
     
     nanpoints = []
-    
+
     cat_process = False
-    
+
     if 'categories' in assignnan:
-      
+
       if category in assignnan['categories']:
-        
+
         cat_process = True
-        
+
         if 'columns' in assignnan:
-          
+
           if column in assignnan['columns']:
-            
+
             cat_process = False
-            
+
         if cat_process is True:
-          
+
           nanpoints = assignnan['categories'][category]
-          
+
     if cat_process is False:
-      
+
       if 'columns' in assignnan:
-        
+
         if column in assignnan['columns']:
-          
+
           nanpoints = assignnan['columns'][column]
-            
-    if 'global' in assignnan:
-      
-      nanpoints += assignnan['global']
+          
+    #we'll have convention that for complete passthrough columns without infill (like: excl, exc6)
+    #global assignnan assignments don't apply and must be assigned explicitly
+    #either in assignnan categories or columns entries
+    if postprocess_dict['process_dict'][category]['MLinfilltype'] not in ['totalexclude']:
+
+      if 'global' in assignnan:
+
+        nanpoints += assignnan['global']
           
     #great we've got our designated infill values, now just convert to nan
     for entry in nanpoints:
@@ -29211,9 +29219,12 @@ class AutoMunge:
 
     #validate assignnan has valid root categories and source columns
     #note this takes place before any label column split from df_train
-    check_assignnan_result = self.check_assignnan(assignnan, transform_dict, list(df_train))
-    
-    miscparameters_results.update({'check_assignnan_result' : check_assignnan_result})
+    check_assignnan_toplevelentries_result, check_assignnan_categories_result, check_assignnan_columns_result \
+    = self.check_assignnan(assignnan, transform_dict, list(df_train))
+  
+    miscparameters_results.update({'check_assignnan_toplevelentries_result' : check_assignnan_toplevelentries_result, \
+                                   'check_assignnan_categories_result'      : check_assignnan_categories_result, \
+                                   'check_assignnan_columns_result'         : check_assignnan_columns_result})
         
     #if user passes as True labels_column passed based on final column (including single column scenario)
     #labels_column = True
@@ -29624,8 +29635,8 @@ class AutoMunge:
       #where values are passed in automunge(.) parameter assignnan
       #assignnan = {'categories':{'cat1':[], 'cat2':[]}, 'columns':{'col1':[], 'col2':[]}, 'global':[]}
       
-      df_train = self.assignnan_convert(df_train, column, category, assignnan)
-      df_test = self.assignnan_convert(df_test, column, category, assignnan)
+      df_train = self.assignnan_convert(df_train, column, category, assignnan, postprocess_dict)
+      df_test = self.assignnan_convert(df_test, column, category, assignnan, postprocess_dict)
       
       #we also have convention that infinity values are by default subjected to infill
       #based on understanding that ML libraries in general do not accept thesae kind of values
@@ -29831,8 +29842,8 @@ class AutoMunge:
   #           labelscategory = 'exc3'
 
       #apply assignnan_convert
-      df_labels = self.assignnan_convert(df_labels, labels_column, labelscategory, assignnan)
-      df_testlabels = self.assignnan_convert(df_testlabels, labels_column, labelscategory, assignnan)
+      df_labels = self.assignnan_convert(df_labels, labels_column, labelscategory, assignnan, postprocess_dict)
+      df_testlabels = self.assignnan_convert(df_testlabels, labels_column, labelscategory, assignnan, postprocess_dict)
       
       #apply convert_inf_to_nan
       df_labels = self.convert_inf_to_nan(df_labels, labels_column)
@@ -30444,7 +30455,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.49'
+    automungeversion = '4.50'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -38716,7 +38727,7 @@ class AutoMunge:
   #       print(df_traininfill)
 
       #if category == 'date':
-      if MLinfilltype in ['exclude', 'boolexclude']:
+      if MLinfilltype in ['exclude', 'boolexclude', 'totalexclude']:
 
         #create empty sets for now
         #an extension of this method would be to implement a comparable infill \
@@ -39818,7 +39829,7 @@ class AutoMunge:
       else:
 
         #assignnan application
-        df_test = self.assignnan_convert(df_test, column, category, postprocess_dict['assignnan'])
+        df_test = self.assignnan_convert(df_test, column, category, postprocess_dict['assignnan'], postprocess_dict)
 
         #we also have convention that infinity values are by default subjected to infill
         df_test = self.convert_inf_to_nan(df_test, column)
@@ -39887,7 +39898,7 @@ class AutoMunge:
       labelscategory = postprocess_dict['origcolumn'][labels_column]['category']
 
       #apply assignnan_convert
-      df_testlabels = self.assignnan_convert(df_testlabels, labels_column, labelscategory, postprocess_dict['assignnan'])
+      df_testlabels = self.assignnan_convert(df_testlabels, labels_column, labelscategory, postprocess_dict['assignnan'], postprocess_dict)
       
       #apply convert_inf_to_nan
       df_testlabels = self.convert_inf_to_nan(df_testlabels, labels_column)
