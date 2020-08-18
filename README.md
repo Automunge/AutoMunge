@@ -1301,6 +1301,7 @@ processdict =  {'newt' : {'dualprocess' : am.process_mnmx_class, \
 #                        will be converted to onehot for ML
 #              'exclude' for columns which will be excluded from ML infill
 #              'boolexclude' boolean set suitable for Binary transform but excluded from all infill (eg NArw entries)
+#              'totalexclude' for complete passthroughs (eg excl, exc6) without infill and excluded from assignnan global option
 
 #labelctgy: should be a string entry of a single transform category found as an entry in the root category's family 
 #tree. Used to determine a basis of feature selection for cases where labels are returned in multiple configurations.
@@ -2594,6 +2595,8 @@ so may only be passed in a user defined transformdict as an entry to cousins pri
 application "replaces" the source column. (Note that for any other transform a cousins primitive entry 
 only supplements the source column, 'excl' is the exception to the rule). For comparable functionality 
 eligible for other primitive entries in a passed transformdict please use 'exc6' transform instead. 
+Note that for assignnan designation of infill designations, excl is excluded from 'global' assignments
+(although may still be assigned explicitly under assignnan columns or categories entries).
   - default infill: none
   - default NArowtype: exclude
   - suffix appender: None or '_excl' (dependant on automunge(.) excl_suffix parameter)
@@ -2616,6 +2619,8 @@ eligible for other primitive entries in a passed transformdict please use 'exc6'
   - inversion available: pending
 * exc6: passes source column un-altered. (Comparable to 'excl' but eligible for entry to full set of 
 family tree primitives in a user-defined transformdict.)
+Note that for assignnan designation of infill designations, exc6 is excluded from 'global' assignments
+(although may still be assigned explicitly under assignnan columns or categories entries).
   - default infill: none
   - default NArowtype: exclude
   - suffix appender: '_exc6'
