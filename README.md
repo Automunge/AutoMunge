@@ -2602,21 +2602,21 @@ Note that for assignnan designation of infill designations, excl is excluded fro
   - suffix appender: None or '_excl' (dependant on automunge(.) excl_suffix parameter)
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: none
-  - inversion available: pending
+  - inversion available: yes
 * exc2/exc3/exc4: passes source column unaltered other than force to numeric, mode infill applied
   - default infill: mode
   - default NArowtype: numeric
   - suffix appender: '_exc2'
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: none
-  - inversion available: pending
+  - inversion available: yes
 * exc5: passes source column unaltered other than force to numeric, mode infill applied for non-integers
   - default infill: mode
   - default NArowtype: integer
   - suffix appender: '_exc5'
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: none
-  - inversion available: pending
+  - inversion available: yes
 * exc6: passes source column un-altered. (Comparable to 'excl' but eligible for entry to full set of 
 family tree primitives in a user-defined transformdict.)
 Note that for assignnan designation of infill designations, exc6 is excluded from 'global' assignments
@@ -2626,7 +2626,7 @@ Note that for assignnan designation of infill designations, exc6 is excluded fro
   - suffix appender: '_exc6'
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: none
-  - inversion available: pending
+  - inversion available: yes
 * eval: performs data property evaluation consistent with default automation to designated column
   - default infill: based on evaluation
   - default NArowtype: based on evaluation
@@ -2649,7 +2649,7 @@ than once with different parameters. Does not prepare column for ML on it's own.
   - suffix appender: '_copy'
   - assignparam parameters accepted: 'suffix' for custom suffix appender
   - driftreport postmunge metrics: none
-  - inversion available: pending
+  - inversion available: yes
 * shfl: shuffles the values of a column based on passed randomseed (Note that returned data may not 
 be numeric and predictive methods like ML infill and feature selection may not work for that scenario
 unless an additional transform is applied downstream.)
