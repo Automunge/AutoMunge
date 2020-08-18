@@ -1986,7 +1986,7 @@ My intuition says z-score has some benefits but really up to the user which they
   - suffix appender: '_mnm3'
   - assignparam parameters accepted: qmax or qmin to change the quantiles from 0.99/0.01
   - driftreport postmunge metrics: quantilemin / quantilemax / mean / std
-  - inversion available: pending
+  - inversion available: yes
 * mnm6: min-max scaling with test floor set capped at min of train set (ensures
 test set returned values >= 0, such as might be useful for kernel PCA for instance)
   - default infill: mean
@@ -1994,7 +1994,7 @@ test set returned values >= 0, such as might be useful for kernel PCA for instan
   - suffix appender: '_mnm6'
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: minimum / maximum / mean / std
-  - inversion available: pending
+  - inversion available: yes
 * retn: related to min/max scaling but retains +/- of values, based on conditions
 if max>=0 and min<=0, x=x/(max-min), elif max>=0 and min>=0 x=(x-min)/(max-min),
 elif max<=0 and min<=0 x=(x-max)/(max-min)
