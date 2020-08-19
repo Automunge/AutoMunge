@@ -2588,8 +2588,8 @@ on number of activations), followed by a 1010 binary encoding
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: none
   - inversion available: no
-* excl: passes source column un-altered. (Note that returned data may not be numeric and predictive 
-methods like ML infill and feature selection may not work for that scenario.)
+* excl: passes source column un-altered, no transforms or infill. (Note that returned data may not be 
+numeric and predictive methods like ML infill and feature selection may not work for that scenario.)
 Note that the excl transform is unique in that it is an in-place operation for efficiency purposes, and
 so may only be passed in a user defined transformdict as an entry to cousins primitive, although it's 
 application "replaces" the source column. (Note that for any other transform a cousins primitive entry 
@@ -2617,8 +2617,8 @@ Note that for assignnan designation of infill designations, excl is excluded fro
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: none
   - inversion available: yes
-* exc6: passes source column un-altered. (Comparable to 'excl' but eligible for entry to full set of 
-family tree primitives in a user-defined transformdict.)
+* exc6: passes source column un-altered, no transforms or infill. (Comparable to 'excl' but eligible 
+for entry to full set of family tree primitives in a user-defined transformdict.)
 Note that for assignnan designation of infill designations, exc6 is excluded from 'global' assignments
 (although may still be assigned explicitly under assignnan columns or categories entries).
   - default infill: none
