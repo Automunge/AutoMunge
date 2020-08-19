@@ -28839,7 +28839,7 @@ class AutoMunge:
       
     return df, inputcolumn
   
-  def convert_inf_to_nan(self, df, column, category):
+  def convert_inf_to_nan(self, df, column, category, postprocess_dict):
     """
     #converts all np.inf values in a dataframe to np.nan
     #similar to pandas pd.options.mode.use_inf_as_na = True
@@ -29643,8 +29643,8 @@ class AutoMunge:
       
       #we also have convention that infinity values are by default subjected to infill
       #based on understanding that ML libraries in general do not accept thesae kind of values
-      df_train = self.convert_inf_to_nan(df_train, column, category)
-      df_test = self.convert_inf_to_nan(df_test, column, category)
+      df_train = self.convert_inf_to_nan(df_train, column, category, postprocess_dict)
+      df_test = self.convert_inf_to_nan(df_test, column, category, postprocess_dict)
 
       #create NArows (column of True/False where True coresponds to missing data)
       trainNArows, drift_dict = self.getNArows(df_train, column, category, postprocess_dict, drift_dict=drift_dict, driftassess=True)
@@ -29849,8 +29849,8 @@ class AutoMunge:
       df_testlabels = self.assignnan_convert(df_testlabels, labels_column, labelscategory, assignnan, postprocess_dict)
       
       #apply convert_inf_to_nan
-      df_labels = self.convert_inf_to_nan(df_labels, labels_column, labelscategory)
-      df_testlabels = self.convert_inf_to_nan(df_testlabels, labels_column, labelscategory)
+      df_labels = self.convert_inf_to_nan(df_labels, labels_column, labelscategory, postprocess_dict)
+      df_testlabels = self.convert_inf_to_nan(df_testlabels, labels_column, labelscategory, postprocess_dict)
 
       #printout display progress
       if printstatus is True:
@@ -30458,7 +30458,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.51'
+    automungeversion = '4.52'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -39835,7 +39835,7 @@ class AutoMunge:
         df_test = self.assignnan_convert(df_test, column, category, postprocess_dict['assignnan'], postprocess_dict)
 
         #we also have convention that infinity values are by default subjected to infill
-        df_test = self.convert_inf_to_nan(df_test, column, category)
+        df_test = self.convert_inf_to_nan(df_test, column, category, postprocess_dict)
 
         #create NArows (column of True/False where True coresponds to missing data)
         if driftreport in ['efficient', True]:
@@ -39904,7 +39904,7 @@ class AutoMunge:
       df_testlabels = self.assignnan_convert(df_testlabels, labels_column, labelscategory, postprocess_dict['assignnan'], postprocess_dict)
       
       #apply convert_inf_to_nan
-      df_testlabels = self.convert_inf_to_nan(df_testlabels, labels_column, labelscategory)
+      df_testlabels = self.convert_inf_to_nan(df_testlabels, labels_column, labelscategory, postprocess_dict)
 
       if printstatus is True:
         #printout display progress
