@@ -39,7 +39,7 @@ oversampling for class imbalance in labels, automated dimensionality reductions
 such as based on feature importance, principal component analysis (PCA), or binary 
 encoding, automated evaluation of data property drift between training data and 
 subsequent data, and perhaps most importantly the simplest means for consistent 
-processing of additional data with just a single function call. 
+processing of additional data with a single function call. 
 
 > In other words, put simply:<br/>
 >  - **automunge(.)** prepares tabular data for machine learning.<br/>
