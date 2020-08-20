@@ -3212,7 +3212,9 @@ The convention is that each transform returns a derived column or set of columns
 from the source column by suffix appenders to the header strings. Note that in cases of root categories 
 whose family trees include multiple generations, there may be multiple inclusions of different suffix 
 appenders in a single returned column. Provided here is a concise sorted list of all suffix appenders so 
-that any user passing a custom defined transformation can avoid any unintentional duplication.
+that any user passing a custom defined transformation can avoid any unintentional duplication. Note that
+the transformation functions test for suffix overlap error from creating new column with headers already
+present in dataframe and return results in postprocess_dict['miscparameters_results']['suffixoverlap_results'].
 
 - '\_-10^'
 - '\_-10^' + i (where i is an integer corresponding to the source number power of ten)
@@ -6127,6 +6129,10 @@ def process_mnm8_class(mdf_train, mdf_test, column, category, \
   #  mnm8_parameter = params['parameter1']
   #else:
   #  mnm8_parameter = (some default value)
+  
+  #we'll initialize an item to store results from a type of validation on copy operation
+  #to detect suffix overlap error
+  suffixoverlap_results = {}
 
   #create the new column, using the category key as a suffix identifier
   
@@ -6134,6 +6140,14 @@ def process_mnm8_class(mdf_train, mdf_test, column, category, \
   mdf_train[column + '_mnm8'] = mdf_train[column].copy()
   mdf_test[column + '_mnm8'] = mdf_test[column].copy()
   
+  #note that to incorproate a suffix overlap validation into the copy operation on train set
+  #could instead use internal function 
+  #mdf_train, suffixoverlap_results = \
+  #am.df_copy_train(mdf_train, column, column + '_mnm8', suffixoverlap_results)
+  #or to run validation independant of copy operation could also run
+  #suffixoverlap_results = \
+  #am.df_check_suffixoverlap(mdf_train, [column + '_mnm8'], suffixoverlap_results)
+  #(using am. for externally defined functions or self. for internally defined)
   
   #perform an initial (default) infill method, here we use mean as a plug, automunge
   #may separately perform a infill method per user specifications elsewhere
@@ -6236,6 +6250,7 @@ def process_mnm8_class(mdf_train, mdf_test, column, category, \
   # 'categorylist' : [nc], \ -> a list of columns created in this transform
   # 'infillmodel' : False, \ -> populated elsewhere, for now enter False
   # 'infillcomplete' : False, \ -> populated elsewhere, for now enter False
+  # 'suffixoverlap_results' : suffixoverlap_results, \ -> validation results for suffix overlap error
   # 'deletecolumn' : False}} -> populated elsewhere, for now enter False
   
   #for column in nmbrcolumns
@@ -6250,6 +6265,7 @@ def process_mnm8_class(mdf_train, mdf_test, column, category, \
                           'categorylist' : nmbrcolumns, \
                           'infillmodel' : False, \
                           'infillcomplete' : False, \
+                          'suffixoverlap_results' : suffixoverlap_results, \
                           'deletecolumn' : False}}
 
     column_dict_list.append(column_dict.copy())
