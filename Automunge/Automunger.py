@@ -5349,6 +5349,76 @@ class AutoMunge:
         postprocess_dict['column_dict'][parentcolumn]['deletecolumn'] = True
 
     return df_train, df_test, postprocess_dict
+
+  def df_copy_train(self, df_train, column, newcolumn, suffixoverlap_results = {}):
+    """
+    #performs a copy operation to add column to a df_train
+    #Before any new columns added to df_train
+    #checks that they are not already present in df_train
+    #if so returns error message and logs in suffixoverlap_results
+    """
+    
+    #test for overlap error
+    if newcolumn in df_train.columns:
+      
+      print("*****************")
+      print("Warning of suffix overlap error")
+      print("When creating new column: ", newcolumn)
+      print("The column was already found present in df_train headers.")
+      print("")
+      print("Some potential quick fixes for this error include:")
+      print("- rename columns to integers before passing to automunge(.)")
+      print("- strip underscores '_' from column header titles.")
+      print("(convention is all suffix appenders include an underscore)")
+      print("")
+      print("Please note any updates to column headers will need to be carried through to assignment parameters.")
+      print("*****************")
+      print("")
+      
+      suffixoverlap_results.update({newcolumn : True})
+      
+    else:
+      
+      df_train[newcolumn] = df_train[column].copy()
+      
+      suffixoverlap_results.update({newcolumn : False})
+    
+    return df_train, suffixoverlap_results
+
+  def df_check_suffixoverlap(self, df_train, newcolumns, suffixoverlap_results = {}):
+    """
+    #checks that newcolumns list are not already present in df_train
+    #logs in suffixoverlap_results
+    """
+    
+    if not isinstance(newcolumns, list):
+      newcolumns = [newcolumns]
+    
+    for newcolumn in newcolumns:
+      
+      if newcolumn in df_train.columns:
+        
+        print("*****************")
+        print("Warning of suffix overlap error")
+        print("When creating new column: ", newcolumn)
+        print("The column was already found present in df_train headers.")
+        print("")
+        print("Some potential quick fixes for this error include:")
+        print("- rename columns to integers before passing to automunge(.)")
+        print("- strip underscores '_' from column header titles.")
+        print("(convention is all suffix appenders include an underscore)")
+        print("")
+        print("Please note any updates to column headers will need to be carried through to assignment parameters.")
+        print("*****************")
+        print("")
+
+        suffixoverlap_results.update({newcolumn : True})
+
+      else:
+
+        suffixoverlap_results.update({newcolumn : False})
+        
+    return suffixoverlap_results
   
   def process_NArw_class(self, df, column, category, postprocess_dict, params = {}):
     '''
@@ -5359,9 +5429,14 @@ class AutoMunge:
     #note this is a "singleprocess" function since is applied to single dataframe
     '''
     
+    suffixoverlap_results = {}
+    
     #add a second column with boolean expression indicating a missing cell
     #(using NArows(.) function defined below, column name will be column+'_NArows')
     NArows_nmbr = self.getNArows(df, column, category, postprocess_dict)
+    
+    suffixoverlap_results = \
+    self.df_check_suffixoverlap(df, column + '_NArw', suffixoverlap_results)
     
     df[column + '_NArw'] = NArows_nmbr.copy()
     del NArows_nmbr
@@ -5392,6 +5467,7 @@ class AutoMunge:
                            'categorylist' : [nc], \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -5412,6 +5488,8 @@ class AutoMunge:
     #expect this approach works better when the numerical distribution is thin tailed
     #if only have training but not test data handy, use same training data for both dataframe inputs
     '''
+    
+    suffixoverlap_results = {}
     
     #initialize parameters
     if 'offset' in params:
@@ -5435,7 +5513,9 @@ class AutoMunge:
       floor = False
     
     #copy source column into new column
-    mdf_train[column + '_nmbr'] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, column + '_nmbr', suffixoverlap_results)
+    
     mdf_test[column + '_nmbr'] = mdf_test[column].copy()
 
     #convert all values to either numeric or NaN
@@ -5529,6 +5609,7 @@ class AutoMunge:
                            'categorylist' : [nc], \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -5546,6 +5627,8 @@ class AutoMunge:
     #for missing values, uses adjacent cell infill as default
     '''
     
+    suffixoverlap_results = {}
+    
     #initialize parameters
     if 'periods' in params:
         
@@ -5556,7 +5639,8 @@ class AutoMunge:
       periods = 1
     
     #copy source column into new column
-    df[column + '_dxdt'] = df[column].copy()
+    df, suffixoverlap_results = \
+    self.df_copy_train(df, column, column + '_dxdt', suffixoverlap_results)
     
     #convert all values to either numeric or NaN
     df[column + '_dxdt'] = pd.to_numeric(df[column + '_dxdt'], errors='coerce')
@@ -5618,6 +5702,7 @@ class AutoMunge:
                            'categorylist' : [nc], \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -5637,6 +5722,8 @@ class AutoMunge:
     #for missing values, uses adjacent cell infill as default
     '''
     
+    suffixoverlap_results = {}
+    
     #initialize parameters
     if 'periods' in params:
         
@@ -5647,7 +5734,8 @@ class AutoMunge:
       periods = 2
     
     #copy source column into new column
-    df[column + '_dxd2'] = df[column].copy()
+    df, suffixoverlap_results = \
+    self.df_copy_train(df, column, column + '_dxd2', suffixoverlap_results)
     
     #convert all values to either numeric or NaN
     df[column + '_dxd2'] = pd.to_numeric(df[column + '_dxd2'], errors='coerce')
@@ -5661,6 +5749,9 @@ class AutoMunge:
 #     #we're going to take difference of average of last two rows with two rows preceding
 #     df[column + '_dxd2'] = (df[column + '_dxd2'] + df[column + '_dxd2'].shift()) / 2 \
 #                            - ((df[column + '_dxd2'].shift(periods=2) + df[column + '_dxd2'].shift(periods=3)) / 2)
+
+    suffixoverlap_results = \
+    self.df_check_suffixoverlap(df, [column + '_temp1', column + '_temp2'], suffixoverlap_results)
 
     df[column + '_temp1'] = df[column + '_dxd2'].copy()
     df[column + '_temp2'] = df[column + '_dxd2'].copy()
@@ -5730,6 +5821,7 @@ class AutoMunge:
                            'categorylist' : [nc], \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -5746,6 +5838,8 @@ class AutoMunge:
     #such as may be useful if applying this transform to the same column more than once
     '''
     
+    suffixoverlap_results = {}
+    
     #initialize parameters
     if 'periods' in params:
       periods = params['periods']
@@ -5759,7 +5853,8 @@ class AutoMunge:
     shft_column = column + '_' + suffix
     
     #copy source column into new column
-    df[shft_column] = df[column].copy()
+    df, suffixoverlap_results = \
+    self.df_copy_train(df, column, shft_column, suffixoverlap_results)
     
     #convert all values to either numeric or NaN
     df[shft_column] = pd.to_numeric(df[shft_column], errors='coerce')
@@ -5822,6 +5917,7 @@ class AutoMunge:
                            'categorylist' : nmbrcolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -5838,6 +5934,8 @@ class AutoMunge:
     #such as may be useful if applying this transform to the same column more than once
     '''
     
+    suffixoverlap_results = {}
+    
     #initialize parameters
     if 'periods' in params:
       periods = params['periods']
@@ -5851,7 +5949,8 @@ class AutoMunge:
     shft_column = column + '_' + suffix
     
     #copy source column into new column
-    df[shft_column] = df[column].copy()
+    df, suffixoverlap_results = \
+    self.df_copy_train(df, column, shft_column, suffixoverlap_results)
     
     #convert all values to either numeric or NaN
     df[shft_column] = pd.to_numeric(df[shft_column], errors='coerce')
@@ -5914,6 +6013,7 @@ class AutoMunge:
                            'categorylist' : nmbrcolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -5930,6 +6030,8 @@ class AutoMunge:
     #such as may be useful if applying this transform to the same column more than once
     '''
     
+    suffixoverlap_results = {}
+    
     #initialize parameters
     if 'periods' in params:
       periods = params['periods']
@@ -5943,7 +6045,8 @@ class AutoMunge:
     shft_column = column + '_' + suffix
     
     #copy source column into new column
-    df[shft_column] = df[column].copy()
+    df, suffixoverlap_results = \
+    self.df_copy_train(df, column, shft_column, suffixoverlap_results)
     
     #convert all values to either numeric or NaN
     df[shft_column] = pd.to_numeric(df[shft_column], errors='coerce')
@@ -6006,6 +6109,7 @@ class AutoMunge:
                            'categorylist' : nmbrcolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -6026,8 +6130,12 @@ class AutoMunge:
     #if only have training but not test data handy, use same training data for both dataframe inputs
     '''
     
+    suffixoverlap_results = {}
+    
     #copy source column into new column
-    mdf_train[column + '_MADn'] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, column + '_MADn', suffixoverlap_results)
+    
     mdf_test[column + '_MADn'] = mdf_test[column].copy()
 
     #convert all values to either numeric or NaN
@@ -6088,6 +6196,7 @@ class AutoMunge:
                            'categorylist' : [nc], \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -6110,8 +6219,12 @@ class AutoMunge:
     #documented in medium essay "Machine Learning and Miscelanea"
     '''
     
+    suffixoverlap_results = {}
+    
     #copy source column into new column
-    mdf_train[column + '_MAD3'] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, column + '_MAD3', suffixoverlap_results)
+    
     mdf_test[column + '_MAD3'] = mdf_test[column].copy()
 
     #convert all values to either numeric or NaN
@@ -6178,6 +6291,7 @@ class AutoMunge:
                            'categorylist' : [nc], \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -6200,6 +6314,8 @@ class AutoMunge:
     #dataframe inputs
     '''
     
+    suffixoverlap_results = {}
+    
     #for cap ands floor, False means not applied, True means based on set's found max/min in train set
     
     #initialize parameters
@@ -6214,7 +6330,9 @@ class AutoMunge:
       floor = False
     
     #copy source column into new column
-    mdf_train[column + '_mnmx'] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, column + '_mnmx', suffixoverlap_results)
+    
     mdf_test[column + '_mnmx'] = mdf_test[column].copy()
 
     #convert all values to either numeric or NaN
@@ -6307,6 +6425,7 @@ class AutoMunge:
                            'categorylist' : [nc], \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -6328,6 +6447,8 @@ class AutoMunge:
     #returns same dataframes with new column of name column + '_mnmx'
     #note this is a "dualprocess" function since is applied to both dataframes
     '''
+    
+    suffixoverlap_results = {}
 
     #initialize parameters
     if 'qmax' in params:
@@ -6341,7 +6462,9 @@ class AutoMunge:
       qmin = 0.01
     
     #copy source column into new column
-    mdf_train[column + '_mnm3'] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, column + '_mnm3', suffixoverlap_results)
+    
     mdf_test[column + '_mnm3'] = mdf_test[column].copy()
 
     #convert all values to either numeric or NaN
@@ -6428,6 +6551,7 @@ class AutoMunge:
                            'categorylist' : [nc], \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -6452,8 +6576,12 @@ class AutoMunge:
     #dataframe inputs
     '''
     
+    suffixoverlap_results = {}
+    
     #copy source column into new column
-    mdf_train[column + '_mnm6'] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, column + '_mnm6', suffixoverlap_results)
+    
     mdf_test[column + '_mnm6'] = mdf_test[column].copy()
 
     #convert all values to either numeric or NaN
@@ -6523,6 +6651,7 @@ class AutoMunge:
                            'categorylist' : [nc], \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -6557,6 +6686,8 @@ class AutoMunge:
     #multiplier/offset based on posttransform values, muoltiplier applied betfore offset
     """
     
+    suffixoverlap_results = {}
+    
     #initialize parameters
     
     #accepts divisor parameters of 'minmax' or 'std'
@@ -6586,7 +6717,9 @@ class AutoMunge:
       floor = False
     
     #copy source column into new column
-    mdf_train[column + '_retn'] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, column + '_retn', suffixoverlap_results)
+    
     mdf_test[column + '_retn'] = mdf_test[column].copy()
 
     #convert all values to either numeric or NaN
@@ -6731,6 +6864,7 @@ class AutoMunge:
                            'categorylist' : nmbrcolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -6751,6 +6885,8 @@ class AutoMunge:
     #if only have training but not test data handy, use same training data for both
     #dataframe inputs
     '''
+    
+    suffixoverlap_results = {}
     
     #initialize parameters
     if 'offset' in params:
@@ -6774,7 +6910,9 @@ class AutoMunge:
       floor = False
     
     #copy source column into new column
-    mdf_train[column + '_mean'] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, column + '_mean', suffixoverlap_results)
+    
     mdf_test[column + '_mean'] = mdf_test[column].copy()
 
     #convert all values to either numeric or NaN
@@ -6873,6 +7011,7 @@ class AutoMunge:
                            'categorylist' : [nc], \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -6892,8 +7031,12 @@ class AutoMunge:
     #note this is a "dualprocess" function since is applied to both dataframes
     '''
     
+    suffixoverlap_results = {}
+    
     #copy column to column + '_bnry'
-    mdf_train[column + '_bnry'] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, column + '_bnry', suffixoverlap_results)
+    
     mdf_test[column + '_bnry'] = mdf_test[column].copy()
 
     #create plug value for missing cells as most common value
@@ -7076,6 +7219,7 @@ class AutoMunge:
                            'categorylist' : [bc], \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -7094,8 +7238,12 @@ class AutoMunge:
     #note this is a "dualprocess" function since is applied to both dataframes
     '''
     
+    suffixoverlap_results = {}
+    
     #copy column to column + '_bnry'
-    mdf_train[column + '_bnr2'] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, column + '_bnr2', suffixoverlap_results)
+    
     mdf_test[column + '_bnr2'] = mdf_test[column].copy()
 
     #create plug value for missing cells as most common value
@@ -7281,6 +7429,7 @@ class AutoMunge:
                            'categorylist' : [bc], \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -7295,7 +7444,12 @@ class AutoMunge:
     #same as 'text' transform except labels returned column with integer instead of entry appender
     '''
     
+    suffixoverlap_results = {}
+    
     tempcolumn = column + '_onht_'
+    
+    suffixoverlap_results = \
+    self.df_check_suffixoverlap(mdf_train, tempcolumn, suffixoverlap_results)
     
     #store original column for later retrieval
     mdf_train[tempcolumn] = mdf_train[column].copy()
@@ -7356,6 +7510,9 @@ class AutoMunge:
     #Ensure the order of column in the test set is in the same order than in train set
     #Note this also removes categories in test set that aren't present in training set
     df_test_cat = df_test_cat[df_train_cat.columns]
+    
+    suffixoverlap_results = \
+    self.df_check_suffixoverlap(mdf_train, list(df_train_cat), suffixoverlap_results)
 
     #concatinate the sparse set with the rest of our training data
     mdf_train = pd.concat([mdf_train, df_train_cat], axis=1)
@@ -7441,6 +7598,7 @@ class AutoMunge:
                            'categorylist' : textcolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -7468,9 +7626,14 @@ class AutoMunge:
     #if only have training but not test data handy, use same training data for both dataframe inputs
     '''
     
+    suffixoverlap_results = {}
+    
     tempsuffix = str(mdf_train[column].unique()[0])
     
     tempcolumn = column + '_' + tempsuffix
+    
+    suffixoverlap_results = \
+    self.df_check_suffixoverlap(mdf_train, tempcolumn, suffixoverlap_results)
     
     #store original column for later retrieval
     mdf_train[tempcolumn] = mdf_train[column].copy()
@@ -7528,6 +7691,9 @@ class AutoMunge:
 
     del mdf_train[tempcolumn]    
     del mdf_test[tempcolumn]
+    
+    suffixoverlap_results = \
+    self.df_check_suffixoverlap(mdf_train, list(df_train_cat), suffixoverlap_results)
     
     #concatinate the sparse set with the rest of our training data
     mdf_train = pd.concat([mdf_train, df_train_cat], axis=1)
@@ -7596,6 +7762,7 @@ class AutoMunge:
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -7610,8 +7777,11 @@ class AutoMunge:
     #note this is a "singleprocess" function since is applied to single dataframe
     '''
     
+    suffixoverlap_results = {}
+    
     #create new column
-    df[column + '_lngt'] = df[column].copy()
+    df, suffixoverlap_results = \
+    self.df_copy_train(df, column, column + '_lngt', suffixoverlap_results)
     
     df[column + '_lngt'] = df[column + '_lngt'].astype(str).apply(len)
     
@@ -7651,6 +7821,7 @@ class AutoMunge:
                            'categorylist' : columns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -7667,13 +7838,16 @@ class AutoMunge:
     #note this is a "singleprocess" function since is applied to single dataframe
     '''
     
+    suffixoverlap_results = {}
+    
     if 'activate' in params:
       activate = params['activate']
     else:
       activate = True
     
     #create new column
-    df[column + '_UPCS'] = df[column].copy()
+    df, suffixoverlap_results = \
+    self.df_copy_train(df, column, column + '_UPCS', suffixoverlap_results)
     
     #convert to uppercase string based on activate parameter
     if activate is True:
@@ -7704,6 +7878,7 @@ class AutoMunge:
                            'categorylist' : UPCScolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -7725,6 +7900,8 @@ class AutoMunge:
     #returns as column titled origcolumn_splt_entry    
     #missing values are ignored by default
     '''
+    
+    suffixoverlap_results = {}
     
     #overlap_lengths = [20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7 , 6, 5]
     
@@ -7946,7 +8123,9 @@ class AutoMunge:
 
       newcolumn = column + '_splt_' + dict_key
       
-      mdf_train[newcolumn] = mdf_train[column].copy()
+      mdf_train, suffixoverlap_results = \
+      self.df_copy_train(mdf_train, column, newcolumn, suffixoverlap_results)
+      
       mdf_test[newcolumn] = mdf_test[column].copy()
 
       mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
@@ -7970,11 +8149,14 @@ class AutoMunge:
         int_labels_dict.update({entry : column + '_splt_' + str(i)})
         i += 1
         
+      newcolumns = [int_labels_dict[entry] for entry in newcolumns]
+        
       #now convert column headers from string to int convention
+      suffixoverlap_results = \
+      self.df_check_suffixoverlap(mdf_train, newcolumns, suffixoverlap_results)
+      
       mdf_train = mdf_train.rename(columns=int_labels_dict)
       mdf_test  = mdf_test.rename(columns=int_labels_dict)
-
-      newcolumns = [int_labels_dict[entry] for entry in newcolumns]
 
       inverse_int_labels_dict = {value:key for key,value in int_labels_dict.items()}
       for key in inverse_int_labels_dict:
@@ -8006,6 +8188,7 @@ class AutoMunge:
                            'categorylist' : newcolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -8033,6 +8216,8 @@ class AutoMunge:
     #this alternative to splt may be benficial for instance if one wanted 
     #to follow with an ordl encoding
     '''
+    
+    suffixoverlap_results = {}
     
 #     overlap_lengths = [20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7 , 6, 5]
 
@@ -8264,7 +8449,9 @@ class AutoMunge:
 
     newcolumn = column + '_spl2'
   
-    mdf_train[newcolumn] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, newcolumn, suffixoverlap_results)
+  
     mdf_test[newcolumn] = mdf_test[column].copy()
     
     mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
@@ -8301,6 +8488,7 @@ class AutoMunge:
                            'categorylist' : newcolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -8330,6 +8518,8 @@ class AutoMunge:
     #this alternative to splt may be benficial for instance if one wanted 
     #to follow with an ordl encoding
     '''
+    
+    suffixoverlap_results = {}
     
 #     overlap_lengths = [20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7 , 6, 5]
 
@@ -8573,7 +8763,9 @@ class AutoMunge:
 
     newcolumn = column + '_spl5'
     
-    mdf_train[newcolumn] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, newcolumn, suffixoverlap_results)
+    
     mdf_test[newcolumn] = mdf_test[column].copy()
     
     mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
@@ -8613,6 +8805,7 @@ class AutoMunge:
                            'categorylist' : newcolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -8643,6 +8836,8 @@ class AutoMunge:
     #this alternative to splt may be benficial for instance if one wanted 
     #to follow with an ordl encoding
     '''
+    
+    suffixoverlap_results = {}
     
 #     overlap_lengths = [20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7 , 6, 5]
     if 'minsplit' in params:
@@ -8887,7 +9082,9 @@ class AutoMunge:
 
     newcolumn = column + '_spl7'
     
-    mdf_train[newcolumn] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, newcolumn, suffixoverlap_results)
+    
     mdf_test[newcolumn] = mdf_test[column].copy()
     
     mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
@@ -8927,6 +9124,7 @@ class AutoMunge:
                            'categorylist' : newcolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -8954,6 +9152,8 @@ class AutoMunge:
     #assumes that unique values of test set are same or subset of train set
     #for more efficient application in postmunge
     '''
+    
+    suffixoverlap_results = {}
     
     #overlap_lengths = [20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7 , 6, 5]
 
@@ -9176,7 +9376,9 @@ class AutoMunge:
 
       newcolumn = column + '_spl8_' + dict_key
       
-      mdf_train[newcolumn] = mdf_train[column].copy()
+      mdf_train, suffixoverlap_results = \
+      self.df_copy_train(mdf_train, column, newcolumn, suffixoverlap_results)
+      
       mdf_test[newcolumn] = mdf_test[column].copy()
 
       mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
@@ -9237,6 +9439,7 @@ class AutoMunge:
                            'categorylist' : newcolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -9266,6 +9469,8 @@ class AutoMunge:
     #spl9 is comparable to spl2 but makes assumption that set of unique values
     #in test set is same or subset of train set for more efficient processing
     '''
+    
+    suffixoverlap_results = {}
     
 #     overlap_lengths = [20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7 , 6, 5]
 
@@ -9507,7 +9712,9 @@ class AutoMunge:
 
     newcolumn = column + '_spl9'
   
-    mdf_train[newcolumn] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, newcolumn, suffixoverlap_results)
+    
     mdf_test[newcolumn] = mdf_test[column].copy()
     
     mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
@@ -9545,6 +9752,7 @@ class AutoMunge:
                            'categorylist' : newcolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -9577,6 +9785,8 @@ class AutoMunge:
     #same or subset of train values for more efficient application in postmunge
     #that's spelled s p one zero
     '''
+    
+    suffixoverlap_results = {}
     
 #     overlap_lengths = [20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7 , 6, 5]
 
@@ -9826,7 +10036,9 @@ class AutoMunge:
 
     newcolumn = column + '_sp10'
     
-    mdf_train[newcolumn] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, newcolumn, suffixoverlap_results)
+    
     mdf_test[newcolumn] = mdf_test[column].copy()
     
     mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
@@ -9867,6 +10079,7 @@ class AutoMunge:
                            'categorylist' : newcolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -9895,6 +10108,8 @@ class AutoMunge:
     #sp15 is comparable to splt but multiple concurrent activations allowed
     #so requires a different MLinfilltype in processdict
     '''
+    
+    suffixoverlap_results = {}
     
     #overlap_lengths = [20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7 , 6, 5]
     
@@ -10119,7 +10334,9 @@ class AutoMunge:
 
       newcolumn = column + '_sp15_' + dict_key
       
-      mdf_train[newcolumn] = mdf_train[column].copy()
+      mdf_train, suffixoverlap_results = \
+      self.df_copy_train(mdf_train, column, newcolumn, suffixoverlap_results)
+      
       mdf_test[newcolumn] = mdf_test[column].copy()
 
       mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
@@ -10179,6 +10396,7 @@ class AutoMunge:
                            'categorylist' : newcolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -10209,6 +10427,8 @@ class AutoMunge:
     #sp16 is comparable to spl8 but multiple concurrent activations allowed
     #so requires a different MLinfilltype in processdict
     '''
+    
+    suffixoverlap_results = {}
     
     #overlap_lengths = [20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7 , 6, 5]
 
@@ -10431,7 +10651,9 @@ class AutoMunge:
 
       newcolumn = column + '_sp16_' + dict_key
       
-      mdf_train[newcolumn] = mdf_train[column].copy()
+      mdf_train, suffixoverlap_results = \
+      self.df_copy_train(mdf_train, column, newcolumn, suffixoverlap_results)
+      
       mdf_test[newcolumn] = mdf_test[column].copy()
 
       mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
@@ -10456,11 +10678,14 @@ class AutoMunge:
         int_labels_dict.update({entry : column + '_sp16_' + str(i)})
         i += 1
         
+      newcolumns = [int_labels_dict[entry] for entry in newcolumns]
+      
+      suffixoverlap_results = \
+      self.df_check_suffixoverlap(mdf_train, newcolumns, suffixoverlap_results)
+        
       #now convert column headers from string to int convention
       mdf_train = mdf_train.rename(columns=int_labels_dict)
       mdf_test  = mdf_test.rename(columns=int_labels_dict)
-
-      newcolumns = [int_labels_dict[entry] for entry in newcolumns]
 
       inverse_int_labels_dict = {value:key for key,value in int_labels_dict.items()}
       for key in inverse_int_labels_dict:
@@ -10492,6 +10717,7 @@ class AutoMunge:
                            'categorylist' : newcolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -10533,6 +10759,8 @@ class AutoMunge:
 
     #missing values are ignored by default
     """
+    
+    suffixoverlap_results = {}
         
     if 'search' in params:
       search = params['search']
@@ -10567,6 +10795,9 @@ class AutoMunge:
       search_dict.update({column + '_srch_' + str(searchitem) : str(searchitem)})
       
     for newcolumn in search_dict:
+      suffixoverlap_results = \
+      self.df_check_suffixoverlap(mdf_train, newcolumn, suffixoverlap_results)
+      
       mdf_train[newcolumn] = \
       np.where(mdf_train[column].astype(str).str.contains(search_dict[newcolumn], case=case, regex=False), 1, 0)
       
@@ -10628,6 +10859,7 @@ class AutoMunge:
                            'categorylist' : newcolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -10658,6 +10890,8 @@ class AutoMunge:
     #assumes that unique values of test set are same or subset of train set
     #for more efficient application in postmunge
     """
+    
+    suffixoverlap_results = {}
         
     if 'search' in params:
       search = params['search']
@@ -10763,7 +10997,9 @@ class AutoMunge:
 
         newcolumn = column + '_src2_' + dict_key
 
-        mdf_train[newcolumn] = mdf_train[column].copy()
+        mdf_train, suffixoverlap_results = \
+        self.df_copy_train(mdf_train, column, newcolumn, suffixoverlap_results)
+        
         mdf_test[newcolumn] = mdf_test[column].copy()
 
         mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
@@ -10824,6 +11060,7 @@ class AutoMunge:
                            'categorylist' : newcolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -10859,6 +11096,8 @@ class AutoMunge:
     #range of unique values but still want capacity to handle values in 
     #test set not found in train set
     """
+    
+    suffixoverlap_results = {}
         
     if 'search' in params:
       search = params['search']
@@ -10946,7 +11185,9 @@ class AutoMunge:
 
         newcolumn = column + '_src3_' + dict_key
 
-        mdf_train[newcolumn] = mdf_train[column].copy()
+        mdf_train, suffixoverlap_results = \
+        self.df_copy_train(mdf_train, column, newcolumn, suffixoverlap_results)
+        
         mdf_test[newcolumn] = mdf_test[column].copy()
 
         mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
@@ -10977,6 +11218,7 @@ class AutoMunge:
                            'categorylist' : newcolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -11020,6 +11262,8 @@ class AutoMunge:
     #the order of entries in search parameter will dictate the final encoding
     #(e.g. entries at end of list are prioritized over beginning)
     """
+    
+    suffixoverlap_results = {}
         
     if 'search' in params:
       search = params['search']
@@ -11054,6 +11298,9 @@ class AutoMunge:
       search_dict.update({column + '_src4_' + str(searchitem) : str(searchitem)})
       
     for newcolumn in search_dict:
+      suffixoverlap_results = \
+      self.df_check_suffixoverlap(mdf_train, newcolumn, suffixoverlap_results)
+      
       mdf_train[newcolumn] = \
       np.where(mdf_train[column].astype(str).str.contains(search_dict[newcolumn], case=case, regex=False), 1, 0)
       
@@ -11082,6 +11329,10 @@ class AutoMunge:
     mdf_test[column + '_src4'] = 0
     
     for newcolumn in newcolumns:
+      
+      suffixoverlap_results = \
+      self.df_check_suffixoverlap(mdf_train, column + '_src4', suffixoverlap_results)
+      
       mdf_train[column + '_src4'] = \
       np.where(mdf_train[newcolumn] == 1, ordl_dict2[newcolumn], mdf_train[column + '_src4'])
       mdf_test[column + '_src4'] = \
@@ -11152,6 +11403,7 @@ class AutoMunge:
                            'categorylist' : src4_newcolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -11169,13 +11421,15 @@ class AutoMunge:
     #note also supports passing aggregate as a single list of terms without embedded lists
     """
     
+    suffixoverlap_results = {}
+    
     if 'aggregate' in params:
       aggregate = params['aggregate']
     else:
       aggregate = [[]]
       
-      
-    df[column + '_aggt'] = df[column].copy()
+    df, suffixoverlap_results = \
+    self.df_copy_train(df, column, column + '_aggt', suffixoverlap_results)
 
     for sublist in aggregate:
       
@@ -11217,6 +11471,7 @@ class AutoMunge:
                            'categorylist' : nmbrcolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -11230,6 +11485,8 @@ class AutoMunge:
     #i.e. character subsets excluding numerical entries
     #entries without strings present subject to infill
     """
+    
+    suffixoverlap_results = {}
     
     unique_list = list(df[column].unique())
 
@@ -11310,6 +11567,9 @@ class AutoMunge:
 
                 overlap_dict.update({unique : np.nan})
     
+    suffixoverlap_results = \
+    self.df_check_suffixoverlap(df, column + '_strn', suffixoverlap_results)
+    
     df[column + '_strn'] = df[column].astype(str)
     df[column + '_strn'] = df[column + '_strn'].replace(overlap_dict)
 
@@ -11344,6 +11604,7 @@ class AutoMunge:
                            'categorylist' : nmbrcolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -11356,6 +11617,8 @@ class AutoMunge:
     #parses string entries and if any numbers present returns numbers
     #entries without numbers present subject to infill
     """
+    
+    suffixoverlap_results = {}
     
     unique_list = list(df[column].unique())
 
@@ -11418,6 +11681,9 @@ class AutoMunge:
 
                 overlap_dict.update({unique : np.nan})
     
+    suffixoverlap_results = \
+    self.df_check_suffixoverlap(df, column + '_nmrc', suffixoverlap_results)
+    
     df[column + '_nmrc'] = df[column].astype(str)
     df[column + '_nmrc'] = df[column + '_nmrc'].replace(overlap_dict)
 
@@ -11457,6 +11723,7 @@ class AutoMunge:
                            'categorylist' : nmbrcolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -11471,6 +11738,8 @@ class AutoMunge:
     #assumes set of entries in test data is same or subset of train data for
     #more efficient postmunge than vs nmrc
     """
+    
+    suffixoverlap_results = {}
     
     unique_list = list(mdf_train[column].unique())
 
@@ -11532,6 +11801,9 @@ class AutoMunge:
               if in_dict is False:
 
                 overlap_dict.update({unique : np.nan})
+                
+    suffixoverlap_results = \
+    self.df_check_suffixoverlap(mdf_train, column + '_nmr4', suffixoverlap_results)
     
     mdf_train[column + '_nmr4'] = mdf_train[column].astype(str)
     mdf_train[column + '_nmr4'] = mdf_train[column + '_nmr4'].replace(overlap_dict)
@@ -11590,6 +11862,7 @@ class AutoMunge:
                            'categorylist' : nmbrcolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -11604,6 +11877,8 @@ class AutoMunge:
     #comparable to nmr4 but instead of making blanket assumption that unique values in
     #test set are found in train set, implements parsing for test set entries not found in train set
     """
+    
+    suffixoverlap_results = {}
     
     unique_list = list(mdf_train[column].unique())
 
@@ -11665,6 +11940,9 @@ class AutoMunge:
               if in_dict is False:
 
                 overlap_dict.update({unique : np.nan})
+                
+    suffixoverlap_results = \
+    self.df_check_suffixoverlap(mdf_train, column + '_nmr7', suffixoverlap_results)
     
     mdf_train[column + '_nmr7'] = mdf_train[column].astype(str)
     mdf_train[column + '_nmr7'] = mdf_train[column + '_nmr7'].replace(overlap_dict)
@@ -11789,6 +12067,7 @@ class AutoMunge:
                            'categorylist' : nmbrcolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -11802,6 +12081,8 @@ class AutoMunge:
     #the check for numbers strips commas and returned numbers have commas stripped
     #entries without numbers present subject to infill
     """
+    
+    suffixoverlap_results = {}
     
     unique_list = list(df[column].unique())
 
@@ -11863,6 +12144,9 @@ class AutoMunge:
               if in_dict is False:
 
                 overlap_dict.update({unique : np.nan})
+                
+    suffixoverlap_results = \
+    self.df_check_suffixoverlap(df, column + '_nmcm', suffixoverlap_results)
     
     df[column + '_nmcm'] = df[column].astype(str)
     df[column + '_nmcm'] = df[column + '_nmcm'].replace(overlap_dict)
@@ -11903,6 +12187,7 @@ class AutoMunge:
                            'categorylist' : nmbrcolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -11918,6 +12203,8 @@ class AutoMunge:
     #assumes set of entries in test data is same or subset of train data for
     #more efficient postmunge than vs nmc
     """
+    
+    suffixoverlap_results = {}
     
     unique_list = list(mdf_train[column].unique())
 
@@ -11979,6 +12266,9 @@ class AutoMunge:
               if in_dict is False:
 
                 overlap_dict.update({unique : np.nan})
+                
+    suffixoverlap_results = \
+    self.df_check_suffixoverlap(mdf_train, column + '_nmc4', suffixoverlap_results)
     
     mdf_train[column + '_nmc4'] = mdf_train[column].astype(str)
     mdf_train[column + '_nmc4'] = mdf_train[column + '_nmc4'].replace(overlap_dict)
@@ -12038,6 +12328,7 @@ class AutoMunge:
                            'categorylist' : nmbrcolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -12055,6 +12346,8 @@ class AutoMunge:
     #comparable to nmc4 but instead of making blanket assumption that unique values in
     #test set are found in train set, implements parsing for test set entries not found in train set
     """
+    
+    suffixoverlap_results = {}
     
     unique_list = list(mdf_train[column].unique())
 
@@ -12116,6 +12409,9 @@ class AutoMunge:
               if in_dict is False:
 
                 overlap_dict.update({unique : np.nan})
+                
+    suffixoverlap_results = \
+    self.df_check_suffixoverlap(mdf_train, column + '_nmc7', suffixoverlap_results)
     
     mdf_train[column + '_nmc7'] = mdf_train[column].astype(str)
     mdf_train[column + '_nmc7'] = mdf_train[column + '_nmc7'].replace(overlap_dict)
@@ -12243,6 +12539,7 @@ class AutoMunge:
                            'categorylist' : nmbrcolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -12257,6 +12554,8 @@ class AutoMunge:
     #such as to recognize international formats
     #entries without numbers present subject to infill
     """
+    
+    suffixoverlap_results = {}
     
     unique_list = list(df[column].unique())
 
@@ -12318,6 +12617,9 @@ class AutoMunge:
               if in_dict is False:
 
                 overlap_dict.update({unique : np.nan})
+                
+    suffixoverlap_results = \
+    self.df_check_suffixoverlap(df, column + '_nmEU', suffixoverlap_results)
     
     df[column + '_nmEU'] = df[column].astype(str)
     df[column + '_nmEU'] = df[column + '_nmEU'].replace(overlap_dict)
@@ -12361,6 +12663,7 @@ class AutoMunge:
                            'categorylist' : nmbrcolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -12377,6 +12680,8 @@ class AutoMunge:
     #assumes set of entries in test data is same or subset of train data for
     #more efficient postmunge than vs nmc
     """
+    
+    suffixoverlap_results = {}
     
     unique_list = list(mdf_train[column].unique())
 
@@ -12438,6 +12743,9 @@ class AutoMunge:
               if in_dict is False:
 
                 overlap_dict.update({unique : np.nan})
+                
+    suffixoverlap_results = \
+    self.df_check_suffixoverlap(mdf_train, column + '_nmE4', suffixoverlap_results)
     
     mdf_train[column + '_nmE4'] = mdf_train[column].astype(str)
     mdf_train[column + '_nmE4'] = mdf_train[column + '_nmE4'].replace(overlap_dict)
@@ -12498,6 +12806,7 @@ class AutoMunge:
                            'categorylist' : nmbrcolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -12516,6 +12825,8 @@ class AutoMunge:
     #comparable to nmc4 but instead of making blanket assumption that unique values in
     #test set are found in train set, implements parsing for test set entries not found in train set
     """
+    
+    suffixoverlap_results = {}
     
     unique_list = list(mdf_train[column].unique())
 
@@ -12577,6 +12888,9 @@ class AutoMunge:
               if in_dict is False:
 
                 overlap_dict.update({unique : np.nan})
+                
+    suffixoverlap_results = \
+    self.df_check_suffixoverlap(mdf_train, column + '_nmE7', suffixoverlap_results)
     
     mdf_train[column + '_nmE7'] = mdf_train[column].astype(str)
     mdf_train[column + '_nmE7'] = mdf_train[column + '_nmE7'].replace(overlap_dict)
@@ -12703,6 +13017,7 @@ class AutoMunge:
                            'categorylist' : nmbrcolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -12720,8 +13035,12 @@ class AutoMunge:
     #for categories presetn in test set not present in train set use this 'zzz' category
     '''
     
+    suffixoverlap_results = {}
+    
     #create new column for trasnformation
-    mdf_train[column + '_ordl'] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, column + '_ordl', suffixoverlap_results)
+    
     mdf_test[column + '_ordl'] = mdf_test[column].copy()
     
     #convert column to category
@@ -12861,6 +13180,7 @@ class AutoMunge:
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -12878,8 +13198,12 @@ class AutoMunge:
     #for categories presetn in test set not present in train set use this 'zzz' category
     '''
     
+    suffixoverlap_results = {}
+    
     #create new column for trasnformation
-    mdf_train[column + '_ord3'] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, column + '_ord3', suffixoverlap_results)
+    
     mdf_test[column + '_ord3'] = mdf_test[column].copy()
     
     #convert column to category
@@ -13027,6 +13351,7 @@ class AutoMunge:
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -13046,8 +13371,12 @@ class AutoMunge:
     #test sets recive comparable encoding
     '''
     
+    suffixoverlap_results = {}
+    
     #create new column for trasnformation
-    mdf_train[column + '_ucct'] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, column + '_ucct', suffixoverlap_results)
+    
     mdf_test[column + '_ucct'] = mdf_test[column].copy()
     
     #convert column to category
@@ -13175,6 +13504,7 @@ class AutoMunge:
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -13192,8 +13522,12 @@ class AutoMunge:
     #for categories present in test set not present in train set uses this 'zzzinfill' category
     '''
     
+    suffixoverlap_results = {}
+    
     #create new column for trasnformation
-    mdf_train[column + '_1010'] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, column + '_1010', suffixoverlap_results)
+    
     mdf_test[column + '_1010'] = mdf_test[column].copy()
     
     #convert column to category
@@ -13340,6 +13674,9 @@ class AutoMunge:
       
       _1010_columnlist.append(column + '_1010_' + str(i))
       
+    suffixoverlap_results = \
+    self.df_check_suffixoverlap(mdf_train, _1010_columnlist, suffixoverlap_results)
+      
     #now let's store the encoding
     i=0
     for _1010_column in _1010_columnlist:
@@ -13376,6 +13713,7 @@ class AutoMunge:
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -13390,6 +13728,8 @@ class AutoMunge:
     #note this is a "singleprocess" function since is applied to single dataframe
     '''
     
+    suffixoverlap_results = {}
+    
     #initialize parameters
     if 'start' in params:
       start = params['start']
@@ -13400,6 +13740,9 @@ class AutoMunge:
       end = params['end']
     else:
       end = 17
+      
+    suffixoverlap_results = \
+    self.df_check_suffixoverlap(df, column+'_bshr', suffixoverlap_results)
     
     #convert improperly formatted values to datetime in new column
     df[column+'_bshr'] = pd.to_datetime(df[column], errors = 'coerce')
@@ -13437,6 +13780,7 @@ class AutoMunge:
                            'categorylist' : [dc], \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False, \
                            'downstream':[]}}
 
@@ -13451,6 +13795,11 @@ class AutoMunge:
     #corresponding to weekdays in source column
     #note this is a "singleprocess" function since is applied to single dataframe
     '''
+    
+    suffixoverlap_results = {}
+    
+    suffixoverlap_results = \
+    self.df_check_suffixoverlap(df, column+'_wkdy', suffixoverlap_results)
     
     #convert improperly formatted values to datetime in new column
     df[column+'_wkdy'] = pd.to_datetime(df[column], errors = 'coerce')
@@ -13490,6 +13839,7 @@ class AutoMunge:
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
                            'deletecolumn' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'downstream':[]}}
 
       column_dict_list.append(column_dict.copy())
@@ -13503,6 +13853,8 @@ class AutoMunge:
     #corresponding to US Federal Holidays in source column
     #note this is a "singleprocess" function since is applied to single dataframe
     '''
+    
+    suffixoverlap_results = {}
     
     #initialize parameters
     if 'holiday_list' in params:
@@ -13525,6 +13877,9 @@ class AutoMunge:
       
     else:
       timestamp_list = []
+      
+    suffixoverlap_results = \
+    self.df_check_suffixoverlap(df, column+'_hldy', suffixoverlap_results)
     
     #convert improperly formatted values to datetime in new column
     df[column+'_hldy'] = pd.to_datetime(df[column], errors = 'coerce')
@@ -13567,6 +13922,7 @@ class AutoMunge:
                            'categorylist' : [dc], \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False, \
                            'downstream':[]}}
 
@@ -13582,6 +13938,11 @@ class AutoMunge:
     #note this is a "singleprocess" function since is applied to single dataframe
     #defdault infill is eight days a week
     '''
+    
+    suffixoverlap_results = {}
+    
+    suffixoverlap_results = \
+    self.df_check_suffixoverlap(df, column+'_wkds', suffixoverlap_results)
     
     #convert improperly formatted values to datetime in new column
     df[column+'_wkds'] = pd.to_datetime(df[column], errors = 'coerce')
@@ -13639,6 +14000,7 @@ class AutoMunge:
                            'categorylist' : [dc], \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False, \
                            'downstream':[]}}
 
@@ -13654,6 +14016,11 @@ class AutoMunge:
     #note this is a "singleprocess" function since is applied to single dataframe
     #default infill is 0
     '''
+    
+    suffixoverlap_results = {}
+    
+    suffixoverlap_results = \
+    self.df_check_suffixoverlap(df, column+'_mnts', suffixoverlap_results)
     
     #convert improperly formatted values to datetime in new column
     df[column+'_mnts'] = pd.to_datetime(df[column], errors = 'coerce')
@@ -13721,6 +14088,7 @@ class AutoMunge:
                            'categorylist' : [dc], \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False, \
                            'downstream':[]}}
 
@@ -13745,8 +14113,12 @@ class AutoMunge:
     #returns two transformed dataframe (mdf_train, mdf_test) and column_dict_list
     '''
     
+    suffixoverlap_results = {}
+    
     #store original column for later retrieval
-    mdf_train[column + '_year'] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, column + '_year', suffixoverlap_results)
+    
     mdf_test[column + '_year'] = mdf_test[column].copy()
 
     #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
@@ -13833,6 +14205,7 @@ class AutoMunge:
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -13856,8 +14229,12 @@ class AutoMunge:
     #returns two transformed dataframe (mdf_train, mdf_test) and column_dict_list
     '''
     
+    suffixoverlap_results = {}
+    
     #store original column for later retrieval
-    mdf_train[column + '_mnth'] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, column + '_mnth', suffixoverlap_results)
+    
     mdf_test[column + '_mnth'] = mdf_test[column].copy()
 
     #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
@@ -13949,6 +14326,7 @@ class AutoMunge:
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -13972,8 +14350,12 @@ class AutoMunge:
     #returns two transformed dataframe (mdf_train, mdf_test) and column_dict_list
     '''
     
+    suffixoverlap_results = {}
+    
     #store original column for later retrieval
-    mdf_train[column + '_mnsn'] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, column + '_mnsn', suffixoverlap_results)
+    
     mdf_test[column + '_mnsn'] = mdf_test[column].copy()
 
     #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
@@ -14039,6 +14421,7 @@ class AutoMunge:
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -14062,8 +14445,12 @@ class AutoMunge:
     #returns two transformed dataframe (mdf_train, mdf_test) and column_dict_list
     '''
     
+    suffixoverlap_results = {}
+    
     #store original column for later retrieval
-    mdf_train[column + '_mncs'] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, column + '_mncs', suffixoverlap_results)
+    
     mdf_test[column + '_mncs'] = mdf_test[column].copy()
 
     #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
@@ -14131,6 +14518,7 @@ class AutoMunge:
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -14153,8 +14541,12 @@ class AutoMunge:
     #returns two transformed dataframe (mdf_train, mdf_test) and column_dict_list
     '''
     
+    suffixoverlap_results = {}
+    
     #store original column for later retrieval
-    mdf_train[column + '_mdsn'] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, column + '_mdsn', suffixoverlap_results)
+    
     mdf_test[column + '_mdsn'] = mdf_test[column].copy()
 
 
@@ -14170,6 +14562,9 @@ class AutoMunge:
 #     mdf_test[column + '_mdsn'] = mdf_test[column + '_mdsn'].dt.month
 
     #convert months to number of days in a temp column to support periodicity trasnform
+  
+    suffixoverlap_results = \
+    self.df_check_suffixoverlap(mdf_train, [column + '_mdsn' + '_temp', column + '_mdsn' + '_temp_leap'], suffixoverlap_results)
 
     mdf_train[column + '_mdsn' + '_temp'] = mdf_train[column + '_mdsn'].copy()
     mdf_train[column + '_mdsn' + '_temp_leap'] = mdf_train[column + '_mdsn'].copy()
@@ -14278,6 +14673,7 @@ class AutoMunge:
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -14300,8 +14696,12 @@ class AutoMunge:
     #returns two transformed dataframe (mdf_train, mdf_test) and column_dict_list
     '''
     
+    suffixoverlap_results = {}
+    
     #store original column for later retrieval
-    mdf_train[column + '_mdcs'] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, column + '_mdcs', suffixoverlap_results)
+    
     mdf_test[column + '_mdcs'] = mdf_test[column].copy()
 
 
@@ -14317,6 +14717,9 @@ class AutoMunge:
 #     mdf_test[column + '_mdsn'] = mdf_test[column + '_mdsn'].dt.month
 
     #convert months to number of days in a temp column to support periodicity trasnform
+  
+    suffixoverlap_results = \
+    self.df_check_suffixoverlap(mdf_train, [column + '_mdcs' + '_temp', column + '_mdcs' + '_temp_leap'], suffixoverlap_results)
 
     mdf_train[column + '_mdcs' + '_temp'] = mdf_train[column + '_mdcs'].copy()
     mdf_train[column + '_mdcs' + '_temp_leap'] = mdf_train[column + '_mdcs'].copy()
@@ -14425,6 +14828,7 @@ class AutoMunge:
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -14448,8 +14852,12 @@ class AutoMunge:
     #returns two transformed dataframe (mdf_train, mdf_test) and column_dict_list
     '''
     
+    suffixoverlap_results = {}
+    
     #store original column for later retrieval
-    mdf_train[column + '_days'] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, column + '_days', suffixoverlap_results)
+    
     mdf_test[column + '_days'] = mdf_test[column].copy()
 
     #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
@@ -14535,6 +14943,7 @@ class AutoMunge:
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -14557,9 +14966,13 @@ class AutoMunge:
     #with columns named after column_ + time category
     #returns two transformed dataframe (mdf_train, mdf_test) and column_dict_list
     '''
+    
+    suffixoverlap_results = {}
 
     #store original column for later retrieval
-    mdf_train[column + '_dysn'] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, column + '_dysn', suffixoverlap_results)
+    
     mdf_test[column + '_dysn'] = mdf_test[column].copy()
 
 
@@ -14628,6 +15041,7 @@ class AutoMunge:
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -14650,9 +15064,13 @@ class AutoMunge:
     #with columns named after column_ + time category
     #returns two transformed dataframe (mdf_train, mdf_test) and column_dict_list
     '''
+    
+    suffixoverlap_results = {}
 
     #store original column for later retrieval
-    mdf_train[column + '_dycs'] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, column + '_dycs', suffixoverlap_results)
+    
     mdf_test[column + '_dycs'] = mdf_test[column].copy()
 
 
@@ -14721,6 +15139,7 @@ class AutoMunge:
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -14744,8 +15163,12 @@ class AutoMunge:
     #returns two transformed dataframe (mdf_train, mdf_test) and column_dict_list
     '''
     
+    suffixoverlap_results = {}
+    
     #store original column for later retrieval
-    mdf_train[column + '_dhms'] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, column + '_dhms', suffixoverlap_results)
+    
     mdf_test[column + '_dhms'] = mdf_test[column].copy()
 
     #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
@@ -14812,6 +15235,7 @@ class AutoMunge:
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -14835,8 +15259,12 @@ class AutoMunge:
     #returns two transformed dataframe (mdf_train, mdf_test) and column_dict_list
     '''
     
+    suffixoverlap_results = {}
+    
     #store original column for later retrieval
-    mdf_train[column + '_dhmc'] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, column + '_dhmc', suffixoverlap_results)
+    
     mdf_test[column + '_dhmc'] = mdf_test[column].copy()
 
     #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
@@ -14903,6 +15331,7 @@ class AutoMunge:
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -14926,8 +15355,12 @@ class AutoMunge:
     #returns two transformed dataframe (mdf_train, mdf_test) and column_dict_list
     '''
     
+    suffixoverlap_results = {}
+    
     #store original column for later retrieval
-    mdf_train[column + '_hour'] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, column + '_hour', suffixoverlap_results)
+    
     mdf_test[column + '_hour'] = mdf_test[column].copy()
 
 
@@ -15016,6 +15449,7 @@ class AutoMunge:
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -15038,9 +15472,13 @@ class AutoMunge:
     #with columns named after column_ + time category
     #returns two transformed dataframe (mdf_train, mdf_test) and column_dict_list
     '''
+    
+    suffixoverlap_results = {}
 
     #store original column for later retrieval
-    mdf_train[column + '_hrsn'] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, column + '_hrsn', suffixoverlap_results)
+    
     mdf_test[column + '_hrsn'] = mdf_test[column].copy()
 
     #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
@@ -15107,6 +15545,7 @@ class AutoMunge:
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -15129,9 +15568,13 @@ class AutoMunge:
     #with columns named after column_ + time category
     #returns two transformed dataframe (mdf_train, mdf_test) and column_dict_list
     '''
+    
+    suffixoverlap_results = {}
 
     #store original column for later retrieval
-    mdf_train[column + '_hrcs'] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, column + '_hrcs', suffixoverlap_results)
+    
     mdf_test[column + '_hrcs'] = mdf_test[column].copy()
 
     #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
@@ -15198,6 +15641,7 @@ class AutoMunge:
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -15221,8 +15665,12 @@ class AutoMunge:
     #returns two transformed dataframe (mdf_train, mdf_test) and column_dict_list
     '''
     
+    suffixoverlap_results = {}
+    
     #store original column for later retrieval
-    mdf_train[column + '_hmss'] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, column + '_hmss', suffixoverlap_results)
+    
     mdf_test[column + '_hmss'] = mdf_test[column].copy()
 
     #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
@@ -15289,6 +15737,7 @@ class AutoMunge:
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -15312,8 +15761,12 @@ class AutoMunge:
     #returns two transformed dataframe (mdf_train, mdf_test) and column_dict_list
     '''
     
+    suffixoverlap_results = {}
+    
     #store original column for later retrieval
-    mdf_train[column + '_hmsc'] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, column + '_hmsc', suffixoverlap_results)
+    
     mdf_test[column + '_hmsc'] = mdf_test[column].copy()
 
     #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
@@ -15381,6 +15834,7 @@ class AutoMunge:
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -15404,8 +15858,12 @@ class AutoMunge:
     #returns two transformed dataframe (mdf_train, mdf_test) and column_dict_list
     '''
     
+    suffixoverlap_results = {}
+    
     #store original column for later retrieval
-    mdf_train[column + '_mint'] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, column + '_mint', suffixoverlap_results)
+    
     mdf_test[column + '_mint'] = mdf_test[column].copy()
 
     #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
@@ -15494,6 +15952,7 @@ class AutoMunge:
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -15516,9 +15975,13 @@ class AutoMunge:
     #with columns named after column_ + time category
     #returns two transformed dataframe (mdf_train, mdf_test) and column_dict_list
     '''
+    
+    suffixoverlap_results = {}
 
     #store original column for later retrieval
-    mdf_train[column + '_misn'] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, column + '_misn', suffixoverlap_results)
+    
     mdf_test[column + '_misn'] = mdf_test[column].copy()
 
     #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
@@ -15585,6 +16048,7 @@ class AutoMunge:
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -15607,9 +16071,13 @@ class AutoMunge:
     #with columns named after column_ + time category
     #returns two transformed dataframe (mdf_train, mdf_test) and column_dict_list
     '''
+    
+    suffixoverlap_results = {}
 
     #store original column for later retrieval
-    mdf_train[column + '_mics'] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, column + '_mics', suffixoverlap_results)
+    
     mdf_test[column + '_mics'] = mdf_test[column].copy()
 
 
@@ -15677,6 +16145,7 @@ class AutoMunge:
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -15700,8 +16169,12 @@ class AutoMunge:
     #returns two transformed dataframe (mdf_train, mdf_test) and column_dict_list
     '''
     
+    suffixoverlap_results = {}
+    
     #store original column for later retrieval
-    mdf_train[column + '_mssn'] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, column + '_mssn', suffixoverlap_results)
+    
     mdf_test[column + '_mssn'] = mdf_test[column].copy()
 
     #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
@@ -15767,6 +16240,7 @@ class AutoMunge:
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -15790,8 +16264,12 @@ class AutoMunge:
     #returns two transformed dataframe (mdf_train, mdf_test) and column_dict_list
     '''
     
+    suffixoverlap_results = {}
+    
     #store original column for later retrieval
-    mdf_train[column + '_mscs'] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, column + '_mscs', suffixoverlap_results)
+    
     mdf_test[column + '_mscs'] = mdf_test[column].copy()
 
     #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
@@ -15857,6 +16335,7 @@ class AutoMunge:
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -15880,8 +16359,12 @@ class AutoMunge:
     #returns two transformed dataframe (mdf_train, mdf_test) and column_dict_list
     '''
     
+    suffixoverlap_results = {}
+    
     #store original column for later retrieval
-    mdf_train[column + '_scnd'] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, column + '_scnd', suffixoverlap_results)
+    
     mdf_test[column + '_scnd'] = mdf_test[column].copy()
 
     #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
@@ -15969,6 +16452,7 @@ class AutoMunge:
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -15991,9 +16475,13 @@ class AutoMunge:
     #with columns named after column_ + time category
     #returns two transformed dataframe (mdf_train, mdf_test) and column_dict_list
     '''
+    
+    suffixoverlap_results = {}
 
     #store original column for later retrieval
-    mdf_train[column + '_scsn'] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, column + '_scsn', suffixoverlap_results)
+    
     mdf_test[column + '_scsn'] = mdf_test[column].copy()
 
 
@@ -16061,6 +16549,7 @@ class AutoMunge:
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -16083,9 +16572,13 @@ class AutoMunge:
     #with columns named after column_ + time category
     #returns two transformed dataframe (mdf_train, mdf_test) and column_dict_list
     '''
+    
+    suffixoverlap_results = {}
 
     #store original column for later retrieval
-    mdf_train[column + '_sccs'] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, column + '_sccs', suffixoverlap_results)
+    
     mdf_test[column + '_sccs'] = mdf_test[column].copy()
 
     #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
@@ -16152,6 +16645,7 @@ class AutoMunge:
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -16163,6 +16657,8 @@ class AutoMunge:
     '''
     Applies Box-Cox transform to an all-positive numerical set.
     '''
+    
+    suffixoverlap_results = {}
     
     #df_train, nmbrcolumns, nmbrnormalization_dict, categorylist = \
     mdf_train, column_dict_list = \
@@ -16198,10 +16694,12 @@ class AutoMunge:
     #distribution is less thin tailed
     '''
     
-    bxcxcolumn = column + '_bxcx'
+    suffixoverlap_results = {}
     
-    #store original column for later reversion
-    df[bxcxcolumn] = df[column].copy()
+    bxcxcolumn = column + '_bxcx'
+
+    df, suffixoverlap_results = \
+    self.df_copy_train(df, column, bxcxcolumn, suffixoverlap_results)
 
     #convert all values to either numeric or NaN
     df[bxcxcolumn] = pd.to_numeric(df[bxcxcolumn], errors='coerce')
@@ -16292,6 +16790,7 @@ class AutoMunge:
                            'categorylist' : [nc], \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -16311,8 +16810,12 @@ class AutoMunge:
     #returns same dataframes with new column of name column + '_log0'
     '''
     
+    suffixoverlap_results = {}
+    
     #copy source column into new column
-    mdf_train[column + '_log0'] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, column + '_log0', suffixoverlap_results)
+    
     mdf_test[column + '_log0'] = mdf_test[column].copy()
 
     #convert all values to either numeric or NaN
@@ -16370,6 +16873,7 @@ class AutoMunge:
                            'categorylist' : [nc], \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -16388,8 +16892,12 @@ class AutoMunge:
     #returns same dataframes with new column of name column + '_logn'
     '''
     
+    suffixoverlap_results = {}
+    
     #copy source column into new column
-    mdf_train[column + '_logn'] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, column + '_logn', suffixoverlap_results)
+    
     mdf_test[column + '_logn'] = mdf_test[column].copy()
 
     #convert all values to either numeric or NaN
@@ -16447,6 +16955,7 @@ class AutoMunge:
                            'categorylist' : [nc], \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -16465,8 +16974,12 @@ class AutoMunge:
     #returns same dataframes with new column of name column + '_log0'
     '''
     
+    suffixoverlap_results = {}
+    
     #copy source column into new column
-    mdf_train[column + '_sqrt'] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, column + '_sqrt', suffixoverlap_results)
+    
     mdf_test[column + '_sqrt'] = mdf_test[column].copy()
 
     #convert all values to either numeric or NaN
@@ -16524,6 +17037,7 @@ class AutoMunge:
                            'categorylist' : [nc], \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -16543,6 +17057,8 @@ class AutoMunge:
     #returns same dataframes with new column of name column + '_addd'
     '''
     
+    suffixoverlap_results = {}
+    
     if 'add' in params:
         
       add = params['add']
@@ -16552,7 +17068,9 @@ class AutoMunge:
       add = 1
     
     #copy source column into new column
-    mdf_train[column + '_addd'] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, column + '_addd', suffixoverlap_results)
+    
     mdf_test[column + '_addd'] = mdf_test[column].copy()
 
     #convert all values to either numeric or NaN
@@ -16594,6 +17112,7 @@ class AutoMunge:
                            'categorylist' : nmbrcolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -16613,6 +17132,8 @@ class AutoMunge:
     #returns same dataframes with new column of name column + '_sbtr'
     '''
     
+    suffixoverlap_results = {}
+    
     if 'subtract' in params:
         
       subtract = params['subtract']
@@ -16622,7 +17143,9 @@ class AutoMunge:
       subtract = 1
     
     #copy source column into new column
-    mdf_train[column + '_sbtr'] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, column + '_sbtr', suffixoverlap_results)
+    
     mdf_test[column + '_sbtr'] = mdf_test[column].copy()
 
     #convert all values to either numeric or NaN
@@ -16663,6 +17186,7 @@ class AutoMunge:
                            'categorylist' : nmbrcolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -16682,6 +17206,8 @@ class AutoMunge:
     #returns same dataframes with new column of name column + '_mltp'
     '''
     
+    suffixoverlap_results = {}
+    
     if 'multiply' in params:
         
       multiply = params['multiply']
@@ -16691,7 +17217,9 @@ class AutoMunge:
       multiply = 2
     
     #copy source column into new column
-    mdf_train[column + '_mltp'] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, column + '_mltp', suffixoverlap_results)
+    
     mdf_test[column + '_mltp'] = mdf_test[column].copy()
 
     #convert all values to either numeric or NaN
@@ -16733,6 +17261,7 @@ class AutoMunge:
                            'categorylist' : nmbrcolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -16750,6 +17279,8 @@ class AutoMunge:
     #returns same dataframes with new column of name column + '_divd'
     '''
     
+    suffixoverlap_results = {}
+    
     if 'divide' in params:
         
       divide = params['divide']
@@ -16763,7 +17294,9 @@ class AutoMunge:
       divide = 1
     
     #copy source column into new column
-    mdf_train[column + '_divd'] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, column + '_divd', suffixoverlap_results)
+    
     mdf_test[column + '_divd'] = mdf_test[column].copy()
 
     #convert all values to either numeric or NaN
@@ -16807,6 +17340,7 @@ class AutoMunge:
                            'categorylist' : nmbrcolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -16824,6 +17358,8 @@ class AutoMunge:
     #returns same dataframes with new column of name column + '_rais'
     '''
     
+    suffixoverlap_results = {}
+    
     if 'raiser' in params:
         
       raiser = params['raiser']
@@ -16833,7 +17369,9 @@ class AutoMunge:
       raiser = 2
     
     #copy source column into new column
-    mdf_train[column + '_rais'] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, column + '_rais', suffixoverlap_results)
+    
     mdf_test[column + '_rais'] = mdf_test[column].copy()
 
     #convert all values to either numeric or NaN
@@ -16874,6 +17412,7 @@ class AutoMunge:
                            'categorylist' : nmbrcolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -16891,8 +17430,12 @@ class AutoMunge:
     #returns same dataframes with new column of name column + '_absl'
     '''
     
+    suffixoverlap_results = {}
+    
     #copy source column into new column
-    mdf_train[column + '_absl'] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, column + '_absl', suffixoverlap_results)
+    
     mdf_test[column + '_absl'] = mdf_test[column].copy()
 
     #convert all values to either numeric or NaN
@@ -16932,6 +17475,7 @@ class AutoMunge:
                            'categorylist' : nmbrcolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -16953,6 +17497,8 @@ class AutoMunge:
     #accepts boolean 'negvalues' parameter, defaults False, True activates encoding for values <0
     '''
     
+    suffixoverlap_results = {}
+    
     if 'negvalues' in params:
       negvalues = params['negvalues']
     else:
@@ -16961,7 +17507,9 @@ class AutoMunge:
     tempcolumn = column + '_-10^'
 
     #store original column for later reversion
-    mdf_train[tempcolumn] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, tempcolumn, suffixoverlap_results)
+    
     mdf_test[tempcolumn] = mdf_test[column].copy()
 
     #convert all values to either numeric or NaN
@@ -16970,7 +17518,9 @@ class AutoMunge:
     
     #create copy with negative values
     negtempcolumn = column + '_negtemp'
-    mdf_train[negtempcolumn] = mdf_train[tempcolumn].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, tempcolumn, negtempcolumn, suffixoverlap_results)
+    
     mdf_test[negtempcolumn] = mdf_test[tempcolumn].copy()
     
     #convert all values in negtempcolumn >= 0 to Nan
@@ -17084,6 +17634,9 @@ class AutoMunge:
     #Note this also removes categories in test set that aren't present in training set
     df_test_cat = df_test_cat[df_train_cat.columns]
     
+    suffixoverlap_results = \
+    self.df_check_suffixoverlap(mdf_train, list(df_train_cat), suffixoverlap_results)
+    
     #concatinate the sparse set with the rest of our training data
     mdf_train = pd.concat([mdf_train, df_train_cat], axis=1)
     mdf_test = pd.concat([mdf_test, df_test_cat], axis=1)
@@ -17142,6 +17695,7 @@ class AutoMunge:
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
         
       column_dict_list.append(column_dict.copy())
@@ -17160,6 +17714,8 @@ class AutoMunge:
     #negative values based on negvalues parameter, makes comparable to por2
     '''
     
+    suffixoverlap_results = {}
+    
     if 'negvalues' in params:
       negvalues = params['negvalues']
     else:
@@ -17168,7 +17724,9 @@ class AutoMunge:
     pworcolumn = column + '_pwor'
 
     #store original column for later reversion
-    mdf_train[pworcolumn] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, pworcolumn, suffixoverlap_results)
+    
     mdf_test[pworcolumn] = mdf_test[column].copy()
 
     #convert all values to either numeric or NaN
@@ -17178,7 +17736,9 @@ class AutoMunge:
     #copy set for negative values
     negtempcolumn = column + '_negtempcolumn'
     
-    mdf_train[negtempcolumn] = mdf_train[pworcolumn].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, pworcolumn, negtempcolumn, suffixoverlap_results)
+    
     mdf_test[negtempcolumn] = mdf_test[pworcolumn].copy()
     
     #convert all values >= 0 to Nan
@@ -17353,6 +17913,7 @@ class AutoMunge:
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
         
       column_dict_list.append(column_dict.copy())
@@ -17374,10 +17935,14 @@ class AutoMunge:
     #if all values are infill no columns returned
     '''
     
+    suffixoverlap_results = {}
+    
     tempcolumn = column + '_-10^'
 
     #store original column for later reversion
-    mdf_train[tempcolumn] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, tempcolumn, suffixoverlap_results)
+    
     mdf_test[tempcolumn] = mdf_test[column].copy()
 
     #convert all values to either numeric or NaN
@@ -17386,7 +17951,9 @@ class AutoMunge:
     
     #create copy with negative values
     negtempcolumn = column + '_negtemp'
-    mdf_train[negtempcolumn] = mdf_train[tempcolumn].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, tempcolumn, negtempcolumn, suffixoverlap_results)
+    
     mdf_test[negtempcolumn] = mdf_test[tempcolumn].copy()
     
     #convert all values in negtempcolumn >= 0 to Nan
@@ -17492,6 +18059,9 @@ class AutoMunge:
     #Note this also removes categories in test set that aren't present in training set
     df_test_cat = df_test_cat[df_train_cat.columns]
     
+    suffixoverlap_results = \
+    self.df_check_suffixoverlap(mdf_train, list(df_train_cat), suffixoverlap_results)
+    
     #concatinate the sparse set with the rest of our training data
     mdf_train = pd.concat([mdf_train, df_train_cat], axis=1)
     mdf_test = pd.concat([mdf_test, df_test_cat], axis=1)
@@ -17551,6 +18121,7 @@ class AutoMunge:
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
         
       column_dict_list.append(column_dict.copy())
@@ -17569,10 +18140,14 @@ class AutoMunge:
     #negative values allows, comparable to pwr2
     '''
     
+    suffixoverlap_results = {}
+    
     pworcolumn = column + '_por2'
 
     #store original column for later reversion
-    mdf_train[pworcolumn] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, pworcolumn, suffixoverlap_results)
+    
     mdf_test[pworcolumn] = mdf_test[column].copy()
 
     #convert all values to either numeric or NaN
@@ -17582,7 +18157,9 @@ class AutoMunge:
     #copy set for negative values
     negtempcolumn = column + '_negtempcolumn'
     
-    mdf_train[negtempcolumn] = mdf_train[pworcolumn].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, pworcolumn, negtempcolumn, suffixoverlap_results)
+    
     mdf_test[negtempcolumn] = mdf_test[pworcolumn].copy()
     
     #convert all values >= 0 to Nan
@@ -17748,6 +18325,7 @@ class AutoMunge:
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
         
       column_dict_list.append(column_dict.copy())
@@ -17764,10 +18342,14 @@ class AutoMunge:
     #bint will be intended for a previously normalized set
     '''
     
+    suffixoverlap_results = {}
+    
     binscolumn = column + '_bins'
 
     #store original column for later reversion
-    mdf_train[binscolumn] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, binscolumn, suffixoverlap_results)
+    
     mdf_test[binscolumn] = mdf_test[column].copy()
 
     #convert all values to either numeric or NaN
@@ -17812,6 +18394,9 @@ class AutoMunge:
     [binscolumn + '_s<-2', binscolumn + '_s-21', binscolumn + '_s-10', \
      binscolumn + '_s+01', binscolumn + '_s+12', binscolumn + '_s>+2']
     
+    suffixoverlap_results = \
+    self.df_check_suffixoverlap(mdf_train, textcolumns, suffixoverlap_results)
+    
     #we're going to use the postprocess_text_class function here since it 
     #allows us to force the columns even if no values present in the set
     #however to do so we're going to have to construct a fake postprocess_dict
@@ -17821,7 +18406,7 @@ class AutoMunge:
     #here are some data structures for reference to create the below
 #     def postprocess_text_class(self, mdf_test, column, postprocess_dict, columnkey):
 #     textcolumns = postprocess_dict['column_dict'][columnkey]['columnslist']
-    
+  
     tempkey = 'tempkey'
     tempbins_postprocess_dict = {'column_dict' : {tempkey : {'columnslist' : textcolumns,\
                                                         'categorylist' : textcolumns}}}
@@ -17868,6 +18453,7 @@ class AutoMunge:
                              'categorylist' : textcolumns, \
                              'infillmodel' : False, \
                              'infillcomplete' : False, \
+                             'suffixoverlap_results' : suffixoverlap_results, \
                              'deletecolumn' : False}}
 
         column_dict_list.append(column_dict.copy())
@@ -17885,10 +18471,14 @@ class AutoMunge:
     #with mean 0 and std 1
     '''
     
+    suffixoverlap_results = {}
+    
     binscolumn = column + '_bint'
 
     #store original column for later reversion
-    mdf_train[binscolumn] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, binscolumn, suffixoverlap_results)
+    
     mdf_test[binscolumn] = mdf_test[column].copy()
 
     #convert all values to either numeric or NaN
@@ -17926,6 +18516,9 @@ class AutoMunge:
     textcolumns = \
     [binscolumn + '_t<-2', binscolumn + '_t-21', binscolumn + '_t-10', \
      binscolumn + '_t+01', binscolumn + '_t+12', binscolumn + '_t>+2']
+    
+    suffixoverlap_results = \
+    self.df_check_suffixoverlap(mdf_train, textcolumns, suffixoverlap_results)
 
     #we're going to use the postprocess_text_class function here since it 
     #allows us to force the columns even if no values present in the set
@@ -17984,6 +18577,7 @@ class AutoMunge:
                              'categorylist' : textcolumns, \
                              'infillmodel' : False, \
                              'infillcomplete' : False, \
+                             'suffixoverlap_results' : suffixoverlap_results, \
                              'deletecolumn' : False}}
 
         column_dict_list.append(column_dict.copy())
@@ -17999,10 +18593,14 @@ class AutoMunge:
     #bint will be intended for a previously normalized set
     '''
     
+    suffixoverlap_results = {}
+    
     binscolumn = column + '_bsor'
 
     #store original column for later reversion
-    mdf_train[binscolumn] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, binscolumn, suffixoverlap_results)
+    
     mdf_test[binscolumn] = mdf_test[column].copy()
 
     #convert all values to either numeric or NaN
@@ -18083,6 +18681,7 @@ class AutoMunge:
                              'categorylist' : nmbrcolumns, \
                              'infillmodel' : False, \
                              'infillcomplete' : False, \
+                             'suffixoverlap_results' : suffixoverlap_results, \
                              'deletecolumn' : False}}
 
         column_dict_list.append(column_dict.copy())
@@ -18102,6 +18701,8 @@ class AutoMunge:
     #such as after z-score normalization)
     '''
     
+    suffixoverlap_results = {}
+    
     if 'width' in params:
         
       bn_width = params['width']
@@ -18113,7 +18714,9 @@ class AutoMunge:
     binscolumn = column + '_bnwd'
 
     #store original column for later reversion
-    mdf_train[binscolumn] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, binscolumn, suffixoverlap_results)
+    
     mdf_test[binscolumn] = mdf_test[column].copy()
 
     #convert all values to either numeric or NaN
@@ -18163,6 +18766,9 @@ class AutoMunge:
       
     #postprocess_textsupport_class will return columns in alphabetical order
     textcolumns.sort()
+    
+    suffixoverlap_results = \
+    self.df_check_suffixoverlap(mdf_train, textcolumns, suffixoverlap_results)
     
     #we're going to use the postprocess_text_class function here since it 
     #allows us to force the columns even if no values present in the set
@@ -18229,6 +18835,7 @@ class AutoMunge:
                              'categorylist' : textcolumns, \
                              'infillmodel' : False, \
                              'infillcomplete' : False, \
+                             'suffixoverlap_results' : suffixoverlap_results, \
                              'deletecolumn' : False}}
 
         column_dict_list.append(column_dict.copy())
@@ -18247,6 +18854,8 @@ class AutoMunge:
     #such as after z-score normalization)
     '''
     
+    suffixoverlap_results = {}
+    
     if 'width' in params:
         
       bn_width = params['width']
@@ -18258,7 +18867,9 @@ class AutoMunge:
     binscolumn = column + '_bnwK'
 
     #store original column for later reversion
-    mdf_train[binscolumn] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, binscolumn, suffixoverlap_results)
+    
     mdf_test[binscolumn] = mdf_test[column].copy()
 
     #convert all values to either numeric or NaN
@@ -18308,6 +18919,9 @@ class AutoMunge:
       
     #postprocess_textsupport_class will return columns in alphabetical order
     textcolumns.sort()
+    
+    suffixoverlap_results = \
+    self.df_check_suffixoverlap(mdf_train, textcolumns, suffixoverlap_results)
     
     #we're going to use the postprocess_text_class function here since it 
     #allows us to force the columns even if no values present in the set
@@ -18374,6 +18988,7 @@ class AutoMunge:
                              'categorylist' : textcolumns, \
                              'infillmodel' : False, \
                              'infillcomplete' : False, \
+                             'suffixoverlap_results' : suffixoverlap_results, \
                              'deletecolumn' : False}}
 
         column_dict_list.append(column_dict.copy())
@@ -18392,6 +19007,8 @@ class AutoMunge:
     #such as after z-score normalization)
     '''
     
+    suffixoverlap_results = {}
+    
     if 'width' in params:
         
       bn_width = params['width']
@@ -18403,7 +19020,9 @@ class AutoMunge:
     binscolumn = column + '_bnwM'
 
     #store original column for later reversion
-    mdf_train[binscolumn] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, binscolumn, suffixoverlap_results)
+    
     mdf_test[binscolumn] = mdf_test[column].copy()
 
     #convert all values to either numeric or NaN
@@ -18453,6 +19072,9 @@ class AutoMunge:
       
     #postprocess_textsupport_class will return columns in alphabetical order
     textcolumns.sort()
+    
+    suffixoverlap_results = \
+    self.df_check_suffixoverlap(mdf_train, textcolumns, suffixoverlap_results)
     
     #we're going to use the postprocess_text_class function here since it 
     #allows us to force the columns even if no values present in the set
@@ -18519,6 +19141,7 @@ class AutoMunge:
                              'categorylist' : textcolumns, \
                              'infillmodel' : False, \
                              'infillcomplete' : False, \
+                             'suffixoverlap_results' : suffixoverlap_results, \
                              'deletecolumn' : False}}
 
         column_dict_list.append(column_dict.copy())
@@ -18537,6 +19160,8 @@ class AutoMunge:
     #such as after z-score normalization)
     '''
     
+    suffixoverlap_results = {}
+    
     if 'width' in params:
         
       bn_width = params['width']
@@ -18548,7 +19173,9 @@ class AutoMunge:
     binscolumn = column + '_bnwo'
 
     #store original column for later reversion
-    mdf_train[binscolumn] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, binscolumn, suffixoverlap_results)
+    
     mdf_test[binscolumn] = mdf_test[column].copy()
 
     #convert all values to either numeric or NaN
@@ -18635,6 +19262,7 @@ class AutoMunge:
                              'categorylist' : nmbrcolumns, \
                              'infillmodel' : False, \
                              'infillcomplete' : False, \
+                             'suffixoverlap_results' : suffixoverlap_results, \
                              'deletecolumn' : False}}
 
         column_dict_list.append(column_dict.copy())
@@ -18653,6 +19281,8 @@ class AutoMunge:
     #such as after z-score normalization)
     '''
     
+    suffixoverlap_results = {}
+    
     if 'width' in params:
         
       bn_width = params['width']
@@ -18664,7 +19294,9 @@ class AutoMunge:
     binscolumn = column + '_bnKo'
 
     #store original column for later reversion
-    mdf_train[binscolumn] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, binscolumn, suffixoverlap_results)
+    
     mdf_test[binscolumn] = mdf_test[column].copy()
 
     #convert all values to either numeric or NaN
@@ -18751,6 +19383,7 @@ class AutoMunge:
                              'categorylist' : nmbrcolumns, \
                              'infillmodel' : False, \
                              'infillcomplete' : False, \
+                             'suffixoverlap_results' : suffixoverlap_results, \
                              'deletecolumn' : False}}
 
         column_dict_list.append(column_dict.copy())
@@ -18769,6 +19402,8 @@ class AutoMunge:
     #such as after z-score normalization)
     '''
     
+    suffixoverlap_results = {}
+    
     if 'width' in params:
         
       bn_width = params['width']
@@ -18780,7 +19415,9 @@ class AutoMunge:
     binscolumn = column + '_bnMo'
 
     #store original column for later reversion
-    mdf_train[binscolumn] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, binscolumn, suffixoverlap_results)
+    
     mdf_test[binscolumn] = mdf_test[column].copy()
 
     #convert all values to either numeric or NaN
@@ -18867,6 +19504,7 @@ class AutoMunge:
                              'categorylist' : nmbrcolumns, \
                              'infillmodel' : False, \
                              'infillcomplete' : False, \
+                             'suffixoverlap_results' : suffixoverlap_results, \
                              'deletecolumn' : False}}
 
         column_dict_list.append(column_dict.copy())
@@ -18887,6 +19525,8 @@ class AutoMunge:
     #such as after z-score normalization)
     '''
     
+    suffixoverlap_results = {}
+    
     if 'bincount' in params:
         
       bincount = params['bincount']
@@ -18898,7 +19538,9 @@ class AutoMunge:
     binscolumn = column + '_bnep'
 
     #copy original column
-    mdf_train[binscolumn] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, binscolumn, suffixoverlap_results)
+    
     mdf_test[binscolumn] = mdf_test[column].copy()
 
     #convert all values to either numeric or NaN
@@ -18987,6 +19629,9 @@ class AutoMunge:
 
       #postprocess_textsupport_class will return columns in alphabetical order
       textcolumns.sort()
+      
+      suffixoverlap_results = \
+      self.df_check_suffixoverlap(mdf_train, textcolumns, suffixoverlap_results)
 
       #we're going to use the postprocess_text_class function here since it 
       #allows us to force the columns even if no values present in the set
@@ -19063,6 +19708,7 @@ class AutoMunge:
                              'categorylist' : textcolumns, \
                              'infillmodel' : False, \
                              'infillcomplete' : False, \
+                             'suffixoverlap_results' : suffixoverlap_results, \
                              'deletecolumn' : False}}
 
         column_dict_list.append(column_dict.copy())
@@ -19081,6 +19727,8 @@ class AutoMunge:
     #such as after z-score normalization)
     '''
     
+    suffixoverlap_results = {}
+    
     if 'bincount' in params:
         
       bincount = params['bincount']
@@ -19092,7 +19740,9 @@ class AutoMunge:
     binscolumn = column + '_bne7'
 
     #copy original column
-    mdf_train[binscolumn] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, binscolumn, suffixoverlap_results)
+    
     mdf_test[binscolumn] = mdf_test[column].copy()
 
     #convert all values to either numeric or NaN
@@ -19179,6 +19829,9 @@ class AutoMunge:
 
       #postprocess_textsupport_class will return columns in alphabetical order
       textcolumns.sort()
+      
+      suffixoverlap_results = \
+      self.df_check_suffixoverlap(mdf_train, textcolumns, suffixoverlap_results)
 
       #we're going to use the postprocess_text_class function here since it 
       #allows us to force the columns even if no values present in the set
@@ -19255,6 +19908,7 @@ class AutoMunge:
                              'categorylist' : textcolumns, \
                              'infillmodel' : False, \
                              'infillcomplete' : False, \
+                             'suffixoverlap_results' : suffixoverlap_results, \
                              'deletecolumn' : False}}
 
         column_dict_list.append(column_dict.copy())
@@ -19273,6 +19927,8 @@ class AutoMunge:
     #such as after z-score normalization)
     '''
     
+    suffixoverlap_results = {}
+    
     if 'bincount' in params:
         
       bincount = params['bincount']
@@ -19284,7 +19940,9 @@ class AutoMunge:
     binscolumn = column + '_bne9'
 
     #copy original column
-    mdf_train[binscolumn] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, binscolumn, suffixoverlap_results)
+    
     mdf_test[binscolumn] = mdf_test[column].copy()
 
     #convert all values to either numeric or NaN
@@ -19371,6 +20029,9 @@ class AutoMunge:
 
       #postprocess_textsupport_class will return columns in alphabetical order
       textcolumns.sort()
+      
+      suffixoverlap_results = \
+      self.df_check_suffixoverlap(mdf_train, textcolumns, suffixoverlap_results)
 
       #we're going to use the postprocess_text_class function here since it 
       #allows us to force the columns even if no values present in the set
@@ -19447,6 +20108,7 @@ class AutoMunge:
                              'categorylist' : textcolumns, \
                              'infillmodel' : False, \
                              'infillcomplete' : False, \
+                             'suffixoverlap_results' : suffixoverlap_results, \
                              'deletecolumn' : False}}
 
         column_dict_list.append(column_dict.copy())
@@ -19465,6 +20127,8 @@ class AutoMunge:
     #such as after z-score normalization)
     '''
     
+    suffixoverlap_results = {}
+    
     if 'bincount' in params:
         
       bincount = params['bincount']
@@ -19476,7 +20140,9 @@ class AutoMunge:
     binscolumn = column + '_bneo'
 
     #copy original column
-    mdf_train[binscolumn] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, binscolumn, suffixoverlap_results)
+    
     mdf_test[binscolumn] = mdf_test[column].copy()
 
     #convert all values to either numeric or NaN
@@ -19617,6 +20283,7 @@ class AutoMunge:
                              'categorylist' : nmbrcolumns, \
                              'infillmodel' : False, \
                              'infillcomplete' : False, \
+                             'suffixoverlap_results' : suffixoverlap_results, \
                              'deletecolumn' : False}}
 
         column_dict_list.append(column_dict.copy())
@@ -19635,6 +20302,8 @@ class AutoMunge:
     #such as after z-score normalization)
     '''
     
+    suffixoverlap_results = {}
+    
     if 'bincount' in params:
         
       bincount = params['bincount']
@@ -19646,7 +20315,9 @@ class AutoMunge:
     binscolumn = column + '_bn7o'
 
     #copy original column
-    mdf_train[binscolumn] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, binscolumn, suffixoverlap_results)
+    
     mdf_test[binscolumn] = mdf_test[column].copy()
 
     #convert all values to either numeric or NaN
@@ -19787,6 +20458,7 @@ class AutoMunge:
                              'categorylist' : nmbrcolumns, \
                              'infillmodel' : False, \
                              'infillcomplete' : False, \
+                             'suffixoverlap_results' : suffixoverlap_results, \
                              'deletecolumn' : False}}
 
         column_dict_list.append(column_dict.copy())
@@ -19805,6 +20477,8 @@ class AutoMunge:
     #such as after z-score normalization)
     '''
     
+    suffixoverlap_results = {}
+    
     if 'bincount' in params:
         
       bincount = params['bincount']
@@ -19816,7 +20490,9 @@ class AutoMunge:
     binscolumn = column + '_bn9o'
 
     #copy original column
-    mdf_train[binscolumn] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, binscolumn, suffixoverlap_results)
+    
     mdf_test[binscolumn] = mdf_test[column].copy()
 
     #convert all values to either numeric or NaN
@@ -19957,6 +20633,7 @@ class AutoMunge:
                              'categorylist' : nmbrcolumns, \
                              'infillmodel' : False, \
                              'infillcomplete' : False, \
+                             'suffixoverlap_results' : suffixoverlap_results, \
                              'deletecolumn' : False}}
 
         column_dict_list.append(column_dict.copy())
@@ -19982,6 +20659,8 @@ class AutoMunge:
     #such as after z-score normalization)
     '''
     
+    suffixoverlap_results = {}
+    
     if 'bincount' in params:
         
       bincount = params['bincount']
@@ -19993,7 +20672,9 @@ class AutoMunge:
     binscolumn = column + '_tlbn'
 
     #copy original column
-    mdf_train[binscolumn] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, binscolumn, suffixoverlap_results)
+    
     mdf_test[binscolumn] = mdf_test[column].copy()
 
     #convert all values to either numeric or NaN
@@ -20080,6 +20761,9 @@ class AutoMunge:
 
       #postprocess_textsupport_class will return columns in alphabetical order
       textcolumns.sort()
+      
+      suffixoverlap_results = \
+      self.df_check_suffixoverlap(mdf_train, textcolumns, suffixoverlap_results)
 
       #we're going to use the postprocess_text_class function here since it 
       #allows us to force the columns even if no values present in the set
@@ -20202,6 +20886,7 @@ class AutoMunge:
                              'categorylist' : textcolumns, \
                              'infillmodel' : False, \
                              'infillcomplete' : False, \
+                             'suffixoverlap_results' : suffixoverlap_results, \
                              'deletecolumn' : False}}
 
         column_dict_list.append(column_dict.copy())
@@ -20218,6 +20903,8 @@ class AutoMunge:
     #removes buckets without activations in train set
     '''
     
+    suffixoverlap_results = {}
+    
     if 'buckets' in params:
         
       buckets = params['buckets']
@@ -20229,7 +20916,9 @@ class AutoMunge:
     binscolumn = column + '_bkt1'
 
     #store original column for later reversion
-    mdf_train[binscolumn] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, binscolumn, suffixoverlap_results)
+    
     mdf_test[binscolumn] = mdf_test[column].copy()
 
     #convert all values to either numeric or NaN
@@ -20274,6 +20963,9 @@ class AutoMunge:
     
     #remove nan for cases where value did not fall within range
     textcolumns = [x for x in textcolumns if x[-3:] != 'nan']
+    
+    suffixoverlap_results = \
+    self.df_check_suffixoverlap(mdf_train, textcolumns, suffixoverlap_results)
     
     #we're going to use the postprocess_text_class function here since it 
     #allows us to force the columns even if no values present in the set
@@ -20336,6 +21028,7 @@ class AutoMunge:
                              'categorylist' : textcolumns, \
                              'infillmodel' : False, \
                              'infillcomplete' : False, \
+                             'suffixoverlap_results' : suffixoverlap_results, \
                              'deletecolumn' : False}}
 
         column_dict_list.append(column_dict.copy())
@@ -20352,6 +21045,8 @@ class AutoMunge:
     #removes buckets without activations in train set
     '''
     
+    suffixoverlap_results = {}
+    
     if 'buckets' in params:
         
       buckets = params['buckets']
@@ -20363,7 +21058,9 @@ class AutoMunge:
     binscolumn = column + '_bkt2'
 
     #store original column for later reversion
-    mdf_train[binscolumn] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, binscolumn, suffixoverlap_results)
+    
     mdf_test[binscolumn] = mdf_test[column].copy()
 
     #convert all values to either numeric or NaN
@@ -20408,6 +21105,9 @@ class AutoMunge:
     
     #remove nan for cases where value did not fall within range
     textcolumns = [x for x in textcolumns if x[-3:] != 'nan']
+    
+    suffixoverlap_results = \
+    self.df_check_suffixoverlap(mdf_train, textcolumns, suffixoverlap_results)
     
     #we're going to use the postprocess_text_class function here since it 
     #allows us to force the columns even if no values present in the set
@@ -20470,6 +21170,7 @@ class AutoMunge:
                              'categorylist' : textcolumns, \
                              'infillmodel' : False, \
                              'infillcomplete' : False, \
+                             'suffixoverlap_results' : suffixoverlap_results, \
                              'deletecolumn' : False}}
 
         column_dict_list.append(column_dict.copy())
@@ -20487,6 +21188,8 @@ class AutoMunge:
     
     '''
     
+    suffixoverlap_results = {}
+    
     if 'buckets' in params:
         
       buckets = params['buckets']
@@ -20498,7 +21201,9 @@ class AutoMunge:
     binscolumn = column + '_bkt3'
 
     #store original column for later reversion
-    mdf_train[binscolumn] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, binscolumn, suffixoverlap_results)
+    
     mdf_test[binscolumn] = mdf_test[column].copy()
 
     #convert all values to either numeric or NaN
@@ -20571,6 +21276,7 @@ class AutoMunge:
                              'categorylist' : nmbrcolumns, \
                              'infillmodel' : False, \
                              'infillcomplete' : False, \
+                             'suffixoverlap_results' : suffixoverlap_results, \
                              'deletecolumn' : False}}
 
         column_dict_list.append(column_dict.copy())
@@ -20587,6 +21293,8 @@ class AutoMunge:
     #segments without activations are included
     '''
     
+    suffixoverlap_results = {}
+    
     if 'buckets' in params:
         
       buckets = params['buckets']
@@ -20598,7 +21306,9 @@ class AutoMunge:
     binscolumn = column + '_bkt4'
 
     #store original column for later reversion
-    mdf_train[binscolumn] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, binscolumn, suffixoverlap_results)
+    
     mdf_test[binscolumn] = mdf_test[column].copy()
 
     #convert all values to either numeric or NaN
@@ -20689,6 +21399,7 @@ class AutoMunge:
                              'categorylist' : nmbrcolumns, \
                              'infillmodel' : False, \
                              'infillcomplete' : False, \
+                             'suffixoverlap_results' : suffixoverlap_results, \
                              'deletecolumn' : False}}
 
         column_dict_list.append(column_dict.copy())
@@ -20711,6 +21422,8 @@ class AutoMunge:
     #in automunge df_test is treated as test data by default
     '''
     
+    suffixoverlap_results = {}
+    
     #initialize parameters
     if 'mu' in params:
       mu = params['mu']
@@ -20723,6 +21436,9 @@ class AutoMunge:
       sigma = 0.06
       
     DPnm_column = column + '_DPnm'
+    
+    suffixoverlap_results = \
+    self.df_check_suffixoverlap(mdf_train, DPnm_column, suffixoverlap_results)
       
     #first we'll derive our sampled noise for injection
     normal_samples = np.random.normal(loc=mu, scale=sigma, size=(mdf_train.shape[0]))
@@ -20754,6 +21470,7 @@ class AutoMunge:
                            'categorylist' : nmbrcolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -20777,6 +21494,8 @@ class AutoMunge:
     #in automunge df_test is treated as test data by default
     '''
     
+    suffixoverlap_results = {}
+    
     #initialize parameters
     if 'mu' in params:
       mu = params['mu']
@@ -20794,6 +21513,9 @@ class AutoMunge:
       flip_prob = 1.0
       
     DPnm_column = column + '_DPnb'
+    
+    suffixoverlap_results = \
+    self.df_check_suffixoverlap(mdf_train, DPnm_column, suffixoverlap_results)
       
     #first we'll derive our sampled noise for injection
     normal_samples = np.random.normal(loc=mu, scale=sigma, size=(mdf_train.shape[0]))
@@ -20826,6 +21548,7 @@ class AutoMunge:
                            'categorylist' : nmbrcolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -20852,6 +21575,8 @@ class AutoMunge:
     #in automunge df_test is treated as test data by default
     '''
     
+    suffixoverlap_results = {}
+    
     #initialize parameters
     if 'mu' in params:
       mu = params['mu']
@@ -20870,6 +21595,9 @@ class AutoMunge:
       
     DPmm_column = column + '_DPmm'
     DPmm_column_temp1 = column + '_DPmm' + '_tmp1'
+    
+    suffixoverlap_results = \
+    self.df_check_suffixoverlap(mdf_train, [DPmm_column, DPmm_column_temp1], suffixoverlap_results)
       
     #first we'll derive our sampled noise for injection
     normal_samples = np.random.normal(loc=mu, scale=sigma, size=(mdf_train.shape[0]))
@@ -20928,6 +21656,7 @@ class AutoMunge:
                            'categorylist' : nmbrcolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -20964,6 +21693,8 @@ class AutoMunge:
     #where cap/floor based on pretransform values
     #multiplier/offset based on posttransform values, muoltiplier applied betfore offset
     """
+    
+    suffixoverlap_results = {}
     
     #accepts divisor parameters of 'minmax' or 'std'
     if 'divisor' in params:
@@ -21010,6 +21741,11 @@ class AutoMunge:
     DPrt_column = column + '_DPrt'
     DPrt_column_temp1 = column + '_DPrt' + '_tmp1'
     DPrt_column_temp2 = column + '_DPrt' + '_tmp2'
+    
+    newcolumns = [DPrt_column, DPrt_column_temp1, DPrt_column_temp2]
+    
+    suffixoverlap_results = \
+    self.df_check_suffixoverlap(mdf_train, newcolumns, suffixoverlap_results)
     
     #copy source column into new column
     mdf_train[DPrt_column] = mdf_train[column].copy()
@@ -21220,6 +21956,7 @@ class AutoMunge:
                            'categorylist' : nmbrcolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -21242,6 +21979,8 @@ class AutoMunge:
     #in automunge df_test is treated as test data by default
     '''
     
+    suffixoverlap_results = {}
+    
     #initialize parameters
     if 'flip_prob' in params:
       flip_prob = params['flip_prob']
@@ -21249,6 +21988,9 @@ class AutoMunge:
       flip_prob = 0.03
       
     DPbn_column = column + '_DPbn'
+    
+    suffixoverlap_results = \
+    self.df_check_suffixoverlap(mdf_train, DPbn_column, suffixoverlap_results)
       
     #first we'll derive our sampled noise for injection
     mdf_train[DPbn_column] = pd.DataFrame(np.random.binomial(n=1, p=flip_prob, size=(mdf_train.shape[0])))
@@ -21278,6 +22020,7 @@ class AutoMunge:
                            'categorylist' : nmbrcolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -21302,6 +22045,8 @@ class AutoMunge:
     #in automunge df_test is treated as test data by default
     '''
     
+    suffixoverlap_results = {}
+    
     #initialize parameters
     if 'flip_prob' in params:
       flip_prob = params['flip_prob']
@@ -21311,6 +22056,11 @@ class AutoMunge:
     DPod_column = column + '_DPod'
     DPod_tempcolumn1 = column + '_DPod_tmp1'
     DPod_tempcolumn2 = column + '_DPod_tmp2'
+    
+    newcolumns = [DPod_column, DPod_tempcolumn1, DPod_tempcolumn2]
+    
+    suffixoverlap_results = \
+    self.df_check_suffixoverlap(mdf_train, newcolumns, suffixoverlap_results)
     
     #we'll want to know the set of activations present in column, for automunge this is unique values
     ord_encodings = mdf_train[column].unique()
@@ -21357,6 +22107,7 @@ class AutoMunge:
                            'categorylist' : nmbrcolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -21368,6 +22119,8 @@ class AutoMunge:
     #here we'll delete any columns that returned a 'null' category
     #note this is a. singleprocess transform
     '''
+    
+    suffixoverlap_results = {}
     
     #df = df.drop([column], axis=1)
     #deletion takes place elsewhere
@@ -21383,6 +22136,7 @@ class AutoMunge:
                                       'categorylist' : [], \
                                       'infillmodel' : False, \
                                       'infillcomplete' : False, \
+                                      'suffixoverlap_results' : suffixoverlap_results, \
                                       'deletecolumn' : False}}
     
     #now append column_dict onto postprocess_dict
@@ -21397,6 +22151,8 @@ class AutoMunge:
     #useful if want to apply same function more than once with different parameters
     '''
     
+    suffixoverlap_results = {}
+    
     if 'suffix' in params:
         
       copy_column = column + params['suffix']
@@ -21405,7 +22161,8 @@ class AutoMunge:
       
       copy_column = column + '_copy'
     
-    df[copy_column] = df[column].copy()
+    df, suffixoverlap_results = \
+    self.df_copy_train(df, column, copy_column, suffixoverlap_results)
 
     column_dict_list = []
 
@@ -21418,6 +22175,7 @@ class AutoMunge:
                                  'categorylist' : [copy_column], \
                                  'infillmodel' : False, \
                                  'infillcomplete' : False, \
+                                 'suffixoverlap_results' : suffixoverlap_results, \
                                  'deletecolumn' : False}}
     
     #now append column_dict onto postprocess_dict
@@ -21442,9 +22200,14 @@ class AutoMunge:
     #from replacement primitives to corresponding supplement primitives
     """
     
+    suffixoverlap_results = {}
+    
     exclcolumn = column + '_excl'
     #df[exclcolumn] = df[column].copy()
     #del df[column]
+    
+    suffixoverlap_results = \
+    self.df_check_suffixoverlap(df, exclcolumn, suffixoverlap_results)
     
     df.rename(columns = {column : exclcolumn}, inplace = True)
     
@@ -21459,6 +22222,7 @@ class AutoMunge:
                                  'categorylist' : [exclcolumn], \
                                  'infillmodel' : False, \
                                  'infillcomplete' : False, \
+                                 'suffixoverlap_results' : suffixoverlap_results, \
                                  'deletecolumn' : False}}
     
     #now append column_dict onto postprocess_dict
@@ -21474,9 +22238,13 @@ class AutoMunge:
     #we'll simply maintain the same column but with a suffix to the header
     '''
     
+    suffixoverlap_results = {}
+    
     exclcolumn = column + '_exc2'
     
-    mdf_train[exclcolumn] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, exclcolumn, suffixoverlap_results)
+    
     mdf_test[exclcolumn] = mdf_test[column].copy()
     
     #del df[column]
@@ -21510,6 +22278,7 @@ class AutoMunge:
                                  'categorylist' : [exclcolumn], \
                                  'infillmodel' : False, \
                                  'infillcomplete' : False, \
+                                 'suffixoverlap_results' : suffixoverlap_results, \
                                  'deletecolumn' : False}}
     
     #now append column_dict onto postprocess_dict
@@ -21525,9 +22294,13 @@ class AutoMunge:
     #we'll simply maintain the same column but with a suffix to the header
     '''
     
+    suffixoverlap_results = {}
+    
     exclcolumn = column + '_exc5'
     
-    mdf_train[exclcolumn] = mdf_train[column].copy()
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, exclcolumn, suffixoverlap_results)
+    
     mdf_test[exclcolumn] = mdf_test[column].copy()
     
     #del df[column]
@@ -21565,6 +22338,7 @@ class AutoMunge:
                                  'categorylist' : [exclcolumn], \
                                  'infillmodel' : False, \
                                  'infillcomplete' : False, \
+                                 'suffixoverlap_results' : suffixoverlap_results, \
                                  'deletecolumn' : False}}
     
     #now append column_dict onto postprocess_dict
@@ -21580,8 +22354,13 @@ class AutoMunge:
     #in a user passed transformdict
     """
     
+    suffixoverlap_results = {}
+    
     exclcolumn = column + '_exc6'
-    df[exclcolumn] = df[column].copy()
+
+    df, suffixoverlap_results = \
+    self.df_copy_train(df, column, exclcolumn, suffixoverlap_results)
+    
     #del df[column]
     
     #df.rename(columns = {column : exclcolumn}, inplace = True)
@@ -21597,6 +22376,7 @@ class AutoMunge:
                                  'categorylist' : [exclcolumn], \
                                  'infillmodel' : False, \
                                  'infillcomplete' : False, \
+                                 'suffixoverlap_results' : suffixoverlap_results, \
                                  'deletecolumn' : False}}
     
     #now append column_dict onto postprocess_dict
@@ -21611,9 +22391,11 @@ class AutoMunge:
     #for missing values, uses adjacent cell infill as default
     '''
     
-    #copy source column into new column
-    df[column + '_shfl'] = df[column].copy()
+    suffixoverlap_results = {}
     
+    #copy source column into new column
+    df, suffixoverlap_results = \
+    self.df_copy_train(df, column, column + '_shfl', suffixoverlap_results)
     
     #we've introduced that randomseed is now accessible throughout in the postprocess_dict
     random = postprocess_dict['randomseed']
@@ -21650,6 +22432,7 @@ class AutoMunge:
                            'categorylist' : [nc], \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
@@ -26850,7 +27633,7 @@ class AutoMunge:
     #False is good
     """
     
-    miscparameters_results = {'columnoverlap_valresults':{}}
+    miscparameters_results = {'suffixoverlap_results':{}}
     
     #check valpercent1
     valpercent1_valresult = False
@@ -29665,32 +30448,6 @@ class AutoMunge:
       df_train, df_test, postprocess_dict = \
       self.processfamily(df_train, df_test, column, category, category, process_dict, \
                         transform_dict, postprocess_dict, assign_param)
-      ##
-      #this is the validation to ensure no overlap error
-      templist3 = list(df_train)
-      overlapkeylist = list(set(templist3) - set(templist1))
-      if len(set(overlapkeylist) & set(columns_train)) > 0:
-        print("*****************")
-        print("Warning of potential error")
-        print("The set of columns returned from transformations applied to column ", column)
-        print("Has an overlap with column headers for those columns originally passed to automunge(.):")
-        print(set(overlapkeylist) & set(columns_train))
-        print("")
-        print("Some potential quick fixes for this error include:")
-        print("- rename columns to integers before passing to automunge(.)")
-        print("- strip underscores '_' from column header titles (convention is all suffix appenders include an underscore)")
-        print("")
-        print("Please note any updates to column headers will need to be carried through to assignment parameters.")
-        print("*****************")
-        print("")
-
-        miscparameters_results['columnoverlap_valresults'].update({column : {'result' : True, \
-                                                                             'overlap' : set(overlapkeylist) & set(columns_train)}})
-      ##
-      else:
-
-        miscparameters_results['columnoverlap_valresults'].update({column : {'result' : False, \
-                                                                             'overlap' : set()}})
 
       ##
       #now delete columns that were subject to replacement
@@ -29871,33 +30628,6 @@ class AutoMunge:
       df_labels, df_testlabels, postprocess_dict = \
       self.processfamily(df_labels, df_testlabels, labels_column, labelscategory, labelscategory, \
                         labelsprocess_dict, labelstransform_dict, postprocess_dict, assign_param)
-      
-      #this is the validation to ensure no overlap error
-      templist3 = list(df_labels)
-      overlapkeylist = list(set(templist3) - set(templist1))
-      if len(set(overlapkeylist) & set([labels_column])) > 0:
-        print("*****************")
-        print("Warning of potential error")
-        print("The set of columns returned from transformations applied to label column ", labels_column)
-        print("Has an overlap with column headers for those columns originally passed to automunge(.):")
-        print(set(overlapkeylist) & set([labels_column]))
-        print("")
-        print("Some potential quick fixes for this error include:")
-        print("- rename columns to integers before passing to automunge(.)")
-        print("- strip underscores '_' from column header titles (convention is all suffix appenders include an underscore)")
-        print("")
-        print("Please note any updates to column headers will need to be carried through to assignment parameters.")
-        print("*****************")
-        print("")
-
-        miscparameters_results['columnoverlap_valresults'].update({column : {'result' : True, \
-                                                                             'overlap' : set(overlapkeylist) & set([labels_column])}})
-
-      else:
-
-        miscparameters_results['columnoverlap_valresults'].update({column : {'result' : False, \
-                                                                             'overlap' : set()}})
-      
       
       #now delete columns subject to replacement
       df_labels, df_testlabels, postprocess_dict = \
@@ -30458,7 +31188,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.52'
+    automungeversion = '4.53'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -30677,22 +31407,28 @@ class AutoMunge:
       if df_validationlabels2.ndim == 2 and df_validationlabels2.shape[1] == 1:
         df_validationlabels2 = np.ravel(df_validationlabels2)
 
-    #then at completion of automunge(.), do an additional printout if any column overlap error to be sure user sees message
-    for overlapcolumn in postprocess_dict['origtraincolumns']:
-      if postprocess_dict['miscparameters_results']['columnoverlap_valresults'][overlapcolumn]['result'] is True:
-        print("*****************")
-        print("Warning of potential error")
-        print("The set of columns returned from transformations applied to column ", overlapcolumn)
-        print("Had an overlap with column headers for those columns originally passed to automunge(.):")
-        print(miscparameters_results['columnoverlap_valresults'][overlapcolumn]['overlap'])
-        print("")
-        print("Some potential quick fixes for this error include:")
-        print("- rename columns to integers before passing to automunge(.)")
-        print("- strip underscores '_' from column header titles (convention is all suffix appenders include an underscore)")
-        print("")
-        print("Please note any updates to column headers will need to be carried through to assignment parameters.")
-        print("*****************")
-        print("")
+    #then at completion of automunge(.), aggregate the suffixoverlap results
+    #and do an additional printout if any column overlap error to be sure user sees message
+    for entry1 in postprocess_dict['column_dict']:
+      for entry2 in postprocess_dict['column_dict'][entry1]['suffixoverlap_results']:
+        if postprocess_dict['column_dict'][entry1]['suffixoverlap_results'][entry2] is True:
+          
+          print("*****************")
+          print("Warning of suffix overlap error")
+          print("When creating new column: ", entry2)
+          print("The column was already found present in df_train headers.")
+          print("")
+          print("Some potential quick fixes for this error include:")
+          print("- rename columns to integers before passing to automunge(.)")
+          print("- strip underscores '_' from column header titles.")
+          print("(convention is all suffix appenders include an underscore)")
+          print("")
+          print("Please note any updates to column headers will need to be carried through to assignment parameters.")
+          print("*****************")
+          print("")
+      
+      postprocess_dict['miscparameters_results']['suffixoverlap_results'].update(
+      postprocess_dict['column_dict'][entry1]['suffixoverlap_results'])
         
     #a reasonable extension would be to perform some validation functions on the\
     #sets here (or also prior to transform to numpy arrays) and confirm things \
