@@ -3215,6 +3215,8 @@ appenders in a single returned column. Provided here is a concise sorted list of
 that any user passing a custom defined transformation can avoid any unintentional duplication. Note that
 the transformation functions test for suffix overlap error from creating new column with headers already
 present in dataframe and return results in postprocess_dict['miscparameters_results']['suffixoverlap_results'].
+(Or for comparable validation results for PCA, Binary, and excl transforms see 'PCA_suffixoverlap_results', 
+'Binary_suffixoverlap_results', 'excl_suffixoverlap_results'.)
 
 - '\_-10^'
 - '\_-10^' + i (where i is an integer corresponding to the source number power of ten)
