@@ -5043,7 +5043,7 @@ class AutoMunge:
     if len(transform_dict[category]['auntsuncles']) \
     + len(transform_dict[category]['parents']) > 0:
       
-      if column in list(df_train):
+      if column in df_train.columns:
         del df_train[column]
         del df_test[column]
 
@@ -5065,7 +5065,7 @@ class AutoMunge:
         #now we'll delete column
         #note this only worksa on single column  parents, need to incioroprate categorylist
         #for multicolumn parents (future extension)
-        if newcolumn in list(df_train):
+        if newcolumn in df_train.columns:
           del df_train[newcolumn]
           del df_test[newcolumn]
 
@@ -5419,6 +5419,74 @@ class AutoMunge:
         suffixoverlap_results.update({newcolumn : False})
         
     return suffixoverlap_results
+
+  def suffix_overlap_final_aggregation_and_printouts(self, postprocess_dict):
+    """
+    #Performs a final round of printouts in case of identified suffix overlap error
+    #Also aggregates the validation results stored in column_dict
+    #To a those returned in postprocess_dict['miscparameters_results']
+    """
+    
+    #then at completion of automunge(.), aggregate the suffixoverlap results
+    #and do an additional printout if any column overlap error to be sure user sees message
+    for entry1 in postprocess_dict['column_dict']:
+      for entry2 in postprocess_dict['column_dict'][entry1]['suffixoverlap_results']:
+        if postprocess_dict['column_dict'][entry1]['suffixoverlap_results'][entry2] is True:
+          
+          print("*****************")
+          print("Warning of suffix overlap error")
+          print("When creating new column: ", entry2)
+          print("The column was already found present in df_train headers.")
+          print("")
+          print("Some potential quick fixes for this error include:")
+          print("- rename columns to integers before passing to automunge(.)")
+          print("- strip underscores '_' from column header titles.")
+          print("(convention is all suffix appenders include an underscore)")
+          print("")
+          print("Please note any updates to column headers will need to be carried through to assignment parameters.")
+          print("*****************")
+          print("")
+      
+      postprocess_dict['miscparameters_results']['suffixoverlap_results'].update(
+      postprocess_dict['column_dict'][entry1]['suffixoverlap_results'])
+
+    for entry1 in postprocess_dict['miscparameters_results']['PCA_suffixoverlap_results']:
+      if postprocess_dict['miscparameters_results']['PCA_suffixoverlap_results'][entry1] is True:
+
+          print("*****************")
+          print("Warning of suffix overlap error")
+          print("When creating PCA column: ", entry1)
+          print("The column was already found present in df_train headers.")
+          print("")
+          print("Note that PCA returned columns are of form: PCAcol0")
+          print("Where # is integer")
+          print("This form of column header should be avoided in passed data.")
+          print("")
+
+    for entry1 in postprocess_dict['miscparameters_results']['Binary_suffixoverlap_results']:
+      if postprocess_dict['miscparameters_results']['Binary_suffixoverlap_results'][entry1] is True:
+
+          print("*****************")
+          print("Warning of suffix overlap error")
+          print("When creating Binary column: ", entry1)
+          print("The column was already found present in df_train headers.")
+          print("")
+          print("Note that Binary returned columns are of form: Binary_1010_#")
+          print("Where # is integer")
+          print("This error might have occured if you passed data including column header 'Binary' to '1010' transform")
+          print("This form of column header should be avoided in passed data.")
+          print("")
+
+    for entry1 in postprocess_dict['miscparameters_results']['excl_suffixoverlap_results']:
+      if postprocess_dict['miscparameters_results']['excl_suffixoverlap_results'][entry1] is True:
+
+          print("*****************")
+          print("Warning of suffix overlap error")
+          print("When removing '_excl' suffix for column: ", entry1)
+          print("The column without suffix was already found present in df_train headers.")
+          print("")
+          
+    return postprocess_dict
   
   def process_NArw_class(self, df, column, category, postprocess_dict, params = {}):
     '''
@@ -13781,8 +13849,7 @@ class AutoMunge:
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
                            'suffixoverlap_results' : suffixoverlap_results, \
-                           'deletecolumn' : False, \
-                           'downstream':[]}}
+                           'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
 
@@ -13839,8 +13906,7 @@ class AutoMunge:
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
                            'deletecolumn' : False, \
-                           'suffixoverlap_results' : suffixoverlap_results, \
-                           'downstream':[]}}
+                           'suffixoverlap_results' : suffixoverlap_results}}
 
       column_dict_list.append(column_dict.copy())
 
@@ -13923,8 +13989,7 @@ class AutoMunge:
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
                            'suffixoverlap_results' : suffixoverlap_results, \
-                           'deletecolumn' : False, \
-                           'downstream':[]}}
+                           'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
 
@@ -14001,8 +14066,7 @@ class AutoMunge:
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
                            'suffixoverlap_results' : suffixoverlap_results, \
-                           'deletecolumn' : False, \
-                           'downstream':[]}}
+                           'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
 
@@ -14089,8 +14153,7 @@ class AutoMunge:
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
                            'suffixoverlap_results' : suffixoverlap_results, \
-                           'deletecolumn' : False, \
-                           'downstream':[]}}
+                           'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
 
@@ -18397,25 +18460,11 @@ class AutoMunge:
     suffixoverlap_results = \
     self.df_check_suffixoverlap(mdf_train, textcolumns, suffixoverlap_results)
     
-    #we're going to use the postprocess_text_class function here since it 
-    #allows us to force the columns even if no values present in the set
-    #however to do so we're going to have to construct a fake postprocess_dict
-    
-    #a future extension should probnably build this capacity into a new distinct function
-    
-    #here are some data structures for reference to create the below
-#     def postprocess_text_class(self, mdf_test, column, postprocess_dict, columnkey):
-#     textcolumns = postprocess_dict['column_dict'][columnkey]['columnslist']
-  
-    tempkey = 'tempkey'
-    tempbins_postprocess_dict = {'column_dict' : {tempkey : {'columnslist' : textcolumns,\
-                                                        'categorylist' : textcolumns}}}
-    
     #process bins as a categorical set
     mdf_train = \
-    self.postprocess_textsupport_class(mdf_train, binscolumn, tempbins_postprocess_dict, tempkey)
+    self.postprocess_textsupport_class(mdf_train, binscolumn, {}, 'tempkey', {'textcolumns':textcolumns})
     mdf_test = \
-    self.postprocess_textsupport_class(mdf_test, binscolumn, tempbins_postprocess_dict, tempkey)
+    self.postprocess_textsupport_class(mdf_test, binscolumn, {}, 'tempkey', {'textcolumns':textcolumns})
     
     #change data type for memory savings
     for textcolumn in textcolumns:
@@ -18519,26 +18568,12 @@ class AutoMunge:
     
     suffixoverlap_results = \
     self.df_check_suffixoverlap(mdf_train, textcolumns, suffixoverlap_results)
-
-    #we're going to use the postprocess_text_class function here since it 
-    #allows us to force the columns even if no values present in the set
-    #however to do so we're going to have to construct a fake postprocess_dict
-    
-    #a future extension should probnably build this capacity into a new distinct function
-    
-    #here are some data structures for reference to create the below
-#     def postprocess_text_class(self, mdf_test, column, postprocess_dict, columnkey):
-#     textcolumns = postprocess_dict['column_dict'][columnkey]['columnslist']
-    
-    tempkey = 'tempkey'
-    tempbint_postprocess_dict = {'column_dict' : {tempkey : {'columnslist' : textcolumns, \
-                                                        'categorylist' : textcolumns}}}
     
     #process bins as a categorical set
     mdf_train = \
-    self.postprocess_textsupport_class(mdf_train, binscolumn, tempbint_postprocess_dict, tempkey)
+    self.postprocess_textsupport_class(mdf_train, binscolumn, {}, 'tempkey', {'textcolumns':textcolumns})
     mdf_test = \
-    self.postprocess_textsupport_class(mdf_test, binscolumn, tempbint_postprocess_dict, tempkey)
+    self.postprocess_textsupport_class(mdf_test, binscolumn, {}, 'tempkey', {'textcolumns':textcolumns})
     
     #change data type for memory savings
     for textcolumn in textcolumns:
@@ -18770,25 +18805,11 @@ class AutoMunge:
     suffixoverlap_results = \
     self.df_check_suffixoverlap(mdf_train, textcolumns, suffixoverlap_results)
     
-    #we're going to use the postprocess_text_class function here since it 
-    #allows us to force the columns even if no values present in the set
-    #however to do so we're going to have to construct a fake postprocess_dict
-    
-    #a future extension should probnably build this capacity into a new distinct function
-    
-    #here are some data structures for reference to create the below
-#     def postprocess_text_class(self, mdf_test, column, postprocess_dict, columnkey):
-#     textcolumns = postprocess_dict['column_dict'][columnkey]['columnslist']
-    
-    tempkey = 'tempkey'
-    tempbins_postprocess_dict = {'column_dict' : {tempkey : {'columnslist' : textcolumns,\
-                                                             'categorylist' : textcolumns}}}
-    
     #process bins as a categorical set
     mdf_train = \
-    self.postprocess_textsupport_class(mdf_train, binscolumn, tempbins_postprocess_dict, tempkey)
+    self.postprocess_textsupport_class(mdf_train, binscolumn, {}, 'tempkey', {'textcolumns':textcolumns})
     mdf_test = \
-    self.postprocess_textsupport_class(mdf_test, binscolumn, tempbins_postprocess_dict, tempkey)
+    self.postprocess_textsupport_class(mdf_test, binscolumn, {}, 'tempkey', {'textcolumns':textcolumns})
     
     #change data type for memory savings
     for textcolumn in textcolumns:
@@ -18923,25 +18944,11 @@ class AutoMunge:
     suffixoverlap_results = \
     self.df_check_suffixoverlap(mdf_train, textcolumns, suffixoverlap_results)
     
-    #we're going to use the postprocess_text_class function here since it 
-    #allows us to force the columns even if no values present in the set
-    #however to do so we're going to have to construct a fake postprocess_dict
-    
-    #a future extension should probnably build this capacity into a new distinct function
-    
-    #here are some data structures for reference to create the below
-#     def postprocess_text_class(self, mdf_test, column, postprocess_dict, columnkey):
-#     textcolumns = postprocess_dict['column_dict'][columnkey]['columnslist']
-    
-    tempkey = 'tempkey'
-    tempbins_postprocess_dict = {'column_dict' : {tempkey : {'columnslist' : textcolumns,\
-                                                             'categorylist' : textcolumns}}}
-    
     #process bins as a categorical set
     mdf_train = \
-    self.postprocess_textsupport_class(mdf_train, binscolumn, tempbins_postprocess_dict, tempkey)
+    self.postprocess_textsupport_class(mdf_train, binscolumn, {}, 'tempkey', {'textcolumns':textcolumns})
     mdf_test = \
-    self.postprocess_textsupport_class(mdf_test, binscolumn, tempbins_postprocess_dict, tempkey)
+    self.postprocess_textsupport_class(mdf_test, binscolumn, {}, 'tempkey', {'textcolumns':textcolumns})
     
     #change data type for memory savings
     for textcolumn in textcolumns:
@@ -19076,25 +19083,11 @@ class AutoMunge:
     suffixoverlap_results = \
     self.df_check_suffixoverlap(mdf_train, textcolumns, suffixoverlap_results)
     
-    #we're going to use the postprocess_text_class function here since it 
-    #allows us to force the columns even if no values present in the set
-    #however to do so we're going to have to construct a fake postprocess_dict
-    
-    #a future extension should probnably build this capacity into a new distinct function
-    
-    #here are some data structures for reference to create the below
-#     def postprocess_text_class(self, mdf_test, column, postprocess_dict, columnkey):
-#     textcolumns = postprocess_dict['column_dict'][columnkey]['columnslist']
-    
-    tempkey = 'tempkey'
-    tempbins_postprocess_dict = {'column_dict' : {tempkey : {'columnslist' : textcolumns,\
-                                                             'categorylist' : textcolumns}}}
-    
     #process bins as a categorical set
     mdf_train = \
-    self.postprocess_textsupport_class(mdf_train, binscolumn, tempbins_postprocess_dict, tempkey)
+    self.postprocess_textsupport_class(mdf_train, binscolumn, {}, 'tempkey', {'textcolumns':textcolumns})
     mdf_test = \
-    self.postprocess_textsupport_class(mdf_test, binscolumn, tempbins_postprocess_dict, tempkey)
+    self.postprocess_textsupport_class(mdf_test, binscolumn, {}, 'tempkey', {'textcolumns':textcolumns})
     
     #change data type for memory savings
     for textcolumn in textcolumns:
@@ -19633,25 +19626,11 @@ class AutoMunge:
       suffixoverlap_results = \
       self.df_check_suffixoverlap(mdf_train, textcolumns, suffixoverlap_results)
 
-      #we're going to use the postprocess_text_class function here since it 
-      #allows us to force the columns even if no values present in the set
-      #however to do so we're going to have to construct a fake postprocess_dict
-
-      #a future extension should probnably build this capacity into a new distinct function
-
-      #here are some data structures for reference to create the below
-  #     def postprocess_text_class(self, mdf_test, column, postprocess_dict, columnkey):
-  #     textcolumns = postprocess_dict['column_dict'][columnkey]['columnslist']
-
-      tempkey = 'tempkey'
-      tempbins_postprocess_dict = {'column_dict' : {tempkey : {'columnslist' : textcolumns,\
-                                                               'categorylist' : textcolumns}}}
-
       #process bins as a categorical set
       mdf_train = \
-      self.postprocess_textsupport_class(mdf_train, binscolumn, tempbins_postprocess_dict, tempkey)
+      self.postprocess_textsupport_class(mdf_train, binscolumn, {}, 'tempkey', {'textcolumns':textcolumns})
       mdf_test = \
-      self.postprocess_textsupport_class(mdf_test, binscolumn, tempbins_postprocess_dict, tempkey)
+      self.postprocess_textsupport_class(mdf_test, binscolumn, {}, 'tempkey', {'textcolumns':textcolumns})
 
       #change data type for memory savings
       for textcolumn in textcolumns:
@@ -19833,25 +19812,11 @@ class AutoMunge:
       suffixoverlap_results = \
       self.df_check_suffixoverlap(mdf_train, textcolumns, suffixoverlap_results)
 
-      #we're going to use the postprocess_text_class function here since it 
-      #allows us to force the columns even if no values present in the set
-      #however to do so we're going to have to construct a fake postprocess_dict
-
-      #a future extension should probnably build this capacity into a new distinct function
-
-      #here are some data structures for reference to create the below
-  #     def postprocess_text_class(self, mdf_test, column, postprocess_dict, columnkey):
-  #     textcolumns = postprocess_dict['column_dict'][columnkey]['columnslist']
-
-      tempkey = 'tempkey'
-      tempbins_postprocess_dict = {'column_dict' : {tempkey : {'columnslist' : textcolumns,\
-                                                               'categorylist' : textcolumns}}}
-
       #process bins as a categorical set
       mdf_train = \
-      self.postprocess_textsupport_class(mdf_train, binscolumn, tempbins_postprocess_dict, tempkey)
+      self.postprocess_textsupport_class(mdf_train, binscolumn, {}, 'tempkey', {'textcolumns':textcolumns})
       mdf_test = \
-      self.postprocess_textsupport_class(mdf_test, binscolumn, tempbins_postprocess_dict, tempkey)
+      self.postprocess_textsupport_class(mdf_test, binscolumn, {}, 'tempkey', {'textcolumns':textcolumns})
 
       #change data type for memory savings
       for textcolumn in textcolumns:
@@ -20033,25 +19998,11 @@ class AutoMunge:
       suffixoverlap_results = \
       self.df_check_suffixoverlap(mdf_train, textcolumns, suffixoverlap_results)
 
-      #we're going to use the postprocess_text_class function here since it 
-      #allows us to force the columns even if no values present in the set
-      #however to do so we're going to have to construct a fake postprocess_dict
-
-      #a future extension should probnably build this capacity into a new distinct function
-
-      #here are some data structures for reference to create the below
-  #     def postprocess_text_class(self, mdf_test, column, postprocess_dict, columnkey):
-  #     textcolumns = postprocess_dict['column_dict'][columnkey]['columnslist']
-
-      tempkey = 'tempkey'
-      tempbins_postprocess_dict = {'column_dict' : {tempkey : {'columnslist' : textcolumns,\
-                                                               'categorylist' : textcolumns}}}
-
       #process bins as a categorical set
       mdf_train = \
-      self.postprocess_textsupport_class(mdf_train, binscolumn, tempbins_postprocess_dict, tempkey)
+      self.postprocess_textsupport_class(mdf_train, binscolumn, {}, 'tempkey', {'textcolumns':textcolumns})
       mdf_test = \
-      self.postprocess_textsupport_class(mdf_test, binscolumn, tempbins_postprocess_dict, tempkey)
+      self.postprocess_textsupport_class(mdf_test, binscolumn, {}, 'tempkey', {'textcolumns':textcolumns})
 
       #change data type for memory savings
       for textcolumn in textcolumns:
@@ -20765,24 +20716,11 @@ class AutoMunge:
       suffixoverlap_results = \
       self.df_check_suffixoverlap(mdf_train, textcolumns, suffixoverlap_results)
 
-      #we're going to use the postprocess_text_class function here since it 
-      #allows us to force the columns even if no values present in the set
-      #however to do so we're going to have to construct a fake postprocess_dict
-
-      #a future extension should probnably build this capacity into a new distinct function
-
-      #here are some data structures for reference to create the below
-  #     def postprocess_text_class(self, mdf_test, column, postprocess_dict, columnkey):
-  #     textcolumns = postprocess_dict['column_dict'][columnkey]['columnslist']
-
-      tempkey = 'tempkey'
-      tempbins_postprocess_dict = {'column_dict' : {tempkey : {'columnslist' : textcolumns,\
-                                                               'categorylist' : textcolumns}}}
       #process bins as a categorical set
       mdf_train = \
-      self.postprocess_textsupport_class(mdf_train, binscolumn, tempbins_postprocess_dict, tempkey)
+      self.postprocess_textsupport_class(mdf_train, binscolumn, {}, 'tempkey', {'textcolumns':textcolumns})
       mdf_test = \
-      self.postprocess_textsupport_class(mdf_test, binscolumn, tempbins_postprocess_dict, tempkey)
+      self.postprocess_textsupport_class(mdf_test, binscolumn, {}, 'tempkey', {'textcolumns':textcolumns})
       
       #initialize binscolumn once more
       mdf_train[binscolumn] = mdf_train[column].copy()
@@ -20967,25 +20905,11 @@ class AutoMunge:
     suffixoverlap_results = \
     self.df_check_suffixoverlap(mdf_train, textcolumns, suffixoverlap_results)
     
-    #we're going to use the postprocess_text_class function here since it 
-    #allows us to force the columns even if no values present in the set
-    #however to do so we're going to have to construct a fake postprocess_dict
-    
-    #a future extension should probnably build this capacity into a new distinct function
-    
-    #here are some data structures for reference to create the below
-#     def postprocess_text_class(self, mdf_test, column, postprocess_dict, columnkey):
-#     textcolumns = postprocess_dict['column_dict'][columnkey]['columnslist']
-    
-    tempkey = 'tempkey'
-    tempbins_postprocess_dict = {'column_dict' : {tempkey : {'columnslist' : textcolumns,\
-                                                             'categorylist' : textcolumns}}}
-    
     #process bins as a categorical set
     mdf_train = \
-    self.postprocess_textsupport_class(mdf_train, binscolumn, tempbins_postprocess_dict, tempkey)
+    self.postprocess_textsupport_class(mdf_train, binscolumn, {}, 'tempkey', {'textcolumns':textcolumns})
     mdf_test = \
-    self.postprocess_textsupport_class(mdf_test, binscolumn, tempbins_postprocess_dict, tempkey)
+    self.postprocess_textsupport_class(mdf_test, binscolumn, {}, 'tempkey', {'textcolumns':textcolumns})
     
     #change data type for memory savings
     for textcolumn in textcolumns:
@@ -21109,25 +21033,11 @@ class AutoMunge:
     suffixoverlap_results = \
     self.df_check_suffixoverlap(mdf_train, textcolumns, suffixoverlap_results)
     
-    #we're going to use the postprocess_text_class function here since it 
-    #allows us to force the columns even if no values present in the set
-    #however to do so we're going to have to construct a fake postprocess_dict
-    
-    #a future extension should probnably build this capacity into a new distinct function
-    
-    #here are some data structures for reference to create the below
-#     def postprocess_text_class(self, mdf_test, column, postprocess_dict, columnkey):
-#     textcolumns = postprocess_dict['column_dict'][columnkey]['columnslist']
-    
-    tempkey = 'tempkey'
-    tempbins_postprocess_dict = {'column_dict' : {tempkey : {'columnslist' : textcolumns,\
-                                                             'categorylist' : textcolumns}}}
-    
     #process bins as a categorical set
     mdf_train = \
-    self.postprocess_textsupport_class(mdf_train, binscolumn, tempbins_postprocess_dict, tempkey)
+    self.postprocess_textsupport_class(mdf_train, binscolumn, {}, 'tempkey', {'textcolumns':textcolumns})
     mdf_test = \
-    self.postprocess_textsupport_class(mdf_test, binscolumn, tempbins_postprocess_dict, tempkey)
+    self.postprocess_textsupport_class(mdf_test, binscolumn, {}, 'tempkey', {'textcolumns':textcolumns})
     
     #change data type for memory savings
     for textcolumn in textcolumns:
@@ -24857,7 +24767,7 @@ class AutoMunge:
     df_array['onehot'] = ''
 
     #populate column to store encodings 
-    for column in list(df_array):
+    for column in df_array.columns:
       if column != 'onehot':
         df_array['onehot'] = \
         df_array['onehot'] + df_array[column].astype(int).astype(str)
@@ -24870,14 +24780,10 @@ class AutoMunge:
     textcolumns = list(range(2**np_1010.shape[1]))
     textcolumns = ['onehot_' + str(format(item, f"0{np_1010.shape[1]}b")) for item in textcolumns]
 
-    #we'll make use of the postprocess_textsupportclass function
-    #which requires some qadmittedly kind of hacky prepopulation of a temp ppd
-    temp_ppd = {'column_dict' : {'columnkey' : {'categorylist' : textcolumns}}}
-
   #   df_onehot = \
   #   postprocess_textsupport_class(df_array, 'onehot', temp_ppd, 'columnkey')
     df_onehot = \
-    self.postprocess_textsupport_class(df_array, 'onehot', temp_ppd, 'columnkey')
+    self.postprocess_textsupport_class(df_array, 'onehot', {}, 'tempkey', {'textcolumns':textcolumns})
 
     del df_onehot['onehot']
 
@@ -26216,7 +26122,7 @@ class AutoMunge:
               self.MLinfillfunction(df_train, df_test, column, postprocess_dict, \
                                     masterNArows_train, masterNArows_test, randomseed, ML_cmnd)
     
-      for columnname in list(df_train):
+      for columnname in df_train.columns:
         postprocess_dict['column_dict'][columnname]['infillcomplete'] = False
       
       iteration += 1
@@ -26450,7 +26356,7 @@ class AutoMunge:
             self.postMLinfillfunction (df_test, column, postprocess_dict, \
                                        masterNArows_test)
 
-      for columnname in list(df_test):
+      for columnname in df_test.columns:
         postprocess_dict['column_dict'][columnname]['infillcomplete'] = False
       
       iteration += 1
@@ -28788,55 +28694,6 @@ class AutoMunge:
       print("")
       
     return result
-
-  def check_Binary_string(self, df_train_list):
-    """
-    runs a validation to check for presence of column headers 
-    that may overlap with those created in Binary transform
-    """
-    
-    check_Binary_string_result = False
-    
-    #we don't know how many columns will be returned from Binary, the 0-8 is arbitrary
-    #Note although 'Binary' is not returned it is used in the derivation
-    overlap_results = {'Binary', 'Binary_1010', 'Binary_1010_0', 'Binary_1010_1', 'Binary_1010_2', 'Binary_1010_3', \
-                      'Binary_1010_4', 'Binary_1010_5', 'Binary_1010_6', 'Binary_1010_7', 'Binary_1010_8'} \
-                      & set(df_train_list)
-    
-    if len(overlap_results) > 0:
-      
-      check_Binary_string_result = True
-      
-      print("error warning: ")
-      print("potential column header overlap for Binary transform")
-      print("for recieved column headers:")
-      print(overlap_results)
-      
-    return check_Binary_string_result
-
-  def check_PCA_string(self, df_train_list):
-    """
-    runs a validation to check for presence of column headers 
-    that may overlap with those created in PCA transform
-    """
-    
-    check_PCA_string_result = False
-    
-    #we don't know how many columns will be returned from PCA, the 0-8 is arbitrary
-    overlap_results = {'PCAcol0', 'PCAcol1', 'PCAcol2', 'PCAcol3', \
-                      'PCAcol4', 'PCAcol5', 'PCAcol6', 'PCAcol7', 'PCAcol8'} \
-                      & set(df_train_list)
-    
-    if len(overlap_results) > 0:
-      
-      check_PCA_string_result = True
-      
-      print("error warning: ")
-      print("potential column header overlap for PCA transform")
-      print("for recieved column headers:")
-      print(overlap_results)
-      
-    return check_PCA_string_result
   
   def assigncat_str_convert(self, assigncat):
     """
@@ -29483,10 +29340,15 @@ class AutoMunge:
     #on train set (but yes on test set)
     """
     
-    if 'Binary' in list(df_train):
+    if 'Binary' in df_train.columns:
       #(this will only happen when a column with header 'Binary' was passed to 'excl')
       print("error: column header 'Binary' present in set")
       print("Binary is a reserved column header when applying Binary transform")
+      
+      Binary_present = {'Binary':True}
+    
+    else:
+      Binary_present = {'Binary':False}
     
     df_train['Binary'] = ''
     df_test['Binary'] = ''
@@ -29509,6 +29371,9 @@ class AutoMunge:
     for column_dict in Binary_column_dict_list:
       
       Binary_dict['column_dict'].update(column_dict)
+    
+    #add suffix overlap results for 'Binary' initialization
+    Binary_dict['column_dict'].update({'Binary':{'suffixoverlap_results':Binary_present}})
       
     Binary_dict.update({'bool_column_list' : bool_column_list})
     
@@ -29993,7 +29858,7 @@ class AutoMunge:
 
     #this converts any numeric columns labels, such as from a passed numpy array, to strings
     trainlabels=[]
-    for column in list(df_train):
+    for column in df_train.columns:
       trainlabels.append(str(column))
     df_train.columns = trainlabels
     
@@ -30041,7 +29906,7 @@ class AutoMunge:
 
     #this converts any numeric columns labels, such as from a passed numpy array, to strings
     testlabels=[]
-    for column in list(df_test):
+    for column in df_test.columns:
       testlabels.append(str(column))
     df_test.columns = testlabels
 
@@ -30061,11 +29926,11 @@ class AutoMunge:
         trainID_columns_in_df_test = True
         if isinstance(trainID_column, list):
           for trainIDcolumn in trainID_column:
-            if trainIDcolumn not in list(df_test):
+            if trainIDcolumn not in df_test.columns:
               trainID_columns_in_df_test = False
               break
         elif isinstance(trainID_column, str):
-          if trainID_column not in list(df_test):
+          if trainID_column not in df_test.columns:
             trainID_columns_in_df_test = False
     if trainID_columns_in_df_test is True:
       testID_column = trainID_column
@@ -30243,7 +30108,7 @@ class AutoMunge:
         single_train_column_labels_case = True
 
       #if the labels column is present in test set too
-      if labels_column in list(df_test):
+      if labels_column in df_test.columns:
         df_testlabels = pd.DataFrame(df_test[labels_column])
         del df_test[labels_column]
         labelspresenttest = True
@@ -30901,9 +30766,6 @@ class AutoMunge:
             print("columns excluded from PCA: ")
             print(bool_PCAexcl)
             print("")
-
-        check_PCA_string_result = self.check_PCA_string(list(df_train))
-        miscparameters_results.update({'check_PCA_string_result' : check_PCA_string_result})
         
         #PCA applied marker set to true
         PCA_applied = True
@@ -30922,6 +30784,12 @@ class AutoMunge:
           print("PCA model applied: ")
           print(PCActgy)
           print("")
+
+
+        PCA_suffixoverlap_results = \
+        self.df_check_suffixoverlap(df_train, list(PCAset_train), suffixoverlap_results = {})
+
+        miscparameters_results.update({'PCA_suffixoverlap_results':PCA_suffixoverlap_results})
 
         #reattach the excluded columns to PCA set
 #         df_train = pd.concat([PCAset_train, df_train[PCAexcl_posttransform]], axis=1)
@@ -30942,6 +30810,8 @@ class AutoMunge:
     else:
       #else we'll just populate the PCAmodel slot in postprocess_dict with a placeholder
       postprocess_dict.update({'PCAmodel' : None})
+
+      miscparameters_results.update({'PCA_suffixoverlap_results':{}})
 
     #Binary dimensionality reduction goes here
     
@@ -31009,11 +30879,15 @@ class AutoMunge:
         print("Consolidating boolean columns:")
         print(bool_column_list)
         print()
-
-      check_Binary_string_result = self.check_Binary_string(list(df_train))
-      miscparameters_results.update({'check_Binary_string_result' : check_Binary_string_result})
           
       df_train, df_test, Binary_dict = self.Binary_convert(df_train, df_test, bool_column_list, Binary)
+
+      #aggregate suffix overlap validations
+      Binary_suffixoverlap_results = {}
+      for entry in Binary_dict['column_dict']:
+        Binary_suffixoverlap_results.update(Binary_dict['column_dict'][entry]['suffixoverlap_results'])
+        
+      miscparameters_results.update({'Binary_suffixoverlap_results' : Binary_suffixoverlap_results})
       
       if printstatus is True:
         print("Boolean column count = ")
@@ -31026,6 +30900,7 @@ class AutoMunge:
     else:
       
       Binary_dict = {'bool_column_list' : [], 'column_dict' : {}}
+      miscparameters_results.update({'Binary_suffixoverlap_results' : {}})
 
     #here is the process to levelize the frequency of label rows in train data
     #currently only label categories of 'bnry' or 'text' are considered
@@ -31156,6 +31031,14 @@ class AutoMunge:
         excl_column_without_suffix = postprocess_dict['excl_columns_without_suffix'][excl_index]
         postprocess_dict['column_dict'].update({excl_column_without_suffix : \
                                                 deepcopy(postprocess_dict['column_dict'][excl_column_with_suffix])})
+
+    if excl_suffix is False:
+      #run a quick suffix overlap validation before changing excl headers
+      excl_suffixoverlap_results = \
+      self.df_check_suffixoverlap(df_train, postprocess_dict['excl_columns_without_suffix'], suffixoverlap_results = {})
+      miscparameters_results.update({'excl_suffixoverlap_results' : excl_suffixoverlap_results})
+    else:
+      miscparameters_results.update({'excl_suffixoverlap_results' : {}})
     
     #(we won't perform this step to train and test sets if PCA was applied)
     if excl_suffix is False:
@@ -31188,7 +31071,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.53'
+    automungeversion = '4.54'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -31409,26 +31292,7 @@ class AutoMunge:
 
     #then at completion of automunge(.), aggregate the suffixoverlap results
     #and do an additional printout if any column overlap error to be sure user sees message
-    for entry1 in postprocess_dict['column_dict']:
-      for entry2 in postprocess_dict['column_dict'][entry1]['suffixoverlap_results']:
-        if postprocess_dict['column_dict'][entry1]['suffixoverlap_results'][entry2] is True:
-          
-          print("*****************")
-          print("Warning of suffix overlap error")
-          print("When creating new column: ", entry2)
-          print("The column was already found present in df_train headers.")
-          print("")
-          print("Some potential quick fixes for this error include:")
-          print("- rename columns to integers before passing to automunge(.)")
-          print("- strip underscores '_' from column header titles.")
-          print("(convention is all suffix appenders include an underscore)")
-          print("")
-          print("Please note any updates to column headers will need to be carried through to assignment parameters.")
-          print("*****************")
-          print("")
-      
-      postprocess_dict['miscparameters_results']['suffixoverlap_results'].update(
-      postprocess_dict['column_dict'][entry1]['suffixoverlap_results'])
+    postprocess_dict = self.suffix_overlap_final_aggregation_and_printouts(postprocess_dict)
         
     #a reasonable extension would be to perform some validation functions on the\
     #sets here (or also prior to transform to numpy arrays) and confirm things \
@@ -31541,7 +31405,7 @@ class AutoMunge:
         #now we'll delete column
         #note this only worksa on single column  parents, need to incioroprate categorylist
         #for multicolumn parents (future extension)
-        if columndict_column in list(df_test):
+        if columndict_column in df_test.columns:
           del df_test[columndict_column]
 
     return df_test
@@ -32577,10 +32441,13 @@ class AutoMunge:
     #just like the postprocess_text_class function but uses different approach for
     #normalizaation key (uses passed columnkey). This function supports some of the
     #other methods.
+    #accepts parameter textcolumns as a list of columns to return 
     '''
     
-    #textcolumns = postprocess_dict['column_dict'][columnkey]['columnslist']
-    textcolumns = postprocess_dict['column_dict'][columnkey]['categorylist']
+    if 'textcolumns' in params:
+      textcolumns = params['textcolumns']
+    else:
+      textcolumns = postprocess_dict['column_dict'][columnkey]['categorylist']
     
     if len(textcolumns) > 0:
       tempcolumn = textcolumns[0]
@@ -37184,28 +37051,10 @@ class AutoMunge:
     textcolumns = \
     [binscolumn + '_s<-2', binscolumn + '_s-21', binscolumn + '_s-10', \
      binscolumn + '_s+01', binscolumn + '_s+12', binscolumn + '_s>+2']
-
-#     #process bins as a categorical set
-#     mdf_test = \
-#     self.postprocess_text_class(mdf_test, binscolumn, textcolumns)
-
-    #we're going to use the postprocess_text_class function here since it 
-    #allows us to force the columns even if no values present in the set
-    #however to do so we're going to have to construct a fake postprocess_dict
-    
-    #a future extension should probnably build this capacity into a new distinct function
-    
-    #here are some data structures for reference to create the below
-#     def postprocess_text_class(self, mdf_test, column, postprocess_dict, columnkey):
-#     textcolumns = postprocess_dict['column_dict'][columnkey]['columnslist']
-    
-    tempkey = 'tempkey'
-    temppostprocess_dict = {'column_dict' : {tempkey : {'columnslist' : textcolumns, \
-                                                       'categorylist' : textcolumns}}}
     
     #process bins as a categorical set
     mdf_test = \
-    self.postprocess_textsupport_class(mdf_test, binscolumn, temppostprocess_dict, tempkey)
+    self.postprocess_textsupport_class(mdf_test, binscolumn, {}, 'tempkey', {'textcolumns':textcolumns})
     
     #change data type for memory savings
     for textcolumn in textcolumns:
@@ -37276,28 +37125,10 @@ class AutoMunge:
     textcolumns = \
     [binscolumn + '_t<-2', binscolumn + '_t-21', binscolumn + '_t-10', \
      binscolumn + '_t+01', binscolumn + '_t+12', binscolumn + '_t>+2']
-
-#     #process bins as a categorical set
-#     mdf_test = \
-#     self.postprocess_text_class(mdf_test, binscolumn, textcolumns)
-
-    #we're going to use the postprocess_text_class function here since it 
-    #allows us to force the columns even if no values present in the set
-    #however to do so we're going to have to construct a fake postprocess_dict
-    
-    #a future extension should probnably build this capacity into a new distinct function
-    
-    #here are some data structures for reference to create the below
-#     def postprocess_text_class(self, mdf_test, column, postprocess_dict, columnkey):
-#     textcolumns = postprocess_dict['column_dict'][columnkey]['columnslist']
-    
-    tempkey = 'tempkey'
-    temppostprocess_dict = {'column_dict' : {tempkey : {'columnslist' : textcolumns, \
-                                                        'categorylist' : textcolumns}}}
     
     #process bins as a categorical set
     mdf_test = \
-    self.postprocess_textsupport_class(mdf_test, binscolumn, temppostprocess_dict, tempkey)
+    self.postprocess_textsupport_class(mdf_test, binscolumn, {}, 'tempkey', {'textcolumns':textcolumns})
     
     #change data type for memory savings
     for textcolumn in textcolumns:
@@ -37444,12 +37275,8 @@ class AutoMunge:
       pd.cut(mdf_test[binscolumn], bins = bins_cuts,  \
              labels = bins_id, precision=len(str(bn_count)))
 
-      tempkey = 'tempkey'
-      tempbins_postprocess_dict = {'column_dict' : {tempkey : {'columnslist' : textcolumns,\
-                                                               'categorylist' : textcolumns}}}
-
       mdf_test = \
-      self.postprocess_textsupport_class(mdf_test, binscolumn, tempbins_postprocess_dict, tempkey)
+      self.postprocess_textsupport_class(mdf_test, binscolumn, {}, 'tempkey', {'textcolumns':textcolumns})
 
       #change data type for memory savings
       for textcolumn in textcolumns:
@@ -37535,12 +37362,8 @@ class AutoMunge:
       pd.cut(mdf_test[binscolumn], bins = bins_cuts,  \
              labels = bins_id, precision=len(str(bn_count)))
 
-      tempkey = 'tempkey'
-      tempbins_postprocess_dict = {'column_dict' : {tempkey : {'columnslist' : textcolumns,\
-                                                               'categorylist' : textcolumns}}}
-
       mdf_test = \
-      self.postprocess_textsupport_class(mdf_test, binscolumn, tempbins_postprocess_dict, tempkey)
+      self.postprocess_textsupport_class(mdf_test, binscolumn, {}, 'tempkey', {'textcolumns':textcolumns})
 
       #change data type for memory savings
       for textcolumn in textcolumns:
@@ -37626,12 +37449,8 @@ class AutoMunge:
       pd.cut(mdf_test[binscolumn], bins = bins_cuts,  \
              labels = bins_id, precision=len(str(bn_count)))
 
-      tempkey = 'tempkey'
-      tempbins_postprocess_dict = {'column_dict' : {tempkey : {'columnslist' : textcolumns,\
-                                                               'categorylist' : textcolumns}}}
-
       mdf_test = \
-      self.postprocess_textsupport_class(mdf_test, binscolumn, tempbins_postprocess_dict, tempkey)
+      self.postprocess_textsupport_class(mdf_test, binscolumn, {}, 'tempkey', {'textcolumns':textcolumns})
 
       #change data type for memory savings
       for textcolumn in textcolumns:
@@ -37857,12 +37676,8 @@ class AutoMunge:
         pd.cut(mdf_test[binscolumn], bins = bins_cuts,  \
                labels = bins_id, precision=len(str(bn_count)), duplicates='drop')
 
-        tempkey = 'tempkey'
-        tempbins_postprocess_dict = {'column_dict' : {tempkey : {'columnslist' : textcolumns,\
-                                                                 'categorylist' : textcolumns}}}
-
         mdf_test = \
-        self.postprocess_textsupport_class(mdf_test, binscolumn, tempbins_postprocess_dict, tempkey)
+        self.postprocess_textsupport_class(mdf_test, binscolumn, {}, 'tempkey', {'textcolumns':textcolumns})
 
         #change data type for memory savings
         for textcolumn in textcolumns:
@@ -37954,12 +37769,8 @@ class AutoMunge:
         pd.cut(mdf_test[binscolumn], bins = bins_cuts,  \
                labels = bins_id, precision=len(str(bn_count)), duplicates='drop')
 
-        tempkey = 'tempkey'
-        tempbins_postprocess_dict = {'column_dict' : {tempkey : {'columnslist' : textcolumns,\
-                                                                 'categorylist' : textcolumns}}}
-
         mdf_test = \
-        self.postprocess_textsupport_class(mdf_test, binscolumn, tempbins_postprocess_dict, tempkey)
+        self.postprocess_textsupport_class(mdf_test, binscolumn, {}, 'tempkey', {'textcolumns':textcolumns})
 
         #change data type for memory savings
         for textcolumn in textcolumns:
@@ -38051,12 +37862,8 @@ class AutoMunge:
         pd.cut(mdf_test[binscolumn], bins = bins_cuts,  \
                labels = bins_id, precision=len(str(bn_count)), duplicates='drop')
 
-        tempkey = 'tempkey'
-        tempbins_postprocess_dict = {'column_dict' : {tempkey : {'columnslist' : textcolumns,\
-                                                                 'categorylist' : textcolumns}}}
-
         mdf_test = \
-        self.postprocess_textsupport_class(mdf_test, binscolumn, tempbins_postprocess_dict, tempkey)
+        self.postprocess_textsupport_class(mdf_test, binscolumn, {}, 'tempkey', {'textcolumns':textcolumns})
 
         #change data type for memory savings
         for textcolumn in textcolumns:
@@ -38332,12 +38139,8 @@ class AutoMunge:
         pd.cut(mdf_test[binscolumn], bins = bins_cuts,  \
                labels = bins_id, precision=len(str(bn_count)), duplicates='drop')
 
-        tempkey = 'tempkey'
-        tempbins_postprocess_dict = {'column_dict' : {tempkey : {'columnslist' : textcolumns,\
-                                                                 'categorylist' : textcolumns}}}
-
         mdf_test = \
-        self.postprocess_textsupport_class(mdf_test, binscolumn, tempbins_postprocess_dict, tempkey)
+        self.postprocess_textsupport_class(mdf_test, binscolumn, {}, 'tempkey', {'textcolumns':textcolumns})
                 
         #initialize binscolumn once more
         mdf_test[binscolumn] = mdf_test[column].copy()        
@@ -38452,12 +38255,8 @@ class AutoMunge:
       pd.cut(mdf_test[binscolumn], bins = bins_cuts,  \
              labels = bins_id, precision=len(str(len(bins_id))))
 
-      tempkey = 'tempkey'
-      tempbins_postprocess_dict = {'column_dict' : {tempkey : {'columnslist' : textcolumns,\
-                                                               'categorylist' : textcolumns}}}
-
       mdf_test = \
-      self.postprocess_textsupport_class(mdf_test, binscolumn, tempbins_postprocess_dict, tempkey)
+      self.postprocess_textsupport_class(mdf_test, binscolumn, {}, 'tempkey', {'textcolumns':textcolumns})
 
       #change data type for memory savings
       for textcolumn in textcolumns:
@@ -38537,12 +38336,8 @@ class AutoMunge:
       pd.cut(mdf_test[binscolumn], bins = bins_cuts,  \
              labels = bins_id, precision=len(str(len(bins_id))))
 
-      tempkey = 'tempkey'
-      tempbins_postprocess_dict = {'column_dict' : {tempkey : {'columnslist' : textcolumns,\
-                                                               'categorylist' : textcolumns}}}
-
       mdf_test = \
-      self.postprocess_textsupport_class(mdf_test, binscolumn, tempbins_postprocess_dict, tempkey)
+      self.postprocess_textsupport_class(mdf_test, binscolumn, {}, 'tempkey', {'textcolumns':textcolumns})
 
       #change data type for memory savings
       for textcolumn in textcolumns:
@@ -40321,7 +40116,7 @@ class AutoMunge:
 
     #this converts any numeric columns labels, such as from a passed numpy array, to strings
     testlabels=[]
-    for column in list(df_test):
+    for column in df_test.columns:
       testlabels.append(str(column))
     df_test.columns = testlabels
 
@@ -40461,7 +40256,7 @@ class AutoMunge:
 
     #check column headers are consistent (this works independent of order)
     columns_train_set = set(postprocess_dict['origtraincolumns'])
-    columns_test_set = set(list(df_test))
+    columns_test_set = set(df_test)
     if columns_train_set != columns_test_set:
       print("error, different column labels in the train and test set")
       return
@@ -43315,7 +43110,7 @@ class AutoMunge:
 
           #we're only retaining successfully recovered source columns in the returned df
           #this deletion is performed sequentially for columns returned from given source column for memory management
-          if column in list(df_test):
+          if column in df_test.columns:
             del df_test[column]
           
       if printstatus is True:
