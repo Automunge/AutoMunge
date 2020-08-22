@@ -1592,8 +1592,8 @@ or 'exc4' for pass-through numeric with powers of ten bins. Note this
 method requires the inclusion of a designated label column.
 
 * featureeval: a boolean identifier _(True/False)_ to activate a feature
-importance evaluation, comparable to one performed in automunge but based
-on the test set passed to postmunge. The results are returned in the
+importance evaluation, comparable to one performed in automunge but based on the 
+test set passed to postmunge. Defaults to False. The results are returned in the
 postreports_dict object returned from postmunge as postreports_dict['featureimportance']. 
 The results will also be printed out if printstatus is activated.  Note that sorted 
 feature importance results are returned in postreports_dict['FS_sorted'], including 
