@@ -25832,6 +25832,8 @@ class AutoMunge:
     #the insertinfill function relies on some support columns so we'll check for overlap error
     infill_suffixoverlap_results = \
     self.df_check_suffixoverlap(df_train, ['tempindex1', 'textNArows'], {})
+
+    infill_validations = {'infill_suffixoverlap_results' : infill_suffixoverlap_results}
       
     while iteration < infilliterate:
       
@@ -26073,6 +26075,9 @@ class AutoMunge:
                 print("     infill type: MLinfill")
                 print("")
 
+              infill_validations = \
+              self.check_ML_infill(df_train, column, postprocess_dict, infill_validations)
+
               df_train, df_test, postprocess_dict = \
               self.MLinfillfunction(df_train, df_test, column, postprocess_dict, \
                                     masterNArows_train, masterNArows_test, randomseed, ML_cmnd)
@@ -26082,7 +26087,7 @@ class AutoMunge:
       
       iteration += 1
     
-    return df_train, df_test, postprocess_dict, infill_suffixoverlap_results
+    return df_train, df_test, postprocess_dict, infill_validations
   
   def apply_pm_infill(self, df_test, postprocess_assigninfill_dict, \
                       postprocess_dict, printstatus, infillcolumns_list, \
@@ -28095,6 +28100,30 @@ class AutoMunge:
         print()
         
     return check_np_shape_train_result, check_np_shape_test_result
+
+  def check_ML_infill(self, df_train, column, postprocess_dict, infill_validations = {}):
+    """
+    #Perform validations that train set is suitable for MLinfill
+    #For example ML infill requires >1 source columns in df_train
+    """
+    
+    columnslist = postprocess_dict['column_dict'][column]['columnslist']
+    
+    if 'MLinfill_validations' not in infill_validations:
+      infill_validations.update({'MLinfill_validations':{}})
+    
+    if len(columnslist) == len(list(df_train)):
+      
+      print("Error: ML infill requires > 1 source features in df_train")
+      print()
+      
+      infill_validations['MLinfill_validations'].update({column : True})
+        
+    else:
+      
+      infill_validations['MLinfill_validations'].update({column : False})
+      
+    return infill_validations
 
   def check_assigncat(self, assigncat):
     """
@@ -30612,12 +30641,12 @@ class AutoMunge:
                                           columns_train, postprocess_dict, MLinfill)
 
     #now apply infill
-    df_train, df_test, postprocess_dict, infill_suffixoverlap_results = \
+    df_train, df_test, postprocess_dict, infill_validations = \
     self.apply_am_infill(df_train, df_test, postprocess_assigninfill_dict, \
                         postprocess_dict, infilliterate, printstatus, infillcolumns_list, \
                         masterNArows_train, masterNArows_test, process_dict, randomseed, ML_cmnd)
 
-    miscparameters_results.update({'infill_suffixoverlap_results' : infill_suffixoverlap_results})
+    miscparameters_results.update(infill_validations)
 
     #quickly gather a list of columns before any dimensionalioty reductions for populating mirror trees
     pre_dimred_finalcolumns_train = list(df_train)
@@ -31028,7 +31057,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.55'
+    automungeversion = '4.56'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
