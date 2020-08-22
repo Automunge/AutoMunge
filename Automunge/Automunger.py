@@ -31057,7 +31057,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.56'
+    automungeversion = '4.57'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -40076,6 +40076,8 @@ class AutoMunge:
         FSmodel, FScolumn_dict, FS_sorted = \
         self.postfeatureselect(df_test, labelscolumn, testID_column, \
                                postprocess_dict, printstatus)
+
+        madethecut = postprocess_dict['madethecut']
 
     else:
 
