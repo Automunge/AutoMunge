@@ -5485,6 +5485,15 @@ class AutoMunge:
           print("When removing '_excl' suffix for column: ", entry1)
           print("The column without suffix was already found present in df_train headers.")
           print("")
+
+    for entry1 in postprocess_dict['miscparameters_results']['infill_suffixoverlap_results']:
+      if postprocess_dict['miscparameters_results']['infill_suffixoverlap_results'][entry1] is True:
+          #this is an unlikely scenario since at time of infill suffixes will have been added
+          print("*****************")
+          print("Warning of suffix overlap error")
+          print("When creating infill support column: ", entry1)
+          print("The column was already found present in df_train headers.")
+          print("")
           
     return postprocess_dict
   
@@ -7593,9 +7602,9 @@ class AutoMunge:
     #delete support NArw2 column
 #     columnNArw = column + '_NArw'
     columnNAr2 = column + '_zzzinfill'
-    if columnNAr2 in list(mdf_train):
+    if columnNAr2 in mdf_train.columns:
       del mdf_train[columnNAr2]
-    if columnNAr2 in list(mdf_test):
+    if columnNAr2 in mdf_test.columns:
       del mdf_test[columnNAr2]
     if 'zzzinfill' in orig_labels_train:
       orig_labels_train.remove('zzzinfill')
@@ -7771,9 +7780,9 @@ class AutoMunge:
     #delete support NArw2 column
 #     columnNArw = column + '_NArw'
     columnNAr2 = column + '_zzzinfill'
-    if columnNAr2 in list(mdf_train):
+    if columnNAr2 in mdf_train.columns:
       del mdf_train[columnNAr2]
-    if columnNAr2 in list(mdf_test):
+    if columnNAr2 in mdf_test.columns:
       del mdf_test[columnNAr2]
     if 'zzzinfill' in orig_labels_train:
       orig_labels_train.remove('zzzinfill')
@@ -24501,13 +24510,10 @@ class AutoMunge:
   def insertinfill(self, df, column, infill, category, NArows, postprocess_dict, \
                    columnslist = [], categorylist = [], singlecolumncase = False):
     '''
-    #insertinfill(df, column, infill, category, NArows, columnslist = [])
-    #function that takes as input a dataframe, column id, category string of either\
-    #'nmbr'/'text'/'bnry'/'date', a df column of True/False identifiying row id of\
-    #rows that will recieve infill, and and a list of columns produced by a text \
-    #class preprocessor when applicable. Replaces the column cells in rows \
-    #coresponding to the NArows True values with the values from infill, returns\
-    #the associated transformed dataframe.
+    #uses the boolean indicators for presence of infill in NArows to apply infill
+    #passed in infill dataframe to df[column]
+    #note that infill dataframe is multicolumn when categorylist length > 1
+    #and singlecolumn case is False
     #singlecolumn case is for special case (used in adjinfill) when we want to 
     #override the categorylist >1 methods
     '''
@@ -24515,9 +24521,6 @@ class AutoMunge:
     MLinfilltype = postprocess_dict['process_dict'][category]['MLinfilltype']
     
     #NArows column name uses original column name + _NArows as key
-    #by convention, current column has original column name + '_ctgy' at end
-    #so we'll drop final 5 characters from column string
-    #origcolumnname = column[:-5]
     NArowcolumn = NArows.columns[0]
 
     #if category in ['nmbr', 'nbr2', 'bxcx', 'bnry', 'text']:
@@ -24528,101 +24531,49 @@ class AutoMunge:
       #if this is a single column set (not categorical)
       if len(categorylist) == 1 or singlecolumncase is True \
       or MLinfilltype in ['concurrent_act', 'concurrent_nmbr']:
-
+        
         #create new dataframe for infills wherein the infill values are placed in \
         #rows coresponding to NArows True values and rows coresponding to NArows \
         #False values are filled with a 0    
 
         #assign index values to a column
-        df['tempindex1'] = df.index
-
-        #concatinate our df with NArows
-        df = pd.concat([df, NArows], axis=1)
+        NArows['tempindex1'] = df.index
 
         #create list of index numbers coresponding to the NArows True values
-        infillindex = df.loc[df[NArowcolumn]]['tempindex1']
+        infillindex = NArows.loc[NArows[NArowcolumn]]['tempindex1']
 
         #create a dictionary for use to insert infill using df's index as the key
         infill_dict = dict(zip(infillindex, infill.values))
-        #infill_dict = dict(zip(infillindex, infill['infill']))
 
         #replace 'tempindex1' column with infill in rows where NArows is True
-        #df['tempindex1'] = np.where(df[NArowcolumn], df['tempindex1'].replace(infill_dict), 'fill')
-        df['tempindex1'] = np.where(df[NArowcolumn], df['tempindex1'].replace(infill_dict), 0)
+        NArows['tempindex1'] = np.where(NArows[NArowcolumn], NArows['tempindex1'].replace(infill_dict), 0)
 
         #now carry that infill over to the target column for rows where NArows is True
-        df[column] = np.where(df[NArowcolumn], df['tempindex1'], df[column])
-
-        #remove the temporary columns from df
-        df = df.drop(['tempindex1'], axis=1)
-        df = df.drop([NArowcolumn], axis=1)
+        df[column] = np.where(NArows[NArowcolumn], NArows['tempindex1'], df[column])
 
       #else if categorylist wasn't single value
       else:
 
-        #create new dataframe for infills wherein the infill values are placed in \
-        #rows coresponding to NArows True values and rows coresponding to NArows \
-        #False values are filled with a 0
-
-        #text infill contains multiple columns for each predicted calssification
-        #which were derived from one-hot encoding the original column in preprocessing
         for textcolumnname in categorylist:
-
-          #create newcolumn which will serve as the NArows specific to textcolumnname
-          df['textNArows'] = NArows
-
-          df['textNArows'] = df['textNArows'].replace(0, False)
-          df['textNArows'] = df['textNArows'].replace(1, True)
-
+          
           #assign index values to a column
-          df['tempindex1'] = df.index
+          NArows['tempindex1'] = df.index
 
           #create list of index numbers coresponding to the NArows True values
-          textinfillindex = pd.DataFrame(df.loc[df['textNArows']]['tempindex1'])
-          
-          #reset the index
-          textinfillindex = textinfillindex.reset_index()
+          infillindex = NArows.loc[NArows[NArowcolumn]]['tempindex1']
 
-          #now before we create our infill dicitonaries, we're going to need to
-          #create a seperate textinfillindex for each category
+          #create a dictionary for use to insert infill using df's index as the key
+          infill_dict = dict(zip(infillindex, infill[textcolumnname].values))
 
-          infill['tempindex1'] = textinfillindex['tempindex1']
-          
-          #if we didn't have infill we created a plug infill set with column name 'infill'
-          if 'infill' not in list(infill):
-            
-            #first let's create a copy of this textcolumn's infill column replacing 
-            #0/1 with True False (this works because we are one hot encoding)
-            infill[textcolumnname + '_bool'] = infill[textcolumnname].astype('bool')
+          #replace 'tempindex1' column with infill in rows where NArows is True
+          NArows['tempindex1'] = np.where(NArows[NArowcolumn], NArows['tempindex1'].replace(infill_dict), 0)
 
-            #we'll use the mask feature to create infillindex which only contains \
-            #rows coresponding to the True value in the column we just created
-
-            mask = (infill[textcolumnname + '_bool']==True)
-            infillindex = infill[mask]['tempindex1']
-
-            #we're only going to insert the infill to column textcolumnname if we \
-            #have infill to insert
-
-            if len(infillindex.values) > 0:
-
-              df.loc[infillindex.values[0], textcolumnname] = 1
-
-          #now we'll delete temporary support columns associated with textcolumnname
-          
-          #for some reason these infill drops are returning performance warnings
-          #but since this function doesn't even return infill I'm just going to leave out
-#           infill = infill.drop([textcolumnname + '_bool'], axis=1)
-#           infill = infill.drop(['tempindex1'], axis=1)
-          
-          df = df.drop(['textNArows'], axis=1)
-          df = df.drop(['tempindex1'], axis=1)
+          #now carry that infill over to the target column for rows where NArows is True
+          df[column] = np.where(NArows[NArowcolumn], NArows['tempindex1'], df[column])
 
     #if category == 'date':
     if MLinfilltype in ['exclude', 'boolexclude', 'totalexclude']:
-      #this spot reserved for future update to incorporate address of datetime\
-      #category data
-      df = df
+      pass
 
     return df
 
@@ -25001,7 +24952,7 @@ class AutoMunge:
       if MLinfilltype in ['numeric']:
 
         columns_labels = []
-        for label in list(labels_df):
+        for label in labels_df.columns:
           #here we're checking if the column is a numneric set aggregated bins
           if postprocess_dict['process_dict'][postprocess_dict['column_dict'][label]['category']]['MLinfilltype'] \
           in ['multirt', 'concurrent_act']:
@@ -25424,7 +25375,7 @@ class AutoMunge:
 
         am_categorylist = []
 
-        for am_label_column in list(am_labels):
+        for am_label_column in am_labels.columns:
 
           if FSpostprocess_dict['column_dict'][am_label_column]['category'] == labelctgy:
 
@@ -25865,7 +25816,7 @@ class AutoMunge:
     """
     #Modularizes the application of infill to train and test sets
     """
-    
+
     #infilliterate allows ML infill sets to run multiple times
     #as may be beneficial if set had a high proportion of infill for instance
     iteration = 0
@@ -25877,6 +25828,10 @@ class AutoMunge:
       print_infilliterate = True
     else:
       print_infilliterate = False
+      
+    #the insertinfill function relies on some support columns so we'll check for overlap error
+    infill_suffixoverlap_results = \
+    self.df_check_suffixoverlap(df_train, ['tempindex1', 'textNArows'], {})
       
     while iteration < infilliterate:
       
@@ -26127,7 +26082,7 @@ class AutoMunge:
       
       iteration += 1
     
-    return df_train, df_test, postprocess_dict
+    return df_train, df_test, postprocess_dict, infill_suffixoverlap_results
   
   def apply_pm_infill(self, df_test, postprocess_assigninfill_dict, \
                       postprocess_dict, printstatus, infillcolumns_list, \
@@ -26692,7 +26647,7 @@ class AutoMunge:
       tempdf_mode_dict = {}
       
       #since this is one hot encoded we can count activations in a column with sum
-      for tempcolumn in list(tempdf):
+      for tempcolumn in tempdf.columns:
         tempdf_mode_dict.update({tempdf[tempcolumn].sum() : tempcolumn})
       
       #create a list of those sums then sort to grab the mode column
@@ -26727,7 +26682,7 @@ class AutoMunge:
       tempdf['onehot'] = ''
 
       #populate column to store aggregated encodings 
-      for tempdf_column in list(tempdf):
+      for tempdf_column in tempdf.columns:
         if tempdf_column != 'onehot':
           tempdf['onehot'] = \
           tempdf['onehot'] + tempdf[tempdf_column].astype(int).astype(str)
@@ -26862,7 +26817,7 @@ class AutoMunge:
       tempdf_mode_dict = {}
       
       #since this is one hot encoded we can count activations in a column with sum
-      for tempcolumn in list(tempdf):
+      for tempcolumn in tempdf.columns:
         tempdf_mode_dict.update({tempdf[tempcolumn].sum() : tempcolumn})
       
       #create a list of those sums then sort to grab the mode column
@@ -26900,7 +26855,7 @@ class AutoMunge:
       tempdf['onehot'] = ''
 
       #populate column to store aggregated encodings 
-      for tempdf_column in list(tempdf):
+      for tempdf_column in tempdf.columns:
         if tempdf_column != 'onehot':
           tempdf['onehot'] = \
           tempdf['onehot'] + tempdf[tempdf_column].astype(int).astype(str)
@@ -28208,12 +28163,12 @@ class AutoMunge:
     #False is good
     result = False
     
-    for assigncat_key in list(assigncat):
+    for assigncat_key in assigncat:
       
       #eval is a special case, it triggers the application of evalcategory
       #which may be neccesary when automated inference turned off with powertransform
       #so it doesn't need a process_dit entry
-      if assigncat_key not in list(transform_dict) and assigncat_key not in ['eval', 'ptfm']:
+      if assigncat_key not in transform_dict and assigncat_key not in ['eval', 'ptfm']:
         
         result = True
         
@@ -28241,9 +28196,9 @@ class AutoMunge:
     #False is good
     result = False
     
-    for assigncat_key in list(assigncat):
+    for assigncat_key in assigncat:
       
-      if assigncat_key in list(transform_dict):
+      if assigncat_key in transform_dict:
         
         familytree_entries = []
         
@@ -28255,7 +28210,7 @@ class AutoMunge:
           
           if familytree_entry != None:
 
-            if familytree_entry not in list(process_dict):
+            if familytree_entry not in process_dict:
 
               print("Error, the following category was found as an entry")
               print("in a family tree without a corresponding entry ")
@@ -28661,7 +28616,7 @@ class AutoMunge:
 
         for normalization_dict_entry in postprocess_dict['column_dict'][column_dict_entry]['normalization_dict'][column_dict_entry]:
 
-          if normalization_dict_entry in list(required_unique_normalization_dict_entries):
+          if normalization_dict_entry in required_unique_normalization_dict_entries:
 
             if required_unique_normalization_dict_entries[normalization_dict_entry] != \
             postprocess_dict['column_dict'][column_dict_entry]['category']:
@@ -28906,7 +28861,7 @@ class AutoMunge:
       #key1 are category entries passed in assignparam['default_assignparam']
       for key1 in assignparam['default_assignparam']:
         
-        if key1 not in list(assignparam):
+        if key1 not in assignparam:
           
           #for column passed in df_train
           for sourcecolumn in list_df_train:
@@ -30657,10 +30612,12 @@ class AutoMunge:
                                           columns_train, postprocess_dict, MLinfill)
 
     #now apply infill
-    df_train, df_test, postprocess_dict = \
+    df_train, df_test, postprocess_dict, infill_suffixoverlap_results = \
     self.apply_am_infill(df_train, df_test, postprocess_assigninfill_dict, \
                         postprocess_dict, infilliterate, printstatus, infillcolumns_list, \
                         masterNArows_train, masterNArows_test, process_dict, randomseed, ML_cmnd)
+
+    miscparameters_results.update({'infill_suffixoverlap_results' : infill_suffixoverlap_results})
 
     #quickly gather a list of columns before any dimensionalioty reductions for populating mirror trees
     pre_dimred_finalcolumns_train = list(df_train)
@@ -31071,7 +31028,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.54'
+    automungeversion = '4.55'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -32302,7 +32259,7 @@ class AutoMunge:
 
       #delete support NArw2 column
       columnNAr2 = column + '_zzzinfill'
-      if columnNAr2 in list(mdf_test):
+      if columnNAr2 in mdf_test.columns:
         del mdf_test[columnNAr2]
 
       #change data types to 8-bit (1 byte) integers for memory savings
@@ -32426,7 +32383,7 @@ class AutoMunge:
 
       #delete support NArw2 column
       columnNAr2 = column + '_zzzinfill'
-      if columnNAr2 in list(mdf_test):
+      if columnNAr2 in mdf_test.columns:
         del mdf_test[columnNAr2]
 
       #change data types to 8-bit (1 byte) integers for memory savings
@@ -32519,7 +32476,7 @@ class AutoMunge:
     
     #delete support NArw2 column
     columnNAr2 = column + '_zzzinfill'
-    if columnNAr2 in list(mdf_test):
+    if columnNAr2 in mdf_test.columns:
       del mdf_test[columnNAr2]
     
     #change data types to 8-bit (1 byte) integers for memory savings
@@ -39545,7 +39502,7 @@ class AutoMunge:
 
         am_categorylist = []
 
-        for am_label_column in list(am_labels):
+        for am_label_column in am_labels.columns:
 
           if FSpostprocess_dict['column_dict'][am_label_column]['category'] == labelctgy:
 
@@ -40978,7 +40935,7 @@ class AutoMunge:
     
     categorylist = []
     
-    for entry in list(postprocess_dict['column_dict']):
+    for entry in postprocess_dict['column_dict']:
       
       if postprocess_dict['column_dict'][entry]['inputcolumn'] == inputcolumn \
       and postprocess_dict['column_dict'][entry]['category'] == category:
@@ -41691,11 +41648,11 @@ class AutoMunge:
     inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
     
     #this is a hack for special treatment associated wiuth excl suffix edge case
-    if normkey not in list(df):
+    if normkey not in df.columns:
       
       if normkey[-5:] == '_excl':
         
-        if normkey[:-5] in list(df):
+        if normkey[:-5] in df.columns:
           
           df.rename(columns={normkey[:-5]:normkey}, inplace=True)
     
@@ -41764,7 +41721,7 @@ class AutoMunge:
     df[inputcolumn] = 0
         
     #for pwr2 trasnform suffix is either '_10^#' for positive values or '_-10^#' for negative
-    for column in list(train_replace_dict):
+    for column in train_replace_dict:
       
       #this dictionary is including a nan key entry for infill points, we'll leave these points as 0
       if column == column:
@@ -41949,7 +41906,7 @@ class AutoMunge:
       
       column = inputcolumn + '_bnwd_' + _id
       
-      if column in list(df):
+      if column in df.columns:
       
         df[inputcolumn] = np.where(df[column] == 1, i * bn_width_bnwd + bn_min, df[inputcolumn])
     
@@ -41989,7 +41946,7 @@ class AutoMunge:
       
       column = inputcolumn + '_bnwK_' + _id
       
-      if column in list(df):
+      if column in df.columns:
       
         df[inputcolumn] = np.where(df[column] == 1, i * bn_width_bnwK + bn_min, df[inputcolumn])
       
@@ -42029,7 +41986,7 @@ class AutoMunge:
       
       column = inputcolumn + '_bnwM_' + _id
       
-      if column in list(df):
+      if column in df.columns:
       
         df[inputcolumn] = np.where(df[column] == 1, i * bn_width_bnwM + bn_min, df[inputcolumn])
       
@@ -42770,7 +42727,7 @@ class AutoMunge:
       
       search = search_dict[column]
       
-      if column in list(df):
+      if column in df.columns:
 
         df[inputcolumn] = np.where((df[column] == 1) & (df[inputcolumn] == 'zzzinfill'), search, df[inputcolumn])
     
@@ -42806,7 +42763,7 @@ class AutoMunge:
       
       searchterm = column.replace(inputcolumn + '_src2_', '')
       
-      if column in list(df):
+      if column in df.columns:
       
         df[inputcolumn] = np.where((df[column] == 1) & (df[inputcolumn] == 'zzzinfill'), searchterm, df[inputcolumn])
     
@@ -42842,7 +42799,7 @@ class AutoMunge:
       
       searchterm = column.replace(inputcolumn + '_src3_', '')
       
-      if column in list(df):
+      if column in df.columns:
       
         df[inputcolumn] = np.where((df[column] == 1) & (df[inputcolumn] == 'zzzinfill'), searchterm, df[inputcolumn])
     
@@ -43151,13 +43108,13 @@ class AutoMunge:
       #if Binary was a 'retain' call then we don't need these columns for inversion
       if postprocess_dict['Binary'] == 'retain' and inversion == 'test':
         inversion = list(df_test)
-        for entry in list(postprocess_dict['Binary_dict']['column_dict']):
+        for entry in postprocess_dict['Binary_dict']['column_dict']:
           if entry in inversion:
             inversion.remove(entry)
       if postprocess_dict['Binary'] == 'retain' and isinstance(inversion, list):
         #we'll have convention that if Binary didn't replace columns 
         #partial inversion only available for Binary source columns
-        for entry in list(postprocess_dict['Binary_dict']['column_dict']):
+        for entry in postprocess_dict['Binary_dict']['column_dict']:
           if entry in inversion:
             print("please note partial inversion lists only supported for columns not returned from Binary")
             print("when Binary was not performed with replacement")
@@ -43167,7 +43124,7 @@ class AutoMunge:
       if postprocess_dict['Binary'] == True and isinstance(inversion, list):
         if set(list(postprocess_dict['Binary_dict']['column_dict'])).issubset(set(inversion)):
           Binary_inversion_marker = True
-          for entry in list(postprocess_dict['Binary_dict']['column_dict']):
+          for entry in postprocess_dict['Binary_dict']['column_dict']:
             inversion.remove(entry)
           inversion += postprocess_dict['Binary_dict']['bool_column_list']
         elif bool(set(postprocess_dict['Binary_dict']['column_dict']) & set(inversion)):
@@ -43180,7 +43137,7 @@ class AutoMunge:
 
       df_test = self.meta_inverseprocess_Binary(df_test, postprocess_dict)
 
-      for entry in list(postprocess_dict['Binary_dict']['column_dict']):
+      for entry in postprocess_dict['Binary_dict']['column_dict']:
         Binary_finalcolumns_train.remove(entry)
       Binary_finalcolumns_train += postprocess_dict['Binary_dict']['bool_column_list']
 
