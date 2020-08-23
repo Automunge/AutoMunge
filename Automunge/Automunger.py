@@ -5485,15 +5485,6 @@ class AutoMunge:
           print("When removing '_excl' suffix for column: ", entry1)
           print("The column without suffix was already found present in df_train headers.")
           print("")
-
-    for entry1 in postprocess_dict['miscparameters_results']['infill_suffixoverlap_results']:
-      if postprocess_dict['miscparameters_results']['infill_suffixoverlap_results'][entry1] is True:
-          #this is an unlikely scenario since at time of infill suffixes will have been added
-          print("*****************")
-          print("Warning of suffix overlap error")
-          print("When creating infill support column: ", entry1)
-          print("The column was already found present in df_train headers.")
-          print("")
           
     return postprocess_dict
   
@@ -25829,11 +25820,8 @@ class AutoMunge:
     else:
       print_infilliterate = False
       
-    #the insertinfill function relies on some support columns so we'll check for overlap error
-    infill_suffixoverlap_results = \
-    self.df_check_suffixoverlap(df_train, ['tempindex1', 'textNArows'], {})
-
-    infill_validations = {'infill_suffixoverlap_results' : infill_suffixoverlap_results}
+    #initialize validation results
+    infill_validations = {}
       
     while iteration < infilliterate:
       
@@ -28112,16 +28100,16 @@ class AutoMunge:
     if 'MLinfill_validations' not in infill_validations:
       infill_validations.update({'MLinfill_validations':{}})
     
-    if len(columnslist) == len(list(df_train)):
-      
-      print("Error: ML infill requires > 1 source features in df_train")
-      print()
-      
-      infill_validations['MLinfill_validations'].update({column : True})
+      if len(columnslist) == len(list(df_train)):
         
-    else:
-      
-      infill_validations['MLinfill_validations'].update({column : False})
+        print("Error: ML infill requires > 1 source features in df_train")
+        print()
+        
+        infill_validations.update({'MLinfill_validations': True})
+          
+      else:
+        
+        infill_validations.update({'MLinfill_validations': False})
       
     return infill_validations
 
