@@ -31057,7 +31057,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.57'
+    automungeversion = '4.58'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -40237,16 +40237,41 @@ class AutoMunge:
 
     #confirm consistency of train an test sets
 
-    #check number of columns is consistent
-    if len(postprocess_dict['origtraincolumns'])!= df_test.shape[1]:
-      print("error, different number of original columns in train and test sets")
-      return
-
-    #check column headers are consistent (this works independent of order)
-    columns_train_set = set(postprocess_dict['origtraincolumns'])
-    columns_test_set = set(df_test)
-    if columns_train_set != columns_test_set:
-      print("error, different column labels in the train and test set")
+    #check columns passed to postmunge(.) are consistent with train set passed to automunge(.)
+    if len(set(postprocess_dict['origtraincolumns']) - set(df_test)) > 0 \
+    or len(set(df_test) - set(postprocess_dict['origtraincolumns'])) > 0:
+      print("Error, inconsistent columns between train set passed to automunge(.)")
+      print("and test set passed to postmunge(.)")
+      print()
+      print("__________")
+      print("original columns passed to automunge(.) (exluding any labels_column and/or trainID_column):")
+      print()
+      print(postprocess_dict['origtraincolumns'])
+      print()
+      print("__________")
+      print("current columns passed to postmunge(.) (exluding any labelscolumn and/or testID_column):")
+      print()
+      print(list(df_test))
+      print()
+      if len(set(postprocess_dict['origtraincolumns']) - set(df_test)) > 0:
+        print("__________")
+        print("missing following columns in df_test passed to postmunge(.):")
+        print()
+        print(list(set(postprocess_dict['origtraincolumns']) - set(df_test)))
+        print()
+        print("If this is a label column requires designation in automunge(.)")
+        print("via the labels_column parameter.")
+        print()
+      if len(set(df_test) - set(postprocess_dict['origtraincolumns'])) > 0:
+        print("__________")
+        print("extra columns passed in df_test to postmunge(.) are:")
+        print()
+        print(list(set(df_test) - set(postprocess_dict['origtraincolumns'])))
+        print()
+        print("Note that extra columns can be carved out in postmunge(.)")
+        print("with testID_column parameter.")
+        print()
+      
       return
 
     #check order of column headers are consistent
@@ -40254,6 +40279,17 @@ class AutoMunge:
     columns_test = list(df_test)
     if columns_train != columns_test:
       print("error, different order of column labels in the train and test set")
+      print()
+      print("__________")
+      print("original columns passed to automunge(.) (exluding any labels_column and/or trainID_column):")
+      print()
+      print(postprocess_dict['origtraincolumns'])
+      print()
+      print("__________")
+      print("current columns passed to postmunge(.) (exluding any labelscolumn and/or testID_column):")
+      print()
+      print(list(df_test))
+      print()
       return
 
     #here we'll perform drift report if elected
