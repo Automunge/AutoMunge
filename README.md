@@ -105,7 +105,6 @@ labelsencoding_dict, finalcolumns_train, finalcolumns_test, \
 featureimportance, postprocess_dict \
 = am.automunge(df_train)
 ```
-
 or for subsequent consistent processing of train or test data, using the
 dictionary returned from original application of automunge(.), run:
 
@@ -114,6 +113,9 @@ test, testID, testlabels, \
 labelsencoding_dict, postreports_dict \
 = am.postmunge(postprocess_dict, df_test)
 ```
+Importantly, if the df_train set passed to automunge(.) includes a column
+intended for use as labels, it should be designated with the labels_column
+parameter.
 
 I find it helpful to pass these functions with the full range of arguments
 included for reference, thus a user may simply copy and past this form.
