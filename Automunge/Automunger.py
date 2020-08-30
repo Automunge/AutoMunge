@@ -29587,6 +29587,122 @@ class AutoMunge:
     del df_temp
     
     return df
+
+  def populate_columntype_report(self, postprocess_dict):
+    """
+    #populates a report for types of returned columns
+    #such as to distingiush between continous, categoric, categoric sets, etc
+    """
+    
+    columntype_report = {'continuous' : [], \
+                         'boolean' : [], \
+                         'ordinal' : [], \
+                         'onehot' : [], \
+                         'onehot_sets' : [], \
+                         'binary' : [], \
+                         'binary_sets' : [], \
+                         'passthrough' : []}
+    
+    populated_columns = []
+    
+    for column in postprocess_dict['finalcolumns_train']:
+      
+      if column not in populated_columns:
+        
+        if column in postprocess_dict['returned_PCA_columns']:
+          
+          #add to numeric
+          columntype_report['continuous'].append(column)
+          
+          populated_columns.append(column)
+          
+        elif column in postprocess_dict['returned_Binary_columns']:
+          
+          #initialize binary_sets
+          columntype_report['binary_sets'].append([])
+
+          for entry in postprocess_dict['returned_Binary_columns']:
+
+            columntype_report['binary_sets'][-1] = \
+            columntype_report['binary_sets'][-1] + [column]
+
+            #add to binary
+            columntype_report['binary'].append(column)
+
+            populated_columns.append(column)
+          
+        elif postprocess_dict['excl_suffix'] is False \
+        and column in postprocess_dict['excl_columns_without_suffix']:
+            
+          #add column to passthrough
+          columntype_report['passthrough'].append(column)
+
+          populated_columns.append(column)
+            
+        elif column in postprocess_dict['column_dict']:
+          
+          MLinfilltype = \
+          postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype']
+          
+          if MLinfilltype in ['numeric', 'concurrent_nmbr']:
+            
+            #add to numeric
+            columntype_report['continuous'].append(column)
+            
+            populated_columns.append(column)
+            
+          elif MLinfilltype in ['binary', 'concurrent_act', 'boolexclude']:
+            
+            #add to boolean
+            columntype_report['boolean'].append(column)
+            
+            populated_columns.append(column)
+          
+          elif MLinfilltype in ['singlct']:
+            
+            #add to ordinal
+            columntype_report['ordinal'].append(column)
+            
+            populated_columns.append(column)
+            
+          elif MLinfilltype in ['multirt']:
+            
+            #initialize onehot_sets
+            columntype_report['onehot_sets'].append([])
+            
+            for entry in postprocess_dict['column_dict'][column]['categorylist']:
+              
+              columntype_report['onehot_sets'][-1] = \
+              columntype_report['onehot_sets'][-1] + [column]
+              
+              #add to onehot
+              columntype_report['onehot'].append(column)
+              
+              populated_columns.append(column)
+              
+          elif MLinfilltype in ['1010']:
+              
+            #initialize binary_sets
+            columntype_report['binary_sets'].append([])
+
+            for entry in postprocess_dict['column_dict'][column]['categorylist']:
+
+              columntype_report['binary_sets'][-1] = \
+              columntype_report['binary_sets'][-1] + [column]
+
+              #add to binary
+              columntype_report['binary'].append(column)
+
+              populated_columns.append(column)
+              
+          elif MLinfilltype in ['exclude', 'totalexclude']:
+            
+            #add to ordinal
+            columntype_report['passthrough'].append(column)
+            
+            populated_columns.append(column)
+            
+    return columntype_report
   
   def automunge(self, df_train, df_test = False, \
                 labels_column = False, trainID_column = False, testID_column = False, \
@@ -30736,6 +30852,9 @@ class AutoMunge:
           print("_______________")
           print("Applying PCA dimensionality reduction")
           print("")
+          print("Before PCA train set column count:")
+          print(len(df_train.columns))
+          print()
           if len(bool_PCAexcl) > 0:
             print("columns excluded from PCA: ")
             print(bool_PCAexcl)
@@ -30771,19 +30890,29 @@ class AutoMunge:
         df_train = pd.concat([PCAset_train.set_index(df_train.index), df_train[PCAexcl_posttransform]], axis=1)
         df_test = pd.concat([PCAset_test.set_index(df_test.index), df_test[PCAexcl_posttransform]], axis=1)
 
+        returned_PCA_columns = list(PCAset_train)
+
+        del PCAset_train
+        del PCAset_test
+
         #printout display progress
         if printstatus is True:
           print("returned PCA columns: ")
-          print(list(PCAset_train))
+          print(returned_PCA_columns)
           print("")
+          print("After PCA train set column count:")
+          print(len(df_train.columns))
+          print()
 
       else:
         #else we'll just populate the PCAmodel slot in postprocess_dict with a placeholder
         postprocess_dict.update({'PCAmodel' : None})
+        returned_PCA_columns = []
 
     else:
       #else we'll just populate the PCAmodel slot in postprocess_dict with a placeholder
       postprocess_dict.update({'PCAmodel' : None})
+      returned_PCA_columns = []
 
       miscparameters_results.update({'PCA_suffixoverlap_results':{}})
 
@@ -30798,7 +30927,7 @@ class AutoMunge:
         print("_______________")
         print("Begin Binary dimensionality reduction")
         print("")
-        print("Before transform train set column count = ")
+        print("Before Binary train set column count = ")
         print(df_train.shape[1])
         print("")
       
@@ -30845,7 +30974,7 @@ class AutoMunge:
           column_category = postprocess_dict['column_dict'][column]['category']
 
           if process_dict[column_category]['MLinfilltype'] in \
-          ['singlect', 'multirt', 'binary', '1010', 'boolexclude', 'concurrent_act']:
+          ['multirt', 'binary', '1010', 'boolexclude', 'concurrent_act']:
 
             bool_column_list.append(column)
             
@@ -30855,6 +30984,9 @@ class AutoMunge:
         print()
           
       df_train, df_test, Binary_dict = self.Binary_convert(df_train, df_test, bool_column_list, Binary)
+
+      returned_Binary_columns = list(Binary_dict['column_dict'])
+      returned_Binary_columns.remove('Binary')
 
       #aggregate suffix overlap validations
       Binary_suffixoverlap_results = {}
@@ -30867,7 +30999,13 @@ class AutoMunge:
         print("Boolean column count = ")
         print(len(bool_column_list))
         print("")
-        print("After transform train set column count = ")
+        print("Returned Binary columns:")
+        print(returned_Binary_columns)
+        print()
+        print("Returned Binary column count = ")
+        print(len(returned_Binary_columns))
+        print("")
+        print("After Binary train set column count = ")
         print(df_train.shape[1])
         print("")
       
@@ -30875,6 +31013,7 @@ class AutoMunge:
       
       Binary_dict = {'bool_column_list' : [], 'column_dict' : {}}
       miscparameters_results.update({'Binary_suffixoverlap_results' : {}})
+      returned_Binary_columns = []
 
     #here is the process to levelize the frequency of label rows in train data
     #currently only label categories of 'bnry' or 'text' are considered
@@ -31013,8 +31152,7 @@ class AutoMunge:
       miscparameters_results.update({'excl_suffixoverlap_results' : excl_suffixoverlap_results})
     else:
       miscparameters_results.update({'excl_suffixoverlap_results' : {}})
-    
-    #(we won't perform this step to train and test sets if PCA was applied)
+
     if excl_suffix is False:
       df_train.columns = [column[:-5] if column in postprocess_dict['column_dict'] and \
                           postprocess_dict['column_dict'][column]['category'] == 'excl' \
@@ -31045,7 +31183,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.58'
+    automungeversion = '4.59'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -31095,10 +31233,12 @@ class AutoMunge:
                              'drift_dict' : drift_dict, \
                              'Binary' : Binary, \
                              'Binary_dict' : Binary_dict, \
+                             'returned_Binary_columns' : returned_Binary_columns, \
                              'PCA_applied' : PCA_applied, \
                              'PCAn_components' : PCAn_components, \
                              'PCAexcl' : PCAexcl, \
                              'prePCAcolumns' : prePCAcolumns, \
+                             'returned_PCA_columns' : returned_PCA_columns, \
                              'madethecut' : madethecut, \
                              'excl_suffix' : excl_suffix, \
                              'traindata' : False, \
@@ -31138,6 +31278,12 @@ class AutoMunge:
     postprocess_dict.update({'categorytree' : categorytree, \
                              'inverse_categorytree' : inverse_categorytree, \
                              'inputcolumn_dict' : inputcolumn_dict})
+
+    #populate a report for column types of returned set
+    columntype_report = \
+    self.populate_columntype_report(postprocess_dict)
+    
+    postprocess_dict.update({'columntype_report' : columntype_report})
 
     if totalvalidationratio > 0:
 
@@ -40618,6 +40764,8 @@ class AutoMunge:
           print("returned PCA columns: ")
           print(list(PCAset_test))
           print("")
+
+        del PCAset_test
 
     #Binary dimensionality reduction goes here
     #we'll only apply to test data not labels
