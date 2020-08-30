@@ -576,6 +576,10 @@ used to train a downstream model so that it may be passed to postmunge(.)
 to consistently process subsequently available test data, such as 
 demonstrated with the pickle library above.
 
+Note that a report classifying the returned column types such as by:
+continuous, boolean, ordinal, onehot, onehot_sets, binary, binary_sets, passthrough
+is available in postprocess_dict['columntype_report'].
+
 ...
 
 ## automunge(.) passed parameters
@@ -2337,7 +2341,7 @@ as bnry except for default infill.)
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: ordinal_dict / ordinal_overlap_replace / ordinal_activations_dict
   - inversion available: yes with full recovery
-* ord3/ord4: converts categorical sets to ordinally encoded set of integer identifiers
+* ord3: converts categorical sets to ordinally encoded set of integer identifiers
 sorted first by frequency of category occurrence, second basis for common count entries is alphabetical
   - default infill: plug value 'zzzinfill'
   - default NArowtype: justNaN
@@ -2345,6 +2349,8 @@ sorted first by frequency of category occurrence, second basis for common count 
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: ordinal_dict / ordinal_overlap_replace / ordinal_activations_dict
   - inversion available: yes with full recovery
+* ord4: derived by an ord3 transform followed by a mnmx transform. Useful as a scaled metric
+(numeric in range 0-1) which ranks any redundant entries by frequency of occurance.
 * 1010: converts categorical sets of >2 unique values to binary encoding (more memory 
 efficient than one-hot encoding)
   - default infill: plug value 'zzzinfill'
