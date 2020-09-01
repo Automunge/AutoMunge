@@ -1292,8 +1292,8 @@ processdict =  {'newt' : {'dualprocess' : am.process_mnmx_class, \
 # ** Note that NArowtype also is used as basis for metrics evaluated in drift assessment of source columns
 # ** Note that by default any np.inf values are converted to NaN for infill
 
-#MLinfilltype: can be entries {'numeric', 'singlct', 'binary', 'multirt', '1010',
-#                              'exclude', 'boolexclude'}
+#MLinfilltype: can be entries {'numeric', 'singlct', 'binary', 'multirt', 'concurrent_act', 'concurrent_nmbr', 
+#                              '1010', 'exclude', 'boolexclude'}
 #              'numeric' refers to columns where predictive algorithms treat
 #                        as a regression for numeric sets
 #              'singlct' single column sets with ordinal entries (integers)
@@ -1307,7 +1307,8 @@ processdict =  {'newt' : {'dualprocess' : am.process_mnmx_class, \
 #                        will be converted to onehot for ML
 #              'exclude' for columns which will be excluded from ML infill
 #              'boolexclude' boolean set suitable for Binary transform but excluded from all infill (eg NArw entries)
-#              'totalexclude' for complete passthroughs (eg excl, exc6) without infill and excluded from assignnan global option
+#              'totalexclude' for complete passthroughs (eg excl, exc6) without infill and excluded 
+#                        from inf conversion and assignnan global option
 
 #labelctgy: should be a string entry of a single transform category found as an entry in the root category's family 
 #tree. Used to determine a basis of feature selection for cases where labels are returned in multiple configurations.
@@ -2351,6 +2352,9 @@ sorted first by frequency of category occurrence, second basis for common count 
   - inversion available: yes with full recovery
 * ord4: derived by an ord3 transform followed by a mnmx transform. Useful as a scaled metric
 (numeric in range 0-1) which ranks any redundant entries by frequency of occurance.
+* lbos: an ord3 encoding followed by downstream conversion to string dtype. This may be useful for
+label sets passed to downstream libraries to ensure they treat labels as target for classification instead
+of regression.
 * 1010: converts categorical sets of >2 unique values to binary encoding (more memory 
 efficient than one-hot encoding)
   - default infill: plug value 'zzzinfill'
@@ -2535,7 +2539,7 @@ remains in range 0-1 (by scaling neg noise when input <0.5 and scaling pos noise
   - default infill: comparable to retn with mean (calculated before noise injection)
   - suffix appender: '_DPrt'
   - assignparam parameters accepted: parameters comparable to retn divisor / offset / multiplier / 
-                                     cap / floor defaulting to 'minmax'/0/1/False/False
+                                     cap / floor defaulting to 'minmax'/0/1/False/False, also
                                      'mu' for noise mean and 'sigma' for noise standard deviation
                                      (defaults to 0, 0.03 respectively), parameters should be
                                      passed to 'DPmm' transformation category from family tree
@@ -3049,6 +3053,7 @@ avoid unintentional duplication.
 - 'lbda',
 - 'lbnm',
 - 'lbor',
+- 'lbos',
 - 'lbte',
 - 'lgnm',
 - 'lngt',
@@ -3203,6 +3208,7 @@ avoid unintentional duplication.
 - 'src4',
 - 'srch',
 - 'strn',
+- 'strg',
 - 'texd',
 - 'text',
 - 'tlbn',
@@ -3365,6 +3371,7 @@ present in dataframe and return results in postprocess_dict['miscparameters_resu
 - '_src4'
 - '\_srch_' + string (where string is an identified overlap of characters with user passed search string)
 - '_strn'
+- '_strg'
 - '\_tlbn_' + i (where i is identifier of bin)
 - '\_text_' + string (where string is a categorical entry in one-hot encoded set)
 - '_ucct'
@@ -4178,6 +4185,16 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'children'      : [], \
                                      'niecesnephews' : [], \
                                      'coworkers'     : ['ord3'], \
+                                     'friends'       : []}})
+
+  
+    transform_dict.update({'strg' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['strg'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
                                      'friends'       : []}})
     
     transform_dict.update({'nmrc' : {'parents'       : [], \
@@ -6032,6 +6049,24 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'children'      : [], \
                                      'niecesnephews' : [], \
                                      'coworkers'     : [], \
+                                     'friends'       : []}})
+
+    transform_dict.update({'lbos' : {'parents'       : ['lbos'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['strg'], \
+                                     'friends'       : []}})
+
+    transform_dict.update({'lbos' : {'parents'       : ['lbos'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['strg'], \
                                      'friends'       : []}})
     
     transform_dict.update({'lbte' : {'parents'       : [], \
