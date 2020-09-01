@@ -890,6 +890,16 @@ class AutoMunge:
                                      'niecesnephews' : [], \
                                      'coworkers'     : ['ord3'], \
                                      'friends'       : []}})
+
+  
+    transform_dict.update({'strg' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['strg'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
     
     transform_dict.update({'nmrc' : {'parents'       : [], \
                                      'siblings'      : [], \
@@ -2744,6 +2754,15 @@ class AutoMunge:
                                      'niecesnephews' : [], \
                                      'coworkers'     : [], \
                                      'friends'       : []}})
+
+    transform_dict.update({'lbos' : {'parents'       : ['lbos'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['strg'], \
+                                     'friends'       : []}})
     
     transform_dict.update({'lbte' : {'parents'       : [], \
                                      'siblings'      : [], \
@@ -3565,6 +3584,14 @@ class AutoMunge:
                                   'singleprocess' : self.process_strn_class, \
                                   'postprocess' : None, \
                                   'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'exclude', \
+                                  'labelctgy' : 'ord3'}})
+    process_dict.update({'strg' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_strg_class, \
+                                  'postprocess' : None, \
+                                  'inverseprocess' : self.inverseprocess_strg, \
+                                  'info_retention' : True, \
+                                  'NArowtype' : 'integer', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'ord3'}})
     process_dict.update({'nmrc' : {'dualprocess' : None, \
@@ -4937,6 +4964,14 @@ class AutoMunge:
                                   'MLinfilltype' : 'multirt', \
                                   'labelctgy' : 'text'}})
     process_dict.update({'lbor' : {'dualprocess' : self.process_ord3_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_ord3_class, \
+                                  'inverseprocess' : self.inverseprocess_ord3, \
+                                  'info_retention' : True, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'singlct', \
+                                  'labelctgy' : 'ord3'}})
+    process_dict.update({'lbos' : {'dualprocess' : self.process_ord3_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_ord3_class, \
                                   'inverseprocess' : self.inverseprocess_ord3, \
@@ -11677,6 +11712,43 @@ class AutoMunge:
 
       column_dict_list.append(column_dict.copy())
         
+    return df, column_dict_list
+
+  def process_strg_class(self, df, column, category, postprocess_dict, params = {}):
+    '''
+    #str function
+    #accepts input of integer categoric sets, such as from an ordinal transform
+    #and converts to strings for purposes of categoric recognition in some downstream libaries
+    #(eg some libraries will treat integer label sets as targets for regression instead of classificaiton)
+    #does not perform infill, just converts entries to string
+    '''
+    
+    suffixoverlap_results = {}
+      
+    strg_column = column + '_strg'
+    
+    df, suffixoverlap_results = \
+    self.df_copy_train(df, column, strg_column, suffixoverlap_results)
+    
+    df[strg_column] = df[strg_column].astype(str)
+
+    column_dict_list = []
+
+    column_dict = {strg_column : {'category' : 'strg', \
+                                 'origcategory' : category, \
+                                 'normalization_dict' : {strg_column:{}}, \
+                                 'origcolumn' : column, \
+                                 'inputcolumn' : column, \
+                                 'columnslist' : [strg_column], \
+                                 'categorylist' : [strg_column], \
+                                 'infillmodel' : False, \
+                                 'infillcomplete' : False, \
+                                 'suffixoverlap_results' : suffixoverlap_results, \
+                                 'deletecolumn' : False}}
+    
+    #now append column_dict onto postprocess_dict
+    column_dict_list.append(column_dict.copy())
+
     return df, column_dict_list
 
   def process_nmrc_class(self, df, column, category, postprocess_dict, params = {}):
@@ -29588,7 +29660,7 @@ class AutoMunge:
     
     return df
 
-  def populate_columntype_report(self, postprocess_dict):
+  def populate_columntype_report(self, postprocess_dict, target_columns):
     """
     #populates a report for types of returned columns
     #such as to distingiush between continous, categoric, categoric sets, etc
@@ -29605,7 +29677,8 @@ class AutoMunge:
     
     populated_columns = []
     
-    for column in postprocess_dict['finalcolumns_train']:
+    #for column in postprocess_dict['finalcolumns_train']:
+    for column in target_columns:
       
       if column not in populated_columns:
         
@@ -31183,7 +31256,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.59'
+    automungeversion = '4.60'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -31281,9 +31354,12 @@ class AutoMunge:
 
     #populate a report for column types of returned set
     columntype_report = \
-    self.populate_columntype_report(postprocess_dict)
-    
+    self.populate_columntype_report(postprocess_dict, postprocess_dict['finalcolumns_train'])
     postprocess_dict.update({'columntype_report' : columntype_report})
+
+    label_columntype_report = \
+    self.populate_columntype_report(postprocess_dict, postprocess_dict['finalcolumns_labels'])
+    postprocess_dict.update({'label_columntype_report' : label_columntype_report})
 
     if totalvalidationratio > 0:
 
@@ -42591,6 +42667,24 @@ class AutoMunge:
     
     df[inputcolumn] = \
     df[normkey].replace(inverse_ordinal_dict)
+    
+    return df, inputcolumn
+
+  def inverseprocess_strg(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_strg_class
+    #converts strings back to integers
+    #assumes any relevant parameters were saved in normalization_dict
+    #does not perform infill, assumes clean data
+    #note that this will return numeric entries as str
+    """
+    
+    normkey = categorylist[0]
+    
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    
+    df[inputcolumn] = \
+    df[normkey].astype(int, errors='ignore')
     
     return df, inputcolumn
   
