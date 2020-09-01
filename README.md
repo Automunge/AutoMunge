@@ -6059,15 +6059,6 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'niecesnephews' : [], \
                                      'coworkers'     : ['strg'], \
                                      'friends'       : []}})
-
-    transform_dict.update({'lbos' : {'parents'       : ['lbos'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['strg'], \
-                                     'friends'       : []}})
     
     transform_dict.update({'lbte' : {'parents'       : [], \
                                      'siblings'      : [], \
