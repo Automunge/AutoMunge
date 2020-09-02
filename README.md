@@ -2542,9 +2542,9 @@ remains in range 0-1 (by scaling neg noise when input <0.5 and scaling pos noise
   - assignparam parameters accepted: parameters comparable to retn divisor / offset / multiplier / 
                                      cap / floor defaulting to 'minmax'/0/1/False/False, also
                                      'mu' for noise mean and 'sigma' for noise standard deviation
-                                     (defaults to 0, 0.03 respectively), parameters should be
-                                     passed to 'DPmm' transformation category from family tree
-                                     also 'flip_prob' for ratio of data with injections (defaults to 1.0)
+                                     (defaults to 0, 0.03 respectively), also 'flip_prob' for ratio 
+                                     of data with injections (defaults to 1.0). Parameters should be
+                                     passed to 'DPrt' transformation category from family tree.
   - driftreport postmunge metrics: mu, sigma, flip_prob for DPrt, also metrics comparable to retn
   - inversion available: yes
 * DPbn: applies a two value binary encoding (bnry) followed by a noise injection to train data which
