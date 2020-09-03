@@ -2257,7 +2257,7 @@ class AutoMunge:
                                      'cousins'       : [], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
-                                     'coworkers'     : ['ord3'], \
+                                     'coworkers'     : ['ordl'], \
                                      'friends'       : []}})
     
     transform_dict.update({'mnts' : {'parents'       : ['mnts'], \
@@ -2275,7 +2275,7 @@ class AutoMunge:
                                      'cousins'       : [], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
-                                     'coworkers'     : ['ord3'], \
+                                     'coworkers'     : ['ordl'], \
                                      'friends'       : []}})
     
     transform_dict.update({'bins' : {'parents'       : [], \
@@ -2566,7 +2566,7 @@ class AutoMunge:
                                      'coworkers'     : ['onht'], \
                                      'friends'       : []}})
     
-    transform_dict.update({'DP10' : {'parents'       : ['DP06'], \
+    transform_dict.update({'DP10' : {'parents'       : ['DPo6'], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : [], \
                                      'cousins'       : [NArw], \
@@ -2575,7 +2575,7 @@ class AutoMunge:
                                      'coworkers'     : [], \
                                      'friends'       : []}})
     
-    transform_dict.update({'DP06' : {'parents'       : ['DP06'], \
+    transform_dict.update({'DPo6' : {'parents'       : ['DPo6'], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : [], \
                                      'cousins'       : [NArw], \
@@ -4781,7 +4781,7 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : '1010'}})
-    process_dict.update({'DP06' : {'dualprocess' : self.process_ord3_class, \
+    process_dict.update({'DPo6' : {'dualprocess' : self.process_ord3_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_ord3_class, \
                                   'inverseprocess' : self.inverseprocess_ord3, \
@@ -18759,6 +18759,9 @@ class AutoMunge:
     inverse_ordinal_dict = {value:key for key,value in ordinal_dict.items()}
     activations_list = list(inverse_ordinal_dict)
 
+    mdf_train[binscolumn] = mdf_train[binscolumn].astype(np.int8)
+    mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.int8)
+
     #create list of columns
     nmbrcolumns = [binscolumn]
 
@@ -31256,7 +31259,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.60'
+    automungeversion = '4.61'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -31453,7 +31456,12 @@ class AutoMunge:
       print(version_combined)
       print("")
 
-      print("Automunge returned column set: ")
+      if df_trainID.empty is False:
+        print("Automunge returned ID column set: ")
+        print(list(df_trainID))
+        print("")
+
+      print("Automunge returned train column set: ")
       print(list(df_train))
       print("")
 
@@ -37394,6 +37402,8 @@ class AutoMunge:
     pd.cut( mdf_test[binscolumn], bins = [-float('inf'), -2, -1, 0, 1, 2, float('inf')],  \
            labels = [0,1,2,3,4,5], precision=4)
 
+    mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.int8)
+
     return mdf_test
   
   def postprocess_bnwd_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
@@ -40959,8 +40969,14 @@ class AutoMunge:
 
     #printout display progress
     if printstatus is True:
+
       print("_______________")
-      print("Postmunge returned column set: ")
+      if df_testID.empty is False:
+        print("Postmunge returned ID column set: ")
+        print(list(df_testID))
+        print("")
+
+      print("Postmunge returned test column set: ")
       print(list(df_test))
       print("")
 
