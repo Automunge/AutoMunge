@@ -5554,7 +5554,7 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'cousins'       : [], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
-                                     'coworkers'     : ['ord3'], \
+                                     'coworkers'     : ['ordl'], \
                                      'friends'       : []}})
     
     transform_dict.update({'mnts' : {'parents'       : ['mnts'], \
@@ -5572,7 +5572,7 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'cousins'       : [], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
-                                     'coworkers'     : ['ord3'], \
+                                     'coworkers'     : ['ordl'], \
                                      'friends'       : []}})
     
     transform_dict.update({'bins' : {'parents'       : [], \
@@ -5863,7 +5863,7 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'coworkers'     : ['onht'], \
                                      'friends'       : []}})
     
-    transform_dict.update({'DP10' : {'parents'       : ['DP06'], \
+    transform_dict.update({'DP10' : {'parents'       : ['DPo6'], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : [], \
                                      'cousins'       : [NArw], \
@@ -5872,7 +5872,7 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'coworkers'     : [], \
                                      'friends'       : []}})
     
-    transform_dict.update({'DP06' : {'parents'       : ['DP06'], \
+    transform_dict.update({'DPo6' : {'parents'       : ['DPo6'], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : [], \
                                      'cousins'       : [NArw], \
