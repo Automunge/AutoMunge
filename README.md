@@ -2146,6 +2146,14 @@ value fell with respect to powers of 10 (comparable to pwor with negvalues param
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: train_replace_dict / test_replace_dict / ordl_activations_dict
   - inversion available: yes with partial recovery
+* por3: comparable to por2 but followed by a binary encoding, such as may be useful for data with 
+high variability
+  - default infill: zero (a distinct encoding)
+  - default NArowtype: nonzeronumeric
+  - suffix appender: '_por2'
+  - assignparam parameters accepted: none
+  - driftreport postmunge metrics: train_replace_dict / test_replace_dict / ordl_activations_dict
+  - inversion available: yes with partial recovery
 * bins: for numerical sets, outputs a set of 6 columns indicating where a
 value fell with respect to number of standard deviations from the mean of the
 set (i.e. <-2, -2-1, -10, 01, 12, >2)
@@ -3168,6 +3176,7 @@ avoid unintentional duplication.
 - 'ors6',
 - 'ors7',
 - 'por2',
+- 'por3',
 - 'pwor',
 - 'pwr2',
 - 'pwrs',
@@ -5735,6 +5744,15 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'children'      : [], \
                                      'niecesnephews' : [], \
                                      'coworkers'     : [], \
+                                     'friends'       : []}})
+
+    transform_dict.update({'por3' : {'parents'       : ['por3'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['1010'], \
                                      'friends'       : []}})
 
     transform_dict.update({'DPnm' : {'parents'       : ['DPn2'], \
