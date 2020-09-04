@@ -2440,6 +2440,15 @@ class AutoMunge:
                                      'coworkers'     : [], \
                                      'friends'       : []}})
 
+    transform_dict.update({'por3' : {'parents'       : ['por3'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['1010'], \
+                                     'friends'       : []}})
+
     transform_dict.update({'DPnm' : {'parents'       : ['DPn2'], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : [], \
@@ -3434,7 +3443,7 @@ class AutoMunge:
                                   'inverseprocess' : self.inverseprocess_spl5, \
                                   'info_retention' : False, \
                                   'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'singlct', \
+                                  'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'ord3'}})
     process_dict.update({'spl6' : {'dualprocess' : self.process_spl2_class, \
                                   'singleprocess' : None, \
@@ -3474,7 +3483,7 @@ class AutoMunge:
                                   'inverseprocess' : self.inverseprocess_spl5, \
                                   'info_retention' : False, \
                                   'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'singlct', \
+                                  'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'ord3'}})
     process_dict.update({'sp11' : {'dualprocess' : self.process_spl2_class, \
                                    'singleprocess' : None, \
@@ -3816,7 +3825,7 @@ class AutoMunge:
                                   'inverseprocess' : self.inverseprocess_sp15, \
                                   'info_retention' : False, \
                                   'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'singlct', \
+                                  'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'ord3'}})
     process_dict.update({'ors5' : {'dualprocess' : self.process_spl5_class, \
                                   'singleprocess' : None, \
@@ -3824,7 +3833,7 @@ class AutoMunge:
                                   'inverseprocess' : self.inverseprocess_sp15, \
                                   'info_retention' : False, \
                                   'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'singlct', \
+                                  'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'ord3'}})
     process_dict.update({'ors6' : {'dualprocess' : self.process_spl5_class, \
                                   'singleprocess' : None, \
@@ -3832,7 +3841,7 @@ class AutoMunge:
                                   'inverseprocess' : self.inverseprocess_sp15, \
                                   'info_retention' : False, \
                                   'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'singlct', \
+                                  'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'ord3'}})
     process_dict.update({'ordl' : {'dualprocess' : self.process_ordl_class, \
                                   'singleprocess' : None, \
@@ -4661,6 +4670,14 @@ class AutoMunge:
                                   'NArowtype' : 'nonzeronumeric', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'por2'}})
+    process_dict.update({'por3' : {'dualprocess' : self.process_por2_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_por2_class, \
+                                  'inverseprocess' : self.inverseprocess_por2, \
+                                  'info_retention' : False, \
+                                  'NArowtype' : 'nonzeronumeric', \
+                                  'MLinfilltype' : 'singlct', \
+                                  'labelctgy' : '1010'}})
     process_dict.update({'DPn2' : {'dualprocess' : self.process_numerical_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_numerical_class, \
@@ -31259,7 +31276,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.61'
+    automungeversion = '4.62'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -42014,6 +42031,9 @@ class AutoMunge:
     inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
     
     df[inputcolumn] = 0
+
+    #we'll convert the input to integers
+    df[normkey] = df[normkey].astype(int, errors='ignore')
         
     #for pwr2 trasnform suffix is either '_10^#' for positive values or '_-10^#' for negative
     for column in train_replace_dict:
@@ -42152,6 +42172,9 @@ class AutoMunge:
     #and for tails we'll arbitraricly follow consistent deltas between buckets
     #(so this loses a lot of tail distribution information in the inversion)
     returned_values_dict = {}
+
+    #we'll convert the input to integers
+    df[normkey] = df[normkey].astype(int, errors='ignore')
     
     i = -2.5
     
@@ -42395,6 +42418,9 @@ class AutoMunge:
     inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
     
     df[inputcolumn] = 0
+
+    #we'll convert the input to integers
+    df[normkey] = df[normkey].astype(int, errors='ignore')
     
     for i in range(len(bins_id)):
       
@@ -42539,6 +42565,9 @@ class AutoMunge:
     #we'll use convention that bucket's replaced with the midpoint value
     #except for bottom bucket replaced with ceiling and top bucket replaced with floor
     #so don't have to deal with inf
+
+    #we'll convert the input to integers
+    df[normkey] = df[normkey].astype(int, errors='ignore')
     
     df[inputcolumn] = 0
     
@@ -42585,6 +42614,9 @@ class AutoMunge:
     #so don't have to deal with inf
     
     df[inputcolumn] = 0
+
+    #we'll convert the input to integers
+    df[normkey] = df[normkey].astype(int, errors='ignore')
     
     for i in bins_id:
       
@@ -42680,6 +42712,9 @@ class AutoMunge:
     inverse_ordinal_dict = {value:key for key,value in ordinal_dict.items()}
     
     inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+
+    #we'll convert the input to integers
+    df[normkey] = df[normkey].astype(int, errors='ignore')
     
     df[inputcolumn] = \
     df[normkey].replace(inverse_ordinal_dict)
@@ -43142,6 +43177,9 @@ class AutoMunge:
     #to match convention of prioritizing search parameter entries at end of list
     keys = list(ordl_dict1)
     keys.reverse()
+
+    #we'll convert the input to integers
+    df[normkey] = df[normkey].astype(int, errors='ignore')
     
     for key in keys:
       
