@@ -2255,6 +2255,10 @@ bin count defaults to 5/7/9 eg for bne0/bn7o/bn9o
 					   defaults to [0,1,2] (arbitrary plug values)
   - driftreport postmunge metrics: binsmean / buckets / bins_cuts / bins_id / ordl_activations_dict
   - inversion available: yes with partial recovery
+* note that bins each have variants for one-hot vs ordinal vs binary encodings
+binary  : bkb3, bkb4, bsbn, bnwb, bnKb, bnMb, bneb, bn7b, bn9b, pwbn, por3
+ordinal : bkt3, bkt4, bsor, bnwo, bnKo, bnMo, bneo, bn7o, bn9o, pwor, por2
+one-hot : bkt1, bkt2, bins, bnwd, bnwK, bnwM, bnep, bne7, bne9, pwrs, pwr2
 * tlbn: returns equal population bins in separate columns with activations replaced by min-max scaled 
 values within that segment's range (between 0-1) and other values subject to an infill of -1 
 (intended for use to evaluate feature importance of different segments of a numerical set's distribution
@@ -2974,25 +2978,34 @@ avoid unintentional duplication.
 - 'aggt',
 - 'bins',
 - 'bint',
+- 'bkb3',
+- 'bkb4',
 - 'bkt1',
 - 'bkt2',
 - 'bkt3',
 - 'bkt4',
+- 'bn7b',
 - 'bn7o',
+- 'bn9b',
 - 'bn9o',
 - 'bnKo',
 - 'bnMo',
 - 'bne7',
 - 'bne9',
+- 'bneb',
 - 'bneo',
 - 'bnep',
+- 'bnKb',
+- 'bnMb',
 - 'bnr2',
 - 'bnrd',
 - 'bnry',
+- 'bnwb',
 - 'bnwK',
 - 'bnwM',
 - 'bnwd',
 - 'bnwo',
+- 'bsbn',
 - 'bshr',
 - 'bsor',
 - 'bxc2',
@@ -3177,6 +3190,7 @@ avoid unintentional duplication.
 - 'ors7',
 - 'por2',
 - 'por3',
+- 'pwbn',
 - 'pwor',
 - 'pwr2',
 - 'pwrs',
@@ -5754,6 +5768,96 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'niecesnephews' : [], \
                                      'coworkers'     : ['1010'], \
                                      'friends'       : []}})
+
+    transform_dict.update({'bkb3' : {'parents'       : ['bkb3'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : ['1010']}})
+  
+    transform_dict.update({'bkb4' : {'parents'       : ['bkb4'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : ['1010']}})
+    
+    transform_dict.update({'bsbn' : {'parents'       : ['bsbn'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : ['1010']}})
+    
+    transform_dict.update({'bnwb' : {'parents'       : ['bnwb'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : ['1010']}})
+    
+    transform_dict.update({'bnKb' : {'parents'       : ['bnKb'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : ['1010']}})
+
+    transform_dict.update({'bnMb' : {'parents'       : ['bnMb'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : ['1010']}})
+    
+    transform_dict.update({'bneb' : {'parents'       : ['bneb'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : ['1010']}})
+
+    transform_dict.update({'bn7b' : {'parents'       : ['bn7b'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : ['1010']}})
+    
+    transform_dict.update({'bn9b' : {'parents'       : ['bn9b'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : ['1010']}})
+    
+    transform_dict.update({'pwbn' : {'parents'       : ['pwbn'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : ['1010']}})
 
     transform_dict.update({'DPnm' : {'parents'       : ['DPn2'], \
                                      'siblings'      : [], \
