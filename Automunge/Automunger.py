@@ -2449,6 +2449,96 @@ class AutoMunge:
                                      'coworkers'     : ['1010'], \
                                      'friends'       : []}})
 
+    transform_dict.update({'bkb3' : {'parents'       : ['bkb3'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['1010'], \
+                                     'friends'       : []}})
+  
+    transform_dict.update({'bkb4' : {'parents'       : ['bkb4'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['1010'], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'bsbn' : {'parents'       : ['bsbn'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['1010'], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'bnwb' : {'parents'       : ['bnwb'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['1010'], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'bnKb' : {'parents'       : ['bnKb'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['1010'], \
+                                     'friends'       : []}})
+
+    transform_dict.update({'bnMb' : {'parents'       : ['bnMb'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['1010'], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'bneb' : {'parents'       : ['bneb'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['1010'], \
+                                     'friends'       : []}})
+
+    transform_dict.update({'bn7b' : {'parents'       : ['bn7b'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['1010'], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'bn9b' : {'parents'       : ['bn9b'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['1010'], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'pwbn' : {'parents'       : ['pwbn'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['1010'], \
+                                     'friends'       : []}})
+
     transform_dict.update({'DPnm' : {'parents'       : ['DPn2'], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : [], \
@@ -4676,6 +4766,86 @@ class AutoMunge:
                                   'inverseprocess' : self.inverseprocess_por2, \
                                   'info_retention' : False, \
                                   'NArowtype' : 'nonzeronumeric', \
+                                  'MLinfilltype' : 'singlct', \
+                                  'labelctgy' : '1010'}})
+    process_dict.update({'bkb3' : {'dualprocess' : self.process_bkt3_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_bkt3_class, \
+                                  'inverseprocess' : self.inverseprocess_bkt3, \
+                                  'info_retention' : False, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'singlct', \
+                                  'labelctgy' : '1010'}})
+    process_dict.update({'bkb4' : {'dualprocess' : self.process_bkt4_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_bkt4_class, \
+                                  'inverseprocess' : self.inverseprocess_bkt4, \
+                                  'info_retention' : False, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'singlct', \
+                                  'labelctgy' : '1010'}})
+    process_dict.update({'bsbn' : {'dualprocess' : self.process_bsor_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_bsor_class, \
+                                  'inverseprocess' : self.inverseprocess_bsor, \
+                                  'info_retention' : False, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'singlct', \
+                                  'labelctgy' : '1010'}})
+    process_dict.update({'bnwb' : {'dualprocess' : self.process_bnwo_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_bnwo_class, \
+                                  'inverseprocess' : self.inverseprocess_bnwo, \
+                                  'info_retention' : False, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'singlct', \
+                                  'labelctgy' : '1010'}})
+    process_dict.update({'bnKb' : {'dualprocess' : self.process_bnKo_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_bnKo_class, \
+                                  'inverseprocess' : self.inverseprocess_bnwo, \
+                                  'info_retention' : False, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'singlct', \
+                                  'labelctgy' : '1010'}})
+    process_dict.update({'bnMb' : {'dualprocess' : self.process_bnMo_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_bnMo_class, \
+                                  'inverseprocess' : self.inverseprocess_bnwo, \
+                                  'info_retention' : False, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'singlct', \
+                                  'labelctgy' : '1010'}})
+    process_dict.update({'bneb' : {'dualprocess' : self.process_bneo_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_bneo_class, \
+                                  'inverseprocess' : self.inverseprocess_bneo, \
+                                  'info_retention' : False, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'singlct', \
+                                  'labelctgy' : '1010'}})
+    process_dict.update({'bn7b' : {'dualprocess' : self.process_bn7o_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_bn7o_class, \
+                                  'inverseprocess' : self.inverseprocess_bneo, \
+                                  'info_retention' : False, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'singlct', \
+                                  'labelctgy' : '1010'}})
+    process_dict.update({'bn9b' : {'dualprocess' : self.process_bn9o_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_bn9o_class, \
+                                  'inverseprocess' : self.inverseprocess_bneo, \
+                                  'info_retention' : False, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'singlct', \
+                                  'labelctgy' : '1010'}})
+    process_dict.update({'pwbn' : {'dualprocess' : self.process_pwor_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_pwor_class, \
+                                  'inverseprocess' : self.inverseprocess_por2, \
+                                  'info_retention' : False, \
+                                  'NArowtype' : 'positivenumeric', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : '1010'}})
     process_dict.update({'DPn2' : {'dualprocess' : self.process_numerical_class, \
@@ -31276,7 +31446,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.62'
+    automungeversion = '4.63'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
