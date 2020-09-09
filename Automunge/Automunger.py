@@ -30219,6 +30219,8 @@ class AutoMunge:
 
     miscparameters_results.update({'check_columnheaders_result' : check_columnheaders_result})
 
+    origcolumns_all = list(df_train)
+
     #validate assignnan has valid root categories and source columns
     #note this takes place before any label column split from df_train
     check_assignnan_toplevelentries_result, check_assignnan_categories_result, check_assignnan_columns_result \
@@ -31446,7 +31448,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.63'
+    automungeversion = '4.64'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -31456,6 +31458,7 @@ class AutoMunge:
     #here we'll populate the postprocess_dci8t that is returned from automunge
     #as it. will be. used in the postmunge call beow to process validation sets
     postprocess_dict.update({'origtraincolumns' : columns_train, \
+                             'origcolumns_all' : origcolumns_all, \
                              'finalcolumns_train' : finalcolumns_train, \
                              'pre_dimred_finalcolumns_train' : pre_dimred_finalcolumns_train, \
                              'labels_column' : labels_column, \
@@ -40509,6 +40512,16 @@ class AutoMunge:
     if isinstance(checknp, type(df_test)):
       df_test = pd.DataFrame(df_test)
 
+      #this converts to original headers
+      if len(df_test.columns) == len(postprocess_dict['origcolumns_all']):
+        df_test.columns = postprocess_dict['origcolumns_all']
+
+      if labelscolumn is False and postprocess_dict['labels_column'] is not False:
+        if len(df_test.columns) == len(postprocess_dict['origcolumns_all']) - 1:
+          origcolumns_all_excluding_label = postprocess_dict['origcolumns_all'].copy()
+          origcolumns_all_excluding_label.remove(postprocess_dict['labels_column'])
+          df_test.columns = origcolumns_all_excluding_label
+
     #this converts any numeric columns labels, such as from a passed numpy array, to strings
     testlabels=[]
     for column in df_test.columns:
@@ -40547,7 +40560,9 @@ class AutoMunge:
 
     #here is where inversion is performed if selected
     if inversion is not False:
-      
+
+      df_test = self.inversion_numpy_support(df_test, postprocess_dict, inversion)
+
       df_test, recovered_list, inversion_info_dict = \
       self.inversion_parent(inversion, df_test, postprocess_dict, printstatus, \
                             pandasoutput, LabelSmoothing)
@@ -41736,6 +41751,39 @@ class AutoMunge:
 
             df = self.LS_invert(LabelSmoothing, df, returned_categorylist, postprocess_dict)
             
+    return df
+
+  def inversion_numpy_support(self, df, postprocess_dict, inversion):
+    """
+    #Checks if a data set passed to inversion is numpy
+    #and if so checks the column count
+    #and if it matches column count of test or testlabels set
+    #then it converts to dataframe and applies the correct headers
+    #such as to enable inversion_parent function
+    #relies on the inversion parameter for whether to 
+    #apply label column headers or test set column headers
+    #note that currently numpy is only supported for full set inverison
+    #eg by passing a full test set or a full label set
+    #if user passes a list of column headers to inversion
+    #this method assumes that list is for a test inversion
+    """
+      
+    if inversion == 'labels':
+
+      if len(df.columns) == len(postprocess_dict['finalcolumns_labels']):
+
+        if set(df.columns) != set(postprocess_dict['finalcolumns_labels']):
+
+          df.columns = postprocess_dict['finalcolumns_labels']
+
+    else:
+
+      if len(df.columns) == len(postprocess_dict['finalcolumns_train']):
+
+        if set(df.columns) != set(postprocess_dict['finalcolumns_train']):
+
+          df.columns = postprocess_dict['finalcolumns_train']
+      
     return df
 
   def inverseprocess_nmbr(self, df, categorylist, postprocess_dict):
