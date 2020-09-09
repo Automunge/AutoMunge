@@ -2223,7 +2223,7 @@ bin count defaults to 5/7/9 eg for bne0/bn7o/bn9o
 			           bins_cuts / bincount / ordl_activations_dict
   - inversion available: yes with partial recovery
 * bkt1: for numerical set graining to user specified encoded bins. First and last bins unconstrained.
-  - default infill: mean
+  - default infill: no activation
   - default NArowtype: numeric
   - suffix appender: '\_bkt1\_#1' where #1 is the bin identifier (# from min)
   - assignparam parameters accepted: 'buckets', a list of numbers, to set bucket boundaries (leave out +/-'inf')
@@ -2232,7 +2232,7 @@ bin count defaults to 5/7/9 eg for bne0/bn7o/bn9o
 					   <column> + '_ratio' (column specific)
   - inversion available: yes with partial recovery
 * bkt2: for numerical set graining to user specified encoded bins. First and last bins bounded.
-  - default infill: mean
+  - default infill: no activation
   - default NArowtype: numeric
   - suffix appender: '\_bkt2\_#1' where #1 is the bin identifier (# from min)
   - assignparam parameters accepted: 'buckets', a list of numbers, to set bucket boundaries
@@ -2241,7 +2241,7 @@ bin count defaults to 5/7/9 eg for bne0/bn7o/bn9o
 					   <column> + '_ratio' (column specific)
   - inversion available: yes with partial recovery
 * bkt3: for numerical set graining to user specified ordinal encoded bins. First and last bins unconstrained.
-  - default infill: mean
+  - default infill: unique activation
   - default NArowtype: numeric
   - suffix appender: '_bkt3'
   - assignparam parameters accepted: 'buckets', a list of numbers, to set bucket boundaries (leave out +/-'inf')
@@ -2249,7 +2249,7 @@ bin count defaults to 5/7/9 eg for bne0/bn7o/bn9o
   - driftreport postmunge metrics: binsmean / buckets / bins_cuts / bins_id / ordl_activations_dict
   - inversion available: yes with partial recovery
 * bkt4: for numerical set graining to user specified ordinal encoded bins. First and last bins bounded.
-  - default infill: mean
+  - default infill: unique activation
   - default NArowtype: numeric
   - suffix appender: '_bkt4'
   - assignparam parameters accepted: 'buckets', a list of numbers, to set bucket boundaries
@@ -2767,7 +2767,15 @@ Note that this version runs risk of high dimensionality of returned data in comp
                                      entries may have activations for multiple simultaneous overlaps
                                      'int_headers': True/False, defaults as False, when True returned column headers 
                                      are encoded with integers, such as for privacy preserving of data contents
-  - driftreport postmunge metrics: overlap_dict / splt_newcolumns_splt / minsplit
+  - driftreport postmunge metrics: overlap_dict / splt_newcolumns_sp15 / minsplit
+  - inversion available: yes with partial recovery
+* sbst: similar to sp15, but only detects string overlaps shared between full unique entries and subsets of longer character length entries
+  - default infill: none
+  - default NArowtype: justNaN
+  - suffix appender: '\_sbst\_##*##' where ##*## is target identified string overlap 
+  - assignparam parameters accepted: 'int_headers': True/False, defaults as False, when True returned column headers 
+                                     are encoded with integers, such as for privacy preserving of data contents
+  - driftreport postmunge metrics: overlap_dict / splt_newcolumns_sbst / minsplit
   - inversion available: yes with partial recovery
 * spl2/ors2/ors6/txt3: similar to splt, but instead of creating new column identifier it replaces categorical 
 entries with the abbreviated string overlap
@@ -2888,8 +2896,8 @@ for identified overlap entries. (Note for multiple activations encoding priority
   - driftreport postmunge metrics: overlap_dict
   - inversion available: pending
 ### More Efficient String Parsing
-* new processing functions nmr4/nmr5/nmr6/nmc4/nmc5/nmc6/nmE4/nmE5/nmE6/spl8/spl9/sp10 (spelled sp"ten")/sp16/src2:
-  - comparable to functions nmrc/nmr2/nmr3/nmcm/nmc2/nmc3/nmEU/nmE2/nmE3/splt/spl2/spl5/sp15/srch
+* new processing functions nmr4/nmr5/nmr6/nmc4/nmc5/nmc6/nmE4/nmE5/nmE6/spl8/spl9/sp10 (spelled sp"ten")/sp16/src2/sbs2:
+  - comparable to functions nmrc/nmr2/nmr3/nmcm/nmc2/nmc3/nmEU/nmE2/nmE3/splt/spl2/spl5/sp15/srch/sbst
   - but make use of new assumption that set of unique values in test set is same or a subset of those values 
     from the train set, which allows for a more efficient application (no more string parsing of test sets)
   - default infill: comparable
@@ -3197,6 +3205,8 @@ avoid unintentional duplication.
 - 'pwrs',
 - 'rais',
 - 'retn',
+- 'sbs2',
+- 'sbst',
 - 'sbtr',
 - 'sccs',
 - 'scn2',
@@ -3370,6 +3380,8 @@ present in dataframe and return results in postprocess_dict['miscparameters_resu
 - '_pwor'
 - '_rais'
 - '_retn'
+- '\_sbs2_' + string (where string is an identified overlap of characters between categorical entries)
+- '\_sbst_' + string (where string is an identified overlap of characters between categorical entries)
 - '_sbtr'
 - '_sccs'
 - '_scnd'
@@ -4156,6 +4168,24 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'children'      : [], \
                                      'niecesnephews' : ['sp17'], \
                                      'coworkers'     : ['ord3'], \
+                                     'friends'       : []}})
+
+    transform_dict.update({'sbst' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['sbst'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+
+    transform_dict.update({'sbs2' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['sbs2'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
                                      'friends'       : []}})
     
     transform_dict.update({'srch' : {'parents'       : [], \
@@ -5776,8 +5806,8 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'cousins'       : [NArw], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
-                                     'coworkers'     : [], \
-                                     'friends'       : ['1010']}})
+                                     'coworkers'     : ['1010'], \
+                                     'friends'       : []}})
   
     transform_dict.update({'bkb4' : {'parents'       : ['bkb4'], \
                                      'siblings'      : [], \
@@ -5785,8 +5815,8 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'cousins'       : [NArw], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
-                                     'coworkers'     : [], \
-                                     'friends'       : ['1010']}})
+                                     'coworkers'     : ['1010'], \
+                                     'friends'       : []}})
     
     transform_dict.update({'bsbn' : {'parents'       : ['bsbn'], \
                                      'siblings'      : [], \
@@ -5794,8 +5824,8 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'cousins'       : [NArw], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
-                                     'coworkers'     : [], \
-                                     'friends'       : ['1010']}})
+                                     'coworkers'     : ['1010'], \
+                                     'friends'       : []}})
     
     transform_dict.update({'bnwb' : {'parents'       : ['bnwb'], \
                                      'siblings'      : [], \
@@ -5803,8 +5833,8 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'cousins'       : [NArw], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
-                                     'coworkers'     : [], \
-                                     'friends'       : ['1010']}})
+                                     'coworkers'     : ['1010'], \
+                                     'friends'       : []}})
     
     transform_dict.update({'bnKb' : {'parents'       : ['bnKb'], \
                                      'siblings'      : [], \
@@ -5812,8 +5842,8 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'cousins'       : [NArw], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
-                                     'coworkers'     : [], \
-                                     'friends'       : ['1010']}})
+                                     'coworkers'     : ['1010'], \
+                                     'friends'       : []}})
 
     transform_dict.update({'bnMb' : {'parents'       : ['bnMb'], \
                                      'siblings'      : [], \
@@ -5821,8 +5851,8 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'cousins'       : [NArw], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
-                                     'coworkers'     : [], \
-                                     'friends'       : ['1010']}})
+                                     'coworkers'     : ['1010'], \
+                                     'friends'       : []}})
     
     transform_dict.update({'bneb' : {'parents'       : ['bneb'], \
                                      'siblings'      : [], \
@@ -5830,8 +5860,8 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'cousins'       : [NArw], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
-                                     'coworkers'     : [], \
-                                     'friends'       : ['1010']}})
+                                     'coworkers'     : ['1010'], \
+                                     'friends'       : []}})
 
     transform_dict.update({'bn7b' : {'parents'       : ['bn7b'], \
                                      'siblings'      : [], \
@@ -5839,8 +5869,8 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'cousins'       : [NArw], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
-                                     'coworkers'     : [], \
-                                     'friends'       : ['1010']}})
+                                     'coworkers'     : ['1010'], \
+                                     'friends'       : []}})
     
     transform_dict.update({'bn9b' : {'parents'       : ['bn9b'], \
                                      'siblings'      : [], \
@@ -5848,8 +5878,8 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'cousins'       : [NArw], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
-                                     'coworkers'     : [], \
-                                     'friends'       : ['1010']}})
+                                     'coworkers'     : ['1010'], \
+                                     'friends'       : []}})
     
     transform_dict.update({'pwbn' : {'parents'       : ['pwbn'], \
                                      'siblings'      : [], \
@@ -5857,8 +5887,8 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'cousins'       : [NArw], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
-                                     'coworkers'     : [], \
-                                     'friends'       : ['1010']}})
+                                     'coworkers'     : ['1010'], \
+                                     'friends'       : []}})
 
     transform_dict.update({'DPnm' : {'parents'       : ['DPn2'], \
                                      'siblings'      : [], \
