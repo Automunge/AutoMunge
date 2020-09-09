@@ -158,8 +158,8 @@ am.automunge(df_train, df_test = False, \
                           'bnry':[], 'onht':[], 'text':[], 'txt2':[], '1010':[], 'or10':[], \
                           'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
                           'Unht':[], 'Utxt':[], 'Utx2':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
-                          'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], \
-                          'spl8':[], 'spl9':[], 'sp10':[], 'sp16':[], \
+                          'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], 'sbst':[], \
+                          'spl8':[], 'spl9':[], 'sp10':[], 'sp16':[], 'sbs2':[], \
                           'srch':[], 'src2':[], 'src4':[], 'strn':[], 'lngt':[], 'aggt':[], \
                           'nmrc':[], 'nmr2':[], 'nmcm':[], 'nmc2':[], 'nmEU':[], 'nmE2':[], \
                           'nmr7':[], 'nmr8':[], 'nmc7':[], 'nmc8':[], 'nmE7':[], 'nmE8':[], \
@@ -388,8 +388,8 @@ am.automunge(df_train, df_test = False, \
                           'bnry':[], 'onht':[], 'text':[], 'txt2':[], '1010':[], 'or10':[], \
                           'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
                           'Unht':[], 'Utxt':[], 'Utx2':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
-                          'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], \
-                          'spl8':[], 'spl9':[], 'sp10':[], 'sp16':[], \
+                          'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], 'sbst':[], \
+                          'spl8':[], 'spl9':[], 'sp10':[], 'sp16':[], 'sbs2':[], \
                           'srch':[], 'src2':[], 'src4':[], 'strn':[], 'lngt':[], 'aggt':[], \
                           'nmrc':[], 'nmr2':[], 'nmcm':[], 'nmc2':[], 'nmEU':[], 'nmE2':[], \
                           'nmr7':[], 'nmr8':[], 'nmc7':[], 'nmc8':[], 'nmE7':[], 'nmE8':[], \
@@ -621,8 +621,8 @@ am.automunge(df_train, df_test = False, \
                           'bnry':[], 'onht':[], 'text':[], 'txt2':[], '1010':[], 'or10':[], \
                           'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
                           'Unht':[], 'Utxt':[], 'Utx2':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
-                          'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], \
-                          'spl8':[], 'spl9':[], 'sp10':[], 'sp16':[], \
+                          'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], 'sbst':[], \
+                          'spl8':[], 'spl9':[], 'sp10':[], 'sp16':[], 'sbs2':[], \
                           'srch':[], 'src2':[], 'src4':[], 'strn':[], 'lngt':[], 'aggt':[], \
                           'nmrc':[], 'nmr2':[], 'nmcm':[], 'nmc2':[], 'nmEU':[], 'nmE2':[], \
                           'nmr7':[], 'nmr8':[], 'nmc7':[], 'nmc8':[], 'nmE7':[], 'nmE8':[], \
@@ -1006,8 +1006,8 @@ assigncat = {'nmbr':[], 'retn':[], 'mnmx':[], 'mean':[], 'MAD3':[], 'lgnm':[], \
              'bnry':[], 'onht':[], 'text':[], 'txt2':[], '1010':[], 'or10':[], \
              'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
              'Unht':[], 'Utxt':[], 'Utx2':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
-             'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], \
-             'spl8':[], 'spl9':[], 'sp10':[], 'sp16':[], \
+             'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], 'sbst':[], \
+             'spl8':[], 'spl9':[], 'sp10':[], 'sp16':[], 'sbs2':[], \
              'srch':[], 'src2':[], 'src4':[], 'strn':[], 'lngt':[], 'aggt':[], \
              'nmrc':[], 'nmr2':[], 'nmcm':[], 'nmc2':[], 'nmEU':[], 'nmE2':[], \
              'nmr7':[], 'nmr8':[], 'nmc7':[], 'nmc8':[], 'nmE7':[], 'nmE8':[], \
