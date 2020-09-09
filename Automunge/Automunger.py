@@ -836,6 +836,24 @@ class AutoMunge:
                                      'niecesnephews' : ['sp17'], \
                                      'coworkers'     : ['ord3'], \
                                      'friends'       : []}})
+
+    transform_dict.update({'sbst' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['sbst'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+
+    transform_dict.update({'sbs2' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['sbs2'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
     
     transform_dict.update({'srch' : {'parents'       : [], \
                                      'siblings'      : [], \
@@ -3639,6 +3657,22 @@ class AutoMunge:
                                    'NArowtype' : 'justNaN', \
                                    'MLinfilltype' : 'exclude', \
                                    'labelctgy' : 'ord3'}})
+    process_dict.update({'sbst' : {'dualprocess' : self.process_sbst_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_sbst_class, \
+                                  'inverseprocess' : self.inverseprocess_sbst, \
+                                  'info_retention' : False, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'concurrent_act', \
+                                  'labelctgy' : 'sbst'}})
+    process_dict.update({'sbs2' : {'dualprocess' : self.process_sbs2_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_sbs2_class, \
+                                  'inverseprocess' : self.inverseprocess_sbs2, \
+                                  'info_retention' : False, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'concurrent_act', \
+                                  'labelctgy' : 'sbs2'}})
     process_dict.update({'srch' : {'dualprocess' : self.process_srch_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_srch_class, \
@@ -10999,6 +11033,469 @@ class AutoMunge:
                                       'inverse_int_labels_dict' : inverse_int_labels_dict}}
       
       column_dict = {tc : {'category' : 'sp16', \
+                           'origcategory' : category, \
+                           'normalization_dict' : textnormalization_dict, \
+                           'origcolumn' : column, \
+                           'inputcolumn' : column, \
+                           'columnslist' : newcolumns, \
+                           'categorylist' : newcolumns, \
+                           'infillmodel' : False, \
+                           'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
+                           'deletecolumn' : False}}
+
+      column_dict_list.append(column_dict.copy())
+      
+    if len(newcolumns) == 0:
+      
+      column_dict_list = []
+    
+    return mdf_train, mdf_test, column_dict_list
+
+  def process_sbst_class(self, mdf_train, mdf_test, column, category, \
+                         postprocess_dict, params = {}):
+    '''
+    #process_sbst_class(mdf_train, mdf_test, column, category)
+    #preprocess column with categorical entries as strings
+    #identifies cases where a full unique value is present 
+    #as a subset of a longer length unique value
+    #and returns one-hot activations to aggregate those cases
+    
+    #accepts parameters concurrent_activations to allow mulitple activations
+    #actually let's make concurrent activations the default
+    #and int_headers for privacy preserving headers
+    
+    #this differs from other string parsing functions in that
+    #only complete entries are checked for presence as subsets in other entries
+    '''
+    
+    suffixoverlap_results = {}
+      
+    if 'concurrent_activations' in params:
+      concurrent_activations = params['concurrent_activations']
+    else:
+      concurrent_activations = True
+      
+    if 'int_headers' in params:
+      int_headers = params['int_headers']
+    else:
+      int_headers = False
+
+    if 'minsplit' in params:
+      minsplit = params['minsplit']
+    else:
+      minsplit = 1
+    
+    #first we find overlaps from mdf_train
+    
+    unique_list = list(mdf_train[column].unique())
+
+    unique_list = list(map(str, unique_list))
+    
+    unique_list = sorted(unique_list, key=len, reverse=True)
+    
+#     maxlength = max(len(x) for x in unique_list)
+    
+#     minlength = min(len(x) for x in unique_list)
+    
+#     overlap_lengths = list(range(maxlength - 1, minlength, -1))
+
+    overlap_dict = {}
+
+    #we'll populate overlap_dict as
+    #{extract_with_overlap : [list of associate categories with that overlap]}
+
+    #we'll cycle through the overlap lengths and only record an overlap 
+    #if it is not a subset of those already recorded
+    
+    #unique is what we are searching for
+    for unique in unique_list:
+      len_unique = len(unique)
+
+      if len_unique >= minsplit:
+      
+        #unique2 is where we are searching
+        for unique2 in unique_list:
+          len_unique2 = len(unique2)
+          
+          if len_unique2 > len_unique:
+            
+            nbr_iterations = len_unique2 - len_unique + 1
+            
+            for i in range(nbr_iterations):
+              
+              extract = unique2[i:(len_unique+i)]
+              
+              extract_already_in_overlap_dict = False
+                    
+              if extract_already_in_overlap_dict is False:
+                
+                if extract == unique:
+                  
+                  if extract in overlap_dict:
+                    
+                    if unique2 not in overlap_dict[extract]:
+                      
+                      overlap_dict[extract].append(unique2)
+                      
+                      if concurrent_activations is False:
+
+                        break
+                        
+                    if unique not in overlap_dict[extract]:
+                      
+                      overlap_dict[extract].append(unique)
+
+                      if concurrent_activations is False:
+
+                        break
+                        
+                  #else if we don't have a key for extract
+                  else:
+
+                    overlap_dict.update({extract : [unique, unique2]})
+
+                    if concurrent_activations is False:
+
+                      break
+                    
+    #now for mdf_test we'll only consider those overlaps already identified from train set
+    
+    unique_list_test = list(mdf_test[column].unique())
+
+    unique_list_test = list(map(str, unique_list_test))
+    
+    unique_list_test = sorted(unique_list_test, key=len, reverse=True)
+
+    test_overlap_dict = {}
+
+    train_keys = list(overlap_dict)
+
+    train_keys.sort(key = len, reverse=True)
+
+    for key in train_keys:
+
+      test_overlap_dict.update({key:[]})
+
+    for dict_key in train_keys:
+
+      for unique_test in unique_list_test:
+
+        len_key = len(dict_key)
+
+        if len(unique_test) >= len_key:
+
+          nbr_iterations4 = len(unique_test) - len_key + 1
+
+          for l in range(nbr_iterations4):
+
+            extract4 = unique_test[l:(len_key+l)]
+
+            if extract4 == dict_key:
+
+              test_overlap_dict[dict_key].append(unique_test)
+              
+              if concurrent_activations is False:
+
+                break
+                
+    newcolumns = []
+
+    for dict_key in overlap_dict:
+
+      newcolumn = column + '_sbst_' + dict_key
+      
+      mdf_train, suffixoverlap_results = \
+      self.df_copy_train(mdf_train, column, newcolumn, suffixoverlap_results)
+      
+#       mdf_train[newcolumn] = mdf_train[column].copy()
+  
+      mdf_test[newcolumn] = mdf_test[column].copy()
+
+      mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
+      mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
+
+      mdf_train[newcolumn] = mdf_train[newcolumn].isin(overlap_dict[dict_key])
+      mdf_train[newcolumn] = mdf_train[newcolumn].astype(np.int8)
+      
+      mdf_test[newcolumn] = mdf_test[newcolumn].isin(test_overlap_dict[dict_key])
+      mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
+
+      newcolumns.append(newcolumn)
+      
+    preint_newcolumns = newcolumns.copy()
+      
+    if int_headers is True:
+      
+      int_labels_dict = {}
+      i = 0
+      for entry in newcolumns:
+        int_labels_dict.update({entry : column + '_sbst_' + str(i)})
+        i += 1
+        
+      newcolumns = [int_labels_dict[entry] for entry in newcolumns]
+        
+      #now convert column headers from string to int convention
+      suffixoverlap_results = \
+      self.df_check_suffixoverlap(mdf_train, newcolumns, suffixoverlap_results)
+      
+      mdf_train = mdf_train.rename(columns=int_labels_dict)
+      mdf_test  = mdf_test.rename(columns=int_labels_dict)
+
+      inverse_int_labels_dict = {value:key for key,value in int_labels_dict.items()}
+      for key in inverse_int_labels_dict:
+        inverse_int_labels_dict[key] = inverse_int_labels_dict[key][len(column) + 1:]
+        
+    else:
+      int_labels_dict = False
+      inverse_int_labels_dict = False
+    
+    column_dict_list = []
+
+    for tc in newcolumns:
+
+      textnormalization_dict = {tc : {'overlap_dict' : overlap_dict, \
+                                      'splt_newcolumns_sbst'   : newcolumns, \
+                                      'concurrent_activations' : concurrent_activations, \
+                                      'preint_newcolumns' : preint_newcolumns, \
+                                      'int_headers' : int_headers, \
+                                      'int_labels_dict' : int_labels_dict, \
+                                      'inverse_int_labels_dict' : inverse_int_labels_dict}}
+      
+      column_dict = {tc : {'category' : 'sbst', \
+                           'origcategory' : category, \
+                           'normalization_dict' : textnormalization_dict, \
+                           'origcolumn' : column, \
+                           'inputcolumn' : column, \
+                           'columnslist' : newcolumns, \
+                           'categorylist' : newcolumns, \
+                           'infillmodel' : False, \
+                           'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
+                           'deletecolumn' : False}}
+
+      column_dict_list.append(column_dict.copy())
+      
+    if len(newcolumns) == 0:
+      
+      column_dict_list = []
+    
+    return mdf_train, mdf_test, column_dict_list
+
+  def process_sbs2_class(self, mdf_train, mdf_test, column, category, \
+                         postprocess_dict, params = {}):
+    '''
+    #process_sbs2_class(mdf_train, mdf_test, column, category)
+    #preprocess column with categorical entries as strings
+    #identifies cases where a full unique value is present 
+    #as a subset of a longer length unique value
+    #and returns one-hot activations to aggregate those cases
+    
+    #accepts parameters concurrent_activations to allow mulitple activations
+    #actually let's make concurrent activations the default
+    #and int_headers for privacy preserving headers
+    
+    #this differs from other string parsing functions in that
+    #only complete entries are checked for presence as subsets in other entries
+    
+    #sbs2 differs from sbst in that test set entries not present in the train set
+    #are not parsed for efficiency
+    '''
+    
+    suffixoverlap_results = {}
+      
+    if 'concurrent_activations' in params:
+      concurrent_activations = params['concurrent_activations']
+    else:
+      concurrent_activations = True
+      
+    if 'int_headers' in params:
+      int_headers = params['int_headers']
+    else:
+      int_headers = False
+
+    if 'minsplit' in params:
+      minsplit = params['minsplit']
+    else:
+      minsplit = 1
+    
+    #first we find overlaps from mdf_train
+    
+    unique_list = list(mdf_train[column].unique())
+
+    unique_list = list(map(str, unique_list))
+    
+    unique_list = sorted(unique_list, key=len, reverse=True)
+    
+#     maxlength = max(len(x) for x in unique_list)
+    
+#     minlength = min(len(x) for x in unique_list)
+    
+#     overlap_lengths = list(range(maxlength - 1, minlength, -1))
+
+    overlap_dict = {}
+
+    #we'll populate overlap_dict as
+    #{extract_with_overlap : [list of associate categories with that overlap]}
+
+    #we'll cycle through the overlap lengths and only record an overlap 
+    #if it is not a subset of those already recorded
+    
+    #unique is what we are searching for
+    for unique in unique_list:
+      len_unique = len(unique)
+
+      if len_unique >= minsplit:
+      
+        #unique2 is where we are searching
+        for unique2 in unique_list:
+          len_unique2 = len(unique2)
+          
+          if len_unique2 > len_unique:
+            
+            nbr_iterations = len_unique2 - len_unique + 1
+            
+            for i in range(nbr_iterations):
+              
+              extract = unique2[i:(len_unique+i)]
+              
+              extract_already_in_overlap_dict = False
+                    
+              if extract_already_in_overlap_dict is False:
+                
+                if extract == unique:
+                  
+                  if extract in overlap_dict:
+                    
+                    if unique2 not in overlap_dict[extract]:
+                      
+                      overlap_dict[extract].append(unique2)
+                      
+                      if concurrent_activations is False:
+
+                        break
+                        
+                    if unique not in overlap_dict[extract]:
+                      
+                      overlap_dict[extract].append(unique)
+
+                      if concurrent_activations is False:
+
+                        break
+                        
+                  #else if we don't have a key for extract
+                  else:
+
+                    overlap_dict.update({extract : [unique, unique2]})
+
+                    if concurrent_activations is False:
+
+                      break
+                    
+#     #now for mdf_test we'll only consider those overlaps already identified from train set
+    
+#     unique_list_test = list(mdf_test[column].unique())
+
+#     unique_list_test = list(map(str, unique_list_test))
+    
+#     unique_list_test = sorted(unique_list_test, key=len, reverse=True)
+
+#     test_overlap_dict = {}
+
+#     train_keys = list(overlap_dict)
+
+#     train_keys.sort(key = len, reverse=True)
+
+#     for key in train_keys:
+
+#       test_overlap_dict.update({key:[]})
+
+#     for dict_key in train_keys:
+
+#       for unique_test in unique_list_test:
+
+#         len_key = len(dict_key)
+
+#         if len(unique_test) >= len_key:
+
+#           nbr_iterations4 = len(unique_test) - len_key + 1
+
+#           for l in range(nbr_iterations4):
+
+#             extract4 = unique_test[l:(len_key+l)]
+
+#             if extract4 == dict_key:
+
+#               test_overlap_dict[dict_key].append(unique_test)
+              
+#               if concurrent_activations is False:
+
+#                 break
+                
+    newcolumns = []
+
+    for dict_key in overlap_dict:
+
+      newcolumn = column + '_sbs2_' + dict_key
+      
+      mdf_train, suffixoverlap_results = \
+      self.df_copy_train(mdf_train, column, newcolumn, suffixoverlap_results)
+      
+#       mdf_train[newcolumn] = mdf_train[column].copy()
+  
+      mdf_test[newcolumn] = mdf_test[column].copy()
+
+      mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
+      mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
+
+      mdf_train[newcolumn] = mdf_train[newcolumn].isin(overlap_dict[dict_key])
+      mdf_train[newcolumn] = mdf_train[newcolumn].astype(np.int8)
+      
+      mdf_test[newcolumn] = mdf_test[newcolumn].isin(overlap_dict[dict_key])
+      mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
+
+      newcolumns.append(newcolumn)
+      
+    preint_newcolumns = newcolumns.copy()
+      
+    if int_headers is True:
+      
+      int_labels_dict = {}
+      i = 0
+      for entry in newcolumns:
+        int_labels_dict.update({entry : column + '_sbs2_' + str(i)})
+        i += 1
+        
+      newcolumns = [int_labels_dict[entry] for entry in newcolumns]
+        
+      #now convert column headers from string to int convention
+      suffixoverlap_results = \
+      self.df_check_suffixoverlap(mdf_train, newcolumns, suffixoverlap_results)
+      
+      mdf_train = mdf_train.rename(columns=int_labels_dict)
+      mdf_test  = mdf_test.rename(columns=int_labels_dict)
+
+      inverse_int_labels_dict = {value:key for key,value in int_labels_dict.items()}
+      for key in inverse_int_labels_dict:
+        inverse_int_labels_dict[key] = inverse_int_labels_dict[key][len(column) + 1:]
+        
+    else:
+      int_labels_dict = False
+      inverse_int_labels_dict = False
+    
+    column_dict_list = []
+
+    for tc in newcolumns:
+
+      textnormalization_dict = {tc : {'overlap_dict' : overlap_dict, \
+                                      'splt_newcolumns_sbs2'   : newcolumns, \
+                                      'concurrent_activations' : concurrent_activations, \
+                                      'preint_newcolumns' : preint_newcolumns, \
+                                      'int_headers' : int_headers, \
+                                      'int_labels_dict' : int_labels_dict, \
+                                      'inverse_int_labels_dict' : inverse_int_labels_dict}}
+      
+      column_dict = {tc : {'category' : 'sbs2', \
                            'origcategory' : category, \
                            'normalization_dict' : textnormalization_dict, \
                            'origcolumn' : column, \
@@ -21131,9 +21628,9 @@ class AutoMunge:
     if mean != mean:
       mean = 0
 
-    #replace missing data with training set mean
-    mdf_train[binscolumn] = mdf_train[binscolumn].fillna(mean)
-    mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
+    # #replace missing data with training set mean
+    # mdf_train[binscolumn] = mdf_train[binscolumn].fillna(mean)
+    # mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
 
     #assemble buckets  
     bins_cuts = buckets.copy()
@@ -21259,9 +21756,9 @@ class AutoMunge:
     if mean != mean:
       mean = 0
 
-    #replace missing data with training set mean
-    mdf_train[binscolumn] = mdf_train[binscolumn].fillna(mean)
-    mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
+    # #replace missing data with training set mean
+    # mdf_train[binscolumn] = mdf_train[binscolumn].fillna(mean)
+    # mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
 
     #assemble buckets  
     bins_cuts = buckets.copy()
@@ -21388,9 +21885,9 @@ class AutoMunge:
     if mean != mean:
       mean = 0
 
-    #replace missing data with training set mean
-    mdf_train[binscolumn] = mdf_train[binscolumn].fillna(mean)
-    mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
+    # #replace missing data with training set mean
+    # mdf_train[binscolumn] = mdf_train[binscolumn].fillna(mean)
+    # mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
 
     #assemble buckets  
     bins_cuts = buckets.copy()
@@ -21399,6 +21896,8 @@ class AutoMunge:
     
     #create labels for bins
     bins_id = list(range(len(bins_cuts)-1))
+
+    infill_activation = len(bins_cuts)-1
       
     #create bins based on standard deviation increments
 #     binscolumn = column + '_bnwo'
@@ -21408,6 +21907,13 @@ class AutoMunge:
     mdf_test[binscolumn] = \
     pd.cut(mdf_test[binscolumn], bins = bins_cuts,  \
            labels = bins_id, precision=len(str(len(bins_id))))
+
+    mdf_train[binscolumn] = mdf_train[binscolumn].astype(float)
+    mdf_test[binscolumn] = mdf_test[binscolumn].astype(float)
+    
+    #replace missing data with infill_activation
+    mdf_train[binscolumn] = mdf_train[binscolumn].fillna(infill_activation)
+    mdf_test[binscolumn] = mdf_test[binscolumn].fillna(infill_activation)
     
     #change column dtype
     mdf_train[binscolumn] = mdf_train[binscolumn].astype(int)
@@ -21435,6 +21941,7 @@ class AutoMunge:
                                       'bins_cuts' : bins_cuts, \
                                       'bins_id' : bins_id, \
                                       'activations_list' : bins_id, \
+                                      'infill_activation' : infill_activation, \
                                       'ordl_activations_dict' : ordl_activations_dict}}
 
       if nc in nmbrcolumns:
@@ -21506,9 +22013,9 @@ class AutoMunge:
     if mean < buckets[0] or mean > buckets[-1]:
       mean = buckets[-1]
 
-    #replace missing data with training set mean
-    mdf_train[binscolumn] = mdf_train[binscolumn].fillna(mean)
-    mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
+    # #replace missing data with training set mean
+    # mdf_train[binscolumn] = mdf_train[binscolumn].fillna(mean)
+    # mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
 
     #assemble buckets  
     bins_cuts = buckets.copy()
@@ -21517,6 +22024,8 @@ class AutoMunge:
 
     #create labels for bins
     bins_id = list(range(len(bins_cuts)-1))
+
+    infill_activation = len(bins_cuts)-1
       
     #create bins based on standard deviation increments
 #     binscolumn = column + '_bnwo'
@@ -21527,10 +22036,12 @@ class AutoMunge:
     pd.cut(mdf_test[binscolumn], bins = bins_cuts,  \
            labels = bins_id, precision=len(str(len(bins_id))))
     
-    #edge case
-    #replace missing data with training set mean
-    mdf_train[binscolumn] = mdf_train[binscolumn].fillna(0)
-    mdf_test[binscolumn] = mdf_test[binscolumn].fillna(0)
+    mdf_train[binscolumn] = mdf_train[binscolumn].astype(float)
+    mdf_test[binscolumn] = mdf_test[binscolumn].astype(float)
+    
+    #replace missing data with infill_activation
+    mdf_train[binscolumn] = mdf_train[binscolumn].fillna(infill_activation)
+    mdf_test[binscolumn] = mdf_test[binscolumn].fillna(infill_activation)
     
     #change column dtype
     mdf_train[binscolumn] = mdf_train[binscolumn].astype(int)
@@ -21558,6 +22069,7 @@ class AutoMunge:
                                       'bins_cuts' : bins_cuts, \
                                       'bins_id' : bins_id, \
                                       'activations_list' : bins_id, \
+                                      'infill_activation' : infill_activation, \
                                       'ordl_activations_dict' : ordl_activations_dict}}
 
       if nc in nmbrcolumns:
@@ -28880,6 +29392,8 @@ class AutoMunge:
      'splt_newcolumns_spl8' : 'spl8', \
      'splt_newcolumns_sp15' : 'sp15', \
      'splt_newcolumns_sp16' : 'sp16', \
+     'splt_newcolumns_sbst' : 'sbst', \
+     'splt_newcolumns_sbs2' : 'sbs2', \
      'bn_width_bnwd'        : 'bnwd', \
      'bn_width_bnwK'        : 'bnwK', \
      'bn_width_bnwM'        : 'bnwM', \
@@ -29996,8 +30510,8 @@ class AutoMunge:
                              'bnry':[], 'onht':[], 'text':[], 'txt2':[], '1010':[], 'or10':[], \
                              'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
                              'Unht':[], 'Utxt':[], 'Utx2':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
-                             'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], \
-                             'spl8':[], 'spl9':[], 'sp10':[], 'sp16':[], \
+                             'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], 'sbst':[], \
+                             'spl8':[], 'spl9':[], 'sp10':[], 'sp16':[], 'sbs2':[], \
                              'srch':[], 'src2':[], 'src4':[], 'strn':[], 'lngt':[], 'aggt':[], \
                              'nmrc':[], 'nmr2':[], 'nmcm':[], 'nmc2':[], 'nmEU':[], 'nmE2':[], \
                              'nmr7':[], 'nmr8':[], 'nmc7':[], 'nmc8':[], 'nmE7':[], 'nmE8':[], \
@@ -31448,7 +31962,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.64'
+    automungeversion = '4.65'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -34051,6 +34565,244 @@ class AutoMunge:
         mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
 
         #mdf_test[newcolumn] = mdf_test[newcolumn].isin(test_overlap_dict[dict_key])
+        mdf_test[newcolumn] = mdf_test[newcolumn].isin(overlap_dict[dict_key])
+        mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
+
+        newcolumns.append(newcolumn)
+        
+      #now convert coloumn headers from string to int convention
+      if int_headers is True:
+        mdf_test  = mdf_test.rename(columns=int_labels_dict)
+    
+    return mdf_test
+
+  def postprocess_sbst_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+    '''
+    #process_sbst_class(mdf_train, mdf_test, column, category)
+    #preprocess column with categorical entries as strings
+    #identifies cases where a full unique value is present 
+    #as a subset of a longer length unique value
+    #and returns one-hot activations to aggregate those cases
+    
+    #accepts parameters concurrent_activations to allow mulitple activations
+    #actually let's make concurrent activations the default
+    #and int_headers for privacy preserving headers
+    
+    #this differs from other string parsing functions in that
+    #only complete entries are checked for presence as subsets in other entries
+    '''
+    
+    #to retrieve the normalization dictionary we're going to use new method since we don't yet 
+    #know what the returned columns titles are yet
+    
+    normkey = False
+    
+    if column in postprocess_dict['origcolumn']:
+      
+      columnkeylist = postprocess_dict['origcolumn'][column]['columnkeylist']
+      
+    else:
+      
+      origcolumn = postprocess_dict['column_dict'][column]['origcolumn']
+      
+      columnkeylist = postprocess_dict['origcolumn'][origcolumn]['columnkeylist']
+    
+    for columnkey in columnkeylist:
+      
+      if column == postprocess_dict['column_dict'][columnkey]['inputcolumn']:
+
+        if 'splt_newcolumns_sbst' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
+
+          normkey = columnkey
+        
+    if normkey is not False:
+
+      #great now we can grab normalization parameters
+      overlap_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['overlap_dict']
+      newcolumns = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['splt_newcolumns_sbst']
+      int_headers = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['int_headers']
+      int_labels_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['int_labels_dict']
+      concurrent_activations = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['concurrent_activations']
+
+      #now for mdf_test we'll only consider those overlaps already identified from train set
+
+      unique_list_test = list(mdf_test[column].unique())
+
+      unique_list_test = list(map(str, unique_list_test))
+
+      unique_list_test = sorted(unique_list_test, key=len, reverse=True)
+
+      test_overlap_dict = {}
+
+      train_keys = list(overlap_dict)
+
+      train_keys.sort(key = len, reverse=True)
+
+      for key in train_keys:
+
+        test_overlap_dict.update({key:[]})
+
+      for dict_key in train_keys:
+
+        for unique_test in unique_list_test:
+
+          len_key = len(dict_key)
+
+          if len(unique_test) >= len_key:
+
+            nbr_iterations4 = len(unique_test) - len_key + 1
+
+            for l in range(nbr_iterations4):
+
+              extract4 = unique_test[l:(len_key+l)]
+
+              if extract4 == dict_key:
+
+                test_overlap_dict[dict_key].append(unique_test)
+
+                if concurrent_activations is False:
+
+                  break
+
+      newcolumns = []
+
+      for dict_key in overlap_dict:
+
+        newcolumn = column + '_sbst_' + dict_key
+        
+#         mdf_train[newcolumn] = mdf_train[column].copy()
+        mdf_test[newcolumn] = mdf_test[column].copy()
+
+#         mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
+        mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
+
+        mdf_test[newcolumn] = mdf_test[newcolumn].isin(test_overlap_dict[dict_key])
+        mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
+
+        newcolumns.append(newcolumn)
+        
+      #now convert coloumn headers from string to int convention
+      if int_headers is True:
+        mdf_test  = mdf_test.rename(columns=int_labels_dict)
+    
+    return mdf_test
+
+  def postprocess_sbs2_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+    '''
+    #process_sbs2_class(mdf_train, mdf_test, column, category)
+    #preprocess column with categorical entries as strings
+    #identifies cases where a full unique value is present 
+    #as a subset of a longer length unique value
+    #and returns one-hot activations to aggregate those cases
+    
+    #accepts parameters concurrent_activations to allow mulitple activations
+    #actually let's make concurrent activations the default
+    #and int_headers for privacy preserving headers
+    
+    #this differs from other string parsing functions in that
+    #only complete entries are checked for presence as subsets in other entries
+    
+    #sbs2 differs from sbst in that test set entries not present in the train set
+    #are not parsed for efficiency
+    '''
+    
+    #to retrieve the normalization dictionary we're going to use new method since we don't yet 
+    #know what the returned columns titles are yet
+    
+    normkey = False
+    
+    if column in postprocess_dict['origcolumn']:
+      
+      columnkeylist = postprocess_dict['origcolumn'][column]['columnkeylist']
+      
+    else:
+      
+      origcolumn = postprocess_dict['column_dict'][column]['origcolumn']
+      
+      columnkeylist = postprocess_dict['origcolumn'][origcolumn]['columnkeylist']
+    
+    for columnkey in columnkeylist:
+      
+      if column == postprocess_dict['column_dict'][columnkey]['inputcolumn']:
+
+        if 'splt_newcolumns_sbs2' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
+
+          normkey = columnkey
+        
+    if normkey is not False:
+
+      #great now we can grab normalization parameters
+      overlap_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['overlap_dict']
+      newcolumns = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['splt_newcolumns_sbs2']
+      int_headers = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['int_headers']
+      int_labels_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['int_labels_dict']
+      concurrent_activations = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['concurrent_activations']
+
+      #this assumes that set of unique values is same or subset of those for train set
+      #for more efficient application in postmunge
+      
+#       #now for mdf_test we'll only consider those overlaps already identified from train set
+
+#       unique_list_test = list(mdf_test[column].unique())
+
+#       unique_list_test = list(map(str, unique_list_test))
+
+#       unique_list_test = sorted(unique_list_test, key=len, reverse=True)
+
+#       test_overlap_dict = {}
+
+#       train_keys = list(overlap_dict)
+
+#       train_keys.sort(key = len, reverse=True)
+
+#       for key in train_keys:
+
+#         test_overlap_dict.update({key:[]})
+
+#       for dict_key in train_keys:
+
+#         for unique_test in unique_list_test:
+
+#           len_key = len(dict_key)
+
+#           if len(unique_test) >= len_key:
+
+#             nbr_iterations4 = len(unique_test) - len_key + 1
+
+#             for l in range(nbr_iterations4):
+
+#               extract4 = unique_test[l:(len_key+l)]
+
+#               if extract4 == dict_key:
+
+#                 test_overlap_dict[dict_key].append(unique_test)
+
+#                 if concurrent_activations is False:
+
+#                   break
+
+      newcolumns = []
+
+      for dict_key in overlap_dict:
+
+        newcolumn = column + '_sbs2_' + dict_key
+        
+#         mdf_train[newcolumn] = mdf_train[column].copy()
+        mdf_test[newcolumn] = mdf_test[column].copy()
+
+#         mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
+        mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
+
         mdf_test[newcolumn] = mdf_test[newcolumn].isin(overlap_dict[dict_key])
         mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
 
@@ -38642,7 +39394,7 @@ class AutoMunge:
       mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
 
       #replace missing data with training set mean
-      mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
+      # mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
       
       #create bins based on standard deviation increments
 #       binscolumn = column + '_bnwd'
@@ -38723,7 +39475,7 @@ class AutoMunge:
       mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
 
       #replace missing data with training set mean
-      mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
+      # mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
       
       #create bins based on standard deviation increments
 #       binscolumn = column + '_bnwd'
@@ -38762,6 +39514,7 @@ class AutoMunge:
     bins_cuts = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_cuts']
     bins_id = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_id']
     ordl_activations_dict = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordl_activations_dict']
+    infill_activation = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['infill_activation']
 
     binscolumn = column + '_bkt3'
     
@@ -38771,14 +39524,19 @@ class AutoMunge:
     #convert all values to either numeric or NaN
     mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
 
-    #replace missing data with training set mean
-    mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
+    # #replace missing data with training set mean
+    # mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
 
     #create bins based on standard deviation increments
 #     binscolumn = column + '_bnwo'
     mdf_test[binscolumn] = \
     pd.cut(mdf_test[binscolumn], bins = bins_cuts,  \
            labels = bins_id, precision=len(str(len(bins_id))))
+
+    mdf_test[binscolumn] = mdf_test[binscolumn].astype(float)
+    
+    #replace missing data with infill_activation
+    mdf_test[binscolumn] = mdf_test[binscolumn].fillna(infill_activation)
     
     #change column dtype
     mdf_test[binscolumn] = mdf_test[binscolumn].astype(int)
@@ -38803,6 +39561,7 @@ class AutoMunge:
     bins_cuts = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_cuts']
     bins_id = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_id']
     ordl_activations_dict = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordl_activations_dict']
+    infill_activation = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['infill_activation']
 
     binscolumn = column + '_bkt4'
     
@@ -38817,8 +39576,8 @@ class AutoMunge:
     
     mdf_test.loc[mdf_test[binscolumn] > buckets[-1], (binscolumn)] = np.nan
 
-    #replace missing data with training set mean
-    mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
+    # #replace missing data with training set mean
+    # mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
 
     #create bins based on standard deviation increments
 #     binscolumn = column + '_bnwo'
@@ -38826,9 +39585,10 @@ class AutoMunge:
     pd.cut(mdf_test[binscolumn], bins = bins_cuts,  \
            labels = bins_id, precision=len(str(len(bins_id))))
   
-    #edge case
-    #replace missing data with training set mean
-    mdf_test[binscolumn] = mdf_test[binscolumn].fillna(0)
+    mdf_test[binscolumn] = mdf_test[binscolumn].astype(float)
+    
+    #replace missing data with infill_activation
+    mdf_test[binscolumn] = mdf_test[binscolumn].fillna(infill_activation)
     
     #change column dtype
     mdf_test[binscolumn] = mdf_test[binscolumn].astype(int)
@@ -42777,6 +43537,8 @@ class AutoMunge:
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_id']
     ordl_activations_dict = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordl_activations_dict']
+    infill_activation = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['infill_activation']
     
     inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
     
@@ -42788,6 +43550,9 @@ class AutoMunge:
     df[normkey] = df[normkey].astype(int, errors='ignore')
     
     df[inputcolumn] = 0
+
+    #infill recovery
+    df[inputcolumn] = np.where(df[normkey] == infill_activation, 'zzzinfill', df[inputcolumn])
     
     for i in bins_id:
       
@@ -42824,6 +43589,8 @@ class AutoMunge:
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_cuts']
     bins_id = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_id']
+    infill_activation = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['infill_activation']
     
     inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
     
@@ -42835,6 +43602,9 @@ class AutoMunge:
 
     #we'll convert the input to integers
     df[normkey] = df[normkey].astype(int, errors='ignore')
+
+    #infill recovery
+    df[inputcolumn] = np.where(df[normkey] == infill_activation, 'zzzinfill', df[inputcolumn])
     
     for i in bins_id:
       
@@ -43261,6 +44031,106 @@ class AutoMunge:
         overlap = column.replace(inputcolumn + '_sp16_', '')
         
         df[inputcolumn] = np.where(df[newcolumn] == 1, overlap, df[inputcolumn])
+    
+    return df, inputcolumn
+
+  def inverseprocess_sbst(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_sbst_class
+    #assumes any relevant parameters were saved in normalization_dict
+    #does not perform infill, assumes clean data
+    
+    #this only achieves partial information recovery, missing entries without overlap
+    
+    #returns the overlaps, not the full entries
+    #since it doesn't know which of the full entries to return
+    """
+    
+    normkey = categorylist[0]
+    
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    
+    newcolumns = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['splt_newcolumns_sbst']
+    preint_newcolumns = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['preint_newcolumns']
+    overlap_dict = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['overlap_dict']
+    int_headers = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['int_headers']
+    
+    df[inputcolumn] = 'zzzinfill'
+    
+    if int_headers is False:
+
+      for column in preint_newcolumns:
+
+        overlap = column.replace(inputcolumn + '_sbst_', '')
+
+        df[inputcolumn] = np.where(df[column] == 1, overlap, df[inputcolumn])
+    
+    else:
+      
+      i = 0
+      for column in preint_newcolumns:
+        
+        newcolumn = newcolumns[i]
+        
+        overlap = column.replace(inputcolumn + '_sbst_', '')
+        
+        df[inputcolumn] = np.where(df[newcolumn] == 1, overlap, df[inputcolumn])
+        
+        i += 1
+    
+    return df, inputcolumn
+
+  def inverseprocess_sbs2(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_sbs2_class
+    #assumes any relevant parameters were saved in normalization_dict
+    #does not perform infill, assumes clean data
+    
+    #this only achieves partial information recovery, missing entries without overlap
+    
+    #returns the overlaps, not the full entries
+    #since it doesn't know which of the full entries to return
+    """
+    
+    normkey = categorylist[0]
+    
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    
+    newcolumns = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['splt_newcolumns_sbs2']
+    preint_newcolumns = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['preint_newcolumns']
+    overlap_dict = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['overlap_dict']
+    int_headers = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['int_headers']
+    
+    df[inputcolumn] = 'zzzinfill'
+    
+    if int_headers is False:
+
+      for column in preint_newcolumns:
+
+        overlap = column.replace(inputcolumn + '_sbs2_', '')
+
+        df[inputcolumn] = np.where(df[column] == 1, overlap, df[inputcolumn])
+    
+    else:
+      
+      i = 0
+      for column in preint_newcolumns:
+        
+        newcolumn = newcolumns[i]
+        
+        overlap = column.replace(inputcolumn + '_sbs2_', '')
+        
+        df[inputcolumn] = np.where(df[newcolumn] == 1, overlap, df[inputcolumn])
+        
+        i += 1
     
     return df, inputcolumn
   
