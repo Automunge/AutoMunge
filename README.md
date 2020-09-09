@@ -2775,6 +2775,7 @@ Note that this version runs risk of high dimensionality of returned data in comp
   - suffix appender: '\_sbst\_##*##' where ##*## is target identified string overlap 
   - assignparam parameters accepted: 'int_headers': True/False, defaults as False, when True returned column headers 
                                      are encoded with integers, such as for privacy preserving of data contents
+                                     'minsplit': indicating lowest character length for recognized overlaps, defaults to 1
   - driftreport postmunge metrics: overlap_dict / splt_newcolumns_sbst / minsplit
   - inversion available: yes with partial recovery
 * spl2/ors2/ors6/txt3: similar to splt, but instead of creating new column identifier it replaces categorical 
