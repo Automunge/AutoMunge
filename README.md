@@ -1557,7 +1557,8 @@ included consistent labels. If desired the set may include an ID column. The
 tool supports the inclusion of non-index-range column as index or multicolumn 
 index (requires named index columns). Such index types are added to the 
 returned "ID" sets which are consistently shuffled and partitioned as the 
-train and test sets.
+train and test sets. If numpy array passed any ID columns from train set should
+be included.
 
 * testID_column: a string of the column title for the column from the
 df_test set intended for use as a row identifier value (such as could be
