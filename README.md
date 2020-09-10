@@ -158,8 +158,8 @@ am.automunge(df_train, df_test = False, \
                           'bnry':[], 'onht':[], 'text':[], 'txt2':[], '1010':[], 'or10':[], \
                           'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
                           'Unht':[], 'Utxt':[], 'Utx2':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
-                          'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], 'sbst':[], \
-                          'spl8':[], 'spl9':[], 'sp10':[], 'sp16':[], 'sbs2':[], \
+                          'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], 'sp19':[], 'sbst':[], \
+                          'spl8':[], 'spl9':[], 'sp10':[], 'sp16':[], 'sp20':[], 'sbs2':[], \
                           'srch':[], 'src2':[], 'src4':[], 'strn':[], 'lngt':[], 'aggt':[], \
                           'nmrc':[], 'nmr2':[], 'nmcm':[], 'nmc2':[], 'nmEU':[], 'nmE2':[], \
                           'nmr7':[], 'nmr8':[], 'nmc7':[], 'nmc8':[], 'nmE7':[], 'nmE8':[], \
@@ -178,7 +178,8 @@ am.automunge(df_train, df_test = False, \
                              'adjinfill':[], 'meaninfill':[], 'medianinfill':[], \
                              'modeinfill':[], 'lcinfill':[], 'naninfill':[]}, \
              assignnan = {'categories':{}, 'columns':{}, 'global':[]}, \
-             transformdict = {}, processdict = {}, evalcat = False, printstatus = True)
+             transformdict = {}, processdict = {}, evalcat = False, \
+             privacy_encode = True, printstatus = True)
 ```
 
 Please remember to save the automunge(.) returned object postprocess_dict 
@@ -388,8 +389,8 @@ am.automunge(df_train, df_test = False, \
                           'bnry':[], 'onht':[], 'text':[], 'txt2':[], '1010':[], 'or10':[], \
                           'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
                           'Unht':[], 'Utxt':[], 'Utx2':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
-                          'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], 'sbst':[], \
-                          'spl8':[], 'spl9':[], 'sp10':[], 'sp16':[], 'sbs2':[], \
+                          'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], 'sp19':[], 'sbst':[], \
+                          'spl8':[], 'spl9':[], 'sp10':[], 'sp16':[], 'sp20':[], 'sbs2':[], \
                           'srch':[], 'src2':[], 'src4':[], 'strn':[], 'lngt':[], 'aggt':[], \
                           'nmrc':[], 'nmr2':[], 'nmcm':[], 'nmc2':[], 'nmEU':[], 'nmE2':[], \
                           'nmr7':[], 'nmr8':[], 'nmc7':[], 'nmc8':[], 'nmE7':[], 'nmE8':[], \
@@ -408,7 +409,8 @@ am.automunge(df_train, df_test = False, \
                              'adjinfill':[], 'meaninfill':[], 'medianinfill':[], \
                              'modeinfill':[], 'lcinfill':[], 'naninfill':[]}, \
              assignnan = {'categories':{}, 'columns':{}, 'global':[]}, \
-             transformdict = {}, processdict = {}, evalcat = False, printstatus = True)
+             transformdict = {}, processdict = {}, evalcat = False, \
+             privacy_encode = True, printstatus = True)
 ```
 
 Or for the postmunge function:
@@ -621,8 +623,8 @@ am.automunge(df_train, df_test = False, \
                           'bnry':[], 'onht':[], 'text':[], 'txt2':[], '1010':[], 'or10':[], \
                           'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
                           'Unht':[], 'Utxt':[], 'Utx2':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
-                          'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], 'sbst':[], \
-                          'spl8':[], 'spl9':[], 'sp10':[], 'sp16':[], 'sbs2':[], \
+                          'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], 'sp19':[], 'sbst':[], \
+                          'spl8':[], 'spl9':[], 'sp10':[], 'sp16':[], 'sp20':[], 'sbs2':[], \
                           'srch':[], 'src2':[], 'src4':[], 'strn':[], 'lngt':[], 'aggt':[], \
                           'nmrc':[], 'nmr2':[], 'nmcm':[], 'nmc2':[], 'nmEU':[], 'nmE2':[], \
                           'nmr7':[], 'nmr8':[], 'nmc7':[], 'nmc8':[], 'nmE7':[], 'nmE8':[], \
@@ -641,7 +643,8 @@ am.automunge(df_train, df_test = False, \
                              'adjinfill':[], 'meaninfill':[], 'medianinfill':[], \
                              'modeinfill':[], 'lcinfill':[], 'naninfill':[]}, \
              assignnan = {'categories':{}, 'columns':{}, 'global':[]}, \
-             transformdict = {}, processdict = {}, evalcat = False, printstatus = True)
+             transformdict = {}, processdict = {}, evalcat = False, \
+             privacy_encode = True, printstatus = True)
 ```
 
 * df_train: a pandas dataframe or numpy array containing a structured 
@@ -1006,8 +1009,8 @@ assigncat = {'nmbr':[], 'retn':[], 'mnmx':[], 'mean':[], 'MAD3':[], 'lgnm':[], \
              'bnry':[], 'onht':[], 'text':[], 'txt2':[], '1010':[], 'or10':[], \
              'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
              'Unht':[], 'Utxt':[], 'Utx2':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
-             'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], 'sbst':[], \
-             'spl8':[], 'spl9':[], 'sp10':[], 'sp16':[], 'sbs2':[], \
+             'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], 'sp19':[], 'sbst':[], \
+             'spl8':[], 'spl9':[], 'sp10':[], 'sp16':[], 'sp20':[], 'sbs2':[], \
              'srch':[], 'src2':[], 'src4':[], 'strn':[], 'lngt':[], 'aggt':[], \
              'nmrc':[], 'nmr2':[], 'nmcm':[], 'nmc2':[], 'nmEU':[], 'nmE2':[], \
              'nmr7':[], 'nmr8':[], 'nmc7':[], 'nmc8':[], 'nmE7':[], 'nmE8':[], \
@@ -1369,6 +1372,14 @@ defaults to False to use built-in evalcategory function. Note evalcat will only 
 applied to columns not assigned in assigncat. (Note that columns assigned to 'eval' / 'ptfm'
 in assigncat will be passed to this function for evaluation with powertransform = False / True
 respectively.) Note that function currently uses python collections library and datetime as dt.
+
+* privacy_encode: a boolean marker _{True, False}_ defaults to False. For cases where sets 
+are returned as pandas dataframe, a user may desire privacy preserving encodings in which
+column headers of received data are anonymized. This parameter when activated replaces
+headers and suffixes with integers, including distinct sets of integers between train, labels,
+and ID sets. Note that conversion information is available in returned postprocess_dict under
+privacy reports. Note that when activated consistent convention is applied in postmunge
+and inversion is supported.
 
 * printstatus: user can pass _True/False_ indicating whether the function will print 
 status of processing during operation. Defaults to True.
@@ -2755,7 +2766,7 @@ start at 20 character length and go down to 5 character length.
 Note that this version runs risk of high dimensionality of returned data in comparison to splt.
   - default infill: none
   - default NArowtype: justNaN
-  - suffix appender: '\_splt\_##*##' where ##*## is target identified string overlap 
+  - suffix appender: '\_sp15\_##*##' where ##*## is target identified string overlap 
   - assignparam parameters accepted: 'minsplit': indicating lowest character length for recognized overlaps 
                                      'space_and_punctuation': True/False, defaults to True, when passed as
                                      False character overlaps are not recorded which include space or punctuation
@@ -2769,6 +2780,13 @@ Note that this version runs risk of high dimensionality of returned data in comp
                                      are encoded with integers, such as for privacy preserving of data contents
   - driftreport postmunge metrics: overlap_dict / splt_newcolumns_sp15 / minsplit
   - inversion available: yes with partial recovery
+* sp19: comaprable to sp15, but with returned columns aggregated by a binary encoding to reduce dimensionality
+  - default infill: distinct encoding
+  - default NArowtype: justNaN
+  - suffix appender: '\_sp19\_#' where # is integer associated with the encoding
+  - assignparam parameters accepted: comparable to sp15
+  - driftreport postmunge metrics: comparable to sp15 with addition of _1010_activations_dict for activation ratios
+  - inversion available: yes with partial recovery
 * sbst: similar to sp15, but only detects string overlaps shared between full unique entries and subsets of longer character length entries
   - default infill: none
   - default NArowtype: justNaN
@@ -2777,6 +2795,13 @@ Note that this version runs risk of high dimensionality of returned data in comp
                                      are encoded with integers, such as for privacy preserving of data contents
                                      'minsplit': indicating lowest character length for recognized overlaps, defaults to 1
   - driftreport postmunge metrics: overlap_dict / splt_newcolumns_sbst / minsplit
+  - inversion available: yes with partial recovery
+* sbs3: comaprable to sbst, but with returned columns aggregated by a binary encoding to reduce dimensionality
+  - default infill: distinct encoding
+  - default NArowtype: justNaN
+  - suffix appender: '\_sbs3\_#' where # is integer associated with the encoding
+  - assignparam parameters accepted: comparable to sbst
+  - driftreport postmunge metrics: comparable to sbst with addition of _1010_activations_dict for activation ratios
   - inversion available: yes with partial recovery
 * spl2/ors2/ors6/txt3: similar to splt, but instead of creating new column identifier it replaces categorical 
 entries with the abbreviated string overlap
@@ -2897,8 +2922,8 @@ for identified overlap entries. (Note for multiple activations encoding priority
   - driftreport postmunge metrics: overlap_dict
   - inversion available: pending
 ### More Efficient String Parsing
-* new processing functions nmr4/nmr5/nmr6/nmc4/nmc5/nmc6/nmE4/nmE5/nmE6/spl8/spl9/sp10 (spelled sp"ten")/sp16/src2/sbs2:
-  - comparable to functions nmrc/nmr2/nmr3/nmcm/nmc2/nmc3/nmEU/nmE2/nmE3/splt/spl2/spl5/sp15/srch/sbst
+* new processing functions nmr4/nmr5/nmr6/nmc4/nmc5/nmc6/nmE4/nmE5/nmE6/spl8/spl9/sp10 (spelled sp"ten")/sp16/src2/sbs2/sp20/sbs4:
+  - comparable to functions nmrc/nmr2/nmr3/nmcm/nmc2/nmc3/nmEU/nmE2/nmE3/splt/spl2/spl5/sp15/srch/sbst/sp19/sbs3
   - but make use of new assumption that set of unique values in test set is same or a subset of those values 
     from the train set, which allows for a more efficient application (no more string parsing of test sets)
   - default infill: comparable
@@ -3207,6 +3232,8 @@ avoid unintentional duplication.
 - 'rais',
 - 'retn',
 - 'sbs2',
+- 'sbs3',
+- 'sbs4',
 - 'sbst',
 - 'sbtr',
 - 'sccs',
@@ -3231,6 +3258,8 @@ avoid unintentional duplication.
 - 'sp16',
 - 'sp17',
 - 'sp18',
+- 'sp19',
+- 'sp20',
 - 'spl2',
 - 'spl5',
 - 'spl6',
@@ -3382,6 +3411,8 @@ present in dataframe and return results in postprocess_dict['miscparameters_resu
 - '_rais'
 - '_retn'
 - '\_sbs2_' + string (where string is an identified overlap of characters between categorical entries)
+- '\_sbs3_' + i (where i is ineteger)
+- '\_sbs4_' + i (where i is ineteger)
 - '\_sbst_' + string (where string is an identified overlap of characters between categorical entries)
 - '_sbtr'
 - '_sccs'
@@ -3397,6 +3428,8 @@ present in dataframe and return results in postprocess_dict['miscparameters_resu
 - '_sp10'
 - '\_sp15_' + string (where string is an identified overlap of characters between categorical entries)
 - '\_sp16_' + string (where string is an identified overlap of characters between categorical entries)
+- '\_sp19_' + i (where i is ineteger)
+- '\_sp20_' + i (where i is ineteger)
 - '_spl2'
 - '_spl5'
 - '_spl7'
@@ -4171,6 +4204,24 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'coworkers'     : ['ord3'], \
                                      'friends'       : []}})
 
+    transform_dict.update({'sp19' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['sp19'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+
+    transform_dict.update({'sp20' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['sp20'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+
     transform_dict.update({'sbst' : {'parents'       : [], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : ['sbst'], \
@@ -4183,6 +4234,24 @@ If you want to skip to the next section you can click here: [Custom Transformati
     transform_dict.update({'sbs2' : {'parents'       : [], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : ['sbs2'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+
+    transform_dict.update({'sbs3' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['sbs3'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+
+    transform_dict.update({'sbs4' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['sbs4'], \
                                      'cousins'       : [NArw], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
