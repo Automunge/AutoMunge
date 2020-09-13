@@ -31194,15 +31194,19 @@ class AutoMunge:
     #assignparam = {'splt' : {'column1' : {'minsplit' : 4}}, \
     #               'spl2' : {'column2' : {'minsplit' : 3}}}
     """
+
+    assignparam_copy = deepcopy(assignparam)
   
     #ignore edge case where user passes empty dictionary
-    if assignparam != {}:
+    if assignparam_copy != {}:
       
-      for categorykey in assignparam:
+      for categorykey in assignparam_copy:
         
-        for columnkey in assignparam[categorykey]:
+        for columnkey in assignparam_copy[categorykey]:
           
           assignparam[categorykey][str(columnkey)] = assignparam[categorykey].pop(columnkey)
+
+    del assignparam_copy
           
     return assignparam
 
@@ -33643,7 +33647,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.66'
+    automungeversion = '4.67'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -34075,12 +34079,12 @@ class AutoMunge:
     for columndict_column in postprocess_dict['column_dict']:
       if postprocess_dict['column_dict'][columndict_column]['deletecolumn'] is True:
 
-        #first we'll remove the column from columnslists 
-        for columnslistcolumn in postprocess_dict['column_dict'][columndict_column]['columnslist']:
+        # #first we'll remove the column from columnslists 
+        # for columnslistcolumn in postprocess_dict['column_dict'][columndict_column]['columnslist']:
 
-          if columndict_column in postprocess_dict['column_dict'][columnslistcolumn]['columnslist']:
+        #   if columndict_column in postprocess_dict['column_dict'][columnslistcolumn]['columnslist']:
 
-            postprocess_dict['column_dict'][columnslistcolumn]['columnslist'].remove(columndict_column)
+        #     postprocess_dict['column_dict'][columnslistcolumn]['columnslist'].remove(columndict_column)
 
         #now we'll delete column
         #note this only worksa on single column  parents, need to incioroprate categorylist
