@@ -33653,7 +33653,6 @@ class AutoMunge:
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
                        + str(application_timestamp)
 
-    #temp note: LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, \
     #here we'll populate the postprocess_dci8t that is returned from automunge
     #as it. will be. used in the postmunge call beow to process validation sets
     postprocess_dict.update({'origtraincolumns' : columns_train, \
