@@ -1594,6 +1594,24 @@ class AutoMunge:
                                      'coworkers'     : [], \
                                      'friends'       : []}})
 
+    transform_dict.update({'rtbn' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['retn', 'bsor'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+
+    transform_dict.update({'rtb2' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['retn', 'bins'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+
     transform_dict.update({'mean' : {'parents'       : [], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : ['mean'], \
@@ -3378,6 +3396,22 @@ class AutoMunge:
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mnm7'}})
     process_dict.update({'retn' : {'dualprocess' : self.process_retn_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_retn_class, \
+                                  'inverseprocess' : self.inverseprocess_retn, \
+                                  'info_retention' : True, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'retn'}})
+    process_dict.update({'rtbn' : {'dualprocess' : self.process_retn_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_retn_class, \
+                                  'inverseprocess' : self.inverseprocess_retn, \
+                                  'info_retention' : True, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'retn'}})
+    process_dict.update({'rtb2' : {'dualprocess' : self.process_retn_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_retn_class, \
                                   'inverseprocess' : self.inverseprocess_retn, \
@@ -11420,7 +11454,7 @@ class AutoMunge:
 
       for entry in newcolumns:
         mdf_train[column + '_sp19'] = mdf_train[column + '_sp19'] + mdf_train[entry].astype(str)
-        mdf_test[column + '_sp19'] = mdf_test[column + '_sp19'] + mdf_train[entry].astype(str)
+        mdf_test[column + '_sp19'] = mdf_test[column + '_sp19'] + mdf_test[entry].astype(str)
 
       #extract categories for column labels
       #note that .unique() extracts the labels as a numpy array
@@ -11862,7 +11896,7 @@ class AutoMunge:
 
       for entry in newcolumns:
         mdf_train[column + '_sp20'] = mdf_train[column + '_sp20'] + mdf_train[entry].astype(str)
-        mdf_test[column + '_sp20'] = mdf_test[column + '_sp20'] + mdf_train[entry].astype(str)
+        mdf_test[column + '_sp20'] = mdf_test[column + '_sp20'] + mdf_test[entry].astype(str)
 
       #extract categories for column labels
       #note that .unique() extracts the labels as a numpy array
@@ -12680,7 +12714,7 @@ class AutoMunge:
 
       for entry in newcolumns:
         mdf_train[column + '_sbs3'] = mdf_train[column + '_sbs3'] + mdf_train[entry].astype(str)
-        mdf_test[column + '_sbs3'] = mdf_test[column + '_sbs3'] + mdf_train[entry].astype(str)
+        mdf_test[column + '_sbs3'] = mdf_test[column + '_sbs3'] + mdf_test[entry].astype(str)
 
       #extract categories for column labels
       #note that .unique() extracts the labels as a numpy array
@@ -13036,7 +13070,7 @@ class AutoMunge:
 
       for entry in newcolumns:
         mdf_train[column + '_sbs4'] = mdf_train[column + '_sbs4'] + mdf_train[entry].astype(str)
-        mdf_test[column + '_sbs4'] = mdf_test[column + '_sbs4'] + mdf_train[entry].astype(str)
+        mdf_test[column + '_sbs4'] = mdf_test[column + '_sbs4'] + mdf_test[entry].astype(str)
 
       #extract categories for column labels
       #note that .unique() extracts the labels as a numpy array
@@ -32490,40 +32524,28 @@ class AutoMunge:
     if type(df_train.index) != pd.RangeIndex:
       #if df_train.index.names == [None]:
       if None in df_train.index.names:
-        if len(list(df_train.index.names)) == 1 and df_train.index.dtype == int:
-          pass
-        elif len(list(df_train.index.names)) == 1 and df_train.index.dtype != int:
-          print("error, non integer index passed without columns named")
-        else:
-          print("error, non integer index passed without columns named")
-      else:
-        if trainID_column is False:
-          trainID_column = []
-        elif isinstance(trainID_column, str):
-          trainID_column = [trainID_column]
-        elif not isinstance(trainID_column, list):
-          print("error, trainID_column allowable values are False, string, or list")
-        trainID_column = trainID_column + list(df_train.index.names)
-        df_train = df_train.reset_index(drop=False)
+        df_train = df_train.rename_axis('Orig_index_' +  str(application_number))
+      if trainID_column is False:
+        trainID_column = []
+      elif isinstance(trainID_column, str):
+        trainID_column = [trainID_column]
+      elif not isinstance(trainID_column, list):
+        print("error, trainID_column allowable values are False, string, or list")
+      trainID_column = trainID_column + list(df_train.index.names)
+      df_train = df_train.reset_index(drop=False)
 
     if type(df_test.index) != pd.RangeIndex:
       #if df_train.index.names == [None]:
       if None in df_test.index.names:
-        if len(list(df_test.index.names)) == 1 and df_test.index.dtype == int:
-          pass
-        elif len(list(df_test.index.names)) == 1 and df_test.index.dtype != int:
-          print("error, non integer index passed without columns named")
-        else:
-          print("error, non integer index passed without columns named")
-      else:
-        if testID_column is False:
-          testID_column = []
-        elif isinstance(testID_column, str):
-          testID_column = [testID_column]
-        elif not isinstance(testID_column, list):
-          print("error, testID_column allowable values are False, string, or list")
-        testID_column = testID_column + list(df_test.index.names)
-        df_test = df_test.reset_index(drop=False)
+        df_test = df_test.rename_axis('Orig_index_' +  str(application_number))
+      if testID_column is False:
+        testID_column = []
+      elif isinstance(testID_column, str):
+        testID_column = [testID_column]
+      elif not isinstance(testID_column, list):
+        print("error, testID_column allowable values are False, string, or list")
+      testID_column = testID_column + list(df_test.index.names)
+      df_test = df_test.reset_index(drop=False)
 
     #here we derive a range integer index for inclusion in the ID sets
     df_train_tempID = pd.DataFrame({indexcolumn:range(0,df_train.shape[0])})
@@ -33647,7 +33669,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.67'
+    automungeversion = '4.68'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -43832,21 +43854,20 @@ class AutoMunge:
     if type(df_test.index) != pd.RangeIndex:
       #if df_train.index.names == [None]:
       if None in df_test.index.names:
-        if len(list(df_test.index.names)) == 1 and df_test.index.dtype == int:
-          pass
-        elif len(list(df_test.index.names)) == 1 and df_test.index.dtype != int:
-          print("error, non integer index passed without columns named")
-        else:
-          print("error, non integer index passed without columns named")
-      else:
-        if testID_column is False:
-          testID_column = []
-        elif isinstance(testID_column, str):
-          testID_column = [testID_column]
-        elif not isinstance(testID_column, list):
-          print("error, testID_column allowable values are False, string, or list")
-        testID_column = testID_column + list(df_test.index.names)
-        df_test = df_test.reset_index(drop=False)
+        df_test = df_test.rename_axis('Orig_index_' +  str(postprocess_dict['application_number']))
+      if testID_column is False:
+        testID_column = []
+      elif isinstance(testID_column, str):
+        testID_column = [testID_column]
+      elif not isinstance(testID_column, list):
+        print("error, testID_column allowable values are False, string, or list")
+      if testID_column is True:
+        if isinstance(postprocess_dict['trainID_column_orig'], str):
+          testID_column = [postprocess_dict['trainID_column_orig']]
+        elif isinstance(postprocess_dict['trainID_column_orig'], list):
+          testID_column = postprocess_dict['trainID_column_orig']
+      testID_column = testID_column + list(df_test.index.names)
+      df_test = df_test.reset_index(drop=False)
 
     if labelscolumn is not False:
       labels_column = postprocess_dict['labels_column']
