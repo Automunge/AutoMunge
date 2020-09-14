@@ -7156,6 +7156,8 @@ class AutoMunge:
     #get standard deviation of training data
     std = mdf_train[column + '_retn'].std()
     
+    mad = mdf_train[column + '_retn'].mad()
+    
     #get maximum value of training column
     maximum = mdf_train[column + '_retn'].max()
     
@@ -7169,6 +7171,9 @@ class AutoMunge:
       
     if std != std or std == 0:
       std = 1
+      
+    if mad != mad or mad == 0:
+      mad = 1
       
     #if cap < maximum, maximum = cap
     if cap is not False and cap is not True:
@@ -7216,10 +7221,12 @@ class AutoMunge:
       minimum = 0
     
     #divisor
-    if divisor not in ['minmax', 'std']:
-      print("Error: retn transform parameter 'divisor' only accepts entries of 'minmax' or 'std'")
+    if divisor not in ['minmax', 'std', 'mad']:
+      print("Error: retn transform parameter 'divisor' only accepts entries of 'minmax' 'mad' or 'std'")
     if divisor == 'minmax':
       divisor = maxminusmin
+    elif divisor == 'mad':
+      divisor = mad
     else:
       divisor = std
       
@@ -7269,6 +7276,7 @@ class AutoMunge:
                                                   'maximum' : maximum, \
                                                   'mean' : mean, \
                                                   'std' : std, \
+                                                  'mad' : mad, \
                                                   'scalingapproach' : scalingapproach, \
                                                   'offset' : offset, \
                                                   'multiplier': multiplier, \
@@ -24149,6 +24157,8 @@ class AutoMunge:
     #get standard deviation of training data
     std = mdf_train[DPrt_column].std()
     
+    mad = mdf_train[DPrt_column].mad()
+    
     #get maximum value of training column
     maximum = mdf_train[DPrt_column].max()
     
@@ -24162,6 +24172,9 @@ class AutoMunge:
       
     if std != std or std == 0:
       std = 1
+      
+    if mad != mad or mad == 0:
+      mad = 1
       
     #if cap < maximum, maximum = cap
     if cap is not False and cap is not True:
@@ -24209,10 +24222,12 @@ class AutoMunge:
       minimum = 0
       
     #divisor
-    if divisor not in ['minmax', 'std']:
-      print("Error: retn transform parameter 'divisor' only accepts entries of 'minmax' or 'std'")
+    if divisor not in ['minmax', 'std', 'mad']:
+      print("Error: retn transform parameter 'divisor' only accepts entries of 'minmax' 'mad' or 'std'")
     if divisor == 'minmax':
       divisor = maxminusmin
+    elif divisor == 'mad':
+      divisor = mad
     else:
       divisor = std
       
@@ -24327,6 +24342,7 @@ class AutoMunge:
                                              'maximum' : maximum, \
                                              'mean' : mean, \
                                              'std' : std, \
+                                             'mad' : mad, \
                                              'scalingapproach' : scalingapproach, \
                                              'offset' : offset, \
                                              'multiplier': multiplier, \
@@ -43866,6 +43882,8 @@ class AutoMunge:
           testID_column = [postprocess_dict['trainID_column_orig']]
         elif isinstance(postprocess_dict['trainID_column_orig'], list):
           testID_column = postprocess_dict['trainID_column_orig']
+        elif postprocess_dict['trainID_column_orig'] is False:
+          testID_column = []
       testID_column = testID_column + list(df_test.index.names)
       df_test = df_test.reset_index(drop=False)
 
@@ -43893,43 +43911,27 @@ class AutoMunge:
     #here we derive a range integer index for inclusion in the test ID sets
     tempIDlist = []
     df_test_tempID = pd.DataFrame({indexcolumn:range(0,df_test.shape[0])})
-    
-    #extract the ID columns from train and test set
+
     if testID_column is not False:
-      
-      testIDcolumn = postprocess_dict['trainID_column_orig']
-      if testID_column is True:
-        testID_column = testIDcolumn
-      if testID_column is not True:
-        if testID_column != testIDcolumn:
-          print("please note the ID column(s) passed to postmunge is different than the ID column(s)")
-          print("that was originally passed to automunge. That's ok as long as the test set columns")
-          print("remaining are the same, just wanted to give you a heads up in case wasn't intentional.")
 
-      if testID_column is not False:
+      df_testID = pd.DataFrame(df_test[testID_column])
 
-        df_testID = pd.DataFrame(df_test[testID_column])
-
-        if isinstance(testID_column, str):
-          testID_column = [testID_column]
-        elif isinstance(testID_column, list):
-          testID_column = testID_column
-        else:
-          print("error, testID_column value must be False, str, or list")
-        
-        df_test_tempID.index = df_testID.index
-        
-        df_testID = pd.concat([df_testID, df_test_tempID], axis=1)
-
-        for IDcolumn in testID_column:
-          del df_test[IDcolumn]
-
-        #then append the indexcolumn to testID_column list for use in later methods
-        testID_column.append(indexcolumn)
-        
+      if isinstance(testID_column, str):
+        testID_column = [testID_column]
+      elif isinstance(testID_column, list):
+        testID_column = testID_column
       else:
-        df_testID = df_test_tempID.copy()
-        testID_column = [indexcolumn]
+        print("error, testID_column value must be False, str, or list")
+      
+      df_test_tempID.index = df_testID.index
+      
+      df_testID = pd.concat([df_testID, df_test_tempID], axis=1)
+
+      for IDcolumn in testID_column:
+        del df_test[IDcolumn]
+
+      #then append the indexcolumn to testID_column list for use in later methods
+      testID_column.append(indexcolumn)
       
     else:
       df_test_tempID.index = df_test.index
