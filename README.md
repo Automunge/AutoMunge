@@ -2032,6 +2032,8 @@ elif max<=0 and min<=0 x=(x-max)/(max-min)
 	std based on scaling by divisor of standard deviation
   - driftreport postmunge metrics: minimum / maximum / mean / std
   - inversion available: yes with full recovery
+* rtbn: retain normalization supplemented by ordinal encoded standard deviation bins
+* rtb2: retain normalization supplemented by one-hot encoded standard deviation bins
 * MADn/MAD2: mean absolute deviation normalization, subtract set mean <br/>
 (x - mean) / (mean absolute deviation)
   - default infill: mean
@@ -3231,6 +3233,8 @@ avoid unintentional duplication.
 - 'pwrs',
 - 'rais',
 - 'retn',
+- 'rtb2',
+- 'rtbn',
 - 'sbs2',
 - 'sbs3',
 - 'sbs4',
@@ -4955,6 +4959,24 @@ If you want to skip to the next section you can click here: [Custom Transformati
     transform_dict.update({'retn' : {'parents'       : [], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : ['retn'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+
+    transform_dict.update({'rtbn' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['retn', 'bsor'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+
+    transform_dict.update({'rtb2' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['retn', 'bins'], \
                                      'cousins'       : [NArw], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
