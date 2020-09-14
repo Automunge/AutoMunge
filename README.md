@@ -2028,8 +2028,8 @@ elif max<=0 and min<=0 x=(x-max)/(max-min)
       cap and floor based on pre-transform values
     - 'muilitplier' and 'offset' to apply multiplier and offset to posttransform values, default to 1,0,
       note that multiplier is applied prior to offset
-    - 'divisor' to select between default of 'minmax' or 'std', where minmax means scaling by divisor of max-min
-	std based on scaling by divisor of standard deviation
+    - 'divisor' to select between default of 'minmax' or 'mad, 'std', where minmax means scaling by divisor of max-min
+	std based on scaling by divisor of standard deviation and mad by median absolute deviation
   - driftreport postmunge metrics: minimum / maximum / mean / std
   - inversion available: yes with full recovery
 * rtbn: retain normalization supplemented by ordinal encoded standard deviation bins
