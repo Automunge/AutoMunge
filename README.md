@@ -6702,4 +6702,4 @@ contact available via automunge.com
 
 Copyright (C) 2018, 2019, 2020 - All Rights Reserved
 
-Patent Pending, application 16552857
+Patent Pending, applications 16552857, 17021770
