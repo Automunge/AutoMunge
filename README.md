@@ -2575,6 +2575,7 @@ remains in range 0-1 (by scaling neg noise when input <0.5 and scaling pos noise
   - inversion available: yes
 * DLmm/DLnb/DLrt: comparable to DPmm/DPnb/DPrt but applies laplace distributed noise instead of gaussian
 with same parameters accepted (where mu is center of noise, sigma is scale, and flip-prob is ratio)
+and with same default parameter values
 * DPbn: applies a two value binary encoding (bnry) followed by a noise injection to train data which
 flips the activation per parameter flip_prob which defaults to 0.03
   - default infill: the DP function does not apply a default infill assume upstream bnry cleans data
