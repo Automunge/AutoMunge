@@ -6056,6 +6056,51 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'niecesnephews' : [], \
                                      'coworkers'     : [], \
                                      'friends'       : []}})
+
+    transform_dict.update({'DLnb' : {'parents'       : ['DLn3'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'DLn3' : {'parents'       : ['DLn3'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['DLnb'], \
+                                     'friends'       : []}})
+
+    transform_dict.update({'DLmm' : {'parents'       : ['DLm2'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+  
+    transform_dict.update({'DLm2' : {'parents'       : ['DLm2'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['DLmm'], \
+                                     'friends'       : []}})
+
+    transform_dict.update({'DLrt' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['DLrt'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
   
     transform_dict.update({'DPbn' : {'parents'       : ['DPb2'], \
                                      'siblings'      : [], \
