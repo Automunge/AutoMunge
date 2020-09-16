@@ -5093,9 +5093,9 @@ class AutoMunge:
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'DLnb'}})
-    process_dict.update({'DLnb' : {'dualprocess' : self.process_DPnb_class, \
+    process_dict.update({'DLnb' : {'dualprocess' : self.process_DLnb_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_DPnb_class, \
+                                  'postprocess' : self.postprocess_DLnb_class, \
                                   'inverseprocess' : self.inverseprocess_UPCS, \
                                   'info_retention' : True, \
                                   'NArowtype' : 'numeric', \
@@ -5109,17 +5109,17 @@ class AutoMunge:
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'DLmm'}})
-    process_dict.update({'DLmm' : {'dualprocess' : self.process_DPmm_class, \
+    process_dict.update({'DLmm' : {'dualprocess' : self.process_DLmm_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_DPmm_class, \
+                                  'postprocess' : self.postprocess_DLmm_class, \
                                   'inverseprocess' : self.inverseprocess_UPCS, \
                                   'info_retention' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'DLmm'}})
-    process_dict.update({'DLrt' : {'dualprocess' : self.process_DPrt_class, \
+    process_dict.update({'DLrt' : {'dualprocess' : self.process_DLrt_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_DPrt_class, \
+                                  'postprocess' : self.postprocess_DLrt_class, \
                                   'inverseprocess' : self.inverseprocess_retn, \
                                   'info_retention' : True, \
                                   'NArowtype' : 'numeric', \
@@ -34264,7 +34264,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.70'
+    automungeversion = '4.71'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
