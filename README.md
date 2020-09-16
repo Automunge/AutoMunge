@@ -2573,6 +2573,8 @@ remains in range 0-1 (by scaling neg noise when input <0.5 and scaling pos noise
                                      passed to 'DPrt' transformation category from family tree.
   - driftreport postmunge metrics: mu, sigma, flip_prob for DPrt, also metrics comparable to retn
   - inversion available: yes
+* DLmm/DLnb/DLrt: comparable to DPmm/DPnb/DPrt but applies laplace distributed noise instead of gaussian
+with same parameters accepted (where mu is center of noise, sigma is scale, and flip-prob is ratio)
 * DPbn: applies a two value binary encoding (bnry) followed by a noise injection to train data which
 flips the activation per parameter flip_prob which defaults to 0.03
   - default infill: the DP function does not apply a default infill assume upstream bnry cleans data
@@ -2974,6 +2976,11 @@ Here are those root categories presented again in a concise sorted list, intende
 avoid unintentional duplication.
 - '1010',
 - '101d',
+- 'DLm2',
+- 'DLmm',
+- 'DLn3',
+- 'DLnb',
+- 'DLrt',
 - 'DP10',
 - 'DPb2',
 - 'DPbn',
@@ -3346,6 +3353,10 @@ present in dataframe and return results in postprocess_dict['miscparameters_resu
 - '_dhmc'
 - '_dhms'
 - '_divd'
+- '_DLmm'
+- '_DLmm_tmp1'
+- '_DLnb'
+- '_DLrt'
 - '_DP10'
 - '_DPbn'
 - '_DPmm'
