@@ -2558,8 +2558,9 @@ on flip_prob parameter.
   - default infill: the DP function does not apply a default infill assume upstream nmbr cleans data
   - default NArowtype: numeric
   - suffix appender: '_nmbr_DPnb'
-  - assignparam parameters accepted: 'flip_prob' for percent of values with noise injection,
-	                             'mu' for noise mean and 'sigma' for noise standard deviation
+  - assignparam parameters accepted: 'noisedistribution' as {'normal', 'laplace'}, defaults to normal
+                                     'flip_prob' for percent of values with noise injection,
+	                             'mu' for noise mean and 'sigma' for noise scale
 	                             (defaults to 1.0, 0.03, 0, 1.0 respectively), parameters should be
 	                             passed to 'DPnb' transformation category from family tree
   - driftreport postmunge metrics: mu, sigma for DPnm, upstream z score via nmbr for others
@@ -2570,8 +2571,9 @@ remains in range 0-1 (by scaling neg noise when input <0.5 and scaling pos noise
   - default infill: the DP function does not apply a default infill assume upstream mnmx cleans data
   - default NArowtype: numeric
   - suffix appender: '_mnmx_DPmm'
-  - assignparam parameters accepted: 'flip_prob' for percent of values with noise injection,
-                                     'mu' for noise mean and 'sigma' for noise standard deviation
+  - assignparam parameters accepted: 'noisedistribution' as {'normal', 'laplace'}, defaults to normal
+                                     'flip_prob' for percent of values with noise injection,
+                                     'mu' for noise mean and 'sigma' for noise scale
                                      (defaults to 1.0, 0, 0.03 respectively), parameters should be
                                      passed to 'DPmm' transformation category from family tree
   - driftreport postmunge metrics: mu, sigma for DPnm, upstream minmax via mnmx for others
@@ -2583,6 +2585,7 @@ remains in range 0-1 (by scaling neg noise when input <0.5 and scaling pos noise
   - suffix appender: '_DPrt'
   - assignparam parameters accepted: parameters comparable to retn divisor / offset / multiplier / 
                                      cap / floor defaulting to 'minmax'/0/1/False/False, also
+                                     'noisedistribution' as {'normal', 'laplace'}, defaults to normal
                                      'mu' for noise mean and 'sigma' for noise standard deviation
                                      (defaults to 0, 0.03 respectively), also 'flip_prob' for ratio 
                                      of data with injections (defaults to 1.0). Parameters should be
@@ -5999,24 +6002,6 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'children'      : [], \
                                      'niecesnephews' : [], \
                                      'coworkers'     : ['1010'], \
-                                     'friends'       : []}})
-
-    transform_dict.update({'DPnm' : {'parents'       : ['DPn2'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
-                                     'friends'       : []}})
-  
-    transform_dict.update({'DPn2' : {'parents'       : ['DPn2'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['DPnm'], \
                                      'friends'       : []}})
 
     transform_dict.update({'DPnb' : {'parents'       : ['DPn3'], \
