@@ -1314,8 +1314,8 @@ processdict =  {'newt' : {'dualprocess' : am.process_mnmx_class, \
 #              'totalexclude' for complete passthroughs (eg excl, exc6) without infill and excluded 
 #                        from inf conversion and assignnan global option
 
-#labelctgy: should be a string entry of a single transform category found as an entry in the root category's family 
-#tree. Used to determine a basis of feature selection for cases where labels are returned in multiple configurations.
+#labelctgy: should be a string entry of a single transform category as recorded by the associated transformation
+#function. Used to determine a basis of feature selection for cases where labels are returned in multiple configurations.
 #Also used in label frequency levelizer.
 ```
 
