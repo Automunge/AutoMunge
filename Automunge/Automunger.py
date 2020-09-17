@@ -3639,14 +3639,20 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_spl2_class, \
                                   'inverseprocess' : self.inverseprocess_spl2, \
                                   'info_retention' : False, \
+                                  'defaultparams' : {'suffix' : '_spl2', \
+                                                     'test_same_as_train' : False, \
+                                                     'consolidate_nonoverlaps' : False}, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'ord3'}})
-    process_dict.update({'spl5' : {'dualprocess' : self.process_spl5_class, \
+    process_dict.update({'spl5' : {'dualprocess' : self.process_spl2_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_spl5_class, \
-                                  'inverseprocess' : self.inverseprocess_spl5, \
+                                  'postprocess' : self.postprocess_spl2_class, \
+                                  'inverseprocess' : self.inverseprocess_spl2, \
                                   'info_retention' : False, \
+                                  'defaultparams' : {'suffix' : '_spl5', \
+                                                     'test_same_as_train' : False, \
+                                                     'consolidate_nonoverlaps' : True}, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'ord3'}})
@@ -3658,35 +3664,46 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'ord3'}})
-    process_dict.update({'spl7' : {'dualprocess' : self.process_spl7_class, \
+    process_dict.update({'spl7' : {'dualprocess' : self.process_spl2_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_spl7_class, \
-                                  'inverseprocess' : self.inverseprocess_spl5, \
-                                  'info_retention' : False, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'singlct', \
-                                  'labelctgy' : 'ord3'}})
-    process_dict.update({'spl8' : {'dualprocess' : self.process_spl8_class, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_spl8_class, \
-                                  'inverseprocess' : self.inverseprocess_spl8, \
-                                  'info_retention' : False, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'multirt', \
-                                  'labelctgy' : 'text'}})
-    process_dict.update({'spl9' : {'dualprocess' : self.process_spl9_class, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_spl9_class, \
+                                  'postprocess' : self.postprocess_spl2_class, \
                                   'inverseprocess' : self.inverseprocess_spl2, \
                                   'info_retention' : False, \
+                                  'defaultparams' : {'suffix' : '_spl7', \
+                                                     'test_same_as_train' : False, \
+                                                     'consolidate_nonoverlaps' : True, \
+                                                     'minsplit' : 1}, \
                                   'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'singlct', \
-                                  'labelctgy' : 'ordl'}})
-    process_dict.update({'sp10' : {'dualprocess' : self.process_sp10_class, \
+                                  'MLinfilltype' : 'exclude', \
+                                  'labelctgy' : 'ord3'}})
+    process_dict.update({'spl8' : {'dualprocess' : self.process_splt_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_sp10_class, \
-                                  'inverseprocess' : self.inverseprocess_spl5, \
+                                  'postprocess' : self.postprocess_splt_class, \
+                                  'inverseprocess' : self.inverseprocess_splt, \
                                   'info_retention' : False, \
+                                  'defaultparams' : {'suffix' : '_spl8', 'test_same_as_train' : True}, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'multirt', \
+                                  'labelctgy' : 'splt'}})
+    process_dict.update({'spl9' : {'dualprocess' : self.process_spl2_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_spl2_class, \
+                                  'inverseprocess' : self.inverseprocess_spl2, \
+                                  'info_retention' : False, \
+                                  'defaultparams' : {'suffix' : '_spl9', \
+                                                     'test_same_as_train' : True, \
+                                                     'consolidate_nonoverlaps' : False}, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'exclude', \
+                                  'labelctgy' : 'ordl'}})
+    process_dict.update({'sp10' : {'dualprocess' : self.process_spl2_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_spl2_class, \
+                                  'inverseprocess' : self.inverseprocess_spl2, \
+                                  'info_retention' : False, \
+                                  'defaultparams' : {'suffix' : '_sp10', \
+                                                     'test_same_as_train' : True, \
+                                                     'consolidate_nonoverlaps' : True}, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'ord3'}})
@@ -3695,6 +3712,9 @@ class AutoMunge:
                                    'postprocess' : self.postprocess_spl2_class, \
                                    'inverseprocess' : self.inverseprocess_spl2, \
                                    'info_retention' : False, \
+                                  'defaultparams' : {'suffix' : '_spl2', \
+                                                     'test_same_as_train' : False, \
+                                                     'consolidate_nonoverlaps' : False}, \
                                    'NArowtype' : 'justNaN', \
                                    'MLinfilltype' : 'exclude', \
                                    'labelctgy' : 'ord3'}})
@@ -3703,46 +3723,64 @@ class AutoMunge:
                                    'postprocess' : self.postprocess_spl2_class, \
                                    'inverseprocess' : self.inverseprocess_spl2, \
                                    'info_retention' : False, \
+                                  'defaultparams' : {'suffix' : '_spl2', \
+                                                     'test_same_as_train' : False, \
+                                                     'consolidate_nonoverlaps' : False}, \
                                    'NArowtype' : 'justNaN', \
                                    'MLinfilltype' : 'exclude', \
                                    'labelctgy' : 'ord3'}})
-    process_dict.update({'sp13' : {'dualprocess' : self.process_spl9_class, \
+    process_dict.update({'sp13' : {'dualprocess' : self.process_spl2_class, \
                                    'singleprocess' : None, \
-                                   'postprocess' : self.postprocess_spl9_class, \
+                                   'postprocess' : self.postprocess_spl2_class, \
                                    'inverseprocess' : self.inverseprocess_spl2, \
                                    'info_retention' : False, \
+                                  'defaultparams' : {'suffix' : '_spl9', \
+                                                     'test_same_as_train' : True, \
+                                                     'consolidate_nonoverlaps' : False}, \
                                    'NArowtype' : 'justNaN', \
                                    'MLinfilltype' : 'exclude', \
                                    'labelctgy' : 'ord3'}})
-    process_dict.update({'sp14' : {'dualprocess' : self.process_spl9_class, \
+    process_dict.update({'sp14' : {'dualprocess' : self.process_spl2_class, \
                                    'singleprocess' : None, \
-                                   'postprocess' : self.postprocess_spl9_class, \
+                                   'postprocess' : self.postprocess_spl2_class, \
                                    'inverseprocess' : self.inverseprocess_spl2, \
                                    'info_retention' : False, \
+                                  'defaultparams' : {'suffix' : '_spl9', \
+                                                     'test_same_as_train' : True, \
+                                                     'consolidate_nonoverlaps' : False}, \
                                    'NArowtype' : 'justNaN', \
                                    'MLinfilltype' : 'exclude', \
                                    'labelctgy' : 'ord3'}})
-    process_dict.update({'sp15' : {'dualprocess' : self.process_sp15_class, \
+    process_dict.update({'sp15' : {'dualprocess' : self.process_splt_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_sp15_class, \
-                                  'inverseprocess' : self.inverseprocess_sp15, \
+                                  'postprocess' : self.postprocess_splt_class, \
+                                  'inverseprocess' : self.inverseprocess_splt, \
                                   'info_retention' : False, \
+                                  'defaultparams' : {'suffix' : '_sp15', \
+                                                     'concurrent_activations': True, \
+                                                     'test_same_as_train' : False}, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'concurrent_act', \
-                                  'labelctgy' : 'sp15'}})
-    process_dict.update({'sp16' : {'dualprocess' : self.process_sp16_class, \
+                                  'labelctgy' : 'splt'}})
+    process_dict.update({'sp16' : {'dualprocess' : self.process_splt_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_sp16_class, \
-                                  'inverseprocess' : self.inverseprocess_sp16, \
+                                  'postprocess' : self.postprocess_splt_class, \
+                                  'inverseprocess' : self.inverseprocess_splt, \
                                   'info_retention' : False, \
+                                  'defaultparams' : {'suffix' : '_sp16', \
+                                                     'concurrent_activations': True, \
+                                                     'test_same_as_train' : True}, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'concurrent_act', \
-                                  'labelctgy' : 'sp16'}})
+                                  'labelctgy' : 'splt'}})
     process_dict.update({'sp17' : {'dualprocess' : self.process_spl2_class, \
                                    'singleprocess' : None, \
                                    'postprocess' : self.postprocess_spl2_class, \
                                    'inverseprocess' : self.inverseprocess_spl2, \
                                    'info_retention' : False, \
+                                  'defaultparams' : {'suffix' : '_spl2', \
+                                                     'test_same_as_train' : False, \
+                                                     'consolidate_nonoverlaps' : False}, \
                                    'NArowtype' : 'justNaN', \
                                    'MLinfilltype' : 'exclude', \
                                    'labelctgy' : 'ord3'}})
@@ -3751,6 +3789,9 @@ class AutoMunge:
                                    'postprocess' : self.postprocess_spl2_class, \
                                    'inverseprocess' : self.inverseprocess_spl2, \
                                    'info_retention' : False, \
+                                  'defaultparams' : {'suffix' : '_spl2', \
+                                                     'test_same_as_train' : False, \
+                                                     'consolidate_nonoverlaps' : False}, \
                                    'NArowtype' : 'justNaN', \
                                    'MLinfilltype' : 'exclude', \
                                    'labelctgy' : 'ord3'}})
@@ -3762,46 +3803,56 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : '1010', \
                                   'labelctgy' : 'sp19'}})
-    process_dict.update({'sp20' : {'dualprocess' : self.process_sp20_class, \
+    process_dict.update({'sp20' : {'dualprocess' : self.process_sp19_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_sp20_class, \
-                                  'inverseprocess' : self.inverseprocess_sp20, \
+                                  'postprocess' : self.postprocess_sp19_class, \
+                                  'inverseprocess' : self.inverseprocess_sp19, \
                                   'info_retention' : False, \
+                                  'defaultparams' : {'suffix' : '_sp20', \
+                                                     'test_same_as_train' : True}, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : '1010', \
-                                  'labelctgy' : 'sp20'}})
+                                  'labelctgy' : 'sp19'}})
     process_dict.update({'sbst' : {'dualprocess' : self.process_sbst_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_sbst_class, \
                                   'inverseprocess' : self.inverseprocess_sbst, \
                                   'info_retention' : False, \
+                                  'defaultparams' : {'suffix' : '_sbst', \
+                                                     'test_same_as_train' : False}, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'concurrent_act', \
                                   'labelctgy' : 'sbst'}})
-    process_dict.update({'sbs2' : {'dualprocess' : self.process_sbs2_class, \
+    process_dict.update({'sbs2' : {'dualprocess' : self.process_sbst_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_sbs2_class, \
-                                  'inverseprocess' : self.inverseprocess_sbs2, \
+                                  'postprocess' : self.postprocess_sbst_class, \
+                                  'inverseprocess' : self.inverseprocess_sbst, \
                                   'info_retention' : False, \
+                                  'defaultparams' : {'suffix' : '_sbs2', \
+                                                     'test_same_as_train' : True}, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'concurrent_act', \
-                                  'labelctgy' : 'sbs2'}})
+                                  'labelctgy' : 'sbst'}})
     process_dict.update({'sbs3' : {'dualprocess' : self.process_sbs3_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_sbs3_class, \
                                   'inverseprocess' : self.inverseprocess_sbs3, \
                                   'info_retention' : False, \
+                                  'defaultparams' : {'suffix' : '_sbs3', \
+                                                     'test_same_as_train' : False}, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : '1010', \
                                   'labelctgy' : 'sbs3'}})
-    process_dict.update({'sbs4' : {'dualprocess' : self.process_sbs4_class, \
+    process_dict.update({'sbs4' : {'dualprocess' : self.process_sbs3_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_sbs4_class, \
-                                  'inverseprocess' : self.inverseprocess_sbs4, \
+                                  'postprocess' : self.postprocess_sbs3_class, \
+                                  'inverseprocess' : self.inverseprocess_sbs3, \
                                   'info_retention' : False, \
+                                  'defaultparams' : {'suffix' : '_sbs4', \
+                                                     'test_same_as_train' : True}, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : '1010', \
-                                  'labelctgy' : 'sbs4'}})
+                                  'labelctgy' : 'sbs3'}})
     process_dict.update({'srch' : {'dualprocess' : self.process_srch_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_srch_class, \
@@ -4072,27 +4123,36 @@ class AutoMunge:
                                   'NArowtype' : 'parsenumeric_EU', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mnmx'}})
-    process_dict.update({'ors7' : {'dualprocess' : self.process_spl5_class, \
+    process_dict.update({'ors7' : {'dualprocess' : self.process_spl2_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_spl5_class, \
-                                  'inverseprocess' : self.inverseprocess_sp15, \
+                                  'postprocess' : self.postprocess_spl2_class, \
+                                  'inverseprocess' : self.inverseprocess_spl2, \
                                   'info_retention' : False, \
+                                  'defaultparams' : {'suffix' : '_spl5', \
+                                                     'test_same_as_train' : False, \
+                                                     'consolidate_nonoverlaps' : True}, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'ord3'}})
-    process_dict.update({'ors5' : {'dualprocess' : self.process_spl5_class, \
+    process_dict.update({'ors5' : {'dualprocess' : self.process_spl2_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_spl5_class, \
-                                  'inverseprocess' : self.inverseprocess_sp15, \
+                                  'postprocess' : self.postprocess_spl2_class, \
+                                  'inverseprocess' : self.inverseprocess_spl2, \
                                   'info_retention' : False, \
+                                  'defaultparams' : {'suffix' : '_spl5', \
+                                                     'test_same_as_train' : False, \
+                                                     'consolidate_nonoverlaps' : True}, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'ord3'}})
-    process_dict.update({'ors6' : {'dualprocess' : self.process_spl5_class, \
+    process_dict.update({'ors6' : {'dualprocess' : self.process_spl2_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_spl5_class, \
-                                  'inverseprocess' : self.inverseprocess_sp15, \
+                                  'postprocess' : self.postprocess_spl2_class, \
+                                  'inverseprocess' : self.inverseprocess_spl2, \
                                   'info_retention' : False, \
+                                  'defaultparams' : {'suffix' : '_spl5', \
+                                                     'test_same_as_train' : False, \
+                                                     'consolidate_nonoverlaps' : True}, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'ord3'}})
@@ -4139,6 +4199,9 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_spl2_class, \
                                   'inverseprocess' : self.inverseprocess_spl2, \
                                   'info_retention' : False, \
+                                  'defaultparams' : {'suffix' : '_spl2', \
+                                                     'test_same_as_train' : False, \
+                                                     'consolidate_nonoverlaps' : False}, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'ord3'}})
@@ -8396,6 +8459,16 @@ class AutoMunge:
       int_headers = params['int_headers']
     else:
       int_headers = False
+      
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = '_splt'
+      
+    if 'test_same_as_train' in params:
+      test_same_as_train = params['test_same_as_train']
+    else:
+      test_same_as_train = False
     
     #first we find overlaps from mdf_train
     
@@ -8548,47 +8621,52 @@ class AutoMunge:
      
     #now for mdf_test we'll only consider those overlaps already identified from train set
     
-    unique_list_test = list(mdf_test[column].unique())
+    if test_same_as_train is True:
+      test_overlap_dict = overlap_dict
+    
+    elif test_same_as_train is False:
 
-    unique_list_test = list(map(str, unique_list_test))
+      unique_list_test = list(mdf_test[column].unique())
 
-    test_overlap_dict = {}
+      unique_list_test = list(map(str, unique_list_test))
 
-    train_keys = list(overlap_dict)
+      test_overlap_dict = {}
 
-    train_keys.sort(key = len, reverse=True)
+      train_keys = list(overlap_dict)
 
-    for key in train_keys:
+      train_keys.sort(key = len, reverse=True)
 
-      test_overlap_dict.update({key:[]})
+      for key in train_keys:
 
-    for dict_key in train_keys:
+        test_overlap_dict.update({key:[]})
 
-      for unique_test in unique_list_test:
+      for dict_key in train_keys:
 
-        len_key = len(dict_key)
+        for unique_test in unique_list_test:
 
-        if len(unique_test) >= len_key:
+          len_key = len(dict_key)
 
-          nbr_iterations4 = len(unique_test) - len_key + 1
+          if len(unique_test) >= len_key:
 
-          for l in range(nbr_iterations4):
+            nbr_iterations4 = len(unique_test) - len_key + 1
 
-            extract4 = unique_test[l:(len_key+l)]
+            for l in range(nbr_iterations4):
 
-            if extract4 == dict_key:
+              extract4 = unique_test[l:(len_key+l)]
 
-              test_overlap_dict[dict_key].append(unique_test)
-              
-              if concurrent_activations is False:
+              if extract4 == dict_key:
 
-                break
+                test_overlap_dict[dict_key].append(unique_test)
+
+                if concurrent_activations is False:
+
+                  break
     
     newcolumns = []
 
     for dict_key in overlap_dict:
 
-      newcolumn = column + '_splt_' + dict_key
+      newcolumn = column + suffix + '_' + dict_key
       
       mdf_train, suffixoverlap_results = \
       self.df_copy_train(mdf_train, column, newcolumn, suffixoverlap_results)
@@ -8613,7 +8691,7 @@ class AutoMunge:
       int_labels_dict = {}
       i = 0
       for entry in newcolumns:
-        int_labels_dict.update({entry : column + '_splt_' + str(i)})
+        int_labels_dict.update({entry : column + suffix + '_' + str(i)})
         i += 1
         
       newcolumns = [int_labels_dict[entry] for entry in newcolumns]
@@ -8637,7 +8715,9 @@ class AutoMunge:
 
     for tc in newcolumns:
 
-      textnormalization_dict = {tc : {'overlap_dict' : overlap_dict, \
+      textnormalization_dict = {tc : {'suffix' : suffix, \
+                                      'test_same_as_train' : test_same_as_train, \
+                                      'overlap_dict' : overlap_dict, \
                                       'splt_newcolumns_splt'   : newcolumns, \
                                       'minsplit' : minsplit, \
                                       'concurrent_activations' : concurrent_activations, \
@@ -8673,11 +8753,13 @@ class AutoMunge:
     #preprocess column with categorical entries as strings
     #identifies overlaps of subsets of those strings and replaces entries 
     #with their redecued overlap
-    #for example, if a categoical set consisted of unique values 
+    #replaces entries without overlap to 0 (unique to spl5)
+    #for example, if a categorical set consisted of unique values 
     #['west', 'north', 'northeast']
     #then a new column would be created in which the entry 'north' 
     #replaced cells with north in their entries
     #(here for north and northeast)
+    #and cells with west would be set to 0
     #returns as column titled origcolumn_spl2
     #missing values are ignored by default
     #this alternative to splt may be benficial for instance if one wanted 
@@ -8705,8 +8787,22 @@ class AutoMunge:
       excluded_characters = params['excluded_characters']
     else:
       excluded_characters = [' ', ',', '.', '?', '!', '(', ')']
-  
-  
+      
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = '_spl2'
+      
+    if 'test_same_as_train' in params:
+      test_same_as_train = params['test_same_as_train']
+    else:
+      test_same_as_train = False
+      
+    if 'consolidate_nonoverlaps' in params:
+      consolidate_nonoverlaps = params['consolidate_nonoverlaps']
+    else:
+      consolidate_nonoverlaps = False
+    
     #first we find overlaps from mdf_train
     
     unique_list = list(mdf_train[column].unique())
@@ -8833,42 +8929,48 @@ class AutoMunge:
                           overlap_dict.update({extract : [unique, unique2]})
                           
                           break
-                        
-    #now for mdf_test we'll only consider those overlaps already identified from train set
+      
+    #now for mdf_test we'll only consider those overlaps already 
+    #identified from train set
     
-    unique_list_test = list(mdf_test[column].unique())
+    if test_same_as_train is True:
+      test_overlap_dict = overlap_dict
+    
+    elif test_same_as_train is False:
+    
+      unique_list_test = list(mdf_test[column].unique())
 
-    unique_list_test = list(map(str, unique_list_test))
+      unique_list_test = list(map(str, unique_list_test))
 
-    test_overlap_dict = {}
+      test_overlap_dict = {}
 
-    train_keys = list(overlap_dict)
+      train_keys = list(overlap_dict)
 
-    train_keys.sort(key = len, reverse=True)
+      train_keys.sort(key = len, reverse=True)
 
-    for key in train_keys:
+      for key in train_keys:
 
-      test_overlap_dict.update({key:[]})
+        test_overlap_dict.update({key:[]})
 
-    for dict_key in train_keys:
+      for dict_key in train_keys:
 
-      for unique_test in unique_list_test:
+        for unique_test in unique_list_test:
 
-        len_key = len(dict_key)
+          len_key = len(dict_key)
 
-        if len(unique_test) >= len_key:
+          if len(unique_test) >= len_key:
 
-          nbr_iterations4 = len(unique_test) - len_key + 1
+            nbr_iterations4 = len(unique_test) - len_key + 1
 
-          for l in range(nbr_iterations4):
+            for l in range(nbr_iterations4):
 
-            extract4 = unique_test[l:(len_key+l)]
+              extract4 = unique_test[l:(len_key+l)]
 
-            if extract4 == dict_key:
+              if extract4 == dict_key:
 
-              test_overlap_dict[dict_key].append(unique_test)
-              
-              break
+                test_overlap_dict[dict_key].append(unique_test)
+
+                break
     
     #so that was all comparable to splt, now for spl2 we'll create a new 
     #dictionary structred as
@@ -8893,6 +8995,13 @@ class AutoMunge:
           
           spl2_overlap_dict.update({entry : overlap_key})
     
+    #here's where we identify values to set to 0 for spl5
+    spl5_zero_dict = {}
+    if consolidate_nonoverlaps is True:
+      for entry in unique_list:
+        if entry not in spl2_overlap_dict:
+          spl5_zero_dict.update({entry : 0})
+    
     #then we'll do same for test set
     
     spl2_test_overlap_dict = {}
@@ -8910,26 +9019,40 @@ class AutoMunge:
           
           spl2_test_overlap_dict.update({entry : overlap_key})
     
+    #here's where we identify values to set to 0 for spl5
+    spl5_test_zero_dict = {}
+    if consolidate_nonoverlaps is True:
+
+      if test_same_as_train is True:
+        unique_list_test = list(mdf_test[column].unique())
+        unique_list_test = list(map(str, unique_list_test))
+
+      for entry in unique_list_test:
+        if entry not in spl2_test_overlap_dict:
+          spl5_test_zero_dict.update({entry : 0})
+    
     newcolumns = []
 
 #     for dict_key in overlap_dict:
 
-    newcolumn = column + '_spl2'
-  
+    newcolumn = column + suffix
+    
     mdf_train, suffixoverlap_results = \
     self.df_copy_train(mdf_train, column, newcolumn, suffixoverlap_results)
-  
+    
     mdf_test[newcolumn] = mdf_test[column].copy()
     
     mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
     mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
 
     mdf_train[newcolumn] = mdf_train[newcolumn].replace(spl2_overlap_dict)
+    mdf_train[newcolumn] = mdf_train[newcolumn].replace(spl5_zero_dict)
 
 #       mdf_train[newcolumn] = mdf_train[column].isin(overlap_dict[dict_key])
 #       mdf_train[newcolumn] = mdf_train[newcolumn].astype(np.int8)
 
     mdf_test[newcolumn] = mdf_test[newcolumn].replace(spl2_test_overlap_dict)
+    mdf_test[newcolumn] = mdf_test[newcolumn].replace(spl5_test_zero_dict)
 
 #       mdf_test[newcolumn] = mdf_test[column].isin(test_overlap_dict[dict_key])
 #       mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
@@ -8940,10 +9063,14 @@ class AutoMunge:
 
     for tc in newcolumns:
 
-      textnormalization_dict = {tc : {'overlap_dict' : overlap_dict, \
+      textnormalization_dict = {tc : {'suffix' : suffix, \
+                                      'test_same_as_train' : test_same_as_train, \
+                                      'consolidate_nonoverlaps' : consolidate_nonoverlaps, \
+                                      'overlap_dict' : overlap_dict, \
                                       'spl2_newcolumns'   : newcolumns, 
                                       'spl2_overlap_dict' : spl2_overlap_dict, \
                                       'spl2_test_overlap_dict' : spl2_test_overlap_dict, \
+                                      'spl5_zero_dict' : spl5_zero_dict, \
                                       'minsplit' : minsplit}}
       
       column_dict = {tc : {'category' : 'spl2', \
@@ -8963,2236 +9090,7 @@ class AutoMunge:
     if len(newcolumns) == 0:
       
       column_dict_list = []
-  
-    return mdf_train, mdf_test, column_dict_list
-  
-  def process_spl5_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict, params = {}):
-    '''
-    #process_spl5_class(mdf_train, mdf_test, column, category)
-    #preprocess column with categorical entries as strings
-    #identifies overlaps of subsets of those strings and replaces entries 
-    #with their redecued overlap
-    #replaces entries without overlap to 0 (unique to spl5)
-    #for example, if a categorical set consisted of unique values 
-    #['west', 'north', 'northeast']
-    #then a new column would be created in which the entry 'north' 
-    #replaced cells with north in their entries
-    #(here for north and northeast)
-    #and cells with west would be set to 0
-    #returns as column titled origcolumn_spl2
-    #missing values are ignored by default
-    #this alternative to splt may be benficial for instance if one wanted 
-    #to follow with an ordl encoding
-    '''
-    
-    suffixoverlap_results = {}
-    
-#     overlap_lengths = [20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7 , 6, 5]
 
-    if 'minsplit' in params:
-        
-      minsplit = params['minsplit'] - 1
-    
-    else:
-      
-      minsplit = 4
-      
-    if 'space_and_punctuation' in params:
-      space_and_punctuation = params['space_and_punctuation']
-    else:
-      space_and_punctuation = True
-      
-    if 'excluded_characters' in params:
-      excluded_characters = params['excluded_characters']
-    else:
-      excluded_characters = [' ', ',', '.', '?', '!', '(', ')']
-    
-    #first we find overlaps from mdf_train
-    
-    unique_list = list(mdf_train[column].unique())
-
-    unique_list = list(map(str, unique_list))
-    
-    maxlength = max(len(x) for x in unique_list)
-    
-    overlap_lengths = list(range(maxlength - 1, minsplit, -1))
-
-    overlap_dict = {}
-
-    #we'll populate overlap_dict as
-    #{extract_with_overlap : [list of associate categories with that overlap]}
-
-    #we'll cycle through the overlap lengths and only record an overlap 
-    #if it is not a subset of those already recorded
-    
-    for overlap_length in overlap_lengths:
-
-      for unique in unique_list:
-
-        len_unique = len(unique)
-
-        if len_unique >= overlap_length:
-
-          nbr_iterations = len_unique - overlap_length + 1
-
-          for i in range(nbr_iterations):
-
-            extract = unique[i:(overlap_length+i)]
-
-            extract_already_in_overlap_dict = False
-
-            for key in overlap_dict:
-
-              len_key = len(key)
-
-              if len_key >= overlap_length:
-
-                nbr_iterations3 = len_key - overlap_length + 1
-
-                for k in range(nbr_iterations3):
-
-                  extract3 = key[k:(overlap_length+k)]
-
-                  if extract == extract3:
-
-                    extract_already_in_overlap_dict = True
-                    
-                    break
-                    
-                if extract_already_in_overlap_dict is True:
-                  
-                  break
-
-            if extract_already_in_overlap_dict is False:
-
-              for unique2 in unique_list:
-
-                if unique2 != unique:
-
-                  len_unique2 = len(unique2)
-
-                  nbr_iterations2 = len_unique2 - overlap_length + 1
-
-                  for j in range(nbr_iterations2):
-
-                    extract2 = unique2[j:(overlap_length+j)]
-
-                    #________
-                    
-                    if space_and_punctuation is True:
-
-                      if extract2 == extract:
-
-                        if extract in overlap_dict:
-
-                          if unique2 not in overlap_dict[extract]:
-
-                            overlap_dict[extract].append(unique2)
-                            
-                            break
-
-                          if unique not in overlap_dict[extract]:
-
-                            overlap_dict[extract].append(unique)
-                            
-                            break
-
-                        #else if we don't have a key for extract
-                        else:
-
-                          overlap_dict.update({extract : [unique, unique2]})
-                          
-                          break
-                          
-                    elif space_and_punctuation is False:
-                      
-                      for scrub_punctuation in excluded_characters:
-                        
-                        extract2 = extract2.replace(scrub_punctuation, '')
-                        
-                      #if any punctuation was scrubbed these two extracts will be different lengths
-                      if extract2 == extract:
-
-                        if extract in overlap_dict:
-
-                          if unique2 not in overlap_dict[extract]:
-
-                            overlap_dict[extract].append(unique2)
-                            
-                            break
-
-                          if unique not in overlap_dict[extract]:
-
-                            overlap_dict[extract].append(unique)
-                            
-                            break
-
-                        #else if we don't have a key for extract
-                        else:
-
-                          overlap_dict.update({extract : [unique, unique2]})
-                          
-                          break
-      
-    #now for mdf_test we'll only consider those overlaps already 
-    #identified from train set
-    
-    unique_list_test = list(mdf_test[column].unique())
-
-    unique_list_test = list(map(str, unique_list_test))
-
-    test_overlap_dict = {}
-
-    train_keys = list(overlap_dict)
-
-    train_keys.sort(key = len, reverse=True)
-
-    for key in train_keys:
-
-      test_overlap_dict.update({key:[]})
-
-    for dict_key in train_keys:
-
-      for unique_test in unique_list_test:
-
-        len_key = len(dict_key)
-
-        if len(unique_test) >= len_key:
-
-          nbr_iterations4 = len(unique_test) - len_key + 1
-
-          for l in range(nbr_iterations4):
-
-            extract4 = unique_test[l:(len_key+l)]
-
-            if extract4 == dict_key:
-
-              test_overlap_dict[dict_key].append(unique_test)
-              
-              break
-    
-    #so that was all comparable to splt, now for spl2 we'll create a new 
-    #dictionary structred as
-    #{original unique value : overlap extract for replacement}
-    
-    #since one original unique value may have entries as multiple overlaps, 
-    #we'll prioritize overlaps with
-    #longer string lengths and then alphabetical
-    
-    spl2_overlap_dict = {}
-    
-    overlap_key_list = list(overlap_dict)
-    
-    overlap_key_list.sort()
-    overlap_key_list.sort(key = len, reverse=True)
-    
-    for overlap_key in overlap_key_list:
-      
-      for entry in overlap_dict[overlap_key]:
-        
-        if entry not in spl2_overlap_dict:
-          
-          spl2_overlap_dict.update({entry : overlap_key})
-    
-    #here's where we identify values to set to 0 for spl5
-    spl5_zero_dict = {}
-    for entry in unique_list:
-      if entry not in spl2_overlap_dict:
-        spl5_zero_dict.update({entry : 0})
-    
-    #then we'll do same for test set
-    
-    spl2_test_overlap_dict = {}
-    
-    test_overlap_key_list = list(test_overlap_dict)
-    
-    test_overlap_key_list.sort()
-    test_overlap_key_list.sort(key = len, reverse=True)
-    
-    for overlap_key in test_overlap_key_list:
-      
-      for entry in test_overlap_dict[overlap_key]:
-        
-        if entry not in spl2_test_overlap_dict:
-          
-          spl2_test_overlap_dict.update({entry : overlap_key})
-    
-    #here's where we identify values to set to 0 for spl5
-    spl5_test_zero_dict = {}
-    for entry in unique_list_test:
-      if entry not in spl2_test_overlap_dict:
-        spl5_test_zero_dict.update({entry : 0})
-    
-    newcolumns = []
-
-#     for dict_key in overlap_dict:
-
-    newcolumn = column + '_spl5'
-    
-    mdf_train, suffixoverlap_results = \
-    self.df_copy_train(mdf_train, column, newcolumn, suffixoverlap_results)
-    
-    mdf_test[newcolumn] = mdf_test[column].copy()
-    
-    mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
-    mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
-
-    mdf_train[newcolumn] = mdf_train[newcolumn].replace(spl2_overlap_dict)
-    mdf_train[newcolumn] = mdf_train[newcolumn].replace(spl5_zero_dict)
-
-#       mdf_train[newcolumn] = mdf_train[column].isin(overlap_dict[dict_key])
-#       mdf_train[newcolumn] = mdf_train[newcolumn].astype(np.int8)
-
-    mdf_test[newcolumn] = mdf_test[newcolumn].replace(spl2_test_overlap_dict)
-    mdf_test[newcolumn] = mdf_test[newcolumn].replace(spl5_test_zero_dict)
-
-#       mdf_test[newcolumn] = mdf_test[column].isin(test_overlap_dict[dict_key])
-#       mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
-
-    newcolumns.append(newcolumn)
-    
-    column_dict_list = []
-
-    for tc in newcolumns:
-
-      textnormalization_dict = {tc : {'overlap_dict' : overlap_dict, \
-                                      'spl2_newcolumns'   : newcolumns, 
-                                      'spl2_overlap_dict' : spl2_overlap_dict, \
-                                      'spl2_test_overlap_dict' : spl2_test_overlap_dict, \
-                                      'spl5_zero_dict' : spl5_zero_dict, \
-                                      'minsplit' : minsplit}}
-      
-      column_dict = {tc : {'category' : 'spl5', \
-                           'origcategory' : category, \
-                           'normalization_dict' : textnormalization_dict, \
-                           'origcolumn' : column, \
-                           'inputcolumn' : column, \
-                           'columnslist' : newcolumns, \
-                           'categorylist' : newcolumns, \
-                           'infillmodel' : False, \
-                           'infillcomplete' : False, \
-                           'suffixoverlap_results' : suffixoverlap_results, \
-                           'deletecolumn' : False}}
-
-      column_dict_list.append(column_dict.copy())
-      
-    if len(newcolumns) == 0:
-      
-      column_dict_list = []
-
-    return mdf_train, mdf_test, column_dict_list
-  
-  def process_spl7_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict, params = {}):
-    '''
-    #(spl7 is same as spl5 but uses min overlap character legnth of 1 instead of 5)
-    #process_spl5_class(mdf_train, mdf_test, column, category)
-    #preprocess column with categorical entries as strings
-    #identifies overlaps of subsets of those strings and replaces entries 
-    #with their redecued overlap
-    #replaces entries without overlap to 0 (unique to spl5)
-    #for example, if a categorical set consisted of unique values 
-    #['west', 'north', 'northeast']
-    #then a new column would be created in which the entry 'north' 
-    #replaced cells with north in their entries
-    #(here for north and northeast)
-    #and cells with west would be set to 0
-    #returns as column titled origcolumn_spl2
-    #missing values are ignored by default
-    #this alternative to splt may be benficial for instance if one wanted 
-    #to follow with an ordl encoding
-    '''
-    
-    suffixoverlap_results = {}
-    
-#     overlap_lengths = [20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7 , 6, 5]
-    if 'minsplit' in params:
-        
-      minsplit = params['minsplit'] - 1
-    
-    else:
-      
-      minsplit = 2 - 1
-      
-    if 'space_and_punctuation' in params:
-      space_and_punctuation = params['space_and_punctuation']
-    else:
-      space_and_punctuation = True
-      
-    if 'excluded_characters' in params:
-      excluded_characters = params['excluded_characters']
-    else:
-      excluded_characters = [' ', ',', '.', '?', '!', '(', ')']
-    
-    #first we find overlaps from mdf_train
-    
-    unique_list = list(mdf_train[column].unique())
-
-    unique_list = list(map(str, unique_list))
-    
-    maxlength = max(len(x) for x in unique_list)
-    
-    overlap_lengths = list(range(maxlength - 1, minsplit, -1))
-
-    overlap_dict = {}
-
-    #we'll populate overlap_dict as
-    #{extract_with_overlap : [list of associate categories with that overlap]}
-
-    #we'll cycle through the overlap lengths and only record an overlap 
-    #if it is not a subset of those already recorded
-    
-    for overlap_length in overlap_lengths:
-
-      for unique in unique_list:
-
-        len_unique = len(unique)
-
-        if len_unique >= overlap_length:
-
-          nbr_iterations = len_unique - overlap_length + 1
-
-          for i in range(nbr_iterations):
-
-            extract = unique[i:(overlap_length+i)]
-
-            extract_already_in_overlap_dict = False
-
-            for key in overlap_dict:
-
-              len_key = len(key)
-
-              if len_key >= overlap_length:
-
-                nbr_iterations3 = len_key - overlap_length + 1
-
-                for k in range(nbr_iterations3):
-
-                  extract3 = key[k:(overlap_length+k)]
-
-                  if extract == extract3:
-
-                    extract_already_in_overlap_dict = True
-                    
-                    break
-                    
-                if extract_already_in_overlap_dict is True:
-                  
-                  break
-
-            if extract_already_in_overlap_dict is False:
-
-              for unique2 in unique_list:
-
-                if unique2 != unique:
-
-                  len_unique2 = len(unique2)
-
-                  nbr_iterations2 = len_unique2 - overlap_length + 1
-
-                  for j in range(nbr_iterations2):
-
-                    extract2 = unique2[j:(overlap_length+j)]
-
-                    #________
-                    
-                    if space_and_punctuation is True:
-
-                      if extract2 == extract:
-
-                        if extract in overlap_dict:
-
-                          if unique2 not in overlap_dict[extract]:
-
-                            overlap_dict[extract].append(unique2)
-                            
-                            break
-
-                          if unique not in overlap_dict[extract]:
-
-                            overlap_dict[extract].append(unique)
-                            
-                            break
-
-                        #else if we don't have a key for extract
-                        else:
-
-                          overlap_dict.update({extract : [unique, unique2]})
-                          
-                          break
-                          
-                    elif space_and_punctuation is False:
-                      
-                      for scrub_punctuation in excluded_characters:
-                        
-                        extract2 = extract2.replace(scrub_punctuation, '')
-                        
-                      #if any punctuation was scrubbed these two extracts will be different lengths
-                      if extract2 == extract:
-
-                        if extract in overlap_dict:
-
-                          if unique2 not in overlap_dict[extract]:
-
-                            overlap_dict[extract].append(unique2)
-                            
-                            break
-
-                          if unique not in overlap_dict[extract]:
-
-                            overlap_dict[extract].append(unique)
-                            
-                            break
-
-                        #else if we don't have a key for extract
-                        else:
-
-                          overlap_dict.update({extract : [unique, unique2]})
-                          
-                          break
-      
-    #now for mdf_test we'll only consider those overlaps already 
-    #identified from train set
-    
-    unique_list_test = list(mdf_test[column].unique())
-
-    unique_list_test = list(map(str, unique_list_test))
-
-    test_overlap_dict = {}
-
-    train_keys = list(overlap_dict)
-
-    train_keys.sort(key = len, reverse=True)
-
-    for key in train_keys:
-
-      test_overlap_dict.update({key:[]})
-
-    for dict_key in train_keys:
-
-      for unique_test in unique_list_test:
-
-        len_key = len(dict_key)
-
-        if len(unique_test) >= len_key:
-
-          nbr_iterations4 = len(unique_test) - len_key + 1
-
-          for l in range(nbr_iterations4):
-
-            extract4 = unique_test[l:(len_key+l)]
-
-            if extract4 == dict_key:
-
-              test_overlap_dict[dict_key].append(unique_test)
-              
-              break
-    
-    #so that was all comparable to splt, now for spl2 we'll create a new 
-    #dictionary structred as
-    #{original unique value : overlap extract for replacement}
-    
-    #since one original unique value may have entries as multiple overlaps, 
-    #we'll prioritize overlaps with
-    #longer string lengths and then alphabetical
-    
-    spl2_overlap_dict = {}
-    
-    overlap_key_list = list(overlap_dict)
-    
-    overlap_key_list.sort()
-    overlap_key_list.sort(key = len, reverse=True)
-    
-    for overlap_key in overlap_key_list:
-      
-      for entry in overlap_dict[overlap_key]:
-        
-        if entry not in spl2_overlap_dict:
-          
-          spl2_overlap_dict.update({entry : overlap_key})
-    
-    #here's where we identify values to set to 0 for spl5
-    spl5_zero_dict = {}
-    for entry in unique_list:
-      if entry not in spl2_overlap_dict:
-        spl5_zero_dict.update({entry : 0})
-          
-    
-    
-    #then we'll do same for test set
-    
-    spl2_test_overlap_dict = {}
-    
-    test_overlap_key_list = list(test_overlap_dict)
-    
-    test_overlap_key_list.sort()
-    test_overlap_key_list.sort(key = len, reverse=True)
-    
-    for overlap_key in test_overlap_key_list:
-      
-      for entry in test_overlap_dict[overlap_key]:
-        
-        if entry not in spl2_test_overlap_dict:
-          
-          spl2_test_overlap_dict.update({entry : overlap_key})
-    
-    #here's where we identify values to set to 0 for spl5
-    spl5_test_zero_dict = {}
-    for entry in unique_list_test:
-      if entry not in spl2_test_overlap_dict:
-        spl5_test_zero_dict.update({entry : 0})
-    
-    newcolumns = []
-
-#     for dict_key in overlap_dict:
-
-    newcolumn = column + '_spl7'
-    
-    mdf_train, suffixoverlap_results = \
-    self.df_copy_train(mdf_train, column, newcolumn, suffixoverlap_results)
-    
-    mdf_test[newcolumn] = mdf_test[column].copy()
-    
-    mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
-    mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
-
-    mdf_train[newcolumn] = mdf_train[newcolumn].replace(spl2_overlap_dict)
-    mdf_train[newcolumn] = mdf_train[newcolumn].replace(spl5_zero_dict)
-
-#       mdf_train[newcolumn] = mdf_train[column].isin(overlap_dict[dict_key])
-#       mdf_train[newcolumn] = mdf_train[newcolumn].astype(np.int8)
-
-    mdf_test[newcolumn] = mdf_test[newcolumn].replace(spl2_test_overlap_dict)
-    mdf_test[newcolumn] = mdf_test[newcolumn].replace(spl5_test_zero_dict)
-
-#       mdf_test[newcolumn] = mdf_test[column].isin(test_overlap_dict[dict_key])
-#       mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
-
-    newcolumns.append(newcolumn)
-    
-    column_dict_list = []
-
-    for tc in newcolumns:
-
-      textnormalization_dict = {tc : {'overlap_dict' : overlap_dict, \
-                                      'spl2_newcolumns'   : newcolumns, 
-                                      'spl2_overlap_dict' : spl2_overlap_dict, \
-                                      'spl2_test_overlap_dict' : spl2_test_overlap_dict, \
-                                      'spl5_zero_dict' : spl5_zero_dict, \
-                                      'minsplit' : minsplit}}
-      
-      column_dict = {tc : {'category' : 'spl7', \
-                           'origcategory' : category, \
-                           'normalization_dict' : textnormalization_dict, \
-                           'origcolumn' : column, \
-                           'inputcolumn' : column, \
-                           'columnslist' : newcolumns, \
-                           'categorylist' : newcolumns, \
-                           'infillmodel' : False, \
-                           'infillcomplete' : False, \
-                           'suffixoverlap_results' : suffixoverlap_results, \
-                           'deletecolumn' : False}}
-
-      column_dict_list.append(column_dict.copy())
-      
-    if len(newcolumns) == 0:
-      
-      column_dict_list = []
-
-    return mdf_train, mdf_test, column_dict_list
-
-  def process_spl8_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
-    '''
-    #process_spl8_class(mdf_train, mdf_test, column, category)
-    #preprocess column with categorical entries as strings
-    #identifies overlaps of subsets of those strings and records
-    #as a new boolan column
-    #for example, if a categoical set consisted of unique values 
-    #['west', 'north', 'northeast']
-    #then a new column would be created idenitifying cells which included 
-    #'north' in their entries
-    #(here for north and northeast)
-    #returns as column titled origcolumn_splt_entry    
-    #missing values are ignored by default
-    #comparable to splt but
-    #assumes that unique values of test set are same or subset of train set
-    #for more efficient application in postmunge
-    '''
-    
-    suffixoverlap_results = {}
-    
-    #overlap_lengths = [20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7 , 6, 5]
-
-    if 'minsplit' in params:
-      minsplit = params['minsplit'] - 1
-    else:
-      minsplit = 4
-      
-    if 'space_and_punctuation' in params:
-      space_and_punctuation = params['space_and_punctuation']
-    else:
-      space_and_punctuation = True
-      
-    if 'excluded_characters' in params:
-      excluded_characters = params['excluded_characters']
-    else:
-      excluded_characters = [' ', ',', '.', '?', '!', '(', ')']
-      
-    if 'concurrent_activations' in params:
-      concurrent_activations = params['concurrent_activations']
-    else:
-      concurrent_activations = False
-      
-    if 'int_headers' in params:
-      int_headers = params['int_headers']
-    else:
-      int_headers = False
-    
-    #first we find overlaps from mdf_train
-    
-    unique_list = list(mdf_train[column].unique())
-
-    unique_list = list(map(str, unique_list))
-    
-    maxlength = max(len(x) for x in unique_list)
-    
-    overlap_lengths = list(range(maxlength - 1, minsplit, -1))
-
-    overlap_dict = {}
-
-    #we'll populate overlap_dict as
-    #{extract_with_overlap : [list of associate categories with that overlap]}
-
-    #we'll cycle through the overlap lengths and only record an overlap 
-    #if it is not a subset of those already recorded
-    
-    for overlap_length in overlap_lengths:
-
-      for unique in unique_list:
-
-        len_unique = len(unique)
-
-        if len_unique >= overlap_length:
-
-          nbr_iterations = len_unique - overlap_length + 1
-
-          for i in range(nbr_iterations):
-
-            extract = unique[i:(overlap_length+i)]
-
-            extract_already_in_overlap_dict = False
-
-            for key in overlap_dict:
-
-              len_key = len(key)
-
-              if len_key >= overlap_length:
-
-                nbr_iterations3 = len_key - overlap_length + 1
-
-                for k in range(nbr_iterations3):
-
-                  extract3 = key[k:(overlap_length+k)]
-                    
-                  if concurrent_activations is False:
-
-                    if extract == extract3:
-
-                      extract_already_in_overlap_dict = True
-                      
-                      break
-                      
-                  elif concurrent_activations is True:
-                    
-                    if extract == extract3 and unique in overlap_dict[key]:
-
-                      extract_already_in_overlap_dict = True
-                      
-                      break
-                      
-                if extract_already_in_overlap_dict is True:
-                  
-                  break
-
-            if extract_already_in_overlap_dict is False:
-
-              for unique2 in unique_list:
-
-                if unique2 != unique:
-
-                  len_unique2 = len(unique2)
-
-                  nbr_iterations2 = len_unique2 - overlap_length + 1
-
-                  for j in range(nbr_iterations2):
-
-                    extract2 = unique2[j:(overlap_length+j)]
-
-                    #________
-                    
-                    if space_and_punctuation is True:
-
-                      if extract2 == extract:
-
-                        if extract in overlap_dict:
-
-                          if unique2 not in overlap_dict[extract]:
-
-                            overlap_dict[extract].append(unique2)
-                            
-                            if concurrent_activations is False:
-
-                              break
-
-                          if unique not in overlap_dict[extract]:
-
-                            overlap_dict[extract].append(unique)
-                            
-                            if concurrent_activations is False:
-
-                              break
-
-                        #else if we don't have a key for extract
-                        else:
-
-                          overlap_dict.update({extract : [unique, unique2]})
-                          
-                          if concurrent_activations is False:
-
-                            break
-                          
-                    elif space_and_punctuation is False:
-                      
-                      for scrub_punctuation in excluded_characters:
-                        
-                        extract2 = extract2.replace(scrub_punctuation, '')
-                        
-                      #if any punctuation was scrubbed these two extracts will be different lengths
-                      if extract2 == extract:
-
-                        if extract in overlap_dict:
-
-                          if unique2 not in overlap_dict[extract]:
-
-                            overlap_dict[extract].append(unique2)
-                            
-                            if concurrent_activations is False:
-
-                              break
-
-                          if unique not in overlap_dict[extract]:
-
-                            overlap_dict[extract].append(unique)
-                            
-                            if concurrent_activations is False:
-
-                              break
-
-                        #else if we don't have a key for extract
-                        else:
-
-                          overlap_dict.update({extract : [unique, unique2]})
-                          
-                          if concurrent_activations is False:
-
-                            break
-
-                        
-    #now for mdf_test we'll only consider those overlaps already identified from train set
-    
-    
-    #note this assumes that set of entries for test data is same or a subset of train data
-    
-    
-#     unique_list_test = list(mdf_test[column].unique())
-
-#     unique_list_test = list(map(str, unique_list_test))
-
-#     test_overlap_dict = {}
-
-#     train_keys = list(overlap_dict)
-
-#     train_keys.sort(key = len, reverse=True)
-
-#     for key in train_keys:
-
-#       test_overlap_dict.update({key:[]})
-
-#     for dict_key in train_keys:
-
-#       for unique_test in unique_list_test:
-
-#         len_key = len(dict_key)
-
-#         if len(unique_test) >= len_key:
-
-#           nbr_iterations4 = len(unique_test) - len_key
-
-#           for l in range(nbr_iterations4 + 1):
-
-#             extract4 = unique_test[l:(len_key+l)]
-
-#             if extract4 == dict_key:
-
-#               test_overlap_dict[dict_key].append(unique_test)
-    
-    newcolumns = []
-
-    for dict_key in overlap_dict:
-
-      newcolumn = column + '_spl8_' + dict_key
-      
-      mdf_train, suffixoverlap_results = \
-      self.df_copy_train(mdf_train, column, newcolumn, suffixoverlap_results)
-      
-      mdf_test[newcolumn] = mdf_test[column].copy()
-
-      mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
-      mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
-
-      mdf_train[newcolumn] = mdf_train[newcolumn].isin(overlap_dict[dict_key])
-      mdf_train[newcolumn] = mdf_train[newcolumn].astype(np.int8)
-      
-      #mdf_test[newcolumn] = mdf_test[newcolumn].isin(test_overlap_dict[dict_key])
-      mdf_test[newcolumn] = mdf_test[newcolumn].isin(overlap_dict[dict_key])
-      mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
-
-      newcolumns.append(newcolumn)
-      
-    preint_newcolumns = newcolumns.copy()
-      
-    if int_headers is True:
-      
-      int_labels_dict = {}
-      i = 0
-      for entry in newcolumns:
-        int_labels_dict.update({entry : column + '_spl8_' + str(i)})
-        i += 1
-        
-      #now convert column headers from string to int convention
-      mdf_train = mdf_train.rename(columns=int_labels_dict)
-      mdf_test  = mdf_test.rename(columns=int_labels_dict)
-
-      newcolumns = [int_labels_dict[entry] for entry in newcolumns]
-
-      inverse_int_labels_dict = {value:key for key,value in int_labels_dict.items()}
-      for key in inverse_int_labels_dict:
-        inverse_int_labels_dict[key] = inverse_int_labels_dict[key][len(column) + 1:]
-        
-    else:
-      int_labels_dict = False
-      inverse_int_labels_dict = False
-    
-    column_dict_list = []
-
-    for tc in newcolumns:
-
-      textnormalization_dict = {tc : {'overlap_dict' : overlap_dict, \
-                                      'splt_newcolumns_spl8'   : newcolumns, \
-                                      'minsplit' : minsplit, \
-                                      'concurrent_activations' : concurrent_activations, \
-                                      'preint_newcolumns' : preint_newcolumns, \
-                                      'int_headers' : int_headers, \
-                                      'int_labels_dict' : int_labels_dict, \
-                                      'inverse_int_labels_dict' : inverse_int_labels_dict}}
-      
-      column_dict = {tc : {'category' : 'spl8', \
-                           'origcategory' : category, \
-                           'normalization_dict' : textnormalization_dict, \
-                           'origcolumn' : column, \
-                           'inputcolumn' : column, \
-                           'columnslist' : newcolumns, \
-                           'categorylist' : newcolumns, \
-                           'infillmodel' : False, \
-                           'infillcomplete' : False, \
-                           'suffixoverlap_results' : suffixoverlap_results, \
-                           'deletecolumn' : False}}
-
-      column_dict_list.append(column_dict.copy())
-      
-    if len(newcolumns) == 0:
-      
-      column_dict_list = []
-
-    return mdf_train, mdf_test, column_dict_list
-  
-  def process_spl9_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
-    '''
-    #process_spl2_class(mdf_train, mdf_test, column, category)
-    #preprocess column with categorical entries as strings
-    #identifies overlaps of subsets of those strings and replaces entries 
-    #with their redecued overlap
-    #for example, if a categoical set consisted of unique values 
-    #['west', 'north', 'northeast']
-    #then a new column would be created in which the entry 'north' 
-    #replaced cells with north in their entries
-    #(here for north and northeast)
-    #returns as column titled origcolumn_spl2
-    #missing values are ignored by default
-    #this alternative to splt may be benficial for instance if one wanted 
-    #to follow with an ordl encoding
-    
-    #spl9 is comparable to spl2 but makes assumption that set of unique values
-    #in test set is same or subset of train set for more efficient processing
-    '''
-    
-    suffixoverlap_results = {}
-    
-#     overlap_lengths = [20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7 , 6, 5]
-
-    if 'minsplit' in params:
-      minsplit = params['minsplit'] - 1
-
-    else:
-      
-      minsplit = 4
-      
-    if 'space_and_punctuation' in params:
-      space_and_punctuation = params['space_and_punctuation']
-    else:
-      space_and_punctuation = True
-      
-    if 'excluded_characters' in params:
-      excluded_characters = params['excluded_characters']
-    else:
-      excluded_characters = [' ', ',', '.', '?', '!', '(', ')']
-    
-    #first we find overlaps from mdf_train
-    
-    unique_list = list(mdf_train[column].unique())
-
-    unique_list = list(map(str, unique_list))
-    
-    maxlength = max(len(x) for x in unique_list)
-    
-    overlap_lengths = list(range(maxlength - 1, minsplit, -1))
-
-    overlap_dict = {}
-
-    #we'll populate overlap_dict as
-    #{extract_with_overlap : [list of associate categories with that overlap]}
-
-    #we'll cycle through the overlap lengths and only record an overlap 
-    #if it is not a subset of those already recorded
-    
-    for overlap_length in overlap_lengths:
-
-      for unique in unique_list:
-
-        len_unique = len(unique)
-
-        if len_unique >= overlap_length:
-
-          nbr_iterations = len_unique - overlap_length + 1
-
-          for i in range(nbr_iterations):
-
-            extract = unique[i:(overlap_length+i)]
-
-            extract_already_in_overlap_dict = False
-
-            for key in overlap_dict:
-
-              len_key = len(key)
-
-              if len_key >= overlap_length:
-
-                nbr_iterations3 = len_key - overlap_length + 1
-
-                for k in range(nbr_iterations3):
-
-                  extract3 = key[k:(overlap_length+k)]
-
-                  if extract == extract3:
-
-                    extract_already_in_overlap_dict = True
-                    
-                    break
-                    
-                if extract_already_in_overlap_dict is True:
-                  
-                  break
-
-            if extract_already_in_overlap_dict is False:
-
-              for unique2 in unique_list:
-
-                if unique2 != unique:
-
-                  len_unique2 = len(unique2)
-
-                  nbr_iterations2 = len_unique2 - overlap_length + 1
-
-                  for j in range(nbr_iterations2):
-
-                    extract2 = unique2[j:(overlap_length+j)]
-
-                    #________
-                    
-                    if space_and_punctuation is True:
-
-                      if extract2 == extract:
-
-                        if extract in overlap_dict:
-
-                          if unique2 not in overlap_dict[extract]:
-
-                            overlap_dict[extract].append(unique2)
-                            
-                            break
-
-                          if unique not in overlap_dict[extract]:
-
-                            overlap_dict[extract].append(unique)
-                            
-                            break
-
-                        #else if we don't have a key for extract
-                        else:
-
-                          overlap_dict.update({extract : [unique, unique2]})
-                          
-                          break
-                          
-                    elif space_and_punctuation is False:
-                      
-                      for scrub_punctuation in excluded_characters:
-                        
-                        extract2 = extract2.replace(scrub_punctuation, '')
-                        
-                      #if any punctuation was scrubbed these two extracts will be different lengths
-                      if extract2 == extract:
-
-                        if extract in overlap_dict:
-
-                          if unique2 not in overlap_dict[extract]:
-
-                            overlap_dict[extract].append(unique2)
-                            
-                            break
-
-                          if unique not in overlap_dict[extract]:
-
-                            overlap_dict[extract].append(unique)
-                            
-                            break
-
-                        #else if we don't have a key for extract
-                        else:
-
-                          overlap_dict.update({extract : [unique, unique2]})
-                          
-                          break
-                        
-    #now for mdf_test we'll only consider those overlaps already identified from train set
-    
-#     unique_list_test = list(mdf_test[column].unique())
-
-#     unique_list_test = list(map(str, unique_list_test))
-
-#     test_overlap_dict = {}
-
-#     train_keys = list(overlap_dict)
-
-#     train_keys.sort(key = len, reverse=True)
-
-#     for key in train_keys:
-
-#       test_overlap_dict.update({key:[]})
-
-#     for dict_key in train_keys:
-
-#       for unique_test in unique_list_test:
-
-#         len_key = len(dict_key)
-
-#         if len(unique_test) >= len_key:
-
-#           nbr_iterations4 = len(unique_test) - len_key
-
-#           for l in range(nbr_iterations4 + 1):
-
-#             extract4 = unique_test[l:(len_key+l)]
-
-#             if extract4 == dict_key:
-
-#               test_overlap_dict[dict_key].append(unique_test)
-    
-    #for spl9 we'll just copy train set overlap_dict
-    test_overlap_dict = deepcopy(overlap_dict)
-    
-    #so that was all comparable to splt, now for spl2 we'll create a new 
-    #dictionary structred as
-    #{original unique value : overlap extract for replacement}
-    
-    #since one original unique value may have entries as multiple overlaps, 
-    #we'll prioritize overlaps with
-    #longer string lengths and then alphabetical
-    
-    spl2_overlap_dict = {}
-    
-    overlap_key_list = list(overlap_dict)
-    
-    overlap_key_list.sort()
-    overlap_key_list.sort(key = len, reverse=True)
-    
-    for overlap_key in overlap_key_list:
-      
-      for entry in overlap_dict[overlap_key]:
-        
-        if entry not in spl2_overlap_dict:
-          
-          spl2_overlap_dict.update({entry : overlap_key})
-    
-    #then we'll do same for test set
-    
-#     spl2_test_overlap_dict = {}
-    
-#     test_overlap_key_list = list(test_overlap_dict)
-    
-#     test_overlap_key_list.sort()
-#     test_overlap_key_list.sort(key = len, reverse=True)
-    
-#     for overlap_key in test_overlap_key_list:
-      
-#       for entry in test_overlap_dict[overlap_key]:
-        
-#         if entry not in spl2_test_overlap_dict:
-          
-#           spl2_test_overlap_dict.update({entry : overlap_key})
-    
-    spl2_test_overlap_dict = deepcopy(spl2_overlap_dict)
-    
-    unique_list_test = list(mdf_test[column].unique())
-    unique_list_test = list(map(str, unique_list_test))
-    
-    extra_unique_test = list(set(unique_list_test) - set(unique_list))
-    
-    for extra_unique in extra_unique_test:
-      
-      spl2_test_overlap_dict.update({str(extra_unique) : str(extra_unique)})
-    
-    newcolumns = []
-
-#     for dict_key in overlap_dict:
-
-    newcolumn = column + '_spl9'
-  
-    mdf_train, suffixoverlap_results = \
-    self.df_copy_train(mdf_train, column, newcolumn, suffixoverlap_results)
-    
-    mdf_test[newcolumn] = mdf_test[column].copy()
-    
-    mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
-    mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
-
-    mdf_train[newcolumn] = mdf_train[newcolumn].replace(spl2_overlap_dict)
-
-#       mdf_train[newcolumn] = mdf_train[column].isin(overlap_dict[dict_key])
-#       mdf_train[newcolumn] = mdf_train[newcolumn].astype(np.int8)
-
-    mdf_test[newcolumn] = mdf_test[newcolumn].replace(spl2_test_overlap_dict)
-
-#       mdf_test[newcolumn] = mdf_test[column].isin(test_overlap_dict[dict_key])
-#       mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
-
-    newcolumns.append(newcolumn)
-    
-    column_dict_list = []
-
-    for tc in newcolumns:
-
-      textnormalization_dict = {tc : {'overlap_dict' : overlap_dict, \
-                                      'spl2_newcolumns'   : newcolumns, 
-                                      'spl2_overlap_dict' : spl2_overlap_dict, \
-                                      'unique_list' : unique_list, \
-                                      'spl2_test_overlap_dict' : spl2_test_overlap_dict, \
-                                      'minsplit' : minsplit}}
-      
-      column_dict = {tc : {'category' : 'spl9', \
-                           'origcategory' : category, \
-                           'normalization_dict' : textnormalization_dict, \
-                           'origcolumn' : column, \
-                           'inputcolumn' : column, \
-                           'columnslist' : newcolumns, \
-                           'categorylist' : newcolumns, \
-                           'infillmodel' : False, \
-                           'infillcomplete' : False, \
-                           'suffixoverlap_results' : suffixoverlap_results, \
-                           'deletecolumn' : False}}
-
-      column_dict_list.append(column_dict.copy())
-      
-    if len(newcolumns) == 0:
-      
-      column_dict_list = []
-
-    return mdf_train, mdf_test, column_dict_list
-  
-  def process_sp10_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
-    '''
-    #process_spl5_class(mdf_train, mdf_test, column, category)
-    #preprocess column with categorical entries as strings
-    #identifies overlaps of subsets of those strings and replaces entries 
-    #with their redecued overlap
-    #replaces entries without overlap to 0 (unique to spl5)
-    #for example, if a categorical set consisted of unique values 
-    #['west', 'north', 'northeast']
-    #then a new column would be created in which the entry 'north' 
-    #replaced cells with north in their entries
-    #(here for north and northeast)
-    #and cells with west would be set to 0
-    #returns as column titled origcolumn_spl2
-    #missing values are ignored by default
-    #this alternative to splt may be benficial for instance if one wanted 
-    #to follow with an ordl encoding
-    
-    #sp10 is like spl5 but makes assumption that set of unique test values is
-    #same or subset of train values for more efficient application in postmunge
-    #that's spelled s p one zero
-    '''
-    
-    suffixoverlap_results = {}
-    
-#     overlap_lengths = [20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7 , 6, 5]
-
-    if 'minsplit' in params:
-        
-      minsplit = params['minsplit'] - 1
-    
-    else:
-      
-      minsplit = 4
-      
-    if 'space_and_punctuation' in params:
-      space_and_punctuation = params['space_and_punctuation']
-    else:
-      space_and_punctuation = True
-      
-    if 'excluded_characters' in params:
-      excluded_characters = params['excluded_characters']
-    else:
-      excluded_characters = [' ', ',', '.', '?', '!', '(', ')']
-    
-    #first we find overlaps from mdf_train
-    
-    unique_list = list(mdf_train[column].unique())
-
-    unique_list = list(map(str, unique_list))
-    
-    maxlength = max(len(x) for x in unique_list)
-    
-    overlap_lengths = list(range(maxlength - 1, minsplit, -1))
-
-    overlap_dict = {}
-
-    #we'll populate overlap_dict as
-    #{extract_with_overlap : [list of associate categories with that overlap]}
-
-    #we'll cycle through the overlap lengths and only record an overlap 
-    #if it is not a subset of those already recorded
-    
-    for overlap_length in overlap_lengths:
-
-      for unique in unique_list:
-
-        len_unique = len(unique)
-
-        if len_unique >= overlap_length:
-
-          nbr_iterations = len_unique - overlap_length + 1
-
-          for i in range(nbr_iterations):
-
-            extract = unique[i:(overlap_length+i)]
-
-            extract_already_in_overlap_dict = False
-
-            for key in overlap_dict:
-
-              len_key = len(key)
-
-              if len_key >= overlap_length:
-
-                nbr_iterations3 = len_key - overlap_length + 1
-
-                for k in range(nbr_iterations3):
-
-                  extract3 = key[k:(overlap_length+k)]
-
-                  if extract == extract3:
-
-                    extract_already_in_overlap_dict = True
-                    
-                    break
-                    
-                if extract_already_in_overlap_dict is True:
-                  
-                  break
-
-            if extract_already_in_overlap_dict is False:
-
-              for unique2 in unique_list:
-
-                if unique2 != unique:
-
-                  len_unique2 = len(unique2)
-
-                  nbr_iterations2 = len_unique2 - overlap_length + 1
-
-                  for j in range(nbr_iterations2):
-
-                    extract2 = unique2[j:(overlap_length+j)]
-
-                    #________
-                    
-                    if space_and_punctuation is True:
-
-                      if extract2 == extract:
-
-                        if extract in overlap_dict:
-
-                          if unique2 not in overlap_dict[extract]:
-
-                            overlap_dict[extract].append(unique2)
-                            
-                            break
-
-                          if unique not in overlap_dict[extract]:
-
-                            overlap_dict[extract].append(unique)
-                            
-                            break
-
-                        #else if we don't have a key for extract
-                        else:
-
-                          overlap_dict.update({extract : [unique, unique2]})
-                          
-                          break
-                          
-                    elif space_and_punctuation is False:
-                      
-                      for scrub_punctuation in excluded_characters:
-                        
-                        extract2 = extract2.replace(scrub_punctuation, '')
-                        
-                      #if any punctuation was scrubbed these two extracts will be different lengths
-                      if extract2 == extract:
-
-                        if extract in overlap_dict:
-
-                          if unique2 not in overlap_dict[extract]:
-
-                            overlap_dict[extract].append(unique2)
-                            
-                            break
-
-                          if unique not in overlap_dict[extract]:
-
-                            overlap_dict[extract].append(unique)
-                            
-                            break
-
-                        #else if we don't have a key for extract
-                        else:
-
-                          overlap_dict.update({extract : [unique, unique2]})
-                          
-                          break
-
-    #now for mdf_test we'll only consider those overlaps already 
-    #identified from train set
-    
-#     unique_list_test = list(mdf_test[column].unique())
-
-#     unique_list_test = list(map(str, unique_list_test))
-
-#     test_overlap_dict = {}
-
-#     train_keys = list(overlap_dict)
-
-#     train_keys.sort(key = len, reverse=True)
-
-#     for key in train_keys:
-
-#       test_overlap_dict.update({key:[]})
-
-#     for dict_key in train_keys:
-
-#       for unique_test in unique_list_test:
-
-#         len_key = len(dict_key)
-
-#         if len(unique_test) >= len_key:
-
-#           nbr_iterations4 = len(unique_test) - len_key
-
-#           for l in range(nbr_iterations4 + 1):
-
-#             extract4 = unique_test[l:(len_key+l)]
-
-#             if extract4 == dict_key:
-
-#               test_overlap_dict[dict_key].append(unique_test)
-
-    #for sp10 we'll just copy train set overlap_dict
-    test_overlap_dict = deepcopy(overlap_dict)
-    
-    #so that was all comparable to splt, now for spl2 we'll create a new 
-    #dictionary structred as
-    #{original unique value : overlap extract for replacement}
-    
-    #since one original unique value may have entries as multiple overlaps, 
-    #we'll prioritize overlaps with
-    #longer string lengths and then alphabetical
-    
-    spl2_overlap_dict = {}
-    
-    overlap_key_list = list(overlap_dict)
-    
-    overlap_key_list.sort()
-    overlap_key_list.sort(key = len, reverse=True)
-    
-    for overlap_key in overlap_key_list:
-      
-      for entry in overlap_dict[overlap_key]:
-        
-        if entry not in spl2_overlap_dict:
-          
-          spl2_overlap_dict.update({entry : overlap_key})
-    
-    #here's where we identify values to set to 0 for spl5
-    spl5_zero_dict = {}
-    for entry in unique_list:
-      if entry not in spl2_overlap_dict:
-        spl5_zero_dict.update({entry : 0})
-    
-    #then we'll do same for test set
-    
-#     spl2_test_overlap_dict = {}
-    
-#     test_overlap_key_list = list(test_overlap_dict)
-    
-#     test_overlap_key_list.sort()
-#     test_overlap_key_list.sort(key = len, reverse=True)
-    
-#     for overlap_key in test_overlap_key_list:
-      
-#       for entry in test_overlap_dict[overlap_key]:
-        
-#         if entry not in spl2_test_overlap_dict:
-          
-#           spl2_test_overlap_dict.update({entry : overlap_key})
-    
-    spl2_test_overlap_dict = deepcopy(spl2_overlap_dict)
-    
-    unique_list_test = list(mdf_test[column].unique())
-    unique_list_test = list(map(str, unique_list_test))
-    
-    #here's where we identify values to set to 0 for spl5
-    spl5_test_zero_dict = {}
-    for entry in unique_list_test:
-      if entry not in spl2_test_overlap_dict:
-        spl5_test_zero_dict.update({entry : 0})
-    
-    newcolumns = []
-
-#     for dict_key in overlap_dict:
-
-    newcolumn = column + '_sp10'
-    
-    mdf_train, suffixoverlap_results = \
-    self.df_copy_train(mdf_train, column, newcolumn, suffixoverlap_results)
-    
-    mdf_test[newcolumn] = mdf_test[column].copy()
-    
-    mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
-    mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
-
-    mdf_train[newcolumn] = mdf_train[newcolumn].replace(spl2_overlap_dict)
-    mdf_train[newcolumn] = mdf_train[newcolumn].replace(spl5_zero_dict)
-
-#       mdf_train[newcolumn] = mdf_train[column].isin(overlap_dict[dict_key])
-#       mdf_train[newcolumn] = mdf_train[newcolumn].astype(np.int8)
-
-    mdf_test[newcolumn] = mdf_test[newcolumn].replace(spl2_test_overlap_dict)
-    mdf_test[newcolumn] = mdf_test[newcolumn].replace(spl5_test_zero_dict)
-
-#       mdf_test[newcolumn] = mdf_test[column].isin(test_overlap_dict[dict_key])
-#       mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
-
-    newcolumns.append(newcolumn)
-    
-    column_dict_list = []
-
-    for tc in newcolumns:
-
-      textnormalization_dict = {tc : {'overlap_dict' : overlap_dict, \
-                                      'spl2_newcolumns'   : newcolumns, 
-                                      'spl2_overlap_dict' : spl2_overlap_dict, \
-                                      'spl2_test_overlap_dict' : spl2_test_overlap_dict, \
-                                      'spl5_zero_dict' : spl5_zero_dict, \
-                                      'unique_list' : unique_list, \
-                                      'minsplit' : minsplit }}
-      
-      column_dict = {tc : {'category' : 'sp10', \
-                           'origcategory' : category, \
-                           'normalization_dict' : textnormalization_dict, \
-                           'origcolumn' : column, \
-                           'inputcolumn' : column, \
-                           'columnslist' : newcolumns, \
-                           'categorylist' : newcolumns, \
-                           'infillmodel' : False, \
-                           'infillcomplete' : False, \
-                           'suffixoverlap_results' : suffixoverlap_results, \
-                           'deletecolumn' : False}}
-
-      column_dict_list.append(column_dict.copy())
-      
-    if len(newcolumns) == 0:
-      
-      column_dict_list = []
-
-    return mdf_train, mdf_test, column_dict_list
-
-  def process_sp15_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict, params = {}):
-    '''
-    #process_splt_class(mdf_train, mdf_test, column, category)
-    #preprocess column with categorical entries as strings
-    #identifies overlaps of subsets of those strings and records
-    #as a new boolan column
-    #for example, if a categoical set consisted of unique values 
-    #['west', 'north', 'northeast']
-    #then a new column would be created idenitifying cells which included 
-    #'north' in their entries
-    #(here for north and northeast)
-    #returns as column titled origcolumn_splt_entry    
-    #missing values are ignored by default
-    
-    #sp15 is comparable to splt but multiple concurrent activations allowed
-    #so requires a different MLinfilltype in processdict
-    '''
-    
-    suffixoverlap_results = {}
-    
-    #overlap_lengths = [20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7 , 6, 5]
-    
-    if 'minsplit' in params:
-      minsplit = params['minsplit'] - 1
-    else:
-      minsplit = 4
-      
-    if 'space_and_punctuation' in params:
-      space_and_punctuation = params['space_and_punctuation']
-    else:
-      space_and_punctuation = True
-      
-    if 'excluded_characters' in params:
-      excluded_characters = params['excluded_characters']
-    else:
-      excluded_characters = [' ', ',', '.', '?', '!', '(', ')']
-      
-    if 'int_headers' in params:
-      int_headers = params['int_headers']
-    else:
-      int_headers = False
-      
-    #note that same MLinfilltype in processdict ('1010')
-    #may be used for both configurations but applying concurrent_activations = False
-    #with sp11 is less efficient then running splt
-    if 'concurrent_activations' in params:
-      concurrent_activations = params['concurrent_activations']
-    else:
-      concurrent_activations = True
-    
-    #first we find overlaps from mdf_train
-    
-    unique_list = list(mdf_train[column].unique())
-
-    unique_list = list(map(str, unique_list))
-    
-    maxlength = max(len(x) for x in unique_list)
-    
-    overlap_lengths = list(range(maxlength - 1, minsplit, -1))
-
-    overlap_dict = {}
-
-    #we'll populate overlap_dict as
-    #{extract_with_overlap : [list of associate categories with that overlap]}
-
-    #we'll cycle through the overlap lengths and only record an overlap 
-    #if it is not a subset of those already recorded
-    
-    for overlap_length in overlap_lengths:
-
-      for unique in unique_list:
-
-        len_unique = len(unique)
-
-        if len_unique >= overlap_length:
-
-          nbr_iterations = len_unique - overlap_length + 1
-
-          for i in range(nbr_iterations):
-
-            extract = unique[i:(overlap_length+i)]
-
-            extract_already_in_overlap_dict = False
-
-            for key in overlap_dict:
-
-              len_key = len(key)
-
-              if len_key >= overlap_length:
-
-                nbr_iterations3 = len_key - overlap_length + 1
-
-                for k in range(nbr_iterations3):
-
-                  extract3 = key[k:(overlap_length+k)]
-                  
-                  if concurrent_activations is False:
-
-                    if extract == extract3:
-
-                      extract_already_in_overlap_dict = True
-                      
-                      break
-                      
-                  elif concurrent_activations is True:
-                    
-                    if extract == extract3 and unique in overlap_dict[key]:
-
-                      extract_already_in_overlap_dict = True
-                      
-                      break
-                      
-                if extract_already_in_overlap_dict is True:
-                  
-                  break
-
-            if extract_already_in_overlap_dict is False:
-
-              for unique2 in unique_list:
-
-                if unique2 != unique:
-
-                  len_unique2 = len(unique2)
-
-                  nbr_iterations2 = len_unique2 - overlap_length + 1
-
-                  for j in range(nbr_iterations2):
-
-                    extract2 = unique2[j:(overlap_length+j)]
-
-                    #________
-                    
-                    if space_and_punctuation is True:
-
-                      if extract2 == extract:
-
-                        if extract in overlap_dict:
-
-                          if unique2 not in overlap_dict[extract]:
-
-                            overlap_dict[extract].append(unique2)
-                            
-                            if concurrent_activations is False:
-
-                              break
-
-                          if unique not in overlap_dict[extract]:
-
-                            overlap_dict[extract].append(unique)
-                            
-                            if concurrent_activations is False:
-
-                              break
-
-                        #else if we don't have a key for extract
-                        else:
-
-                          overlap_dict.update({extract : [unique, unique2]})
-                          
-                          if concurrent_activations is False:
-
-                            break
-                          
-                    elif space_and_punctuation is False:
-                      
-                      for scrub_punctuation in excluded_characters:
-                        
-                        extract2 = extract2.replace(scrub_punctuation, '')
-                        
-                      #if any punctuation was scrubbed these two extracts will be different lengths
-                      if extract2 == extract:
-
-                        if extract in overlap_dict:
-
-                          if unique2 not in overlap_dict[extract]:
-
-                            overlap_dict[extract].append(unique2)
-                            
-                            if concurrent_activations is False:
-
-                              break
-
-                          if unique not in overlap_dict[extract]:
-
-                            overlap_dict[extract].append(unique)
-                            
-                            if concurrent_activations is False:
-
-                              break
-
-                        #else if we don't have a key for extract
-                        else:
-
-                          overlap_dict.update({extract : [unique, unique2]})
-                          
-                          if concurrent_activations is False:
-
-                            break
-        
-    #now for mdf_test we'll only consider those overlaps already identified from train set
-    
-    unique_list_test = list(mdf_test[column].unique())
-
-    unique_list_test = list(map(str, unique_list_test))
-
-    test_overlap_dict = {}
-
-    train_keys = list(overlap_dict)
-
-    train_keys.sort(key = len, reverse=True)
-
-    for key in train_keys:
-
-      test_overlap_dict.update({key:[]})
-
-    for dict_key in train_keys:
-
-      for unique_test in unique_list_test:
-
-        len_key = len(dict_key)
-
-        if len(unique_test) >= len_key:
-
-          nbr_iterations4 = len(unique_test) - len_key + 1
-
-          for l in range(nbr_iterations4):
-
-            extract4 = unique_test[l:(len_key+l)]
-
-            if extract4 == dict_key:
-
-              test_overlap_dict[dict_key].append(unique_test)
-              
-              if concurrent_activations is False:
-
-                break
-    
-    newcolumns = []
-
-    for dict_key in overlap_dict:
-
-      newcolumn = column + '_sp15_' + dict_key
-      
-      mdf_train, suffixoverlap_results = \
-      self.df_copy_train(mdf_train, column, newcolumn, suffixoverlap_results)
-      
-      mdf_test[newcolumn] = mdf_test[column].copy()
-
-      mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
-      mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
-
-      mdf_train[newcolumn] = mdf_train[newcolumn].isin(overlap_dict[dict_key])
-      mdf_train[newcolumn] = mdf_train[newcolumn].astype(np.int8)
-      
-      mdf_test[newcolumn] = mdf_test[newcolumn].isin(test_overlap_dict[dict_key])
-      mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
-
-      newcolumns.append(newcolumn)
-      
-    preint_newcolumns = newcolumns.copy()
-      
-    if int_headers is True:
-      
-      int_labels_dict = {}
-      i = 0
-      for entry in newcolumns:
-        int_labels_dict.update({entry : column + '_sp15_' + str(i)})
-        i += 1
-        
-      #now convert column headers from string to int convention
-      mdf_train = mdf_train.rename(columns=int_labels_dict)
-      mdf_test  = mdf_test.rename(columns=int_labels_dict)
-
-      newcolumns = [int_labels_dict[entry] for entry in newcolumns]
-
-      inverse_int_labels_dict = {value:key for key,value in int_labels_dict.items()}
-      for key in inverse_int_labels_dict:
-        inverse_int_labels_dict[key] = inverse_int_labels_dict[key][len(column) + 1:]
-        
-    else:
-      int_labels_dict = False
-      inverse_int_labels_dict = False
-    
-    column_dict_list = []
-
-    for tc in newcolumns:
-
-      textnormalization_dict = {tc : {'overlap_dict' : overlap_dict, \
-                                      'splt_newcolumns_sp15'   : newcolumns, \
-                                      'minsplit' : minsplit, \
-                                      'concurrent_activations' : concurrent_activations, \
-                                      'preint_newcolumns' : preint_newcolumns, \
-                                      'int_headers' : int_headers, \
-                                      'int_labels_dict' : int_labels_dict, \
-                                      'inverse_int_labels_dict' : inverse_int_labels_dict}}
-      
-      column_dict = {tc : {'category' : 'sp15', \
-                           'origcategory' : category, \
-                           'normalization_dict' : textnormalization_dict, \
-                           'origcolumn' : column, \
-                           'inputcolumn' : column, \
-                           'columnslist' : newcolumns, \
-                           'categorylist' : newcolumns, \
-                           'infillmodel' : False, \
-                           'infillcomplete' : False, \
-                           'suffixoverlap_results' : suffixoverlap_results, \
-                           'deletecolumn' : False}}
-
-      column_dict_list.append(column_dict.copy())
-      
-    if len(newcolumns) == 0:
-      
-      column_dict_list = []
-    
-    return mdf_train, mdf_test, column_dict_list
-
-  def process_sp16_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
-    '''
-    #process_sp16_class(mdf_train, mdf_test, column, category)
-    #preprocess column with categorical entries as strings
-    #identifies overlaps of subsets of those strings and records
-    #as a new boolan column
-    #for example, if a categoical set consisted of unique values 
-    #['west', 'north', 'northeast']
-    #then a new column would be created idenitifying cells which included 
-    #'north' in their entries
-    #(here for north and northeast)
-    #returns as column titled origcolumn_splt_entry    
-    #missing values are ignored by default
-    #comparable to splt but
-    #assumes that unique values of test set are same or subset of train set
-    #for more efficient application in postmunge
-    
-    #sp16 is comparable to spl8 but multiple concurrent activations allowed
-    #so requires a different MLinfilltype in processdict
-    '''
-    
-    suffixoverlap_results = {}
-    
-    #overlap_lengths = [20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7 , 6, 5]
-
-    if 'minsplit' in params:
-      minsplit = params['minsplit'] - 1
-    else:
-      minsplit = 4
-      
-    if 'space_and_punctuation' in params:
-      space_and_punctuation = params['space_and_punctuation']
-    else:
-      space_and_punctuation = True
-      
-    if 'excluded_characters' in params:
-      excluded_characters = params['excluded_characters']
-    else:
-      excluded_characters = [' ', ',', '.', '?', '!', '(', ')']
-      
-    if 'int_headers' in params:
-      int_headers = params['int_headers']
-    else:
-      int_headers = False
-      
-    #note that same MLinfilltype in processdict ('1010')
-    #may be used for both configurations but applying concurrent_activations = False
-    #with sp12 is less efficient then running spl8
-    if 'concurrent_activations' in params:
-      concurrent_activations = params['concurrent_activations']
-    else:
-      concurrent_activations = True
-    
-    #first we find overlaps from mdf_train
-    
-    unique_list = list(mdf_train[column].unique())
-
-    unique_list = list(map(str, unique_list))
-    
-    maxlength = max(len(x) for x in unique_list)
-    
-    overlap_lengths = list(range(maxlength - 1, minsplit, -1))
-
-    overlap_dict = {}
-
-    #we'll populate overlap_dict as
-    #{extract_with_overlap : [list of associate categories with that overlap]}
-
-    #we'll cycle through the overlap lengths and only record an overlap 
-    #if it is not a subset of those already recorded
-    
-    for overlap_length in overlap_lengths:
-
-      for unique in unique_list:
-
-        len_unique = len(unique)
-
-        if len_unique >= overlap_length:
-
-          nbr_iterations = len_unique - overlap_length + 1
-
-          for i in range(nbr_iterations):
-
-            extract = unique[i:(overlap_length+i)]
-
-            extract_already_in_overlap_dict = False
-
-            for key in overlap_dict:
-
-              len_key = len(key)
-
-              if len_key >= overlap_length:
-
-                nbr_iterations3 = len_key - overlap_length + 1
-
-                for k in range(nbr_iterations3):
-
-                  extract3 = key[k:(overlap_length+k)]
-                    
-                  if concurrent_activations is False:
-
-                    if extract == extract3:
-
-                      extract_already_in_overlap_dict = True
-                      
-                      break
-                      
-                  elif concurrent_activations is True:
-                    
-                    if extract == extract3 and unique in overlap_dict[key]:
-
-                      extract_already_in_overlap_dict = True
-                      
-                      break
-                      
-                if extract_already_in_overlap_dict is True:
-                  
-                  break
-
-            if extract_already_in_overlap_dict is False:
-
-              for unique2 in unique_list:
-
-                if unique2 != unique:
-
-                  len_unique2 = len(unique2)
-
-                  nbr_iterations2 = len_unique2 - overlap_length + 1
-
-                  for j in range(nbr_iterations2):
-
-                    extract2 = unique2[j:(overlap_length+j)]
-
-                    #________
-                    
-                    if space_and_punctuation is True:
-
-                      if extract2 == extract:
-
-                        if extract in overlap_dict:
-
-                          if unique2 not in overlap_dict[extract]:
-
-                            overlap_dict[extract].append(unique2)
-                            
-                            if concurrent_activations is False:
-
-                              break
-
-                          if unique not in overlap_dict[extract]:
-
-                            overlap_dict[extract].append(unique)
-                            
-                            if concurrent_activations is False:
-
-                              break
-
-                        #else if we don't have a key for extract
-                        else:
-
-                          overlap_dict.update({extract : [unique, unique2]})
-                          
-                          if concurrent_activations is False:
-
-                            break
-                          
-                    elif space_and_punctuation is False:
-                      
-                      for scrub_punctuation in excluded_characters:
-                        
-                        extract2 = extract2.replace(scrub_punctuation, '')
-                        
-                      #if any punctuation was scrubbed these two extracts will be different lengths
-                      if extract2 == extract:
-
-                        if extract in overlap_dict:
-
-                          if unique2 not in overlap_dict[extract]:
-
-                            overlap_dict[extract].append(unique2)
-                            
-                            if concurrent_activations is False:
-
-                              break
-
-                          if unique not in overlap_dict[extract]:
-
-                            overlap_dict[extract].append(unique)
-                            
-                            if concurrent_activations is False:
-
-                              break
-
-                        #else if we don't have a key for extract
-                        else:
-
-                          overlap_dict.update({extract : [unique, unique2]})
-                          
-                          if concurrent_activations is False:
-
-                            break
-                        
-    #now for mdf_test we'll only consider those overlaps already identified from train set
-    
-    #note this assumes that set of entries for test data is same or a subset of train data
-    
-#     unique_list_test = list(mdf_test[column].unique())
-
-#     unique_list_test = list(map(str, unique_list_test))
-
-#     test_overlap_dict = {}
-
-#     train_keys = list(overlap_dict)
-
-#     train_keys.sort(key = len, reverse=True)
-
-#     for key in train_keys:
-
-#       test_overlap_dict.update({key:[]})
-
-#     for dict_key in train_keys:
-
-#       for unique_test in unique_list_test:
-
-#         len_key = len(dict_key)
-
-#         if len(unique_test) >= len_key:
-
-#           nbr_iterations4 = len(unique_test) - len_key
-
-#           for l in range(nbr_iterations4 + 1):
-
-#             extract4 = unique_test[l:(len_key+l)]
-
-#             if extract4 == dict_key:
-
-#               test_overlap_dict[dict_key].append(unique_test)
-    
-    newcolumns = []
-
-    for dict_key in overlap_dict:
-
-      newcolumn = column + '_sp16_' + dict_key
-      
-      mdf_train, suffixoverlap_results = \
-      self.df_copy_train(mdf_train, column, newcolumn, suffixoverlap_results)
-      
-      mdf_test[newcolumn] = mdf_test[column].copy()
-
-      mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
-      mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
-
-      mdf_train[newcolumn] = mdf_train[newcolumn].isin(overlap_dict[dict_key])
-      mdf_train[newcolumn] = mdf_train[newcolumn].astype(np.int8)
-      
-      #mdf_test[newcolumn] = mdf_test[newcolumn].isin(test_overlap_dict[dict_key])
-      mdf_test[newcolumn] = mdf_test[newcolumn].isin(overlap_dict[dict_key])
-      mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
-
-      newcolumns.append(newcolumn)
-      
-    preint_newcolumns = newcolumns.copy()
-      
-    if int_headers is True:
-      
-      int_labels_dict = {}
-      i = 0
-      for entry in newcolumns:
-        int_labels_dict.update({entry : column + '_sp16_' + str(i)})
-        i += 1
-        
-      newcolumns = [int_labels_dict[entry] for entry in newcolumns]
-      
-      suffixoverlap_results = \
-      self.df_check_suffixoverlap(mdf_train, newcolumns, suffixoverlap_results)
-        
-      #now convert column headers from string to int convention
-      mdf_train = mdf_train.rename(columns=int_labels_dict)
-      mdf_test  = mdf_test.rename(columns=int_labels_dict)
-
-      inverse_int_labels_dict = {value:key for key,value in int_labels_dict.items()}
-      for key in inverse_int_labels_dict:
-        inverse_int_labels_dict[key] = inverse_int_labels_dict[key][len(column) + 1:]
-        
-    else:
-      int_labels_dict = False
-      inverse_int_labels_dict = False
-    
-    column_dict_list = []
-
-    for tc in newcolumns:
-
-      textnormalization_dict = {tc : {'overlap_dict' : overlap_dict, \
-                                      'splt_newcolumns_sp16'   : newcolumns, \
-                                      'minsplit' : minsplit, \
-                                      'concurrent_activations' : concurrent_activations, \
-                                      'preint_newcolumns' : preint_newcolumns, \
-                                      'int_headers' : int_headers, \
-                                      'int_labels_dict' : int_labels_dict, \
-                                      'inverse_int_labels_dict' : inverse_int_labels_dict}}
-      
-      column_dict = {tc : {'category' : 'sp16', \
-                           'origcategory' : category, \
-                           'normalization_dict' : textnormalization_dict, \
-                           'origcolumn' : column, \
-                           'inputcolumn' : column, \
-                           'columnslist' : newcolumns, \
-                           'categorylist' : newcolumns, \
-                           'infillmodel' : False, \
-                           'infillcomplete' : False, \
-                           'suffixoverlap_results' : suffixoverlap_results, \
-                           'deletecolumn' : False}}
-
-      column_dict_list.append(column_dict.copy())
-      
-    if len(newcolumns) == 0:
-      
-      column_dict_list = []
-    
     return mdf_train, mdf_test, column_dict_list
 
   def process_sp19_class(self, mdf_train, mdf_test, column, category, \
@@ -11247,6 +9145,16 @@ class AutoMunge:
       concurrent_activations = params['concurrent_activations']
     else:
       concurrent_activations = True
+      
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = '_sp19'
+      
+    if 'test_same_as_train' in params:
+      test_same_as_train = params['test_same_as_train']
+    else:
+      test_same_as_train = False
     
     #first we find overlaps from mdf_train
     
@@ -11399,41 +9307,46 @@ class AutoMunge:
         
     #now for mdf_test we'll only consider those overlaps already identified from train set
     
-    unique_list_test = list(mdf_test[column].unique())
+    if test_same_as_train is True:
+      test_overlap_dict = overlap_dict
+    
+    elif test_same_as_train is False:
 
-    unique_list_test = list(map(str, unique_list_test))
+      unique_list_test = list(mdf_test[column].unique())
 
-    test_overlap_dict = {}
+      unique_list_test = list(map(str, unique_list_test))
 
-    train_keys = list(overlap_dict)
+      test_overlap_dict = {}
 
-    train_keys.sort(key = len, reverse=True)
+      train_keys = list(overlap_dict)
 
-    for key in train_keys:
+      train_keys.sort(key = len, reverse=True)
 
-      test_overlap_dict.update({key:[]})
+      for key in train_keys:
 
-    for dict_key in train_keys:
+        test_overlap_dict.update({key:[]})
 
-      for unique_test in unique_list_test:
+      for dict_key in train_keys:
 
-        len_key = len(dict_key)
+        for unique_test in unique_list_test:
 
-        if len(unique_test) >= len_key:
+          len_key = len(dict_key)
 
-          nbr_iterations4 = len(unique_test) - len_key + 1
+          if len(unique_test) >= len_key:
 
-          for l in range(nbr_iterations4):
+            nbr_iterations4 = len(unique_test) - len_key + 1
 
-            extract4 = unique_test[l:(len_key+l)]
+            for l in range(nbr_iterations4):
 
-            if extract4 == dict_key:
+              extract4 = unique_test[l:(len_key+l)]
 
-              test_overlap_dict[dict_key].append(unique_test)
-              
-              if concurrent_activations is False:
+              if extract4 == dict_key:
 
-                break
+                test_overlap_dict[dict_key].append(unique_test)
+
+                if concurrent_activations is False:
+
+                  break
     
     newcolumns = []
 
@@ -11487,21 +9400,23 @@ class AutoMunge:
     #begin binary encoding of set, leaving the int_headers here out of convenience, not really needed
     
     if len(newcolumns) > 0:
+      
+      sp19_column = column + suffix
     
       #aggregate collection of activations as string set
       #the suffix 'activations_' is to avoid potential of overlap with binary encoding and aggregated activations
-      mdf_train[column + '_sp19'] = 'activations_'
-      mdf_test[column + '_sp19'] = 'activations_'
+      mdf_train[column + suffix] = 'activations_'
+      mdf_test[column + suffix] = 'activations_'
 
       for entry in newcolumns:
-        mdf_train[column + '_sp19'] = mdf_train[column + '_sp19'] + mdf_train[entry].astype(str)
-        mdf_test[column + '_sp19'] = mdf_test[column + '_sp19'] + mdf_test[entry].astype(str)
+        mdf_train[sp19_column] = mdf_train[sp19_column] + mdf_train[entry].astype(str)
+        mdf_test[sp19_column] = mdf_test[sp19_column] + mdf_test[entry].astype(str)
 
       #extract categories for column labels
       #note that .unique() extracts the labels as a numpy array
-      labels_train = list(mdf_train[column + '_sp19'].unique())
+      labels_train = list(mdf_train[sp19_column].unique())
       labels_train.sort()
-      labels_test = list(mdf_test[column + '_sp19'].unique())
+      labels_test = list(mdf_test[sp19_column].unique())
       labels_test.sort()
 
       #if infill not present in train set, insert
@@ -11547,13 +9462,13 @@ class AutoMunge:
       #new driftreport metric _1010_activations_dict
       _1010_activations_dict = {}
       for key in binary_encoding_dict:
-        sumcalc = (mdf_train[column+'_sp19'] == key).sum() 
-        ratio = sumcalc / mdf_train[column+'_sp19'].shape[0]
+        sumcalc = (mdf_train[sp19_column] == key).sum() 
+        ratio = sumcalc / mdf_train[sp19_column].shape[0]
         _1010_activations_dict.update({key:ratio})
 
 
       #replace the cateogries in train set via ordinal trasnformation
-      mdf_train[column + '_sp19'] = mdf_train[column + '_sp19'].replace(binary_encoding_dict) 
+      mdf_train[sp19_column] = mdf_train[sp19_column].replace(binary_encoding_dict) 
 
       #in test set, we'll need to strike any categories that weren't present in train
       #first let'/s identify what applies
@@ -11561,17 +9476,17 @@ class AutoMunge:
 
       #so we'll just replace those items with our plug value
       testplug_dict = dict(zip(testspecificcategories, ['zzzinfill'] * len(testspecificcategories)))
-      mdf_test[column + '_sp19'] = mdf_test[column + '_sp19'].replace(testplug_dict)  
+      mdf_test[sp19_column] = mdf_test[sp19_column].replace(testplug_dict)  
 
       #now we'll apply the 1010 transformation to the test set
-      mdf_test[column + '_sp19'] = mdf_test[column + '_sp19'].replace(binary_encoding_dict)    
+      mdf_test[sp19_column] = mdf_test[sp19_column].replace(binary_encoding_dict)    
 
       #ok let's create a list of columns to store each entry of the binary encoding
       _1010_columnlist = []
 
       for i in range(binary_column_count):
 
-        _1010_columnlist.append(column + '_sp19_' + str(i))
+        _1010_columnlist.append(column + suffix + '_' + str(i))
 
       suffixoverlap_results = \
       self.df_check_suffixoverlap(mdf_train, _1010_columnlist, suffixoverlap_results)
@@ -11580,15 +9495,15 @@ class AutoMunge:
       i=0
       for _1010_column in _1010_columnlist:
 
-        mdf_train[_1010_column] = mdf_train[column + '_sp19'].str.slice(i,i+1).astype(np.int8)
+        mdf_train[_1010_column] = mdf_train[sp19_column].str.slice(i,i+1).astype(np.int8)
 
-        mdf_test[_1010_column] = mdf_test[column + '_sp19'].str.slice(i,i+1).astype(np.int8)
+        mdf_test[_1010_column] = mdf_test[sp19_column].str.slice(i,i+1).astype(np.int8)
 
         i+=1
 
       #now delete the support column
-      del mdf_train[column + '_sp19']
-      del mdf_test[column + '_sp19']
+      del mdf_train[sp19_column]
+      del mdf_test[sp19_column]
 
       for entry in newcolumns:
         del mdf_train[entry]
@@ -11602,7 +9517,9 @@ class AutoMunge:
       for tc in categorylist:
 
         #                                   '_1010_overlap_replace' : overlap_replace, \
-        normalization_dict = {tc : {'_1010_binary_encoding_dict' : binary_encoding_dict, \
+        normalization_dict = {tc : {'suffix' : suffix, \
+                                    'test_same_as_train' : test_same_as_train, \
+                                    '_1010_binary_encoding_dict' : binary_encoding_dict, \
                                     '_1010_binary_column_count' : binary_column_count, \
                                     '_1010_activations_dict' : _1010_activations_dict, \
                                     'categorylist' : categorylist, \
@@ -11616,448 +9533,6 @@ class AutoMunge:
                                     'inverse_int_labels_dict' : inverse_int_labels_dict}}
 
         column_dict = {tc : {'category' : 'sp19', \
-                             'origcategory' : category, \
-                             'normalization_dict' : normalization_dict, \
-                             'origcolumn' : column, \
-                             'inputcolumn' : column, \
-                             'columnslist' : categorylist, \
-                             'categorylist' : categorylist, \
-                             'infillmodel' : False, \
-                             'infillcomplete' : False, \
-                             'suffixoverlap_results' : suffixoverlap_results, \
-                             'deletecolumn' : False}}
-
-        column_dict_list.append(column_dict.copy())
-      
-    else:
-      
-      column_dict_list = []
-    
-    return mdf_train, mdf_test, column_dict_list
-
-  def process_sp20_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict, params = {}):
-    '''
-    #process_splt_class(mdf_train, mdf_test, column, category)
-    #preprocess column with categorical entries as strings
-    #identifies overlaps of subsets of those strings and records
-    #as a new boolan column
-    #for example, if a categoical set consisted of unique values 
-    #['west', 'north', 'northeast']
-    #then a new column would be created idenitifying cells which included 
-    #'north' in their entries
-    #(here for north and northeast)
-    #returns as column titled origcolumn_splt_entry    
-    #missing values are ignored by default
-    
-    #sp15 is comparable to splt but multiple concurrent activations allowed
-    #so requires a different MLinfilltype in processdict
-    
-    #sp19 is comparable to sp15 but with a returned binary encoding aggregation
-    
-    #sp20 is comparable to sp19 but assumes test set unique values are subset of train set
-    '''
-    
-    suffixoverlap_results = {}
-    
-    #overlap_lengths = [20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7 , 6, 5]
-    
-    if 'minsplit' in params:
-      minsplit = params['minsplit'] - 1
-    else:
-      minsplit = 4
-      
-    if 'space_and_punctuation' in params:
-      space_and_punctuation = params['space_and_punctuation']
-    else:
-      space_and_punctuation = True
-      
-    if 'excluded_characters' in params:
-      excluded_characters = params['excluded_characters']
-    else:
-      excluded_characters = [' ', ',', '.', '?', '!', '(', ')']
-      
-    if 'int_headers' in params:
-      int_headers = params['int_headers']
-    else:
-      int_headers = False
-      
-    #note that same MLinfilltype in processdict ('1010')
-    #may be used for both configurations but applying concurrent_activations = False
-    #with sp11 is less efficient then running splt
-    if 'concurrent_activations' in params:
-      concurrent_activations = params['concurrent_activations']
-    else:
-      concurrent_activations = True
-    
-    #first we find overlaps from mdf_train
-    
-    unique_list = list(mdf_train[column].unique())
-
-    unique_list = list(map(str, unique_list))
-    
-    maxlength = max(len(x) for x in unique_list)
-    
-    overlap_lengths = list(range(maxlength - 1, minsplit, -1))
-
-    overlap_dict = {}
-
-    #we'll populate overlap_dict as
-    #{extract_with_overlap : [list of associate categories with that overlap]}
-
-    #we'll cycle through the overlap lengths and only record an overlap 
-    #if it is not a subset of those already recorded
-    
-    for overlap_length in overlap_lengths:
-
-      for unique in unique_list:
-
-        len_unique = len(unique)
-
-        if len_unique >= overlap_length:
-
-          nbr_iterations = len_unique - overlap_length + 1
-
-          for i in range(nbr_iterations):
-
-            extract = unique[i:(overlap_length+i)]
-
-            extract_already_in_overlap_dict = False
-
-            for key in overlap_dict:
-
-              len_key = len(key)
-
-              if len_key >= overlap_length:
-
-                nbr_iterations3 = len_key - overlap_length + 1
-
-                for k in range(nbr_iterations3):
-
-                  extract3 = key[k:(overlap_length+k)]
-                  
-                  if concurrent_activations is False:
-
-                    if extract == extract3:
-
-                      extract_already_in_overlap_dict = True
-                      
-                      break
-                      
-                  elif concurrent_activations is True:
-                    
-                    if extract == extract3 and unique in overlap_dict[key]:
-
-                      extract_already_in_overlap_dict = True
-                      
-                      break
-                      
-                if extract_already_in_overlap_dict is True:
-                  
-                  break
-
-            if extract_already_in_overlap_dict is False:
-
-              for unique2 in unique_list:
-
-                if unique2 != unique:
-
-                  len_unique2 = len(unique2)
-
-                  nbr_iterations2 = len_unique2 - overlap_length + 1
-
-                  for j in range(nbr_iterations2):
-
-                    extract2 = unique2[j:(overlap_length+j)]
-
-                    #________
-                    
-                    if space_and_punctuation is True:
-
-                      if extract2 == extract:
-
-                        if extract in overlap_dict:
-
-                          if unique2 not in overlap_dict[extract]:
-
-                            overlap_dict[extract].append(unique2)
-                            
-                            if concurrent_activations is False:
-
-                              break
-
-                          if unique not in overlap_dict[extract]:
-
-                            overlap_dict[extract].append(unique)
-                            
-                            if concurrent_activations is False:
-
-                              break
-
-                        #else if we don't have a key for extract
-                        else:
-
-                          overlap_dict.update({extract : [unique, unique2]})
-                          
-                          if concurrent_activations is False:
-
-                            break
-                          
-                    elif space_and_punctuation is False:
-                      
-                      for scrub_punctuation in excluded_characters:
-                        
-                        extract2 = extract2.replace(scrub_punctuation, '')
-                        
-                      #if any punctuation was scrubbed these two extracts will be different lengths
-                      if extract2 == extract:
-
-                        if extract in overlap_dict:
-
-                          if unique2 not in overlap_dict[extract]:
-
-                            overlap_dict[extract].append(unique2)
-                            
-                            if concurrent_activations is False:
-
-                              break
-
-                          if unique not in overlap_dict[extract]:
-
-                            overlap_dict[extract].append(unique)
-                            
-                            if concurrent_activations is False:
-
-                              break
-
-                        #else if we don't have a key for extract
-                        else:
-
-                          overlap_dict.update({extract : [unique, unique2]})
-                          
-                          if concurrent_activations is False:
-
-                            break
-        
-#     #now for mdf_test we'll only consider those overlaps already identified from train set
-    
-#     unique_list_test = list(mdf_test[column].unique())
-
-#     unique_list_test = list(map(str, unique_list_test))
-
-#     test_overlap_dict = {}
-
-#     train_keys = list(overlap_dict)
-
-#     train_keys.sort(key = len, reverse=True)
-
-#     for key in train_keys:
-
-#       test_overlap_dict.update({key:[]})
-
-#     for dict_key in train_keys:
-
-#       for unique_test in unique_list_test:
-
-#         len_key = len(dict_key)
-
-#         if len(unique_test) >= len_key:
-
-#           nbr_iterations4 = len(unique_test) - len_key + 1
-
-#           for l in range(nbr_iterations4):
-
-#             extract4 = unique_test[l:(len_key+l)]
-
-#             if extract4 == dict_key:
-
-#               test_overlap_dict[dict_key].append(unique_test)
-              
-#               if concurrent_activations is False:
-
-#                 break
-    
-    newcolumns = []
-
-    for dict_key in overlap_dict:
-
-      newcolumn = column + '_sp15_' + dict_key
-      
-      mdf_train, suffixoverlap_results = \
-      self.df_copy_train(mdf_train, column, newcolumn, suffixoverlap_results)
-#       mdf_train[newcolumn] = mdf_train[column].copy()
-      
-      mdf_test[newcolumn] = mdf_test[column].copy()
-
-      mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
-      mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
-
-      mdf_train[newcolumn] = mdf_train[newcolumn].isin(overlap_dict[dict_key])
-      mdf_train[newcolumn] = mdf_train[newcolumn].astype(np.int8)
-      
-      mdf_test[newcolumn] = mdf_test[newcolumn].isin(overlap_dict[dict_key])
-      mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
-
-      newcolumns.append(newcolumn)
-      
-    preint_newcolumns = newcolumns.copy()
-      
-    if int_headers is True:
-      
-      int_labels_dict = {}
-      i = 0
-      for entry in newcolumns:
-        int_labels_dict.update({entry : column + '_sp15_' + str(i)})
-        i += 1
-        
-      #now convert column headers from string to int convention
-      mdf_train = mdf_train.rename(columns=int_labels_dict)
-      mdf_test  = mdf_test.rename(columns=int_labels_dict)
-
-      newcolumns = [int_labels_dict[entry] for entry in newcolumns]
-
-      inverse_int_labels_dict = {value:key for key,value in int_labels_dict.items()}
-      for key in inverse_int_labels_dict:
-        inverse_int_labels_dict[key] = inverse_int_labels_dict[key][len(column) + 1:]
-        
-    else:
-      int_labels_dict = False
-      inverse_int_labels_dict = False
-    
-    column_dict_list = []
-    
-    #begin binary encoding of set, leaving the int_headers here out of convenience, not really needed
-    
-    if len(newcolumns) > 0:
-
-      #aggregate collection of activations as string set
-      #the suffix 'activations_' is to avoid potential of overlap with binary encoding and aggregated activations
-      mdf_train[column + '_sp20'] = 'activations_'
-      mdf_test[column + '_sp20'] = 'activations_'
-
-      for entry in newcolumns:
-        mdf_train[column + '_sp20'] = mdf_train[column + '_sp20'] + mdf_train[entry].astype(str)
-        mdf_test[column + '_sp20'] = mdf_test[column + '_sp20'] + mdf_test[entry].astype(str)
-
-      #extract categories for column labels
-      #note that .unique() extracts the labels as a numpy array
-      labels_train = list(mdf_train[column + '_sp20'].unique())
-      labels_train.sort()
-      labels_test = list(mdf_test[column + '_sp20'].unique())
-      labels_test.sort()
-
-      #if infill not present in train set, insert
-      if 'zzzinfill' not in labels_train:
-        labels_train = labels_train + ['zzzinfill']
-        labels_train.sort()
-      if 'zzzinfill' not in labels_test:
-        labels_test = labels_test + ['zzzinfill']
-        labels_test.sort()
-
-      #get length of the list
-      listlength = len(labels_train)
-
-      #calculate number of columns we'll need
-      binary_column_count = int(np.ceil(np.log2(listlength)))
-
-      #initialize dictionaryt to store encodings
-      binary_encoding_dict = {}
-      encoding_list = []
-
-      for i in range(listlength):
-
-        #this converts the integer i to binary encoding
-        #where f is an f string for inserting the column coount into the string to designate length of encoding
-        #0 is to pad out the encoding with 0's for the length
-        #and b is telling it to convert to binary 
-        #note this returns a string
-        encoding = format(i, f"0{binary_column_count}b")
-
-        if i < len(labels_train):
-
-          #store the encoding in a dictionary
-          binary_encoding_dict.update({labels_train[i] : encoding})
-
-          #store the encoding in a list for checking in next step
-          encoding_list.append(encoding)
-
-
-      #clear up memory
-      del encoding_list
-  #     del overlap_list
-
-      #new driftreport metric _1010_activations_dict
-      _1010_activations_dict = {}
-      for key in binary_encoding_dict:
-        sumcalc = (mdf_train[column+'_sp20'] == key).sum() 
-        ratio = sumcalc / mdf_train[column+'_sp20'].shape[0]
-        _1010_activations_dict.update({key:ratio})
-
-
-      #replace the cateogries in train set via ordinal trasnformation
-      mdf_train[column + '_sp20'] = mdf_train[column + '_sp20'].replace(binary_encoding_dict) 
-
-      #in test set, we'll need to strike any categories that weren't present in train
-      #first let'/s identify what applies
-      testspecificcategories = list(set(labels_test)-set(labels_train))
-
-      #so we'll just replace those items with our plug value
-      testplug_dict = dict(zip(testspecificcategories, ['zzzinfill'] * len(testspecificcategories)))
-      mdf_test[column + '_sp20'] = mdf_test[column + '_sp20'].replace(testplug_dict)  
-
-      #now we'll apply the 1010 transformation to the test set
-      mdf_test[column + '_sp20'] = mdf_test[column + '_sp20'].replace(binary_encoding_dict)    
-
-      #ok let's create a list of columns to store each entry of the binary encoding
-      _1010_columnlist = []
-
-      for i in range(binary_column_count):
-
-        _1010_columnlist.append(column + '_sp20_' + str(i))
-
-      suffixoverlap_results = \
-      self.df_check_suffixoverlap(mdf_train, _1010_columnlist, suffixoverlap_results)
-
-      #now let's store the encoding
-      i=0
-      for _1010_column in _1010_columnlist:
-
-        mdf_train[_1010_column] = mdf_train[column + '_sp20'].str.slice(i,i+1).astype(np.int8)
-
-        mdf_test[_1010_column] = mdf_test[column + '_sp20'].str.slice(i,i+1).astype(np.int8)
-
-        i+=1
-
-      #now delete the support column
-      del mdf_train[column + '_sp20']
-      del mdf_test[column + '_sp20']
-
-      for entry in newcolumns:
-        del mdf_train[entry]
-        del mdf_test[entry]
-
-      #now store the column_dict entries
-      categorylist = _1010_columnlist
-
-      column_dict_list = []
-
-      for tc in categorylist:
-
-  #                                   '_1010_overlap_replace' : overlap_replace, \
-        normalization_dict = {tc : {'_1010_binary_encoding_dict' : binary_encoding_dict, \
-                                    '_1010_binary_column_count' : binary_column_count, \
-                                    '_1010_activations_dict' : _1010_activations_dict, \
-                                    'categorylist' : categorylist, \
-                                    'overlap_dict' : overlap_dict, \
-                                    'splt_newcolumns_sp20'   : newcolumns, \
-                                    'minsplit' : minsplit, \
-                                    'concurrent_activations' : concurrent_activations, \
-                                    'preint_newcolumns' : preint_newcolumns, \
-                                    'int_headers' : int_headers, \
-                                    'int_labels_dict' : int_labels_dict, \
-                                    'inverse_int_labels_dict' : inverse_int_labels_dict}}
-
-        column_dict = {tc : {'category' : 'sp20', \
                              'origcategory' : category, \
                              'normalization_dict' : normalization_dict, \
                              'origcolumn' : column, \
@@ -12110,6 +9585,16 @@ class AutoMunge:
       minsplit = params['minsplit']
     else:
       minsplit = 1
+      
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = '_sbst'
+      
+    if 'test_same_as_train' in params:
+      test_same_as_train = params['test_same_as_train']
+    else:
+      test_same_as_train = False
     
     #first we find overlaps from mdf_train
     
@@ -12186,49 +9671,54 @@ class AutoMunge:
                     
     #now for mdf_test we'll only consider those overlaps already identified from train set
     
-    unique_list_test = list(mdf_test[column].unique())
-
-    unique_list_test = list(map(str, unique_list_test))
+    if test_same_as_train is True:
+      test_overlap_dict = overlap_dict
     
-    unique_list_test = sorted(unique_list_test, key=len, reverse=True)
+    elif test_same_as_train is False:
 
-    test_overlap_dict = {}
+      unique_list_test = list(mdf_test[column].unique())
 
-    train_keys = list(overlap_dict)
+      unique_list_test = list(map(str, unique_list_test))
 
-    train_keys.sort(key = len, reverse=True)
+      unique_list_test = sorted(unique_list_test, key=len, reverse=True)
 
-    for key in train_keys:
+      test_overlap_dict = {}
 
-      test_overlap_dict.update({key:[]})
+      train_keys = list(overlap_dict)
 
-    for dict_key in train_keys:
+      train_keys.sort(key = len, reverse=True)
 
-      for unique_test in unique_list_test:
+      for key in train_keys:
 
-        len_key = len(dict_key)
+        test_overlap_dict.update({key:[]})
 
-        if len(unique_test) >= len_key:
+      for dict_key in train_keys:
 
-          nbr_iterations4 = len(unique_test) - len_key + 1
+        for unique_test in unique_list_test:
 
-          for l in range(nbr_iterations4):
+          len_key = len(dict_key)
 
-            extract4 = unique_test[l:(len_key+l)]
+          if len(unique_test) >= len_key:
 
-            if extract4 == dict_key:
+            nbr_iterations4 = len(unique_test) - len_key + 1
 
-              test_overlap_dict[dict_key].append(unique_test)
-              
-              if concurrent_activations is False:
+            for l in range(nbr_iterations4):
 
-                break
+              extract4 = unique_test[l:(len_key+l)]
+
+              if extract4 == dict_key:
+
+                test_overlap_dict[dict_key].append(unique_test)
+
+                if concurrent_activations is False:
+
+                  break
                 
     newcolumns = []
 
     for dict_key in overlap_dict:
 
-      newcolumn = column + '_sbst_' + dict_key
+      newcolumn = column + suffix + '_' + dict_key
       
       mdf_train, suffixoverlap_results = \
       self.df_copy_train(mdf_train, column, newcolumn, suffixoverlap_results)
@@ -12255,7 +9745,7 @@ class AutoMunge:
       int_labels_dict = {}
       i = 0
       for entry in newcolumns:
-        int_labels_dict.update({entry : column + '_sbst_' + str(i)})
+        int_labels_dict.update({entry : column + suffix + '_' + str(i)})
         i += 1
         
       newcolumns = [int_labels_dict[entry] for entry in newcolumns]
@@ -12279,7 +9769,9 @@ class AutoMunge:
 
     for tc in newcolumns:
 
-      textnormalization_dict = {tc : {'overlap_dict' : overlap_dict, \
+      textnormalization_dict = {tc : {'suffix' : suffix, \
+                                      'test_same_as_train' : test_same_as_train, \
+                                      'overlap_dict' : overlap_dict, \
                                       'splt_newcolumns_sbst'   : newcolumns, \
                                       'minsplit' : minsplit, \
                                       'concurrent_activations' : concurrent_activations, \
@@ -12289,240 +9781,6 @@ class AutoMunge:
                                       'inverse_int_labels_dict' : inverse_int_labels_dict}}
       
       column_dict = {tc : {'category' : 'sbst', \
-                           'origcategory' : category, \
-                           'normalization_dict' : textnormalization_dict, \
-                           'origcolumn' : column, \
-                           'inputcolumn' : column, \
-                           'columnslist' : newcolumns, \
-                           'categorylist' : newcolumns, \
-                           'infillmodel' : False, \
-                           'infillcomplete' : False, \
-                           'suffixoverlap_results' : suffixoverlap_results, \
-                           'deletecolumn' : False}}
-
-      column_dict_list.append(column_dict.copy())
-      
-    if len(newcolumns) == 0:
-      
-      column_dict_list = []
-    
-    return mdf_train, mdf_test, column_dict_list
-
-  def process_sbs2_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict, params = {}):
-    '''
-    #process_sbs2_class(mdf_train, mdf_test, column, category)
-    #preprocess column with categorical entries as strings
-    #identifies cases where a full unique value is present 
-    #as a subset of a longer length unique value
-    #and returns one-hot activations to aggregate those cases
-    
-    #accepts parameters concurrent_activations to allow mulitple activations
-    #actually let's make concurrent activations the default
-    #and int_headers for privacy preserving headers
-    
-    #this differs from other string parsing functions in that
-    #only complete entries are checked for presence as subsets in other entries
-    
-    #sbs2 differs from sbst in that test set entries not present in the train set
-    #are not parsed for efficiency
-    '''
-    
-    suffixoverlap_results = {}
-      
-    if 'concurrent_activations' in params:
-      concurrent_activations = params['concurrent_activations']
-    else:
-      concurrent_activations = True
-      
-    if 'int_headers' in params:
-      int_headers = params['int_headers']
-    else:
-      int_headers = False
-
-    if 'minsplit' in params:
-      minsplit = params['minsplit']
-    else:
-      minsplit = 1
-    
-    #first we find overlaps from mdf_train
-    
-    unique_list = list(mdf_train[column].unique())
-
-    unique_list = list(map(str, unique_list))
-    
-    unique_list = sorted(unique_list, key=len, reverse=True)
-    
-#     maxlength = max(len(x) for x in unique_list)
-    
-#     minlength = min(len(x) for x in unique_list)
-    
-#     overlap_lengths = list(range(maxlength - 1, minlength, -1))
-
-    overlap_dict = {}
-
-    #we'll populate overlap_dict as
-    #{extract_with_overlap : [list of associate categories with that overlap]}
-
-    #we'll cycle through the overlap lengths and only record an overlap 
-    #if it is not a subset of those already recorded
-    
-    #unique is what we are searching for
-    for unique in unique_list:
-      len_unique = len(unique)
-
-      if len_unique >= minsplit:
-      
-        #unique2 is where we are searching
-        for unique2 in unique_list:
-          len_unique2 = len(unique2)
-          
-          if len_unique2 > len_unique:
-            
-            nbr_iterations = len_unique2 - len_unique + 1
-            
-            for i in range(nbr_iterations):
-              
-              extract = unique2[i:(len_unique+i)]
-              
-              extract_already_in_overlap_dict = False
-                    
-              if extract_already_in_overlap_dict is False:
-                
-                if extract == unique:
-                  
-                  if extract in overlap_dict:
-                    
-                    if unique2 not in overlap_dict[extract]:
-                      
-                      overlap_dict[extract].append(unique2)
-                      
-                      if concurrent_activations is False:
-
-                        break
-                        
-                    # if unique not in overlap_dict[extract]:
-                      
-                    #   overlap_dict[extract].append(unique)
-
-                    #   if concurrent_activations is False:
-
-                    #     break
-                        
-                  #else if we don't have a key for extract
-                  else:
-
-                    overlap_dict.update({extract : [unique, unique2]})
-
-                    if concurrent_activations is False:
-
-                      break
-                    
-#     #now for mdf_test we'll only consider those overlaps already identified from train set
-    
-#     unique_list_test = list(mdf_test[column].unique())
-
-#     unique_list_test = list(map(str, unique_list_test))
-    
-#     unique_list_test = sorted(unique_list_test, key=len, reverse=True)
-
-#     test_overlap_dict = {}
-
-#     train_keys = list(overlap_dict)
-
-#     train_keys.sort(key = len, reverse=True)
-
-#     for key in train_keys:
-
-#       test_overlap_dict.update({key:[]})
-
-#     for dict_key in train_keys:
-
-#       for unique_test in unique_list_test:
-
-#         len_key = len(dict_key)
-
-#         if len(unique_test) >= len_key:
-
-#           nbr_iterations4 = len(unique_test) - len_key + 1
-
-#           for l in range(nbr_iterations4):
-
-#             extract4 = unique_test[l:(len_key+l)]
-
-#             if extract4 == dict_key:
-
-#               test_overlap_dict[dict_key].append(unique_test)
-              
-#               if concurrent_activations is False:
-
-#                 break
-                
-    newcolumns = []
-
-    for dict_key in overlap_dict:
-
-      newcolumn = column + '_sbs2_' + dict_key
-      
-      mdf_train, suffixoverlap_results = \
-      self.df_copy_train(mdf_train, column, newcolumn, suffixoverlap_results)
-      
-#       mdf_train[newcolumn] = mdf_train[column].copy()
-  
-      mdf_test[newcolumn] = mdf_test[column].copy()
-
-      mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
-      mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
-
-      mdf_train[newcolumn] = mdf_train[newcolumn].isin(overlap_dict[dict_key])
-      mdf_train[newcolumn] = mdf_train[newcolumn].astype(np.int8)
-      
-      mdf_test[newcolumn] = mdf_test[newcolumn].isin(overlap_dict[dict_key])
-      mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
-
-      newcolumns.append(newcolumn)
-      
-    preint_newcolumns = newcolumns.copy()
-      
-    if int_headers is True:
-      
-      int_labels_dict = {}
-      i = 0
-      for entry in newcolumns:
-        int_labels_dict.update({entry : column + '_sbs2_' + str(i)})
-        i += 1
-        
-      newcolumns = [int_labels_dict[entry] for entry in newcolumns]
-        
-      #now convert column headers from string to int convention
-      suffixoverlap_results = \
-      self.df_check_suffixoverlap(mdf_train, newcolumns, suffixoverlap_results)
-      
-      mdf_train = mdf_train.rename(columns=int_labels_dict)
-      mdf_test  = mdf_test.rename(columns=int_labels_dict)
-
-      inverse_int_labels_dict = {value:key for key,value in int_labels_dict.items()}
-      for key in inverse_int_labels_dict:
-        inverse_int_labels_dict[key] = inverse_int_labels_dict[key][len(column) + 1:]
-        
-    else:
-      int_labels_dict = False
-      inverse_int_labels_dict = False
-    
-    column_dict_list = []
-
-    for tc in newcolumns:
-
-      textnormalization_dict = {tc : {'overlap_dict' : overlap_dict, \
-                                      'splt_newcolumns_sbs2'   : newcolumns, \
-                                      'concurrent_activations' : concurrent_activations, \
-                                      'minsplit' : minsplit, \
-                                      'preint_newcolumns' : preint_newcolumns, \
-                                      'int_headers' : int_headers, \
-                                      'int_labels_dict' : int_labels_dict, \
-                                      'inverse_int_labels_dict' : inverse_int_labels_dict}}
-      
-      column_dict = {tc : {'category' : 'sbs2', \
                            'origcategory' : category, \
                            'normalization_dict' : textnormalization_dict, \
                            'origcolumn' : column, \
@@ -12577,6 +9835,16 @@ class AutoMunge:
       minsplit = params['minsplit']
     else:
       minsplit = 1
+      
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = '_sbs3'
+      
+    if 'test_same_as_train' in params:
+      test_same_as_train = params['test_same_as_train']
+    else:
+      test_same_as_train = False
     
     #first we find overlaps from mdf_train
     
@@ -12653,43 +9921,48 @@ class AutoMunge:
                     
     #now for mdf_test we'll only consider those overlaps already identified from train set
     
-    unique_list_test = list(mdf_test[column].unique())
-
-    unique_list_test = list(map(str, unique_list_test))
+    if test_same_as_train is True:
+      test_overlap_dict = overlap_dict
     
-    unique_list_test = sorted(unique_list_test, key=len, reverse=True)
+    elif test_same_as_train is False:
 
-    test_overlap_dict = {}
+      unique_list_test = list(mdf_test[column].unique())
 
-    train_keys = list(overlap_dict)
+      unique_list_test = list(map(str, unique_list_test))
 
-    train_keys.sort(key = len, reverse=True)
+      unique_list_test = sorted(unique_list_test, key=len, reverse=True)
 
-    for key in train_keys:
+      test_overlap_dict = {}
 
-      test_overlap_dict.update({key:[]})
+      train_keys = list(overlap_dict)
 
-    for dict_key in train_keys:
+      train_keys.sort(key = len, reverse=True)
 
-      for unique_test in unique_list_test:
+      for key in train_keys:
 
-        len_key = len(dict_key)
+        test_overlap_dict.update({key:[]})
 
-        if len(unique_test) >= len_key:
+      for dict_key in train_keys:
 
-          nbr_iterations4 = len(unique_test) - len_key + 1
+        for unique_test in unique_list_test:
 
-          for l in range(nbr_iterations4):
+          len_key = len(dict_key)
 
-            extract4 = unique_test[l:(len_key+l)]
+          if len(unique_test) >= len_key:
 
-            if extract4 == dict_key:
+            nbr_iterations4 = len(unique_test) - len_key + 1
 
-              test_overlap_dict[dict_key].append(unique_test)
-              
-              if concurrent_activations is False:
+            for l in range(nbr_iterations4):
 
-                break
+              extract4 = unique_test[l:(len_key+l)]
+
+              if extract4 == dict_key:
+
+                test_overlap_dict[dict_key].append(unique_test)
+
+                if concurrent_activations is False:
+
+                  break
                 
     newcolumns = []
 
@@ -12747,21 +10020,23 @@ class AutoMunge:
     #begin binary encoding of set, leaving the int_headers here out of convenience, not really needed
     
     if len(newcolumns) > 0:
+      
+      sbs3_column = column + suffix
 
       #aggregate collection of activations as string set
       #the suffix 'activations_' is to avoid potential of overlap with binary encoding and aggregated activations
-      mdf_train[column + '_sbs3'] = 'activations_'
-      mdf_test[column + '_sbs3'] = 'activations_'
+      mdf_train[sbs3_column] = 'activations_'
+      mdf_test[sbs3_column] = 'activations_'
 
       for entry in newcolumns:
-        mdf_train[column + '_sbs3'] = mdf_train[column + '_sbs3'] + mdf_train[entry].astype(str)
-        mdf_test[column + '_sbs3'] = mdf_test[column + '_sbs3'] + mdf_test[entry].astype(str)
+        mdf_train[sbs3_column] = mdf_train[sbs3_column] + mdf_train[entry].astype(str)
+        mdf_test[sbs3_column] = mdf_test[sbs3_column] + mdf_test[entry].astype(str)
 
       #extract categories for column labels
       #note that .unique() extracts the labels as a numpy array
-      labels_train = list(mdf_train[column + '_sbs3'].unique())
+      labels_train = list(mdf_train[sbs3_column].unique())
       labels_train.sort()
-      labels_test = list(mdf_test[column + '_sbs3'].unique())
+      labels_test = list(mdf_test[sbs3_column].unique())
       labels_test.sort()
 
       #if infill not present in train set, insert
@@ -12807,13 +10082,13 @@ class AutoMunge:
       #new driftreport metric _1010_activations_dict
       _1010_activations_dict = {}
       for key in binary_encoding_dict:
-        sumcalc = (mdf_train[column+'_sbs3'] == key).sum() 
-        ratio = sumcalc / mdf_train[column+'_sbs3'].shape[0]
+        sumcalc = (mdf_train[sbs3_column] == key).sum() 
+        ratio = sumcalc / mdf_train[sbs3_column].shape[0]
         _1010_activations_dict.update({key:ratio})
 
 
       #replace the cateogries in train set via ordinal trasnformation
-      mdf_train[column + '_sbs3'] = mdf_train[column + '_sbs3'].replace(binary_encoding_dict) 
+      mdf_train[sbs3_column] = mdf_train[sbs3_column].replace(binary_encoding_dict) 
 
       #in test set, we'll need to strike any categories that weren't present in train
       #first let'/s identify what applies
@@ -12821,17 +10096,17 @@ class AutoMunge:
 
       #so we'll just replace those items with our plug value
       testplug_dict = dict(zip(testspecificcategories, ['zzzinfill'] * len(testspecificcategories)))
-      mdf_test[column + '_sbs3'] = mdf_test[column + '_sbs3'].replace(testplug_dict)  
+      mdf_test[sbs3_column] = mdf_test[sbs3_column].replace(testplug_dict)  
 
       #now we'll apply the 1010 transformation to the test set
-      mdf_test[column + '_sbs3'] = mdf_test[column + '_sbs3'].replace(binary_encoding_dict)    
+      mdf_test[sbs3_column] = mdf_test[sbs3_column].replace(binary_encoding_dict)    
 
       #ok let's create a list of columns to store each entry of the binary encoding
       _1010_columnlist = []
 
       for i in range(binary_column_count):
 
-        _1010_columnlist.append(column + '_sbs3_' + str(i))
+        _1010_columnlist.append(column + suffix + '_' + str(i))
 
       suffixoverlap_results = \
       self.df_check_suffixoverlap(mdf_train, _1010_columnlist, suffixoverlap_results)
@@ -12840,15 +10115,15 @@ class AutoMunge:
       i=0
       for _1010_column in _1010_columnlist:
 
-        mdf_train[_1010_column] = mdf_train[column + '_sbs3'].str.slice(i,i+1).astype(np.int8)
+        mdf_train[_1010_column] = mdf_train[sbs3_column].str.slice(i,i+1).astype(np.int8)
 
-        mdf_test[_1010_column] = mdf_test[column + '_sbs3'].str.slice(i,i+1).astype(np.int8)
+        mdf_test[_1010_column] = mdf_test[sbs3_column].str.slice(i,i+1).astype(np.int8)
 
         i+=1
 
       #now delete the support column
-      del mdf_train[column + '_sbs3']
-      del mdf_test[column + '_sbs3']
+      del mdf_train[sbs3_column]
+      del mdf_test[sbs3_column]
 
       for entry in newcolumns:
         del mdf_train[entry]
@@ -12862,7 +10137,9 @@ class AutoMunge:
       for tc in categorylist:
 
   #                                   '_1010_overlap_replace' : overlap_replace, \
-        normalization_dict = {tc : {'_1010_binary_encoding_dict' : binary_encoding_dict, \
+        normalization_dict = {tc : {'suffix' : suffix, \
+                                    'test_same_as_train' : test_same_as_train, \
+                                    '_1010_binary_encoding_dict' : binary_encoding_dict, \
                                     '_1010_binary_column_count' : binary_column_count, \
                                     '_1010_activations_dict' : _1010_activations_dict, \
                                     'categorylist' : categorylist, \
@@ -12876,362 +10153,6 @@ class AutoMunge:
                                     'inverse_int_labels_dict' : inverse_int_labels_dict}}
 
         column_dict = {tc : {'category' : 'sbs3', \
-                             'origcategory' : category, \
-                             'normalization_dict' : normalization_dict, \
-                             'origcolumn' : column, \
-                             'inputcolumn' : column, \
-                             'columnslist' : categorylist, \
-                             'categorylist' : categorylist, \
-                             'infillmodel' : False, \
-                             'infillcomplete' : False, \
-                             'suffixoverlap_results' : suffixoverlap_results, \
-                             'deletecolumn' : False}}
-
-        column_dict_list.append(column_dict.copy())
-      
-    else:
-      
-      column_dict_list = []
-    
-    return mdf_train, mdf_test, column_dict_list
-
-  def process_sbs4_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict, params = {}):
-    '''
-    #process_sbst_class(mdf_train, mdf_test, column, category)
-    #preprocess column with categorical entries as strings
-    #identifies cases where a full unique value is present 
-    #as a subset of a longer length unique value
-    #and returns one-hot activations to aggregate those cases
-    
-    #accepts parameters concurrent_activations to allow mulitple activations
-    #actually let's make concurrent activations the default
-    #and int_headers for privacy preserving headers
-    
-    #this differs from other string parsing functions in that
-    #only complete entries are checked for presence as subsets in other entries
-    
-    #sbs2 differs from sbst in that test set entries not present in the train set
-    #are not parsed for efficiency
-    
-    #sbs4 is comparable to sbs2 but with a returned binary encoding aggregation
-    '''
-    
-    suffixoverlap_results = {}
-      
-    if 'concurrent_activations' in params:
-      concurrent_activations = params['concurrent_activations']
-    else:
-      concurrent_activations = True
-      
-    if 'int_headers' in params:
-      int_headers = params['int_headers']
-    else:
-      int_headers = False
-
-    if 'minsplit' in params:
-      minsplit = params['minsplit']
-    else:
-      minsplit = 1
-    
-    #first we find overlaps from mdf_train
-    
-    unique_list = list(mdf_train[column].unique())
-
-    unique_list = list(map(str, unique_list))
-    
-    unique_list = sorted(unique_list, key=len, reverse=True)
-    
-#     maxlength = max(len(x) for x in unique_list)
-    
-#     minlength = min(len(x) for x in unique_list)
-    
-#     overlap_lengths = list(range(maxlength - 1, minlength, -1))
-
-    overlap_dict = {}
-
-    #we'll populate overlap_dict as
-    #{extract_with_overlap : [list of associate categories with that overlap]}
-
-    #we'll cycle through the overlap lengths and only record an overlap 
-    #if it is not a subset of those already recorded
-    
-    #unique is what we are searching for
-    for unique in unique_list:
-      len_unique = len(unique)
-
-      if len_unique >= minsplit:
-      
-        #unique2 is where we are searching
-        for unique2 in unique_list:
-          len_unique2 = len(unique2)
-          
-          if len_unique2 > len_unique:
-            
-            nbr_iterations = len_unique2 - len_unique + 1
-            
-            for i in range(nbr_iterations):
-              
-              extract = unique2[i:(len_unique+i)]
-              
-              extract_already_in_overlap_dict = False
-                    
-              if extract_already_in_overlap_dict is False:
-                
-                if extract == unique:
-                  
-                  if extract in overlap_dict:
-                    
-                    if unique2 not in overlap_dict[extract]:
-                      
-                      overlap_dict[extract].append(unique2)
-                      
-                      if concurrent_activations is False:
-
-                        break
-                        
-                    # if unique not in overlap_dict[extract]:
-                      
-                    #   overlap_dict[extract].append(unique)
-
-                    #   if concurrent_activations is False:
-
-                    #     break
-                        
-                  #else if we don't have a key for extract
-                  else:
-
-                    overlap_dict.update({extract : [unique, unique2]})
-
-                    if concurrent_activations is False:
-
-                      break
-                    
-#     #now for mdf_test we'll only consider those overlaps already identified from train set
-    
-#     unique_list_test = list(mdf_test[column].unique())
-
-#     unique_list_test = list(map(str, unique_list_test))
-    
-#     unique_list_test = sorted(unique_list_test, key=len, reverse=True)
-
-#     test_overlap_dict = {}
-
-#     train_keys = list(overlap_dict)
-
-#     train_keys.sort(key = len, reverse=True)
-
-#     for key in train_keys:
-
-#       test_overlap_dict.update({key:[]})
-
-#     for dict_key in train_keys:
-
-#       for unique_test in unique_list_test:
-
-#         len_key = len(dict_key)
-
-#         if len(unique_test) >= len_key:
-
-#           nbr_iterations4 = len(unique_test) - len_key + 1
-
-#           for l in range(nbr_iterations4):
-
-#             extract4 = unique_test[l:(len_key+l)]
-
-#             if extract4 == dict_key:
-
-#               test_overlap_dict[dict_key].append(unique_test)
-              
-#               if concurrent_activations is False:
-
-#                 break
-                
-    newcolumns = []
-
-    for dict_key in overlap_dict:
-
-      newcolumn = column + '_sbst_' + dict_key
-      
-      mdf_train, suffixoverlap_results = \
-      self.df_copy_train(mdf_train, column, newcolumn, suffixoverlap_results)
-      
-#       mdf_train[newcolumn] = mdf_train[column].copy()
-  
-      mdf_test[newcolumn] = mdf_test[column].copy()
-
-      mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
-      mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
-
-      mdf_train[newcolumn] = mdf_train[newcolumn].isin(overlap_dict[dict_key])
-      mdf_train[newcolumn] = mdf_train[newcolumn].astype(np.int8)
-      
-      mdf_test[newcolumn] = mdf_test[newcolumn].isin(overlap_dict[dict_key])
-      mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
-
-      newcolumns.append(newcolumn)
-      
-    preint_newcolumns = newcolumns.copy()
-      
-    if int_headers is True:
-      
-      int_labels_dict = {}
-      i = 0
-      for entry in newcolumns:
-        int_labels_dict.update({entry : column + '_sbst_' + str(i)})
-        i += 1
-        
-      newcolumns = [int_labels_dict[entry] for entry in newcolumns]
-        
-      #now convert column headers from string to int convention
-      suffixoverlap_results = \
-      self.df_check_suffixoverlap(mdf_train, newcolumns, suffixoverlap_results)
-      
-      mdf_train = mdf_train.rename(columns=int_labels_dict)
-      mdf_test  = mdf_test.rename(columns=int_labels_dict)
-
-      inverse_int_labels_dict = {value:key for key,value in int_labels_dict.items()}
-      for key in inverse_int_labels_dict:
-        inverse_int_labels_dict[key] = inverse_int_labels_dict[key][len(column) + 1:]
-        
-    else:
-      int_labels_dict = False
-      inverse_int_labels_dict = False
-    
-    column_dict_list = []
-    
-    #begin binary encoding of set, leaving the int_headers here out of convenience, not really needed
-    
-    if len(newcolumns) > 0:
-
-      #aggregate collection of activations as string set
-      #the suffix 'activations_' is to avoid potential of overlap with binary encoding and aggregated activations
-      mdf_train[column + '_sbs4'] = 'activations_'
-      mdf_test[column + '_sbs4'] = 'activations_'
-
-      for entry in newcolumns:
-        mdf_train[column + '_sbs4'] = mdf_train[column + '_sbs4'] + mdf_train[entry].astype(str)
-        mdf_test[column + '_sbs4'] = mdf_test[column + '_sbs4'] + mdf_test[entry].astype(str)
-
-      #extract categories for column labels
-      #note that .unique() extracts the labels as a numpy array
-      labels_train = list(mdf_train[column + '_sbs4'].unique())
-      labels_train.sort()
-      labels_test = list(mdf_test[column + '_sbs4'].unique())
-      labels_test.sort()
-
-      #if infill not present in train set, insert
-      if 'zzzinfill' not in labels_train:
-        labels_train = labels_train + ['zzzinfill']
-        labels_train.sort()
-      if 'zzzinfill' not in labels_test:
-        labels_test = labels_test + ['zzzinfill']
-        labels_test.sort()
-
-      #get length of the list
-      listlength = len(labels_train)
-
-      #calculate number of columns we'll need
-      binary_column_count = int(np.ceil(np.log2(listlength)))
-
-      #initialize dictionaryt to store encodings
-      binary_encoding_dict = {}
-      encoding_list = []
-
-      for i in range(listlength):
-
-        #this converts the integer i to binary encoding
-        #where f is an f string for inserting the column coount into the string to designate length of encoding
-        #0 is to pad out the encoding with 0's for the length
-        #and b is telling it to convert to binary 
-        #note this returns a string
-        encoding = format(i, f"0{binary_column_count}b")
-
-        if i < len(labels_train):
-
-          #store the encoding in a dictionary
-          binary_encoding_dict.update({labels_train[i] : encoding})
-
-          #store the encoding in a list for checking in next step
-          encoding_list.append(encoding)
-
-
-      #clear up memory
-      del encoding_list
-  #     del overlap_list
-
-      #new driftreport metric _1010_activations_dict
-      _1010_activations_dict = {}
-      for key in binary_encoding_dict:
-        sumcalc = (mdf_train[column+'_sbs4'] == key).sum() 
-        ratio = sumcalc / mdf_train[column+'_sbs4'].shape[0]
-        _1010_activations_dict.update({key:ratio})
-
-
-      #replace the cateogries in train set via ordinal trasnformation
-      mdf_train[column + '_sbs4'] = mdf_train[column + '_sbs4'].replace(binary_encoding_dict) 
-
-      #in test set, we'll need to strike any categories that weren't present in train
-      #first let'/s identify what applies
-      testspecificcategories = list(set(labels_test)-set(labels_train))
-
-      #so we'll just replace those items with our plug value
-      testplug_dict = dict(zip(testspecificcategories, ['zzzinfill'] * len(testspecificcategories)))
-      mdf_test[column + '_sbs4'] = mdf_test[column + '_sbs4'].replace(testplug_dict)  
-
-      #now we'll apply the 1010 transformation to the test set
-      mdf_test[column + '_sbs4'] = mdf_test[column + '_sbs4'].replace(binary_encoding_dict)    
-
-      #ok let's create a list of columns to store each entry of the binary encoding
-      _1010_columnlist = []
-
-      for i in range(binary_column_count):
-
-        _1010_columnlist.append(column + '_sbs4_' + str(i))
-
-      suffixoverlap_results = \
-      self.df_check_suffixoverlap(mdf_train, _1010_columnlist, suffixoverlap_results)
-
-      #now let's store the encoding
-      i=0
-      for _1010_column in _1010_columnlist:
-
-        mdf_train[_1010_column] = mdf_train[column + '_sbs4'].str.slice(i,i+1).astype(np.int8)
-
-        mdf_test[_1010_column] = mdf_test[column + '_sbs4'].str.slice(i,i+1).astype(np.int8)
-
-        i+=1
-
-      #now delete the support column
-      del mdf_train[column + '_sbs4']
-      del mdf_test[column + '_sbs4']
-
-      for entry in newcolumns:
-        del mdf_train[entry]
-        del mdf_test[entry]
-
-      #now store the column_dict entries
-      categorylist = _1010_columnlist
-
-      column_dict_list = []
-
-      for tc in categorylist:
-
-  #                                   '_1010_overlap_replace' : overlap_replace, \
-        normalization_dict = {tc : {'_1010_binary_encoding_dict' : binary_encoding_dict, \
-                                    '_1010_binary_column_count' : binary_column_count, \
-                                    '_1010_activations_dict' : _1010_activations_dict, \
-                                    'categorylist' : categorylist, \
-                                    'overlap_dict' : overlap_dict, \
-                                    'splt_newcolumns_sbs4'   : newcolumns, \
-                                    'concurrent_activations' : concurrent_activations, \
-                                    'minsplit' : minsplit, \
-                                    'preint_newcolumns' : preint_newcolumns, \
-                                    'int_headers' : int_headers, \
-                                    'int_labels_dict' : int_labels_dict, \
-                                    'inverse_int_labels_dict' : inverse_int_labels_dict}}
-
-        column_dict = {tc : {'category' : 'sbs4', \
                              'origcategory' : category, \
                              'normalization_dict' : normalization_dict, \
                              'origcolumn' : column, \
@@ -29459,15 +26380,9 @@ class AutoMunge:
      'textlabelsdict_onht'  : 'onht', \
      'powerlabelsdict_pwrs' : 'pwrs', \
      'splt_newcolumns_splt' : 'splt', \
-     'splt_newcolumns_spl8' : 'spl8', \
-     'splt_newcolumns_sp15' : 'sp15', \
-     'splt_newcolumns_sp16' : 'sp16', \
      'splt_newcolumns_sp19' : 'sp19', \
-     'splt_newcolumns_sp20' : 'sp20', \
      'splt_newcolumns_sbst' : 'sbst', \
-     'splt_newcolumns_sbs2' : 'sbs2', \
      'splt_newcolumns_sbs3' : 'sbs3', \
-     'splt_newcolumns_sbs4' : 'sbs4', \
      'bn_width_bnwd'        : 'bnwd', \
      'bincount_bnep'        : 'bnep', \
      'buckets_bkt1'         : 'bkt1', \
@@ -32029,7 +28944,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.73'
+    automungeversion = '4.74'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -33585,6 +30500,11 @@ class AutoMunge:
     #fromthe train set
     '''
     
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = '_splt'
+    
     #to retrieve the normalization dictionary we're going to use new method since we don't yet 
     #know what the returned columns titles are yet
     
@@ -33604,7 +30524,8 @@ class AutoMunge:
       
       if column == postprocess_dict['column_dict'][columnkey]['inputcolumn']:
 
-        if 'splt_newcolumns_splt' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
+        if 'splt_newcolumns_splt' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey] \
+        and postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]['suffix'] == suffix:
 
           normkey = columnkey
         
@@ -33621,50 +30542,59 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['int_labels_dict']
       concurrent_activations = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['concurrent_activations']
+      suffix = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+      test_same_as_train = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['test_same_as_train']
 
       #now for mdf_test we'll only consider those overlaps already identified from train set
+      
+      if test_same_as_train is True:
+        test_overlap_dict = overlap_dict
+      
+      else:
 
-      unique_list_test = list(mdf_test[column].unique())
+        unique_list_test = list(mdf_test[column].unique())
 
-      unique_list_test = list(map(str, unique_list_test))
+        unique_list_test = list(map(str, unique_list_test))
 
-      test_overlap_dict = {}
+        test_overlap_dict = {}
 
-      train_keys = list(overlap_dict)
+        train_keys = list(overlap_dict)
 
-      train_keys.sort(key = len, reverse=True)
+        train_keys.sort(key = len, reverse=True)
 
-      for key in train_keys:
+        for key in train_keys:
 
-        test_overlap_dict.update({key:[]})
+          test_overlap_dict.update({key:[]})
 
-      for dict_key in train_keys:
+        for dict_key in train_keys:
 
-        for unique_test in unique_list_test:
+          for unique_test in unique_list_test:
 
-          len_key = len(dict_key)
+            len_key = len(dict_key)
 
-          if len(unique_test) >= len_key:
+            if len(unique_test) >= len_key:
 
-            nbr_iterations4 = len(unique_test) - len_key + 1
+              nbr_iterations4 = len(unique_test) - len_key + 1
 
-            for l in range(nbr_iterations4):
+              for l in range(nbr_iterations4):
 
-              extract4 = unique_test[l:(len_key+l)]
+                extract4 = unique_test[l:(len_key+l)]
 
-              if extract4 == dict_key:
+                if extract4 == dict_key:
 
-                test_overlap_dict[dict_key].append(unique_test)
-                
-                if concurrent_activations is False:
+                  test_overlap_dict[dict_key].append(unique_test)
 
-                  break
+                  if concurrent_activations is False:
+
+                    break
 
       newcolumns = []
 
       for dict_key in overlap_dict:
 
-        newcolumn = column + '_splt_' + dict_key
+        newcolumn = column + suffix + '_' + dict_key
         
 #         mdf_train[newcolumn] = mdf_train[column].copy()
         mdf_test[newcolumn] = mdf_test[column].copy()
@@ -33682,134 +30612,12 @@ class AutoMunge:
         mdf_test  = mdf_test.rename(columns=int_labels_dict)
     
     return mdf_test
-  
+
   def postprocess_spl2_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #postprocess_spl2_class(mdf_test, column, postprocess_dict, category)
     #preprocess column with categorical entries as strings
     #identifies overlaps of subsets of those strings and replaces entries with their redecued overlap
-    #for example, if a categoical set consisted of unique values ['west', 'north', 'northeast']
-    #then a new column would be created in which the entry 'north' replaced cells with north in their entries
-    #(here for north and northeast)
-    #returns as column titled origcolumn_spl2
-    #missing values are ignored by default
-    #this alternative to splt may be benficial for instance if one wanted to follow with an ordl encoding
-    
-    #here in postprocess we only replace entries for those overlaps that were identified 
-    #from the train set
-    '''
-    
-    #to retrieve the normalization dictionary we're going to use new method since we don't yet 
-    #know what the returned columns titles are yet
-    
-    normkey = False
-    
-#     if column in postprocess_dict['origcolumn']:
-      
-#       columnkeylist = postprocess_dict['origcolumn'][column]['columnkeylist']
-      
-#     else:
-      
-#       origcolumn = postprocess_dict['column_dict'][column]['origcolumn']
-      
-#       columnkeylist = postprocess_dict['origcolumn'][origcolumn]['columnkeylist']
-    
-#     for columnkey in columnkeylist:
-    
-#       if 'splt_newcolumns' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
-        
-#         normkey = columnkey
-
-    normkey = column + '_spl2'
-        
-    if normkey is not False:
-
-      #great now we can grab normalization parameters
-      overlap_dict = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['overlap_dict']
-
-#       newcolumns = \
-#       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['spl2_newcolumns']
-
-      #now for mdf_test we'll only consider those overlaps already identified from train set
-
-      unique_list_test = list(mdf_test[column].unique())
-
-      unique_list_test = list(map(str, unique_list_test))
-
-      test_overlap_dict = {}
-
-      train_keys = list(overlap_dict)
-
-      train_keys.sort(key = len, reverse=True)
-
-      for key in train_keys:
-
-        test_overlap_dict.update({key:[]})
-
-      for dict_key in train_keys:
-
-        for unique_test in unique_list_test:
-
-          len_key = len(dict_key)
-
-          if len(unique_test) >= len_key:
-
-            nbr_iterations4 = len(unique_test) - len_key + 1
-
-            for l in range(nbr_iterations4):
-
-              extract4 = unique_test[l:(len_key+l)]
-
-              if extract4 == dict_key:
-
-                test_overlap_dict[dict_key].append(unique_test)
-                
-                break
-                
-      #then we'll populate the spl2 replacement dict
-
-      spl2_test_overlap_dict = {}
-
-      test_overlap_key_list = list(test_overlap_dict)
-
-      test_overlap_key_list.sort()
-      test_overlap_key_list.sort(key = len, reverse=True)
-
-      for overlap_key in test_overlap_key_list:
-
-        for entry in test_overlap_dict[overlap_key]:
-
-          if entry not in spl2_test_overlap_dict:
-
-            spl2_test_overlap_dict.update({entry : overlap_key})
-
-#       newcolumns = []
-
-#       for dict_key in overlap_dict:
-
-      newcolumn = column + '_spl2'
-
-#         mdf_test[newcolumn] = mdf_test[column].isin(test_overlap_dict[dict_key])
-#         mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
-
-#       mdf_train[newcolumn] = mdf_train[column].copy()
-      mdf_test[newcolumn] = mdf_test[column].copy()
-
-#       mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
-      mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
-
-      mdf_test[newcolumn] = mdf_test[newcolumn].replace(spl2_test_overlap_dict)
-
-#       newcolumns.append(newcolumn)
-    
-    return mdf_test
-  
-  def postprocess_spl5_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
-    '''
-    #postprocess_spl5_class(mdf_test, column, postprocess_dict, category)
-    #preprocess column with categorical entries as strings
-    #identifies overlaps of subsets of those strings and replaces entries with their redecued overlap
     #replaces entries without overlap to 0 (unique to spl5)
     #for example, if a categorical set consisted of unique values ['west', 'north', 'northeast']
     #then a new column would be created in which the entry 'north' replaced cells with north in their entries
@@ -33820,382 +30628,10 @@ class AutoMunge:
     #this alternative to splt may be benficial for instance if one wanted to follow with an ordl encoding
     '''
     
-    #to retrieve the normalization dictionary we're going to use new method since we don't yet 
-    #know what the returned columns titles are yet
-    
-    normkey = False
-    
-#     if column in postprocess_dict['origcolumn']:
-      
-#       columnkeylist = postprocess_dict['origcolumn'][column]['columnkeylist']
-      
-#     else:
-      
-#       origcolumn = postprocess_dict['column_dict'][column]['origcolumn']
-      
-#       columnkeylist = postprocess_dict['origcolumn'][origcolumn]['columnkeylist']
-    
-#     for columnkey in columnkeylist:
-    
-#       if 'splt_newcolumns' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
-        
-#         normkey = columnkey
-
-    normkey = column + '_spl5'
-        
-    if normkey is not False:
-
-      #great now we can grab normalization parameters
-      overlap_dict = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['overlap_dict']
-
-#       newcolumns = \
-#       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['spl2_newcolumns']
-
-      #now for mdf_test we'll only consider those overlaps already identified from train set
-
-      unique_list_test = list(mdf_test[column].unique())
-
-      unique_list_test = list(map(str, unique_list_test))
-
-      test_overlap_dict = {}
-
-      train_keys = list(overlap_dict)
-
-      train_keys.sort(key = len, reverse=True)
-
-      for key in train_keys:
-
-        test_overlap_dict.update({key:[]})
-
-      for dict_key in train_keys:
-
-        for unique_test in unique_list_test:
-
-          len_key = len(dict_key)
-
-          if len(unique_test) >= len_key:
-
-            nbr_iterations4 = len(unique_test) - len_key + 1
-
-            for l in range(nbr_iterations4):
-
-              extract4 = unique_test[l:(len_key+l)]
-
-              if extract4 == dict_key:
-
-                test_overlap_dict[dict_key].append(unique_test)
-                
-                break
-                
-      #then we'll populate the spl2 replacement dict
-
-      spl2_test_overlap_dict = {}
-
-      test_overlap_key_list = list(test_overlap_dict)
-
-      test_overlap_key_list.sort()
-      test_overlap_key_list.sort(key = len, reverse=True)
-
-      for overlap_key in test_overlap_key_list:
-
-        for entry in test_overlap_dict[overlap_key]:
-
-          if entry not in spl2_test_overlap_dict:
-
-            spl2_test_overlap_dict.update({entry : overlap_key})
-            
-      #here's where we identify values to set to 0 for spl5
-      spl5_test_zero_dict = {}
-      for entry in unique_list_test:
-        if entry not in spl2_test_overlap_dict:
-          spl5_test_zero_dict.update({entry : 0})
-
-#       newcolumns = []
-
-#       for dict_key in overlap_dict:
-
-      newcolumn = column + '_spl5'
-
-#         mdf_test[newcolumn] = mdf_test[column].isin(test_overlap_dict[dict_key])
-#         mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
-
-#       mdf_train[newcolumn] = mdf_train[column].copy()
-      mdf_test[newcolumn] = mdf_test[column].copy()
-
-#       mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
-      mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
-
-      mdf_test[newcolumn] = mdf_test[newcolumn].replace(spl2_test_overlap_dict)
-      mdf_test[newcolumn] = mdf_test[newcolumn].replace(spl5_test_zero_dict)
-
-#       newcolumns.append(newcolumn)
-    
-    return mdf_test
-  
-  def postprocess_spl7_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
-    '''
-    #(spl7 is same as spl5 but uses min overlap character legnth of 1 instead of 5)
-    #postprocess_spl5_class(mdf_test, column, postprocess_dict, category)
-    #preprocess column with categorical entries as strings
-    #identifies overlaps of subsets of those strings and replaces entries with their redecued overlap
-    #replaces entries without overlap to 0 (unique to spl5)
-    #for example, if a categorical set consisted of unique values ['west', 'north', 'northeast']
-    #then a new column would be created in which the entry 'north' replaced cells with north in their entries
-    #(here for north and northeast)
-    #and cells with west would be set to 0
-    #returns as column titled origcolumn_spl2
-    #missing values are ignored by default
-    #this alternative to splt may be benficial for instance if one wanted to follow with an ordl encoding
-    '''
-    
-    #to retrieve the normalization dictionary we're going to use new method since we don't yet 
-    #know what the returned columns titles are yet
-    
-    normkey = False
-    
-#     if column in postprocess_dict['origcolumn']:
-      
-#       columnkeylist = postprocess_dict['origcolumn'][column]['columnkeylist']
-      
-#     else:
-      
-#       origcolumn = postprocess_dict['column_dict'][column]['origcolumn']
-      
-#       columnkeylist = postprocess_dict['origcolumn'][origcolumn]['columnkeylist']
-    
-#     for columnkey in columnkeylist:
-    
-#       if 'splt_newcolumns' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
-        
-#         normkey = columnkey
-
-    normkey = column + '_spl7'
-        
-    if normkey is not False:
-
-      #great now we can grab normalization parameters
-      overlap_dict = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['overlap_dict']
-
-#       newcolumns = \
-#       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['spl2_newcolumns']
-
-      #now for mdf_test we'll only consider those overlaps already identified from train set
-
-      unique_list_test = list(mdf_test[column].unique())
-
-      unique_list_test = list(map(str, unique_list_test))
-
-      test_overlap_dict = {}
-
-      train_keys = list(overlap_dict)
-
-      train_keys.sort(key = len, reverse=True)
-
-      for key in train_keys:
-
-        test_overlap_dict.update({key:[]})
-
-      for dict_key in train_keys:
-
-        for unique_test in unique_list_test:
-
-          len_key = len(dict_key)
-
-          if len(unique_test) >= len_key:
-
-            nbr_iterations4 = len(unique_test) - len_key + 1
-
-            for l in range(nbr_iterations4):
-
-              extract4 = unique_test[l:(len_key+l)]
-
-              if extract4 == dict_key:
-
-                test_overlap_dict[dict_key].append(unique_test)
-                
-                break
-                
-      #then we'll populate the spl2 replacement dict
-
-      spl2_test_overlap_dict = {}
-
-      test_overlap_key_list = list(test_overlap_dict)
-
-      test_overlap_key_list.sort()
-      test_overlap_key_list.sort(key = len, reverse=True)
-
-      for overlap_key in test_overlap_key_list:
-
-        for entry in test_overlap_dict[overlap_key]:
-
-          if entry not in spl2_test_overlap_dict:
-
-            spl2_test_overlap_dict.update({entry : overlap_key})
-            
-      #here's where we identify values to set to 0 for spl5
-      spl5_test_zero_dict = {}
-      for entry in unique_list_test:
-        if entry not in spl2_test_overlap_dict:
-          spl5_test_zero_dict.update({entry : 0})
-
-#       newcolumns = []
-
-#       for dict_key in overlap_dict:
-
-      newcolumn = column + '_spl7'
-
-#         mdf_test[newcolumn] = mdf_test[column].isin(test_overlap_dict[dict_key])
-#         mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
-
-#       mdf_train[newcolumn] = mdf_train[column].copy()
-      mdf_test[newcolumn] = mdf_test[column].copy()
-
-#       mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
-      mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
-
-      mdf_test[newcolumn] = mdf_test[newcolumn].replace(spl2_test_overlap_dict)
-      mdf_test[newcolumn] = mdf_test[newcolumn].replace(spl5_test_zero_dict)
-
-#       newcolumns.append(newcolumn)
-    
-    return mdf_test
-
-  def postprocess_spl8_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
-    '''
-    #postprocess_splt_class(mdf_test, column, postprocess_dict, category)
-    #preprocess column with categorical entries as strings
-    #identifies overlaps of subsets of those strings and records
-    #as a new boolan column
-    #for example, if a categoical set consisted of unique values ['west', 'north', 'northeast']
-    #then a new column would be created idenitifying cells which included 'north' in their entries
-    #(here for north and northeast)
-    #returns as column titled origcolumn_splt_entry    
-    #missing values are ignored by default
-    
-    #here in postprocess we only create columns foir those overlaps that were identified 
-    #fromthe train set
-    
-    #comparable to splt but
-    #assumes that unique values of test set are same or subset of train set
-    #for more efficient application in postmunge
-    '''
-    
-    #to retrieve the normalization dictionary we're going to use new method since we don't yet 
-    #know what the returned columns titles are yet
-    
-    normkey = False
-    
-    if column in postprocess_dict['origcolumn']:
-      
-      columnkeylist = postprocess_dict['origcolumn'][column]['columnkeylist']
-      
+    if 'suffix' in params:
+      suffix = params['suffix']
     else:
-      
-      origcolumn = postprocess_dict['column_dict'][column]['origcolumn']
-      
-      columnkeylist = postprocess_dict['origcolumn'][origcolumn]['columnkeylist']
-    
-    for columnkey in columnkeylist:
-      
-      if column == postprocess_dict['column_dict'][columnkey]['inputcolumn']:
-
-        if 'splt_newcolumns_spl8' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
-
-          normkey = columnkey
-        
-    if normkey is not False:
-
-      #great now we can grab normalization parameters
-      overlap_dict = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['overlap_dict']
-      newcolumns = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['splt_newcolumns_spl8']
-      int_headers = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['int_headers']
-      int_labels_dict = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['int_labels_dict']
-
-      #now for mdf_test we'll only consider those overlaps already identified from train set
-      
-      #this assumes that set of unique values is same or subset of those for train set
-      #for more efficient application in postmunge
-
-#       unique_list_test = list(mdf_test[column].unique())
-
-#       unique_list_test = list(map(str, unique_list_test))
-
-#       test_overlap_dict = {}
-
-#       train_keys = list(overlap_dict)
-
-#       train_keys.sort(key = len, reverse=True)
-
-#       for key in train_keys:
-
-#         test_overlap_dict.update({key:[]})
-
-#       for dict_key in train_keys:
-
-#         for unique_test in unique_list_test:
-
-#           len_key = len(dict_key)
-
-#           if len(unique_test) >= len_key:
-
-#             nbr_iterations4 = len(unique_test) - len_key
-
-#             for l in range(nbr_iterations4 + 1):
-
-#               extract4 = unique_test[l:(len_key+l)]
-
-#               if extract4 == dict_key:
-
-#                 test_overlap_dict[dict_key].append(unique_test)
-
-      newcolumns = []
-
-      for dict_key in overlap_dict:
-
-        newcolumn = column + '_spl8_' + dict_key
-        
-#         mdf_train[newcolumn] = mdf_train[column].copy()
-        mdf_test[newcolumn] = mdf_test[column].copy()
-
-#         mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
-        mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
-
-        #mdf_test[newcolumn] = mdf_test[newcolumn].isin(test_overlap_dict[dict_key])
-        mdf_test[newcolumn] = mdf_test[newcolumn].isin(overlap_dict[dict_key])
-        mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
-
-        newcolumns.append(newcolumn)
-        
-      #now convert coloumn headers from string to int convention
-      if int_headers is True:
-        mdf_test  = mdf_test.rename(columns=int_labels_dict)
-    
-    return mdf_test
-  
-  def postprocess_spl9_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
-    '''
-    #postprocess_spl2_class(mdf_test, column, postprocess_dict, category)
-    #preprocess column with categorical entries as strings
-    #identifies overlaps of subsets of those strings and replaces entries with their redecued overlap
-    #for example, if a categoical set consisted of unique values ['west', 'north', 'northeast']
-    #then a new column would be created in which the entry 'north' replaced cells with north in their entries
-    #(here for north and northeast)
-    #returns as column titled origcolumn_spl2
-    #missing values are ignored by default
-    #this alternative to splt may be benficial for instance if one wanted to follow with an ordl encoding
-    
-    #here in postprocess we only replace entries for those overlaps that were identified 
-    #from the train set
-    
-    #spl9 is comparable to spl2 but makes assumption that set of unique values
-    #in test set is same or subset of train set for more efficient processing
-    '''
+      suffix = '_spl2'
     
     #to retrieve the normalization dictionary we're going to use new method since we don't yet 
     #know what the returned columns titles are yet
@@ -34218,493 +30654,110 @@ class AutoMunge:
         
 #         normkey = columnkey
 
-    normkey = column + '_spl9'
+    normkey = column + suffix
         
     if normkey is not False:
 
       #great now we can grab normalization parameters
       overlap_dict = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['overlap_dict']
-      
-      spl2_overlap_dict = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['spl2_overlap_dict']
-      
-      unique_list = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['unique_list']
+      test_same_as_train = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['test_same_as_train']
+      consolidate_nonoverlaps = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['consolidate_nonoverlaps']
 
 #       newcolumns = \
 #       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['spl2_newcolumns']
 
-#       #now for mdf_test we'll only consider those overlaps already identified from train set
-
-#       unique_list_test = list(mdf_test[column].unique())
-
-#       unique_list_test = list(map(str, unique_list_test))
-
-#       test_overlap_dict = {}
-
-#       train_keys = list(overlap_dict)
-
-#       train_keys.sort(key = len, reverse=True)
-
-#       for key in train_keys:
-
-#         test_overlap_dict.update({key:[]})
-
-#       for dict_key in train_keys:
-
-#         for unique_test in unique_list_test:
-
-#           len_key = len(dict_key)
-
-#           if len(unique_test) >= len_key:
-
-#             nbr_iterations4 = len(unique_test) - len_key
-
-#             for l in range(nbr_iterations4 + 1):
-
-#               extract4 = unique_test[l:(len_key+l)]
-
-#               if extract4 == dict_key:
-
-#                 test_overlap_dict[dict_key].append(unique_test)
-                
-      #for spl9 we'll just copy train set overlap_dict
-      test_overlap_dict = deepcopy(overlap_dict)
-                
-      #then we'll populate the spl2 replacement dict
-      
-      spl2_test_overlap_dict = deepcopy(spl2_overlap_dict)
-
-      unique_list_test = list(mdf_test[column].unique())
-      unique_list_test = list(map(str, unique_list_test))
-
-      extra_unique_test = list(set(unique_list_test) - set(unique_list))
-
-      for extra_unique in extra_unique_test:
-
-        spl2_test_overlap_dict.update({str(extra_unique) : str(extra_unique)})
-        
-        #I'm suspect will eventually be a headache for someone that we're populating
-        #this with str(extra_unique) as entry, trying to be consistent with train set
-        #if you want to extract numbers for now run seperately a nmrc transform
-
-#       spl2_test_overlap_dict = {}
-
-#       test_overlap_key_list = list(test_overlap_dict)
-
-#       test_overlap_key_list.sort()
-#       test_overlap_key_list.sort(key = len, reverse=True)
-
-#       for overlap_key in test_overlap_key_list:
-
-#         for entry in test_overlap_dict[overlap_key]:
-
-#           if entry not in spl2_test_overlap_dict:
-
-#             spl2_test_overlap_dict.update({entry : overlap_key})
-
-#       newcolumns = []
-
-#       for dict_key in overlap_dict:
-
-      newcolumn = column + '_spl9'
-
-#         mdf_test[newcolumn] = mdf_test[column].isin(test_overlap_dict[dict_key])
-#         mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
-
-#       mdf_train[newcolumn] = mdf_train[column].copy()
-      mdf_test[newcolumn] = mdf_test[column].copy()
-
-#       mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
-      mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
-
-      mdf_test[newcolumn] = mdf_test[newcolumn].replace(spl2_test_overlap_dict)
-
-#       newcolumns.append(newcolumn)
-    
-    return mdf_test
+      #now for mdf_test we'll only consider those overlaps already identified from train set
   
-  def postprocess_sp10_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
-    '''
-    #postprocess_spl5_class(mdf_test, column, postprocess_dict, category)
-    #preprocess column with categorical entries as strings
-    #identifies overlaps of subsets of those strings and replaces entries with their redecued overlap
-    #replaces entries without overlap to 0 (unique to spl5)
-    #for example, if a categorical set consisted of unique values ['west', 'north', 'northeast']
-    #then a new column would be created in which the entry 'north' replaced cells with north in their entries
-    #(here for north and northeast)
-    #and cells with west would be set to 0
-    #returns as column titled origcolumn_spl2
-    #missing values are ignored by default
-    #this alternative to splt may be benficial for instance if one wanted to follow with an ordl encoding
-    
-    #sp10 is like spl5 but makes assumption that set of unique test values is
-    #same or subset of train values for more efficient application in postmunge
-    #that's spelled s p one zero
-    '''
-    
-    #to retrieve the normalization dictionary we're going to use new method since we don't yet 
-    #know what the returned columns titles are yet
-    
-    normkey = False
-    
-#     if column in postprocess_dict['origcolumn']:
-      
-#       columnkeylist = postprocess_dict['origcolumn'][column]['columnkeylist']
-      
-#     else:
-      
-#       origcolumn = postprocess_dict['column_dict'][column]['origcolumn']
-      
-#       columnkeylist = postprocess_dict['origcolumn'][origcolumn]['columnkeylist']
-    
-#     for columnkey in columnkeylist:
-    
-#       if 'splt_newcolumns' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
-        
-#         normkey = columnkey
+      if test_same_as_train is True:
+        test_overlap_dict = overlap_dict
 
-    normkey = column + '_sp10'
-        
-    if normkey is not False:
+      elif test_same_as_train is False:
 
-      #great now we can grab normalization parameters
-      overlap_dict = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['overlap_dict']
-      
-      spl2_overlap_dict = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['spl2_overlap_dict']
-      
-      unique_list = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['unique_list']
+        unique_list_test = list(mdf_test[column].unique())
 
-#       newcolumns = \
-#       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['spl2_newcolumns']
+        unique_list_test = list(map(str, unique_list_test))
 
-      #now for mdf_test we'll only consider those overlaps already identified from train set
+        test_overlap_dict = {}
 
-#       unique_list_test = list(mdf_test[column].unique())
+        train_keys = list(overlap_dict)
 
-#       unique_list_test = list(map(str, unique_list_test))
+        train_keys.sort(key = len, reverse=True)
 
-#       test_overlap_dict = {}
+        for key in train_keys:
 
-#       train_keys = list(overlap_dict)
+          test_overlap_dict.update({key:[]})
 
-#       train_keys.sort(key = len, reverse=True)
+        for dict_key in train_keys:
 
-#       for key in train_keys:
+          for unique_test in unique_list_test:
 
-#         test_overlap_dict.update({key:[]})
+            len_key = len(dict_key)
 
-#       for dict_key in train_keys:
+            if len(unique_test) >= len_key:
 
-#         for unique_test in unique_list_test:
+              nbr_iterations4 = len(unique_test) - len_key + 1
 
-#           len_key = len(dict_key)
+              for l in range(nbr_iterations4):
 
-#           if len(unique_test) >= len_key:
+                extract4 = unique_test[l:(len_key+l)]
 
-#             nbr_iterations4 = len(unique_test) - len_key
+                if extract4 == dict_key:
 
-#             for l in range(nbr_iterations4 + 1):
-
-#               extract4 = unique_test[l:(len_key+l)]
-
-#               if extract4 == dict_key:
-
-#                 test_overlap_dict[dict_key].append(unique_test)
-
-      #for sp10 we'll just copy train set overlap_dict
-      test_overlap_dict = deepcopy(overlap_dict)
-                
-#       #then we'll populate the spl2 replacement dict
-
-#       spl2_test_overlap_dict = {}
-
-#       test_overlap_key_list = list(test_overlap_dict)
-
-#       test_overlap_key_list.sort()
-#       test_overlap_key_list.sort(key = len, reverse=True)
-
-#       for overlap_key in test_overlap_key_list:
-
-#         for entry in test_overlap_dict[overlap_key]:
-
-#           if entry not in spl2_test_overlap_dict:
-
-#             spl2_test_overlap_dict.update({entry : overlap_key})
-            
-#       #here's where we identify values to set to 0 for spl5
-#       spl5_test_zero_dict = {}
-#       for entry in unique_list_test:
-#         if entry not in spl2_test_overlap_dict:
-#           spl5_test_zero_dict.update({entry : 0})
-
-      spl2_test_overlap_dict = deepcopy(spl2_overlap_dict)
-
-      unique_list_test = list(mdf_test[column].unique())
-      unique_list_test = list(map(str, unique_list_test))
-
-      #here's where we identify values to set to 0 for spl5
-      spl5_test_zero_dict = {}
-      for entry in unique_list_test:
-        if entry not in spl2_test_overlap_dict:
-          spl5_test_zero_dict.update({entry : 0})
-
-#       newcolumns = []
-
-#       for dict_key in overlap_dict:
-
-      newcolumn = column + '_sp10'
-
-#         mdf_test[newcolumn] = mdf_test[column].isin(test_overlap_dict[dict_key])
-#         mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
-
-#       mdf_train[newcolumn] = mdf_train[column].copy()
-      mdf_test[newcolumn] = mdf_test[column].copy()
-
-#       mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
-      mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
-
-      mdf_test[newcolumn] = mdf_test[newcolumn].replace(spl2_test_overlap_dict)
-      mdf_test[newcolumn] = mdf_test[newcolumn].replace(spl5_test_zero_dict)
-
-#       newcolumns.append(newcolumn)
-    
-    return mdf_test
-
-  def postprocess_sp15_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
-    '''
-    #postprocess_splt_class(mdf_test, column, postprocess_dict, category)
-    #preprocess column with categorical entries as strings
-    #identifies overlaps of subsets of those strings and records
-    #as a new boolan column
-    #for example, if a categoical set consisted of unique values ['west', 'north', 'northeast']
-    #then a new column would be created idenitifying cells which included 'north' in their entries
-    #(here for north and northeast)
-    #returns as column titled origcolumn_splt_entry    
-    #missing values are ignored by default
-    
-    #here in postprocess we only create columns foir those overlaps that were identified 
-    #fromthe train set
-    '''
-    
-    #to retrieve the normalization dictionary we're going to use new method since we don't yet 
-    #know what the returned columns titles are yet
-    
-    normkey = False
-    
-    if column in postprocess_dict['origcolumn']:
-      
-      columnkeylist = postprocess_dict['origcolumn'][column]['columnkeylist']
-      
-    else:
-      
-      origcolumn = postprocess_dict['column_dict'][column]['origcolumn']
-      
-      columnkeylist = postprocess_dict['origcolumn'][origcolumn]['columnkeylist']
-    
-    for columnkey in columnkeylist:
-      
-      if column == postprocess_dict['column_dict'][columnkey]['inputcolumn']:
-
-        if 'splt_newcolumns_sp15' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
-
-          normkey = columnkey
-        
-    if normkey is not False:
-
-      #great now we can grab normalization parameters
-      overlap_dict = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['overlap_dict']
-      newcolumns = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['splt_newcolumns_sp15']
-      int_headers = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['int_headers']
-      int_labels_dict = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['int_labels_dict']
-      concurrent_activations = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['concurrent_activations']
-
-      #now for mdf_test we'll only consider those overlaps already identified from train set
-
-      unique_list_test = list(mdf_test[column].unique())
-
-      unique_list_test = list(map(str, unique_list_test))
-
-      test_overlap_dict = {}
-
-      train_keys = list(overlap_dict)
-
-      train_keys.sort(key = len, reverse=True)
-
-      for key in train_keys:
-
-        test_overlap_dict.update({key:[]})
-
-      for dict_key in train_keys:
-
-        for unique_test in unique_list_test:
-
-          len_key = len(dict_key)
-
-          if len(unique_test) >= len_key:
-
-            nbr_iterations4 = len(unique_test) - len_key + 1
-
-            for l in range(nbr_iterations4):
-
-              extract4 = unique_test[l:(len_key+l)]
-
-              if extract4 == dict_key:
-
-                test_overlap_dict[dict_key].append(unique_test)
-                
-                if concurrent_activations is False:
+                  test_overlap_dict[dict_key].append(unique_test)
 
                   break
+                
+      #then we'll populate the spl2 replacement dict
 
-      newcolumns = []
+      spl2_test_overlap_dict = {}
 
-      for dict_key in overlap_dict:
+      test_overlap_key_list = list(test_overlap_dict)
 
-        newcolumn = column + '_sp15_' + dict_key
-        
-#         mdf_train[newcolumn] = mdf_train[column].copy()
-        mdf_test[newcolumn] = mdf_test[column].copy()
+      test_overlap_key_list.sort()
+      test_overlap_key_list.sort(key = len, reverse=True)
 
-#         mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
-        mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
+      for overlap_key in test_overlap_key_list:
 
-        mdf_test[newcolumn] = mdf_test[newcolumn].isin(test_overlap_dict[dict_key])
-        mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
+        for entry in test_overlap_dict[overlap_key]:
 
-        newcolumns.append(newcolumn)
-        
-      #now convert coloumn headers from string to int convention
-      if int_headers is True:
-        mdf_test  = mdf_test.rename(columns=int_labels_dict)
-    
-    return mdf_test
+          if entry not in spl2_test_overlap_dict:
 
-  def postprocess_sp16_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
-    '''
-    #postprocess_sp16_class(mdf_test, column, postprocess_dict, category)
-    #preprocess column with categorical entries as strings
-    #identifies overlaps of subsets of those strings and records
-    #as a new boolan column
-    #for example, if a categoical set consisted of unique values ['west', 'north', 'northeast']
-    #then a new column would be created idenitifying cells which included 'north' in their entries
-    #(here for north and northeast)
-    #returns as column titled origcolumn_splt_entry    
-    #missing values are ignored by default
-    
-    #here in postprocess we only create columns foir those overlaps that were identified 
-    #fromthe train set
-    
-    #comparable to splt but
-    #assumes that unique values of test set are same or subset of train set
-    #for more efficient application in postmunge
-    
-    #sp16 is comparable to spl8 but multiple concurrent activations allowed
-    #so requires a different MLinfilltype in processdict
-    '''
-    
-    #to retrieve the normalization dictionary we're going to use new method since we don't yet 
-    #know what the returned columns titles are yet
-    
-    normkey = False
-    
-    if column in postprocess_dict['origcolumn']:
-      
-      columnkeylist = postprocess_dict['origcolumn'][column]['columnkeylist']
-      
-    else:
-      
-      origcolumn = postprocess_dict['column_dict'][column]['origcolumn']
-      
-      columnkeylist = postprocess_dict['origcolumn'][origcolumn]['columnkeylist']
-    
-    for columnkey in columnkeylist:
-      
-      if column == postprocess_dict['column_dict'][columnkey]['inputcolumn']:
+            spl2_test_overlap_dict.update({entry : overlap_key})
+            
+      #here's where we identify values to set to 0 for spl5
+      spl5_test_zero_dict = {}
+      if consolidate_nonoverlaps is True:
 
-        if 'splt_newcolumns_sp16' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
+        if test_same_as_train is True:
+          unique_list_test = list(mdf_test[column].unique())
+          unique_list_test = list(map(str, unique_list_test))
 
-          normkey = columnkey
-        
-    if normkey is not False:
+        for entry in unique_list_test:
+          if entry not in spl2_test_overlap_dict:
+            spl5_test_zero_dict.update({entry : 0})
 
-      #great now we can grab normalization parameters
-      overlap_dict = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['overlap_dict']
-      newcolumns = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['splt_newcolumns_sp16']
-      int_headers = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['int_headers']
-      int_labels_dict = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['int_labels_dict']
+#       newcolumns = []
 
-      #now for mdf_test we'll only consider those overlaps already identified from train set
-      
-      #this assumes that set of unique values is same or subset of those for train set
-      #for more efficient application in postmunge
+#       for dict_key in overlap_dict:
 
-#       unique_list_test = list(mdf_test[column].unique())
+      newcolumn = column + suffix
 
-#       unique_list_test = list(map(str, unique_list_test))
+#         mdf_test[newcolumn] = mdf_test[column].isin(test_overlap_dict[dict_key])
+#         mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
 
-#       test_overlap_dict = {}
+#       mdf_train[newcolumn] = mdf_train[column].copy()
+      mdf_test[newcolumn] = mdf_test[column].copy()
 
-#       train_keys = list(overlap_dict)
+#       mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
+      mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
 
-#       train_keys.sort(key = len, reverse=True)
+      mdf_test[newcolumn] = mdf_test[newcolumn].replace(spl2_test_overlap_dict)
+      mdf_test[newcolumn] = mdf_test[newcolumn].replace(spl5_test_zero_dict)
 
-#       for key in train_keys:
-
-#         test_overlap_dict.update({key:[]})
-
-#       for dict_key in train_keys:
-
-#         for unique_test in unique_list_test:
-
-#           len_key = len(dict_key)
-
-#           if len(unique_test) >= len_key:
-
-#             nbr_iterations4 = len(unique_test) - len_key
-
-#             for l in range(nbr_iterations4 + 1):
-
-#               extract4 = unique_test[l:(len_key+l)]
-
-#               if extract4 == dict_key:
-
-#                 test_overlap_dict[dict_key].append(unique_test)
-
-      newcolumns = []
-
-      for dict_key in overlap_dict:
-
-        newcolumn = column + '_sp16_' + dict_key
-        
-#         mdf_train[newcolumn] = mdf_train[column].copy()
-        mdf_test[newcolumn] = mdf_test[column].copy()
-
-#         mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
-        mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
-
-        #mdf_test[newcolumn] = mdf_test[newcolumn].isin(test_overlap_dict[dict_key])
-        mdf_test[newcolumn] = mdf_test[newcolumn].isin(overlap_dict[dict_key])
-        mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
-
-        newcolumns.append(newcolumn)
-        
-      #now convert coloumn headers from string to int convention
-      if int_headers is True:
-        mdf_test  = mdf_test.rename(columns=int_labels_dict)
+#       newcolumns.append(newcolumn)
     
     return mdf_test
 
@@ -34729,6 +30782,11 @@ class AutoMunge:
     #sp19 is comparable to sp15 but with a returned binary encoding aggregation
     '''
     
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = '_sp19'
+    
     #to retrieve the normalization dictionary we're going to use new method since we don't yet 
     #know what the returned columns titles are yet
     
@@ -34748,7 +30806,8 @@ class AutoMunge:
       
       if column == postprocess_dict['column_dict'][columnkey]['inputcolumn']:
 
-        if 'splt_newcolumns_sp19' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
+        if 'splt_newcolumns_sp19' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey] \
+        and postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]['suffix'] == suffix:
 
           normkey = columnkey
         
@@ -34773,44 +30832,51 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['_1010_activations_dict']
       categorylist = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['categorylist']
+      test_same_as_train = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['test_same_as_train']
 
       #now for mdf_test we'll only consider those overlaps already identified from train set
+      
+      if test_same_as_train is True:
+        test_overlap_dict = overlap_dict
 
-      unique_list_test = list(mdf_test[column].unique())
+      elif test_same_as_train is False:
 
-      unique_list_test = list(map(str, unique_list_test))
+        unique_list_test = list(mdf_test[column].unique())
 
-      test_overlap_dict = {}
+        unique_list_test = list(map(str, unique_list_test))
 
-      train_keys = list(overlap_dict)
+        test_overlap_dict = {}
 
-      train_keys.sort(key = len, reverse=True)
+        train_keys = list(overlap_dict)
 
-      for key in train_keys:
+        train_keys.sort(key = len, reverse=True)
 
-        test_overlap_dict.update({key:[]})
+        for key in train_keys:
 
-      for dict_key in train_keys:
+          test_overlap_dict.update({key:[]})
 
-        for unique_test in unique_list_test:
+        for dict_key in train_keys:
 
-          len_key = len(dict_key)
+          for unique_test in unique_list_test:
 
-          if len(unique_test) >= len_key:
+            len_key = len(dict_key)
 
-            nbr_iterations4 = len(unique_test) - len_key + 1
+            if len(unique_test) >= len_key:
 
-            for l in range(nbr_iterations4):
+              nbr_iterations4 = len(unique_test) - len_key + 1
 
-              extract4 = unique_test[l:(len_key+l)]
+              for l in range(nbr_iterations4):
 
-              if extract4 == dict_key:
+                extract4 = unique_test[l:(len_key+l)]
 
-                test_overlap_dict[dict_key].append(unique_test)
-                
-                if concurrent_activations is False:
+                if extract4 == dict_key:
 
-                  break
+                  test_overlap_dict[dict_key].append(unique_test)
+
+                  if concurrent_activations is False:
+
+                    break
 
       newcolumns = []
 
@@ -34835,16 +30901,18 @@ class AutoMunge:
         
       
       #begin binary encoding of set, leaving the int_headers here out of convenience, not really needed
-      mdf_test[column + '_sp19'] = 'activations_'
+      sp19_column = column + suffix
+      
+      mdf_test[sp19_column] = 'activations_'
       
       for entry in newcolumns:
-        mdf_test[column + '_sp19'] = mdf_test[column + '_sp19'] + mdf_test[entry].astype(str)
+        mdf_test[sp19_column] = mdf_test[sp19_column] + mdf_test[entry].astype(str)
         
       #extract categories for column labels
       #note that .unique() extracts the labels as a numpy array
       labels_train = list(_1010_binary_encoding_dict.keys())
       labels_train.sort()
-      labels_test = list(mdf_test[column + '_sp19'].unique())
+      labels_test = list(mdf_test[sp19_column].unique())
       labels_test.sort()
       
       #if infill not present in train set, insert
@@ -34853,7 +30921,7 @@ class AutoMunge:
         labels_test.sort()
         
       #replace the cateogries in train set via ordinal trasnformation
-      mdf_test[column + '_sp19'] = mdf_test[column + '_sp19'].replace(_1010_binary_encoding_dict)
+      mdf_test[sp19_column] = mdf_test[sp19_column].replace(_1010_binary_encoding_dict)
       
       #in test set, we'll need to strike any categories that weren't present in train
       #first let'/s identify what applies
@@ -34861,210 +30929,28 @@ class AutoMunge:
       
       #so we'll just replace those items with our plug value
       testplug_dict = dict(zip(testspecificcategories, ['zzzinfill'] * len(testspecificcategories)))
-      mdf_test[column + '_sp19'] = mdf_test[column + '_sp19'].replace(testplug_dict)
+      mdf_test[sp19_column] = mdf_test[sp19_column].replace(testplug_dict)
       
       #now we'll apply the 1010 transformation to the test set
-      mdf_test[column + '_sp19'] = mdf_test[column + '_sp19'].replace(_1010_binary_encoding_dict)
+      mdf_test[sp19_column] = mdf_test[sp19_column].replace(_1010_binary_encoding_dict)
       
       #ok let's create a list of columns to store each entry of the binary encoding
       _1010_columnlist = []
       
       for i in range(_1010_binary_column_count):
 
-        _1010_columnlist.append(column + '_sp19_' + str(i))
+        _1010_columnlist.append(column + suffix + '_' + str(i))
 
       #now let's store the encoding
       i=0
       for _1010_column in _1010_columnlist:
 
-        mdf_test[_1010_column] = mdf_test[column + '_sp19'].str.slice(i,i+1).astype(np.int8)
+        mdf_test[_1010_column] = mdf_test[sp19_column].str.slice(i,i+1).astype(np.int8)
 
         i+=1
         
       #now delete the support column
-      del mdf_test[column + '_sp19']
-      for entry in newcolumns:
-        del mdf_test[entry]
-    
-    return mdf_test
-
-  def postprocess_sp20_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
-    '''
-    #postprocess_splt_class(mdf_test, column, postprocess_dict, category)
-    #preprocess column with categorical entries as strings
-    #identifies overlaps of subsets of those strings and records
-    #as a new boolan column
-    #for example, if a categoical set consisted of unique values ['west', 'north', 'northeast']
-    #then a new column would be created idenitifying cells which included 'north' in their entries
-    #(here for north and northeast)
-    #returns as column titled origcolumn_splt_entry    
-    #missing values are ignored by default
-    
-    #here in postprocess we only create columns foir those overlaps that were identified 
-    #fromthe train set
-    
-    #sp15 is comparable to splt but multiple concurrent activations allowed
-    #so requires a different MLinfilltype in processdict
-    
-    #sp19 is comparable to sp15 but with a returned binary encoding aggregation
-    
-    #sp20 is comparable to sp19 but assumes test set unique values are subset of train set
-    '''
-    
-    #to retrieve the normalization dictionary we're going to use new method since we don't yet 
-    #know what the returned columns titles are yet
-    
-    normkey = False
-    
-    if column in postprocess_dict['origcolumn']:
-      
-      columnkeylist = postprocess_dict['origcolumn'][column]['columnkeylist']
-      
-    else:
-      
-      origcolumn = postprocess_dict['column_dict'][column]['origcolumn']
-      
-      columnkeylist = postprocess_dict['origcolumn'][origcolumn]['columnkeylist']
-    
-    for columnkey in columnkeylist:
-      
-      if column == postprocess_dict['column_dict'][columnkey]['inputcolumn']:
-
-        if 'splt_newcolumns_sp20' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
-
-          normkey = columnkey
-        
-    if normkey is not False:
-
-      #great now we can grab normalization parameters
-      overlap_dict = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['overlap_dict']
-      newcolumns = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['splt_newcolumns_sp20']
-      int_headers = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['int_headers']
-      int_labels_dict = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['int_labels_dict']
-      concurrent_activations = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['concurrent_activations']
-      _1010_binary_encoding_dict = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['_1010_binary_encoding_dict']
-      _1010_binary_column_count = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['_1010_binary_column_count']
-      _1010_activations_dict = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['_1010_activations_dict']
-      categorylist = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['categorylist']
-
-#       #now for mdf_test we'll only consider those overlaps already identified from train set
-
-#       unique_list_test = list(mdf_test[column].unique())
-
-#       unique_list_test = list(map(str, unique_list_test))
-
-#       test_overlap_dict = {}
-
-#       train_keys = list(overlap_dict)
-
-#       train_keys.sort(key = len, reverse=True)
-
-#       for key in train_keys:
-
-#         test_overlap_dict.update({key:[]})
-
-#       for dict_key in train_keys:
-
-#         for unique_test in unique_list_test:
-
-#           len_key = len(dict_key)
-
-#           if len(unique_test) >= len_key:
-
-#             nbr_iterations4 = len(unique_test) - len_key + 1
-
-#             for l in range(nbr_iterations4):
-
-#               extract4 = unique_test[l:(len_key+l)]
-
-#               if extract4 == dict_key:
-
-#                 test_overlap_dict[dict_key].append(unique_test)
-                
-#                 if concurrent_activations is False:
-
-#                   break
-
-      newcolumns = []
-
-      for dict_key in overlap_dict:
-
-        newcolumn = column + '_sp15_' + dict_key
-        
-#         mdf_train[newcolumn] = mdf_train[column].copy()
-        mdf_test[newcolumn] = mdf_test[column].copy()
-
-#         mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
-        mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
-
-        mdf_test[newcolumn] = mdf_test[newcolumn].isin(overlap_dict[dict_key])
-        mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
-
-        newcolumns.append(newcolumn)
-        
-      #now convert coloumn headers from string to int convention
-      if int_headers is True:
-        mdf_test  = mdf_test.rename(columns=int_labels_dict)
-        
-      
-      #begin binary encoding of set, leaving the int_headers here out of convenience, not really needed
-      mdf_test[column + '_sp20'] = 'activations_'
-      
-      for entry in newcolumns:
-        mdf_test[column + '_sp20'] = mdf_test[column + '_sp20'] + mdf_test[entry].astype(str)
-        
-      #extract categories for column labels
-      #note that .unique() extracts the labels as a numpy array
-      labels_train = list(_1010_binary_encoding_dict.keys())
-      labels_train.sort()
-      labels_test = list(mdf_test[column + '_sp20'].unique())
-      labels_test.sort()
-      
-      #if infill not present in train set, insert
-      if 'zzzinfill' not in labels_test:
-        labels_test = labels_test + ['zzzinfill']
-        labels_test.sort()
-        
-      #replace the cateogries in train set via ordinal trasnformation
-      mdf_test[column + '_sp20'] = mdf_test[column + '_sp20'].replace(_1010_binary_encoding_dict)
-      
-      #in test set, we'll need to strike any categories that weren't present in train
-      #first let'/s identify what applies
-      testspecificcategories = list(set(labels_test)-set(labels_train))
-      
-      #so we'll just replace those items with our plug value
-      testplug_dict = dict(zip(testspecificcategories, ['zzzinfill'] * len(testspecificcategories)))
-      mdf_test[column + '_sp20'] = mdf_test[column + '_sp20'].replace(testplug_dict)
-      
-      #now we'll apply the 1010 transformation to the test set
-      mdf_test[column + '_sp20'] = mdf_test[column + '_sp20'].replace(_1010_binary_encoding_dict)
-      
-      #ok let's create a list of columns to store each entry of the binary encoding
-      _1010_columnlist = []
-      
-      for i in range(_1010_binary_column_count):
-
-        _1010_columnlist.append(column + '_sp20_' + str(i))
-
-      #now let's store the encoding
-      i=0
-      for _1010_column in _1010_columnlist:
-
-        mdf_test[_1010_column] = mdf_test[column + '_sp20'].str.slice(i,i+1).astype(np.int8)
-
-        i+=1
-        
-      #now delete the support column
-      del mdf_test[column + '_sp20']
+      del mdf_test[sp19_column]
       for entry in newcolumns:
         del mdf_test[entry]
     
@@ -35086,6 +30972,11 @@ class AutoMunge:
     #only complete entries are checked for presence as subsets in other entries
     '''
     
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = '_sbst'
+    
     #to retrieve the normalization dictionary we're going to use new method since we don't yet 
     #know what the returned columns titles are yet
     
@@ -35105,7 +30996,8 @@ class AutoMunge:
       
       if column == postprocess_dict['column_dict'][columnkey]['inputcolumn']:
 
-        if 'splt_newcolumns_sbst' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
+        if 'splt_newcolumns_sbst' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey] \
+        and postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]['suffix'] == suffix:
 
           normkey = columnkey
         
@@ -35122,52 +31014,59 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['int_labels_dict']
       concurrent_activations = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['concurrent_activations']
+      test_same_as_train = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['test_same_as_train']
 
       #now for mdf_test we'll only consider those overlaps already identified from train set
+      
+      if test_same_as_train is True:
+        test_overlap_dict = overlap_dict
 
-      unique_list_test = list(mdf_test[column].unique())
+      elif test_same_as_train is False:
 
-      unique_list_test = list(map(str, unique_list_test))
+        unique_list_test = list(mdf_test[column].unique())
 
-      unique_list_test = sorted(unique_list_test, key=len, reverse=True)
+        unique_list_test = list(map(str, unique_list_test))
 
-      test_overlap_dict = {}
+        unique_list_test = sorted(unique_list_test, key=len, reverse=True)
 
-      train_keys = list(overlap_dict)
+        test_overlap_dict = {}
 
-      train_keys.sort(key = len, reverse=True)
+        train_keys = list(overlap_dict)
 
-      for key in train_keys:
+        train_keys.sort(key = len, reverse=True)
 
-        test_overlap_dict.update({key:[]})
+        for key in train_keys:
 
-      for dict_key in train_keys:
+          test_overlap_dict.update({key:[]})
 
-        for unique_test in unique_list_test:
+        for dict_key in train_keys:
 
-          len_key = len(dict_key)
+          for unique_test in unique_list_test:
 
-          if len(unique_test) >= len_key:
+            len_key = len(dict_key)
 
-            nbr_iterations4 = len(unique_test) - len_key + 1
+            if len(unique_test) >= len_key:
 
-            for l in range(nbr_iterations4):
+              nbr_iterations4 = len(unique_test) - len_key + 1
 
-              extract4 = unique_test[l:(len_key+l)]
+              for l in range(nbr_iterations4):
 
-              if extract4 == dict_key:
+                extract4 = unique_test[l:(len_key+l)]
 
-                test_overlap_dict[dict_key].append(unique_test)
+                if extract4 == dict_key:
 
-                if concurrent_activations is False:
+                  test_overlap_dict[dict_key].append(unique_test)
 
-                  break
+                  if concurrent_activations is False:
+
+                    break
 
       newcolumns = []
 
       for dict_key in overlap_dict:
 
-        newcolumn = column + '_sbst_' + dict_key
+        newcolumn = column + suffix + '_' + dict_key
         
 #         mdf_train[newcolumn] = mdf_train[column].copy()
         mdf_test[newcolumn] = mdf_test[column].copy()
@@ -35176,128 +31075,6 @@ class AutoMunge:
         mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
 
         mdf_test[newcolumn] = mdf_test[newcolumn].isin(test_overlap_dict[dict_key])
-        mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
-
-        newcolumns.append(newcolumn)
-        
-      #now convert coloumn headers from string to int convention
-      if int_headers is True:
-        mdf_test  = mdf_test.rename(columns=int_labels_dict)
-    
-    return mdf_test
-
-  def postprocess_sbs2_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
-    '''
-    #process_sbs2_class(mdf_train, mdf_test, column, category)
-    #preprocess column with categorical entries as strings
-    #identifies cases where a full unique value is present 
-    #as a subset of a longer length unique value
-    #and returns one-hot activations to aggregate those cases
-    
-    #accepts parameters concurrent_activations to allow mulitple activations
-    #actually let's make concurrent activations the default
-    #and int_headers for privacy preserving headers
-    
-    #this differs from other string parsing functions in that
-    #only complete entries are checked for presence as subsets in other entries
-    
-    #sbs2 differs from sbst in that test set entries not present in the train set
-    #are not parsed for efficiency
-    '''
-    
-    #to retrieve the normalization dictionary we're going to use new method since we don't yet 
-    #know what the returned columns titles are yet
-    
-    normkey = False
-    
-    if column in postprocess_dict['origcolumn']:
-      
-      columnkeylist = postprocess_dict['origcolumn'][column]['columnkeylist']
-      
-    else:
-      
-      origcolumn = postprocess_dict['column_dict'][column]['origcolumn']
-      
-      columnkeylist = postprocess_dict['origcolumn'][origcolumn]['columnkeylist']
-    
-    for columnkey in columnkeylist:
-      
-      if column == postprocess_dict['column_dict'][columnkey]['inputcolumn']:
-
-        if 'splt_newcolumns_sbs2' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
-
-          normkey = columnkey
-        
-    if normkey is not False:
-
-      #great now we can grab normalization parameters
-      overlap_dict = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['overlap_dict']
-      newcolumns = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['splt_newcolumns_sbs2']
-      int_headers = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['int_headers']
-      int_labels_dict = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['int_labels_dict']
-      concurrent_activations = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['concurrent_activations']
-
-      #this assumes that set of unique values is same or subset of those for train set
-      #for more efficient application in postmunge
-      
-#       #now for mdf_test we'll only consider those overlaps already identified from train set
-
-#       unique_list_test = list(mdf_test[column].unique())
-
-#       unique_list_test = list(map(str, unique_list_test))
-
-#       unique_list_test = sorted(unique_list_test, key=len, reverse=True)
-
-#       test_overlap_dict = {}
-
-#       train_keys = list(overlap_dict)
-
-#       train_keys.sort(key = len, reverse=True)
-
-#       for key in train_keys:
-
-#         test_overlap_dict.update({key:[]})
-
-#       for dict_key in train_keys:
-
-#         for unique_test in unique_list_test:
-
-#           len_key = len(dict_key)
-
-#           if len(unique_test) >= len_key:
-
-#             nbr_iterations4 = len(unique_test) - len_key + 1
-
-#             for l in range(nbr_iterations4):
-
-#               extract4 = unique_test[l:(len_key+l)]
-
-#               if extract4 == dict_key:
-
-#                 test_overlap_dict[dict_key].append(unique_test)
-
-#                 if concurrent_activations is False:
-
-#                   break
-
-      newcolumns = []
-
-      for dict_key in overlap_dict:
-
-        newcolumn = column + '_sbs2_' + dict_key
-        
-#         mdf_train[newcolumn] = mdf_train[column].copy()
-        mdf_test[newcolumn] = mdf_test[column].copy()
-
-#         mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
-        mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
-
-        mdf_test[newcolumn] = mdf_test[newcolumn].isin(overlap_dict[dict_key])
         mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
 
         newcolumns.append(newcolumn)
@@ -35326,6 +31103,11 @@ class AutoMunge:
     #sbs3 is comparable to sbst but with a returned binary encoding aggregation
     '''
     
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = '_sbs3'
+    
     #to retrieve the normalization dictionary we're going to use new method since we don't yet 
     #know what the returned columns titles are yet
     
@@ -35345,7 +31127,8 @@ class AutoMunge:
       
       if column == postprocess_dict['column_dict'][columnkey]['inputcolumn']:
 
-        if 'splt_newcolumns_sbs3' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
+        if 'splt_newcolumns_sbs3' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey] \
+        and postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]['suffix'] == suffix:
 
           normkey = columnkey
         
@@ -35370,46 +31153,53 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['_1010_activations_dict']
       categorylist = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['categorylist']
-
+      test_same_as_train = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['test_same_as_train']
+      
       #now for mdf_test we'll only consider those overlaps already identified from train set
+      
+      if test_same_as_train is True:
+        test_overlap_dict = overlap_dict
 
-      unique_list_test = list(mdf_test[column].unique())
+      elif test_same_as_train is False:
 
-      unique_list_test = list(map(str, unique_list_test))
+        unique_list_test = list(mdf_test[column].unique())
 
-      unique_list_test = sorted(unique_list_test, key=len, reverse=True)
+        unique_list_test = list(map(str, unique_list_test))
 
-      test_overlap_dict = {}
+        unique_list_test = sorted(unique_list_test, key=len, reverse=True)
 
-      train_keys = list(overlap_dict)
+        test_overlap_dict = {}
 
-      train_keys.sort(key = len, reverse=True)
+        train_keys = list(overlap_dict)
 
-      for key in train_keys:
+        train_keys.sort(key = len, reverse=True)
 
-        test_overlap_dict.update({key:[]})
+        for key in train_keys:
 
-      for dict_key in train_keys:
+          test_overlap_dict.update({key:[]})
 
-        for unique_test in unique_list_test:
+        for dict_key in train_keys:
 
-          len_key = len(dict_key)
+          for unique_test in unique_list_test:
 
-          if len(unique_test) >= len_key:
+            len_key = len(dict_key)
 
-            nbr_iterations4 = len(unique_test) - len_key + 1
+            if len(unique_test) >= len_key:
 
-            for l in range(nbr_iterations4):
+              nbr_iterations4 = len(unique_test) - len_key + 1
 
-              extract4 = unique_test[l:(len_key+l)]
+              for l in range(nbr_iterations4):
 
-              if extract4 == dict_key:
+                extract4 = unique_test[l:(len_key+l)]
 
-                test_overlap_dict[dict_key].append(unique_test)
+                if extract4 == dict_key:
 
-                if concurrent_activations is False:
+                  test_overlap_dict[dict_key].append(unique_test)
 
-                  break
+                  if concurrent_activations is False:
+
+                    break
 
       newcolumns = []
 
@@ -35434,16 +31224,19 @@ class AutoMunge:
         
       
       #begin binary encoding of set, leaving the int_headers here out of convenience, not really needed
-      mdf_test[column + '_sbs3'] = 'activations_'
+      
+      sbs3_column = column + suffix
+      
+      mdf_test[sbs3_column] = 'activations_'
       
       for entry in newcolumns:
-        mdf_test[column + '_sbs3'] = mdf_test[column + '_sbs3'] + mdf_test[entry].astype(str)
+        mdf_test[sbs3_column] = mdf_test[sbs3_column] + mdf_test[entry].astype(str)
         
       #extract categories for column labels
       #note that .unique() extracts the labels as a numpy array
       labels_train = list(_1010_binary_encoding_dict.keys())
       labels_train.sort()
-      labels_test = list(mdf_test[column + '_sbs3'].unique())
+      labels_test = list(mdf_test[sbs3_column].unique())
       labels_test.sort()
       
       #if infill not present in train set, insert
@@ -35452,7 +31245,7 @@ class AutoMunge:
         labels_test.sort()
         
       #replace the cateogries in train set via ordinal trasnformation
-      mdf_test[column + '_sbs3'] = mdf_test[column + '_sbs3'].replace(_1010_binary_encoding_dict)
+      mdf_test[sbs3_column] = mdf_test[sbs3_column].replace(_1010_binary_encoding_dict)
       
       #in test set, we'll need to strike any categories that weren't present in train
       #first let'/s identify what applies
@@ -35460,210 +31253,28 @@ class AutoMunge:
       
       #so we'll just replace those items with our plug value
       testplug_dict = dict(zip(testspecificcategories, ['zzzinfill'] * len(testspecificcategories)))
-      mdf_test[column + '_sbs3'] = mdf_test[column + '_sbs3'].replace(testplug_dict)
+      mdf_test[sbs3_column] = mdf_test[sbs3_column].replace(testplug_dict)
       
       #now we'll apply the 1010 transformation to the test set
-      mdf_test[column + '_sbs3'] = mdf_test[column + '_sbs3'].replace(_1010_binary_encoding_dict)
+      mdf_test[sbs3_column] = mdf_test[sbs3_column].replace(_1010_binary_encoding_dict)
       
       #ok let's create a list of columns to store each entry of the binary encoding
       _1010_columnlist = []
       
       for i in range(_1010_binary_column_count):
 
-        _1010_columnlist.append(column + '_sbs3_' + str(i))
+        _1010_columnlist.append(column + suffix + '_' + str(i))
 
       #now let's store the encoding
       i=0
       for _1010_column in _1010_columnlist:
 
-        mdf_test[_1010_column] = mdf_test[column + '_sbs3'].str.slice(i,i+1).astype(np.int8)
+        mdf_test[_1010_column] = mdf_test[sbs3_column].str.slice(i,i+1).astype(np.int8)
 
         i+=1
         
       #now delete the support column
-      del mdf_test[column + '_sbs3']
-      for entry in newcolumns:
-        del mdf_test[entry]
-    
-    return mdf_test
-
-  def postprocess_sbs4_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
-    '''
-    #process_sbst_class(mdf_train, mdf_test, column, category)
-    #preprocess column with categorical entries as strings
-    #identifies cases where a full unique value is present 
-    #as a subset of a longer length unique value
-    #and returns one-hot activations to aggregate those cases
-    
-    #accepts parameters concurrent_activations to allow mulitple activations
-    #actually let's make concurrent activations the default
-    #and int_headers for privacy preserving headers
-    
-    #this differs from other string parsing functions in that
-    #only complete entries are checked for presence as subsets in other entries
-    
-    #sbs2 differs from sbst in that test set entries not present in the train set
-    #are not parsed for efficiency
-    
-    #sbs4 is comparable to sbs2 but with a returned binary encoding aggregation
-    '''
-    
-    #to retrieve the normalization dictionary we're going to use new method since we don't yet 
-    #know what the returned columns titles are yet
-    
-    normkey = False
-    
-    if column in postprocess_dict['origcolumn']:
-      
-      columnkeylist = postprocess_dict['origcolumn'][column]['columnkeylist']
-      
-    else:
-      
-      origcolumn = postprocess_dict['column_dict'][column]['origcolumn']
-      
-      columnkeylist = postprocess_dict['origcolumn'][origcolumn]['columnkeylist']
-    
-    for columnkey in columnkeylist:
-      
-      if column == postprocess_dict['column_dict'][columnkey]['inputcolumn']:
-
-        if 'splt_newcolumns_sbs4' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
-
-          normkey = columnkey
-        
-    if normkey is not False:
-
-      #great now we can grab normalization parameters
-      overlap_dict = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['overlap_dict']
-      newcolumns = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['splt_newcolumns_sbs4']
-      int_headers = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['int_headers']
-      int_labels_dict = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['int_labels_dict']
-      concurrent_activations = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['concurrent_activations']
-      _1010_binary_encoding_dict = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['_1010_binary_encoding_dict']
-      _1010_binary_column_count = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['_1010_binary_column_count']
-      _1010_activations_dict = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['_1010_activations_dict']
-      categorylist = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['categorylist']
-
-      #now for mdf_test we'll only consider those overlaps already identified from train set
-
-      unique_list_test = list(mdf_test[column].unique())
-
-      unique_list_test = list(map(str, unique_list_test))
-
-      unique_list_test = sorted(unique_list_test, key=len, reverse=True)
-
-      test_overlap_dict = {}
-
-      train_keys = list(overlap_dict)
-
-      train_keys.sort(key = len, reverse=True)
-
-      for key in train_keys:
-
-        test_overlap_dict.update({key:[]})
-
-      for dict_key in train_keys:
-
-        for unique_test in unique_list_test:
-
-          len_key = len(dict_key)
-
-          if len(unique_test) >= len_key:
-
-            nbr_iterations4 = len(unique_test) - len_key + 1
-
-            for l in range(nbr_iterations4):
-
-              extract4 = unique_test[l:(len_key+l)]
-
-              if extract4 == dict_key:
-
-                test_overlap_dict[dict_key].append(unique_test)
-
-                if concurrent_activations is False:
-
-                  break
-
-      newcolumns = []
-
-      for dict_key in overlap_dict:
-
-        newcolumn = column + '_sbst_' + dict_key
-        
-#         mdf_train[newcolumn] = mdf_train[column].copy()
-        mdf_test[newcolumn] = mdf_test[column].copy()
-
-#         mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
-        mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
-
-        mdf_test[newcolumn] = mdf_test[newcolumn].isin(test_overlap_dict[dict_key])
-        mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
-
-        newcolumns.append(newcolumn)
-        
-      #now convert coloumn headers from string to int convention
-      if int_headers is True:
-        mdf_test  = mdf_test.rename(columns=int_labels_dict)
-        
-      
-      #begin binary encoding of set, leaving the int_headers here out of convenience, not really needed
-      mdf_test[column + '_sbs4'] = 'activations_'
-      
-      for entry in newcolumns:
-        mdf_test[column + '_sbs4'] = mdf_test[column + '_sbs4'] + mdf_test[entry].astype(str)
-        
-      #extract categories for column labels
-      #note that .unique() extracts the labels as a numpy array
-      labels_train = list(_1010_binary_encoding_dict.keys())
-      labels_train.sort()
-      labels_test = list(mdf_test[column + '_sbs4'].unique())
-      labels_test.sort()
-      
-      #if infill not present in train set, insert
-      if 'zzzinfill' not in labels_test:
-        labels_test = labels_test + ['zzzinfill']
-        labels_test.sort()
-        
-      #replace the cateogries in train set via ordinal trasnformation
-      mdf_test[column + '_sbs4'] = mdf_test[column + '_sbs4'].replace(_1010_binary_encoding_dict)
-      
-      #in test set, we'll need to strike any categories that weren't present in train
-      #first let'/s identify what applies
-      testspecificcategories = list(set(labels_test)-set(labels_train))
-      
-      #so we'll just replace those items with our plug value
-      testplug_dict = dict(zip(testspecificcategories, ['zzzinfill'] * len(testspecificcategories)))
-      mdf_test[column + '_sbs4'] = mdf_test[column + '_sbs4'].replace(testplug_dict)
-      
-      #now we'll apply the 1010 transformation to the test set
-      mdf_test[column + '_sbs4'] = mdf_test[column + '_sbs4'].replace(_1010_binary_encoding_dict)
-      
-      #ok let's create a list of columns to store each entry of the binary encoding
-      _1010_columnlist = []
-      
-      for i in range(_1010_binary_column_count):
-
-        _1010_columnlist.append(column + '_sbs4_' + str(i))
-
-      #now let's store the encoding
-      i=0
-      for _1010_column in _1010_columnlist:
-
-        mdf_test[_1010_column] = mdf_test[column + '_sbs4'].str.slice(i,i+1).astype(np.int8)
-
-        i+=1
-        
-      #now delete the support column
-      del mdf_test[column + '_sbs4']
+      del mdf_test[sbs3_column]
       for entry in newcolumns:
         del mdf_test[entry]
     
@@ -43763,7 +39374,7 @@ class AutoMunge:
 
   def inverseprocess_splt(self, df, categorylist, postprocess_dict):
     """
-    #inverse transform corresponding to process_splt_class
+    #inverse transform corresponding to process_sp1t_class
     #assumes any relevant parameters were saved in normalization_dict
     #does not perform infill, assumes clean data
     
@@ -43785,106 +39396,39 @@ class AutoMunge:
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['overlap_dict']
     int_headers = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['int_headers']
+    suffix = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
     
     df[inputcolumn] = 'zzzinfill'
+    
+    column_conversion_dict = dict(zip(preint_newcolumns, newcolumns))
+    
+    preint_newcolumns = sorted(preint_newcolumns, reverse = False, key=len)
     
     if int_headers is False:
 
       for column in preint_newcolumns:
 
-        overlap = column.replace(inputcolumn + '_splt_', '')
+        overlap = column.replace(inputcolumn + suffix + '_', '')
 
         df[inputcolumn] = np.where(df[column] == 1, overlap, df[inputcolumn])
     
     else:
-      
-      i = 0
+
       for column in preint_newcolumns:
         
-        newcolumn = newcolumns[i]
+        newcolumn = column_conversion_dict[column]
         
-        overlap = column.replace(inputcolumn + '_splt_', '')
+        overlap = column.replace(inputcolumn + suffix + '_', '')
         
         df[inputcolumn] = np.where(df[newcolumn] == 1, overlap, df[inputcolumn])
-        
-        i += 1
-    
-    return df, inputcolumn
 
-  def inverseprocess_spl8(self, df, categorylist, postprocess_dict):
-    """
-    #inverse transform corresponding to process_splt_class
-    #assumes any relevant parameters were saved in normalization_dict
-    #does not perform infill, assumes clean data
-    
-    #this only achieves partial information recovery, missing entries without overlap
-    
-    #returns the overlaps, not the full entries
-    #since it doesn't know which of the full entries to return
-    """
-    
-    normkey = categorylist[0]
-    
-    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
-    
-    newcolumns = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['splt_newcolumns_spl8']
-    preint_newcolumns = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['preint_newcolumns']
-    overlap_dict = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['overlap_dict']
-    int_headers = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['int_headers']
-    
-    df[inputcolumn] = 'zzzinfill'
-    
-    if int_headers is False:
 
-      for column in preint_newcolumns:
-
-        overlap = column.replace(inputcolumn + '_spl8_', '')
-
-        df[inputcolumn] = np.where(df[column] == 1, overlap, df[inputcolumn])
-    
-    else:
-      
-      i = 0
-      for column in preint_newcolumns:
-        
-        newcolumn = newcolumns[i]
-        
-        overlap = column.replace(inputcolumn + '_spl8_', '')
-        
-        df[inputcolumn] = np.where(df[newcolumn] == 1, overlap, df[inputcolumn])
-        
-        i += 1
-      
     return df, inputcolumn
   
   def inverseprocess_spl2(self, df, categorylist, postprocess_dict):
     """
     #inverse transform corresponding to process_spl2_class
-    #assumes any relevant parameters were saved in normalization_dict
-    #does not perform infill, assumes clean data
-    
-    #this only achieves partial information recovery, missing entries without overlap
-    
-    #returns the overlaps as a passthrough, not the full entries
-    #since it doesn't know which of the full entries to return
-    """
-    
-    normkey = categorylist[0]
-    
-    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
-    
-    df[inputcolumn] = df[normkey]
-
-    
-    return df, inputcolumn
-  
-  def inverseprocess_spl5(self, df, categorylist, postprocess_dict):
-    """
-    #inverse transform corresponding to process_spl5_class
     #assumes any relevant parameters were saved in normalization_dict
     #does not perform infill, assumes clean data
     
@@ -43902,115 +39446,15 @@ class AutoMunge:
     
     inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
     
+    consolidate_nonoverlaps = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['consolidate_nonoverlaps']
+    
     df[inputcolumn] = df[normkey]
     
-    df[inputcolumn] = np.where(df[inputcolumn] == '0', 'zzzinfill', df[inputcolumn])
+    if consolidate_nonoverlaps is True:
+
+      df[inputcolumn] = np.where(df[inputcolumn] == '0', 'zzzinfill', df[inputcolumn])
   
-    return df, inputcolumn
-
-  def inverseprocess_sp15(self, df, categorylist, postprocess_dict):
-    """
-    #inverse transform corresponding to process_sp15_class
-    #assumes any relevant parameters were saved in normalization_dict
-    #does not perform infill, assumes clean data
-    
-    #this only achieves partial information recovery, missing entries without overlap
-    
-    #returns the overlaps, not the full entries
-    #since it doesn't know which of the full entries to return
-    """
-    
-    normkey = categorylist[0]
-    
-    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
-    
-    newcolumns = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['splt_newcolumns_sp15']
-    preint_newcolumns = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['preint_newcolumns']
-    overlap_dict = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['overlap_dict']
-    int_headers = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['int_headers']
-    
-    df[inputcolumn] = 'zzzinfill'
-    
-    column_conversion_dict = dict(zip(preint_newcolumns, newcolumns))
-    
-    preint_newcolumns = sorted(preint_newcolumns, reverse = False, key=len)
-    
-    if int_headers is False:
-
-      for column in preint_newcolumns:
-
-        overlap = column.replace(inputcolumn + '_sp15_', '')
-
-        df[inputcolumn] = np.where(df[column] == 1, overlap, df[inputcolumn])
-    
-    else:
-
-      for column in preint_newcolumns:
-        
-        newcolumn = column_conversion_dict[column]
-        
-        overlap = column.replace(inputcolumn + '_sp15_', '')
-        
-        df[inputcolumn] = np.where(df[newcolumn] == 1, overlap, df[inputcolumn])
-
-
-    return df, inputcolumn
-
-  def inverseprocess_sp16(self, df, categorylist, postprocess_dict):
-    """
-    #inverse transform corresponding to process_sp15_class
-    #assumes any relevant parameters were saved in normalization_dict
-    #does not perform infill, assumes clean data
-    
-    #this only achieves partial information recovery, missing entries without overlap
-    
-    #returns the overlaps, not the full entries
-    #since it doesn't know which of the full entries to return
-    """
-    
-    normkey = categorylist[0]
-    
-    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
-    
-    newcolumns = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['splt_newcolumns_sp16']
-    preint_newcolumns = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['preint_newcolumns']
-    overlap_dict = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['overlap_dict']
-    int_headers = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['int_headers']
-#     overlap_dict = \
-#     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['overlap_dict']
-    
-    df[inputcolumn] = 'zzzinfill'
-    
-    column_conversion_dict = dict(zip(preint_newcolumns, newcolumns))
-    
-    preint_newcolumns = sorted(preint_newcolumns, reverse = False, key=len)
-    
-    if int_headers is False:
-
-      for column in preint_newcolumns:
-
-        overlap = column.replace(inputcolumn + '_sp16_', '')
-
-        df[inputcolumn] = np.where(df[column] == 1, overlap, df[inputcolumn])
-    
-    else:
-      
-      for column in preint_newcolumns:
-        
-        newcolumn = column_conversion_dict[column]
-        
-        overlap = column.replace(inputcolumn + '_sp16_', '')
-        
-        df[inputcolumn] = np.where(df[newcolumn] == 1, overlap, df[inputcolumn])
-    
     return df, inputcolumn
 
   def inverseprocess_sp19(self, df, categorylist, postprocess_dict):
@@ -44031,95 +39475,6 @@ class AutoMunge:
     
     newcolumns = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['splt_newcolumns_sp19']
-    preint_newcolumns = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['preint_newcolumns']
-    overlap_dict = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['overlap_dict']
-    int_headers = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['int_headers']
-    _1010_binary_encoding_dict = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['_1010_binary_encoding_dict']
-    _1010_binary_column_count = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['_1010_binary_column_count']
-    _1010_activations_dict = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['_1010_activations_dict']
-    categorylist = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['categorylist']
-    
-    inverse_binary_encoding_dict = {value:key for key,value in _1010_binary_encoding_dict.items()}
-    
-    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
-    
-    for categorylist_entry in categorylist:
-      
-      if categorylist_entry == categorylist[0]:
-        
-        df[inputcolumn] = df[categorylist_entry].astype(int).astype(str)
-        
-      else:
-        
-        df[inputcolumn] = df[inputcolumn] + df[categorylist_entry].astype(int).astype(str)
-        
-    df[inputcolumn] = df[inputcolumn].replace(inverse_binary_encoding_dict)
-    
-    df[inputcolumn] = df[inputcolumn].str.replace('activations_', '')
-    
-    #now let's extract the encoding
-    i=0
-    for newcolumn in newcolumns:
-      
-      df[newcolumn] = df[inputcolumn].str.slice(i,i+1).astype(np.int8)
-      
-      i+=1
-    
-    df[inputcolumn] = 'zzzinfill'
-    
-    column_conversion_dict = dict(zip(preint_newcolumns, newcolumns))
-    
-    preint_newcolumns = sorted(preint_newcolumns, reverse = False, key=len)
-    
-    if int_headers is False:
-
-      for column in preint_newcolumns:
-
-        overlap = column.replace(inputcolumn + '_sp15_', '')
-
-        df[inputcolumn] = np.where(df[column] == 1, overlap, df[inputcolumn])
-    
-    else:
-
-      for column in preint_newcolumns:
-        
-        newcolumn = column_conversion_dict[column]
-        
-        overlap = column.replace(inputcolumn + '_sp15_', '')
-        
-        df[inputcolumn] = np.where(df[newcolumn] == 1, overlap, df[inputcolumn])
-
-    for newcolumn in newcolumns:
-      
-      del df[newcolumn]
-
-    return df, inputcolumn
-
-  def inverseprocess_sp20(self, df, categorylist, postprocess_dict):
-    """
-    #inverse transform corresponding to process_sp20_class
-    #assumes any relevant parameters were saved in normalization_dict
-    #does not perform infill, assumes clean data
-    
-    #this only achieves partial information recovery, missing entries without overlap
-    
-    #returns the overlaps, not the full entries
-    #since it doesn't know which of the full entries to return
-    """
-    
-    normkey = categorylist[0]
-    
-    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
-    
-    newcolumns = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['splt_newcolumns_sp20']
     preint_newcolumns = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['preint_newcolumns']
     overlap_dict = \
@@ -44215,6 +39570,9 @@ class AutoMunge:
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['overlap_dict']
     int_headers = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['int_headers']
+    suffix = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+
     
     df[inputcolumn] = 'zzzinfill'
     
@@ -44222,7 +39580,7 @@ class AutoMunge:
 
       for column in preint_newcolumns:
 
-        overlap = column.replace(inputcolumn + '_sbst_', '')
+        overlap = column.replace(inputcolumn + suffix + '_', '')
 
         df[inputcolumn] = np.where(df[column] == 1, overlap, df[inputcolumn])
     
@@ -44233,57 +39591,7 @@ class AutoMunge:
         
         newcolumn = newcolumns[i]
         
-        overlap = column.replace(inputcolumn + '_sbst_', '')
-        
-        df[inputcolumn] = np.where(df[newcolumn] == 1, overlap, df[inputcolumn])
-        
-        i += 1
-    
-    return df, inputcolumn
-
-  def inverseprocess_sbs2(self, df, categorylist, postprocess_dict):
-    """
-    #inverse transform corresponding to process_sbs2_class
-    #assumes any relevant parameters were saved in normalization_dict
-    #does not perform infill, assumes clean data
-    
-    #this only achieves partial information recovery, missing entries without overlap
-    
-    #returns the overlaps, not the full entries
-    #since it doesn't know which of the full entries to return
-    """
-    
-    normkey = categorylist[0]
-    
-    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
-    
-    newcolumns = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['splt_newcolumns_sbs2']
-    preint_newcolumns = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['preint_newcolumns']
-    overlap_dict = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['overlap_dict']
-    int_headers = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['int_headers']
-    
-    df[inputcolumn] = 'zzzinfill'
-    
-    if int_headers is False:
-
-      for column in preint_newcolumns:
-
-        overlap = column.replace(inputcolumn + '_sbs2_', '')
-
-        df[inputcolumn] = np.where(df[column] == 1, overlap, df[inputcolumn])
-    
-    else:
-      
-      i = 0
-      for column in preint_newcolumns:
-        
-        newcolumn = newcolumns[i]
-        
-        overlap = column.replace(inputcolumn + '_sbs2_', '')
+        overlap = column.replace(inputcolumn + suffix + '_', '')
         
         df[inputcolumn] = np.where(df[newcolumn] == 1, overlap, df[inputcolumn])
         
@@ -44309,95 +39617,6 @@ class AutoMunge:
     
     newcolumns = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['splt_newcolumns_sbs3']
-    preint_newcolumns = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['preint_newcolumns']
-    overlap_dict = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['overlap_dict']
-    int_headers = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['int_headers']
-    _1010_binary_encoding_dict = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['_1010_binary_encoding_dict']
-    _1010_binary_column_count = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['_1010_binary_column_count']
-    _1010_activations_dict = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['_1010_activations_dict']
-    categorylist = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['categorylist']
-    
-    inverse_binary_encoding_dict = {value:key for key,value in _1010_binary_encoding_dict.items()}
-    
-    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
-    
-    for categorylist_entry in categorylist:
-      
-      if categorylist_entry == categorylist[0]:
-        
-        df[inputcolumn] = df[categorylist_entry].astype(int).astype(str)
-        
-      else:
-        
-        df[inputcolumn] = df[inputcolumn] + df[categorylist_entry].astype(int).astype(str)
-        
-    df[inputcolumn] = df[inputcolumn].replace(inverse_binary_encoding_dict)
-    
-    df[inputcolumn] = df[inputcolumn].str.replace('activations_', '')
-    
-    #now let's extract the encoding
-    i=0
-    for newcolumn in newcolumns:
-      
-      df[newcolumn] = df[inputcolumn].str.slice(i,i+1).astype(np.int8)
-      
-      i+=1
-    
-    df[inputcolumn] = 'zzzinfill'
-    
-    column_conversion_dict = dict(zip(preint_newcolumns, newcolumns))
-    
-    preint_newcolumns = sorted(preint_newcolumns, reverse = False, key=len)
-    
-    if int_headers is False:
-
-      for column in preint_newcolumns:
-
-        overlap = column.replace(inputcolumn + '_sbst_', '')
-
-        df[inputcolumn] = np.where(df[column] == 1, overlap, df[inputcolumn])
-    
-    else:
-
-      for column in preint_newcolumns:
-        
-        newcolumn = column_conversion_dict[column]
-        
-        overlap = column.replace(inputcolumn + '_sbst_', '')
-        
-        df[inputcolumn] = np.where(df[newcolumn] == 1, overlap, df[inputcolumn])
-
-    for newcolumn in newcolumns:
-      
-      del df[newcolumn]
-
-    return df, inputcolumn
-
-  def inverseprocess_sbs4(self, df, categorylist, postprocess_dict):
-    """
-    #inverse transform corresponding to process_sbs3_class
-    #assumes any relevant parameters were saved in normalization_dict
-    #does not perform infill, assumes clean data
-    
-    #this only achieves partial information recovery, missing entries without overlap
-    
-    #returns the overlaps, not the full entries
-    #since it doesn't know which of the full entries to return
-    """
-    
-    normkey = categorylist[0]
-    
-    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
-    
-    newcolumns = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['splt_newcolumns_sbs4']
     preint_newcolumns = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['preint_newcolumns']
     overlap_dict = \
