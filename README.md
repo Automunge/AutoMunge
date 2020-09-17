@@ -1337,6 +1337,22 @@ processdict =  {'newt' : {'dualprocess' : am.process_mnmx_class, \
 #loss to recovered data from inversion. For format of inverseprocess functions
 #please refer to the code base.
 
+Optionally, a user can set alternate default parameters to be passed to the associated
+transfomation functions by including the 'defaultparams' key. These updates to default
+parameters will still be overwritten if user manually specifies parameters in assignparam.
+```
+#for example
+processdict =  {'DLmm' : {'dualprocess' : am.process_DPmm_class, \
+                          'singleprocess' : None, \
+                          'postprocess' : am.postprocess_DPmm_class, \
+                          'inverseprocess' : am.inverseprocess_UPCS, \
+                          'info_retention' : True, \
+                          'defaultparams' : {'noisedistribution' : 'laplace'}, \
+                          'NArowtype' : 'numeric', \
+                          'MLinfilltype' : 'numeric', \
+                          'labelctgy' : 'DLmm'}}
+```
+
 #For advanced users:
 #Note that when populating a processdict for a transformation category, the
 #inversion function should be consistent with the transformation category that
@@ -2977,11 +2993,6 @@ Here are those root categories presented again in a concise sorted list, intende
 avoid unintentional duplication.
 - '1010',
 - '101d',
-- 'DLm2',
-- 'DLmm',
-- 'DLn3',
-- 'DLnb',
-- 'DLrt',
 - 'DP10',
 - 'DPb2',
 - 'DPbn',
@@ -3354,10 +3365,6 @@ present in dataframe and return results in postprocess_dict['miscparameters_resu
 - '_dhmc'
 - '_dhms'
 - '_divd'
-- '_DLmm'
-- '_DLmm_tmp1'
-- '_DLnb'
-- '_DLrt'
 - '_DP10'
 - '_DPbn'
 - '_DPmm'
