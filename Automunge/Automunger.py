@@ -3643,7 +3643,7 @@ class AutoMunge:
                                                      'test_same_as_train' : False, \
                                                      'consolidate_nonoverlaps' : False}, \
                                   'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'singlct', \
+                                  'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'ord3'}})
     process_dict.update({'spl5' : {'dualprocess' : self.process_spl2_class, \
                                   'singleprocess' : None, \
@@ -3695,7 +3695,7 @@ class AutoMunge:
                                                      'consolidate_nonoverlaps' : False}, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'exclude', \
-                                  'labelctgy' : 'ordl'}})
+                                  'labelctgy' : 'ord3'}})
     process_dict.update({'sp10' : {'dualprocess' : self.process_spl2_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_spl2_class, \
@@ -9405,8 +9405,8 @@ class AutoMunge:
     
       #aggregate collection of activations as string set
       #the suffix 'activations_' is to avoid potential of overlap with binary encoding and aggregated activations
-      mdf_train[column + suffix] = 'activations_'
-      mdf_test[column + suffix] = 'activations_'
+      mdf_train[sp19_column] = 'activations_'
+      mdf_test[sp19_column] = 'activations_'
 
       for entry in newcolumns:
         mdf_train[sp19_column] = mdf_train[sp19_column] + mdf_train[entry].astype(str)
@@ -39422,7 +39422,6 @@ class AutoMunge:
         overlap = column.replace(inputcolumn + suffix + '_', '')
         
         df[inputcolumn] = np.where(df[newcolumn] == 1, overlap, df[inputcolumn])
-
 
     return df, inputcolumn
   
