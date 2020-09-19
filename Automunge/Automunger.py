@@ -6,8 +6,7 @@ contact available via automunge.com
 
 Copyright (C) 2018, 2019, 2020 Nicholas Teague - All Rights Reserved
 
-patent pending, application 16552857
-
+patent pending, applications 16552857, 17021770
 """
 
 #global imports
@@ -54,7 +53,6 @@ from sklearn.decomposition import KernelPCA
 import random
 #import datetime as dt
 import types
-
 
 class AutoMunge:
   
@@ -1704,8 +1702,26 @@ class AutoMunge:
   
     transform_dict.update({'yea2' : {'parents'       : [], \
                                      'siblings'      : [], \
-                                     'auntsuncles'   : ['year', 'mdsn', 'mdcs'], \
+                                     'auntsuncles'   : ['year', 'yrsn', 'yrcs', 'mdsn', 'mdcs'], \
                                      'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+
+    transform_dict.update({'yrcs' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['yrcs'], \
+                                     'cousins'       : [], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'yrsn' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['yrsn'], \
+                                     'cousins'       : [], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
                                      'coworkers'     : [], \
@@ -3912,6 +3928,8 @@ class AutoMunge:
                                   'postprocess' : None, \
                                   'inverseprocess' : self.inverseprocess_nmrc, \
                                   'info_retention' : True, \
+                                  'defaultparams' : {'convention' : 'numbers', \
+                                                     'suffix' : '_nmrc'}, \
                                   'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmrc'}})
@@ -3920,6 +3938,8 @@ class AutoMunge:
                                   'postprocess' : None, \
                                   'inverseprocess' : self.inverseprocess_nmrc, \
                                   'info_retention' : False, \
+                                  'defaultparams' : {'convention' : 'numbers', \
+                                                     'suffix' : '_nmrc'}, \
                                   'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmbr'}})
@@ -3928,6 +3948,8 @@ class AutoMunge:
                                   'postprocess' : None, \
                                   'inverseprocess' : self.inverseprocess_nmrc, \
                                   'info_retention' : False, \
+                                  'defaultparams' : {'convention' : 'numbers', \
+                                                     'suffix' : '_nmrc'}, \
                                   'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mnmx'}})
@@ -3936,6 +3958,9 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_nmr4_class, \
                                   'inverseprocess' : self.inverseprocess_nmrc, \
                                   'info_retention' : True, \
+                                  'defaultparams' : {'convention' : 'numbers', \
+                                                     'suffix' : '_nmr4', \
+                                                     'test_same_as_train' : True}, \
                                   'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmrc'}})
@@ -3944,6 +3969,9 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_nmr4_class, \
                                   'inverseprocess' : self.inverseprocess_nmrc, \
                                   'info_retention' : False, \
+                                  'defaultparams' : {'convention' : 'numbers', \
+                                                     'suffix' : '_nmr4', \
+                                                     'test_same_as_train' : True}, \
                                   'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmbr'}})
@@ -3952,174 +3980,234 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_nmr4_class, \
                                   'inverseprocess' : self.inverseprocess_nmrc, \
                                   'info_retention' : False, \
+                                  'defaultparams' : {'convention' : 'numbers', \
+                                                     'suffix' : '_nmr4', \
+                                                     'test_same_as_train' : True}, \
                                   'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mnmx'}})
-    process_dict.update({'nmr7' : {'dualprocess' : self.process_nmr7_class, \
+    process_dict.update({'nmr7' : {'dualprocess' : self.process_nmr4_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_nmr7_class, \
+                                  'postprocess' : self.postprocess_nmr4_class, \
                                   'inverseprocess' : self.inverseprocess_nmrc, \
                                   'info_retention' : False, \
+                                  'defaultparams' : {'convention' : 'numbers', \
+                                                     'suffix' : '_nmr7', \
+                                                     'test_same_as_train' : False}, \
                                   'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmrc'}})
-    process_dict.update({'nmr8' : {'dualprocess' : self.process_nmr7_class, \
+    process_dict.update({'nmr8' : {'dualprocess' : self.process_nmr4_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_nmr7_class, \
+                                  'postprocess' : self.postprocess_nmr4_class, \
                                   'inverseprocess' : self.inverseprocess_nmrc, \
                                   'info_retention' : False, \
+                                  'defaultparams' : {'convention' : 'numbers', \
+                                                     'suffix' : '_nmr7', \
+                                                     'test_same_as_train' : False}, \
                                   'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmbr'}})
-    process_dict.update({'nmr9' : {'dualprocess' : self.process_nmr7_class, \
+    process_dict.update({'nmr9' : {'dualprocess' : self.process_nmr4_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_nmr7_class, \
+                                  'postprocess' : self.postprocess_nmr4_class, \
                                   'inverseprocess' : self.inverseprocess_nmrc, \
                                   'info_retention' : False, \
+                                  'defaultparams' : {'convention' : 'numbers', \
+                                                     'suffix' : '_nmr7', \
+                                                     'test_same_as_train' : False}, \
                                   'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mnmx'}})
     process_dict.update({'nmcm' : {'dualprocess' : None, \
-                                  'singleprocess' : self.process_nmcm_class, \
+                                  'singleprocess' : self.process_nmrc_class, \
                                   'postprocess' : None, \
                                   'inverseprocess' : self.inverseprocess_nmrc, \
                                   'info_retention' : True, \
+                                  'defaultparams' : {'convention' : 'commas', \
+                                                     'suffix' : '_nmcm'}, \
                                   'NArowtype' : 'parsenumeric_commas', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmcm'}})
     process_dict.update({'nmc2' : {'dualprocess' : None, \
-                                  'singleprocess' : self.process_nmcm_class, \
+                                  'singleprocess' : self.process_nmrc_class, \
                                   'postprocess' : None, \
                                   'inverseprocess' : self.inverseprocess_nmrc, \
                                   'info_retention' : False, \
+                                  'defaultparams' : {'convention' : 'commas', \
+                                                     'suffix' : '_nmcm'}, \
                                   'NArowtype' : 'parsenumeric_commas', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmbr'}})
     process_dict.update({'nmc3' : {'dualprocess' : None, \
-                                  'singleprocess' : self.process_nmcm_class, \
+                                  'singleprocess' : self.process_nmrc_class, \
                                   'postprocess' : None, \
                                   'inverseprocess' : self.inverseprocess_nmrc, \
                                   'info_retention' : False, \
+                                  'defaultparams' : {'convention' : 'commas', \
+                                                     'suffix' : '_nmcm'}, \
                                   'NArowtype' : 'parsenumeric_commas', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mnmx'}})
-    process_dict.update({'nmc4' : {'dualprocess' : self.process_nmc4_class, \
+    process_dict.update({'nmc4' : {'dualprocess' : self.process_nmr4_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_nmc4_class, \
+                                  'postprocess' : self.postprocess_nmr4_class, \
                                   'inverseprocess' : self.inverseprocess_nmrc, \
                                   'info_retention' : True, \
+                                  'defaultparams' : {'convention' : 'commas', \
+                                                     'suffix' : '_nmc4', \
+                                                     'test_same_as_train' : True}, \
                                   'NArowtype' : 'parsenumeric_commas', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmrc'}})
-    process_dict.update({'nmc5' : {'dualprocess' : self.process_nmc4_class, \
+    process_dict.update({'nmc5' : {'dualprocess' : self.process_nmr4_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_nmc4_class, \
+                                  'postprocess' : self.postprocess_nmr4_class, \
                                   'inverseprocess' : self.inverseprocess_nmrc, \
                                   'info_retention' : False, \
+                                  'defaultparams' : {'convention' : 'commas', \
+                                                     'suffix' : '_nmc4', \
+                                                     'test_same_as_train' : True}, \
                                   'NArowtype' : 'parsenumeric_commas', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmbr'}})
-    process_dict.update({'nmc6' : {'dualprocess' : self.process_nmc4_class, \
+    process_dict.update({'nmc6' : {'dualprocess' : self.process_nmr4_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_nmc4_class, \
+                                  'postprocess' : self.postprocess_nmr4_class, \
                                   'inverseprocess' : self.inverseprocess_nmrc, \
                                   'info_retention' : False, \
+                                  'defaultparams' : {'convention' : 'commas', \
+                                                     'suffix' : '_nmc4', \
+                                                     'test_same_as_train' : True}, \
                                   'NArowtype' : 'parsenumeric_commas', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mnmx'}})
-    process_dict.update({'nmc7' : {'dualprocess' : self.process_nmc7_class, \
+    process_dict.update({'nmc7' : {'dualprocess' : self.process_nmr4_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_nmc7_class, \
+                                  'postprocess' : self.postprocess_nmr4_class, \
                                   'inverseprocess' : self.inverseprocess_nmrc, \
                                   'info_retention' : False, \
+                                  'defaultparams' : {'convention' : 'commas', \
+                                                     'suffix' : '_nmc7', \
+                                                     'test_same_as_train' : False}, \
                                   'NArowtype' : 'parsenumeric_commas', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmrc'}})
-    process_dict.update({'nmc8' : {'dualprocess' : self.process_nmc7_class, \
+    process_dict.update({'nmc8' : {'dualprocess' : self.process_nmr4_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_nmc7_class, \
+                                  'postprocess' : self.postprocess_nmr4_class, \
                                   'inverseprocess' : self.inverseprocess_nmrc, \
                                   'info_retention' : False, \
+                                  'defaultparams' : {'convention' : 'commas', \
+                                                     'suffix' : '_nmc7', \
+                                                     'test_same_as_train' : False}, \
                                   'NArowtype' : 'parsenumeric_commas', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmbr'}})
-    process_dict.update({'nmc9' : {'dualprocess' : self.process_nmc7_class, \
+    process_dict.update({'nmc9' : {'dualprocess' : self.process_nmr4_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_nmc7_class, \
+                                  'postprocess' : self.postprocess_nmr4_class, \
                                   'inverseprocess' : self.inverseprocess_nmrc, \
                                   'info_retention' : False, \
+                                  'defaultparams' : {'convention' : 'commas', \
+                                                     'suffix' : '_nmc7', \
+                                                     'test_same_as_train' : False}, \
                                   'NArowtype' : 'parsenumeric_commas', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mnmx'}})
     process_dict.update({'nmEU' : {'dualprocess' : None, \
-                                  'singleprocess' : self.process_nmEU_class, \
+                                  'singleprocess' : self.process_nmrc_class, \
                                   'postprocess' : None, \
                                   'inverseprocess' : self.inverseprocess_nmrc, \
                                   'info_retention' : True, \
+                                  'defaultparams' : {'convention' : 'spaces', \
+                                                     'suffix' : '_nmEU'}, \
                                   'NArowtype' : 'parsenumeric_EU', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmrc'}})
     process_dict.update({'nmE2' : {'dualprocess' : None, \
-                                  'singleprocess' : self.process_nmEU_class, \
+                                  'singleprocess' : self.process_nmrc_class, \
                                   'postprocess' : None, \
                                   'inverseprocess' : self.inverseprocess_nmrc, \
                                   'info_retention' : False, \
+                                  'defaultparams' : {'convention' : 'spaces', \
+                                                     'suffix' : '_nmEU'}, \
                                   'NArowtype' : 'parsenumeric_EU', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmbr'}})
     process_dict.update({'nmE3' : {'dualprocess' : None, \
-                                  'singleprocess' : self.process_nmEU_class, \
+                                  'singleprocess' : self.process_nmrc_class, \
                                   'postprocess' : None, \
                                   'inverseprocess' : self.inverseprocess_nmrc, \
                                   'info_retention' : False, \
+                                  'defaultparams' : {'convention' : 'spaces', \
+                                                     'suffix' : '_nmEU'}, \
                                   'NArowtype' : 'parsenumeric_EU', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mnmx'}})
-    process_dict.update({'nmE4' : {'dualprocess' : self.process_nmE4_class, \
+    process_dict.update({'nmE4' : {'dualprocess' : self.process_nmr4_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_nmE4_class, \
+                                  'postprocess' : self.postprocess_nmr4_class, \
                                   'inverseprocess' : self.inverseprocess_nmrc, \
                                   'info_retention' : True, \
+                                  'defaultparams' : {'convention' : 'spaces', \
+                                                     'suffix' : '_nmE4', \
+                                                     'test_same_as_train' : True}, \
                                   'NArowtype' : 'parsenumeric_EU', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmrc'}})
-    process_dict.update({'nmE5' : {'dualprocess' : self.process_nmE4_class, \
+    process_dict.update({'nmE5' : {'dualprocess' : self.process_nmr4_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_nmE4_class, \
+                                  'postprocess' : self.postprocess_nmr4_class, \
                                   'inverseprocess' : self.inverseprocess_nmrc, \
                                   'info_retention' : False, \
+                                  'defaultparams' : {'convention' : 'spaces', \
+                                                     'suffix' : '_nmE4', \
+                                                     'test_same_as_train' : True}, \
                                   'NArowtype' : 'parsenumeric_EU', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmbr'}})
-    process_dict.update({'nmE6' : {'dualprocess' : self.process_nmE4_class, \
+    process_dict.update({'nmE6' : {'dualprocess' : self.process_nmr4_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_nmE4_class, \
+                                  'postprocess' : self.postprocess_nmr4_class, \
                                   'inverseprocess' : self.inverseprocess_nmrc, \
                                   'info_retention' : False, \
+                                  'defaultparams' : {'convention' : 'spaces', \
+                                                     'suffix' : '_nmE4', \
+                                                     'test_same_as_train' : True}, \
                                   'NArowtype' : 'parsenumeric_EU', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mnmx'}})
-    process_dict.update({'nmE7' : {'dualprocess' : self.process_nmE7_class, \
+    process_dict.update({'nmE7' : {'dualprocess' : self.process_nmr4_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_nmE7_class, \
+                                  'postprocess' : self.postprocess_nmr4_class, \
                                   'inverseprocess' : self.inverseprocess_nmrc, \
                                   'info_retention' : False, \
+                                  'defaultparams' : {'convention' : 'spaces', \
+                                                     'suffix' : '_nmE7', \
+                                                     'test_same_as_train' : False}, \
                                   'NArowtype' : 'parsenumeric_EU', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmrc'}})
-    process_dict.update({'nmE8' : {'dualprocess' : self.process_nmE7_class, \
+    process_dict.update({'nmE8' : {'dualprocess' : self.process_nmr4_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_nmE7_class, \
+                                  'postprocess' : self.postprocess_nmr4_class, \
                                   'inverseprocess' : self.inverseprocess_nmrc, \
                                   'info_retention' : False, \
+                                  'defaultparams' : {'convention' : 'spaces', \
+                                                     'suffix' : '_nmE7', \
+                                                     'test_same_as_train' : False}, \
                                   'NArowtype' : 'parsenumeric_EU', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmbr'}})
-    process_dict.update({'nmE9' : {'dualprocess' : self.process_nmE7_class, \
+    process_dict.update({'nmE9' : {'dualprocess' : self.process_nmr4_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_nmE7_class, \
+                                  'postprocess' : self.postprocess_nmr4_class, \
                                   'inverseprocess' : self.inverseprocess_nmrc, \
                                   'info_retention' : False, \
+                                  'defaultparams' : {'convention' : 'spaces', \
+                                                     'suffix' : '_nmE7', \
+                                                     'test_same_as_train' : False}, \
                                   'NArowtype' : 'parsenumeric_EU', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mnmx'}})
@@ -4333,12 +4421,24 @@ class AutoMunge:
                                   'NArowtype' : 'positivenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmbr'}})
+    process_dict.update({'tmsc' : {'dualprocess' : None, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'datetime', \
+                                  'MLinfilltype' : 'exclude', \
+                                  'labelctgy' : 'tmsc'}})
+    process_dict.update({'time' : {'dualprocess' : None, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : None, \
+                                  'NArowtype' : 'datetime', \
+                                  'MLinfilltype' : 'exclude', \
+                                  'labelctgy' : 'time'}})
     process_dict.update({'date' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'exclude', \
-                                  'labelctgy' : 'mnth'}})
+                                  'labelctgy' : 'time'}})
     process_dict.update({'dat2' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
@@ -4350,273 +4450,363 @@ class AutoMunge:
                                   'postprocess' : None, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'exclude', \
-                                  'labelctgy' : 'mnsn'}})
+                                  'labelctgy' : 'tmsc'}})
     process_dict.update({'dat4' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'exclude', \
-                                  'labelctgy' : 'mdsn'}})
+                                  'labelctgy' : 'tmsc'}})
     process_dict.update({'dat5' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'exclude', \
-                                  'labelctgy' : 'mdsn'}})
+                                  'labelctgy' : 'tmsc'}})
     process_dict.update({'dat6' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'exclude', \
-                                  'labelctgy' : 'mdsn'}})
-    process_dict.update({'year' : {'dualprocess' : self.process_year_class, \
+                                  'labelctgy' : 'tmsc'}})
+    process_dict.update({'year' : {'dualprocess' : self.process_time_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_year_class, \
+                                  'postprocess' : self.postprocess_time_class, \
                                   'inverseprocess' : self.inverseprocess_year, \
                                   'info_retention' : False, \
+                                  'defaultparams' : {'scale' : 'year', \
+                                                     'suffix' : '_year', \
+                                                     'normalization' : 'zscore'}, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
-                                  'labelctgy' : 'year'}})
+                                  'labelctgy' : 'time'}})
     process_dict.update({'yea2' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
-                                  'labelctgy' : 'year'}})
-    process_dict.update({'mnth' : {'dualprocess' : self.process_mnth_class, \
+                                  'labelctgy' : 'time'}})
+    process_dict.update({'yrsn' : {'dualprocess' : self.process_tmsc_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_mnth_class, \
+                                  'postprocess' : self.postprocess_tmsc_class, \
+                                  'defaultparams' : {'scale' : 'year', \
+                                                     'suffix' : '_yrsn', \
+                                                     'function' : 'sin'}, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
-                                  'labelctgy' : 'mnth'}})
+                                  'labelctgy' : 'tmsc'}})
+    process_dict.update({'yrcs' : {'dualprocess' : self.process_tmsc_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_tmsc_class, \
+                                  'defaultparams' : {'scale' : 'year', \
+                                                     'suffix' : '_yrcs', \
+                                                     'function' : 'cos'}, \
+                                  'NArowtype' : 'datetime', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'tmsc'}})
+    process_dict.update({'mnth' : {'dualprocess' : self.process_time_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_time_class, \
+                                  'defaultparams' : {'scale' : 'month', \
+                                                     'suffix' : '_mnth', \
+                                                     'normalization' : 'zscore'}, \
+                                  'NArowtype' : 'datetime', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'time'}})
     process_dict.update({'mnt2' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
-                                  'labelctgy' : 'mnsn'}})
+                                  'labelctgy' : 'tmsc'}})
     process_dict.update({'mnt3' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
-                                  'labelctgy' : 'mnsn'}})
+                                  'labelctgy' : 'tmsc'}})
     process_dict.update({'mnt4' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
-                                  'labelctgy' : 'mdsn'}})
+                                  'labelctgy' : 'tmsc'}})
     process_dict.update({'mnt5' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
-                                  'labelctgy' : 'mdsn'}})
+                                  'labelctgy' : 'tmsc'}})
     process_dict.update({'mnt6' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
-                                  'labelctgy' : 'mdsn'}})
-    process_dict.update({'mnsn' : {'dualprocess' : self.process_mnsn_class, \
+                                  'labelctgy' : 'tmsc'}})
+    process_dict.update({'mnsn' : {'dualprocess' : self.process_tmsc_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_mnsn_class, \
+                                  'postprocess' : self.postprocess_tmsc_class, \
+                                  'defaultparams' : {'scale' : 'month', \
+                                                     'suffix' : '_mnsn', \
+                                                     'function' : 'sin'}, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
-                                  'labelctgy' : 'mnsn'}})
-    process_dict.update({'mncs' : {'dualprocess' : self.process_mncs_class, \
+                                  'labelctgy' : 'tmsc'}})
+    process_dict.update({'mncs' : {'dualprocess' : self.process_tmsc_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_mncs_class, \
+                                  'postprocess' : self.postprocess_tmsc_class, \
+                                  'defaultparams' : {'scale' : 'month', \
+                                                     'suffix' : '_mncs', \
+                                                     'function' : 'cos'}, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
-                                  'labelctgy' : 'mncs'}})
-    process_dict.update({'mdsn' : {'dualprocess' : self.process_mdsn_class, \
+                                  'labelctgy' : 'tmsc'}})
+    process_dict.update({'mdsn' : {'dualprocess' : self.process_tmsc_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_mdsn_class, \
+                                  'postprocess' : self.postprocess_tmsc_class, \
+                                  'defaultparams' : {'scale' : 'monthday', \
+                                                     'suffix' : '_mdsn', \
+                                                     'function' : 'sin'}, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
-                                  'labelctgy' : 'mdsn'}})
-    process_dict.update({'mdcs' : {'dualprocess' : self.process_mdcs_class, \
+                                  'labelctgy' : 'tmsc'}})
+    process_dict.update({'mdcs' : {'dualprocess' : self.process_tmsc_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_mdcs_class, \
+                                  'postprocess' : self.postprocess_tmsc_class, \
+                                  'defaultparams' : {'scale' : 'monthday', \
+                                                     'suffix' : '_mdcs', \
+                                                     'function' : 'cos'}, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
-                                  'labelctgy' : 'mdcs'}})
-    process_dict.update({'days' : {'dualprocess' : self.process_days_class, \
+                                  'labelctgy' : 'tmsc'}})
+    process_dict.update({'days' : {'dualprocess' : self.process_time_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_days_class, \
+                                  'postprocess' : self.postprocess_time_class, \
+                                  'defaultparams' : {'scale' : 'day', \
+                                                     'suffix' : '_days', \
+                                                     'normalization' : 'zscore'}, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
-                                  'labelctgy' : 'days'}})
+                                  'labelctgy' : 'time'}})
     process_dict.update({'day2' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
-                                  'labelctgy' : 'dysn'}})
+                                  'labelctgy' : 'tmsc'}})
     process_dict.update({'day3' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
-                                  'labelctgy' : 'dysn'}})
+                                  'labelctgy' : 'tmsc'}})
     process_dict.update({'day4' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
-                                  'labelctgy' : 'dhms'}})
+                                  'labelctgy' : 'tmsc'}})
     process_dict.update({'day5' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
-                                  'labelctgy' : 'dhms'}})
-    process_dict.update({'dysn' : {'dualprocess' : self.process_dysn_class, \
+                                  'labelctgy' : 'tmsc'}})
+    process_dict.update({'dysn' : {'dualprocess' : self.process_tmsc_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_dysn_class, \
+                                  'postprocess' : self.postprocess_tmsc_class, \
+                                  'defaultparams' : {'scale' : 'day', \
+                                                     'suffix' : '_dysn', \
+                                                     'function' : 'sin'}, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
-                                  'labelctgy' : 'dysn'}})
-    process_dict.update({'dycs' : {'dualprocess' : self.process_dycs_class, \
+                                  'labelctgy' : 'tmsc'}})
+    process_dict.update({'dycs' : {'dualprocess' : self.process_tmsc_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_dycs_class, \
+                                  'postprocess' : self.postprocess_tmsc_class, \
+                                  'defaultparams' : {'scale' : 'day', \
+                                                     'suffix' : '_dycs', \
+                                                     'function' : 'cos'}, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
-                                  'labelctgy' : 'dycs'}})
-    process_dict.update({'dhms' : {'dualprocess' : self.process_dhms_class, \
+                                  'labelctgy' : 'tmsc'}})
+    process_dict.update({'dhms' : {'dualprocess' : self.process_tmsc_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_dhms_class, \
+                                  'postprocess' : self.postprocess_tmsc_class, \
+                                  'defaultparams' : {'scale' : 'dayhourminute', \
+                                                     'suffix' : '_dhms', \
+                                                     'function' : 'sin'}, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
-                                  'labelctgy' : 'dhms'}})
-    process_dict.update({'dhmc' : {'dualprocess' : self.process_dhmc_class, \
+                                  'labelctgy' : 'tmsc'}})
+    process_dict.update({'dhmc' : {'dualprocess' : self.process_tmsc_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_dhmc_class, \
+                                  'postprocess' : self.postprocess_tmsc_class, \
+                                  'defaultparams' : {'scale' : 'dayhourminute', \
+                                                     'suffix' : '_dhmc', \
+                                                     'function' : 'cos'}, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
-                                  'labelctgy' : 'dhmc'}})
-    process_dict.update({'hour' : {'dualprocess' : self.process_hour_class, \
+                                  'labelctgy' : 'tmsc'}})
+    process_dict.update({'hour' : {'dualprocess' : self.process_time_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_hour_class, \
+                                  'postprocess' : self.postprocess_time_class, \
+                                  'defaultparams' : {'scale' : 'hour', \
+                                                     'suffix' : '_hour', \
+                                                     'normalization' : 'zscore'}, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
-                                  'labelctgy' : 'hour'}})
+                                  'labelctgy' : 'time'}})
     process_dict.update({'hrs2' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
-                                  'labelctgy' : 'hrsn'}})
+                                  'labelctgy' : 'tmsc'}})
     process_dict.update({'hrs3' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
-                                  'labelctgy' : 'hrsn'}})
+                                  'labelctgy' : 'tmsc'}})
     process_dict.update({'hrs4' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
-                                  'labelctgy' : 'hmss'}})
-    process_dict.update({'hrsn' : {'dualprocess' : self.process_hrsn_class, \
+                                  'labelctgy' : 'tmsc'}})
+    process_dict.update({'hrsn' : {'dualprocess' : self.process_tmsc_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_hrsn_class, \
+                                  'postprocess' : self.postprocess_tmsc_class, \
+                                  'defaultparams' : {'scale' : 'hour', \
+                                                     'suffix' : '_hrsn', \
+                                                     'function' : 'sin'}, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
-                                  'labelctgy' : 'hrsn'}})
-    process_dict.update({'hrcs' : {'dualprocess' : self.process_hrcs_class, \
+                                  'labelctgy' : 'tmsc'}})
+    process_dict.update({'hrcs' : {'dualprocess' : self.process_tmsc_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_hrcs_class, \
+                                  'postprocess' : self.postprocess_tmsc_class, \
+                                  'defaultparams' : {'scale' : 'hour', \
+                                                     'suffix' : '_hrcs', \
+                                                     'function' : 'cos'}, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
-                                  'labelctgy' : 'hrcs'}})
-    process_dict.update({'hmss' : {'dualprocess' : self.process_hmss_class, \
+                                  'labelctgy' : 'tmsc'}})
+    process_dict.update({'hmss' : {'dualprocess' : self.process_tmsc_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_hmss_class, \
+                                  'postprocess' : self.postprocess_tmsc_class, \
+                                  'defaultparams' : {'scale' : 'hourminutesecond', \
+                                                     'suffix' : '_hmss', \
+                                                     'function' : 'sin'}, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
-                                  'labelctgy' : 'hmss'}})
-    process_dict.update({'hmsc' : {'dualprocess' : self.process_hmsc_class, \
+                                  'labelctgy' : 'tmsc'}})
+    process_dict.update({'hmsc' : {'dualprocess' : self.process_tmsc_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_hmsc_class, \
+                                  'postprocess' : self.postprocess_tmsc_class, \
+                                  'defaultparams' : {'scale' : 'hourminutesecond', \
+                                                     'suffix' : '_hmsc', \
+                                                     'function' : 'cos'}, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
-                                  'labelctgy' : 'hmsc'}})
-    process_dict.update({'mint' : {'dualprocess' : self.process_mint_class, \
+                                  'labelctgy' : 'tmsc'}})
+    process_dict.update({'mint' : {'dualprocess' : self.process_time_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_mint_class, \
+                                  'postprocess' : self.postprocess_time_class, \
+                                  'defaultparams' : {'scale' : 'minute', \
+                                                     'suffix' : '_mint', \
+                                                     'normalization' : 'zscore'}, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
-                                  'labelctgy' : 'mint'}})
+                                  'labelctgy' : 'time'}})
     process_dict.update({'min2' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
-                                  'labelctgy' : 'misn'}})
+                                  'labelctgy' : 'tmsc'}})
     process_dict.update({'min3' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
-                                  'labelctgy' : 'misn'}})
+                                  'labelctgy' : 'tmsc'}})
     process_dict.update({'min4' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'misn'}})
-    process_dict.update({'misn' : {'dualprocess' : self.process_misn_class, \
+    process_dict.update({'misn' : {'dualprocess' : self.process_tmsc_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_misn_class, \
+                                  'postprocess' : self.postprocess_tmsc_class, \
+                                  'defaultparams' : {'scale' : 'minute', \
+                                                     'suffix' : '_misn', \
+                                                     'function' : 'sin'}, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
-                                  'labelctgy' : 'misn'}})
-    process_dict.update({'mics' : {'dualprocess' : self.process_mics_class, \
+                                  'labelctgy' : 'tmsc'}})
+    process_dict.update({'mics' : {'dualprocess' : self.process_tmsc_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_mics_class, \
+                                  'postprocess' : self.postprocess_tmsc_class, \
+                                  'defaultparams' : {'scale' : 'minute', \
+                                                     'suffix' : '_mics', \
+                                                     'function' : 'cos'}, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mics'}})
-    process_dict.update({'mssn' : {'dualprocess' : self.process_mssn_class, \
+    process_dict.update({'mssn' : {'dualprocess' : self.process_tmsc_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_mssn_class, \
+                                  'postprocess' : self.postprocess_tmsc_class, \
+                                  'defaultparams' : {'scale' : 'minutesecond', \
+                                                     'suffix' : '_mssn', \
+                                                     'function' : 'sin'}, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
-                                  'labelctgy' : 'mssn'}})
-    process_dict.update({'mscs' : {'dualprocess' : self.process_mscs_class, \
+                                  'labelctgy' : 'tmsc'}})
+    process_dict.update({'mscs' : {'dualprocess' : self.process_tmsc_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_mscs_class, \
+                                  'postprocess' : self.postprocess_tmsc_class, \
+                                  'defaultparams' : {'scale' : 'minutesecond', \
+                                                     'suffix' : '_mscs', \
+                                                     'function' : 'cos'}, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
-                                  'labelctgy' : 'mscs'}})
-    process_dict.update({'scnd' : {'dualprocess' : self.process_scnd_class, \
+                                  'labelctgy' : 'tmsc'}})
+    process_dict.update({'scnd' : {'dualprocess' : self.process_time_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_scnd_class, \
+                                  'postprocess' : self.postprocess_time_class, \
+                                  'defaultparams' : {'scale' : 'second', \
+                                                     'suffix' : '_scnd', \
+                                                     'normalization' : 'zscore'}, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
-                                  'labelctgy' : 'scnd'}})
+                                  'labelctgy' : 'time'}})
     process_dict.update({'scn2' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
-                                  'labelctgy' : 'scsn'}})
-    process_dict.update({'scsn' : {'dualprocess' : self.process_scsn_class, \
+                                  'labelctgy' : 'tmsc'}})
+    process_dict.update({'scsn' : {'dualprocess' : self.process_tmsc_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_scsn_class, \
+                                  'postprocess' : self.postprocess_tmsc_class, \
+                                  'defaultparams' : {'scale' : 'second', \
+                                                     'suffix' : '_scsn', \
+                                                     'function' : 'sin'}, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
-                                  'labelctgy' : 'scsn'}})
-    process_dict.update({'sccs' : {'dualprocess' : self.process_sccs_class, \
+                                  'labelctgy' : 'tmsc'}})
+    process_dict.update({'sccs' : {'dualprocess' : self.process_tmsc_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_sccs_class, \
+                                  'postprocess' : self.postprocess_tmsc_class, \
+                                  'defaultparams' : {'scale' : 'second', \
+                                                     'suffix' : '_sccs', \
+                                                     'function' : 'cos'}, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
-                                  'labelctgy' : 'sccs'}})
+                                  'labelctgy' : 'tmsc'}})
     process_dict.update({'bxc2' : {'dualprocess' : self.process_bxcx_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_bxcx_class, \
@@ -11097,11 +11287,31 @@ class AutoMunge:
     #process_nmrc_class(df, column, category, postprocess_dict)
     #parses string entries and if any numbers present returns numbers
     #entries without numbers present subject to infill
+    #accepts parameters 
+    #convention as numbers/commas/spaces
+    #suffix for column suffix identifier
     """
     
     suffixoverlap_results = {}
     
-    unique_list = list(df[column].unique())
+    if 'convention' in params:
+      #accepts numbers/commas/spaces
+      convention = params['convention']
+    else:
+      convention = 'numbers'
+      
+    if 'suffix' in params:
+      #accepts string for suffix appender
+      suffix = params['suffix']
+    else:
+      suffix = '_nmrc'
+      
+    nmrc_column = column + suffix
+    
+    df, suffixoverlap_results = \
+    self.df_copy_train(df, column, nmrc_column, suffixoverlap_results)
+    
+    unique_list = list(df[nmrc_column].unique())
 
     unique_list = list(map(str, unique_list))
     
@@ -11132,11 +11342,25 @@ class AutoMunge:
                   extract = unique[i:(overlap_length+i)]
 
   #                 extract_already_in_overlap_dict = False
+                  
+                  if convention == 'numbers':
+                  
+                    if self.is_number(extract):
 
-                  if self.is_number(extract):
+                      overlap_dict.update({unique : float(extract)})
+              
+                  elif convention == 'commas':
+                  
+                    if self.is_number_comma(extract):
 
-                    overlap_dict.update({unique : float(extract)})
-                
+                      overlap_dict.update({unique : float(extract.replace(',',''))})
+                      
+                  elif convention == 'spaces':
+                  
+                    if self.is_number_EU(extract):
+
+                      overlap_dict.update({unique : float(extract[0] + extract[1:-1].replace(' ','').replace('.','').replace(',','.') + extract[-1])})
+                      
             #else if overlap_length == 1    
             else:
               
@@ -11157,42 +11381,41 @@ class AutoMunge:
                     in_dict = True
 
                     overlap_dict.update({unique : float(extract)})
-                  
+
               if in_dict is False:
 
                 overlap_dict.update({unique : np.nan})
     
-    suffixoverlap_results = \
-    self.df_check_suffixoverlap(df, column + '_nmrc', suffixoverlap_results)
+    df[nmrc_column] = df[nmrc_column].astype(str)
+    df[nmrc_column] = df[nmrc_column].replace(overlap_dict)
     
-    df[column + '_nmrc'] = df[column].astype(str)
-    df[column + '_nmrc'] = df[column + '_nmrc'].replace(overlap_dict)
-
     #get mean of training data
-    mean = df[column + '_nmrc'].mean()
+    mean = df[nmrc_column].mean()
     if mean != mean:
       mean = 0
-
+      
     #replace missing data with training set mean as default infill
-    df[column + '_nmrc'] = df[column + '_nmrc'].fillna(mean)
+    df[nmrc_column] = df[nmrc_column].fillna(mean)
     
     #a few more metrics collected for driftreport
     #get maximum value of training column
-    maximum = df[column + '_nmrc'].max()
+    maximum = df[nmrc_column].max()
     #get minimum value of training column
-    minimum = df[column + '_nmrc'].min()
+    minimum = df[nmrc_column].min()
     
     #create list of columns
-    nmbrcolumns = [column + '_nmrc']
+    nmbrcolumns = [nmrc_column]
 
-    nmbrnormalization_dict = {column + '_nmrc' : {'overlap_dict' : overlap_dict, \
-                                                  'mean' : mean, \
-                                                  'maximum' : maximum, \
-                                                  'minimum' : minimum }}
-
-    #store some values in the nmbr_dict{} for use later in ML infill methods
+    #populate data structures
+    nmbrnormalization_dict = {nmrc_column : {'overlap_dict' : overlap_dict, \
+                                            'mean' : mean, \
+                                            'maximum' : maximum, \
+                                            'minimum' : minimum, \
+                                            'convention' : convention, \
+                                            'suffix' : suffix }}
+    
     column_dict_list = []
-
+    
     for nc in nmbrcolumns:
 
       column_dict = { nc : {'category' : 'nmrc', \
@@ -11211,18 +11434,47 @@ class AutoMunge:
     
     return df, column_dict_list
 
-  def process_nmr4_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
+  def process_nmr4_class(self, mdf_train, mdf_test, column, category, \
+                         postprocess_dict, params = {}):
     """
-    #process_nmr4_class(df, column, category, postprocess_dict)
-    #parses string entries and if any numbers present returns numbers
-    #entries without numbers present subject to infill
-    #assumes set of entries in test data is same or subset of train data for
-    #more efficient postmunge than vs nmrc
+    #extract numeric partitions from categoric entries, test treated differently than train
+    #accepts parameters
+    #convention as numbers/commas/spaces
+    #suffix for column suffix identifier
+    #test_same_as_train as True/False
+    #where True copiues overlap_dict from train for test, False parses test entries not found in train
     """
     
     suffixoverlap_results = {}
     
-    unique_list = list(mdf_train[column].unique())
+    if 'convention' in params:
+      #accepts numbers/commas/spaces
+      convention = params['convention']
+    else:
+      convention = 'numbers'
+      
+    if 'suffix' in params:
+      #accepts string for suffix appender
+      suffix = params['suffix']
+    else:
+      suffix = '_nmr4'
+      
+    if 'test_same_as_train' in params:
+      #accepts boolean
+      test_same_as_train = params['test_same_as_train']
+    else:
+      test_same_as_train = True
+      
+    nmrc_column = column + suffix
+    
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, nmrc_column, suffixoverlap_results)
+    
+    mdf_test[nmrc_column] = mdf_test[column].copy()
+    
+    #begin parsing train set
+    
+    unique_list = list(mdf_train[nmrc_column].unique())
 
     unique_list = list(map(str, unique_list))
     
@@ -11253,11 +11505,25 @@ class AutoMunge:
                   extract = unique[i:(overlap_length+i)]
 
   #                 extract_already_in_overlap_dict = False
+                  
+                  if convention == 'numbers':
+                  
+                    if self.is_number(extract):
 
-                  if self.is_number(extract):
+                      overlap_dict.update({unique : float(extract)})
+              
+                  elif convention == 'commas':
+                  
+                    if self.is_number_comma(extract):
 
-                    overlap_dict.update({unique : float(extract)})
-                
+                      overlap_dict.update({unique : float(extract.replace(',',''))})
+                      
+                  elif convention == 'spaces':
+                  
+                    if self.is_number_EU(extract):
+
+                      overlap_dict.update({unique : float(extract[0] + extract[1:-1].replace(' ','').replace('.','').replace(',','.') + extract[-1])})
+                      
             #else if overlap_length == 1    
             else:
               
@@ -11272,66 +11538,138 @@ class AutoMunge:
                   extract = unique[i:(overlap_length+i)]
 
   #                 extract_already_in_overlap_dict = False
-
+  
                   if self.is_number(extract):
 
                     in_dict = True
 
                     overlap_dict.update({unique : float(extract)})
-                  
+
               if in_dict is False:
 
                 overlap_dict.update({unique : np.nan})
                 
-    suffixoverlap_results = \
-    self.df_check_suffixoverlap(mdf_train, column + '_nmr4', suffixoverlap_results)
+    mdf_train[nmrc_column] = mdf_train[nmrc_column].astype(str)
+    mdf_train[nmrc_column] = mdf_train[nmrc_column].replace(overlap_dict)
     
-    mdf_train[column + '_nmr4'] = mdf_train[column].astype(str)
-    mdf_train[column + '_nmr4'] = mdf_train[column + '_nmr4'].replace(overlap_dict)
-    
-    #do same for test data
-    #note this assumes that set of entries for test data is same or a subset of train data
-    #any entries not present will be subject to default infill
-    #note that getNArows will not capture these infill for infill with assigninfill
-    
-    test_unique_list = list(mdf_test[column].unique())
+    #now test set
+    test_unique_list = list(mdf_test[nmrc_column].unique())
     test_unique_list = list(map(str, test_unique_list))
     extra_test_unique = list(set(test_unique_list) - set(unique_list))
-    
-    test_overlap_dict = deepcopy(overlap_dict)
-    for test_unique in extra_test_unique:
-      test_overlap_dict.update({str(test_unique) : np.nan})
-    
-    mdf_test[column + '_nmr4'] = mdf_test[column].astype(str)
-    mdf_test[column + '_nmr4'] = mdf_test[column + '_nmr4'].replace(test_overlap_dict)
 
+    test_overlap_dict = deepcopy(overlap_dict)
+    
+    if test_same_as_train is True:
+      
+      for test_unique in extra_test_unique:
+        test_overlap_dict.update({str(test_unique) : np.nan})
+      
+    elif test_same_as_train is False:
+      
+      testmaxlength = max(len(x) for x in unique_list)
+
+      overlap_lengths = list(range(testmaxlength, 0, -1))
+
+  #     overlap_dict = {}
+
+      for overlap_length in overlap_lengths:
+
+        for unique in extra_test_unique:
+
+          if unique not in test_overlap_dict:
+
+            len_unique = len(unique)
+
+            if len_unique >= overlap_length:
+
+              if overlap_length > 1:
+
+                nbr_iterations = len_unique - overlap_length
+
+                for i in range(nbr_iterations + 1):
+
+                  if unique not in test_overlap_dict:
+
+                    extract = unique[i:(overlap_length+i)]
+
+    #                 extract_already_in_overlap_dict = False
+                    
+                    if convention == 'numbers':
+                    
+                      if self.is_number(extract):
+
+                        test_overlap_dict.update({unique : float(extract)})
+                  
+                    elif convention == 'commas':
+                    
+                      if self.is_number_comma(extract):
+
+                        test_overlap_dict.update({unique : float(extract.replace(',',''))})
+                        
+                    elif convention == 'spaces':
+                    
+                      if self.is_number_EU(extract):
+
+                        test_overlap_dict.update({unique : float(extract[0] + extract[1:-1].replace(' ','').replace('.','').replace(',','.') + extract[-1])})
+
+              #else if overlap_length == 1    
+              else:
+
+                nbr_iterations = len_unique - overlap_length
+
+                in_dict = False
+
+                for i in range(nbr_iterations + 1):
+
+                  if unique not in test_overlap_dict:
+
+                    extract = unique[i:(overlap_length+i)]
+
+    #                 extract_already_in_overlap_dict = False
+                    
+                    if self.is_number(extract):
+
+                      in_dict = True
+
+                      test_overlap_dict.update({unique : float(extract)})
+                    
+                if in_dict is False:
+
+                  test_overlap_dict.update({unique : np.nan})
+    
+    #great now that test_overlap_dict is populated
+    mdf_test[nmrc_column] = mdf_test[nmrc_column].astype(str)
+    mdf_test[nmrc_column] = mdf_test[nmrc_column].replace(test_overlap_dict)
+    
     #get mean of training data
-    mean = mdf_train[column + '_nmr4'].mean()
+    mean = mdf_train[nmrc_column].mean()
     if mean != mean:
       mean = 0
 
     #replace missing data with training set mean as default infill
-    mdf_train[column + '_nmr4'] = mdf_train[column + '_nmr4'].fillna(mean)
-    mdf_test[column + '_nmr4'] = mdf_test[column + '_nmr4'].fillna(mean)
+    mdf_train[nmrc_column] = mdf_train[nmrc_column].fillna(mean)
+    mdf_test[nmrc_column] = mdf_test[nmrc_column].fillna(mean)
     
     #a few more metrics collected for driftreport
-    #get maximum value of training column
-    maximum = mdf_train[column + '_nmr4'].max()
-    #get minimum value of training column
-    minimum = mdf_train[column + '_nmr4'].min()
+    maximum = mdf_train[nmrc_column].max()
+    minimum = mdf_train[nmrc_column].min()
     
     #create list of columns
-    nmbrcolumns = [column + '_nmr4']
-
-    nmbrnormalization_dict = {column + '_nmr4' : {'overlap_dict' : overlap_dict, \
-                                                  'mean' : mean, \
-                                                  'maximum' : maximum, \
-                                                  'minimum' : minimum, \
-                                                  'unique_list' : unique_list}}
-
-    #store some values in the nmbr_dict{} for use later in ML infill methods
+    nmbrcolumns = [nmrc_column]
+    
+    #populate data structures
+    nmbrnormalization_dict = {nmrc_column : {'overlap_dict' : overlap_dict, \
+                                            'mean' : mean, \
+                                            'maximum' : maximum, \
+                                            'minimum' : minimum, \
+                                            'unique_list' : unique_list, \
+                                            'maxlength' : maxlength, \
+                                            'convention' : convention, \
+                                            'suffix' : suffix, \
+                                            'test_same_as_train' : test_same_as_train}}
+    
     column_dict_list = []
-
+    
     for nc in nmbrcolumns:
 
       column_dict = { nc : {'category' : 'nmr4', \
@@ -11347,1162 +11685,7 @@ class AutoMunge:
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
-    
-    return mdf_train, mdf_test, column_dict_list
-  
-  def process_nmr7_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
-    """
-    #process_nmr4_class(df, column, category, postprocess_dict)
-    #parses string entries and if any numbers present returns numbers
-    #entries without numbers present subject to infill
-    #comparable to nmr4 but instead of making blanket assumption that unique values in
-    #test set are found in train set, implements parsing for test set entries not found in train set
-    """
-    
-    suffixoverlap_results = {}
-    
-    unique_list = list(mdf_train[column].unique())
-
-    unique_list = list(map(str, unique_list))
-    
-    maxlength = max(len(x) for x in unique_list)
-    
-    overlap_lengths = list(range(maxlength, 0, -1))
-
-    overlap_dict = {}
-    
-    for overlap_length in overlap_lengths:
-
-      for unique in unique_list:
-        
-        if unique not in overlap_dict:
-
-          len_unique = len(unique)
-
-          if len_unique >= overlap_length:
-            
-            if overlap_length > 1:
-
-              nbr_iterations = len_unique - overlap_length
-
-              for i in range(nbr_iterations + 1):
-                
-                if unique not in overlap_dict:
-
-                  extract = unique[i:(overlap_length+i)]
-
-  #                 extract_already_in_overlap_dict = False
-
-                  if self.is_number(extract):
-
-                    overlap_dict.update({unique : float(extract)})
-                
-            #else if overlap_length == 1    
-            else:
-              
-              nbr_iterations = len_unique - overlap_length
-              
-              in_dict = False
-
-              for i in range(nbr_iterations + 1):
-                
-                if unique not in overlap_dict:
-
-                  extract = unique[i:(overlap_length+i)]
-
-  #                 extract_already_in_overlap_dict = False
-
-                  if self.is_number(extract):
-
-                    in_dict = True
-
-                    overlap_dict.update({unique : float(extract)})
-                  
-              if in_dict is False:
-
-                overlap_dict.update({unique : np.nan})
-                
-    suffixoverlap_results = \
-    self.df_check_suffixoverlap(mdf_train, column + '_nmr7', suffixoverlap_results)
-    
-    mdf_train[column + '_nmr7'] = mdf_train[column].astype(str)
-    mdf_train[column + '_nmr7'] = mdf_train[column + '_nmr7'].replace(overlap_dict)
-    
-    #do same for test data
-    #note this assumes that set of entries for test data is same or a subset of train data
-    #any entries not present will be subject to default infill
-    #note that getNArows will not capture these infill for infill with assigninfill
-    
-    test_unique_list = list(mdf_test[column].unique())
-    test_unique_list = list(map(str, test_unique_list))
-    extra_test_unique = list(set(test_unique_list) - set(unique_list))
-    
-    test_overlap_dict = deepcopy(overlap_dict)
-    
-#     unique_list = list(mdf_train[column].unique())
-
-#     unique_list = list(map(str, unique_list))
-    
-    testmaxlength = max(len(x) for x in unique_list)
-    
-    if testmaxlength > maxlength:
-      maxlength = testmaxlength
-    
-    overlap_lengths = list(range(maxlength, 0, -1))
-
-#     overlap_dict = {}
-    
-    for overlap_length in overlap_lengths:
-
-      for unique in extra_test_unique:
-        
-        if unique not in test_overlap_dict:
-
-          len_unique = len(unique)
-
-          if len_unique >= overlap_length:
-            
-            if overlap_length > 1:
-
-              nbr_iterations = len_unique - overlap_length
-
-              for i in range(nbr_iterations + 1):
-                
-                if unique not in test_overlap_dict:
-
-                  extract = unique[i:(overlap_length+i)]
-
-  #                 extract_already_in_overlap_dict = False
-
-                  if self.is_number(extract):
-
-                    test_overlap_dict.update({unique : float(extract)})
-                
-            #else if overlap_length == 1    
-            else:
-              
-              nbr_iterations = len_unique - overlap_length
-              
-              in_dict = False
-
-              for i in range(nbr_iterations + 1):
-                
-                if unique not in test_overlap_dict:
-
-                  extract = unique[i:(overlap_length+i)]
-
-  #                 extract_already_in_overlap_dict = False
-
-                  if self.is_number(extract):
-
-                    in_dict = True
-
-                    test_overlap_dict.update({unique : float(extract)})
-                  
-              if in_dict is False:
-
-                test_overlap_dict.update({unique : np.nan})
-    
-#     for test_unique in extra_test_unique:
-#       test_overlap_dict.update({str(test_unique) : np.nan})
-    
-    mdf_test[column + '_nmr7'] = mdf_test[column].astype(str)
-    mdf_test[column + '_nmr7'] = mdf_test[column + '_nmr7'].replace(test_overlap_dict)
-
-    #get mean of training data
-    mean = mdf_train[column + '_nmr7'].mean()
-    if mean != mean:
-      mean = 0
-
-    #replace missing data with training set mean as default infill
-    mdf_train[column + '_nmr7'] = mdf_train[column + '_nmr7'].fillna(mean)
-    mdf_test[column + '_nmr7'] = mdf_test[column + '_nmr7'].fillna(mean)
-    
-    #a few more metrics collected for driftreport
-    #get maximum value of training column
-    maximum = mdf_train[column + '_nmr7'].max()
-    #get minimum value of training column
-    minimum = mdf_train[column + '_nmr7'].min()
-    
-    #create list of columns
-    nmbrcolumns = [column + '_nmr7']
-
-    nmbrnormalization_dict = {column + '_nmr7' : {'overlap_dict' : overlap_dict, \
-                                                  'mean' : mean, \
-                                                  'maximum' : maximum, \
-                                                  'minimum' : minimum, \
-                                                  'unique_list' : unique_list, \
-                                                  'maxlength' : maxlength}}
-
-    #store some values in the nmbr_dict{} for use later in ML infill methods
-    column_dict_list = []
-  
-    for nc in nmbrcolumns:
-
-      column_dict = { nc : {'category' : 'nmr7', \
-                           'origcategory' : category, \
-                           'normalization_dict' : nmbrnormalization_dict, \
-                           'origcolumn' : column, \
-                           'inputcolumn' : column, \
-                           'columnslist' : nmbrcolumns, \
-                           'categorylist' : nmbrcolumns, \
-                           'infillmodel' : False, \
-                           'infillcomplete' : False, \
-                           'suffixoverlap_results' : suffixoverlap_results, \
-                           'deletecolumn' : False}}
-
-      column_dict_list.append(column_dict.copy())
-        
-    return mdf_train, mdf_test, column_dict_list
-  
-  def process_nmcm_class(self, df, column, category, postprocess_dict, params = {}):
-    """
-    #process_nmcm_class(df, column, category, postprocess_dict)
-    #parses string entries and if any numbers present returns numbers
-    #the check for numbers strips commas and returned numbers have commas stripped
-    #entries without numbers present subject to infill
-    """
-    
-    suffixoverlap_results = {}
-    
-    unique_list = list(df[column].unique())
-
-    unique_list = list(map(str, unique_list))
-    
-    maxlength = max(len(x) for x in unique_list)
-    
-    overlap_lengths = list(range(maxlength, 0, -1))
-
-    overlap_dict = {}
-    
-    for overlap_length in overlap_lengths:
-
-      for unique in unique_list:
-        
-        if unique not in overlap_dict:
-
-          len_unique = len(unique)
-
-          if len_unique >= overlap_length:
-            
-            if overlap_length > 1:
-
-              nbr_iterations = len_unique - overlap_length
-
-              for i in range(nbr_iterations + 1):
-                
-                if unique not in overlap_dict:
-
-                  extract = unique[i:(overlap_length+i)]
-
-  #                 extract_already_in_overlap_dict = False
-
-                  if self.is_number_comma(extract):
-
-                    overlap_dict.update({unique : float(extract.replace(',',''))})
-                
-            #else if overlap_length == 1    
-            else:
-              
-              nbr_iterations = len_unique - overlap_length
-              
-              in_dict = False
-
-              for i in range(nbr_iterations + 1):
-                
-                if unique not in overlap_dict:
-
-                  extract = unique[i:(overlap_length+i)]
-
-  #                 extract_already_in_overlap_dict = False
-
-                  if self.is_number_comma(extract):
-
-                    in_dict = True
-
-                    overlap_dict.update({unique : float(extract.replace(',',''))})
-                  
-              if in_dict is False:
-
-                overlap_dict.update({unique : np.nan})
-                
-    suffixoverlap_results = \
-    self.df_check_suffixoverlap(df, column + '_nmcm', suffixoverlap_results)
-    
-    df[column + '_nmcm'] = df[column].astype(str)
-    df[column + '_nmcm'] = df[column + '_nmcm'].replace(overlap_dict)
-    
-    #get mean of training data
-    mean = df[column + '_nmcm'].mean()
-    if mean != mean:
-      mean = 0
-
-    #replace missing data with training set mean as default infill
-    df[column + '_nmcm'] = df[column + '_nmcm'].fillna(mean)
-    
-    #a few more metrics collected for driftreport
-    #get maximum value of training column
-    maximum = df[column + '_nmcm'].max()
-    #get minimum value of training column
-    minimum = df[column + '_nmcm'].min()
-        
-    #create list of columns
-    nmbrcolumns = [column + '_nmcm']
-
-    nmbrnormalization_dict = {column + '_nmcm' : {'overlap_dict' : overlap_dict, \
-                                                  'mean' : mean, \
-                                                  'maximum' : maximum, \
-                                                  'minimum' : minimum }}
-
-    #store some values in the nmbr_dict{} for use later in ML infill methods
-    column_dict_list = []
-
-    for nc in nmbrcolumns:
-
-      column_dict = { nc : {'category' : 'nmcm', \
-                           'origcategory' : category, \
-                           'normalization_dict' : nmbrnormalization_dict, \
-                           'origcolumn' : column, \
-                           'inputcolumn' : column, \
-                           'columnslist' : nmbrcolumns, \
-                           'categorylist' : nmbrcolumns, \
-                           'infillmodel' : False, \
-                           'infillcomplete' : False, \
-                           'suffixoverlap_results' : suffixoverlap_results, \
-                           'deletecolumn' : False}}
-
-      column_dict_list.append(column_dict.copy())
-    
-    return df, column_dict_list
-  
-  def process_nmc4_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
-    """
-    #process_nmc4_class(df, column, category, postprocess_dict)
-    #parses string entries and if any numbers present returns numbers
-    #the check for numbers strips commas and returned numbers have commas stripped
-    #entries without numbers present subject to infill
-    #assumes set of entries in test data is same or subset of train data for
-    #more efficient postmunge than vs nmc
-    """
-    
-    suffixoverlap_results = {}
-    
-    unique_list = list(mdf_train[column].unique())
-
-    unique_list = list(map(str, unique_list))
-    
-    maxlength = max(len(x) for x in unique_list)
-    
-    overlap_lengths = list(range(maxlength, 0, -1))
-
-    overlap_dict = {}
-    
-    for overlap_length in overlap_lengths:
-
-      for unique in unique_list:
-        
-        if unique not in overlap_dict:
-
-          len_unique = len(unique)
-
-          if len_unique >= overlap_length:
-            
-            if overlap_length > 1:
-
-              nbr_iterations = len_unique - overlap_length
-
-              for i in range(nbr_iterations + 1):
-                
-                if unique not in overlap_dict:
-
-                  extract = unique[i:(overlap_length+i)]
-
-  #                 extract_already_in_overlap_dict = False
-
-                  if self.is_number_comma(extract):
-
-                    overlap_dict.update({unique : float(extract.replace(',',''))})
-                
-            #else if overlap_length == 1    
-            else:
-              
-              nbr_iterations = len_unique - overlap_length
-              
-              in_dict = False
-
-              for i in range(nbr_iterations + 1):
-                
-                if unique not in overlap_dict:
-
-                  extract = unique[i:(overlap_length+i)]
-
-  #                 extract_already_in_overlap_dict = False
-
-                  if self.is_number_comma(extract):
-
-                    in_dict = True
-
-                    overlap_dict.update({unique : float(extract.replace(',',''))})
-                  
-              if in_dict is False:
-
-                overlap_dict.update({unique : np.nan})
-                
-    suffixoverlap_results = \
-    self.df_check_suffixoverlap(mdf_train, column + '_nmc4', suffixoverlap_results)
-    
-    mdf_train[column + '_nmc4'] = mdf_train[column].astype(str)
-    mdf_train[column + '_nmc4'] = mdf_train[column + '_nmc4'].replace(overlap_dict)
-    
-    #do same for test data
-    #note this assumes that set of entries for test data is same or a subset of train data
-    #any entries not present will be subject to default infill
-    #note that getNArows will not capture these infill for infill with assigninfill
-    
-    test_unique_list = list(mdf_test[column].unique())
-    test_unique_list = list(map(str, test_unique_list))
-    extra_test_unique = list(set(test_unique_list) - set(unique_list))
-    
-    test_overlap_dict = deepcopy(overlap_dict)
-    test_unique_list = list(map(str, test_unique_list))
-    for test_unique in extra_test_unique:
-      test_overlap_dict.update({str(test_unique) : np.nan})
-    
-    mdf_test[column + '_nmc4'] = mdf_test[column].astype(str)
-    mdf_test[column + '_nmc4'] = mdf_test[column + '_nmc4'].replace(test_overlap_dict)
-
-    #get mean of training data
-    mean = mdf_train[column + '_nmc4'].mean()
-    if mean != mean:
-      mean = 0
-
-    #replace missing data with training set mean as default infill
-    mdf_train[column + '_nmc4'] = mdf_train[column + '_nmc4'].fillna(mean)
-    mdf_test[column + '_nmc4'] = mdf_test[column + '_nmc4'].fillna(mean)
-    
-    #a few more metrics collected for driftreport
-    #get maximum value of training column
-    maximum = mdf_train[column + '_nmc4'].max()
-    #get minimum value of training column
-    minimum = mdf_train[column + '_nmc4'].min()
-    
-    #create list of columns
-    nmbrcolumns = [column + '_nmc4']
-
-    nmbrnormalization_dict = {column + '_nmc4' : {'overlap_dict' : overlap_dict, \
-                                                  'mean' : mean, \
-                                                  'maximum' : maximum, \
-                                                  'minimum' : minimum, \
-                                                  'unique_list' : unique_list}}
-
-    #store some values in the nmbr_dict{} for use later in ML infill methods
-    column_dict_list = []
-
-    for nc in nmbrcolumns:
-
-      column_dict = { nc : {'category' : 'nmc4', \
-                           'origcategory' : category, \
-                           'normalization_dict' : nmbrnormalization_dict, \
-                           'origcolumn' : column, \
-                           'inputcolumn' : column, \
-                           'columnslist' : nmbrcolumns, \
-                           'categorylist' : nmbrcolumns, \
-                           'infillmodel' : False, \
-                           'infillcomplete' : False, \
-                           'suffixoverlap_results' : suffixoverlap_results, \
-                           'deletecolumn' : False}}
-
-      column_dict_list.append(column_dict.copy())
-    
-    return mdf_train, mdf_test, column_dict_list
-  
-  def process_nmc7_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
-    """
-    #process_nmc7_class(df, column, category, postprocess_dict)
-    #parses string entries and if any numbers present returns numbers
-    #the check for numbers strips commas and returned numbers have commas stripped
-    #entries without numbers present subject to infill
-    #assumes set of entries in test data is same or subset of train data for
-    #more efficient postmunge than vs nmc
-    #comparable to nmc4 but instead of making blanket assumption that unique values in
-    #test set are found in train set, implements parsing for test set entries not found in train set
-    """
-    
-    suffixoverlap_results = {}
-    
-    unique_list = list(mdf_train[column].unique())
-
-    unique_list = list(map(str, unique_list))
-    
-    maxlength = max(len(x) for x in unique_list)
-    
-    overlap_lengths = list(range(maxlength, 0, -1))
-
-    overlap_dict = {}
-    
-    for overlap_length in overlap_lengths:
-
-      for unique in unique_list:
-        
-        if unique not in overlap_dict:
-
-          len_unique = len(unique)
-
-          if len_unique >= overlap_length:
-            
-            if overlap_length > 1:
-
-              nbr_iterations = len_unique - overlap_length
-
-              for i in range(nbr_iterations + 1):
-                
-                if unique not in overlap_dict:
-
-                  extract = unique[i:(overlap_length+i)]
-
-  #                 extract_already_in_overlap_dict = False
-
-                  if self.is_number_comma(extract):
-
-                    overlap_dict.update({unique : float(extract.replace(',',''))})
-                
-            #else if overlap_length == 1    
-            else:
-              
-              nbr_iterations = len_unique - overlap_length
-              
-              in_dict = False
-
-              for i in range(nbr_iterations + 1):
-                
-                if unique not in overlap_dict:
-
-                  extract = unique[i:(overlap_length+i)]
-
-  #                 extract_already_in_overlap_dict = False
-
-                  if self.is_number_comma(extract):
-
-                    in_dict = True
-
-                    overlap_dict.update({unique : float(extract.replace(',',''))})
-                  
-              if in_dict is False:
-
-                overlap_dict.update({unique : np.nan})
-                
-    suffixoverlap_results = \
-    self.df_check_suffixoverlap(mdf_train, column + '_nmc7', suffixoverlap_results)
-    
-    mdf_train[column + '_nmc7'] = mdf_train[column].astype(str)
-    mdf_train[column + '_nmc7'] = mdf_train[column + '_nmc7'].replace(overlap_dict)
-    
-    #do same for test data
-    #note this assumes that set of entries for test data is same or a subset of train data
-    #any entries not present will be subject to default infill
-    #note that getNArows will not capture these infill for infill with assigninfill
-    
-    test_unique_list = list(mdf_test[column].unique())
-    test_unique_list = list(map(str, test_unique_list))
-    extra_test_unique = list(set(test_unique_list) - set(unique_list))
-    
-    test_overlap_dict = deepcopy(overlap_dict)
-#     for test_unique in extra_test_unique:
-#       test_overlap_dict.update({str(test_unique) : np.nan})
-
-
-#     unique_list = list(mdf_train[column].unique())
-
-#     unique_list = list(map(str, unique_list))
-    
-    testmaxlength = max(len(x) for x in unique_list)
-    
-    if testmaxlength > maxlength:
-      maxlength = testmaxlength
-    
-    overlap_lengths = list(range(maxlength, 0, -1))
-
-#     overlap_dict = {}
-    
-    for overlap_length in overlap_lengths:
-
-      for unique in extra_test_unique:
-        
-        if unique not in test_overlap_dict:
-
-          len_unique = len(unique)
-
-          if len_unique >= overlap_length:
-            
-            if overlap_length > 1:
-
-              nbr_iterations = len_unique - overlap_length
-
-              for i in range(nbr_iterations + 1):
-                
-                if unique not in test_overlap_dict:
-
-                  extract = unique[i:(overlap_length+i)]
-
-  #                 extract_already_in_overlap_dict = False
-
-                  if self.is_number(extract):
-
-                    test_overlap_dict.update({unique : float(extract)})
-                
-            #else if overlap_length == 1    
-            else:
-              
-              nbr_iterations = len_unique - overlap_length
-              
-              in_dict = False
-
-              for i in range(nbr_iterations + 1):
-                
-                if unique not in test_overlap_dict:
-
-                  extract = unique[i:(overlap_length+i)]
-
-  #                 extract_already_in_overlap_dict = False
-
-                  if self.is_number(extract):
-
-                    in_dict = True
-
-                    test_overlap_dict.update({unique : float(extract)})
-                  
-              if in_dict is False:
-
-                test_overlap_dict.update({unique : np.nan})
-    
-#     for test_unique in extra_test_unique:
-#       test_overlap_dict.update({str(test_unique) : np.nan})
-    
-    mdf_test[column + '_nmc7'] = mdf_test[column].astype(str)
-    mdf_test[column + '_nmc7'] = mdf_test[column + '_nmc7'].replace(test_overlap_dict)
-
-    #get mean of training data
-    mean = mdf_train[column + '_nmc7'].mean()
-    if mean != mean:
-      mean = 0
-
-    #replace missing data with training set mean as default infill
-    mdf_train[column + '_nmc7'] = mdf_train[column + '_nmc7'].fillna(mean)
-    mdf_test[column + '_nmc7'] = mdf_test[column + '_nmc7'].fillna(mean)
-    
-    #a few more metrics collected for driftreport
-    #get maximum value of training column
-    maximum = mdf_train[column + '_nmc7'].max()
-    #get minimum value of training column
-    minimum = mdf_train[column + '_nmc7'].min()
-    
-    #create list of columns
-    nmbrcolumns = [column + '_nmc7']
-
-    nmbrnormalization_dict = {column + '_nmc7' : {'overlap_dict' : overlap_dict, \
-                                                  'mean' : mean, \
-                                                  'maximum' : maximum, \
-                                                  'minimum' : minimum, \
-                                                  'unique_list' : unique_list, \
-                                                  'maxlength' : maxlength}}
-
-    #store some values in the nmbr_dict{} for use later in ML infill methods
-    column_dict_list = []
-  
-    for nc in nmbrcolumns:
-
-      column_dict = { nc : {'category' : 'nmc7', \
-                           'origcategory' : category, \
-                           'normalization_dict' : nmbrnormalization_dict, \
-                           'origcolumn' : column, \
-                           'inputcolumn' : column, \
-                           'columnslist' : nmbrcolumns, \
-                           'categorylist' : nmbrcolumns, \
-                           'infillmodel' : False, \
-                           'infillcomplete' : False, \
-                           'suffixoverlap_results' : suffixoverlap_results, \
-                           'deletecolumn' : False}}
-
-      column_dict_list.append(column_dict.copy())
-        
-    return mdf_train, mdf_test, column_dict_list
-  
-  def process_nmEU_class(self, df, column, category, postprocess_dict, params = {}):
-    """
-    #process_nmEU_class(df, column, category, postprocess_dict)
-    #parses string entries and if any numbers present returns numbers
-    #the check for numbers strips spaces/periods, replaces commas with periods
-    #such as to recognize international formats
-    #entries without numbers present subject to infill
-    """
-    
-    suffixoverlap_results = {}
-    
-    unique_list = list(df[column].unique())
-
-    unique_list = list(map(str, unique_list))
-    
-    maxlength = max(len(x) for x in unique_list)
-    
-    overlap_lengths = list(range(maxlength, 0, -1))
-
-    overlap_dict = {}
-    
-    for overlap_length in overlap_lengths:
-
-      for unique in unique_list:
-        
-        if unique not in overlap_dict:
-
-          len_unique = len(unique)
-
-          if len_unique >= overlap_length:
-            
-            if overlap_length > 1:
-
-              nbr_iterations = len_unique - overlap_length
-
-              for i in range(nbr_iterations + 1):
-                
-                if unique not in overlap_dict:
-
-                  extract = unique[i:(overlap_length+i)]
-
-  #                 extract_already_in_overlap_dict = False
-
-                  if self.is_number_EU(extract):
-
-                    overlap_dict.update({unique : float(extract[0] + extract[1:-1].replace(' ','').replace('.','').replace(',','.') + extract[-1])})
-                
-            #else if overlap_length == 1    
-            else:
-              
-              nbr_iterations = len_unique - overlap_length
-              
-              in_dict = False
-
-              for i in range(nbr_iterations + 1):
-                
-                if unique not in overlap_dict:
-
-                  extract = unique[i:(overlap_length+i)]
-
-  #                 extract_already_in_overlap_dict = False
-
-                  if self.is_number_EU(extract):
-
-                    in_dict = True
-
-                    overlap_dict.update({unique : float(extract[0] + extract[1:-1].replace(' ','').replace('.','').replace(',','.') + extract[-1])})
-                  
-              if in_dict is False:
-
-                overlap_dict.update({unique : np.nan})
-                
-    suffixoverlap_results = \
-    self.df_check_suffixoverlap(df, column + '_nmEU', suffixoverlap_results)
-    
-    df[column + '_nmEU'] = df[column].astype(str)
-    df[column + '_nmEU'] = df[column + '_nmEU'].replace(overlap_dict)
-
-    #get mean of training data
-    mean = df[column + '_nmEU'].mean()
-    if mean != mean:
-      mean = 0
-
-    #replace missing data with training set mean as default infill
-    df[column + '_nmEU'] = df[column + '_nmEU'].fillna(mean)
-    
-    #a few more metrics collected for driftreport
-    #get maximum value of training column
-    maximum = df[column + '_nmEU'].max()
-    #get minimum value of training column
-    minimum = df[column + '_nmEU'].min()
-    
-    #create list of columns
-    nmbrcolumns = [column + '_nmEU']
-
-
-    nmbrnormalization_dict = {column + '_nmEU' : {'overlap_dict' : overlap_dict, \
-                                                  'mean' : mean, \
-                                                  'maximum' : maximum, \
-                                                  'minimum' : minimum }}
-
-
-    #store some values in the nmbr_dict{} for use later in ML infill methods
-    column_dict_list = []
-
-    
-    for nc in nmbrcolumns:
-
-      column_dict = { nc : {'category' : 'nmEU', \
-                           'origcategory' : category, \
-                           'normalization_dict' : nmbrnormalization_dict, \
-                           'origcolumn' : column, \
-                           'inputcolumn' : column, \
-                           'columnslist' : nmbrcolumns, \
-                           'categorylist' : nmbrcolumns, \
-                           'infillmodel' : False, \
-                           'infillcomplete' : False, \
-                           'suffixoverlap_results' : suffixoverlap_results, \
-                           'deletecolumn' : False}}
-
-      column_dict_list.append(column_dict.copy())
-    
-    return df, column_dict_list
-  
-  def process_nmE4_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
-    """
-    #process_nmc4_class(df, column, category, postprocess_dict)
-    #parses string entries and if any numbers present returns numbers
-    #the check for numbers strips periods/spaces and replaces commas with periods
-    #such as to recognize international format
-    #entries without numbers present subject to infill
-    #assumes set of entries in test data is same or subset of train data for
-    #more efficient postmunge than vs nmc
-    """
-    
-    suffixoverlap_results = {}
-    
-    unique_list = list(mdf_train[column].unique())
-
-    unique_list = list(map(str, unique_list))
-    
-    maxlength = max(len(x) for x in unique_list)
-    
-    overlap_lengths = list(range(maxlength, 0, -1))
-
-    overlap_dict = {}
-    
-    for overlap_length in overlap_lengths:
-
-      for unique in unique_list:
-        
-        if unique not in overlap_dict:
-
-          len_unique = len(unique)
-
-          if len_unique >= overlap_length:
-            
-            if overlap_length > 1:
-
-              nbr_iterations = len_unique - overlap_length
-
-              for i in range(nbr_iterations + 1):
-                
-                if unique not in overlap_dict:
-
-                  extract = unique[i:(overlap_length+i)]
-
-  #                 extract_already_in_overlap_dict = False
-
-                  if self.is_number_EU(extract):
-
-                    overlap_dict.update({unique : float(extract[0] + extract[1:-1].replace(' ','').replace('.','').replace(',','.') + extract[-1])})
-                
-            #else if overlap_length == 1    
-            else:
-              
-              nbr_iterations = len_unique - overlap_length
-              
-              in_dict = False
-
-              for i in range(nbr_iterations + 1):
-                
-                if unique not in overlap_dict:
-
-                  extract = unique[i:(overlap_length+i)]
-
-  #                 extract_already_in_overlap_dict = False
-
-                  if self.is_number_EU(extract):
-
-                    in_dict = True
-
-                    overlap_dict.update({unique : float(extract[0] + extract[1:-1].replace(' ','').replace('.','').replace(',','.') + extract[-1])})
-                  
-              if in_dict is False:
-
-                overlap_dict.update({unique : np.nan})
-                
-    suffixoverlap_results = \
-    self.df_check_suffixoverlap(mdf_train, column + '_nmE4', suffixoverlap_results)
-    
-    mdf_train[column + '_nmE4'] = mdf_train[column].astype(str)
-    mdf_train[column + '_nmE4'] = mdf_train[column + '_nmE4'].replace(overlap_dict)
-    
-    #do same for test data
-    #note this assumes that set of entries for test data is same or a subset of train data
-    #any entries not present will be subject to default infill
-    #note that getNArows will not capture these infill for infill with assigninfill
-    
-    test_unique_list = list(mdf_test[column].unique())
-    test_unique_list = list(map(str, test_unique_list))
-    extra_test_unique = list(set(test_unique_list) - set(unique_list))
-    
-    test_overlap_dict = deepcopy(overlap_dict)
-    test_unique_list = list(map(str, test_unique_list))
-    for test_unique in extra_test_unique:
-      test_overlap_dict.update({str(test_unique) : np.nan})
-    
-    mdf_test[column + '_nmE4'] = mdf_test[column].astype(str)
-    mdf_test[column + '_nmE4'] = mdf_test[column + '_nmE4'].replace(test_overlap_dict)
-    
-
-    #get mean of training data
-    mean = mdf_train[column + '_nmE4'].mean()
-    if mean != mean:
-      mean = 0
-
-    #replace missing data with training set mean as default infill
-    mdf_train[column + '_nmE4'] = mdf_train[column + '_nmE4'].fillna(mean)
-    mdf_test[column + '_nmE4'] = mdf_test[column + '_nmE4'].fillna(mean)
-    
-    #a few more metrics collected for driftreport
-    #get maximum value of training column
-    maximum = mdf_train[column + '_nmE4'].max()
-    #get minimum value of training column
-    minimum = mdf_train[column + '_nmE4'].min()
-    
-    #create list of columns
-    nmbrcolumns = [column + '_nmE4']
-
-    nmbrnormalization_dict = {column + '_nmE4' : {'overlap_dict' : overlap_dict, \
-                                                  'mean' : mean, \
-                                                  'maximum' : maximum, \
-                                                  'minimum' : minimum, \
-                                                  'unique_list' : unique_list}}
-
-    #store some values in the nmbr_dict{} for use later in ML infill methods
-    column_dict_list = []
-
-    for nc in nmbrcolumns:
-
-      column_dict = { nc : {'category' : 'nmE4', \
-                           'origcategory' : category, \
-                           'normalization_dict' : nmbrnormalization_dict, \
-                           'origcolumn' : column, \
-                           'inputcolumn' : column, \
-                           'columnslist' : nmbrcolumns, \
-                           'categorylist' : nmbrcolumns, \
-                           'infillmodel' : False, \
-                           'infillcomplete' : False, \
-                           'suffixoverlap_results' : suffixoverlap_results, \
-                           'deletecolumn' : False}}
-
-      column_dict_list.append(column_dict.copy())
-    
-    return mdf_train, mdf_test, column_dict_list
-  
-  def process_nmE7_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
-    """
-    #process_nmE7_class(df, column, category, postprocess_dict)
-    #parses string entries and if any numbers present returns numbers
-    #the check for numbers strips periods/spaces and replaces commas with periods
-    #such as to recognize international format
-    #entries without numbers present subject to infill
-    #assumes set of entries in test data is same or subset of train data for
-    #more efficient postmunge than vs nmc
-    #comparable to nmc4 but instead of making blanket assumption that unique values in
-    #test set are found in train set, implements parsing for test set entries not found in train set
-    """
-    
-    suffixoverlap_results = {}
-    
-    unique_list = list(mdf_train[column].unique())
-
-    unique_list = list(map(str, unique_list))
-    
-    maxlength = max(len(x) for x in unique_list)
-    
-    overlap_lengths = list(range(maxlength, 0, -1))
-
-    overlap_dict = {}
-    
-    for overlap_length in overlap_lengths:
-
-      for unique in unique_list:
-        
-        if unique not in overlap_dict:
-
-          len_unique = len(unique)
-
-          if len_unique >= overlap_length:
-            
-            if overlap_length > 1:
-
-              nbr_iterations = len_unique - overlap_length
-
-              for i in range(nbr_iterations + 1):
-                
-                if unique not in overlap_dict:
-
-                  extract = unique[i:(overlap_length+i)]
-
-  #                 extract_already_in_overlap_dict = False
-
-                  if self.is_number_EU(extract):
-
-                    overlap_dict.update({unique : float(extract[0] + extract[1:-1].replace(' ','').replace('.','').replace(',','.') + extract[-1])})
-                
-            #else if overlap_length == 1    
-            else:
-              
-              nbr_iterations = len_unique - overlap_length
-              
-              in_dict = False
-
-              for i in range(nbr_iterations + 1):
-                
-                if unique not in overlap_dict:
-
-                  extract = unique[i:(overlap_length+i)]
-
-  #                 extract_already_in_overlap_dict = False
-
-                  if self.is_number_EU(extract):
-
-                    in_dict = True
-
-                    overlap_dict.update({unique : float(extract[0] + extract[1:-1].replace(' ','').replace('.','').replace(',','.') + extract[-1])})
-                  
-              if in_dict is False:
-
-                overlap_dict.update({unique : np.nan})
-                
-    suffixoverlap_results = \
-    self.df_check_suffixoverlap(mdf_train, column + '_nmE7', suffixoverlap_results)
-    
-    mdf_train[column + '_nmE7'] = mdf_train[column].astype(str)
-    mdf_train[column + '_nmE7'] = mdf_train[column + '_nmE7'].replace(overlap_dict)
-    
-    #do same for test data
-    #note this assumes that set of entries for test data is same or a subset of train data
-    #any entries not present will be subject to default infill
-    #note that getNArows will not capture these infill for infill with assigninfill
-    
-    test_unique_list = list(mdf_test[column].unique())
-    test_unique_list = list(map(str, test_unique_list))
-    extra_test_unique = list(set(test_unique_list) - set(unique_list))
-    
-    test_overlap_dict = deepcopy(overlap_dict)
-#     for test_unique in extra_test_unique:
-#       test_overlap_dict.update({str(test_unique) : np.nan})
-
-#     unique_list = list(mdf_train[column].unique())
-
-#     unique_list = list(map(str, unique_list))
-    
-    testmaxlength = max(len(x) for x in unique_list)
-    
-    if testmaxlength > maxlength:
-      maxlength = testmaxlength
-    
-    overlap_lengths = list(range(maxlength, 0, -1))
-
-#     overlap_dict = {}
-    
-    for overlap_length in overlap_lengths:
-
-      for unique in extra_test_unique:
-        
-        if unique not in test_overlap_dict:
-
-          len_unique = len(unique)
-
-          if len_unique >= overlap_length:
-            
-            if overlap_length > 1:
-
-              nbr_iterations = len_unique - overlap_length
-
-              for i in range(nbr_iterations + 1):
-                
-                if unique not in test_overlap_dict:
-
-                  extract = unique[i:(overlap_length+i)]
-
-  #                 extract_already_in_overlap_dict = False
-
-                  if self.is_number(extract):
-
-                    test_overlap_dict.update({unique : float(extract[0] + extract[1:-1].replace(' ','').replace('.','').replace(',','.') + extract[-1])})
-                
-            #else if overlap_length == 1    
-            else:
-              
-              nbr_iterations = len_unique - overlap_length
-              
-              in_dict = False
-
-              for i in range(nbr_iterations + 1):
-                
-                if unique not in test_overlap_dict:
-
-                  extract = unique[i:(overlap_length+i)]
-
-  #                 extract_already_in_overlap_dict = False
-
-                  if self.is_number(extract):
-
-                    in_dict = True
-
-                    test_overlap_dict.update({unique : float(extract[0] + extract[1:-1].replace(' ','').replace('.','').replace(',','.') + extract[-1])})
-                  
-              if in_dict is False:
-
-                test_overlap_dict.update({unique : np.nan})
-    
-#     for test_unique in extra_test_unique:
-#       test_overlap_dict.update({str(test_unique) : np.nan})
-    
-    mdf_test[column + '_nmE7'] = mdf_test[column].astype(str)
-    mdf_test[column + '_nmE7'] = mdf_test[column + '_nmE7'].replace(test_overlap_dict)
-
-    #get mean of training data
-    mean = mdf_train[column + '_nmE7'].mean()
-    if mean != mean:
-      mean = 0
-
-    #replace missing data with training set mean as default infill
-    mdf_train[column + '_nmE7'] = mdf_train[column + '_nmE7'].fillna(mean)
-    mdf_test[column + '_nmE7'] = mdf_test[column + '_nmE7'].fillna(mean)
-    
-    #a few more metrics collected for driftreport
-    #get maximum value of training column
-    maximum = mdf_train[column + '_nmE7'].max()
-    #get minimum value of training column
-    minimum = mdf_train[column + '_nmE7'].min()
-    
-    #create list of columns
-    nmbrcolumns = [column + '_nmE7']
-
-    nmbrnormalization_dict = {column + '_nmE7' : {'overlap_dict' : overlap_dict, \
-                                                  'mean' : mean, \
-                                                  'maximum' : maximum, \
-                                                  'minimum' : minimum, \
-                                                  'unique_list' : unique_list, \
-                                                  'maxlength' : maxlength}}
-
-    #store some values in the nmbr_dict{} for use later in ML infill methods
-    column_dict_list = []
-
-    for nc in nmbrcolumns:
-
-      column_dict = { nc : {'category' : 'nmE7', \
-                           'origcategory' : category, \
-                           'normalization_dict' : nmbrnormalization_dict, \
-                           'origcolumn' : column, \
-                           'inputcolumn' : column, \
-                           'columnslist' : nmbrcolumns, \
-                           'categorylist' : nmbrcolumns, \
-                           'infillmodel' : False, \
-                           'infillcomplete' : False, \
-                           'suffixoverlap_results' : suffixoverlap_results, \
-                           'deletecolumn' : False}}
-
-      column_dict_list.append(column_dict.copy())
-        
+      
     return mdf_train, mdf_test, column_dict_list
   
   def process_ordl_class(self, mdf_train, mdf_test, column, category, \
@@ -13582,2457 +12765,225 @@ class AutoMunge:
       column_dict_list.append(column_dict.copy())
 
     return df, column_dict_list
-  
-  def process_year_class(self, mdf_train, mdf_test, column, category, \
+
+  def process_tmsc_class(self, mdf_train, mdf_test, column, category, \
                          postprocess_dict, params = {}):
-    '''
-    #process_year_class(mdf_train, mdf_test, column, category)
-    #preprocess column with time classifications
-    #takes as arguement two pandas dataframe containing training and test data respectively 
-    #(mdf_train, mdf_test), and the name of the column string ('column') and the
-    #category fo the source column (category)
-    #note this trains both training and test data simultaneously due to unique treatment if any category
-    #missing from training set but not from test set to ensure consistent formatting 
-    
-    #creates distinct columns for year
-    #z score normalized to the mean and std, with missing values plugged with the mean
-    #with columns named after column_ + time category
-    #returns two transformed dataframe (mdf_train, mdf_test) and column_dict_list
-    '''
+    """
+    #time data segregated by time scale
+    #with sin or cos applied to address periodicity
+    #such as may be useful to return both by seperate transformation categories
+    #accepts parameter 'scale' to distinguish between year/month/day/hour/minute/second
+    #note that some scales can be returned combined by passing 
+    #monthday/dayhourminute/hourminutesecond/minutesecond
+    #accepts parameter 'suffix' for returned column header suffix
+    #accets parameter 'function' to distinguish between sin/cos
+    """
     
     suffixoverlap_results = {}
     
-    #store original column for later retrieval
-    mdf_train, suffixoverlap_results = \
-    self.df_copy_train(mdf_train, column, column + '_year', suffixoverlap_results)
-    
-    mdf_test[column + '_year'] = mdf_test[column].copy()
-
-    #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
-    mdf_train[column + '_year'] = pd.to_datetime(mdf_train[column + '_year'], errors = 'coerce')
-    mdf_test[column + '_year'] = pd.to_datetime(mdf_test[column + '_year'], errors = 'coerce')
-
-    #mdf_train[column].replace(-np.Inf, np.nan)
-    #mdf_test[column].replace(-np.Inf, np.nan)
-
-    #get mean of various categories of datetime objects to use to plug in missing cells
-    meanyear = mdf_train[column + '_year'].dt.year.mean()
-    
-    if meanyear != meanyear:
-      meanyear = 0
-
-    #get standard deviation of training data
-    stdyear = mdf_train[column + '_year'].dt.year.std()
-    
-    #special case, if standard deviation is 0 we'll set it to 1 to avoid division by 0
-    if stdyear == 0:
-      stdyear = 1
-    if stdyear != stdyear:
-      stdyear = 1
-
-    #create new columns for each category in train set
-    mdf_train[column + '_year'] = mdf_train[column + '_year'].dt.year
-    mdf_test[column + '_year'] = mdf_test[column + '_year'].dt.year
-
-    #replace missing data with training set mean
-    mdf_train[column + '_year'] = mdf_train[column + '_year'].fillna(meanyear)
-    mdf_test[column + '_year'] = mdf_test[column + '_year'].fillna(meanyear)
-
-    #subtract mean from column for both train and test
-    mdf_train[column + '_year'] = mdf_train[column + '_year'] - meanyear
-    mdf_test[column + '_year'] = mdf_test[column + '_year'] - meanyear
-
-    #divide column values by std for both training and test data
-    mdf_train[column + '_year'] = mdf_train[column + '_year'] / stdyear
-
-    mdf_test[column + '_year'] = mdf_test[column + '_year'] / stdyear
-
-#     #now replace NaN with 0
-#     mdf_train[column + '_year'] = mdf_train[column + '_year'].fillna(0)
-
-#     #do same for test set
-#     mdf_test[column + '_year'] = mdf_test[column + '_year'].fillna(0)
-
-    #output of a list of the created column names
-    datecolumns = [column + '_year']
-
-#     #this is to address an issue I found when parsing columns with only time no date
-#     #which returned -inf vlaues, so if an issue will just delete the associated 
-#     #column along with the entry in datecolumns
-#     checkyear = np.isinf(mdf_train.iloc[0][column + '_year'])
-#     if checkyear:
-#       del mdf_train[column + '_year']
-#       datecolumns.remove(column + '_year')
-#       if column + '_year' in mdf_test.columns:
-#         del mdf_test[column + '_year']
-
-#     #change data type for memory savings
-#     mdf_train[column + '_year'] = mdf_train[column + '_year'].astype(np.float32)
-#     mdf_test[column + '_year'] = mdf_test[column + '_year'].astype(np.float32)
-
-    #store some values in the date_dict{} for use later in ML infill methods
-
-    column_dict_list = []
-
-    categorylist = datecolumns
-
-    for dc in categorylist:
-
-      #save a dictionary of the associated column mean and std
-      timenormalization_dict = \
-      {dc : {'meanyear' : meanyear,\
-             'stdyear' : stdyear}}
-
-      column_dict = {dc : {'category' : 'year', \
-                           'origcategory' : category, \
-                           'normalization_dict' : timenormalization_dict, \
-                           'origcolumn' : column, \
-                           'inputcolumn' : column, \
-                           'columnslist' : datecolumns, \
-                           'categorylist' : categorylist, \
-                           'infillmodel' : False, \
-                           'infillcomplete' : False, \
-                           'suffixoverlap_results' : suffixoverlap_results, \
-                           'deletecolumn' : False}}
-
-      column_dict_list.append(column_dict.copy())
+    if 'scale' in params:
+      #accepts year/month/day/hour/minute/second
+      scale = params['scale']
+    else:
+      scale = 'monthday'
       
-    return mdf_train, mdf_test, column_dict_list
-  
-  def process_mnth_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict, params = {}):
-    '''
-    #process_mnth_class(mdf_train, mdf_test, column, category)
-    #preprocess column with time classifications
-    #takes as arguement two pandas dataframe containing training and test data respectively 
-    #(mdf_train, mdf_test), and the name of the column string ('column') and the
-    #category fo the source column (category)
-    #note this trains both training and test data simultaneously due to unique treatment if any category
-    #missing from training set but not from test set to ensure consistent formatting 
-    
-    #creates distinct columns for months
-    #z score normalized to the mean and std, with missing values plugged with the mean
-    #with columns named after column_ + time category
-    #returns two transformed dataframe (mdf_train, mdf_test) and column_dict_list
-    '''
-    
-    suffixoverlap_results = {}
-    
-    #store original column for later retrieval
-    mdf_train, suffixoverlap_results = \
-    self.df_copy_train(mdf_train, column, column + '_mnth', suffixoverlap_results)
-    
-    mdf_test[column + '_mnth'] = mdf_test[column].copy()
-
-    #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
-    mdf_train[column + '_mnth'] = pd.to_datetime(mdf_train[column + '_mnth'], errors = 'coerce')
-    mdf_test[column + '_mnth'] = pd.to_datetime(mdf_test[column + '_mnth'], errors = 'coerce')
-
-    #mdf_train[column].replace(-np.Inf, np.nan)
-    #mdf_test[column].replace(-np.Inf, np.nan)
-
-    #get mean of various categories of datetime objects to use to plug in missing cells
-    meanmonth = mdf_train[column + '_mnth'].dt.month.mean()
-    
-    if meanmonth != meanmonth:
-      meanmonth = 0
-
-    #get standard deviation of training data
-    stdmonth = mdf_train[column + '_mnth'].dt.month.std()
-
-    #special case, if standard deviation is 0 we'll set it to 1 to avoid division by 0
-    if stdmonth == 0:
-      stdmonth = 1
-    if stdmonth != stdmonth:
-      stdmonth = 1
-
-    #create new columns for each category in train set
-    mdf_train[column + '_mnth'] = mdf_train[column + '_mnth'].dt.month
-
-    #do same for test set
-    mdf_test[column + '_mnth'] = mdf_test[column + '_mnth'].dt.month
-
-    #replace missing data with training set mean
-    mdf_train[column + '_mnth'] = mdf_train[column + '_mnth'].fillna(meanmonth)
-
-    #do same for test set
-    mdf_test[column + '_mnth'] = mdf_test[column + '_mnth'].fillna(meanmonth)
-
-    #subtract mean from column for both train and test
-    mdf_train[column + '_mnth'] = mdf_train[column + '_mnth'] - meanmonth
-
-    mdf_test[column + '_mnth'] = mdf_test[column + '_mnth'] - meanmonth
-
-    #divide column values by std for both training and test data
-    mdf_train[column + '_mnth'] = mdf_train[column + '_mnth'] / stdmonth
-
-    mdf_test[column + '_mnth'] = mdf_test[column + '_mnth'] / stdmonth
-
-#     #now replace NaN with 0
-#     mdf_train[column + '_mnth'] = mdf_train[column + '_mnth'].fillna(0)
-
-#     #do same for test set
-#     mdf_test[column + '_mnth'] = mdf_test[column + '_mnth'].fillna(0)
-
-#     #change data type for memory savings
-#     mdf_train[column + '_mnth'] = mdf_train[column + '_mnth'].astype(np.float32)
-#     mdf_test[column + '_mnth'] = mdf_test[column + '_mnth'].astype(np.float32)
-
-    #output of a list of the created column names
-    datecolumns = [column + '_mnth']
-
-#     #this is to address an issue I found when parsing columns with only time no date
-#     #which returned -inf vlaues, so if an issue will just delete the associated 
-#     #column along with the entry in datecolumns
-#     checkyear = np.isinf(mdf_train.iloc[0][column + '_year'])
-#     if checkyear:
-#       del mdf_train[column + '_year']
-#       datecolumns.remove(column + '_year')
-#       if column + '_year' in mdf_test.columns:
-#         del mdf_test[column + '_year']
-
-    #store some values in the date_dict{} for use later in ML infill methods
-
-    column_dict_list = []
-
-    categorylist = datecolumns
-
-    for dc in categorylist:
-
-      #save a dictionary of the associated column mean and std
-      timenormalization_dict = \
-      {dc : {'meanmonth' : meanmonth,\
-             'stdmonth' : stdmonth}}
-
-      column_dict = {dc : {'category' : 'mnth', \
-                           'origcategory' : category, \
-                           'normalization_dict' : timenormalization_dict, \
-                           'origcolumn' : column, \
-                           'inputcolumn' : column, \
-                           'columnslist' : datecolumns, \
-                           'categorylist' : categorylist, \
-                           'infillmodel' : False, \
-                           'infillcomplete' : False, \
-                           'suffixoverlap_results' : suffixoverlap_results, \
-                           'deletecolumn' : False}}
-
-      column_dict_list.append(column_dict.copy())
+    if 'suffix' in params:
+      #accepts column header suffix appender
+      suffix = params['suffix']
+    else:
+      suffix = '_mdsn'
       
-    return mdf_train, mdf_test, column_dict_list
-  
-  def process_mnsn_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict, params = {}):
-    '''
-    #process_mnsn_class(mdf_train, mdf_test, column, category)
-    #preprocess column with time classifications
-    #takes as arguement two pandas dataframe containing training and test data respectively 
-    #(mdf_train, mdf_test), and the name of the column string ('column') and the
-    #category fo the source column (category)
-    #note this trains both training and test data simultaneously due to unique treatment if any category
-    #missing from training set but not from test set to ensure consistent formatting 
+    if 'function' in params:
+      #accepts sin/cos
+      function = params['function']
+    else:
+      function = 'sin'
     
-    #creates distinct columns for months
-    #with sin transform for 12 month period, with missing values plugged with the mean
-    #with columns named after column_ + time category
-    #returns two transformed dataframe (mdf_train, mdf_test) and column_dict_list
-    '''
+    time_column = column + suffix
     
-    suffixoverlap_results = {}
-    
-    #store original column for later retrieval
     mdf_train, suffixoverlap_results = \
-    self.df_copy_train(mdf_train, column, column + '_mnsn', suffixoverlap_results)
+    self.df_copy_train(mdf_train, column, time_column, suffixoverlap_results)
     
-    mdf_test[column + '_mnsn'] = mdf_test[column].copy()
-
+    mdf_test[time_column] = mdf_test[column].copy()
+    
     #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
-    mdf_train[column + '_mnsn'] = pd.to_datetime(mdf_train[column + '_mnsn'], errors = 'coerce')
-    mdf_test[column + '_mnsn'] = pd.to_datetime(mdf_test[column + '_mnsn'], errors = 'coerce')
-
-    #mdf_train[column].replace(-np.Inf, np.nan)
-    #mdf_test[column].replace(-np.Inf, np.nan)
-
-    #grab month entries
-    mdf_train[column + '_mnsn'] = mdf_train[column + '_mnsn'].dt.month
-    mdf_test[column + '_mnsn'] = mdf_test[column + '_mnsn'].dt.month
+    mdf_train[time_column] = pd.to_datetime(mdf_train[time_column], errors = 'coerce')
+    mdf_test[time_column] = pd.to_datetime(mdf_test[time_column], errors = 'coerce')
     
-    #apply sin transform
-    mdf_train[column + '_mnsn'] = np.sin(mdf_train[column + '_mnsn'] * 2 * np.pi / 12 )
-    mdf_test[column + '_mnsn'] = np.sin(mdf_test[column + '_mnsn'] * 2 * np.pi / 12 )
-    
-    #get mean of various categories of datetime objects to use to plug in missing cells
-    mean_mnsn = mdf_train[column + '_mnsn'].mean()
-    
-    if mean_mnsn != mean_mnsn:
-      mean_mnsn = 0
-
-    #replace missing data with training set mean
-    mdf_train[column + '_mnsn'] = mdf_train[column + '_mnsn'].fillna(mean_mnsn)
-    mdf_test[column + '_mnsn'] = mdf_test[column + '_mnsn'].fillna(mean_mnsn)
-
-    #output of a list of the created column names
-    datecolumns = [column + '_mnsn']
-
-#     #this is to address an issue I found when parsing columns with only time no date
-#     #which returned -inf vlaues, so if an issue will just delete the associated 
-#     #column along with the entry in datecolumns
-#     checkyear = np.isinf(mdf_train.iloc[0][column + '_year'])
-#     if checkyear:
-#       del mdf_train[column + '_year']
-#       datecolumns.remove(column + '_year')
-#       if column + '_year' in mdf_test.columns:
-#         del mdf_test[column + '_year']
-
-#     #change data type for memory savings
-#     mdf_train[column + '_mnsn'] = mdf_train[column + '_mnsn'].astype(np.float32)
-#     mdf_test[column + '_mnsn'] = mdf_test[column + '_mnsn'].astype(np.float32)
-
-    #store some values in the date_dict{} for use later in ML infill methods
-
-    column_dict_list = []
-
-    categorylist = datecolumns
-
-    for dc in categorylist:
-
-      #save a dictionary of the associated column mean and std
-      timenormalization_dict = \
-      {dc : {'mean_mnsn' : mean_mnsn}}
-
-      column_dict = {dc : {'category' : 'mnsn', \
-                           'origcategory' : category, \
-                           'normalization_dict' : timenormalization_dict, \
-                           'origcolumn' : column, \
-                           'inputcolumn' : column, \
-                           'columnslist' : datecolumns, \
-                           'categorylist' : categorylist, \
-                           'infillmodel' : False, \
-                           'infillcomplete' : False, \
-                           'suffixoverlap_results' : suffixoverlap_results, \
-                           'deletecolumn' : False}}
-
-      column_dict_list.append(column_dict.copy())
+    #access time scale from one of year/month/day/hour/minute/second
+    #monthday/dayhourminute/hourminutesecond/minutesecond
+    if scale == 'year':
+      mdf_train[time_column] = mdf_train[time_column].dt.year
+      mdf_test[time_column] = mdf_test[time_column].dt.year
       
-    return mdf_train, mdf_test, column_dict_list
-  
-  def process_mncs_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict, params = {}):
-    '''
-    #process_mncs_class(mdf_train, mdf_test, column, category)
-    #preprocess column with time classifications
-    #takes as arguement two pandas dataframe containing training and test data respectively 
-    #(mdf_train, mdf_test), and the name of the column string ('column') and the
-    #category fo the source column (category)
-    #note this trains both training and test data simultaneously due to unique treatment if any category
-    #missing from training set but not from test set to ensure consistent formatting 
-    
-    #creates distinct columns for months
-    #with cos transform for 12 month period, with missing values plugged with the mean
-    #with columns named after column_ + time category
-    #returns two transformed dataframe (mdf_train, mdf_test) and column_dict_list
-    '''
-    
-    suffixoverlap_results = {}
-    
-    #store original column for later retrieval
-    mdf_train, suffixoverlap_results = \
-    self.df_copy_train(mdf_train, column, column + '_mncs', suffixoverlap_results)
-    
-    mdf_test[column + '_mncs'] = mdf_test[column].copy()
-
-    #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
-    mdf_train[column + '_mncs'] = pd.to_datetime(mdf_train[column + '_mncs'], errors = 'coerce')
-    mdf_test[column + '_mncs'] = pd.to_datetime(mdf_test[column + '_mncs'], errors = 'coerce')
-
-    #mdf_train[column].replace(-np.Inf, np.nan)
-    #mdf_test[column].replace(-np.Inf, np.nan)
-
-    #grab month entries
-    mdf_train[column + '_mncs'] = mdf_train[column + '_mncs'].dt.month
-    mdf_test[column + '_mncs'] = mdf_test[column + '_mncs'].dt.month
-    
-    #apply cos transform
-    mdf_train[column + '_mncs'] = np.cos(mdf_train[column + '_mncs'] * 2 * np.pi / 12 )
-    mdf_test[column + '_mncs'] = np.cos(mdf_test[column + '_mncs'] * 2 * np.pi / 12 )
-    
-    
-    #get mean of various categories of datetime objects to use to plug in missing cells
-    mean_mncs = mdf_train[column + '_mncs'].mean()
-
-    if mean_mncs != mean_mncs:
-      mean_mncs = 0
-
-    #replace missing data with training set mean
-    mdf_train[column + '_mncs'] = mdf_train[column + '_mncs'].fillna(mean_mncs)
-    mdf_test[column + '_mncs'] = mdf_test[column + '_mncs'].fillna(mean_mncs)
-
-    #output of a list of the created column names
-    datecolumns = [column + '_mncs']
-
-#     #this is to address an issue I found when parsing columns with only time no date
-#     #which returned -inf vlaues, so if an issue will just delete the associated 
-#     #column along with the entry in datecolumns
-#     checkyear = np.isinf(mdf_train.iloc[0][column + '_year'])
-#     if checkyear:
-#       del mdf_train[column + '_year']
-#       datecolumns.remove(column + '_year')
-#       if column + '_year' in mdf_test.columns:
-#         del mdf_test[column + '_year']
-
-#     #change data type for memory savings
-#     mdf_train[column + '_mncs'] = mdf_train[column + '_mncs'].astype(np.float32)
-#     mdf_test[column + '_mncs'] = mdf_test[column + '_mncs'].astype(np.float32)
-
-    #store some values in the date_dict{} for use later in ML infill methods
-
-    column_dict_list = []
-
-    categorylist = datecolumns
-
-
-    for dc in categorylist:
-
-      #save a dictionary of the associated column mean and std
-      timenormalization_dict = \
-      {dc : {'mean_mncs' : mean_mncs}}
-
-      column_dict = {dc : {'category' : 'mncs', \
-                           'origcategory' : category, \
-                           'normalization_dict' : timenormalization_dict, \
-                           'origcolumn' : column, \
-                           'inputcolumn' : column, \
-                           'columnslist' : datecolumns, \
-                           'categorylist' : categorylist, \
-                           'infillmodel' : False, \
-                           'infillcomplete' : False, \
-                           'suffixoverlap_results' : suffixoverlap_results, \
-                           'deletecolumn' : False}}
-
-      column_dict_list.append(column_dict.copy())
+      #we'll scale periodicity by decade
+      mdf_train[time_column] = (mdf_train[time_column]) * 2 * np.pi / 10
+      mdf_test[time_column] = (mdf_test[time_column]) * 2 * np.pi / 10
       
-    return mdf_train, mdf_test, column_dict_list
-  
-  def process_mdsn_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
-    '''
-    #process_mdsn_class(mdf_train, mdf_test, column, category)
-    #preprocess column with time classifications
-    #takes as arguement two pandas dataframe containing training and test data respectively 
-    #(mdf_train, mdf_test), and the name of the column string ('column') and the
-    #category fo the source column (category)
-    #note this trains both training and test data simultaneously due to unique treatment if any category
-    #missing from training set but not from test set to ensure consistent formatting 
-    
-    #creates combined columns for months and days
-    #with sin transform for 12 month period, with missing values plugged with the mean
-    #with columns named after column_ + time category
-    #returns two transformed dataframe (mdf_train, mdf_test) and column_dict_list
-    '''
-    
-    suffixoverlap_results = {}
-    
-    #store original column for later retrieval
-    mdf_train, suffixoverlap_results = \
-    self.df_copy_train(mdf_train, column, column + '_mdsn', suffixoverlap_results)
-    
-    mdf_test[column + '_mdsn'] = mdf_test[column].copy()
-
-
-    #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
-    mdf_train[column + '_mdsn'] = pd.to_datetime(mdf_train[column + '_mdsn'], errors = 'coerce')
-    mdf_test[column + '_mdsn'] = pd.to_datetime(mdf_test[column + '_mdsn'], errors = 'coerce')
-
-    #mdf_train[column].replace(-np.Inf, np.nan)
-    #mdf_test[column].replace(-np.Inf, np.nan)
-
-#     #grab month entries
-#     mdf_train[column + '_mdsn'] = mdf_train[column + '_mdsn'].dt.month
-#     mdf_test[column + '_mdsn'] = mdf_test[column + '_mdsn'].dt.month
-
-    #convert months to number of days in a temp column to support periodicity trasnform
-  
-    suffixoverlap_results = \
-    self.df_check_suffixoverlap(mdf_train, [column + '_mdsn' + '_temp', column + '_mdsn' + '_temp_leap'], suffixoverlap_results)
-
-    mdf_train[column + '_mdsn' + '_temp'] = mdf_train[column + '_mdsn'].copy()
-    mdf_train[column + '_mdsn' + '_temp_leap'] = mdf_train[column + '_mdsn'].copy()
-
-    mdf_train[column + '_mdsn' + '_temp'] = mdf_train[column + '_mdsn' + '_temp'].dt.month
-    mdf_train[column + '_mdsn' + '_temp_leap'] = mdf_train[column + '_mdsn' + '_temp_leap'].dt.is_leap_year
-
-    mdf_train[column + '_mdsn' + '_temp_leap'] = \
-    np.where(mdf_train[column + '_mdsn' + '_temp_leap'], 29, 28)
-    
-    mdf_train[column + '_mdsn' + '_temp'] = \
-    np.where(mdf_train[column + '_mdsn' + '_temp'].isin([1,3,5,7,8,10,12]), 31, mdf_train[column + '_mdsn' + '_temp'].values)
-
-    mdf_train[column + '_mdsn' + '_temp'] = \
-    np.where(mdf_train[column + '_mdsn' + '_temp'].isin([4,6,9,11]), 30, mdf_train[column + '_mdsn' + '_temp'].values)
-
-    mdf_train[column + '_mdsn' + '_temp'] = \
-    np.where(mdf_train[column + '_mdsn' + '_temp'].isin([2]), mdf_train[column + '_mdsn' + '_temp_leap'], \
-    mdf_train[column + '_mdsn' + '_temp'].values)
-
-    mdf_train[column + '_mdsn' + '_temp'] = \
-    np.where(mdf_train[column + '_mdsn' + '_temp'].isin([28,29,30,31]), mdf_train[column + '_mdsn' + '_temp'].values, 30.42)
-
-    #do same for test set
-
-    mdf_test[column + '_mdsn' + '_temp'] = mdf_test[column + '_mdsn'].copy()
-    mdf_test[column + '_mdsn' + '_temp_leap'] = mdf_test[column + '_mdsn'].copy()
-
-    mdf_test[column + '_mdsn' + '_temp'] = mdf_test[column + '_mdsn' + '_temp'].dt.month
-    mdf_test[column + '_mdsn' + '_temp_leap'] = mdf_test[column + '_mdsn' + '_temp_leap'].dt.is_leap_year
-
-    mdf_test[column + '_mdsn' + '_temp_leap'] = \
-    np.where(mdf_test[column + '_mdsn' + '_temp_leap'], 29, 28)
-    
-    mdf_test[column + '_mdsn' + '_temp'] = \
-    np.where(mdf_test[column + '_mdsn' + '_temp'].isin([1,3,5,7,8,10,12]), 31, mdf_test[column + '_mdsn' + '_temp'].values)
-
-    mdf_test[column + '_mdsn' + '_temp'] = \
-    np.where(mdf_test[column + '_mdsn' + '_temp'].isin([4,6,9,11]), 30, mdf_test[column + '_mdsn' + '_temp'].values)
-
-    mdf_test[column + '_mdsn' + '_temp'] = \
-    np.where(mdf_test[column + '_mdsn' + '_temp'].isin([2]), mdf_test[column + '_mdsn' + '_temp_leap'], \
-    mdf_test[column + '_mdsn' + '_temp'].values)
-
-    mdf_test[column + '_mdsn' + '_temp'] = \
-    np.where(mdf_test[column + '_mdsn' + '_temp'].isin([28,29,30,31]), mdf_test[column + '_mdsn' + '_temp'].values, 30.42)
-
-    #apply sin transform to combined day and month, note aversage of 30.42 days in a month, 12 months in a year
-    mdf_train[column + '_mdsn'] = np.sin((mdf_train[column + '_mdsn'].dt.month + mdf_train[column + '_mdsn'].dt.day / \
-    mdf_train[column + '_mdsn' + '_temp']) * 2 * np.pi / 12 )
-    mdf_test[column + '_mdsn'] = np.sin((mdf_test[column + '_mdsn'].dt.month + mdf_test[column + '_mdsn'].dt.day / \
-    mdf_test[column + '_mdsn' + '_temp']) * 2 * np.pi / 12 )
-
-    #delete the support columns 
-    del mdf_train[column + '_mdsn' + '_temp']
-    del mdf_test[column + '_mdsn' + '_temp']
-
-    del mdf_train[column + '_mdsn' + '_temp_leap']
-    del mdf_test[column + '_mdsn' + '_temp_leap']
-    
-    #get mean of various categories of datetime objects to use to plug in missing cells
-    mean_mdsn = mdf_train[column + '_mdsn'].mean()
-
-    if mean_mdsn != mean_mdsn:
-      mean_mdsn = 0
-
-    #replace missing data with training set mean
-    mdf_train[column + '_mdsn'] = mdf_train[column + '_mdsn'].fillna(mean_mdsn)
-    mdf_test[column + '_mdsn'] = mdf_test[column + '_mdsn'].fillna(mean_mdsn)
-
-    #output of a list of the created column names
-    datecolumns = [column + '_mdsn']
-
-#     #this is to address an issue I found when parsing columns with only time no date
-#     #which returned -inf vlaues, so if an issue will just delete the associated 
-#     #column along with the entry in datecolumns
-#     checkyear = np.isinf(mdf_train.iloc[0][column + '_year'])
-#     if checkyear:
-#       del mdf_train[column + '_year']
-#       datecolumns.remove(column + '_year')
-#       if column + '_year' in mdf_test.columns:
-#         del mdf_test[column + '_year']
-
-#     #change data type for memory savings
-#     mdf_train[column + '_mdsn'] = mdf_train[column + '_mdsn'].astype(np.float32)
-#     mdf_test[column + '_mdsn'] = mdf_test[column + '_mdsn'].astype(np.float32)
-
-    #store some values in the date_dict{} for use later in ML infill methods
-
-    column_dict_list = []
-
-    categorylist = datecolumns
-
-    for dc in categorylist:
-
-      #save a dictionary of the associated column mean and std
-      timenormalization_dict = \
-      {dc : {'mean_mdsn' : mean_mdsn}}
-
-      column_dict = {dc : {'category' : 'mdsn', \
-                           'origcategory' : category, \
-                           'normalization_dict' : timenormalization_dict, \
-                           'origcolumn' : column, \
-                           'inputcolumn' : column, \
-                           'columnslist' : datecolumns, \
-                           'categorylist' : categorylist, \
-                           'infillmodel' : False, \
-                           'infillcomplete' : False, \
-                           'suffixoverlap_results' : suffixoverlap_results, \
-                           'deletecolumn' : False}}
-
-      column_dict_list.append(column_dict.copy())
+    elif scale == 'month':
+      mdf_train[time_column] = mdf_train[time_column].dt.month
+      mdf_test[time_column] = mdf_test[time_column].dt.month
       
-    return mdf_train, mdf_test, column_dict_list
-  
-  def process_mdcs_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
-    '''
-    #process_mdcs_class(mdf_train, mdf_test, column, category)
-    #preprocess column with time classifications
-    #takes as arguement two pandas dataframe containing training and test data respectively 
-    #(mdf_train, mdf_test), and the name of the column string ('column') and the
-    #category fo the source column (category)
-    #note this trains both training and test data simultaneously due to unique treatment if any category
-    #missing from training set but not from test set to ensure consistent formatting 
-    
-    #creates combined columns for months and days
-    #with cos transform for 12 month period, with missing values plugged with the mean
-    #with columns named after column_ + time category
-    #returns two transformed dataframe (mdf_train, mdf_test) and column_dict_list
-    '''
-    
-    suffixoverlap_results = {}
-    
-    #store original column for later retrieval
-    mdf_train, suffixoverlap_results = \
-    self.df_copy_train(mdf_train, column, column + '_mdcs', suffixoverlap_results)
-    
-    mdf_test[column + '_mdcs'] = mdf_test[column].copy()
-
-
-    #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
-    mdf_train[column + '_mdcs'] = pd.to_datetime(mdf_train[column + '_mdcs'], errors = 'coerce')
-    mdf_test[column + '_mdcs'] = pd.to_datetime(mdf_test[column + '_mdcs'], errors = 'coerce')
-
-    #mdf_train[column].replace(-np.Inf, np.nan)
-    #mdf_test[column].replace(-np.Inf, np.nan)
-
-#     #grab month entries
-#     mdf_train[column + '_mdsn'] = mdf_train[column + '_mdsn'].dt.month
-#     mdf_test[column + '_mdsn'] = mdf_test[column + '_mdsn'].dt.month
-
-    #convert months to number of days in a temp column to support periodicity trasnform
-  
-    suffixoverlap_results = \
-    self.df_check_suffixoverlap(mdf_train, [column + '_mdcs' + '_temp', column + '_mdcs' + '_temp_leap'], suffixoverlap_results)
-
-    mdf_train[column + '_mdcs' + '_temp'] = mdf_train[column + '_mdcs'].copy()
-    mdf_train[column + '_mdcs' + '_temp_leap'] = mdf_train[column + '_mdcs'].copy()
-
-    mdf_train[column + '_mdcs' + '_temp'] = mdf_train[column + '_mdcs' + '_temp'].dt.month
-    mdf_train[column + '_mdcs' + '_temp_leap'] = mdf_train[column + '_mdcs' + '_temp_leap'].dt.is_leap_year
-
-    mdf_train[column + '_mdcs' + '_temp_leap'] = \
-    np.where(mdf_train[column + '_mdcs' + '_temp_leap'], 29, 28)
-    
-    mdf_train[column + '_mdcs' + '_temp'] = \
-    np.where(mdf_train[column + '_mdcs' + '_temp'].isin([1,3,5,7,8,10,12]), 31, mdf_train[column + '_mdcs' + '_temp'].values)
-
-    mdf_train[column + '_mdcs' + '_temp'] = \
-    np.where(mdf_train[column + '_mdcs' + '_temp'].isin([4,6,9,11]), 30, mdf_train[column + '_mdcs' + '_temp'].values)
-
-    mdf_train[column + '_mdcs' + '_temp'] = \
-    np.where(mdf_train[column + '_mdcs' + '_temp'].isin([2]), mdf_train[column + '_mdcs' + '_temp_leap'], \
-    mdf_train[column + '_mdcs' + '_temp'].values)
-
-    mdf_train[column + '_mdcs' + '_temp'] = \
-    np.where(mdf_train[column + '_mdcs' + '_temp'].isin([28,29,30,31]), mdf_train[column + '_mdcs' + '_temp'].values, 30.42)
-
-    #do same for test set
-
-    mdf_test[column + '_mdcs' + '_temp'] = mdf_test[column + '_mdcs'].copy()
-    mdf_test[column + '_mdcs' + '_temp_leap'] = mdf_test[column + '_mdcs'].copy()
-
-    mdf_test[column + '_mdcs' + '_temp'] = mdf_test[column + '_mdcs' + '_temp'].dt.month
-    mdf_test[column + '_mdcs' + '_temp_leap'] = mdf_test[column + '_mdcs' + '_temp_leap'].dt.is_leap_year
-
-    mdf_test[column + '_mdcs' + '_temp_leap'] = \
-    np.where(mdf_test[column + '_mdcs' + '_temp_leap'], 29, 28)
-    
-    mdf_test[column + '_mdcs' + '_temp'] = \
-    np.where(mdf_test[column + '_mdcs' + '_temp'].isin([1,3,5,7,8,10,12]), 31, mdf_test[column + '_mdcs' + '_temp'].values)
-
-    mdf_test[column + '_mdcs' + '_temp'] = \
-    np.where(mdf_test[column + '_mdcs' + '_temp'].isin([4,6,9,11]), 30, mdf_test[column + '_mdcs' + '_temp'].values)
-
-    mdf_test[column + '_mdcs' + '_temp'] = \
-    np.where(mdf_test[column + '_mdcs' + '_temp'].isin([2]), mdf_test[column + '_mdcs' + '_temp_leap'], \
-    mdf_test[column + '_mdcs' + '_temp'].values)
-
-    mdf_test[column + '_mdcs' + '_temp'] = \
-    np.where(mdf_test[column + '_mdcs' + '_temp'].isin([28,29,30,31]), mdf_test[column + '_mdcs' + '_temp'].values, 30.42)
-    
-    #apply cos transform to combined day and month, note aversage of 30.42 days in a month, 12 months in a year
-    mdf_train[column + '_mdcs'] = np.cos((mdf_train[column + '_mdcs'].dt.month + mdf_train[column + '_mdcs'].dt.day / \
-    mdf_train[column + '_mdcs' + '_temp']) * 2 * np.pi / 12 )
-    mdf_test[column + '_mdcs'] = np.cos((mdf_test[column + '_mdcs'].dt.month + mdf_test[column + '_mdcs'].dt.day / \
-    mdf_test[column + '_mdcs' + '_temp']) * 2 * np.pi / 12 )
-
-    #delete the support columns 
-    del mdf_train[column + '_mdcs' + '_temp']
-    del mdf_test[column + '_mdcs' + '_temp']
-
-    del mdf_train[column + '_mdcs' + '_temp_leap']
-    del mdf_test[column + '_mdcs' + '_temp_leap']
-    
-    #get mean of various categories of datetime objects to use to plug in missing cells
-    mean_mdcs = mdf_train[column + '_mdcs'].mean()
-
-    if mean_mdcs != mean_mdcs:
-      mean_mdcs = 0
-
-    #replace missing data with training set mean
-    mdf_train[column + '_mdcs'] = mdf_train[column + '_mdcs'].fillna(mean_mdcs)
-    mdf_test[column + '_mdcs'] = mdf_test[column + '_mdcs'].fillna(mean_mdcs)
-
-    #output of a list of the created column names
-    datecolumns = [column + '_mdcs']
-
-#     #this is to address an issue I found when parsing columns with only time no date
-#     #which returned -inf vlaues, so if an issue will just delete the associated 
-#     #column along with the entry in datecolumns
-#     checkyear = np.isinf(mdf_train.iloc[0][column + '_year'])
-#     if checkyear:
-#       del mdf_train[column + '_year']
-#       datecolumns.remove(column + '_year')
-#       if column + '_year' in mdf_test.columns:
-#         del mdf_test[column + '_year']
-
-#     #change data type for memory savings
-#     mdf_train[column + '_mdcs'] = mdf_train[column + '_mdcs'].astype(np.float32)
-#     mdf_test[column + '_mdcs'] = mdf_test[column + '_mdcs'].astype(np.float32)
-
-    #store some values in the date_dict{} for use later in ML infill methods
-
-    column_dict_list = []
-
-    categorylist = datecolumns
-
-    for dc in categorylist:
-
-      #save a dictionary of the associated column mean and std
-      timenormalization_dict = \
-      {dc : {'mean_mdcs' : mean_mdcs}}
-
-      column_dict = {dc : {'category' : 'mdcs', \
-                           'origcategory' : category, \
-                           'normalization_dict' : timenormalization_dict, \
-                           'origcolumn' : column, \
-                           'inputcolumn' : column, \
-                           'columnslist' : datecolumns, \
-                           'categorylist' : categorylist, \
-                           'infillmodel' : False, \
-                           'infillcomplete' : False, \
-                           'suffixoverlap_results' : suffixoverlap_results, \
-                           'deletecolumn' : False}}
-
-      column_dict_list.append(column_dict.copy())
+      #we'll scale periodicity by year
+      mdf_train[time_column] = (mdf_train[time_column]) * 2 * np.pi / 12
+      mdf_test[time_column] = (mdf_test[time_column]) * 2 * np.pi / 12
       
-    return mdf_train, mdf_test, column_dict_list
-  
-  def process_days_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict, params = {}):
-    '''
-    #process_days_class(mdf_train, mdf_test, column, category)
-    #preprocess column with time classifications
-    #takes as arguement two pandas dataframe containing training and test data respectively 
-    #(mdf_train, mdf_test), and the name of the column string ('column') and the
-    #category fo the source column (category)
-    #note this trains both training and test data simultaneously due to unique treatment if any category
-    #missing from training set but not from test set to ensure consistent formatting 
-    
-    #creates distinct columns for days
-    #z score normalized to the mean and std, with missing values plugged with the mean
-    #with columns named after column_ + time category
-    #returns two transformed dataframe (mdf_train, mdf_test) and column_dict_list
-    '''
-    
-    suffixoverlap_results = {}
-    
-    #store original column for later retrieval
-    mdf_train, suffixoverlap_results = \
-    self.df_copy_train(mdf_train, column, column + '_days', suffixoverlap_results)
-    
-    mdf_test[column + '_days'] = mdf_test[column].copy()
-
-    #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
-    mdf_train[column + '_days'] = pd.to_datetime(mdf_train[column + '_days'], errors = 'coerce')
-    mdf_test[column + '_days'] = pd.to_datetime(mdf_test[column + '_days'], errors = 'coerce')
-
-    #mdf_train[column].replace(-np.Inf, np.nan)
-    #mdf_test[column].replace(-np.Inf, np.nan)
-
-    #get mean of various categories of datetime objects to use to plug in missing cells
-    meanday = mdf_train[column + '_days'].dt.day.mean()
-    
-    if meanday != meanday:
-      meanday = 0
-
-    #get standard deviation of training data
-    stdday = mdf_train[column + '_days'].dt.day.std()
-
-    #special case, if standard deviation is 0 we'll set it to 1 to avoid division by 0
-    if stdday == 0:
-      stdday = 1
-    if stdday != stdday:
-      stdday = 1
-
-    #create new columns for each category in train set
-    mdf_train[column + '_days'] = mdf_train[column + '_days'].dt.day
-    mdf_test[column + '_days'] = mdf_test[column + '_days'].dt.day
-
-    #replace missing data with training set mean
-    mdf_train[column + '_days'] = mdf_train[column + '_days'].fillna(meanday)
-    mdf_test[column + '_days'] = mdf_test[column + '_days'].fillna(meanday)
-
-    #subtract mean from column for both train and test
-    mdf_train[column + '_days'] = mdf_train[column + '_days'] - meanday
-    mdf_test[column + '_days'] = mdf_test[column + '_days'] - meanday
-
-    #divide column values by std for both training and test data
-    mdf_train[column + '_days'] = mdf_train[column + '_days'] / stdday
-    mdf_test[column + '_days'] = mdf_test[column + '_days'] / stdday
-
-#     #now replace NaN with 0
-#     mdf_train[column + '_days'] = mdf_train[column + '_days'].fillna(0)
-
-#     #do same for test set
-#     mdf_test[column + '_days'] = mdf_test[column + '_days'].fillna(0)
-
-#     #change data type for memory savings
-#     mdf_train[column + '_days'] = mdf_train[column + '_days'].astype(np.float32)
-#     mdf_test[column + '_days'] = mdf_test[column + '_days'].astype(np.float32)
-
-    #output of a list of the created column names
-    datecolumns = [column + '_days']
-
-#     #this is to address an issue I found when parsing columns with only time no date
-#     #which returned -inf vlaues, so if an issue will just delete the associated 
-#     #column along with the entry in datecolumns
-#     checkyear = np.isinf(mdf_train.iloc[0][column + '_year'])
-#     if checkyear:
-#       del mdf_train[column + '_year']
-#       datecolumns.remove(column + '_year')
-#       if column + '_year' in mdf_test.columns:
-#         del mdf_test[column + '_year']
-
-    #store some values in the date_dict{} for use later in ML infill methods
-
-    column_dict_list = []
-
-    categorylist = datecolumns
-
-    for dc in categorylist:
-
-      #save a dictionary of the associated column mean and std
-      timenormalization_dict = \
-      {dc : {'meanday' : meanday,\
-             'stdday' : stdday}}
-
-      column_dict = {dc : {'category' : 'days', \
-                           'origcategory' : category, \
-                           'normalization_dict' : timenormalization_dict, \
-                           'origcolumn' : column, \
-                           'inputcolumn' : column, \
-                           'columnslist' : datecolumns, \
-                           'categorylist' : categorylist, \
-                           'infillmodel' : False, \
-                           'infillcomplete' : False, \
-                           'suffixoverlap_results' : suffixoverlap_results, \
-                           'deletecolumn' : False}}
-
-      column_dict_list.append(column_dict.copy())
+    elif scale == 'day':
+      mdf_train[time_column] = mdf_train[time_column].dt.day
+      mdf_test[time_column] = mdf_test[time_column].dt.day
       
-    return mdf_train, mdf_test, column_dict_list
-  
-  def process_dysn_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict, params = {}):
-    '''
-    #process_dysn_class(mdf_train, mdf_test, column, category)
-    #preprocess column with time classifications
-    #takes as arguement two pandas dataframe containing training and test data respectively 
-    #(mdf_train, mdf_test), and the name of the column string ('column') and the
-    #category fo the source column (category)
-    #note this trains both training and test data simultaneously due to unique treatment if any category
-    #missing from training set but not from test set to ensure consistent formatting 
-
-    #creates distinct columns for days
-    #with sin transform for 12 month period, with missing values plugged with the mean
-    #with columns named after column_ + time category
-    #returns two transformed dataframe (mdf_train, mdf_test) and column_dict_list
-    '''
-    
-    suffixoverlap_results = {}
-
-    #store original column for later retrieval
-    mdf_train, suffixoverlap_results = \
-    self.df_copy_train(mdf_train, column, column + '_dysn', suffixoverlap_results)
-    
-    mdf_test[column + '_dysn'] = mdf_test[column].copy()
-
-
-    #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
-    mdf_train[column + '_dysn'] = pd.to_datetime(mdf_train[column + '_dysn'], errors = 'coerce')
-    mdf_test[column + '_dysn'] = pd.to_datetime(mdf_test[column + '_dysn'], errors = 'coerce')
-
-    #mdf_train[column].replace(-np.Inf, np.nan)
-    #mdf_test[column].replace(-np.Inf, np.nan)
-
-    #grab month entries
-    mdf_train[column + '_dysn'] = mdf_train[column + '_dysn'].dt.day
-    mdf_test[column + '_dysn'] = mdf_test[column + '_dysn'].dt.day
-
-    #apply sin transform
-    #average number of days in a month is 30.42
-    #days in a week is 7
-    mdf_train[column + '_dysn'] = np.sin(mdf_train[column + '_dysn'] * 2 * np.pi / 7 )
-    mdf_test[column + '_dysn'] = np.sin(mdf_test[column + '_dysn'] * 2 * np.pi / 7 )
-
-    #get mean of various categories of datetime objects to use to plug in missing cells
-    mean_dysn = mdf_train[column + '_dysn'].mean()
-
-    if mean_dysn != mean_dysn:
-      mean_dysn = 0
-
-    #replace missing data with training set mean
-    mdf_train[column + '_dysn'] = mdf_train[column + '_dysn'].fillna(mean_dysn)
-    mdf_test[column + '_dysn'] = mdf_test[column + '_dysn'].fillna(mean_dysn)
-
-    #output of a list of the created column names
-    datecolumns = [column + '_dysn']
-
-#     #this is to address an issue I found when parsing columns with only time no date
-#     #which returned -inf vlaues, so if an issue will just delete the associated 
-#     #column along with the entry in datecolumns
-#     checkyear = np.isinf(mdf_train.iloc[0][column + '_year'])
-#     if checkyear:
-#       del mdf_train[column + '_year']
-#       datecolumns.remove(column + '_year')
-#       if column + '_year' in mdf_test.columns:
-#         del mdf_test[column + '_year']
-
-#     #change data type for memory savings
-#     mdf_train[column + '_dysn'] = mdf_train[column + '_dysn'].astype(np.float32)
-#     mdf_test[column + '_dysn'] = mdf_test[column + '_dysn'].astype(np.float32)
-
-    #store some values in the date_dict{} for use later in ML infill methods
-
-    column_dict_list = []
-
-    categorylist = datecolumns
-
-    for dc in categorylist:
-
-      #save a dictionary of the associated column mean and std
-      timenormalization_dict = \
-      {dc : {'mean_dysn' : mean_dysn}}
-
-      column_dict = {dc : {'category' : 'dysn', \
-                           'origcategory' : category, \
-                           'normalization_dict' : timenormalization_dict, \
-                           'origcolumn' : column, \
-                           'inputcolumn' : column, \
-                           'columnslist' : datecolumns, \
-                           'categorylist' : categorylist, \
-                           'infillmodel' : False, \
-                           'infillcomplete' : False, \
-                           'suffixoverlap_results' : suffixoverlap_results, \
-                           'deletecolumn' : False}}
-
-      column_dict_list.append(column_dict.copy())
-
-    return mdf_train, mdf_test, column_dict_list
-  
-  def process_dycs_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict, params = {}):
-    '''
-    #process_dycs_class(mdf_train, mdf_test, column, category)
-    #preprocess column with time classifications
-    #takes as arguement two pandas dataframe containing training and test data respectively 
-    #(mdf_train, mdf_test), and the name of the column string ('column') and the
-    #category fo the source column (category)
-    #note this trains both training and test data simultaneously due to unique treatment if any category
-    #missing from training set but not from test set to ensure consistent formatting 
-
-    #creates distinct columns for days
-    #with cos transform for 12 month period, with missing values plugged with the mean
-    #with columns named after column_ + time category
-    #returns two transformed dataframe (mdf_train, mdf_test) and column_dict_list
-    '''
-    
-    suffixoverlap_results = {}
-
-    #store original column for later retrieval
-    mdf_train, suffixoverlap_results = \
-    self.df_copy_train(mdf_train, column, column + '_dycs', suffixoverlap_results)
-    
-    mdf_test[column + '_dycs'] = mdf_test[column].copy()
-
-
-    #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
-    mdf_train[column + '_dycs'] = pd.to_datetime(mdf_train[column + '_dycs'], errors = 'coerce')
-    mdf_test[column + '_dycs'] = pd.to_datetime(mdf_test[column + '_dycs'], errors = 'coerce')
-
-    #mdf_train[column].replace(-np.Inf, np.nan)
-    #mdf_test[column].replace(-np.Inf, np.nan)
-
-    #grab month entries
-    mdf_train[column + '_dycs'] = mdf_train[column + '_dycs'].dt.day
-    mdf_test[column + '_dycs'] = mdf_test[column + '_dycs'].dt.day
-
-    #apply sin transform
-    #average number of days in a month is 30.42
-    #days in. a week is 7
-    mdf_train[column + '_dycs'] = np.cos(mdf_train[column + '_dycs'] * 2 * np.pi / 7 )
-    mdf_test[column + '_dycs'] = np.cos(mdf_test[column + '_dycs'] * 2 * np.pi / 7 )
-
-    #get mean of various categories of datetime objects to use to plug in missing cells
-    mean_dycs = mdf_train[column + '_dycs'].mean()
-
-    if mean_dycs != mean_dycs:
-      mean_dycs = 0
-
-    #replace missing data with training set mean
-    mdf_train[column + '_dycs'] = mdf_train[column + '_dycs'].fillna(mean_dycs)
-    mdf_test[column + '_dycs'] = mdf_test[column + '_dycs'].fillna(mean_dycs)
-
-    #output of a list of the created column names
-    datecolumns = [column + '_dycs']
-
-#     #this is to address an issue I found when parsing columns with only time no date
-#     #which returned -inf vlaues, so if an issue will just delete the associated 
-#     #column along with the entry in datecolumns
-#     checkyear = np.isinf(mdf_train.iloc[0][column + '_year'])
-#     if checkyear:
-#       del mdf_train[column + '_year']
-#       datecolumns.remove(column + '_year')
-#       if column + '_year' in mdf_test.columns:
-#         del mdf_test[column + '_year']
-
-#     #change data type for memory savings
-#     mdf_train[column + '_dycs'] = mdf_train[column + '_dycs'].astype(np.float32)
-#     mdf_test[column + '_dycs'] = mdf_test[column + '_dycs'].astype(np.float32)
-
-    #store some values in the date_dict{} for use later in ML infill methods
-
-    column_dict_list = []
-
-    categorylist = datecolumns
-
-    for dc in categorylist:
-
-      #save a dictionary of the associated column mean and std
-      timenormalization_dict = \
-      {dc : {'mean_dycs' : mean_dycs}}
-
-      column_dict = {dc : {'category' : 'dycs', \
-                           'origcategory' : category, \
-                           'normalization_dict' : timenormalization_dict, \
-                           'origcolumn' : column, \
-                           'inputcolumn' : column, \
-                           'columnslist' : datecolumns, \
-                           'categorylist' : categorylist, \
-                           'infillmodel' : False, \
-                           'infillcomplete' : False, \
-                           'suffixoverlap_results' : suffixoverlap_results, \
-                           'deletecolumn' : False}}
-
-      column_dict_list.append(column_dict.copy())
-
-    return mdf_train, mdf_test, column_dict_list
-  
-  def process_dhms_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict, params = {}):
-    '''
-    #process_mdsn_class(mdf_train, mdf_test, column, category)
-    #preprocess column with time classifications
-    #takes as arguement two pandas dataframe containing training and test data respectively 
-    #(mdf_train, mdf_test), and the name of the column string ('column') and the
-    #category fo the source column (category)
-    #note this trains both training and test data simultaneously due to unique treatment if any category
-    #missing from training set but not from test set to ensure consistent formatting 
-    
-    #creates combined column for days, hours and minutes
-    #with sin transform for 1 day period, with missing values plugged with the mean
-    #with columns named after column_ + time category
-    #returns two transformed dataframe (mdf_train, mdf_test) and column_dict_list
-    '''
-    
-    suffixoverlap_results = {}
-    
-    #store original column for later retrieval
-    mdf_train, suffixoverlap_results = \
-    self.df_copy_train(mdf_train, column, column + '_dhms', suffixoverlap_results)
-    
-    mdf_test[column + '_dhms'] = mdf_test[column].copy()
-
-    #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
-    mdf_train[column + '_dhms'] = pd.to_datetime(mdf_train[column + '_dhms'], errors = 'coerce')
-    mdf_test[column + '_dhms'] = pd.to_datetime(mdf_test[column + '_dhms'], errors = 'coerce')
-
-    #mdf_train[column].replace(-np.Inf, np.nan)
-    #mdf_test[column].replace(-np.Inf, np.nan)
-
-#     #grab month entries
-#     mdf_train[column + '_mdsn'] = mdf_train[column + '_mdsn'].dt.month
-#     mdf_test[column + '_mdsn'] = mdf_test[column + '_mdsn'].dt.month
-    
-    #apply sin transform to combined day and month, note aversage of 30.42 days in a month, 12 months in a year
-    #7 days in. a week
-    mdf_train[column + '_dhms'] = np.sin((mdf_train[column + '_dhms'].dt.day + mdf_train[column + '_dhms'].dt.hour / 24 + mdf_train[column + '_dhms'].dt.minute / 24 / 60) * 2 * np.pi / 7 )
-    mdf_test[column + '_dhms'] = np.sin((mdf_test[column + '_dhms'].dt.day + mdf_test[column + '_dhms'].dt.hour / 24 + mdf_test[column + '_dhms'].dt.minute / 24 / 60) * 2 * np.pi / 7 )
-    
-    #get mean of various categories of datetime objects to use to plug in missing cells
-    mean_dhms = mdf_train[column + '_dhms'].mean()
-
-    if mean_dhms != mean_dhms:
-      mean_dhms = 0
-
-    #replace missing data with training set mean
-    mdf_train[column + '_dhms'] = mdf_train[column + '_dhms'].fillna(mean_dhms)
-    mdf_test[column + '_dhms'] = mdf_test[column + '_dhms'].fillna(mean_dhms)
-
-    #output of a list of the created column names
-    datecolumns = [column + '_dhms']
-
-#     #this is to address an issue I found when parsing columns with only time no date
-#     #which returned -inf vlaues, so if an issue will just delete the associated 
-#     #column along with the entry in datecolumns
-#     checkyear = np.isinf(mdf_train.iloc[0][column + '_year'])
-#     if checkyear:
-#       del mdf_train[column + '_year']
-#       datecolumns.remove(column + '_year')
-#       if column + '_year' in mdf_test.columns:
-#         del mdf_test[column + '_year']
-
-#     #change data type for memory savings
-#     mdf_train[column + '_dhms'] = mdf_train[column + '_dhms'].astype(np.float32)
-#     mdf_test[column + '_dhms'] = mdf_test[column + '_dhms'].astype(np.float32)
-
-    #store some values in the date_dict{} for use later in ML infill methods
-
-    column_dict_list = []
-
-    categorylist = datecolumns
-
-    for dc in categorylist:
-
-      #save a dictionary of the associated column mean and std
-      timenormalization_dict = \
-      {dc : {'mean_dhms' : mean_dhms}}
-
-      column_dict = {dc : {'category' : 'dhms', \
-                           'origcategory' : category, \
-                           'normalization_dict' : timenormalization_dict, \
-                           'origcolumn' : column, \
-                           'inputcolumn' : column, \
-                           'columnslist' : datecolumns, \
-                           'categorylist' : categorylist, \
-                           'infillmodel' : False, \
-                           'infillcomplete' : False, \
-                           'suffixoverlap_results' : suffixoverlap_results, \
-                           'deletecolumn' : False}}
-
-      column_dict_list.append(column_dict.copy())
+      #we'll scale periodicity by week
+      mdf_train[time_column] = (mdf_train[time_column]) * 2 * np.pi / 7
+      mdf_test[time_column] = (mdf_test[time_column]) * 2 * np.pi / 7
       
-    return mdf_train, mdf_test, column_dict_list
-  
-  def process_dhmc_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict, params = {}):
-    '''
-    #process_dhmc_class(mdf_train, mdf_test, column, category)
-    #preprocess column with time classifications
-    #takes as arguement two pandas dataframe containing training and test data respectively 
-    #(mdf_train, mdf_test), and the name of the column string ('column') and the
-    #category fo the source column (category)
-    #note this trains both training and test data simultaneously due to unique treatment if any category
-    #missing from training set but not from test set to ensure consistent formatting 
-    
-    #creates combined column for days, hours and minutes
-    #with cos transform for 1 day period, with missing values plugged with the mean
-    #with columns named after column_ + time category
-    #returns two transformed dataframe (mdf_train, mdf_test) and column_dict_list
-    '''
-    
-    suffixoverlap_results = {}
-    
-    #store original column for later retrieval
-    mdf_train, suffixoverlap_results = \
-    self.df_copy_train(mdf_train, column, column + '_dhmc', suffixoverlap_results)
-    
-    mdf_test[column + '_dhmc'] = mdf_test[column].copy()
-
-    #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
-    mdf_train[column + '_dhmc'] = pd.to_datetime(mdf_train[column + '_dhmc'], errors = 'coerce')
-    mdf_test[column + '_dhmc'] = pd.to_datetime(mdf_test[column + '_dhmc'], errors = 'coerce')
-
-    #mdf_train[column].replace(-np.Inf, np.nan)
-    #mdf_test[column].replace(-np.Inf, np.nan)
-
-#     #grab month entries
-#     mdf_train[column + '_mdsn'] = mdf_train[column + '_mdsn'].dt.month
-#     mdf_test[column + '_mdsn'] = mdf_test[column + '_mdsn'].dt.month
-    
-    #apply cos transform to combined day and month, note aversage of 30.42 days in a month, 12 months in a year
-    #7 days in a week
-    mdf_train[column + '_dhmc'] = np.cos((mdf_train[column + '_dhmc'].dt.day + mdf_train[column + '_dhmc'].dt.hour / 24 + mdf_train[column + '_dhmc'].dt.minute / 24 / 60) * 2 * np.pi / 7 )
-    mdf_test[column + '_dhmc'] = np.cos((mdf_test[column + '_dhmc'].dt.day + mdf_test[column + '_dhmc'].dt.hour / 24 + mdf_test[column + '_dhmc'].dt.minute / 24 / 60) * 2 * np.pi / 7 )
-    
-    #get mean of various categories of datetime objects to use to plug in missing cells
-    mean_dhmc = mdf_train[column + '_dhmc'].mean()
-
-    if mean_dhmc != mean_dhmc:
-      mean_dhmc = 0
-
-    #replace missing data with training set mean
-    mdf_train[column + '_dhmc'] = mdf_train[column + '_dhmc'].fillna(mean_dhmc)
-    mdf_test[column + '_dhmc'] = mdf_test[column + '_dhmc'].fillna(mean_dhmc)
-
-    #output of a list of the created column names
-    datecolumns = [column + '_dhmc']
-
-#     #this is to address an issue I found when parsing columns with only time no date
-#     #which returned -inf vlaues, so if an issue will just delete the associated 
-#     #column along with the entry in datecolumns
-#     checkyear = np.isinf(mdf_train.iloc[0][column + '_year'])
-#     if checkyear:
-#       del mdf_train[column + '_year']
-#       datecolumns.remove(column + '_year')
-#       if column + '_year' in mdf_test.columns:
-#         del mdf_test[column + '_year']
-
-#     #change data type for memory savings
-#     mdf_train[column + '_dhmc'] = mdf_train[column + '_dhmc'].astype(np.float32)
-#     mdf_test[column + '_dhmc'] = mdf_test[column + '_dhmc'].astype(np.float32)
-
-    #store some values in the date_dict{} for use later in ML infill methods
-
-    column_dict_list = []
-
-    categorylist = datecolumns
-
-    for dc in categorylist:
-
-      #save a dictionary of the associated column mean and std
-      timenormalization_dict = \
-      {dc : {'mean_dhmc' : mean_dhmc}}
-
-      column_dict = {dc : {'category' : 'dhmc', \
-                           'origcategory' : category, \
-                           'normalization_dict' : timenormalization_dict, \
-                           'origcolumn' : column, \
-                           'inputcolumn' : column, \
-                           'columnslist' : datecolumns, \
-                           'categorylist' : categorylist, \
-                           'infillmodel' : False, \
-                           'infillcomplete' : False, \
-                           'suffixoverlap_results' : suffixoverlap_results, \
-                           'deletecolumn' : False}}
-
-      column_dict_list.append(column_dict.copy())
+    elif scale == 'hour':
+      mdf_train[time_column] = mdf_train[time_column].dt.hour
+      mdf_test[time_column] = mdf_test[time_column].dt.hour
       
-    return mdf_train, mdf_test, column_dict_list
-  
-  def process_hour_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict, params = {}):
-    '''
-    #process_hour_class(mdf_train, mdf_test, column, category)
-    #preprocess column with time classifications
-    #takes as arguement two pandas dataframe containing training and test data respectively 
-    #(mdf_train, mdf_test), and the name of the column string ('column') and the
-    #category fo the source column (category)
-    #note this trains both training and test data simultaneously due to unique treatment if any category
-    #missing from training set but not from test set to ensure consistent formatting 
-    
-    #creates distinct columns for hours
-    #z score normalized to the mean and std, with missing values plugged with the mean
-    #with columns named after column_ + time category
-    #returns two transformed dataframe (mdf_train, mdf_test) and column_dict_list
-    '''
-    
-    suffixoverlap_results = {}
-    
-    #store original column for later retrieval
-    mdf_train, suffixoverlap_results = \
-    self.df_copy_train(mdf_train, column, column + '_hour', suffixoverlap_results)
-    
-    mdf_test[column + '_hour'] = mdf_test[column].copy()
-
-
-    #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
-    mdf_train[column + '_hour'] = pd.to_datetime(mdf_train[column + '_hour'], errors = 'coerce')
-    mdf_test[column + '_hour'] = pd.to_datetime(mdf_test[column + '_hour'], errors = 'coerce')
-
-    #mdf_train[column].replace(-np.Inf, np.nan)
-    #mdf_test[column].replace(-np.Inf, np.nan)
-
-    #get mean of various categories of datetime objects to use to plug in missing cells
-    meanhour = mdf_train[column + '_hour'].dt.hour.mean()
-
-    if meanhour != meanhour:
-      meanhour = 0
-    
-    #get standard deviation of training data
-    stdhour = mdf_train[column + '_hour'].dt.hour.std()
-
-    #special case, if standard deviation is 0 we'll set it to 1 to avoid division by 0
-    if stdhour == 0:
-      stdhour = 1
-    if stdhour != stdhour:
-      stdhour = 1
-
-    #create new columns for each category in train set
-    mdf_train[column + '_hour'] = mdf_train[column + '_hour'].dt.hour
-    mdf_test[column + '_hour'] = mdf_test[column + '_hour'].dt.hour
-
-    #replace missing data with training set mean
-    mdf_train[column + '_hour'] = mdf_train[column + '_hour'].fillna(meanhour)
-    mdf_test[column + '_hour'] = mdf_test[column + '_hour'].fillna(meanhour)
-
-    #subtract mean from column for both train and test
-    mdf_train[column + '_hour'] = mdf_train[column + '_hour'] - meanhour
-
-    mdf_test[column + '_hour'] = mdf_test[column + '_hour'] - meanhour
-
-    #divide column values by std for both training and test data
-    mdf_train[column + '_hour'] = mdf_train[column + '_hour'] / stdhour
-
-    mdf_test[column + '_hour'] = mdf_test[column + '_hour'] / stdhour
-
-#     #now replace NaN with 0
-#     mdf_train[column + '_hour'] = mdf_train[column + '_hour'].fillna(0)
-
-#     #do same for test set
-#     mdf_test[column + '_hour'] = mdf_test[column + '_hour'].fillna(0)
-
-    #output of a list of the created column names
-    datecolumns = [column + '_hour']
-
-#     #this is to address an issue I found when parsing columns with only time no date
-#     #which returned -inf vlaues, so if an issue will just delete the associated 
-#     #column along with the entry in datecolumns
-#     checkyear = np.isinf(mdf_train.iloc[0][column + '_year'])
-#     if checkyear:
-#       del mdf_train[column + '_year']
-#       datecolumns.remove(column + '_year')
-#       if column + '_year' in mdf_test.columns:
-#         del mdf_test[column + '_year']
-
-#     #change data type for memory savings
-#     mdf_train[column + '_hour'] = mdf_train[column + '_hour'].astype(np.float32)
-#     mdf_test[column + '_hour'] = mdf_test[column + '_hour'].astype(np.float32)
-
-    #store some values in the date_dict{} for use later in ML infill methods
-
-    column_dict_list = []
-
-    categorylist = datecolumns
-
-    for dc in categorylist:
-
-      #save a dictionary of the associated column mean and std
-      timenormalization_dict = \
-      {dc : {'meanhour' : meanhour,\
-             'stdhour' : stdhour}}
-
-      column_dict = {dc : {'category' : 'hour', \
-                           'origcategory' : category, \
-                           'normalization_dict' : timenormalization_dict, \
-                           'origcolumn' : column, \
-                           'inputcolumn' : column, \
-                           'columnslist' : datecolumns, \
-                           'categorylist' : categorylist, \
-                           'infillmodel' : False, \
-                           'infillcomplete' : False, \
-                           'suffixoverlap_results' : suffixoverlap_results, \
-                           'deletecolumn' : False}}
-
-      column_dict_list.append(column_dict.copy())
+      #we'll scale periodicity by day
+      mdf_train[time_column] = (mdf_train[time_column]) * 2 * np.pi / 24
+      mdf_test[time_column] = (mdf_test[time_column]) * 2 * np.pi / 24
       
-    return mdf_train, mdf_test, column_dict_list
-  
-  def process_hrsn_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict, params = {}):
-    '''
-    #process_hrsn_class(mdf_train, mdf_test, column, category)
-    #preprocess column with time classifications
-    #takes as arguement two pandas dataframe containing training and test data respectively 
-    #(mdf_train, mdf_test), and the name of the column string ('column') and the
-    #category fo the source column (category)
-    #note this trains both training and test data simultaneously due to unique treatment if any category
-    #missing from training set but not from test set to ensure consistent formatting 
-
-    #creates distinct columns for hours
-    #with sin transform for 12 month period, with missing values plugged with the mean
-    #with columns named after column_ + time category
-    #returns two transformed dataframe (mdf_train, mdf_test) and column_dict_list
-    '''
-    
-    suffixoverlap_results = {}
-
-    #store original column for later retrieval
-    mdf_train, suffixoverlap_results = \
-    self.df_copy_train(mdf_train, column, column + '_hrsn', suffixoverlap_results)
-    
-    mdf_test[column + '_hrsn'] = mdf_test[column].copy()
-
-    #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
-    mdf_train[column + '_hrsn'] = pd.to_datetime(mdf_train[column + '_hrsn'], errors = 'coerce')
-    mdf_test[column + '_hrsn'] = pd.to_datetime(mdf_test[column + '_hrsn'], errors = 'coerce')
-
-    #mdf_train[column].replace(-np.Inf, np.nan)
-    #mdf_test[column].replace(-np.Inf, np.nan)
-
-    #grab hour entries
-    mdf_train[column + '_hrsn'] = mdf_train[column + '_hrsn'].dt.hour
-    mdf_test[column + '_hrsn'] = mdf_test[column + '_hrsn'].dt.hour
-
-    #apply sin transform
-    #average number of hours in a day is ~24
-    mdf_train[column + '_hrsn'] = np.sin(mdf_train[column + '_hrsn'] * 2 * np.pi / 24 )
-    mdf_test[column + '_hrsn'] = np.sin(mdf_test[column + '_hrsn'] * 2 * np.pi / 24 )
-
-    #get mean of various categories of datetime objects to use to plug in missing cells
-    mean_hrsn = mdf_train[column + '_hrsn'].mean()
-
-    if mean_hrsn != mean_hrsn:
-      mean_hrsn = 0
-
-    #replace missing data with training set mean
-    mdf_train[column + '_hrsn'] = mdf_train[column + '_hrsn'].fillna(mean_hrsn)
-    mdf_test[column + '_hrsn'] = mdf_test[column + '_hrsn'].fillna(mean_hrsn)
-
-    #output of a list of the created column names
-    datecolumns = [column + '_hrsn']
-
-#     #this is to address an issue I found when parsing columns with only time no date
-#     #which returned -inf vlaues, so if an issue will just delete the associated 
-#     #column along with the entry in datecolumns
-#     checkyear = np.isinf(mdf_train.iloc[0][column + '_year'])
-#     if checkyear:
-#       del mdf_train[column + '_year']
-#       datecolumns.remove(column + '_year')
-#       if column + '_year' in mdf_test.columns:
-#         del mdf_test[column + '_year']
-
-#     #change data type for memory savings
-#     mdf_train[column + '_hrsn'] = mdf_train[column + '_hrsn'].astype(np.float32)
-#     mdf_test[column + '_hrsn'] = mdf_test[column + '_hrsn'].astype(np.float32)
-
-    #store some values in the date_dict{} for use later in ML infill methods
-
-    column_dict_list = []
-
-    categorylist = datecolumns
-
-    for dc in categorylist:
-
-      #save a dictionary of the associated column mean and std
-      timenormalization_dict = \
-      {dc : {'mean_hrsn' : mean_hrsn}}
-
-      column_dict = {dc : {'category' : 'hrsn', \
-                           'origcategory' : category, \
-                           'normalization_dict' : timenormalization_dict, \
-                           'origcolumn' : column, \
-                           'inputcolumn' : column, \
-                           'columnslist' : datecolumns, \
-                           'categorylist' : categorylist, \
-                           'infillmodel' : False, \
-                           'infillcomplete' : False, \
-                           'suffixoverlap_results' : suffixoverlap_results, \
-                           'deletecolumn' : False}}
-
-      column_dict_list.append(column_dict.copy())
-
-    return mdf_train, mdf_test, column_dict_list
-  
-  def process_hrcs_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict, params = {}):
-    '''
-    #process_hrcs_class(mdf_train, mdf_test, column, category)
-    #preprocess column with time classifications
-    #takes as arguement two pandas dataframe containing training and test data respectively 
-    #(mdf_train, mdf_test), and the name of the column string ('column') and the
-    #category fo the source column (category)
-    #note this trains both training and test data simultaneously due to unique treatment if any category
-    #missing from training set but not from test set to ensure consistent formatting 
-
-    #creates distinct columns for hours
-    #with cos transform for 12 month period, with missing values plugged with the mean
-    #with columns named after column_ + time category
-    #returns two transformed dataframe (mdf_train, mdf_test) and column_dict_list
-    '''
-    
-    suffixoverlap_results = {}
-
-    #store original column for later retrieval
-    mdf_train, suffixoverlap_results = \
-    self.df_copy_train(mdf_train, column, column + '_hrcs', suffixoverlap_results)
-    
-    mdf_test[column + '_hrcs'] = mdf_test[column].copy()
-
-    #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
-    mdf_train[column + '_hrcs'] = pd.to_datetime(mdf_train[column + '_hrcs'], errors = 'coerce')
-    mdf_test[column + '_hrcs'] = pd.to_datetime(mdf_test[column + '_hrcs'], errors = 'coerce')
-
-    #mdf_train[column].replace(-np.Inf, np.nan)
-    #mdf_test[column].replace(-np.Inf, np.nan)
-
-    #grab month entries
-    mdf_train[column + '_hrcs'] = mdf_train[column + '_hrcs'].dt.hour
-    mdf_test[column + '_hrcs'] = mdf_test[column + '_hrcs'].dt.hour
-
-    #apply cos transform
-    #average number of hours in a day is ~24
-    mdf_train[column + '_hrcs'] = np.cos(mdf_train[column + '_hrcs'] * 2 * np.pi / 24 )
-    mdf_test[column + '_hrcs'] = np.cos(mdf_test[column + '_hrcs'] * 2 * np.pi / 24 )
-
-    #get mean of various categories of datetime objects to use to plug in missing cells
-    mean_hrcs = mdf_train[column + '_hrcs'].mean()
-
-    if mean_hrcs != mean_hrcs:
-      mean_hrcs = 0
-
-    #replace missing data with training set mean
-    mdf_train[column + '_hrcs'] = mdf_train[column + '_hrcs'].fillna(mean_hrcs)
-    mdf_test[column + '_hrcs'] = mdf_test[column + '_hrcs'].fillna(mean_hrcs)
-
-    #output of a list of the created column names
-    datecolumns = [column + '_hrcs']
-
-#     #this is to address an issue I found when parsing columns with only time no date
-#     #which returned -inf vlaues, so if an issue will just delete the associated 
-#     #column along with the entry in datecolumns
-#     checkyear = np.isinf(mdf_train.iloc[0][column + '_year'])
-#     if checkyear:
-#       del mdf_train[column + '_year']
-#       datecolumns.remove(column + '_year')
-#       if column + '_year' in mdf_test.columns:
-#         del mdf_test[column + '_year']
-
-#     #change data type for memory savings
-#     mdf_train[column + '_hrcs'] = mdf_train[column + '_hrcs'].astype(np.float32)
-#     mdf_test[column + '_hrcs'] = mdf_test[column + '_hrcs'].astype(np.float32)
-
-    #store some values in the date_dict{} for use later in ML infill methods
-
-    column_dict_list = []
-
-    categorylist = datecolumns
-
-    for dc in categorylist:
-
-      #save a dictionary of the associated column mean and std
-      timenormalization_dict = \
-      {dc : {'mean_hrcs' : mean_hrcs}}
-
-      column_dict = {dc : {'category' : 'hrcs', \
-                           'origcategory' : category, \
-                           'normalization_dict' : timenormalization_dict, \
-                           'origcolumn' : column, \
-                           'inputcolumn' : column, \
-                           'columnslist' : datecolumns, \
-                           'categorylist' : categorylist, \
-                           'infillmodel' : False, \
-                           'infillcomplete' : False, \
-                           'suffixoverlap_results' : suffixoverlap_results, \
-                           'deletecolumn' : False}}
-
-      column_dict_list.append(column_dict.copy())
-
-    return mdf_train, mdf_test, column_dict_list
-  
-  def process_hmss_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict, params = {}):
-    '''
-    #process_hmss_class(mdf_train, mdf_test, column, category)
-    #preprocess column with time classifications
-    #takes as arguement two pandas dataframe containing training and test data respectively 
-    #(mdf_train, mdf_test), and the name of the column string ('column') and the
-    #category fo the source column (category)
-    #note this trains both training and test data simultaneously due to unique treatment if any category
-    #missing from training set but not from test set to ensure consistent formatting 
-    
-    #creates combined column for hours, minutes, and seconds
-    #with sin transform for 1hr period, with missing values plugged with the mean
-    #with columns named after column_ + time category
-    #returns two transformed dataframe (mdf_train, mdf_test) and column_dict_list
-    '''
-    
-    suffixoverlap_results = {}
-    
-    #store original column for later retrieval
-    mdf_train, suffixoverlap_results = \
-    self.df_copy_train(mdf_train, column, column + '_hmss', suffixoverlap_results)
-    
-    mdf_test[column + '_hmss'] = mdf_test[column].copy()
-
-    #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
-    mdf_train[column + '_hmss'] = pd.to_datetime(mdf_train[column + '_hmss'], errors = 'coerce')
-    mdf_test[column + '_hmss'] = pd.to_datetime(mdf_test[column + '_hmss'], errors = 'coerce')
-
-    #mdf_train[column].replace(-np.Inf, np.nan)
-    #mdf_test[column].replace(-np.Inf, np.nan)
-
-#     #grab month entries
-#     mdf_train[column + '_mdsn'] = mdf_train[column + '_mdsn'].dt.month
-#     mdf_test[column + '_mdsn'] = mdf_test[column + '_mdsn'].dt.month
-    
-    #apply sin transform to combined day and month, note aversage of 30.42 days in a month, 12 months in a year
-    #24 hours in. a day
-    mdf_train[column + '_hmss'] = np.sin((mdf_train[column + '_hmss'].dt.hour + mdf_train[column + '_hmss'].dt.minute / 60 + mdf_train[column + '_hmss'].dt.second / 60 / 60) * 2 * np.pi / 24 )
-    mdf_test[column + '_hmss'] = np.sin((mdf_test[column + '_hmss'].dt.hour + mdf_test[column + '_hmss'].dt.minute / 60 + mdf_test[column + '_hmss'].dt.second / 60 / 60) * 2 * np.pi / 24 )
-    
-    #get mean of various categories of datetime objects to use to plug in missing cells
-    mean_hmss = mdf_train[column + '_hmss'].mean()
-
-    if mean_hmss != mean_hmss:
-      mean_hmss = 0
-
-    #replace missing data with training set mean
-    mdf_train[column + '_hmss'] = mdf_train[column + '_hmss'].fillna(mean_hmss)
-    mdf_test[column + '_hmss'] = mdf_test[column + '_hmss'].fillna(mean_hmss)
-
-    #output of a list of the created column names
-    datecolumns = [column + '_hmss']
-
-#     #this is to address an issue I found when parsing columns with only time no date
-#     #which returned -inf vlaues, so if an issue will just delete the associated 
-#     #column along with the entry in datecolumns
-#     checkyear = np.isinf(mdf_train.iloc[0][column + '_year'])
-#     if checkyear:
-#       del mdf_train[column + '_year']
-#       datecolumns.remove(column + '_year')
-#       if column + '_year' in mdf_test.columns:
-#         del mdf_test[column + '_year']
-
-#     #change data type for memory savings
-#     mdf_train[column + '_hmss'] = mdf_train[column + '_hmss'].astype(np.float32)
-#     mdf_test[column + '_hmss'] = mdf_test[column + '_hmss'].astype(np.float32)
-
-    #store some values in the date_dict{} for use later in ML infill methods
-
-    column_dict_list = []
-
-    categorylist = datecolumns
-
-    for dc in categorylist:
-
-      #save a dictionary of the associated column mean and std
-      timenormalization_dict = \
-      {dc : {'mean_hmss' : mean_hmss}}
-
-      column_dict = {dc : {'category' : 'hmss', \
-                           'origcategory' : category, \
-                           'normalization_dict' : timenormalization_dict, \
-                           'origcolumn' : column, \
-                           'inputcolumn' : column, \
-                           'columnslist' : datecolumns, \
-                           'categorylist' : categorylist, \
-                           'infillmodel' : False, \
-                           'infillcomplete' : False, \
-                           'suffixoverlap_results' : suffixoverlap_results, \
-                           'deletecolumn' : False}}
-
-      column_dict_list.append(column_dict.copy())
+    elif scale == 'minute':
+      mdf_train[time_column] = mdf_train[time_column].dt.minute
+      mdf_test[time_column] = mdf_test[time_column].dt.minute
       
-    return mdf_train, mdf_test, column_dict_list
-  
-  def process_hmsc_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict, params = {}):
-    '''
-    #process_hmsc_class(mdf_train, mdf_test, column, category)
-    #preprocess column with time classifications
-    #takes as arguement two pandas dataframe containing training and test data respectively 
-    #(mdf_train, mdf_test), and the name of the column string ('column') and the
-    #category fo the source column (category)
-    #note this trains both training and test data simultaneously due to unique treatment if any category
-    #missing from training set but not from test set to ensure consistent formatting 
-    
-    #creates combined column for hours, minutes, and seconds
-    #with cos transform for 1hr period, with missing values plugged with the mean
-    #with columns named after column_ + time category
-    #returns two transformed dataframe (mdf_train, mdf_test) and column_dict_list
-    '''
-    
-    suffixoverlap_results = {}
-    
-    #store original column for later retrieval
-    mdf_train, suffixoverlap_results = \
-    self.df_copy_train(mdf_train, column, column + '_hmsc', suffixoverlap_results)
-    
-    mdf_test[column + '_hmsc'] = mdf_test[column].copy()
-
-    #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
-    mdf_train[column + '_hmsc'] = pd.to_datetime(mdf_train[column + '_hmsc'], errors = 'coerce')
-    mdf_test[column + '_hmsc'] = pd.to_datetime(mdf_test[column + '_hmsc'], errors = 'coerce')
-
-    #mdf_train[column].replace(-np.Inf, np.nan)
-    #mdf_test[column].replace(-np.Inf, np.nan)
-
-#     #grab month entries
-#     mdf_train[column + '_mdsn'] = mdf_train[column + '_mdsn'].dt.month
-#     mdf_test[column + '_mdsn'] = mdf_test[column + '_mdsn'].dt.month
-    
-    #apply cos transform to combined day and month, note aversage of 30.42 days in a month, 12 months in a year
-    #24 hours in a day
-    mdf_train[column + '_hmsc'] = np.cos((mdf_train[column + '_hmsc'].dt.hour + mdf_train[column + '_hmsc'].dt.minute / 60 + mdf_train[column + '_hmsc'].dt.second / 60 / 60) * 2 * np.pi / 24 )
-    mdf_test[column + '_hmsc'] = np.cos((mdf_test[column + '_hmsc'].dt.hour + mdf_test[column + '_hmsc'].dt.minute / 60 + mdf_test[column + '_hmsc'].dt.second / 60 / 60) * 2 * np.pi / 24 )
-    
-    #get mean of various categories of datetime objects to use to plug in missing cells
-    mean_hmsc = mdf_train[column + '_hmsc'].mean()
-
-    if mean_hmsc != mean_hmsc:
-      mean_hmsc = 0
-
-    #replace missing data with training set mean
-    mdf_train[column + '_hmsc'] = mdf_train[column + '_hmsc'].fillna(mean_hmsc)
-    mdf_test[column + '_hmsc'] = mdf_test[column + '_hmsc'].fillna(mean_hmsc)
-
-    #output of a list of the created column names
-    datecolumns = [column + '_hmsc']
-
-#     #this is to address an issue I found when parsing columns with only time no date
-#     #which returned -inf vlaues, so if an issue will just delete the associated 
-#     #column along with the entry in datecolumns
-#     checkyear = np.isinf(mdf_train.iloc[0][column + '_year'])
-#     if checkyear:
-#       del mdf_train[column + '_year']
-#       datecolumns.remove(column + '_year')
-#       if column + '_year' in mdf_test.columns:
-#         del mdf_test[column + '_year']
-
-#     #change data type for memory savings
-#     mdf_train[column + '_hmsc'] = mdf_train[column + '_hmsc'].astype(np.float32)
-#     mdf_test[column + '_hmsc'] = mdf_test[column + '_hmsc'].astype(np.float32)
-
-    #store some values in the date_dict{} for use later in ML infill methods
-
-    column_dict_list = []
-
-    categorylist = datecolumns
-
-
-    for dc in categorylist:
-
-      #save a dictionary of the associated column mean and std
-      timenormalization_dict = \
-      {dc : {'mean_hmsc' : mean_hmsc}}
-
-      column_dict = {dc : {'category' : 'hmsc', \
-                           'origcategory' : category, \
-                           'normalization_dict' : timenormalization_dict, \
-                           'origcolumn' : column, \
-                           'inputcolumn' : column, \
-                           'columnslist' : datecolumns, \
-                           'categorylist' : categorylist, \
-                           'infillmodel' : False, \
-                           'infillcomplete' : False, \
-                           'suffixoverlap_results' : suffixoverlap_results, \
-                           'deletecolumn' : False}}
-
-      column_dict_list.append(column_dict.copy())
+      #we'll scale periodicity by hour
+      mdf_train[time_column] = (mdf_train[time_column]) * 2 * np.pi / 60
+      mdf_test[time_column] = (mdf_test[time_column]) * 2 * np.pi / 60
       
-    return mdf_train, mdf_test, column_dict_list
-  
-  def process_mint_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict, params = {}):
-    '''
-    #process_mint_class(mdf_train, mdf_test, column, category)
-    #preprocess column with time classifications
-    #takes as arguement two pandas dataframe containing training and test data respectively 
-    #(mdf_train, mdf_test), and the name of the column string ('column') and the
-    #category fo the source column (category)
-    #note this trains both training and test data simultaneously due to unique treatment if any category
-    #missing from training set but not from test set to ensure consistent formatting 
-    
-    #creates distinct columns for minutes
-    #z score normalized to the mean and std, with missing values plugged with the mean
-    #with columns named after column_ + time category
-    #returns two transformed dataframe (mdf_train, mdf_test) and column_dict_list
-    '''
-    
-    suffixoverlap_results = {}
-    
-    #store original column for later retrieval
-    mdf_train, suffixoverlap_results = \
-    self.df_copy_train(mdf_train, column, column + '_mint', suffixoverlap_results)
-    
-    mdf_test[column + '_mint'] = mdf_test[column].copy()
-
-    #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
-    mdf_train[column + '_mint'] = pd.to_datetime(mdf_train[column + '_mint'], errors = 'coerce')
-    mdf_test[column + '_mint'] = pd.to_datetime(mdf_test[column + '_mint'], errors = 'coerce')
-
-    #mdf_train[column].replace(-np.Inf, np.nan)
-    #mdf_test[column].replace(-np.Inf, np.nan)
-
-    #get mean of various categories of datetime objects to use to plug in missing cells
-    meanmint = mdf_train[column + '_mint'].dt.minute.mean()
-
-    if meanmint != meanmint:
-      meanmint = 0
+    elif scale == 'second':
+      mdf_train[time_column] = mdf_train[time_column].dt.second
+      mdf_test[time_column] = mdf_test[time_column].dt.second
       
-    #get standard deviation of training data
-    stdmint = mdf_train[column + '_mint'].dt.minute.std()
-
-    #special case, if standard deviation is 0 we'll set it to 1 to avoid division by 0
-    if stdmint == 0:
-      stdmint = 1
-    if stdmint != stdmint:
-      stdmint = 1
-
-    #create new columns for each category in train set
-    mdf_train[column + '_mint'] = mdf_train[column + '_mint'].dt.minute
-    mdf_test[column + '_mint'] = mdf_test[column + '_mint'].dt.minute
-
-    #replace missing data with training set mean
-    mdf_train[column + '_mint'] = mdf_train[column + '_mint'].fillna(meanmint)
-    mdf_test[column + '_mint'] = mdf_test[column + '_mint'].fillna(meanmint)
-
-    #subtract mean from column for both train and test
-    mdf_train[column + '_mint'] = mdf_train[column + '_mint'] - meanmint
-
-    mdf_test[column + '_mint'] = mdf_test[column + '_mint'] - meanmint
-
-    #divide column values by std for both training and test data
-    mdf_train[column + '_mint'] = mdf_train[column + '_mint'] / stdmint
-
-    mdf_test[column + '_mint'] = mdf_test[column + '_mint'] / stdmint
-
-#     #now replace NaN with 0
-#     mdf_train[column + '_hour'] = mdf_train[column + '_hour'].fillna(0)
-
-#     #do same for test set
-#     mdf_test[column + '_hour'] = mdf_test[column + '_hour'].fillna(0)
-
-    #output of a list of the created column names
-    datecolumns = [column + '_mint']
-
-#     #this is to address an issue I found when parsing columns with only time no date
-#     #which returned -inf vlaues, so if an issue will just delete the associated 
-#     #column along with the entry in datecolumns
-#     checkyear = np.isinf(mdf_train.iloc[0][column + '_year'])
-#     if checkyear:
-#       del mdf_train[column + '_year']
-#       datecolumns.remove(column + '_year')
-#       if column + '_year' in mdf_test.columns:
-#         del mdf_test[column + '_year']
-
-#     #change data type for memory savings
-#     mdf_train[column + '_mint'] = mdf_train[column + '_mint'].astype(np.float32)
-#     mdf_test[column + '_mint'] = mdf_test[column + '_mint'].astype(np.float32)
-
-    #store some values in the date_dict{} for use later in ML infill methods
-
-    column_dict_list = []
-
-    categorylist = datecolumns
-
-
-    for dc in categorylist:
-
-      #save a dictionary of the associated column mean and std
-      timenormalization_dict = \
-      {dc : {'meanmint' : meanmint,\
-             'stdmint' : stdmint}}
-
-      column_dict = {dc : {'category' : 'mint', \
-                           'origcategory' : category, \
-                           'normalization_dict' : timenormalization_dict, \
-                           'origcolumn' : column, \
-                           'inputcolumn' : column, \
-                           'columnslist' : datecolumns, \
-                           'categorylist' : categorylist, \
-                           'infillmodel' : False, \
-                           'infillcomplete' : False, \
-                           'suffixoverlap_results' : suffixoverlap_results, \
-                           'deletecolumn' : False}}
-
-      column_dict_list.append(column_dict.copy())
+      #we'll scale periodicity by minute
+      mdf_train[time_column] = (mdf_train[time_column]) * 2 * np.pi / 60
+      mdf_test[time_column] = (mdf_test[time_column]) * 2 * np.pi / 60
+    
+    elif scale == 'monthday':
+      tempcolumn1 = time_column + '_tmp1'
+      tempcolumn2 = time_column + '_tmp2'
       
-    return mdf_train, mdf_test, column_dict_list
-  
-  def process_misn_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict, params = {}):
-    '''
-    #process_misn_class(mdf_train, mdf_test, column, category)
-    #preprocess column with time classifications
-    #takes as arguement two pandas dataframe containing training and test data respectively 
-    #(mdf_train, mdf_test), and the name of the column string ('column') and the
-    #category fo the source column (category)
-    #note this trains both training and test data simultaneously due to unique treatment if any category
-    #missing from training set but not from test set to ensure consistent formatting 
-
-    #creates distinct columns for minutes
-    #with sin transform for 12 month period, with missing values plugged with the mean
-    #with columns named after column_ + time category
-    #returns two transformed dataframe (mdf_train, mdf_test) and column_dict_list
-    '''
-    
-    suffixoverlap_results = {}
-
-    #store original column for later retrieval
-    mdf_train, suffixoverlap_results = \
-    self.df_copy_train(mdf_train, column, column + '_misn', suffixoverlap_results)
-    
-    mdf_test[column + '_misn'] = mdf_test[column].copy()
-
-    #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
-    mdf_train[column + '_misn'] = pd.to_datetime(mdf_train[column + '_misn'], errors = 'coerce')
-    mdf_test[column + '_misn'] = pd.to_datetime(mdf_test[column + '_misn'], errors = 'coerce')
-
-    #mdf_train[column].replace(-np.Inf, np.nan)
-    #mdf_test[column].replace(-np.Inf, np.nan)
-
-    #grab hour entries
-    mdf_train[column + '_misn'] = mdf_train[column + '_misn'].dt.minute
-    mdf_test[column + '_misn'] = mdf_test[column + '_misn'].dt.minute
-
-    #apply sin transform
-    #60 minutes in an hour, 24 hours in a. day
-    mdf_train[column + '_misn'] = np.sin(mdf_train[column + '_misn'] * 2 * np.pi / 60 / 24 )
-    mdf_test[column + '_misn'] = np.sin(mdf_test[column + '_misn'] * 2 * np.pi / 60 / 24 )
-
-    #get mean of various categories of datetime objects to use to plug in missing cells
-    mean_misn = mdf_train[column + '_misn'].mean()
-
-    if mean_misn != mean_misn:
-      mean_misn = 0
-
-    #replace missing data with training set mean
-    mdf_train[column + '_misn'] = mdf_train[column + '_misn'].fillna(mean_misn)
-    mdf_test[column + '_misn'] = mdf_test[column + '_misn'].fillna(mean_misn)
-
-    #output of a list of the created column names
-    datecolumns = [column + '_misn']
-
-#     #this is to address an issue I found when parsing columns with only time no date
-#     #which returned -inf vlaues, so if an issue will just delete the associated 
-#     #column along with the entry in datecolumns
-#     checkyear = np.isinf(mdf_train.iloc[0][column + '_year'])
-#     if checkyear:
-#       del mdf_train[column + '_year']
-#       datecolumns.remove(column + '_year')
-#       if column + '_year' in mdf_test.columns:
-#         del mdf_test[column + '_year']
-
-#     #change data type for memory savings
-#     mdf_train[column + '_misn'] = mdf_train[column + '_misn'].astype(np.float32)
-#     mdf_test[column + '_misn'] = mdf_test[column + '_misn'].astype(np.float32)
-
-    #store some values in the date_dict{} for use later in ML infill methods
-
-    column_dict_list = []
-
-    categorylist = datecolumns
-
-    for dc in categorylist:
-
-      #save a dictionary of the associated column mean and std
-      timenormalization_dict = \
-      {dc : {'mean_misn' : mean_misn}}
-
-      column_dict = {dc : {'category' : 'misn', \
-                           'origcategory' : category, \
-                           'normalization_dict' : timenormalization_dict, \
-                           'origcolumn' : column, \
-                           'inputcolumn' : column, \
-                           'columnslist' : datecolumns, \
-                           'categorylist' : categorylist, \
-                           'infillmodel' : False, \
-                           'infillcomplete' : False, \
-                           'suffixoverlap_results' : suffixoverlap_results, \
-                           'deletecolumn' : False}}
-
-      column_dict_list.append(column_dict.copy())
-
-    return mdf_train, mdf_test, column_dict_list
-  
-  def process_mics_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict, params = {}):
-    '''
-    #process_mics_class(mdf_train, mdf_test, column, category)
-    #preprocess column with time classifications
-    #takes as arguement two pandas dataframe containing training and test data respectively 
-    #(mdf_train, mdf_test), and the name of the column string ('column') and the
-    #category fo the source column (category)
-    #note this trains both training and test data simultaneously due to unique treatment if any category
-    #missing from training set but not from test set to ensure consistent formatting 
-
-    #creates distinct columns for minutes
-    #with cos transform for 12 month period, with missing values plugged with the mean
-    #with columns named after column_ + time category
-    #returns two transformed dataframe (mdf_train, mdf_test) and column_dict_list
-    '''
-    
-    suffixoverlap_results = {}
-
-    #store original column for later retrieval
-    mdf_train, suffixoverlap_results = \
-    self.df_copy_train(mdf_train, column, column + '_mics', suffixoverlap_results)
-    
-    mdf_test[column + '_mics'] = mdf_test[column].copy()
-
-
-    #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
-    mdf_train[column + '_mics'] = pd.to_datetime(mdf_train[column + '_mics'], errors = 'coerce')
-    mdf_test[column + '_mics'] = pd.to_datetime(mdf_test[column + '_mics'], errors = 'coerce')
-
-    #mdf_train[column].replace(-np.Inf, np.nan)
-    #mdf_test[column].replace(-np.Inf, np.nan)
-
-    #grab hour entries
-    mdf_train[column + '_mics'] = mdf_train[column + '_mics'].dt.minute
-    mdf_test[column + '_mics'] = mdf_test[column + '_mics'].dt.minute
-
-    #apply cos transform
-    #60 minutes in an hour, 24 hours in a day
-    mdf_train[column + '_mics'] = np.cos(mdf_train[column + '_mics'] * 2 * np.pi / 60 / 24 )
-    mdf_test[column + '_mics'] = np.cos(mdf_test[column + '_mics'] * 2 * np.pi / 60 / 24 )
-
-    #get mean of various categories of datetime objects to use to plug in missing cells
-    mean_mics = mdf_train[column + '_mics'].mean()
-
-    if mean_mics != mean_mics:
-      mean_mics = 0
-
-    #replace missing data with training set mean
-    mdf_train[column + '_mics'] = mdf_train[column + '_mics'].fillna(mean_mics)
-    mdf_test[column + '_mics'] = mdf_test[column + '_mics'].fillna(mean_mics)
-
-    #output of a list of the created column names
-    datecolumns = [column + '_mics']
-
-#     #this is to address an issue I found when parsing columns with only time no date
-#     #which returned -inf vlaues, so if an issue will just delete the associated 
-#     #column along with the entry in datecolumns
-#     checkyear = np.isinf(mdf_train.iloc[0][column + '_year'])
-#     if checkyear:
-#       del mdf_train[column + '_year']
-#       datecolumns.remove(column + '_year')
-#       if column + '_year' in mdf_test.columns:
-#         del mdf_test[column + '_year']
-
-#     #change data type for memory savings
-#     mdf_train[column + '_mics'] = mdf_train[column + '_mics'].astype(np.float32)
-#     mdf_test[column + '_mics'] = mdf_test[column + '_mics'].astype(np.float32)
-
-    #store some values in the date_dict{} for use later in ML infill methods
-
-    column_dict_list = []
-
-    categorylist = datecolumns
-
-    for dc in categorylist:
-
-      #save a dictionary of the associated column mean and std
-      timenormalization_dict = \
-      {dc : {'mean_mics' : mean_mics}}
-
-      column_dict = {dc : {'category' : 'mics', \
-                           'origcategory' : category, \
-                           'normalization_dict' : timenormalization_dict, \
-                           'origcolumn' : column, \
-                           'inputcolumn' : column, \
-                           'columnslist' : datecolumns, \
-                           'categorylist' : categorylist, \
-                           'infillmodel' : False, \
-                           'infillcomplete' : False, \
-                           'suffixoverlap_results' : suffixoverlap_results, \
-                           'deletecolumn' : False}}
-
-      column_dict_list.append(column_dict.copy())
-
-    return mdf_train, mdf_test, column_dict_list
-  
-  def process_mssn_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict, params = {}):
-    '''
-    #process_mssn_class(mdf_train, mdf_test, column, category)
-    #preprocess column with time classifications
-    #takes as arguement two pandas dataframe containing training and test data respectively 
-    #(mdf_train, mdf_test), and the name of the column string ('column') and the
-    #category fo the source column (category)
-    #note this trains both training and test data simultaneously due to unique treatment if any category
-    #missing from training set but not from test set to ensure consistent formatting 
-    
-    #creates combined column for minutes, and seconds
-    #with sin transform for 1 min period, with missing values plugged with the mean
-    #with columns named after column_ + time category
-    #returns two transformed dataframe (mdf_train, mdf_test) and column_dict_list
-    '''
-    
-    suffixoverlap_results = {}
-    
-    #store original column for later retrieval
-    mdf_train, suffixoverlap_results = \
-    self.df_copy_train(mdf_train, column, column + '_mssn', suffixoverlap_results)
-    
-    mdf_test[column + '_mssn'] = mdf_test[column].copy()
-
-    #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
-    mdf_train[column + '_mssn'] = pd.to_datetime(mdf_train[column + '_mssn'], errors = 'coerce')
-    mdf_test[column + '_mssn'] = pd.to_datetime(mdf_test[column + '_mssn'], errors = 'coerce')
-
-    #mdf_train[column].replace(-np.Inf, np.nan)
-    #mdf_test[column].replace(-np.Inf, np.nan)
-
-#     #grab month entries
-#     mdf_train[column + '_mdsn'] = mdf_train[column + '_mdsn'].dt.month
-#     mdf_test[column + '_mdsn'] = mdf_test[column + '_mdsn'].dt.month
-    
-    #apply sin transform to combined day and month, note aversage of 30.42 days in a month, 12 months in a year
-    mdf_train[column + '_mssn'] = np.sin((mdf_train[column + '_mssn'].dt.minute + mdf_train[column + '_mssn'].dt.second / 60) * 2 * np.pi / 60 / 24 )
-    mdf_test[column + '_mssn'] = np.sin((mdf_test[column + '_mssn'].dt.minute + mdf_test[column + '_mssn'].dt.second / 60) * 2 * np.pi / 60 / 24 )
-    
-    #get mean of various categories of datetime objects to use to plug in missing cells
-    mean_mssn = mdf_train[column + '_mssn'].mean()
-
-    if mean_mssn != mean_mssn:
-      mean_mssn = 0
-
-    #replace missing data with training set mean
-    mdf_train[column + '_mssn'] = mdf_train[column + '_mssn'].fillna(mean_mssn)
-    mdf_test[column + '_mssn'] = mdf_test[column + '_mssn'].fillna(mean_mssn)
-
-    #output of a list of the created column names
-    datecolumns = [column + '_mssn']
-
-#     #this is to address an issue I found when parsing columns with only time no date
-#     #which returned -inf vlaues, so if an issue will just delete the associated 
-#     #column along with the entry in datecolumns
-#     checkyear = np.isinf(mdf_train.iloc[0][column + '_year'])
-#     if checkyear:
-#       del mdf_train[column + '_year']
-#       datecolumns.remove(column + '_year')
-#       if column + '_year' in mdf_test.columns:
-#         del mdf_test[column + '_year']
-
-#     #change data type for memory savings
-#     mdf_train[column + '_mssn'] = mdf_train[column + '_mssn'].astype(np.float32)
-#     mdf_test[column + '_mssn'] = mdf_test[column + '_mssn'].astype(np.float32)
-
-    #store some values in the date_dict{} for use later in ML infill methods
-
-    column_dict_list = []
-
-    categorylist = datecolumns
-
-    for dc in categorylist:
-
-      #save a dictionary of the associated column mean and std
-      timenormalization_dict = \
-      {dc : {'mean_mssn' : mean_mssn}}
-
-      column_dict = {dc : {'category' : 'mssn', \
-                           'origcategory' : category, \
-                           'normalization_dict' : timenormalization_dict, \
-                           'origcolumn' : column, \
-                           'inputcolumn' : column, \
-                           'columnslist' : datecolumns, \
-                           'categorylist' : categorylist, \
-                           'infillmodel' : False, \
-                           'infillcomplete' : False, \
-                           'suffixoverlap_results' : suffixoverlap_results, \
-                           'deletecolumn' : False}}
-
-      column_dict_list.append(column_dict.copy())
+      suffixoverlap_results = \
+      self.df_check_suffixoverlap(mdf_train, [tempcolumn1, tempcolumn2], suffixoverlap_results)
       
-    return mdf_train, mdf_test, column_dict_list
-  
-  def process_mscs_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict, params = {}):
-    '''
-    #process_mscs_class(mdf_train, mdf_test, column, category)
-    #preprocess column with time classifications
-    #takes as arguement two pandas dataframe containing training and test data respectively 
-    #(mdf_train, mdf_test), and the name of the column string ('column') and the
-    #category fo the source column (category)
-    #note this trains both training and test data simultaneously due to unique treatment if any category
-    #missing from training set but not from test set to ensure consistent formatting 
-    
-    #creates combined column for minutes, and seconds
-    #with cos transform for 1 min period, with missing values plugged with the mean
-    #with columns named after column_ + time category
-    #returns two transformed dataframe (mdf_train, mdf_test) and column_dict_list
-    '''
-    
-    suffixoverlap_results = {}
-    
-    #store original column for later retrieval
-    mdf_train, suffixoverlap_results = \
-    self.df_copy_train(mdf_train, column, column + '_mscs', suffixoverlap_results)
-    
-    mdf_test[column + '_mscs'] = mdf_test[column].copy()
-
-    #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
-    mdf_train[column + '_mscs'] = pd.to_datetime(mdf_train[column + '_mscs'], errors = 'coerce')
-    mdf_test[column + '_mscs'] = pd.to_datetime(mdf_test[column + '_mscs'], errors = 'coerce')
-
-    #mdf_train[column].replace(-np.Inf, np.nan)
-    #mdf_test[column].replace(-np.Inf, np.nan)
-
-#     #grab month entries
-#     mdf_train[column + '_mdsn'] = mdf_train[column + '_mdsn'].dt.month
-#     mdf_test[column + '_mdsn'] = mdf_test[column + '_mdsn'].dt.month
-    
-    #apply cos transform to combined day and month, note aversage of 30.42 days in a month, 12 months in a year
-    mdf_train[column + '_mscs'] = np.cos((mdf_train[column + '_mscs'].dt.minute + mdf_train[column + '_mscs'].dt.second / 60) * 2 * np.pi / 60 / 24 )
-    mdf_test[column + '_mscs'] = np.cos((mdf_test[column + '_mscs'].dt.minute + mdf_test[column + '_mscs'].dt.second / 60) * 2 * np.pi / 60 / 24 )
-    
-    #get mean of various categories of datetime objects to use to plug in missing cells
-    mean_mscs = mdf_train[column + '_mscs'].mean()
-
-    if mean_mscs != mean_mscs:
-      mean_mscs = 0
-
-    #replace missing data with training set mean
-    mdf_train[column + '_mscs'] = mdf_train[column + '_mscs'].fillna(mean_mscs)
-    mdf_test[column + '_mscs'] = mdf_test[column + '_mscs'].fillna(mean_mscs)
-
-    #output of a list of the created column names
-    datecolumns = [column + '_mscs']
-
-#     #this is to address an issue I found when parsing columns with only time no date
-#     #which returned -inf vlaues, so if an issue will just delete the associated 
-#     #column along with the entry in datecolumns
-#     checkyear = np.isinf(mdf_train.iloc[0][column + '_year'])
-#     if checkyear:
-#       del mdf_train[column + '_year']
-#       datecolumns.remove(column + '_year')
-#       if column + '_year' in mdf_test.columns:
-#         del mdf_test[column + '_year']
-
-#     #change data type for memory savings
-#     mdf_train[column + '_mscs'] = mdf_train[column + '_mscs'].astype(np.float32)
-#     mdf_test[column + '_mscs'] = mdf_test[column + '_mscs'].astype(np.float32)
-
-    #store some values in the date_dict{} for use later in ML infill methods
-
-    column_dict_list = []
-
-    categorylist = datecolumns
-
-    for dc in categorylist:
-
-      #save a dictionary of the associated column mean and std
-      timenormalization_dict = \
-      {dc : {'mean_mscs' : mean_mscs}}
-
-      column_dict = {dc : {'category' : 'mscs', \
-                           'origcategory' : category, \
-                           'normalization_dict' : timenormalization_dict, \
-                           'origcolumn' : column, \
-                           'inputcolumn' : column, \
-                           'columnslist' : datecolumns, \
-                           'categorylist' : categorylist, \
-                           'infillmodel' : False, \
-                           'infillcomplete' : False, \
-                           'suffixoverlap_results' : suffixoverlap_results, \
-                           'deletecolumn' : False}}
-
-      column_dict_list.append(column_dict.copy())
+      #temp1 is for number of days in month, temp2 is to handle leap year support
+      mdf_train[tempcolumn1] = mdf_train[time_column].copy()
+      mdf_train[tempcolumn2] = mdf_train[time_column].copy()
       
-    return mdf_train, mdf_test, column_dict_list
-  
-  def process_scnd_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict, params = {}):
-    '''
-    #process_scnd_class(mdf_train, mdf_test, column, category)
-    #preprocess column with time classifications
-    #takes as arguement two pandas dataframe containing training and test data respectively 
-    #(mdf_train, mdf_test), and the name of the column string ('column') and the
-    #category fo the source column (category)
-    #note this trains both training and test data simultaneously due to unique treatment if any category
-    #missing from training set but not from test set to ensure consistent formatting 
-    
-    #creates distinct columns for seconds
-    #z score normalized to the mean and std, with missing values plugged with the mean
-    #with columns named after column_ + time category
-    #returns two transformed dataframe (mdf_train, mdf_test) and column_dict_list
-    '''
-    
-    suffixoverlap_results = {}
-    
-    #store original column for later retrieval
-    mdf_train, suffixoverlap_results = \
-    self.df_copy_train(mdf_train, column, column + '_scnd', suffixoverlap_results)
-    
-    mdf_test[column + '_scnd'] = mdf_test[column].copy()
-
-    #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
-    mdf_train[column + '_scnd'] = pd.to_datetime(mdf_train[column + '_scnd'], errors = 'coerce')
-    mdf_test[column + '_scnd'] = pd.to_datetime(mdf_test[column + '_scnd'], errors = 'coerce')
-
-    #mdf_train[column].replace(-np.Inf, np.nan)
-    #mdf_test[column].replace(-np.Inf, np.nan)
-
-    #get mean of various categories of datetime objects to use to plug in missing cells
-    meanscnd = mdf_train[column + '_scnd'].dt.second.mean()
-    
-    if meanscnd != meanscnd:
-      meanscnd = 0
-
-    #get standard deviation of training data
-    stdscnd = mdf_train[column + '_scnd'].dt.second.std()
-
-    #special case, if standard deviation is 0 we'll set it to 1 to avoid division by 0
-    if stdscnd == 0:
-      stdscnd = 1
-    if stdscnd != stdscnd:
-      stdscnd = 1
-
-    #create new columns for each category in train set
-    mdf_train[column + '_scnd'] = mdf_train[column + '_scnd'].dt.second
-    mdf_test[column + '_scnd'] = mdf_test[column + '_scnd'].dt.second
-
-    #replace missing data with training set mean
-    mdf_train[column + '_scnd'] = mdf_train[column + '_scnd'].fillna(meanscnd)
-    mdf_test[column + '_scnd'] = mdf_test[column + '_scnd'].fillna(meanscnd)
-
-    #subtract mean from column for both train and test
-    mdf_train[column + '_scnd'] = mdf_train[column + '_scnd'] - meanscnd
-
-    mdf_test[column + '_scnd'] = mdf_test[column + '_scnd'] - meanscnd
-
-    #divide column values by std for both training and test data
-    mdf_train[column + '_scnd'] = mdf_train[column + '_scnd'] / stdscnd
-
-    mdf_test[column + '_scnd'] = mdf_test[column + '_scnd'] / stdscnd
-
-#     #now replace NaN with 0
-#     mdf_train[column + '_hour'] = mdf_train[column + '_hour'].fillna(0)
-
-#     #do same for test set
-#     mdf_test[column + '_hour'] = mdf_test[column + '_hour'].fillna(0)
-
-    #output of a list of the created column names
-    datecolumns = [column + '_scnd']
-
-#     #this is to address an issue I found when parsing columns with only time no date
-#     #which returned -inf vlaues, so if an issue will just delete the associated 
-#     #column along with the entry in datecolumns
-#     checkyear = np.isinf(mdf_train.iloc[0][column + '_year'])
-#     if checkyear:
-#       del mdf_train[column + '_year']
-#       datecolumns.remove(column + '_year')
-#       if column + '_year' in mdf_test.columns:
-#         del mdf_test[column + '_year']
-
-#     #change data type for memory savings
-#     mdf_train[column + '_scnd'] = mdf_train[column + '_scnd'].astype(np.float32)
-#     mdf_test[column + '_scnd'] = mdf_test[column + '_scnd'].astype(np.float32)
-
-    #store some values in the date_dict{} for use later in ML infill methods
-
-    column_dict_list = []
-
-    categorylist = datecolumns
-
-    for dc in categorylist:
-
-      #save a dictionary of the associated column mean and std
-      timenormalization_dict = \
-      {dc : {'meanscnd' : meanscnd,\
-             'stdscnd' : stdscnd}}
-
-      column_dict = {dc : {'category' : 'scnd', \
-                           'origcategory' : category, \
-                           'normalization_dict' : timenormalization_dict, \
-                           'origcolumn' : column, \
-                           'inputcolumn' : column, \
-                           'columnslist' : datecolumns, \
-                           'categorylist' : categorylist, \
-                           'infillmodel' : False, \
-                           'infillcomplete' : False, \
-                           'suffixoverlap_results' : suffixoverlap_results, \
-                           'deletecolumn' : False}}
-
-      column_dict_list.append(column_dict.copy())
+      mdf_train[tempcolumn1] = mdf_train[tempcolumn1].dt.month
+      mdf_train[tempcolumn2] = mdf_train[tempcolumn2].dt.is_leap_year
       
-    return mdf_train, mdf_test, column_dict_list
-  
-  def process_scsn_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict, params = {}):
-    '''
-    #process_scsn_class(mdf_train, mdf_test, column, category)
-    #preprocess column with time classifications
-    #takes as arguement two pandas dataframe containing training and test data respectively 
-    #(mdf_train, mdf_test), and the name of the column string ('column') and the
-    #category fo the source column (category)
-    #note this trains both training and test data simultaneously due to unique treatment if any category
-    #missing from training set but not from test set to ensure consistent formatting 
+      mdf_train[tempcolumn2] = \
+      np.where(mdf_train[tempcolumn2], 29, 28)
+      
+      mdf_train[tempcolumn1] = \
+      np.where(mdf_train[tempcolumn1].isin([1,3,5,7,8,10,12]), 31, mdf_train[tempcolumn1].values)
+      
+      mdf_train[tempcolumn1] = \
+      np.where(mdf_train[tempcolumn1].isin([4,6,9,11]), 30, mdf_train[tempcolumn1].values)
+      
+      mdf_train[tempcolumn1] = \
+      np.where(mdf_train[tempcolumn1].isin([2]), mdf_train[tempcolumn2], \
+      mdf_train[tempcolumn1].values)
+      
+      #do same for test set
+      mdf_test[tempcolumn1] = mdf_test[time_column].copy()
+      mdf_test[tempcolumn2] = mdf_test[time_column].copy()
+      
+      mdf_test[tempcolumn1] = mdf_test[tempcolumn1].dt.month
+      mdf_test[tempcolumn2] = mdf_test[tempcolumn2].dt.is_leap_year
+      
+      mdf_test[tempcolumn2] = \
+      np.where(mdf_test[tempcolumn2], 29, 28)
+      
+      mdf_test[tempcolumn1] = \
+      np.where(mdf_test[tempcolumn1].isin([1,3,5,7,8,10,12]), 31, mdf_test[tempcolumn1].values)
+      
+      mdf_test[tempcolumn1] = \
+      np.where(mdf_test[tempcolumn1].isin([4,6,9,11]), 30, mdf_test[tempcolumn1].values)
+      
+      mdf_test[tempcolumn1] = \
+      np.where(mdf_test[tempcolumn1].isin([2]), mdf_test[tempcolumn2], \
+      mdf_test[tempcolumn1].values)
+      
+      #combine month and day, scale for trigonomic transform, periodicity by year
+      mdf_train[time_column] = (mdf_train[time_column].dt.month + mdf_train[time_column].dt.day / \
+      mdf_train[tempcolumn1]) * 2 * np.pi / 12
+      
+      mdf_test[time_column] = (mdf_test[time_column].dt.month + mdf_test[time_column].dt.day / \
+      mdf_test[tempcolumn1]) * 2 * np.pi / 12
+      
+      #delete the support columns 
+      del mdf_train[tempcolumn1]
+      del mdf_test[tempcolumn1]
 
-    #creates distinct columns for seconds
-    #with sin transform for 12 month period, with missing values plugged with the mean
-    #with columns named after column_ + time category
-    #returns two transformed dataframe (mdf_train, mdf_test) and column_dict_list
-    '''
+      del mdf_train[tempcolumn2]
+      del mdf_test[tempcolumn2]
+      
+    elif scale == 'dayhourminute':
+      #we'll scale periodicity by week
+      mdf_train[time_column] = (mdf_train[time_column].dt.day + mdf_train[time_column].dt.hour / 24 + mdf_train[time_column].dt.minute / 24 / 60) * 2 * np.pi / 7
+      mdf_test[time_column] = (mdf_test[time_column].dt.day + mdf_test[time_column].dt.hour / 24 + mdf_test[time_column].dt.minute / 24 / 60) * 2 * np.pi / 7
+
+    elif scale == 'hourminutesecond':
+      #we'll scale periodicity by day
+      mdf_train[time_column] = (mdf_train[time_column].dt.hour + mdf_train[time_column].dt.minute / 60 + mdf_train[time_column].dt.second / 60 / 60) * 2 * np.pi / 24
+      mdf_test[time_column] = (mdf_test[time_column].dt.hour + mdf_test[time_column].dt.minute / 60 + mdf_test[time_column].dt.second / 60 / 60) * 2 * np.pi / 24
+
+    elif scale == 'minutesecond':
+      #we'll scale periodicity by hour
+      mdf_train[time_column] = (mdf_train[time_column].dt.minute + mdf_train[time_column].dt.second / 60) * 2 * np.pi / 60
+      mdf_test[time_column] = (mdf_test[time_column].dt.minute + mdf_test[time_column].dt.second / 60) * 2 * np.pi / 60
+      
+    #grab a few drift metrics, we'll evaluate prior to trigometric transform
+    timemean = mdf_train[time_column].mean()
+    timemax = mdf_train[time_column].max()
+    timemin = mdf_train[time_column].min()
+    timestd = mdf_train[time_column].std()
     
-    suffixoverlap_results = {}
-
-    #store original column for later retrieval
-    mdf_train, suffixoverlap_results = \
-    self.df_copy_train(mdf_train, column, column + '_scsn', suffixoverlap_results)
+    #default infill is adjacent cell
+    mdf_train[time_column] = mdf_train[time_column].fillna(method='ffill')
+    mdf_train[time_column] = mdf_train[time_column].fillna(method='bfill')
     
-    mdf_test[column + '_scsn'] = mdf_test[column].copy()
+    mdf_test[time_column] = mdf_test[time_column].fillna(method='ffill')
+    mdf_test[time_column] = mdf_test[time_column].fillna(method='bfill')
+    
+    #backup default infill for cases without valid entries
+    mdf_train[time_column] = mdf_train[time_column].fillna(0)
+    mdf_test[time_column] = mdf_test[time_column].fillna(0)
+    
+    #apply trigometric transform
+    
+    if function == 'sin':
+      
+      mdf_train[time_column] = np.sin(mdf_train[time_column])
+      mdf_test[time_column] = np.sin(mdf_test[time_column])
+      
+    if function == 'cos':
 
-
-    #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
-    mdf_train[column + '_scsn'] = pd.to_datetime(mdf_train[column + '_scsn'], errors = 'coerce')
-    mdf_test[column + '_scsn'] = pd.to_datetime(mdf_test[column + '_scsn'], errors = 'coerce')
-
-    #mdf_train[column].replace(-np.Inf, np.nan)
-    #mdf_test[column].replace(-np.Inf, np.nan)
-
-    #grab hour entries
-    mdf_train[column + '_scsn'] = mdf_train[column + '_scsn'].dt.second
-    mdf_test[column + '_scsn'] = mdf_test[column + '_scsn'].dt.second
-
-    #apply sin transform
-    #60 seconds in a minute
-    mdf_train[column + '_scsn'] = np.sin(mdf_train[column + '_scsn'] * 2 * np.pi / 60 )
-    mdf_test[column + '_scsn'] = np.sin(mdf_test[column + '_scsn'] * 2 * np.pi / 60 )
-
-    #get mean of various categories of datetime objects to use to plug in missing cells
-    mean_scsn = mdf_train[column + '_scsn'].mean()
-
-    if mean_scsn != mean_scsn:
-      mean_scsn = 0
-
-    #replace missing data with training set mean
-    mdf_train[column + '_scsn'] = mdf_train[column + '_scsn'].fillna(mean_scsn)
-    mdf_test[column + '_scsn'] = mdf_test[column + '_scsn'].fillna(mean_scsn)
-
-    #output of a list of the created column names
-    datecolumns = [column + '_scsn']
-
-#     #this is to address an issue I found when parsing columns with only time no date
-#     #which returned -inf vlaues, so if an issue will just delete the associated 
-#     #column along with the entry in datecolumns
-#     checkyear = np.isinf(mdf_train.iloc[0][column + '_year'])
-#     if checkyear:
-#       del mdf_train[column + '_year']
-#       datecolumns.remove(column + '_year')
-#       if column + '_year' in mdf_test.columns:
-#         del mdf_test[column + '_year']
-
-#     #change data type for memory savings
-#     mdf_train[column + '_scsn'] = mdf_train[column + '_scsn'].astype(np.float32)
-#     mdf_test[column + '_scsn'] = mdf_test[column + '_scsn'].astype(np.float32)
-
-    #store some values in the date_dict{} for use later in ML infill methods
-
+      mdf_train[time_column] = np.cos(mdf_train[time_column])
+      mdf_test[time_column] = np.cos(mdf_test[time_column])
+      
+    #populate data structures
     column_dict_list = []
-
-    categorylist = datecolumns
-
-    for dc in categorylist:
-
-      #save a dictionary of the associated column mean and std
-      timenormalization_dict = \
-      {dc : {'mean_scsn' : mean_scsn}}
-
-      column_dict = {dc : {'category' : 'scsn', \
+    categorylist = [time_column]
+    
+    for tc in categorylist:
+      norm_dict = {tc : {'scale'         : scale, \
+                         'suffix'        : suffix, \
+                         'function'      : function, \
+                         'timemean'      : timemean, \
+                         'timemax'       : timemax, \
+                         'timemin'       : timemin, \
+                         'timestd'       : timestd}}
+      
+      column_dict = {tc : {'category' : 'tmsc', \
                            'origcategory' : category, \
-                           'normalization_dict' : timenormalization_dict, \
+                           'normalization_dict' : norm_dict, \
                            'origcolumn' : column, \
                            'inputcolumn' : column, \
-                           'columnslist' : datecolumns, \
+                           'columnslist' : categorylist, \
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
@@ -16040,95 +12991,133 @@ class AutoMunge:
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
-
+    
     return mdf_train, mdf_test, column_dict_list
-  
-  def process_sccs_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict, params = {}):
-    '''
-    #process_sccs_class(mdf_train, mdf_test, column, category)
-    #preprocess column with time classifications
-    #takes as arguement two pandas dataframe containing training and test data respectively 
-    #(mdf_train, mdf_test), and the name of the column string ('column') and the
-    #category fo the source column (category)
-    #note this trains both training and test data simultaneously due to unique treatment if any category
-    #missing from training set but not from test set to ensure consistent formatting 
 
-    #creates distinct columns for seconds
-    #with cos transform for 12 month period, with missing values plugged with the mean
-    #with columns named after column_ + time category
-    #returns two transformed dataframe (mdf_train, mdf_test) and column_dict_list
-    '''
+  def process_time_class(self, mdf_train, mdf_test, column, category, \
+                         postprocess_dict, params = {}):
+    """
+    #z-score normalized time data segregated by a particular time scale
+    #accepts parameter 'scale' to distinguish between year/month/day/hour/minute/second
+    #accepts parameter 'suffix' for returned column header suffix
+    #accepts parameter 'normalization' to distinguish between zscore/minmax/unscaled
+    """
     
     suffixoverlap_results = {}
-
-    #store original column for later retrieval
-    mdf_train, suffixoverlap_results = \
-    self.df_copy_train(mdf_train, column, column + '_sccs', suffixoverlap_results)
     
-    mdf_test[column + '_sccs'] = mdf_test[column].copy()
-
+    if 'scale' in params:
+      #accepts year/month/day/hour/minute/second
+      scale = params['scale']
+    else:
+      scale = 'year'
+      
+    if 'suffix' in params:
+      #accepts column header suffix appender
+      suffix = params['suffix']
+    else:
+      suffix = '_year'
+      
+    if 'normalization' in params:
+      #accepts zscore/minmax/unscaled
+      normalization = params['normalization']
+    else:
+      normalization = 'zscore'
+      
+    time_column = column + suffix
+    
+    mdf_train, suffixoverlap_results = \
+    self.df_copy_train(mdf_train, column, time_column, suffixoverlap_results)
+    
+    mdf_test[time_column] = mdf_test[column].copy()
+    
     #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
-    mdf_train[column + '_sccs'] = pd.to_datetime(mdf_train[column + '_sccs'], errors = 'coerce')
-    mdf_test[column + '_sccs'] = pd.to_datetime(mdf_test[column + '_sccs'], errors = 'coerce')
+    mdf_train[time_column] = pd.to_datetime(mdf_train[time_column], errors = 'coerce')
+    mdf_test[time_column] = pd.to_datetime(mdf_test[time_column], errors = 'coerce')
+    
+    #access time scale from one of year/month/day/hour/minute/second
+    if scale == 'year':
+      mdf_train[time_column] = mdf_train[time_column].dt.year
+      mdf_test[time_column] = mdf_test[time_column].dt.year
+    elif scale == 'month':
+      mdf_train[time_column] = mdf_train[time_column].dt.month
+      mdf_test[time_column] = mdf_test[time_column].dt.month
+    elif scale == 'day':
+      mdf_train[time_column] = mdf_train[time_column].dt.day
+      mdf_test[time_column] = mdf_test[time_column].dt.day
+    elif scale == 'hour':
+      mdf_train[time_column] = mdf_train[time_column].dt.hour
+      mdf_test[time_column] = mdf_test[time_column].dt.hour
+    elif scale == 'minute':
+      mdf_train[time_column] = mdf_train[time_column].dt.minute
+      mdf_test[time_column] = mdf_test[time_column].dt.minute
+    elif scale == 'second':
+      mdf_train[time_column] = mdf_train[time_column].dt.second
+      mdf_test[time_column] = mdf_test[time_column].dt.second
+      
+    #default infill is adjacent cell
+    mdf_train[time_column] = mdf_train[time_column].fillna(method='ffill')
+    mdf_train[time_column] = mdf_train[time_column].fillna(method='bfill')
+    
+    mdf_test[time_column] = mdf_test[time_column].fillna(method='ffill')
+    mdf_test[time_column] = mdf_test[time_column].fillna(method='bfill')
+      
+    #grab a few drift metrics
+    timemean = mdf_train[time_column].mean()
+    timemax = mdf_train[time_column].max()
+    timemin = mdf_train[time_column].min()
+    timestd = mdf_train[time_column].std()
 
-    #mdf_train[column].replace(-np.Inf, np.nan)
-    #mdf_test[column].replace(-np.Inf, np.nan)
-
-    #grab hour entries
-    mdf_train[column + '_sccs'] = mdf_train[column + '_sccs'].dt.second
-    mdf_test[column + '_sccs'] = mdf_test[column + '_sccs'].dt.second
-
-    #apply cos transform
-    #60 seconds in a minute
-    mdf_train[column + '_sccs'] = np.cos(mdf_train[column + '_sccs'] * 2 * np.pi / 60 )
-    mdf_test[column + '_sccs'] = np.cos(mdf_test[column + '_sccs'] * 2 * np.pi / 60 )
-
-    #get mean of various categories of datetime objects to use to plug in missing cells
-    mean_sccs = mdf_train[column + '_sccs'].mean()
-
-    if mean_sccs != mean_sccs:
-      mean_sccs = 0
-
-    #replace missing data with training set mean
-    mdf_train[column + '_sccs'] = mdf_train[column + '_sccs'].fillna(mean_sccs)
-    mdf_test[column + '_sccs'] = mdf_test[column + '_sccs'].fillna(mean_sccs)
-
-    #output of a list of the created column names
-    datecolumns = [column + '_sccs']
-
-#     #this is to address an issue I found when parsing columns with only time no date
-#     #which returned -inf vlaues, so if an issue will just delete the associated 
-#     #column along with the entry in datecolumns
-#     checkyear = np.isinf(mdf_train.iloc[0][column + '_year'])
-#     if checkyear:
-#       del mdf_train[column + '_year']
-#       datecolumns.remove(column + '_year')
-#       if column + '_year' in mdf_test.columns:
-#         del mdf_test[column + '_year']
-
-#     #change data type for memory savings
-#     mdf_train[column + '_sccs'] = mdf_train[column + '_sccs'].astype(np.float32)
-#     mdf_test[column + '_sccs'] = mdf_test[column + '_sccs'].astype(np.float32)
-
-    #store some values in the date_dict{} for use later in ML infill methods
-
+    maxminusmin = timemax - timemin
+    
+    #backup default infill for cases without valid entries
+    mdf_train[time_column] = mdf_train[time_column].fillna(0)
+    mdf_test[time_column] = mdf_test[time_column].fillna(0)
+      
+    #formula for scaling is (x - scaler) / divisor
+    #normalizaiton is either zscore/minmax/unscaled
+    if normalization == 'zscore':
+      scaler = timemean
+      divisor = timestd
+    if normalization == 'minmax':
+      scaler = timemin
+      divisor = maxminusmin
+    if normalization == 'unscaled':
+      scaler = 0
+      divisor = 1
+    
+    if divisor == 0 or divisor != divisor:
+      divisor = 1
+      
+    if scaler != scaler:
+      scaler = 0
+      
+    #apply normalization
+    if normalization != 'unscaled':
+      mdf_train[time_column] = (mdf_train[time_column] - scaler) / divisor
+      mdf_test[time_column] = (mdf_test[time_column] - scaler) / divisor
+      
+    #populate data structures
     column_dict_list = []
-
-    categorylist = datecolumns
-
-    for dc in categorylist:
-
-      #save a dictionary of the associated column mean and std
-      timenormalization_dict = \
-      {dc : {'mean_sccs' : mean_sccs}}
-
-      column_dict = {dc : {'category' : 'sccs', \
+    categorylist = [time_column]
+    
+    for tc in categorylist:
+      norm_dict = {tc : {'scale'         : scale, \
+                         'suffix'        : suffix, \
+                         'normalization' : normalization, \
+                         'scaler'        : scaler, \
+                         'divisor'       : divisor, \
+                         'timemean'      : timemean, \
+                         'timemax'       : timemax, \
+                         'timemin'       : timemin, \
+                         'timestd'       : timestd, \
+                         'maxminusmin'   : maxminusmin}}
+      
+      column_dict = {tc : {'category' : 'time', \
                            'origcategory' : category, \
-                           'normalization_dict' : timenormalization_dict, \
+                           'normalization_dict' : norm_dict, \
                            'origcolumn' : column, \
                            'inputcolumn' : column, \
-                           'columnslist' : datecolumns, \
+                           'columnslist' : categorylist, \
                            'categorylist' : categorylist, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
@@ -16136,7 +13125,7 @@ class AutoMunge:
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
-
+    
     return mdf_train, mdf_test, column_dict_list
 
   def process_bxcx_class(self, mdf_train, mdf_test, column, category, \
@@ -28944,7 +25933,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.74'
+    automungeversion = '4.75'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -31730,463 +28719,129 @@ class AutoMunge:
         mdf_test[column + '_src4'] = mdf_test[column + '_src4'].astype(np.uint32)
     
     return mdf_test
-  
+
   def postprocess_nmr4_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     """
-    #process_nmr4_class(df, column, category, postprocess_dict)
-    #parses string entries and if any numbers present returns numbers
-    #entries without numbers present subject to infill
-    #assumes set of entries in test data is same or subset of train data for
-    #more efficient postmunge than vs nmrc
+    #extract numeric partitions from categoric entries, test treated differently than train
+    #accepts parameters
+    #convention as numbers/commas/spaces
+    #suffix for column suffix identifier
+    #test_same_as_train as True/False
+    #where True copiues overlap_dict from train for test, False parses test entries not found in train
     """
     
-    #get normkey
-    normkey = column + '_nmr4'
+    if 'suffix' in params:
+      #accepts string for suffix appender
+      suffix = params['suffix']
+    else:
+      suffix = '_nmr4'
+      
+    nmrc_column = column + suffix
     
-    #retrieve normalization parameters
     mean = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
-
+    postprocess_dict['column_dict'][nmrc_column]['normalization_dict'][nmrc_column]['mean']
     unique_list = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['unique_list']
-    
+    postprocess_dict['column_dict'][nmrc_column]['normalization_dict'][nmrc_column]['unique_list']
     overlap_dict = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['overlap_dict']
-
-    #note this assumes that set of entries for test data is same or a subset of train data
-    #any entries not present will be subject to default infill (mean)
-    #note that getNArows will not capture these infill for infill with assigninfill
+    postprocess_dict['column_dict'][nmrc_column]['normalization_dict'][nmrc_column]['overlap_dict']
+    convention = \
+    postprocess_dict['column_dict'][nmrc_column]['normalization_dict'][nmrc_column]['convention']
+    test_same_as_train = \
+    postprocess_dict['column_dict'][nmrc_column]['normalization_dict'][nmrc_column]['test_same_as_train']
     
-    test_unique_list = list(mdf_test[column].unique())
+    mdf_test[nmrc_column] = mdf_test[column].copy()
+    
+    test_unique_list = list(mdf_test[nmrc_column].unique())
     test_unique_list = list(map(str, test_unique_list))
     extra_test_unique = list(set(test_unique_list) - set(unique_list))
-    
-    test_overlap_dict = deepcopy(overlap_dict)
-    for test_unique in extra_test_unique:
-      test_overlap_dict.update({str(test_unique) : np.nan})
-    
-    mdf_test[column + '_nmr4'] = mdf_test[column].astype(str)
-    mdf_test[column + '_nmr4'] = mdf_test[column + '_nmr4'].replace(test_overlap_dict)
-    
-    #replace missing data with training set mean as default infill
-    mdf_test[column + '_nmr4'] = mdf_test[column + '_nmr4'].fillna(mean)
-    
-    return mdf_test
-  
-  def postprocess_nmr7_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
-    """
-    #process_nmr4_class(df, column, category, postprocess_dict)
-    #parses string entries and if any numbers present returns numbers
-    #entries without numbers present subject to infill
-    #comparable to nmr4 but instead of making blanket assumption that unique values in
-    #test set are found in train set, implements parsing for test set entries not found in train set
-    """
-    
-    #get normkey
-    normkey = column + '_nmr7'
-    
-    #retrieve normalization parameters
-    mean = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
 
-    unique_list = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['unique_list']
-    
-    overlap_dict = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['overlap_dict']
-    
-    maxlength = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['maxlength']
-
-    #note this assumes that set of entries for test data is same or a subset of train data
-    #any entries not present will be subject to default infill (mean)
-    #note that getNArows will not capture these infill for infill with assigninfill
-    
-    test_unique_list = list(mdf_test[column].unique())
-    test_unique_list = list(map(str, test_unique_list))
-    extra_test_unique = list(set(test_unique_list) - set(unique_list))
-    
     test_overlap_dict = deepcopy(overlap_dict)
     
-#     unique_list = list(mdf_train[column].unique())
+    if test_same_as_train is True:
+      
+      for test_unique in extra_test_unique:
+        test_overlap_dict.update({str(test_unique) : np.nan})
+      
+    elif test_same_as_train is False:
+      
+      testmaxlength = max(len(x) for x in unique_list)
 
-#     unique_list = list(map(str, unique_list))
-    
-    testmaxlength = max(len(x) for x in unique_list)
-    
-    if testmaxlength > maxlength:
-      maxlength = testmaxlength
-    
-    overlap_lengths = list(range(maxlength, 0, -1))
+      overlap_lengths = list(range(testmaxlength, 0, -1))
 
-#     overlap_dict = {}
-    
-    for overlap_length in overlap_lengths:
+  #     overlap_dict = {}
 
-      for unique in extra_test_unique:
-        
-        if unique not in test_overlap_dict:
+      for overlap_length in overlap_lengths:
 
-          len_unique = len(unique)
+        for unique in extra_test_unique:
 
-          if len_unique >= overlap_length:
-            
-            if overlap_length > 1:
+          if unique not in test_overlap_dict:
 
-              nbr_iterations = len_unique - overlap_length
+            len_unique = len(unique)
 
-              for i in range(nbr_iterations + 1):
-                
-                if unique not in test_overlap_dict:
+            if len_unique >= overlap_length:
 
-                  extract = unique[i:(overlap_length+i)]
+              if overlap_length > 1:
 
-  #                 extract_already_in_overlap_dict = False
+                nbr_iterations = len_unique - overlap_length
 
-                  if self.is_number(extract):
+                for i in range(nbr_iterations + 1):
 
-                    test_overlap_dict.update({unique : float(extract)})
-                
-            #else if overlap_length == 1    
-            else:
-              
-              nbr_iterations = len_unique - overlap_length
-              
-              in_dict = False
+                  if unique not in test_overlap_dict:
 
-              for i in range(nbr_iterations + 1):
-                
-                if unique not in test_overlap_dict:
+                    extract = unique[i:(overlap_length+i)]
 
-                  extract = unique[i:(overlap_length+i)]
+    #                 extract_already_in_overlap_dict = False
+                    
+                    if convention == 'numbers':
+                    
+                      if self.is_number(extract):
 
-  #                 extract_already_in_overlap_dict = False
-
-                  if self.is_number(extract):
-
-                    in_dict = True
-
-                    test_overlap_dict.update({unique : float(extract)})
+                        test_overlap_dict.update({unique : float(extract)})
                   
-              if in_dict is False:
+                    elif convention == 'commas':
+                    
+                      if self.is_number_comma(extract):
 
-                test_overlap_dict.update({unique : np.nan})
+                        test_overlap_dict.update({unique : float(extract.replace(',',''))})
+                        
+                    elif convention == 'spaces':
+                    
+                      if self.is_number_EU(extract):
 
-#     test_overlap_dict = deepcopy(overlap_dict)
-    
-#     for test_unique in extra_test_unique:
-#       test_overlap_dict.update({str(test_unique) : np.nan})
-    
-    mdf_test[column + '_nmr7'] = mdf_test[column].astype(str)
-    mdf_test[column + '_nmr7'] = mdf_test[column + '_nmr7'].replace(test_overlap_dict)
-    
-    #replace missing data with training set mean as default infill
-    mdf_test[column + '_nmr7'] = mdf_test[column + '_nmr7'].fillna(mean)
-    
-    return mdf_test
-  
-  def postprocess_nmc4_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
-    """
-    #process_nmr4_class(df, column, category, postprocess_dict)
-    #parses string entries and if any numbers present returns numbers
-    #entries without numbers present subject to infill
-    #assumes set of entries in test data is same or subset of train data for
-    #more efficient postmunge than vs nmc
-    """
-    
-    #get normkey
-    normkey = column + '_nmc4'
-    
-    #retrieve normalization parameters
-    mean = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
+                        test_overlap_dict.update({unique : float(extract[0] + extract[1:-1].replace(' ','').replace('.','').replace(',','.') + extract[-1])})
 
-    unique_list = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['unique_list']
-    
-    overlap_dict = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['overlap_dict']
+              #else if overlap_length == 1    
+              else:
 
-    #note this assumes that set of entries for test data is same or a subset of train data
-    #any entries not present will be subject to default infill (mean)
-    #note that getNArows will not capture these infill for infill with assigninfill
+                nbr_iterations = len_unique - overlap_length
+
+                in_dict = False
+
+                for i in range(nbr_iterations + 1):
+
+                  if unique not in test_overlap_dict:
+
+                    extract = unique[i:(overlap_length+i)]
+
+    #                 extract_already_in_overlap_dict = False
+                    
+                    if self.is_number(extract):
+
+                      in_dict = True
+
+                      test_overlap_dict.update({unique : float(extract)})
+
+                if in_dict is False:
+
+                  test_overlap_dict.update({unique : np.nan})
     
-    test_unique_list = list(mdf_test[column].unique())
-    test_unique_list = list(map(str, test_unique_list))
-    extra_test_unique = list(set(test_unique_list) - set(unique_list))
-    
-    test_overlap_dict = deepcopy(overlap_dict)
-    for test_unique in extra_test_unique:
-      test_overlap_dict.update({str(test_unique) : np.nan})
-    
-    mdf_test[column + '_nmc4'] = mdf_test[column].astype(str)
-    mdf_test[column + '_nmc4'] = mdf_test[column + '_nmc4'].replace(test_overlap_dict)
+    #great now that test_overlap_dict is populated
+    mdf_test[nmrc_column] = mdf_test[nmrc_column].astype(str)
+    mdf_test[nmrc_column] = mdf_test[nmrc_column].replace(test_overlap_dict)
     
     #replace missing data with training set mean as default infill
-    mdf_test[column + '_nmc4'] = mdf_test[column + '_nmc4'].fillna(mean)
+    mdf_test[nmrc_column] = mdf_test[nmrc_column].fillna(mean)
     
-    return mdf_test
-  
-  def postprocess_nmc7_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
-    """
-    #process_nmr7_class(df, column, category, postprocess_dict)
-    #parses string entries and if any numbers present returns numbers
-    #entries without numbers present subject to infill
-    #comparable to nmc4 but instead of making blanket assumption that unique values in
-    #test set are found in train set, implements parsing for test set entries not found in train set
-    """
-    
-    #get normkey
-    normkey = column + '_nmc7'
-    
-    #retrieve normalization parameters
-    mean = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
-
-    unique_list = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['unique_list']
-    
-    overlap_dict = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['overlap_dict']
-    
-    maxlength = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['maxlength']
-    
-    #note this assumes that set of entries for test data is same or a subset of train data
-    #any entries not present will be subject to default infill (mean)
-    #note that getNArows will not capture these infill for infill with assigninfill
-    
-    test_unique_list = list(mdf_test[column].unique())
-    test_unique_list = list(map(str, test_unique_list))
-    extra_test_unique = list(set(test_unique_list) - set(unique_list))
-    
-    test_overlap_dict = deepcopy(overlap_dict)
-#     for test_unique in extra_test_unique:
-#       test_overlap_dict.update({str(test_unique) : np.nan})
-
-#     unique_list = list(mdf_train[column].unique())
-
-#     unique_list = list(map(str, unique_list))
-    
-    testmaxlength = max(len(x) for x in unique_list)
-    
-    if testmaxlength > maxlength:
-      maxlength = testmaxlength
-    
-    overlap_lengths = list(range(maxlength, 0, -1))
-
-#     overlap_dict = {}
-    
-    for overlap_length in overlap_lengths:
-
-      for unique in extra_test_unique:
-        
-        if unique not in test_overlap_dict:
-
-          len_unique = len(unique)
-
-          if len_unique >= overlap_length:
-            
-            if overlap_length > 1:
-
-              nbr_iterations = len_unique - overlap_length
-
-              for i in range(nbr_iterations + 1):
-                
-                if unique not in test_overlap_dict:
-
-                  extract = unique[i:(overlap_length+i)]
-
-  #                 extract_already_in_overlap_dict = False
-
-                  if self.is_number_comma(extract):
-
-                    test_overlap_dict.update({unique : float(extract.replace(',',''))})
-                
-            #else if overlap_length == 1    
-            else:
-              
-              nbr_iterations = len_unique - overlap_length
-              
-              in_dict = False
-
-              for i in range(nbr_iterations + 1):
-                
-                if unique not in test_overlap_dict:
-
-                  extract = unique[i:(overlap_length+i)]
-
-  #                 extract_already_in_overlap_dict = False
-
-                  if self.is_number_comma(extract):
-
-                    in_dict = True
-
-                    test_overlap_dict.update({unique : float(extract.replace(',',''))})
-                  
-              if in_dict is False:
-
-                test_overlap_dict.update({unique : np.nan})
-    
-    mdf_test[column + '_nmc7'] = mdf_test[column].astype(str)
-    mdf_test[column + '_nmc7'] = mdf_test[column + '_nmc7'].replace(test_overlap_dict)
-
-    #replace missing data with training set mean as default infill
-    mdf_test[column + '_nmc7'] = mdf_test[column + '_nmc7'].fillna(mean)
-        
-    return mdf_test
-  
-  def postprocess_nmE4_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
-    """
-    #process_nmE4_class(df, column, category, postprocess_dict)
-    #the check for numbers strips periods/spaces and replaces commas with periods
-    #such as to recognize international format
-    #entries without numbers present subject to infill
-    #assumes set of entries in test data is same or subset of train data for
-    #more efficient postmunge than vs nmc
-    """
-    
-    #get normkey
-    normkey = column + '_nmE4'
-    
-    #retrieve normalization parameters
-    mean = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
-
-    unique_list = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['unique_list']
-    
-    overlap_dict = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['overlap_dict']
-
-    #note this assumes that set of entries for test data is same or a subset of train data
-    #any entries not present will be subject to default infill (mean)
-    #note that getNArows will not capture these infill for infill with assigninfill
-    
-    test_unique_list = list(mdf_test[column].unique())
-    test_unique_list = list(map(str, test_unique_list))
-    extra_test_unique = list(set(test_unique_list) - set(unique_list))
-    
-    test_overlap_dict = deepcopy(overlap_dict)
-    for test_unique in extra_test_unique:
-      test_overlap_dict.update({str(test_unique) : np.nan})
-    
-    mdf_test[column + '_nmE4'] = mdf_test[column].astype(str)
-    mdf_test[column + '_nmE4'] = mdf_test[column + '_nmE4'].replace(test_overlap_dict)
-    
-    #replace missing data with training set mean as default infill
-    mdf_test[column + '_nmE4'] = mdf_test[column + '_nmE4'].fillna(mean)
-    
-    return mdf_test
-  
-  def postprocess_nmE7_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
-    """
-    #process_nmE7_class(df, column, category, postprocess_dict)
-    #parses string entries and if any numbers present returns numbers
-    #entries without numbers present subject to infill
-    #comparable to nmE4 but instead of making blanket assumption that unique values in
-    #test set are found in train set, implements parsing for test set entries not found in train set
-    """
-    
-    #get normkey
-    normkey = column + '_nmE7'
-    
-    #retrieve normalization parameters
-    mean = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
-
-    unique_list = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['unique_list']
-    
-    overlap_dict = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['overlap_dict']
-    
-    maxlength = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['maxlength']
-
-    #note this assumes that set of entries for test data is same or a subset of train data
-    #any entries not present will be subject to default infill (mean)
-    #note that getNArows will not capture these infill for infill with assigninfill
-    
-    test_unique_list = list(mdf_test[column].unique())
-    test_unique_list = list(map(str, test_unique_list))
-    extra_test_unique = list(set(test_unique_list) - set(unique_list))
-    
-    test_overlap_dict = deepcopy(overlap_dict)
-#     for test_unique in extra_test_unique:
-#       test_overlap_dict.update({str(test_unique) : np.nan})
-
-
-#     unique_list = list(mdf_train[column].unique())
-
-#     unique_list = list(map(str, unique_list))
-    
-    testmaxlength = max(len(x) for x in unique_list)
-    
-    if testmaxlength > maxlength:
-      maxlength = testmaxlength
-    
-    overlap_lengths = list(range(maxlength, 0, -1))
-
-#     overlap_dict = {}
-    
-    for overlap_length in overlap_lengths:
-
-      for unique in extra_test_unique:
-        
-        if unique not in test_overlap_dict:
-
-          len_unique = len(unique)
-
-          if len_unique >= overlap_length:
-            
-            if overlap_length > 1:
-
-              nbr_iterations = len_unique - overlap_length
-
-              for i in range(nbr_iterations + 1):
-                
-                if unique not in test_overlap_dict:
-
-                  extract = unique[i:(overlap_length+i)]
-
-  #                 extract_already_in_overlap_dict = False
-
-                  if self.is_number_EU(extract):
-
-                    test_overlap_dict.update({unique : float(extract[0] + extract[1:-1].replace(' ','').replace('.','').replace(',','.') + extract[-1])})
-                
-            #else if overlap_length == 1    
-            else:
-              
-              nbr_iterations = len_unique - overlap_length
-              
-              in_dict = False
-
-              for i in range(nbr_iterations + 1):
-                
-                if unique not in test_overlap_dict:
-
-                  extract = unique[i:(overlap_length+i)]
-
-  #                 extract_already_in_overlap_dict = False
-
-                  if self.is_number_EU(extract):
-
-                    in_dict = True
-
-                    test_overlap_dict.update({unique : float(extract[0] + extract[1:-1].replace(' ','').replace('.','').replace(',','.') + extract[-1])})
-                  
-              if in_dict is False:
-
-                test_overlap_dict.update({unique : np.nan})
-  
-    mdf_test[column + '_nmE7'] = mdf_test[column].astype(str)
-    mdf_test[column + '_nmE7'] = mdf_test[column + '_nmE7'].replace(test_overlap_dict)
-  
-    #replace missing data with training set mean as default infill
-    mdf_test[column + '_nmE7'] = mdf_test[column + '_nmE7'].fillna(mean)
-        
     return mdf_test
   
   def postprocess_ordl_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
@@ -32508,1238 +29163,191 @@ class AutoMunge:
     
     return mdf_test
 
-  def postprocess_year_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
-
-    '''
-    #postprocess_year_class(mdf_test, column, postprocess_dict, columnkey)
-    #postprocess test column with of date category
-    #takes as arguement pandas dataframe containing test data 
-    #(mdf_test), the name of the column string ('column'), and the timenormalization_dict 
-    #from the original application of automunge to the associated date column from train set
-    #(saved in the postprocess_dict)
-    #retains the original column from master dataframe and
-    #adds distinct columns for year
-    #z score normalized to the mean and std from original train set, 
-    #with missing values plugged with the mean
-    #with columns named after column_ + time category
-    #returns mdf_test
-    '''
+  def postprocess_tmsc_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+    """
+    #time data segregated by time scale
+    #with sin or cos applied to address periodicity
+    #such as may be useful to return both by seperate transformation categories
+    #accepts parameter 'scale' to distinguish between year/month/day/hour/minute/second
+    #note that some scales can be returned combined by passing 
+    #monthday/dayhourminute/hourminutesecond/minutesecond
+    #accepts parameter 'suffix' for returned column header suffix
+    #accets parameter 'function' to distinguish between sin/cos
+    """
     
-    #retrieve normalization parameters from postprocess_dict
-    datekey = column + '_year'
+    if 'suffix' in params:
+      #accepts column header suffix appender
+      suffix = params['suffix']
+    else:
+      suffix = '_mdsn'
+      
+    time_column = column + suffix
     
-    meanyear = \
-    postprocess_dict['column_dict'][datekey]['normalization_dict'][datekey]['meanyear']
+    scale = \
+    postprocess_dict['column_dict'][time_column]['normalization_dict'][time_column]['scale']
+    function = \
+    postprocess_dict['column_dict'][time_column]['normalization_dict'][time_column]['function']
     
-    stdyear = \
-    postprocess_dict['column_dict'][datekey]['normalization_dict'][datekey]['stdyear']
-
-    #create copy of original column
-    mdf_test[column + '_year'] = mdf_test[column].copy()
-
+    mdf_test[time_column] = mdf_test[column].copy()
+    
     #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
-    mdf_test[column + '_year'] = pd.to_datetime(mdf_test[column + '_year'], errors = 'coerce')
+    mdf_test[time_column] = pd.to_datetime(mdf_test[time_column], errors = 'coerce')
+    
+    #access time scale from one of year/month/day/hour/minute/second
+    #monthday/dayhourminute/hourminutesecond/minutesecond
+    if scale == 'year':
+      mdf_test[time_column] = mdf_test[time_column].dt.year
+      
+      #we'll scale periodicity by decade
+      mdf_test[time_column] = (mdf_test[time_column]) * 2 * np.pi / 10
+      
+    elif scale == 'month':
+      mdf_test[time_column] = mdf_test[time_column].dt.month
+      
+      #we'll scale periodicity by year
+      mdf_test[time_column] = (mdf_test[time_column]) * 2 * np.pi / 12
+      
+    elif scale == 'day':
+      mdf_test[time_column] = mdf_test[time_column].dt.day
+      
+      #we'll scale periodicity by week
+      mdf_test[time_column] = (mdf_test[time_column]) * 2 * np.pi / 7
+      
+    elif scale == 'hour':
+      mdf_test[time_column] = mdf_test[time_column].dt.hour
+      
+      #we'll scale periodicity by day
+      mdf_test[time_column] = (mdf_test[time_column]) * 2 * np.pi / 24
+      
+    elif scale == 'minute':
+      mdf_test[time_column] = mdf_test[time_column].dt.minute
+      
+      #we'll scale periodicity by hour
+      mdf_test[time_column] = (mdf_test[time_column]) * 2 * np.pi / 60
+      
+    elif scale == 'second':
+      mdf_test[time_column] = mdf_test[time_column].dt.second
+      
+      #we'll scale periodicity by minute
+      mdf_test[time_column] = (mdf_test[time_column]) * 2 * np.pi / 60
+      
+    elif scale == 'monthday':
+      tempcolumn1 = time_column + '_tmp1'
+      tempcolumn2 = time_column + '_tmp2'
+      
+      #temp1 is for number of days in month, temp2 is to handle leap year support
+      
+      mdf_test[tempcolumn1] = mdf_test[time_column].copy()
+      mdf_test[tempcolumn2] = mdf_test[time_column].copy()
+      
+      mdf_test[tempcolumn1] = mdf_test[tempcolumn1].dt.month
+      mdf_test[tempcolumn2] = mdf_test[tempcolumn2].dt.is_leap_year
+      
+      mdf_test[tempcolumn2] = \
+      np.where(mdf_test[tempcolumn2], 29, 28)
+      
+      mdf_test[tempcolumn1] = \
+      np.where(mdf_test[tempcolumn1].isin([1,3,5,7,8,10,12]), 31, mdf_test[tempcolumn1].values)
+      
+      mdf_test[tempcolumn1] = \
+      np.where(mdf_test[tempcolumn1].isin([4,6,9,11]), 30, mdf_test[tempcolumn1].values)
+      
+      mdf_test[tempcolumn1] = \
+      np.where(mdf_test[tempcolumn1].isin([2]), mdf_test[tempcolumn2], \
+      mdf_test[tempcolumn1].values)
+      
+      #combine month and day, scale for trigonomic transform, periodicity by year
+      mdf_test[time_column] = (mdf_test[time_column].dt.month + mdf_test[time_column].dt.day / \
+      mdf_test[tempcolumn1]) * 2 * np.pi / 12
+      
+      #delete the support columns
+      del mdf_test[tempcolumn1]
+      del mdf_test[tempcolumn2]
+      
+    elif scale == 'dayhourminute':
+      #we'll scale periodicity by week
+      mdf_test[time_column] = (mdf_test[time_column].dt.day + mdf_test[time_column].dt.hour / 24 + mdf_test[time_column].dt.minute / 24 / 60) * 2 * np.pi / 7
 
-    #mdf_train[column].replace(-np.Inf, np.nan)
-    #mdf_test[column].replace(-np.Inf, np.nan)
+    elif scale == 'hourminutesecond':
+      #we'll scale periodicity by day
+      mdf_test[time_column] = (mdf_test[time_column].dt.hour + mdf_test[time_column].dt.minute / 60 + mdf_test[time_column].dt.second / 60 / 60) * 2 * np.pi / 24
 
-    #grab year entries for test set
-    mdf_test[column + '_year'] = mdf_test[column + '_year'].dt.year
-
-    #replace missing data with training set mean
-    mdf_test[column + '_year'] = mdf_test[column + '_year'].fillna(meanyear)
-
-    #subtract mean from column for both train and test
-    mdf_test[column + '_year'] = mdf_test[column + '_year'] - meanyear
-
-    #divide column values by std for both training and test data
-    mdf_test[column + '_year'] = mdf_test[column + '_year'] / stdyear
-
-#     #now replace NaN with 0
-#     mdf_test[column + '_year'] = mdf_test[column + '_year'].fillna(0)
-
-#     #change data type for memory savings
-#     mdf_test[column + '_year'] = mdf_test[column + '_year'].astype(np.float32)
-
+    elif scale == 'minutesecond':
+      #we'll scale periodicity by hour
+      mdf_test[time_column] = (mdf_test[time_column].dt.minute + mdf_test[time_column].dt.second / 60) * 2 * np.pi / 60
+      
+    #default infill is adjacent cell
+    mdf_test[time_column] = mdf_test[time_column].fillna(method='ffill')
+    mdf_test[time_column] = mdf_test[time_column].fillna(method='bfill')
+    
+    #backup default infill for cases without valid entries
+    mdf_test[time_column] = mdf_test[time_column].fillna(0)
+    
+    #apply trigometric transform
+    
+    if function == 'sin':
+      mdf_test[time_column] = np.sin(mdf_test[time_column])
+      
+    if function == 'cos':
+      mdf_test[time_column] = np.cos(mdf_test[time_column])
+      
     return mdf_test
 
-  def postprocess_mnth_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
-
-    '''
-    #postprocess_mnth_class(mdf_test, column, postprocess_dict, columnkey)
-    #postprocess test column with of date category
-    #takes as arguement pandas dataframe containing test data 
-    #(mdf_test), the name of the column string ('column'), and the timenormalization_dict 
-    #from the original application of automunge to the associated date column from train set
-    #(saved in the postprocess_dict)
-    #retains the original column from master dataframe and
-    #adds distinct columns for year
-    #z score normalized to the mean and std from original train set, 
-    #with missing values plugged with the mean
-    #with columns named after column_ + time category
-    #returns mdf_test
-    '''
+  def postprocess_time_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+    """
+    #z-score normalized time data segregated by a particular time scale
+    #accepts parameter 'scale' to distinguish between year/month/day/hour/minute/second
+    #accepts parameter 'suffix' for returned column header suffix
+    #accepts parameter 'normalization' to distinguish between zscore/minmax/unscaled
+    """
     
-    #retrieve normalization parameters from postprocess_dict
-    datekey = column + '_mnth'
+    if 'suffix' in params:
+      #accepts column header suffix appender
+      suffix = params['suffix']
+    else:
+      suffix = '_year'
     
-    meanmonth = \
-    postprocess_dict['column_dict'][datekey]['normalization_dict'][datekey]['meanmonth']
+    time_column = column + suffix
     
-    stdmonth = \
-    postprocess_dict['column_dict'][datekey]['normalization_dict'][datekey]['stdmonth']
-
-    #create copy of original column
-    mdf_test[column + '_mnth'] = mdf_test[column].copy()
-
+    scale = \
+    postprocess_dict['column_dict'][time_column]['normalization_dict'][time_column]['scale']
+    normalization = \
+    postprocess_dict['column_dict'][time_column]['normalization_dict'][time_column]['normalization']
+    scaler = \
+    postprocess_dict['column_dict'][time_column]['normalization_dict'][time_column]['scaler']
+    divisor = \
+    postprocess_dict['column_dict'][time_column]['normalization_dict'][time_column]['divisor']
+    
+    mdf_test[time_column] = mdf_test[column].copy()
+    
     #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
-    mdf_test[column + '_mnth'] = pd.to_datetime(mdf_test[column + '_mnth'], errors = 'coerce')
-
-    #mdf_train[column].replace(-np.Inf, np.nan)
-    #mdf_test[column].replace(-np.Inf, np.nan)
-
-    #grab month entries for test set
-    mdf_test[column + '_mnth'] = mdf_test[column + '_mnth'].dt.month
-
-    #replace missing data with training set mean
-    mdf_test[column + '_mnth'] = mdf_test[column + '_mnth'].fillna(meanmonth)
-
-    #subtract mean from column for both train and test
-    mdf_test[column + '_mnth'] = mdf_test[column + '_mnth'] - meanmonth
-
-
-    #divide column values by std for both training and test data
-    mdf_test[column + '_mnth'] = mdf_test[column + '_mnth'] / stdmonth
-
-#     #now replace NaN with 0
-#     mdf_test[column + '_mnth'] = mdf_test[column + '_mnth'].fillna(0)
-
-#     #change data type for memory savings
-#     mdf_test[column + '_mnth'] = mdf_test[column + '_mnth'].astype(np.float32)
-
-    return mdf_test
-
-  def postprocess_mnsn_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
-
-    '''
-    #postprocess_mnsn_class(mdf_test, column, postprocess_dict, columnkey)
-    #postprocess test column with of date category
-    #takes as arguement pandas dataframe containing test data 
-    #(mdf_test), the name of the column string ('column'), and the timenormalization_dict 
-    #from the original application of automunge to the associated date column from train set
-    #(saved in the postprocess_dict)
-    #retains the original column from master dataframe and
-    #adds distinct columns for month
-    #with sin transform, 
-    #with missing values plugged with the mean from train set after sin transform
-    #with columns named after column_ + time category
-    #returns mdf_test
-    '''
-    
-    #retrieve normalization parameters from postprocess_dict
-    datekey = column + '_mnsn'
-    
-    mean_mnsn = \
-    postprocess_dict['column_dict'][datekey]['normalization_dict'][datekey]['mean_mnsn']
-
-    #create copy of original column
-    mdf_test[column + '_mnsn'] = mdf_test[column].copy()
-
-    #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
-    mdf_test[column + '_mnsn'] = pd.to_datetime(mdf_test[column + '_mnsn'], errors = 'coerce')
-
-    #mdf_train[column].replace(-np.Inf, np.nan)
-    #mdf_test[column].replace(-np.Inf, np.nan)
-
-    #grab month entries for test set
-    mdf_test[column + '_mnsn'] = mdf_test[column + '_mnsn'].dt.month
-    
-    #apply sin transform
-    mdf_test[column + '_mnsn'] = np.sin(mdf_test[column + '_mnsn'] * 2 * np.pi / 12 )
-
-    #replace missing data with training set mean
-    mdf_test[column + '_mnsn'] = mdf_test[column + '_mnsn'].fillna(mean_mnsn)
-    
-#     #change data type for memory savings
-#     mdf_test[column + '_mnsn'] = mdf_test[column + '_mnsn'].astype(np.float32)
-    
-    return mdf_test
-  
-  def postprocess_mncs_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
-
-    '''
-    #postprocess_mncs_class(mdf_test, column, postprocess_dict, columnkey)
-    #postprocess test column with of date category
-    #takes as arguement pandas dataframe containing test data 
-    #(mdf_test), the name of the column string ('column'), and the timenormalization_dict 
-    #from the original application of automunge to the associated date column from train set
-    #(saved in the postprocess_dict)
-    #retains the original column from master dataframe and
-    #adds distinct columns for month
-    #with cos transform, 
-    #with missing values plugged with the mean from train set after sin transform
-    #with columns named after column_ + time category
-    #returns mdf_test
-    '''
-    
-    #retrieve normalization parameters from postprocess_dict
-    datekey = column + '_mncs'
-    
-    mean_mncs = \
-    postprocess_dict['column_dict'][datekey]['normalization_dict'][datekey]['mean_mncs']
-
-    #create copy of original column
-    mdf_test[column + '_mncs'] = mdf_test[column].copy()
-
-    #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
-    mdf_test[column + '_mncs'] = pd.to_datetime(mdf_test[column + '_mncs'], errors = 'coerce')
-
-    #mdf_train[column].replace(-np.Inf, np.nan)
-    #mdf_test[column].replace(-np.Inf, np.nan)
-
-    #grab month entries for test set
-    mdf_test[column + '_mncs'] = mdf_test[column + '_mncs'].dt.month
-    
-    #apply cos transform
-    mdf_test[column + '_mncs'] = np.cos(mdf_test[column + '_mncs'] * 2 * np.pi / 12 )
-
-    #replace missing data with training set mean
-    mdf_test[column + '_mncs'] = mdf_test[column + '_mncs'].fillna(mean_mncs)
-    
-#     #change data type for memory savings
-#     mdf_test[column + '_mncs'] = mdf_test[column + '_mncs'].astype(np.float32)
-    
-    return mdf_test
-
-  def postprocess_mdsn_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
-
-    '''
-    #postprocess_mdsn_class(mdf_test, column, postprocess_dict, columnkey)
-    #postprocess test column with of date category
-    #takes as arguement pandas dataframe containing test data 
-    #(mdf_test), the name of the column string ('column'), and the timenormalization_dict 
-    #from the original application of automunge to the associated date column from train set
-    #(saved in the postprocess_dict)
-    #retains the original column from master dataframe and
-    #adds combined columns for month and day
-    #with sin transform, 
-    #with missing values plugged with the mean from train set after sin transform
-    #with columns named after column_ + time category
-    #returns mdf_test
-    '''
-    
-    #retrieve normalization parameters from postprocess_dict
-    datekey = column + '_mdsn'
-    
-    mean_mdsn = \
-    postprocess_dict['column_dict'][datekey]['normalization_dict'][datekey]['mean_mdsn']
-
-    #create copy of original column
-    mdf_test[column + '_mdsn'] = mdf_test[column].copy()
-
-    #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
-    mdf_test[column + '_mdsn'] = pd.to_datetime(mdf_test[column + '_mdsn'], errors = 'coerce')
-
-    #mdf_train[column].replace(-np.Inf, np.nan)
-    #mdf_test[column].replace(-np.Inf, np.nan)
-
-#     #grab month entries for test set
-#     mdf_test[column + '_mdsn'] = mdf_test[column + '_mdsn'].dt.month
-
-    #convert months to number of days in a temp column to support periodicity trasnform
-
-    mdf_test[column + '_mdsn' + '_temp'] = mdf_test[column + '_mdsn'].copy()
-    mdf_test[column + '_mdsn' + '_temp_leap'] = mdf_test[column + '_mdsn'].copy()
-
-    mdf_test[column + '_mdsn' + '_temp'] = mdf_test[column + '_mdsn' + '_temp'].dt.month
-    mdf_test[column + '_mdsn' + '_temp_leap'] = mdf_test[column + '_mdsn' + '_temp_leap'].dt.is_leap_year
-
-    mdf_test[column + '_mdsn' + '_temp_leap'] = \
-    np.where(mdf_test[column + '_mdsn' + '_temp_leap'], 29, 28)
-    
-    mdf_test[column + '_mdsn' + '_temp'] = \
-    np.where(mdf_test[column + '_mdsn' + '_temp'].isin([1,3,5,7,8,10,12]), 31, mdf_test[column + '_mdsn' + '_temp'].values)
-
-    mdf_test[column + '_mdsn' + '_temp'] = \
-    np.where(mdf_test[column + '_mdsn' + '_temp'].isin([4,6,9,11]), 30, mdf_test[column + '_mdsn' + '_temp'].values)
-
-    mdf_test[column + '_mdsn' + '_temp'] = \
-    np.where(mdf_test[column + '_mdsn' + '_temp'].isin([2]), mdf_test[column + '_mdsn' + '_temp_leap'], \
-    mdf_test[column + '_mdsn' + '_temp'].values)
-
-    mdf_test[column + '_mdsn' + '_temp'] = \
-    np.where(mdf_test[column + '_mdsn' + '_temp'].isin([28,29,30,31]), mdf_test[column + '_mdsn' + '_temp'].values, 30.42)
-    
-    #apply sin transform to combined day and month, note average of 30.42 days in a month, 12 months in a year
-    mdf_test[column + '_mdsn'] = np.sin((mdf_test[column + '_mdsn'].dt.month + mdf_test[column + '_mdsn'].dt.day / \
-    mdf_test[column + '_mdsn' + '_temp']) * 2 * np.pi / 12 )
-
-    #delete the support column
-    del mdf_test[column + '_mdsn' + '_temp']
-    del mdf_test[column + '_mdsn' + '_temp_leap']
-
-    #replace missing data with training set mean
-    mdf_test[column + '_mdsn'] = mdf_test[column + '_mdsn'].fillna(mean_mdsn)
-    
-#     #change data type for memory savings
-#     mdf_test[column + '_mdsn'] = mdf_test[column + '_mdsn'].astype(np.float32)
-    
-    return mdf_test
-  
-  def postprocess_mdcs_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
-
-    '''
-    #postprocess_mdsn_class(mdf_test, column, postprocess_dict, columnkey)
-    #postprocess test column with of date category
-    #takes as arguement pandas dataframe containing test data 
-    #(mdf_test), the name of the column string ('column'), and the timenormalization_dict 
-    #from the original application of automunge to the associated date column from train set
-    #(saved in the postprocess_dict)
-    #retains the original column from master dataframe and
-    #adds combined columns for month and day
-    #with cos transform, 
-    #with missing values plugged with the mean from train set after sin transform
-    #with columns named after column_ + time category
-    #returns mdf_test
-    '''
-    
-    #retrieve normalization parameters from postprocess_dict
-    datekey = column + '_mdcs'
-    
-    mean_mdcs = \
-    postprocess_dict['column_dict'][datekey]['normalization_dict'][datekey]['mean_mdcs']
-
-    #create copy of original column
-    mdf_test[column + '_mdcs'] = mdf_test[column].copy()
-
-    #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
-    mdf_test[column + '_mdcs'] = pd.to_datetime(mdf_test[column + '_mdcs'], errors = 'coerce')
-
-    #mdf_train[column].replace(-np.Inf, np.nan)
-    #mdf_test[column].replace(-np.Inf, np.nan)
-
-#     #grab month entries for test set
-#     mdf_test[column + '_mdsn'] = mdf_test[column + '_mdsn'].dt.month
-
-    #convert months to number of days in a temp column to support periodicity trasnform
-
-    mdf_test[column + '_mdcs' + '_temp'] = mdf_test[column + '_mdcs'].copy()
-    mdf_test[column + '_mdcs' + '_temp_leap'] = mdf_test[column + '_mdcs'].copy()
-
-    mdf_test[column + '_mdcs' + '_temp'] = mdf_test[column + '_mdcs' + '_temp'].dt.month
-    mdf_test[column + '_mdcs' + '_temp_leap'] = mdf_test[column + '_mdcs' + '_temp_leap'].dt.is_leap_year
-
-    mdf_test[column + '_mdcs' + '_temp_leap'] = \
-    np.where(mdf_test[column + '_mdcs' + '_temp_leap'], 29, 28)
-    
-    mdf_test[column + '_mdcs' + '_temp'] = \
-    np.where(mdf_test[column + '_mdcs' + '_temp'].isin([1,3,5,7,8,10,12]), 31, mdf_test[column + '_mdcs' + '_temp'].values)
-
-    mdf_test[column + '_mdcs' + '_temp'] = \
-    np.where(mdf_test[column + '_mdcs' + '_temp'].isin([4,6,9,11]), 30, mdf_test[column + '_mdcs' + '_temp'].values)
-
-    mdf_test[column + '_mdcs' + '_temp'] = \
-    np.where(mdf_test[column + '_mdcs' + '_temp'].isin([2]), mdf_test[column + '_mdcs' + '_temp_leap'], \
-    mdf_test[column + '_mdcs' + '_temp'].values)
-
-    mdf_test[column + '_mdcs' + '_temp'] = \
-    np.where(mdf_test[column + '_mdcs' + '_temp'].isin([28,29,30,31]), mdf_test[column + '_mdcs' + '_temp'].values, 30.42)
-    
-    #apply sin transform to combined day and month, note average of 30.42 days in a month, 12 months in a year
-    mdf_test[column + '_mdcs'] = np.cos((mdf_test[column + '_mdcs'].dt.month + mdf_test[column + '_mdcs'].dt.day / \
-    mdf_test[column + '_mdcs' + '_temp']) * 2 * np.pi / 12 )
-
-    #delete support column
-    del mdf_test[column + '_mdcs' + '_temp']
-    del mdf_test[column + '_mdcs' + '_temp_leap']
-
-    #replace missing data with training set mean
-    mdf_test[column + '_mdcs'] = mdf_test[column + '_mdcs'].fillna(mean_mdcs)
-    
-#     #change data type for memory savings
-#     mdf_test[column + '_mdcs'] = mdf_test[column + '_mdcs'].astype(np.float32)
-    
-    return mdf_test
-  
-  def postprocess_days_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
-
-    '''
-    #postprocess_days_class(mdf_test, column, postprocess_dict, columnkey)
-    #postprocess test column with of date category
-    #takes as arguement pandas dataframe containing test data 
-    #(mdf_test), the name of the column string ('column'), and the timenormalization_dict 
-    #from the original application of automunge to the associated date column from train set
-    #(saved in the postprocess_dict)
-    #retains the original column from master dataframe and
-    #adds distinct columns for days
-    #z score normalized to the mean and std from original train set, 
-    #with missing values plugged with the mean
-    #with columns named after column_ + time category
-    #returns mdf_test
-    '''
-    
-    #retrieve normalization parameters from postprocess_dict
-    datekey = column + '_days'
-    
-    meanday = \
-    postprocess_dict['column_dict'][datekey]['normalization_dict'][datekey]['meanday']
-    
-    stdday = \
-    postprocess_dict['column_dict'][datekey]['normalization_dict'][datekey]['stdday']
-
-    #create copy of original column
-    mdf_test[column + '_days'] = mdf_test[column].copy()
-
-    #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
-    mdf_test[column + '_days'] = pd.to_datetime(mdf_test[column + '_days'], errors = 'coerce')
-
-    #mdf_train[column].replace(-np.Inf, np.nan)
-    #mdf_test[column].replace(-np.Inf, np.nan)
-
-    #grab month entries for test set
-    mdf_test[column + '_days'] = mdf_test[column + '_days'].dt.day
-
-    #replace missing data with training set mean
-    mdf_test[column + '_days'] = mdf_test[column + '_days'].fillna(meanday)
-
-    #subtract mean from column for both train and test
-    mdf_test[column + '_days'] = mdf_test[column + '_days'] - meanday
-
-    #divide column values by std for both training and test data
-    mdf_test[column + '_days'] = mdf_test[column + '_days'] / stdday
-
-#     #now replace NaN with 0
-#     mdf_test[column + '_days'] = mdf_test[column + '_days'].fillna(0)
-
-#     #change data type for memory savings
-#     mdf_test[column + '_days'] = mdf_test[column + '_days'].astype(np.float32)
-
-    return mdf_test
-
-  def postprocess_dysn_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
-
-    '''
-    #postprocess_dysn_class(mdf_test, column, postprocess_dict, columnkey)
-    #postprocess test column with of date category
-    #takes as arguement pandas dataframe containing test data 
-    #(mdf_test), the name of the column string ('column'), and the timenormalization_dict 
-    #from the original application of automunge to the associated date column from train set
-    #(saved in the postprocess_dict)
-    #retains the original column from master dataframe and
-    #adds distinct columns for days
-    #with sin transform, 
-    #with missing values plugged with the mean from train set after sin transform
-    #with columns named after column_ + time category
-    #returns mdf_test
-    '''
-    
-    #retrieve normalization parameters from postprocess_dict
-    datekey = column + '_dysn'
-    
-    mean_dysn = \
-    postprocess_dict['column_dict'][datekey]['normalization_dict'][datekey]['mean_dysn']
-
-    #create copy of original column
-    mdf_test[column + '_dysn'] = mdf_test[column].copy()
-
-    #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
-    mdf_test[column + '_dysn'] = pd.to_datetime(mdf_test[column + '_dysn'], errors = 'coerce')
-
-    #mdf_train[column].replace(-np.Inf, np.nan)
-    #mdf_test[column].replace(-np.Inf, np.nan)
-
-    #grab month entries for test set
-    mdf_test[column + '_dysn'] = mdf_test[column + '_dysn'].dt.day
-    
-    #apply sin transform
-    #average number of days in a month is 30.42
-    #7 days in a week
-    mdf_test[column + '_dysn'] = np.sin(mdf_test[column + '_dysn'] * 2 * np.pi / 7 )
-
-    #replace missing data with training set mean
-    mdf_test[column + '_dysn'] = mdf_test[column + '_dysn'].fillna(mean_dysn)
-    
-#     #change data type for memory savings
-#     mdf_test[column + '_dysn'] = mdf_test[column + '_dysn'].astype(np.float32)
-    
-    return mdf_test
-  
-  def postprocess_dycs_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
-
-    '''
-    #postprocess_dycs_class(mdf_test, column, postprocess_dict, columnkey)
-    #postprocess test column with of date category
-    #takes as arguement pandas dataframe containing test data 
-    #(mdf_test), the name of the column string ('column'), and the timenormalization_dict 
-    #from the original application of automunge to the associated date column from train set
-    #(saved in the postprocess_dict)
-    #retains the original column from master dataframe and
-    #adds distinct columns for days
-    #with cos transform, 
-    #with missing values plugged with the mean from train set after sin transform
-    #with columns named after column_ + time category
-    #returns mdf_test
-    '''
-    
-    #retrieve normalization parameters from postprocess_dict
-    datekey = column + '_dycs'
-    
-    mean_dycs = \
-    postprocess_dict['column_dict'][datekey]['normalization_dict'][datekey]['mean_dycs']
-
-    #create copy of original column
-    mdf_test[column + '_dycs'] = mdf_test[column].copy()
-
-    #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
-    mdf_test[column + '_dycs'] = pd.to_datetime(mdf_test[column + '_dycs'], errors = 'coerce')
-
-    #mdf_train[column].replace(-np.Inf, np.nan)
-    #mdf_test[column].replace(-np.Inf, np.nan)
-
-    #grab month entries for test set
-    mdf_test[column + '_dycs'] = mdf_test[column + '_dycs'].dt.day
-    
-    #apply sin transform
-    #average number of days in a month is 30.42
-    #7 days in a week
-    mdf_test[column + '_dycs'] = np.cos(mdf_test[column + '_dycs'] * 2 * np.pi / 7 )
-
-    #replace missing data with training set mean
-    mdf_test[column + '_dycs'] = mdf_test[column + '_dycs'].fillna(mean_dycs)
-    
-#     #change data type for memory savings
-#     mdf_test[column + '_dycs'] = mdf_test[column + '_dycs'].astype(np.float32)
-    
-    return mdf_test
-  
-  def postprocess_dhms_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
-
-    '''
-    #postprocess_dhms_class(mdf_test, column, postprocess_dict, columnkey)
-    #postprocess test column with of date category
-    #takes as arguement pandas dataframe containing test data 
-    #(mdf_test), the name of the column string ('column'), and the timenormalization_dict 
-    #from the original application of automunge to the associated date column from train set
-    #(saved in the postprocess_dict)
-    #retains the original column from master dataframe and
-    #adds combined column for day, hours, and minutes
-    #with sin transform, 
-    #with missing values plugged with the mean from train set after sin transform
-    #with columns named after column_ + time category
-    #returns mdf_test
-    '''
-    
-    #retrieve normalization parameters from postprocess_dict
-    datekey = column + '_dhms'
-    
-    mean_dhms = \
-    postprocess_dict['column_dict'][datekey]['normalization_dict'][datekey]['mean_dhms']
-
-    #create copy of original column
-    mdf_test[column + '_dhms'] = mdf_test[column].copy()
-
-    #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
-    mdf_test[column + '_dhms'] = pd.to_datetime(mdf_test[column + '_dhms'], errors = 'coerce')
-
-    #mdf_train[column].replace(-np.Inf, np.nan)
-    #mdf_test[column].replace(-np.Inf, np.nan)
-
-#     #grab month entries for test set
-#     mdf_test[column + '_mdsn'] = mdf_test[column + '_mdsn'].dt.month
-    
-    #apply sin transform to combined day hour minute
-    #7 days in a week
-    mdf_test[column + '_dhms'] = np.sin((mdf_test[column + '_dhms'].dt.day + mdf_test[column + '_dhms'].dt.hour / 24 + mdf_test[column + '_dhms'].dt.minute / 24 / 60) * 2 * np.pi / 7 )
-  
-    #replace missing data with training set mean
-    mdf_test[column + '_dhms'] = mdf_test[column + '_dhms'].fillna(mean_dhms)
-    
-#     #change data type for memory savings
-#     mdf_test[column + '_dhms'] = mdf_test[column + '_dhms'].astype(np.float32)
-    
-    return mdf_test
-  
-  def postprocess_dhmc_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
-
-    '''
-    #postprocess_dhmc_class(mdf_test, column, postprocess_dict, columnkey)
-    #postprocess test column with of date category
-    #takes as arguement pandas dataframe containing test data 
-    #(mdf_test), the name of the column string ('column'), and the timenormalization_dict 
-    #from the original application of automunge to the associated date column from train set
-    #(saved in the postprocess_dict)
-    #retains the original column from master dataframe and
-    #adds combined column for day, hours, and minutes
-    #with cos transform, 
-    #with missing values plugged with the mean from train set after sin transform
-    #with columns named after column_ + time category
-    #returns mdf_test
-    '''
-    
-    #retrieve normalization parameters from postprocess_dict
-    datekey = column + '_dhmc'
-    
-    mean_dhmc = \
-    postprocess_dict['column_dict'][datekey]['normalization_dict'][datekey]['mean_dhmc']
-
-    #create copy of original column
-    mdf_test[column + '_dhmc'] = mdf_test[column].copy()
-
-    #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
-    mdf_test[column + '_dhmc'] = pd.to_datetime(mdf_test[column + '_dhmc'], errors = 'coerce')
-
-    #mdf_train[column].replace(-np.Inf, np.nan)
-    #mdf_test[column].replace(-np.Inf, np.nan)
-
-#     #grab month entries for test set
-#     mdf_test[column + '_mdsn'] = mdf_test[column + '_mdsn'].dt.month
-    
-    #apply sin transform to combined day hour minute
-    #7 days in. a week
-    mdf_test[column + '_dhmc'] = np.cos((mdf_test[column + '_dhmc'].dt.day + mdf_test[column + '_dhmc'].dt.hour / 24 + mdf_test[column + '_dhmc'].dt.minute / 24 / 60) * 2 * np.pi / 7 )
-  
-    #replace missing data with training set mean
-    mdf_test[column + '_dhmc'] = mdf_test[column + '_dhmc'].fillna(mean_dhmc)
-    
-#     #change data type for memory savings
-#     mdf_test[column + '_dhmc'] = mdf_test[column + '_dhmc'].astype(np.float32)
-    
-    return mdf_test
-  
-  def postprocess_hour_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
-
-    '''
-    #postprocess_hour_class(mdf_test, column, postprocess_dict, columnkey)
-    #postprocess test column with of date category
-    #takes as arguement pandas dataframe containing test data 
-    #(mdf_test), the name of the column string ('column'), and the timenormalization_dict 
-    #from the original application of automunge to the associated date column from train set
-    #(saved in the postprocess_dict)
-    #retains the original column from master dataframe and
-    #adds distinct columns for hours
-    #z score normalized to the mean and std from original train set, 
-    #with missing values plugged with the mean
-    #with columns named after column_ + time category
-    #returns mdf_test
-    '''
-    
-    #retrieve normalization parameters from postprocess_dict
-    datekey = column + '_hour'
-    
-    meanhour = \
-    postprocess_dict['column_dict'][datekey]['normalization_dict'][datekey]['meanhour']
-    
-    stdhour = \
-    postprocess_dict['column_dict'][datekey]['normalization_dict'][datekey]['stdhour']
-
-    #create copy of original column
-    mdf_test[column + '_hour'] = mdf_test[column].copy()
-
-    #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
-    mdf_test[column + '_hour'] = pd.to_datetime(mdf_test[column + '_hour'], errors = 'coerce')
-
-    #mdf_train[column].replace(-np.Inf, np.nan)
-    #mdf_test[column].replace(-np.Inf, np.nan)
-
-    #grab month entries for test set
-    mdf_test[column + '_hour'] = mdf_test[column + '_hour'].dt.hour
-
-    #replace missing data with training set mean
-    mdf_test[column + '_hour'] = mdf_test[column + '_hour'].fillna(meanhour)
-
-    #subtract mean from column for both train and test
-    mdf_test[column + '_hour'] = mdf_test[column + '_hour'] - meanhour
-
-    #divide column values by std for both training and test data
-    mdf_test[column + '_hour'] = mdf_test[column + '_hour'] / stdhour
-
-#     #now replace NaN with 0
-#     mdf_test[column + '_days'] = mdf_test[column + '_days'].fillna(0)
-
-#     #change data type for memory savings
-#     mdf_test[column + '_hour'] = mdf_test[column + '_hour'].astype(np.float32)
-
-    return mdf_test
-
-  def postprocess_hrsn_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
-
-    '''
-    #postprocess_dysn_class(mdf_test, column, postprocess_dict, columnkey)
-    #postprocess test column with of date category
-    #takes as arguement pandas dataframe containing test data 
-    #(mdf_test), the name of the column string ('column'), and the timenormalization_dict 
-    #from the original application of automunge to the associated date column from train set
-    #(saved in the postprocess_dict)
-    #retains the original column from master dataframe and
-    #adds distinct columns for hours
-    #with sin transform, 
-    #with missing values plugged with the mean from train set after sin transform
-    #with columns named after column_ + time category
-    #returns mdf_test
-    '''
-    
-    #retrieve normalization parameters from postprocess_dict
-    datekey = column + '_hrsn'
-    
-    mean_hrsn = \
-    postprocess_dict['column_dict'][datekey]['normalization_dict'][datekey]['mean_hrsn']
-
-    #create copy of original column
-    mdf_test[column + '_hrsn'] = mdf_test[column].copy()
-
-    #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
-    mdf_test[column + '_hrsn'] = pd.to_datetime(mdf_test[column + '_hrsn'], errors = 'coerce')
-
-    #mdf_train[column].replace(-np.Inf, np.nan)
-    #mdf_test[column].replace(-np.Inf, np.nan)
-
-    #grab month entries for test set
-    mdf_test[column + '_hrsn'] = mdf_test[column + '_hrsn'].dt.hour
-    
-    #apply sin transform
-    #average number of hours in a day is ~24
-    mdf_test[column + '_hrsn'] = np.sin(mdf_test[column + '_hrsn'] * 2 * np.pi / 24 )
-
-    #replace missing data with training set mean
-    mdf_test[column + '_hrsn'] = mdf_test[column + '_hrsn'].fillna(mean_hrsn)
-    
-#     #change data type for memory savings
-#     mdf_test[column + '_hrsn'] = mdf_test[column + '_hrsn'].astype(np.float32)
-    
-    return mdf_test
-  
-  def postprocess_hrcs_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
-
-    '''
-    #postprocess_hrcs_class(mdf_test, column, postprocess_dict, columnkey)
-    #postprocess test column with of date category
-    #takes as arguement pandas dataframe containing test data 
-    #(mdf_test), the name of the column string ('column'), and the timenormalization_dict 
-    #from the original application of automunge to the associated date column from train set
-    #(saved in the postprocess_dict)
-    #retains the original column from master dataframe and
-    #adds distinct columns for hours
-    #with cos transform, 
-    #with missing values plugged with the mean from train set after sin transform
-    #with columns named after column_ + time category
-    #returns mdf_test
-    '''
-    
-    #retrieve normalization parameters from postprocess_dict
-    datekey = column + '_hrcs'
-    
-    mean_hrcs = \
-    postprocess_dict['column_dict'][datekey]['normalization_dict'][datekey]['mean_hrcs']
-
-    #create copy of original column
-    mdf_test[column + '_hrcs'] = mdf_test[column].copy()
-
-    #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
-    mdf_test[column + '_hrcs'] = pd.to_datetime(mdf_test[column + '_hrcs'], errors = 'coerce')
-
-    #mdf_train[column].replace(-np.Inf, np.nan)
-    #mdf_test[column].replace(-np.Inf, np.nan)
-
-    #grab month entries for test set
-    mdf_test[column + '_hrcs'] = mdf_test[column + '_hrcs'].dt.hour
-    
-    #apply sin transform
-    #average number of hours in a day is ~24
-    mdf_test[column + '_hrcs'] = np.cos(mdf_test[column + '_hrcs'] * 2 * np.pi / 24 )
-
-    #replace missing data with training set mean
-    mdf_test[column + '_hrcs'] = mdf_test[column + '_hrcs'].fillna(mean_hrcs)
-    
-#     #change data type for memory savings
-#     mdf_test[column + '_hrcs'] = mdf_test[column + '_hrcs'].astype(np.float32)
-    
-    return mdf_test
-  
-  def postprocess_hmss_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
-
-    '''
-    #postprocess_hmss_class(mdf_test, column, postprocess_dict, columnkey)
-    #postprocess test column with of date category
-    #takes as arguement pandas dataframe containing test data 
-    #(mdf_test), the name of the column string ('column'), and the timenormalization_dict 
-    #from the original application of automunge to the associated date column from train set
-    #(saved in the postprocess_dict)
-    #retains the original column from master dataframe and
-    #adds combined column for hours, minutes, and seconds
-    #with sin transform, 
-    #with missing values plugged with the mean from train set after sin transform
-    #with columns named after column_ + time category
-    #returns mdf_test
-    '''
-    
-    #retrieve normalization parameters from postprocess_dict
-    datekey = column + '_hmss'
-    
-    mean_hmss = \
-    postprocess_dict['column_dict'][datekey]['normalization_dict'][datekey]['mean_hmss']
-
-    #create copy of original column
-    mdf_test[column + '_hmss'] = mdf_test[column].copy()
-
-    #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
-    mdf_test[column + '_hmss'] = pd.to_datetime(mdf_test[column + '_hmss'], errors = 'coerce')
-
-    #mdf_train[column].replace(-np.Inf, np.nan)
-    #mdf_test[column].replace(-np.Inf, np.nan)
-
-#     #grab month entries for test set
-#     mdf_test[column + '_mdsn'] = mdf_test[column + '_mdsn'].dt.month
-    
-    #apply sin transform to combined hour minute sec
-    #24 hours in a day
-    mdf_test[column + '_hmss'] = np.sin((mdf_test[column + '_hmss'].dt.hour + mdf_test[column + '_hmss'].dt.minute / 60 + mdf_test[column + '_hmss'].dt.second / 60 / 60) * 2 * np.pi / 24 )
-
-    
-    #replace missing data with training set mean
-    mdf_test[column + '_hmss'] = mdf_test[column + '_hmss'].fillna(mean_hmss)
-    
-#     #change data type for memory savings
-#     mdf_test[column + '_hmss'] = mdf_test[column + '_hmss'].astype(np.float32)
-    
-    return mdf_test
-  
-  def postprocess_hmsc_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
-
-    '''
-    #postprocess_hmsc_class(mdf_test, column, postprocess_dict, columnkey)
-    #postprocess test column with of date category
-    #takes as arguement pandas dataframe containing test data 
-    #(mdf_test), the name of the column string ('column'), and the timenormalization_dict 
-    #from the original application of automunge to the associated date column from train set
-    #(saved in the postprocess_dict)
-    #retains the original column from master dataframe and
-    #adds combined column for hours, minutes, and seconds
-    #with cos transform, 
-    #with missing values plugged with the mean from train set after sin transform
-    #with columns named after column_ + time category
-    #returns mdf_test
-    '''
-    
-    #retrieve normalization parameters from postprocess_dict
-    datekey = column + '_hmsc'
-    
-    mean_hmsc = \
-    postprocess_dict['column_dict'][datekey]['normalization_dict'][datekey]['mean_hmsc']
-
-    #create copy of original column
-    mdf_test[column + '_hmsc'] = mdf_test[column].copy()
-
-    #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
-    mdf_test[column + '_hmsc'] = pd.to_datetime(mdf_test[column + '_hmsc'], errors = 'coerce')
-
-    #mdf_train[column].replace(-np.Inf, np.nan)
-    #mdf_test[column].replace(-np.Inf, np.nan)
-
-#     #grab month entries for test set
-#     mdf_test[column + '_mdsn'] = mdf_test[column + '_mdsn'].dt.month
-    
-    #apply sin transform to combined hour minute sec
-    #24 hours in a. day
-    mdf_test[column + '_hmsc'] = np.cos((mdf_test[column + '_hmsc'].dt.hour + mdf_test[column + '_hmsc'].dt.minute / 60 + mdf_test[column + '_hmsc'].dt.second / 60 / 60) * 2 * np.pi / 24 )
-
-    
-    #replace missing data with training set mean
-    mdf_test[column + '_hmsc'] = mdf_test[column + '_hmsc'].fillna(mean_hmsc)
-    
-#     #change data type for memory savings
-#     mdf_test[column + '_hmsc'] = mdf_test[column + '_hmsc'].astype(np.float32)
-    
-    return mdf_test
-  
-  def postprocess_mint_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
-
-    '''
-    #postprocess_mint_class(mdf_test, column, postprocess_dict, columnkey)
-    #postprocess test column with of date category
-    #takes as arguement pandas dataframe containing test data 
-    #(mdf_test), the name of the column string ('column'), and the timenormalization_dict 
-    #from the original application of automunge to the associated date column from train set
-    #(saved in the postprocess_dict)
-    #retains the original column from master dataframe and
-    #adds distinct columns for minutes
-    #z score normalized to the mean and std from original train set, 
-    #with missing values plugged with the mean
-    #with columns named after column_ + time category
-    #returns mdf_test
-    '''
-    
-    #retrieve normalization parameters from postprocess_dict
-    datekey = column + '_mint'
-    
-    meanmint = \
-    postprocess_dict['column_dict'][datekey]['normalization_dict'][datekey]['meanmint']
-    
-    stdmint = \
-    postprocess_dict['column_dict'][datekey]['normalization_dict'][datekey]['stdmint']
-
-    #create copy of original column
-    mdf_test[column + '_mint'] = mdf_test[column].copy()
-
-    #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
-    mdf_test[column + '_mint'] = pd.to_datetime(mdf_test[column + '_mint'], errors = 'coerce')
-
-    #mdf_train[column].replace(-np.Inf, np.nan)
-    #mdf_test[column].replace(-np.Inf, np.nan)
-
-    #grab month entries for test set
-    mdf_test[column + '_mint'] = mdf_test[column + '_mint'].dt.minute
-
-    #replace missing data with training set mean
-    mdf_test[column + '_mint'] = mdf_test[column + '_mint'].fillna(meanmint)
-
-    #subtract mean from column for both train and test
-    mdf_test[column + '_mint'] = mdf_test[column + '_mint'] - meanmint
-
-    #divide column values by std for both training and test data
-    mdf_test[column + '_mint'] = mdf_test[column + '_mint'] / stdmint
-
-#     #now replace NaN with 0
-#     mdf_test[column + '_days'] = mdf_test[column + '_days'].fillna(0)
-
-#     #change data type for memory savings
-#     mdf_test[column + '_mint'] = mdf_test[column + '_mint'].astype(np.float32)
-
-    return mdf_test
-
-  def postprocess_misn_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
-
-    '''
-    #postprocess_misn_class(mdf_test, column, postprocess_dict, columnkey)
-    #postprocess test column with of date category
-    #takes as arguement pandas dataframe containing test data 
-    #(mdf_test), the name of the column string ('column'), and the timenormalization_dict 
-    #from the original application of automunge to the associated date column from train set
-    #(saved in the postprocess_dict)
-    #retains the original column from master dataframe and
-    #adds distinct columns for minutes
-    #with sin transform, 
-    #with missing values plugged with the mean from train set after sin transform
-    #with columns named after column_ + time category
-    #returns mdf_test
-    '''
-    
-    #retrieve normalization parameters from postprocess_dict
-    datekey = column + '_misn'
-    
-    mean_misn = \
-    postprocess_dict['column_dict'][datekey]['normalization_dict'][datekey]['mean_misn']
-
-    #create copy of original column
-    mdf_test[column + '_misn'] = mdf_test[column].copy()
-
-    #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
-    mdf_test[column + '_misn'] = pd.to_datetime(mdf_test[column + '_misn'], errors = 'coerce')
-
-    #mdf_train[column].replace(-np.Inf, np.nan)
-    #mdf_test[column].replace(-np.Inf, np.nan)
-
-    #grab month entries for test set
-    mdf_test[column + '_misn'] = mdf_test[column + '_misn'].dt.minute
-    
-    #apply sin transform
-    #60 minutes in an hour, 24 hours in day
-    mdf_test[column + '_misn'] = np.sin(mdf_test[column + '_misn'] * 2 * np.pi / 60 / 24 )
-
-    #replace missing data with training set mean
-    mdf_test[column + '_misn'] = mdf_test[column + '_misn'].fillna(mean_misn)
-    
-#     #change data type for memory savings
-#     mdf_test[column + '_misn'] = mdf_test[column + '_misn'].astype(np.float32)
-    
-    return mdf_test
-  
-  def postprocess_mics_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
-
-    '''
-    #postprocess_mics_class(mdf_test, column, postprocess_dict, columnkey)
-    #postprocess test column with of date category
-    #takes as arguement pandas dataframe containing test data 
-    #(mdf_test), the name of the column string ('column'), and the timenormalization_dict 
-    #from the original application of automunge to the associated date column from train set
-    #(saved in the postprocess_dict)
-    #retains the original column from master dataframe and
-    #adds distinct columns for minutes
-    #with cos transform, 
-    #with missing values plugged with the mean from train set after sin transform
-    #with columns named after column_ + time category
-    #returns mdf_test
-    '''
-    
-    #retrieve normalization parameters from postprocess_dict
-    datekey = column + '_mics'
-    
-    mean_mics = \
-    postprocess_dict['column_dict'][datekey]['normalization_dict'][datekey]['mean_mics']
-
-    #create copy of original column
-    mdf_test[column + '_mics'] = mdf_test[column].copy()
-
-    #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
-    mdf_test[column + '_mics'] = pd.to_datetime(mdf_test[column + '_mics'], errors = 'coerce')
-
-    #mdf_train[column].replace(-np.Inf, np.nan)
-    #mdf_test[column].replace(-np.Inf, np.nan)
-
-    #grab month entries for test set
-    mdf_test[column + '_mics'] = mdf_test[column + '_mics'].dt.minute
-    
-    #apply sin transform
-    #60 minutes in an hour, 24 hours in day
-    mdf_test[column + '_mics'] = np.cos(mdf_test[column + '_mics'] * 2 * np.pi / 60 / 24 )
-
-    #replace missing data with training set mean
-    mdf_test[column + '_mics'] = mdf_test[column + '_mics'].fillna(mean_mics)
-    
-#     #change data type for memory savings
-#     mdf_test[column + '_mics'] = mdf_test[column + '_mics'].astype(np.float32)
-    
-    return mdf_test
-  
-  def postprocess_mssn_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
-
-    '''
-    #postprocess_mssn_class(mdf_test, column, postprocess_dict, columnkey)
-    #postprocess test column with of date category
-    #takes as arguement pandas dataframe containing test data 
-    #(mdf_test), the name of the column string ('column'), and the timenormalization_dict 
-    #from the original application of automunge to the associated date column from train set
-    #(saved in the postprocess_dict)
-    #retains the original column from master dataframe and
-    #adds combined column for minutes, and seconds
-    #with sin transform, 
-    #with missing values plugged with the mean from train set after sin transform
-    #with columns named after column_ + time category
-    #returns mdf_test
-    '''
-    
-    #retrieve normalization parameters from postprocess_dict
-    datekey = column + '_mssn'
-    
-    mean_mssn = \
-    postprocess_dict['column_dict'][datekey]['normalization_dict'][datekey]['mean_mssn']
-
-    #create copy of original column
-    mdf_test[column + '_mssn'] = mdf_test[column].copy()
-
-    #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
-    mdf_test[column + '_mssn'] = pd.to_datetime(mdf_test[column + '_mssn'], errors = 'coerce')
-
-    #mdf_train[column].replace(-np.Inf, np.nan)
-    #mdf_test[column].replace(-np.Inf, np.nan)
-
-#     #grab month entries for test set
-#     mdf_test[column + '_mdsn'] = mdf_test[column + '_mdsn'].dt.month
-    
-    #apply sin transform to combined minute sec
-    mdf_test[column + '_mssn'] = np.sin((mdf_test[column + '_mssn'].dt.minute + mdf_test[column + '_mssn'].dt.second / 60 ) * 2 * np.pi / 60 / 24 )
-  
-    #replace missing data with training set mean
-    mdf_test[column + '_mssn'] = mdf_test[column + '_mssn'].fillna(mean_mssn)
-    
-#     #change data type for memory savings
-#     mdf_test[column + '_mssn'] = mdf_test[column + '_mssn'].astype(np.float32)
-    
-    return mdf_test
-  
-  def postprocess_mscs_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
-
-    '''
-    #postprocess_mscs_class(mdf_test, column, postprocess_dict, columnkey)
-    #postprocess test column with of date category
-    #takes as arguement pandas dataframe containing test data 
-    #(mdf_test), the name of the column string ('column'), and the timenormalization_dict 
-    #from the original application of automunge to the associated date column from train set
-    #(saved in the postprocess_dict)
-    #retains the original column from master dataframe and
-    #adds combined column for minutes, and seconds
-    #with sin transform, 
-    #with missing values plugged with the mean from train set after sin transform
-    #with columns named after column_ + time category
-    #returns mdf_test
-    '''
-    
-    #retrieve normalization parameters from postprocess_dict
-    datekey = column + '_mscs'
-    
-    mean_mscs = \
-    postprocess_dict['column_dict'][datekey]['normalization_dict'][datekey]['mean_mscs']
-
-    #create copy of original column
-    mdf_test[column + '_mscs'] = mdf_test[column].copy()
-
-    #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
-    mdf_test[column + '_mscs'] = pd.to_datetime(mdf_test[column + '_mscs'], errors = 'coerce')
-
-    #mdf_train[column].replace(-np.Inf, np.nan)
-    #mdf_test[column].replace(-np.Inf, np.nan)
-
-#     #grab month entries for test set
-#     mdf_test[column + '_mdsn'] = mdf_test[column + '_mdsn'].dt.month
-    
-    #apply sin transform to combined minute sec
-    mdf_test[column + '_mscs'] = np.cos((mdf_test[column + '_mscs'].dt.minute + mdf_test[column + '_mscs'].dt.second / 60 ) * 2 * np.pi / 60 / 24 )
-
-    
-    #replace missing data with training set mean
-    mdf_test[column + '_mscs'] = mdf_test[column + '_mscs'].fillna(mean_mscs)
-    
-#     #change data type for memory savings
-#     mdf_test[column + '_mscs'] = mdf_test[column + '_mscs'].astype(np.float32)
-    
-    return mdf_test
-  
-  def postprocess_scnd_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
-
-    '''
-    #postprocess_scnd_class(mdf_test, column, postprocess_dict, columnkey)
-    #postprocess test column with of date category
-    #takes as arguement pandas dataframe containing test data 
-    #(mdf_test), the name of the column string ('column'), and the timenormalization_dict 
-    #from the original application of automunge to the associated date column from train set
-    #(saved in the postprocess_dict)
-    #retains the original column from master dataframe and
-    #adds distinct columns for seconds
-    #z score normalized to the mean and std from original train set, 
-    #with missing values plugged with the mean
-    #with columns named after column_ + time category
-    #returns mdf_test
-    '''
-    
-    #retrieve normalization parameters from postprocess_dict
-    datekey = column + '_scnd'
-    
-    meanscnd = \
-    postprocess_dict['column_dict'][datekey]['normalization_dict'][datekey]['meanscnd']
-    
-    stdscnd = \
-    postprocess_dict['column_dict'][datekey]['normalization_dict'][datekey]['stdscnd']
-
-    #create copy of original column
-    mdf_test[column + '_scnd'] = mdf_test[column].copy()
-
-    #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
-    mdf_test[column + '_scnd'] = pd.to_datetime(mdf_test[column + '_scnd'], errors = 'coerce')
-
-    #mdf_train[column].replace(-np.Inf, np.nan)
-    #mdf_test[column].replace(-np.Inf, np.nan)
-
-    #grab month entries for test set
-    mdf_test[column + '_scnd'] = mdf_test[column + '_scnd'].dt.second
-
-    #replace missing data with training set mean
-    mdf_test[column + '_scnd'] = mdf_test[column + '_scnd'].fillna(meanscnd)
-
-    #subtract mean from column for both train and test
-    mdf_test[column + '_scnd'] = mdf_test[column + '_scnd'] - meanscnd
-
-    #divide column values by std for both training and test data
-    mdf_test[column + '_scnd'] = mdf_test[column + '_scnd'] / stdscnd
-
-#     #now replace NaN with 0
-#     mdf_test[column + '_days'] = mdf_test[column + '_days'].fillna(0)
-
-#     #change data type for memory savings
-#     mdf_test[column + '_scnd'] = mdf_test[column + '_scnd'].astype(np.float32)
-
-    return mdf_test
-
-  def postprocess_scsn_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
-
-    '''
-    #postprocess_scsn_class(mdf_test, column, postprocess_dict, columnkey)
-    #postprocess test column with of date category
-    #takes as arguement pandas dataframe containing test data 
-    #(mdf_test), the name of the column string ('column'), and the timenormalization_dict 
-    #from the original application of automunge to the associated date column from train set
-    #(saved in the postprocess_dict)
-    #retains the original column from master dataframe and
-    #adds distinct columns for seconds
-    #with sin transform, 
-    #with missing values plugged with the mean from train set after sin transform
-    #with columns named after column_ + time category
-    #returns mdf_test
-    '''
-    
-    #retrieve normalization parameters from postprocess_dict
-    datekey = column + '_scsn'
-    
-    mean_scsn = \
-    postprocess_dict['column_dict'][datekey]['normalization_dict'][datekey]['mean_scsn']
-
-    #create copy of original column
-    mdf_test[column + '_scsn'] = mdf_test[column].copy()
-
-    #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
-    mdf_test[column + '_scsn'] = pd.to_datetime(mdf_test[column + '_scsn'], errors = 'coerce')
-
-    #mdf_train[column].replace(-np.Inf, np.nan)
-    #mdf_test[column].replace(-np.Inf, np.nan)
-
-    #grab month entries for test set
-    mdf_test[column + '_scsn'] = mdf_test[column + '_scsn'].dt.second
-    
-    #apply sin transform
-    #60 seconds in a minute
-    mdf_test[column + '_scsn'] = np.sin(mdf_test[column + '_scsn'] * 2 * np.pi / 60 )
-
-    #replace missing data with training set mean
-    mdf_test[column + '_scsn'] = mdf_test[column + '_scsn'].fillna(mean_scsn)
-    
-#     #change data type for memory savings
-#     mdf_test[column + '_scsn'] = mdf_test[column + '_scsn'].astype(np.float32)
-    
-    return mdf_test
-  
-  def postprocess_sccs_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
-
-    '''
-    #postprocess_sccs_class(mdf_test, column, postprocess_dict, columnkey)
-    #postprocess test column with of date category
-    #takes as arguement pandas dataframe containing test data 
-    #(mdf_test), the name of the column string ('column'), and the timenormalization_dict 
-    #from the original application of automunge to the associated date column from train set
-    #(saved in the postprocess_dict)
-    #retains the original column from master dataframe and
-    #adds distinct columns for seconds
-    #with cos transform, 
-    #with missing values plugged with the mean from train set after sin transform
-    #with columns named after column_ + time category
-    #returns mdf_test
-    '''
-    
-    #retrieve normalization parameters from postprocess_dict
-    datekey = column + '_sccs'
-    
-    mean_sccs = \
-    postprocess_dict['column_dict'][datekey]['normalization_dict'][datekey]['mean_sccs']
-
-    #create copy of original column
-    mdf_test[column + '_sccs'] = mdf_test[column].copy()
-
-    #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
-    mdf_test[column + '_sccs'] = pd.to_datetime(mdf_test[column + '_sccs'], errors = 'coerce')
-
-    #mdf_train[column].replace(-np.Inf, np.nan)
-    #mdf_test[column].replace(-np.Inf, np.nan)
-
-    #grab month entries for test set
-    mdf_test[column + '_sccs'] = mdf_test[column + '_sccs'].dt.second
-    
-    #apply sin transform
-    #60 seconds in a minute
-    mdf_test[column + '_sccs'] = np.cos(mdf_test[column + '_sccs'] * 2 * np.pi / 60 )
-
-    #replace missing data with training set mean
-    mdf_test[column + '_sccs'] = mdf_test[column + '_sccs'].fillna(mean_sccs)
-    
-#     #change data type for memory savings
-#     mdf_test[column + '_sccs'] = mdf_test[column + '_sccs'].astype(np.float32)
-    
+    mdf_test[time_column] = pd.to_datetime(mdf_test[time_column], errors = 'coerce')
+    
+    #access time scale from one of year/month/day/hour/minute/second
+    if scale == 'year':
+      mdf_test[time_column] = mdf_test[time_column].dt.year
+    elif scale == 'month':
+      mdf_test[time_column] = mdf_test[time_column].dt.month
+    elif scale == 'day':
+      mdf_test[time_column] = mdf_test[time_column].dt.day
+    elif scale == 'hour':
+      mdf_test[time_column] = mdf_test[time_column].dt.hour
+    elif scale == 'minute':
+      mdf_test[time_column] = mdf_test[time_column].dt.minute
+    elif scale == 'second':
+      mdf_test[time_column] = mdf_test[time_column].dt.second
+      
+    #apply default infill
+    mdf_test[time_column] = mdf_test[time_column].fillna(method='ffill')
+    mdf_test[time_column] = mdf_test[time_column].fillna(method='bfill')
+    
+    #backup default infill for cases without valid entries
+    mdf_test[time_column] = mdf_test[time_column].fillna(0)
+    
+    #apply normalization
+    if normalization != 'unscaled':
+      mdf_test[time_column] = (mdf_test[time_column] - scaler) / divisor
+      
     return mdf_test
   
   def postprocess_bxcx_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
