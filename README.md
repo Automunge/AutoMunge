@@ -467,9 +467,9 @@ conclusion of printouts.
 ...
 
 Here now are descriptions for the returned sets from automunge, which
-will be followed by descriptions of the arguments which can be passed to
+will be followed by descriptions of the parameters which can be passed to
 the function, followed by similar treatment for postmunge returned sets
-and arguments.
+and arguments. Further below is documentation for the library of transformations.
 
 ...
 
