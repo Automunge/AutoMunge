@@ -144,7 +144,7 @@ am.automunge(df_train, df_test = False, \
                         'PCA_cmnd':{}}, \
              assigncat = {'nmbr':[], 'retn':[], 'mnmx':[], 'mean':[], 'MAD3':[], 'lgnm':[], \
                           'bins':[], 'bsor':[], 'pwrs':[], 'pwr2':[], 'por2':[], 'bxcx':[], \
-                          'addd':[], 'sbtr':[], 'mltp':[], 'divd':[], \
+                          'binz':[], 'bzor':[], 'addd':[], 'sbtr':[], 'mltp':[], 'divd':[], \
                           'log0':[], 'log1':[], 'logn':[], 'sqrt':[], 'rais':[], 'absl':[], \
                           'bnwd':[], 'bnwK':[], 'bnwM':[], 'bnwo':[], 'bnKo':[], 'bnMo':[], \
                           'bnep':[], 'bne7':[], 'bne9':[], 'bneo':[], 'bn7o':[], 'bn9o':[], \
@@ -375,7 +375,7 @@ am.automunge(df_train, df_test = False, \
                         'PCA_cmnd':{}}, \
              assigncat = {'nmbr':[], 'retn':[], 'mnmx':[], 'mean':[], 'MAD3':[], 'lgnm':[], \
                           'bins':[], 'bsor':[], 'pwrs':[], 'pwr2':[], 'por2':[], 'bxcx':[], \
-                          'addd':[], 'sbtr':[], 'mltp':[], 'divd':[], \
+                          'binz':[], 'bzor':[], 'addd':[], 'sbtr':[], 'mltp':[], 'divd':[], \
                           'log0':[], 'log1':[], 'logn':[], 'sqrt':[], 'rais':[], 'absl':[], \
                           'bnwd':[], 'bnwK':[], 'bnwM':[], 'bnwo':[], 'bnKo':[], 'bnMo':[], \
                           'bnep':[], 'bne7':[], 'bne9':[], 'bneo':[], 'bn7o':[], 'bn9o':[], \
@@ -609,7 +609,7 @@ am.automunge(df_train, df_test = False, \
                         'PCA_cmnd':{}}, \
              assigncat = {'nmbr':[], 'retn':[], 'mnmx':[], 'mean':[], 'MAD3':[], 'lgnm':[], \
                           'bins':[], 'bsor':[], 'pwrs':[], 'pwr2':[], 'por2':[], 'bxcx':[], \
-                          'addd':[], 'sbtr':[], 'mltp':[], 'divd':[], \
+                          'binz':[], 'bzor':[], 'addd':[], 'sbtr':[], 'mltp':[], 'divd':[], \
                           'log0':[], 'log1':[], 'logn':[], 'sqrt':[], 'rais':[], 'absl':[], \
                           'bnwd':[], 'bnwK':[], 'bnwM':[], 'bnwo':[], 'bnKo':[], 'bnMo':[], \
                           'bnep':[], 'bne7':[], 'bne9':[], 'bneo':[], 'bn7o':[], 'bn9o':[], \
@@ -995,7 +995,7 @@ such as could potentially result in memory savings.
 
 assigncat = {'nmbr':[], 'retn':[], 'mnmx':[], 'mean':[], 'MAD3':[], 'lgnm':[], \
              'bins':[], 'bsor':[], 'pwrs':[], 'pwr2':[], 'por2':[], 'bxcx':[], \
-             'addd':[], 'sbtr':[], 'mltp':[], 'divd':[], \
+             'binz':[], 'bzor':[], 'addd':[], 'sbtr':[], 'mltp':[], 'divd':[], \
              'log0':[], 'log1':[], 'logn':[], 'sqrt':[], 'rais':[], 'absl':[], \
              'bnwd':[], 'bnwK':[], 'bnwM':[], 'bnwo':[], 'bnKo':[], 'bnMo':[], \
              'bnep':[], 'bne7':[], 'bne9':[], 'bneo':[], 'bn7o':[], 'bn9o':[], \
@@ -2202,6 +2202,14 @@ set (i.e. <-2, -2-1, -10, 01, 12, >2)
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: binsmean / binsstd / <column> + '_ratio' (column specific)
   - inversion available: yes with partial recovery
+* binz: comparable to bins but accepts parameter for number of bins, where if bincount is odd
+center bin straddles the mean
+  - default infill: mean
+  - default NArowtype: numeric
+  - suffix appender: '\_binz\_#' where # is integer for bin id
+  - assignparam parameters accepted: bincount as integer for # of bins (defaults to 5)
+  - driftreport postmunge metrics: binsmean / binsstd / <column> + '_ratio' (column specific)
+  - inversion available: yes with partial recovery
 * bsor: for numerical sets, outputs an ordinal encoding indicating where a
 value fell with respect to number of standard deviations from the mean of the
 set (i.e. <-2:0, -2-1:1, -10:2, 01:3, 12:4, >2:5)
@@ -2209,6 +2217,14 @@ set (i.e. <-2:0, -2-1:1, -10:2, 01:3, 12:4, >2:5)
   - default NArowtype: numeric
   - suffix appender: '_bsor'
   - assignparam parameters accepted: none
+  - driftreport postmunge metrics: ordinal_dict / ordl_activations_dict / binsmean / binsstd
+  - inversion available: yes with partial recovery
+* bzor: comparable to bsor but accepts parameter for number of bins, where if bincount is odd
+center bin straddles the mean
+  - default infill: mean
+  - default NArowtype: numeric
+  - suffix appender: '_bzor'
+  - assignparam parameters accepted: bincount as integer for # of bins (defaults to 5)
   - driftreport postmunge metrics: ordinal_dict / ordl_activations_dict / binsmean / binsstd
   - inversion available: yes with partial recovery
 * bnwd/bnwK/bnwM: for numerical set graining to fixed width bins for one-hot encoded bins 
@@ -3037,6 +3053,7 @@ avoid unintentional duplication.
 - 'aggt',
 - 'bins',
 - 'bint',
+- 'binz',
 - 'bkb3',
 - 'bkb4',
 - 'bkt1',
@@ -3067,6 +3084,8 @@ avoid unintentional duplication.
 - 'bsbn',
 - 'bshr',
 - 'bsor',
+- 'bzbn',
+- 'bzor',
 - 'bxc2',
 - 'bxc3',
 - 'bxc4',
@@ -3342,6 +3361,8 @@ present in dataframe and return results in postprocess_dict['miscparameters_resu
 - '_bint_t+12'
 - '_bint_t<-2'
 - '_bint_t>+2'
+- '_binz'
+- '\_binz_' + # where # is integer for bin id
 - '\_bkt1_' + i (where i is identifier of bin)
 - '\_bkt2_' + i (where i is identifier of bin)
 - '\_bkt3_' + i (where i is identifier of bin)
@@ -3363,6 +3384,7 @@ present in dataframe and return results in postprocess_dict['miscparameters_resu
 - '_bshr'
 - '_bsor'
 - '_bxcx'
+- '_bzor'
 - '_copy'
 - '_days'
 - '_dhmc'
@@ -5097,8 +5119,26 @@ If you want to skip to the next section you can click here: [Custom Transformati
   
     transform_dict.update({'yea2' : {'parents'       : [], \
                                      'siblings'      : [], \
-                                     'auntsuncles'   : ['year', 'mdsn', 'mdcs'], \
+                                     'auntsuncles'   : ['year', 'yrsn', 'yrcs', 'mdsn', 'mdcs'], \
                                      'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+
+    transform_dict.update({'yrcs' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['yrcs'], \
+                                     'cousins'       : [], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'yrsn' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['yrsn'], \
+                                     'cousins'       : [], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
                                      'coworkers'     : [], \
@@ -5746,7 +5786,7 @@ If you want to skip to the next section you can click here: [Custom Transformati
     transform_dict.update({'bins' : {'parents'       : [], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : ['bins'], \
-                                     'cousins'       : [], \
+                                     'cousins'       : [NArw], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
                                      'coworkers'     : [], \
@@ -5768,6 +5808,33 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'children'      : [], \
                                      'niecesnephews' : [], \
                                      'coworkers'     : [], \
+                                     'friends'       : []}})
+
+    transform_dict.update({'binz' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['binz'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+  
+    transform_dict.update({'bzor' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['bzor'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'bzbn' : {'parents'       : ['bzbn'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['1010'], \
                                      'friends'       : []}})
     
     transform_dict.update({'bnwd' : {'parents'       : [], \
