@@ -582,6 +582,9 @@ Note that a report classifying the returned column types such as by:
 continuous, boolean, ordinal, onehot, onehot_sets, binary, binary_sets, passthrough
 is available in postprocess_dict['columntype_report'], with a comparable
 report for columns returned for the label set as postprocess_dict['label_columntype_report'].
+Also a report mapping the input columns to their associated returned columns (excluding
+those consolidated as part of a dimensionality reduction) is available as
+postprocess_dict['column_map'].
 
 ...
 
