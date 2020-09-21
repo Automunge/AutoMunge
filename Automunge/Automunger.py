@@ -2369,7 +2369,7 @@ class AutoMunge:
     transform_dict.update({'bins' : {'parents'       : [], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : ['bins'], \
-                                     'cousins'       : [], \
+                                     'cousins'       : [NArw], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
                                      'coworkers'     : [], \
@@ -2391,6 +2391,33 @@ class AutoMunge:
                                      'children'      : [], \
                                      'niecesnephews' : [], \
                                      'coworkers'     : [], \
+                                     'friends'       : []}})
+
+    transform_dict.update({'binz' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['binz'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+  
+    transform_dict.update({'bzor' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['bzor'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'bzbn' : {'parents'       : ['bzbn'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['1010'], \
                                      'friends'       : []}})
     
     transform_dict.update({'bnwd' : {'parents'       : [], \
@@ -5034,7 +5061,6 @@ class AutoMunge:
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'ord3'}})
-    
     process_dict.update({'bins' : {'dualprocess' : self.process_bins_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_bins_class, \
@@ -5056,9 +5082,33 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_bsor_class, \
                                   'inverseprocess' : self.inverseprocess_bsor, \
                                   'info_retention' : False, \
-                                  'NArowtype' : 'justNaN', \
+                                  'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'bsor'}})
+    process_dict.update({'binz' : {'dualprocess' : self.process_binz_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_binz_class, \
+                                  'inverseprocess' : self.inverseprocess_binz, \
+                                  'info_retention' : False, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'multirt', \
+                                  'labelctgy' : 'binz'}})
+    process_dict.update({'bzor' : {'dualprocess' : self.process_bzor_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_bzor_class, \
+                                  'inverseprocess' : self.inverseprocess_bzor, \
+                                  'info_retention' : False, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'singlct', \
+                                  'labelctgy' : 'bzor'}})
+    process_dict.update({'bzbn' : {'dualprocess' : self.process_bzor_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_bzor_class, \
+                                  'inverseprocess' : self.inverseprocess_bzor, \
+                                  'info_retention' : False, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'singlct', \
+                                  'labelctgy' : '1010'}})
     process_dict.update({'bnwd' : {'dualprocess' : self.process_bnwd_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_bnwd_class, \
@@ -5216,7 +5266,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_bsor_class, \
                                   'inverseprocess' : self.inverseprocess_bsor, \
                                   'info_retention' : False, \
-                                  'NArowtype' : 'justNaN', \
+                                  'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : '1010'}})
     process_dict.update({'bnwb' : {'dualprocess' : self.process_bnwo_class, \
@@ -14699,7 +14749,6 @@ class AutoMunge:
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
 
-
     for nc in nmbrcolumns:
 
       nmbrnormalization_dict = {nc : {'ordinal_dict' : ordinal_dict, \
@@ -14726,6 +14775,295 @@ class AutoMunge:
         column_dict_list.append(column_dict.copy())
 
     #return mdf_train, mdf_test, mean, std, nmbrcolumns, categorylist
+    return mdf_train, mdf_test, column_dict_list
+
+  def process_binz_class(self, mdf_train, mdf_test, column, category, \
+                         postprocess_dict, params = {}):
+    '''
+    #bins processes a numerical set by creating bins coresponding to post z score
+    #normalization of <-2, -2-1, -10, 01, 12, >2 in one hot encoded columns
+    
+    #bins will be intended for a raw set that is not normalized
+    #bint will be intended for a previously normalized set
+    
+    #binz is comparable to bins but accepts a parameter bincount 
+    #as integer for number of bins
+    #where if bincount is an odd number the center bin straddles the mean
+    #and if bincount is even the center two bins straddle the mean
+    #defaults to 5 bins
+    #suffix appender is '_binz_#'' where # is integer for bin id
+    '''
+    
+    suffixoverlap_results = {}
+    
+    if 'bincount' in params:
+      bincount = params['bincount']
+    else:
+      bincount = 5
+    
+    binscolumn = column + '_binz'
+    
+    if bincount > 0:
+
+      mdf_train, suffixoverlap_results = \
+      self.df_copy_train(mdf_train, column, binscolumn, suffixoverlap_results)
+
+      mdf_test[binscolumn] = mdf_test[column].copy()
+
+      #convert all values to either numeric or NaN
+      mdf_train[binscolumn] = pd.to_numeric(mdf_train[binscolumn], errors='coerce')
+      mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
+
+      #get mean of training data
+      mean = mdf_train[binscolumn].mean()
+
+      if mean != mean:
+        mean = 0
+
+      #get standard deviation of training data
+      std = mdf_train[binscolumn].std()
+
+      #special case, if standard deviation is 0 we'll set it to 1 to avoid division by 0
+      if std == 0:
+        std = 1
+        
+      if std != std:
+        std = 1
+
+      #replace missing data with training set mean
+      mdf_train[binscolumn] = mdf_train[binscolumn].fillna(mean)
+      mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
+
+      #z-score normalize
+      mdf_train[binscolumn] = (mdf_train[binscolumn] - mean) / std
+      mdf_test[binscolumn] = (mdf_test[binscolumn] - mean) / std
+
+      #derive cuts based on bincount
+
+      bincuts = []
+
+      mincut = - (bincount - 2) / 2
+      bincuts.append(-float('inf'))
+
+      for i in range(bincount - 1):
+        bincuts.append(mincut)
+        mincut += 1
+
+      bincuts.append(float('inf'))
+
+      binlabels = list(range(bincount))
+      binlabels = list(map(str, binlabels))
+
+      #create bins based on standard deviation increments
+  #     binscolumn = column + '_bins'
+      mdf_train[binscolumn] = \
+      pd.cut( mdf_train[binscolumn], bins = bincuts,  \
+             labels = binlabels, precision=4)
+      mdf_test[binscolumn] = \
+      pd.cut( mdf_test[binscolumn], bins = bincuts,  \
+             labels = binlabels, precision=4)
+
+      #returned column headers
+      textcolumns = []
+      for binlabel in binlabels:
+        textcolumns.append(binscolumn + '_' + binlabel)
+
+      suffixoverlap_results = \
+      self.df_check_suffixoverlap(mdf_train, textcolumns, suffixoverlap_results)
+
+      #process bins as a categorical set
+      mdf_train = \
+      self.postprocess_textsupport_class(mdf_train, binscolumn, {}, 'tempkey', {'textcolumns':textcolumns})
+      mdf_test = \
+      self.postprocess_textsupport_class(mdf_test, binscolumn, {}, 'tempkey', {'textcolumns':textcolumns})
+
+      #change data type for memory savings
+      for textcolumn in textcolumns:
+        mdf_train[textcolumn] = mdf_train[textcolumn].astype(np.int8)
+        mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.int8)
+
+      #delete the support column
+      del mdf_train[binscolumn]
+      del mdf_test[binscolumn]
+    
+      #store some values in the nmbr_dict{} for use later in ML infill methods
+      column_dict_list = []
+
+      for nc in textcolumns:
+
+        #new parameter collected for driftreport
+        tc_ratio = nc + '_ratio'
+        tcratio = mdf_train[nc].sum() / mdf_train[nc].shape[0]
+
+        nmbrnormalization_dict = {nc : {'bincuts' : bincuts, \
+                                        'binlabels' : binlabels, \
+                                        'binscolumns' : textcolumns, \
+                                        'bincount' : bincount, \
+                                        'binsmean' : mean, \
+                                        'binsstd' : std, \
+                                        tc_ratio : tcratio}}
+
+        if nc in textcolumns:
+
+          column_dict = { nc : {'category' : 'binz', \
+                               'origcategory' : category, \
+                               'normalization_dict' : nmbrnormalization_dict, \
+                               'origcolumn' : column, \
+                               'inputcolumn' : column, \
+                               'columnslist' : textcolumns, \
+                               'categorylist' : textcolumns, \
+                               'infillmodel' : False, \
+                               'infillcomplete' : False, \
+                               'suffixoverlap_results' : suffixoverlap_results, \
+                               'deletecolumn' : False}}
+
+          column_dict_list.append(column_dict.copy())
+          
+    else:
+      
+      column_dict_list = []
+
+    return mdf_train, mdf_test, column_dict_list
+
+  def process_bzor_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
+    '''
+    #bins processes a numerical set by creating bins coresponding to post z score
+    #normalization of <-2, -2-1, -10, 01, 12, >2 in one hot encoded columns
+    
+    #bins will be intended for a raw set that is not normalized
+    #bint will be intended for a previously normalized set
+    
+    #binz is comparable to bins but accepts a parameter bincount 
+    #as integer for number of bins
+    #where if bincount is an odd number the center bin straddles the mean
+    #and if bincount is even the center two bins straddle the mean
+    #defaults to 5 bins
+    #suffix appender is '_binz_#'' where # is integer for bin id
+    
+    #bzor is comparable to binz but returns ordinal encoded column
+    '''
+    
+    suffixoverlap_results = {}
+    
+    if 'bincount' in params:
+      bincount = params['bincount']
+    else:
+      bincount = 5
+    
+    binscolumn = column + '_bzor'
+    
+    if bincount > 0:
+
+      #store original column for later reversion
+      mdf_train, suffixoverlap_results = \
+      self.df_copy_train(mdf_train, column, binscolumn, suffixoverlap_results)
+
+      mdf_test[binscolumn] = mdf_test[column].copy()
+
+      #convert all values to either numeric or NaN
+      mdf_train[binscolumn] = pd.to_numeric(mdf_train[binscolumn], errors='coerce')
+      mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
+
+      #get mean of training data
+      mean = mdf_train[binscolumn].mean()
+      if mean != mean:
+        mean = 0
+        
+      #get standard deviation of training data
+      std = mdf_train[binscolumn].std()
+      if std == 0:
+        std = 1
+      if std != 0:
+        std = 1
+
+      #replace missing data with training set mean
+      mdf_train[binscolumn] = mdf_train[binscolumn].fillna(mean)
+      mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
+
+      #z-score normalize
+      mdf_train[binscolumn] = (mdf_train[binscolumn] - mean) / std
+      mdf_test[binscolumn] = (mdf_test[binscolumn] - mean) / std
+      
+      #derive cuts based on bincount
+
+      bincuts = []
+
+      mincut = - (bincount - 2) / 2
+      bincuts.append(-float('inf'))
+
+      for i in range(bincount - 1):
+        bincuts.append(mincut)
+        mincut += 1
+
+      bincuts.append(float('inf'))
+
+      binlabels = list(range(bincount))
+
+  #     binscolumn = column + '_bsor'
+      mdf_train[binscolumn] = \
+      pd.cut( mdf_train[binscolumn], bins = bincuts,  \
+             labels = binlabels, precision=4)
+      mdf_test[binscolumn] = \
+      pd.cut( mdf_test[binscolumn], bins = bincuts,  \
+             labels = binlabels, precision=4)
+
+      ordinal_dict = {}
+      for binlabel in binlabels:
+        ordinal_dict.update({str(binlabel) : binlabel})
+        
+      #new driftreport metric ordl_activations_dict
+      ordl_activations_dict = {}
+      for key in ordinal_dict:
+        sumcalc = (mdf_train[binscolumn] == ordinal_dict[key]).sum() 
+        ratio = sumcalc / mdf_train[binscolumn].shape[0]
+        ordl_activations_dict.update({key:ratio})
+
+      inverse_ordinal_dict = {value:key for key,value in ordinal_dict.items()}
+      activations_list = list(inverse_ordinal_dict)
+
+      mdf_train[binscolumn] = mdf_train[binscolumn].astype(np.int8)
+      mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.int8)
+
+      #create list of columns
+      nmbrcolumns = [binscolumn]
+
+      #nmbrnormalization_dict = {'mean' : mean, 'std' : std}
+
+      #store some values in the nmbr_dict{} for use later in ML infill methods
+      column_dict_list = []
+
+      for nc in nmbrcolumns:
+
+        nmbrnormalization_dict = {nc : {'ordinal_dict' : ordinal_dict, \
+                                        'inverse_ordinal_dict' : inverse_ordinal_dict, \
+                                        'activations_list' : activations_list, \
+                                        'ordl_activations_dict' : ordl_activations_dict, \
+                                        'binsmean' : mean, \
+                                        'binsstd' : std, \
+                                        'bincount' : bincount, \
+                                        'bincuts' : bincuts, \
+                                        'binlabels' : binlabels}}
+
+        if nc in nmbrcolumns:
+
+          column_dict = { nc : {'category' : 'bzor', \
+                               'origcategory' : category, \
+                               'normalization_dict' : nmbrnormalization_dict, \
+                               'origcolumn' : column, \
+                               'inputcolumn' : column, \
+                               'columnslist' : nmbrcolumns, \
+                               'categorylist' : nmbrcolumns, \
+                               'infillmodel' : False, \
+                               'infillcomplete' : False, \
+                               'suffixoverlap_results' : suffixoverlap_results, \
+                               'deletecolumn' : False}}
+
+          column_dict_list.append(column_dict.copy())
+
+    else:
+      
+      column_dict_list = []
+    
     return mdf_train, mdf_test, column_dict_list
   
   def process_bnwd_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
@@ -24478,7 +24816,7 @@ class AutoMunge:
                            'PCA_cmnd':{}}, \
                 assigncat = {'nmbr':[], 'retn':[], 'mnmx':[], 'mean':[], 'MAD3':[], 'lgnm':[], \
                              'bins':[], 'bsor':[], 'pwrs':[], 'pwr2':[], 'por2':[], 'bxcx':[], \
-                             'addd':[], 'sbtr':[], 'mltp':[], 'divd':[], \
+                             'binz':[], 'bzor':[], 'addd':[], 'sbtr':[], 'mltp':[], 'divd':[], \
                              'log0':[], 'log1':[], 'logn':[], 'sqrt':[], 'rais':[], 'absl':[], \
                              'bnwd':[], 'bnwK':[], 'bnwM':[], 'bnwo':[], 'bnKo':[], 'bnMo':[], \
                              'bnep':[], 'bne7':[], 'bne9':[], 'bneo':[], 'bn7o':[], 'bn9o':[], \
@@ -25933,7 +26271,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.75'
+    automungeversion = '4.76'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -30173,6 +30511,123 @@ class AutoMunge:
     mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.int8)
 
     return mdf_test
+
+  def postprocess_binz_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+    '''
+    #bins processes a numerical set by creating bins coresponding to post z score
+    #normalization of <-2, -2-1, -10, 01, 12, >2 in one hot encoded columns
+    
+    #bins will be intended for a raw set that is not normalized
+    #bint will be intended for a previously normalized set
+    
+    #binz is comparable to bins but accepts a parameter bincount 
+    #as integer for number of bins
+    #where if bincount is an odd number the center bin straddles the mean
+    #and if bincount is even the center two bins straddle the mean
+    #defaults to 5 bins
+    #suffix appender is '_binz_#'' where # is integer for bin id
+    '''
+    
+    #retrieve normalization parameters from postprocess_dict
+    normkey = column +'_binz_0'
+    
+    if normkey in postprocess_dict['column_dict']:
+
+      mean = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binsmean']
+      std = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binsstd']
+      bincuts = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bincuts']
+      binlabels = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binlabels']
+      textcolumns = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binscolumns']
+
+      binscolumn = column + '_binz'
+
+      mdf_test[binscolumn] = mdf_test[column].copy()
+
+      #convert all values to either numeric or NaN
+      mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
+
+      #replace missing data with training set mean
+      mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
+
+      #z-score normalize
+      mdf_test[binscolumn] = (mdf_test[binscolumn] - mean) / std
+
+      #create bins based on standard deviation increments
+  #     binscolumn = column + '_bins'
+      mdf_test[binscolumn] = \
+      pd.cut( mdf_test[binscolumn], bins = bincuts,  \
+             labels = binlabels, precision=4)
+
+      #process bins as a categorical set
+      mdf_test = \
+      self.postprocess_textsupport_class(mdf_test, binscolumn, {}, 'tempkey', {'textcolumns':textcolumns})
+
+      #change data type for memory savings
+      for textcolumn in textcolumns:
+        mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.int8)
+
+      #delete the support column
+      del mdf_test[binscolumn]
+
+    return mdf_test
+
+  def postprocess_bzor_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+    '''
+    #bins processes a numerical set by creating bins coresponding to post z score
+    #normalization of <-2, -2-1, -10, 01, 12, >2 in one hot encoded columns
+    
+    #bins will be intended for a raw set that is not normalized
+    #bint will be intended for a previously normalized set
+    
+    #binz is comparable to bins but accepts a parameter bincount 
+    #as integer for number of bins
+    #where if bincount is an odd number the center bin straddles the mean
+    #and if bincount is even the center two bins straddle the mean
+    #defaults to 5 bins
+    #suffix appender is '_binz_#'' where # is integer for bin id
+    
+    #bzor is comparable to binz but returns ordinal encoded column
+    '''
+    
+    if 'bincount' in params:
+      bincount = params['bincount']
+    else:
+      bincount = 5
+      
+    if bincount > 0:
+
+      #retrieve normalization parameters from postprocess_dict
+      normkey = column +'_bzor'
+      #normkey = columnkey
+
+      mean = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binsmean']
+      std = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binsstd']
+      ordinal_dict = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordinal_dict']
+      bincuts = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bincuts']
+      binlabels = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binlabels']
+      
+      binscolumn = column + '_bzor'
+
+      #store original column for later reversion
+      mdf_test[binscolumn] = mdf_test[column].copy()
+
+      #convert all values to either numeric or NaN
+      mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
+
+      #replace missing data with training set mean
+      mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
+
+      #z-score normalize
+      mdf_test[binscolumn] = (mdf_test[binscolumn] - mean) / std
+
+      #create bins based on standard deviation increments
+      mdf_test[binscolumn] = \
+      pd.cut( mdf_test[binscolumn], bins = bincuts,  \
+             labels = binlabels, precision=4)
+
+      mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.int8)
+
+    return mdf_test
   
   def postprocess_bnwd_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
@@ -34330,7 +34785,7 @@ class AutoMunge:
     #(so this loses a lot of tail distribution information in the inversion)
     returned_values_dict = {}
     
-    i = -2.5
+    i = -2.5 + 0.5
     
     for bucket in ['s<-2', 's-21', 's-10', 's+01', 's+12', 's>+2']:
       
@@ -34374,7 +34829,7 @@ class AutoMunge:
     #(so this loses a lot of tail distribution information in the inversion)
     returned_values_dict = {}
     
-    i = -2.5
+    i = -2.5 + 0.5
     
     for bucket in ['t<-2', 't-21', 't-10', 't+01', 't+12', 't>+2']:
       
@@ -34425,7 +34880,7 @@ class AutoMunge:
     #we'll convert the input to integers
     df[normkey] = df[normkey].astype(int, errors='ignore')
     
-    i = -2.5
+    i = -2.5 + 0.5
     
     for bucket in [0, 1, 2, 3, 4, 5]:
       
@@ -34436,6 +34891,106 @@ class AutoMunge:
     df[inputcolumn] = df[normkey].copy()
     
     df[inputcolumn] = df[inputcolumn].replace(returned_values_dict)
+
+    return df, inputcolumn
+
+  def inverseprocess_binz(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_binz_class
+    #assumes any relevant parameters were saved in normalization_dict
+    #does not perform infill, assumes clean data
+    
+    #incomplete information recovery
+    """
+    
+    normkey = categorylist[0]
+    
+    binsmean = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binsmean']
+    binsstd = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binsstd']
+    bincuts = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bincuts']
+    binlabels = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binlabels']
+    textcolumns = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binscolumns']
+    bincount = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bincount']
+    
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    
+    #we'll follow convention that values placed in mid point of buckets
+    #eg for bucket with boundaries mean through mean+stsndard devation
+    #we'll return value mean + 1/2 standard deviation
+    #and for tails we'll arbitraricly follow consistent deltas between buckets
+    #(so this loses a lot of tail distribution information in the inversion)
+    returned_values_dict = {}
+    
+    i = - (bincount - 2) / 2 + 0.5
+    
+    for bucket in binlabels:
+      
+      #relies on suffix appender conventions
+      column = inputcolumn + '_binz_' + bucket
+      value = (i * binsstd + binsmean)
+      
+      returned_values_dict.update({column : value})
+      
+      i += 1
+      
+    df[inputcolumn] = 'zzzinfill'
+    
+    for column in categorylist:
+        
+      df[inputcolumn] = np.where(df[column] == 1, returned_values_dict[column], df[inputcolumn])
+      
+    return df, inputcolumn
+
+  def inverseprocess_bzor(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_bsor_class
+    #assumes any relevant parameters were saved in normalization_dict
+    #does not perform infill, assumes clean data
+    
+    #incomplete information recovery
+    """
+    
+    normkey = categorylist[0]
+    
+    #this has keys of pwr2 equivalent column headers and values of ordinal values found in column
+    binsmean = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binsmean']
+    binsstd = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binsstd']
+    ordinal_dict = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordinal_dict']
+    bincount = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bincount']
+    binlabels = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binlabels']
+    
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    
+    #we'll follow convention that values placed in mid point of buckets
+    #eg for bucket with boundaries mean through mean+stsndard devation
+    #we'll return value mean + 1/2 standard deviation
+    #and for tails we'll arbitraricly follow consistent deltas between buckets
+    #(so this loses a lot of tail distribution information in the inversion)
+    returned_values_dict = {}
+
+    #we'll convert the input to integers
+    df[normkey] = df[normkey].astype(int, errors='ignore')
+    
+    i = - (bincount - 2) / 2 + 0.5
+    
+    df[inputcolumn] = 'zzzinfill'
+    
+    for bucket in binlabels:
+      
+      df[inputcolumn] = np.where(df[normkey] == bucket, (i * binsstd + binsmean), df[inputcolumn])
+
+      i += 1
 
     return df, inputcolumn
   
