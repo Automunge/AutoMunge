@@ -4452,13 +4452,13 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
                                   'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'exclude', \
+                                  'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'tmsc'}})
     process_dict.update({'time' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
                                   'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'exclude', \
+                                  'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'time'}})
     process_dict.update({'date' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
@@ -24800,6 +24800,41 @@ class AutoMunge:
             populated_columns.append(column)
             
     return columntype_report
+
+  def populate_column_map_report(self, postprocess_dict):
+    """
+    #populates a report that maps input columns to their corresponding set of output columns
+    #as a dictionary with keys of input columns and values of a list of associated output columns
+    #includes label columns
+    #returned in postprocess_dict as postprocess_dict['column_map']
+    #excludes any returned columns that were part of a dimensionality reduction consolidation
+    #those are available in postprocess_dict as returned_Binary_columns and returned_PCA_columns
+    """
+    
+    column_map = {}
+    
+    allfinalcolumns = postprocess_dict['finalcolumns_train'] + postprocess_dict['finalcolumns_labels']
+    
+    for finalcolumn in allfinalcolumns:
+      
+      finalcolumn2 = finalcolumn
+      
+      if finalcolumn2 not in postprocess_dict['returned_PCA_columns'] and \
+      finalcolumn2 not in postprocess_dict['returned_Binary_columns']:
+      
+        if postprocess_dict['excl_suffix'] is False:
+
+          if finalcolumn in postprocess_dict['excl_columns_without_suffix']:
+
+            finalcolumn2 += '_excl'
+
+        columnkeylist = \
+        postprocess_dict['origcolumn'][postprocess_dict['column_dict'][finalcolumn2]['origcolumn']]['columnkeylist']
+
+        #if entry was already populated for multiple returned columns it overwrites it with same info
+        column_map.update({postprocess_dict['column_dict'][finalcolumn2]['origcolumn'] : columnkeylist})
+      
+    return column_map
   
   def automunge(self, df_train, df_test = False, \
                 labels_column = False, trainID_column = False, testID_column = False, \
@@ -26271,7 +26306,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.76'
+    automungeversion = '4.77'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -26375,6 +26410,10 @@ class AutoMunge:
     label_columntype_report = \
     self.populate_columntype_report(postprocess_dict, postprocess_dict['finalcolumns_labels'])
     postprocess_dict.update({'label_columntype_report' : label_columntype_report})
+
+    column_map = \
+    self.populate_column_map_report(postprocess_dict)
+    postprocess_dict.update({'column_map' : column_map})
 
     finalcolumns_labels = list(df_labels)
     
