@@ -92,7 +92,7 @@ class AutoMunge:
 
     #initialize bins based on what was passed through application of automunge(.)
     if binstransform is True:
-      bint = 'bins'
+      bint = 'bint'
     else:
       bint = None
         
@@ -2372,10 +2372,28 @@ class AutoMunge:
                                      'niecesnephews' : [], \
                                      'coworkers'     : [], \
                                      'friends'       : []}})
+
+    transform_dict.update({'bint' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['bint'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
     
     transform_dict.update({'bsor' : {'parents'       : [], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : ['bsor'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+
+    transform_dict.update({'btor' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['btor'], \
                                      'cousins'       : [NArw], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
@@ -5031,11 +5049,29 @@ class AutoMunge:
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'multirt', \
                                   'labelctgy' : 'bins'}})
+    process_dict.update({'bint' : {'dualprocess' : self.process_bins_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_bins_class, \
+                                  'inverseprocess' : self.inverseprocess_bins, \
+                                  'info_retention' : False, \
+                                  'defaultparams' : {'normalizedinput' : True}, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'multirt', \
+                                  'labelctgy' : 'bins'}})
     process_dict.update({'bsor' : {'dualprocess' : self.process_bsor_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_bsor_class, \
                                   'inverseprocess' : self.inverseprocess_bsor, \
                                   'info_retention' : False, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'singlct', \
+                                  'labelctgy' : 'bsor'}})
+    process_dict.update({'btor' : {'dualprocess' : self.process_bsor_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_bsor_class, \
+                                  'inverseprocess' : self.inverseprocess_bsor, \
+                                  'info_retention' : False, \
+                                  'defaultparams' : {'normalizedinput' : True}, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'bsor'}})
@@ -14400,6 +14436,12 @@ class AutoMunge:
     else:
       bincount = 6
     
+    #if data is known to be z-score normalized we'll reduce the computational overhead
+    if 'normalizedinput' in params:
+      normalizedinput = params['normalizedinput']
+    else:
+      normalizedinput = False
+    
     binscolumn = column + '_bins'
     
     if bincount > 0:
@@ -14412,30 +14454,38 @@ class AutoMunge:
       #convert all values to either numeric or NaN
       mdf_train[binscolumn] = pd.to_numeric(mdf_train[binscolumn], errors='coerce')
       mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
+      
+      if normalizedinput is False:
 
-      #get mean of training data
-      mean = mdf_train[binscolumn].mean()
+        #get mean of training data
+        mean = mdf_train[binscolumn].mean()
 
-      if mean != mean:
+        if mean != mean:
+          mean = 0
+
+        #get standard deviation of training data
+        std = mdf_train[binscolumn].std()
+
+        #special case, if standard deviation is 0 we'll set it to 1 to avoid division by 0
+        if std == 0:
+          std = 1
+
+        if std != std:
+          std = 1
+      
+      else:
         mean = 0
-
-      #get standard deviation of training data
-      std = mdf_train[binscolumn].std()
-
-      #special case, if standard deviation is 0 we'll set it to 1 to avoid division by 0
-      if std == 0:
         std = 1
-        
-      if std != std:
-        std = 1
-
+      
       #replace missing data with training set mean
       mdf_train[binscolumn] = mdf_train[binscolumn].fillna(mean)
       mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
+      
+      if normalizedinput is False:
 
-      #z-score normalize
-      mdf_train[binscolumn] = (mdf_train[binscolumn] - mean) / std
-      mdf_test[binscolumn] = (mdf_test[binscolumn] - mean) / std
+        #z-score normalize
+        mdf_train[binscolumn] = (mdf_train[binscolumn] - mean) / std
+        mdf_test[binscolumn] = (mdf_test[binscolumn] - mean) / std
 
       #derive cuts based on bincount
 
@@ -14500,6 +14550,7 @@ class AutoMunge:
                                         'bincount' : bincount, \
                                         'binsmean' : mean, \
                                         'binsstd' : std, \
+                                        'normalizedinput' : normalizedinput, \
                                         tc_ratio : tcratio}}
 
         if nc in textcolumns:
@@ -14545,6 +14596,12 @@ class AutoMunge:
       bincount = params['bincount']
     else:
       bincount = 6
+      
+    #if data is known to be z-score normalized we'll reduce the computational overhead
+    if 'normalizedinput' in params:
+      normalizedinput = params['normalizedinput']
+    else:
+      normalizedinput = False
     
     binscolumn = column + '_bsor'
     
@@ -14559,26 +14616,35 @@ class AutoMunge:
       #convert all values to either numeric or NaN
       mdf_train[binscolumn] = pd.to_numeric(mdf_train[binscolumn], errors='coerce')
       mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
+      
+      if normalizedinput is False:
 
-      #get mean of training data
-      mean = mdf_train[binscolumn].mean()
-      if mean != mean:
-        mean = 0
+        #get mean of training data
+        mean = mdf_train[binscolumn].mean()
+        if mean != mean:
+          mean = 0
+
+        #get standard deviation of training data
+        std = mdf_train[binscolumn].std()
+        if std == 0:
+          std = 1
+        if std != std:
+          std = 1
+          
+      else:
         
-      #get standard deviation of training data
-      std = mdf_train[binscolumn].std()
-      if std == 0:
-        std = 1
-      if std != std:
+        mean = 0
         std = 1
 
       #replace missing data with training set mean
       mdf_train[binscolumn] = mdf_train[binscolumn].fillna(mean)
       mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
+      
+      if normalizedinput is False:
 
-      #z-score normalize
-      mdf_train[binscolumn] = (mdf_train[binscolumn] - mean) / std
-      mdf_test[binscolumn] = (mdf_test[binscolumn] - mean) / std
+        #z-score normalize
+        mdf_train[binscolumn] = (mdf_train[binscolumn] - mean) / std
+        mdf_test[binscolumn] = (mdf_test[binscolumn] - mean) / std
       
       #derive cuts based on bincount
 
@@ -14636,6 +14702,7 @@ class AutoMunge:
                                         'ordl_activations_dict' : ordl_activations_dict, \
                                         'binsmean' : mean, \
                                         'binsstd' : std, \
+                                        'normalizedinput' : normalizedinput, \
                                         'bincount' : bincount, \
                                         'bincuts' : bincuts, \
                                         'binlabels' : binlabels}}
@@ -25910,7 +25977,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.78'
+    automungeversion = '4.79'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -29979,6 +30046,7 @@ class AutoMunge:
       bincuts = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bincuts']
       binlabels = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binlabels']
       textcolumns = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binscolumns']
+      normalizedinput = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['normalizedinput']
 
       binscolumn = column + '_bins'
 
@@ -29989,9 +30057,11 @@ class AutoMunge:
 
       #replace missing data with training set mean
       mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
+      
+      if normalizedinput is False:
 
-      #z-score normalize
-      mdf_test[binscolumn] = (mdf_test[binscolumn] - mean) / std
+        #z-score normalize
+        mdf_test[binscolumn] = (mdf_test[binscolumn] - mean) / std
 
       #create bins based on standard deviation increments
   #     binscolumn = column + '_bins'
@@ -30043,6 +30113,7 @@ class AutoMunge:
       ordinal_dict = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordinal_dict']
       bincuts = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bincuts']
       binlabels = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binlabels']
+      normalizedinput = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['normalizedinput']
       
       binscolumn = column + '_bsor'
 
@@ -30055,8 +30126,10 @@ class AutoMunge:
       #replace missing data with training set mean
       mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
 
-      #z-score normalize
-      mdf_test[binscolumn] = (mdf_test[binscolumn] - mean) / std
+      if normalizedinput is False:
+      
+        #z-score normalize
+        mdf_test[binscolumn] = (mdf_test[binscolumn] - mean) / std
 
       #create bins based on standard deviation increments
       mdf_test[binscolumn] = \
