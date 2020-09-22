@@ -5751,10 +5751,28 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'niecesnephews' : [], \
                                      'coworkers'     : [], \
                                      'friends'       : []}})
+
+    transform_dict.update({'bint' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['bint'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
     
     transform_dict.update({'bsor' : {'parents'       : [], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : ['bsor'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+
+    transform_dict.update({'btor' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['btor'], \
                                      'cousins'       : [NArw], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
