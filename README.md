@@ -2307,8 +2307,8 @@ normalization which scales data with min/max while retaining +/- sign
   defaults to 1
   - driftreport postmunge metrics: positiveratio / negativeratio / zeroratio / minimum / maximum / mean / std
   - inversion available: no
-* dxd2/d2d2/d3d2/d4d2/d5d2/d6d2: denoised rate of change (average of last two rows minus average
-of preceding two rows), high orders return lower orders (eg d2d2 returns original set, dxd2, 
+* dxd2/d2d2/d3d2/d4d2/d5d2/d6d2: denoised rate of change (average of last two or more rows minus average
+of preceding two or more rows), high orders return lower orders (eg d2d2 returns original set, dxd2, 
 and d2d2), all returned sets include 'retn' normalization
   - default infill: adjacent cells
   - default NArowtype: numeric
