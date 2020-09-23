@@ -2202,7 +2202,7 @@ set (i.e. <-2:0, -2-1:1, -10:2, 01:3, 12:4, >2:5)
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '_bsor'
-  - assignparam parameters accepted: bincount as integer for # of bins (defaults to 5)
+  - assignparam parameters accepted: bincount as integer for # of bins (defaults to 6)
   - driftreport postmunge metrics: ordinal_dict / ordl_activations_dict / binsmean / binsstd
   - inversion available: yes with partial recovery
 * bnwd/bnwK/bnwM: for numerical set graining to fixed width bins for one-hot encoded bins 
