@@ -1317,6 +1317,10 @@ processdict =  {'newt' : {'dualprocess' : am.process_mnmx_class, \
 #labelctgy: should be a string entry of a single transform category as recorded by the associated transformation
 #function. Used to determine a basis of feature selection for cases where labels are returned in multiple configurations.
 #Also used in label frequency levelizer.
+
+#Note that NArowtype is associated with a category's use as a root category, such as may be assigned to a column in assigncat
+#MLinfilltype is associated with a category's use as a transformation category entry to family tree primitives associated with a root category
+#and labelctgy is associated with a category's use as a root category for a label column when conducting feature importance
 ```
 
 Optionally, some additional values can be incorporated into the processdict to 
