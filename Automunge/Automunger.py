@@ -22595,28 +22595,36 @@ class AutoMunge:
     #check PCAn_components
     #accepts integers >1 or floats between 0-1 or None
     PCAn_components_valresult = False
-    if (isinstance(PCAn_components, (int, float)) \
-        and not isinstance(PCAn_components, bool)) \
+    if isinstance(PCAn_components, (int, float)) \
+    or PCAn_components is False \
     or PCAn_components == None:
       
-      if isinstance(PCAn_components, int):
-        if PCAn_components < 1:
+      if PCAn_components is not False:
+
+        if isinstance(PCAn_components, int):
+          if PCAn_components < 1:
+            PCAn_components_valresult = True
+            print("Error: invalid entry passed for PCAn_components")
+            print("Acceptable values are integers > 1, floats between 0-1, False, or None.")
+            print()
+          
+        if isinstance(PCAn_components, float):
+          if (PCAn_components > 1.0 or PCAn_components < 0.0):
+            PCAn_components_valresult = True
+            print("Error: invalid entry passed for PCAn_components")
+            print("Acceptable values are integers > 1, floats between 0-1, False, or None.")
+            print()
+
+        if PCAn_components is True:
           PCAn_components_valresult = True
           print("Error: invalid entry passed for PCAn_components")
-          print("Acceptable values are integers > 1, floats between 0-1, or None.")
-          print()
-        
-      if isinstance(PCAn_components, float):
-        if (PCAn_components > 1.0 or PCAn_components < 0.0):
-          PCAn_components_valresult = True
-          print("Error: invalid entry passed for PCAn_components")
-          print("Acceptable values are integers > 1, floats between 0-1, or None.")
+          print("Acceptable values are integers > 1, floats between 0-1, False, or None.")
           print()
 
     else:
       PCAn_components_valresult = True
       print("Error: invalid entry passed for PCAn_components")
-      print("Acceptable values are integers > 1, floats between 0-1, or None.")
+      print("Acceptable values are integers > 1, floats between 0-1, False, or None.")
       print()
       
     miscparameters_results.update({'PCAn_components_valresult' : PCAn_components_valresult})
@@ -24502,7 +24510,7 @@ class AutoMunge:
                 LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, LSfit = False, \
                 numbercategoryheuristic = 63, pandasoutput = False, NArw_marker = False, \
                 featureselection = False, featurepct = 1.0, featuremetric = 0.0, featuremethod = 'default', \
-                Binary = False, PCAn_components = None, PCAexcl = [], excl_suffix = False, \
+                Binary = False, PCAn_components = False, PCAexcl = [], excl_suffix = False, \
                 ML_cmnd = {'MLinfill_type':'default', \
                            'MLinfill_cmnd':{'RandomForestClassifier':{}, 'RandomForestRegressor':{}}, \
                            'PCA_type':'default', \
@@ -25597,10 +25605,16 @@ class AutoMunge:
     #assign a new n_components
 
     n_components = PCAn_components
-    if ML_cmnd['PCA_type'] == 'default':
 
-      _1, n_components = \
-      self.evalPCA(df_train, PCAn_components, ML_cmnd)
+    if n_components is not False:
+      if ML_cmnd['PCA_type'] == 'default':
+
+        _1, n_components = \
+        self.evalPCA(df_train, PCAn_components, ML_cmnd)
+
+    else:
+      n_components = None
+      PCAn_components = None
 
     #if PCAn_components != None:
     if n_components != None:
@@ -25964,7 +25978,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.80'
+    automungeversion = '4.81'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
