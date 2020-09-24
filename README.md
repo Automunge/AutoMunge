@@ -137,7 +137,7 @@ am.automunge(df_train, df_test = False, \
              LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, LSfit = False, \
              numbercategoryheuristic = 63, pandasoutput = False, NArw_marker = False, \
              featureselection = False, featurepct = 1.0, featuremetric = 0.0, featuremethod = 'default', \
-             Binary = False, PCAn_components = None, PCAexcl = [], excl_suffix = False, \
+             Binary = False, PCAn_components = False, PCAexcl = [], excl_suffix = False, \
              ML_cmnd = {'MLinfill_type':'default', \
                         'MLinfill_cmnd':{'RandomForestClassifier':{}, 'RandomForestRegressor':{}}, \
                         'PCA_type':'default', \
@@ -368,7 +368,7 @@ am.automunge(df_train, df_test = False, \
              LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, LSfit = False, \
              numbercategoryheuristic = 63, pandasoutput = False, NArw_marker = False, \
              featureselection = False, featurepct = 1.0, featuremetric = 0.0, featuremethod = 'default', \
-             Binary = False, PCAn_components = None, PCAexcl = [], excl_suffix = False, \
+             Binary = False, PCAn_components = False, PCAexcl = [], excl_suffix = False, \
              ML_cmnd = {'MLinfill_type':'default', \
                         'MLinfill_cmnd':{'RandomForestClassifier':{}, 'RandomForestRegressor':{}}, \
                         'PCA_type':'default', \
@@ -605,7 +605,7 @@ am.automunge(df_train, df_test = False, \
              LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, LSfit = False, \
              numbercategoryheuristic = 63, pandasoutput = False, NArw_marker = False, \
              featureselection = False, featurepct = 1.0, featuremetric = 0.0, featuremethod = 'default', \
-             Binary = False, PCAn_components = None, PCAexcl = [], excl_suffix = False, \
+             Binary = False, PCAn_components = False, PCAexcl = [], excl_suffix = False, \
              ML_cmnd = {'MLinfill_type':'default', \
                         'MLinfill_cmnd':{'RandomForestClassifier':{}, 'RandomForestRegressor':{}}, \
                         'PCA_type':'default', \
@@ -903,16 +903,16 @@ can pass Binary = [False, 'target_column_1', 'target_column_2']. Note that
 when applied a column named 'Binary' is used in derivation, thus this is a 
 reserved column header when applying this transform.
 
-* PCAn_components: defaults to _None_ for no PCA dimensionality reduction performed
-(other than based on the automatic PCA application based on ratio of columns and 
-rows - see ML_cmnd if you want to turn that off). A user can pass _an integer_ to 
-define the number of PCA derived features for purposes of dimensionality 
-reduction, such integer to be less than the otherwise returned number of sets. 
-Function will default to kernel PCA for all non-negative sets or otherwise Sparse PCA. 
-Also if this value is passed as a _float <1.0_ then linear PCA will be applied such 
-that the returned number of sets are the minimum number that can reproduce that 
-percent of the variance. Note this can also be passed in conjunction with assigned 
-PCA type or parameters in the ML_cmnd object.
+* PCAn_components: defaults to False for no PCA dimensionality reduction performed
+If passed as _None_ not performed unless # features exceeds 0.5 # rows as a heuristic.
+A user can pass _an integer_ to define the number of PCA derived features for 
+purposes of dimensionality reduction, such integer to be less than the otherwise 
+returned number of sets. Function will default to kernel PCA for all non-negative 
+sets or otherwise Sparse PCA. Also if this value is passed as a _float <1.0_ then 
+linear PCA will be applied such that the returned number of sets are the minimum 
+number that can reproduce that percent of the variance. Note this can also be passed 
+in conjunction with assigned PCA type or parameters in the ML_cmnd object. These methods
+apply PCA with the scikit-learn library.
 
 * PCAexcl: a _list_ of column headers for columns that are to be excluded from
 any application of PCA
@@ -979,12 +979,7 @@ ML_cmnd = {'MLinfill_type':'default', \
            'PCA_cmnd':{'kernel':'sigmoid'}}
            
 ```
-Note that the PCA is currently defaulted to active for cases where the 
-train set number of features is >0.50 the number of rows. A user can 
-change this ratio by passing 'PCA_cmnd':{'col_row_ratio':0.22}} for 
-instance. Also a user can simply turn off default PCA transforms by 
-passing 'PCA_cmnd':{'PCA_type':'off'}. A user can also exclude returned
-boolean (0/1) columns from any PCA application by passing 
+A user can also exclude returned boolean (0/1) columns from any PCA application by passing 
 'PCA_cmnd':{'bool_PCA_excl':True}
 or exclude returned boolean and ordinal columns from PCA application by
 'PCA_cmnd':{'bool_ordl_PCAexcl':True}
@@ -1825,11 +1820,6 @@ default to 'text' (one-hot encoding) instead of '1010'. Also, numerical data wil
 to 'excl2' (pass-through) instead of 'nmbr'. Also, if label smoothing is applied, label 
 columns evaluated as 'bnry' (two unique values) will default to 'text' instead of 'bnry'
 as label smoothing requires one-hot encoding.
-
-- PCA: if the number of features exceeds 0.5 times the number of rows (an arbitrary heuristic)
-a default PCA transform is applied defaulting to kernel PCA if all positive or otherwise 
-sparse PCA (using scikit library). Note that this heuristic ratio can be changed or PCA 
-turned off in the ML_cmnd, reference the ML_cmnd section under automunge(.) passed parameters.
 
 - powertransform: if the powertransform parameter is activated, a statistical evaluation
 will be performed on numerical sets to distinguish between columns to be subject to
