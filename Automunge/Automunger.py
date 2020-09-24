@@ -17142,11 +17142,17 @@ class AutoMunge:
       defaultdatetime = 'dat6'
       
       #_____
-      
-      if eval_ratio > 0 and eval_ratio <= 1:
-        eval_ratio = eval_ratio
+
+      rowcount = df_source.shape[0]
+
+      #we'll have convention that eval_ratio only applied for sets with >2,000 rows
+      if rowcount < 2000:
+        eval_ratio = 1.
       else:
-        eval_ratio = eval_ratio / df_source.shape[0]
+        if eval_ratio > 0 and eval_ratio <= 1:
+          eval_ratio = eval_ratio
+        else:
+          eval_ratio = eval_ratio / rowcount
       
       #take a random sample of rows for evaluation based on eval_ratio heuristic
       df = pd.DataFrame(df_source[column]).sample(frac=eval_ratio, random_state=randomseed)
@@ -25978,7 +25984,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.81'
+    automungeversion = '4.82'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
