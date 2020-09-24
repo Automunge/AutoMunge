@@ -809,6 +809,8 @@ This defaults to 42, a nice round number.
 * eval_ratio: a 0-1 float or integer for number of rows, defaults to 0.5, serves
 to reduce the overhead of the category evaluation functions under automation by only
 evaluating this sampled ratio of rows instead fo thte full set. Makes automunge faster.
+To accomodate small data sets, the convention is that eval_ratio is only applied
+when training set has > 2,000 rows.
 
 * LabelSmoothing_train / LabelSmoothing_test / LabelSmoothing_val: each of these
 parameters accept float values in range _0.0-1.0_ or the default value of _False_ to 
