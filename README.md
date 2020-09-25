@@ -1243,8 +1243,12 @@ to define a corresponding processdict entry for the new category, which we
 demonstrate here:
 
 
-* processdict: allows a user to define their own processing functions 
-corresponding to new transformdict keys. We'll describe the entries here:
+* processdict: allows a user to define their own processing functions and transformation category properties 
+corresponding to new transformdict entries. All transformation categories used in transformdict, including
+those used as root categories as well as transformation category entries to family tree primitives associated
+with a root category, require a correpsonding entry in the processdict to define transformation category 
+properties. Only in cases where a transformdict entry is being passed to overwrite an existing category internal 
+to the library is a corresponding processdict entry not required. We'll describe the processdict entries here:
 ```
 #for example, to populate a custom transformation category 'newt' that uses
 #internal defined transformation functions:
