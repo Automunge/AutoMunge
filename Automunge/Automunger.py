@@ -23504,11 +23504,16 @@ class AutoMunge:
     #we'll have convention that only processdict entries can have functionpointers, not proces_dict entries
     #ie only externally defined processdict can have functionpointers
     #tracks a counter i to ensure don't get caught in infinite loop, defaults to 111 cycles
+
+    #where targetcategory is the processdict category entry that has a functionpointer entry
+    #pointercategory is the corresponding functionpointer entry
+    #and for chains of functionpointer entries the targetcategory remains same and pointercategory is updated
     """
     
-    if i > 111:
+    #counter i is here to ensure if we're recursively following chains of pointers we don't get caught in loop
+    if i > 1111:
       
-      print("error: functionpointer cycled through 111 entries without finding a stopping point")
+      print("error: functionpointer cycled through 1111 entries without finding a stopping point")
       print("for processdict category entry: ", targetcategory)
       print("likely infinite loop")
       
@@ -23520,16 +23525,29 @@ class AutoMunge:
       
       if pointercategory in processdict:
         
+        #if function poitner points to a category that itself has a functionpointer
         if 'functionpointer' in processdict[pointercategory]:
           
+          #for chains of functionpointers, we'll still update defaultparams for each link
+          if 'defaultparams' in processdict[pointercategory]:
+            if 'defaultparams' in processdict[targetcategory]:
+              defaultparams = deepcopy(processdict[pointercategory]['defaultparams'])
+              defaultparams.update(processdict[targetcategory]['defaultparams'])
+              processdict[targetcategory]['defaultparams'] = defaultparams
+            else:
+              processdict[targetcategory]['defaultparams'] = processdict[pointercategory]['defaultparams']
+          
+          #now new pointer category is the functionpointer entry of the prior functionpointer entry
           pointercategory = processdict[pointercategory]['functionpointer']
-            
+          
+          #follow through recursion
           processdict, i, check_functionpointer_result = \
           self.grab_processdict_functions_support(targetcategory, pointercategory, processdict, process_dict, \
                                                   i, check_functionpointer_result)
             
         else:
-
+          
+          #function pointers have to point to a category with either a funcitonpointer or processing function entries
           if 'dualprocess' not in processdict[pointercategory] or \
           'singleprocess' not in processdict[pointercategory] or \
           'postprocess' not in processdict[pointercategory]:
@@ -23539,6 +23557,7 @@ class AutoMunge:
             print("for processdict entry ", pointercategory)
             print()
 
+          #so if processing function entries were present, we can grab them and pass to targetcategory
           else:
             
             processdict[targetcategory]['dualprocess'] = processdict[pointercategory]['dualprocess']
@@ -23557,11 +23576,12 @@ class AutoMunge:
                 processdict[targetcategory]['defaultparams'] = defaultparams
               else:
                 processdict[targetcategory]['defaultparams'] = processdict[pointercategory]['defaultparams']
-                
+      
+      #if pointercategory wasn't in user passed processdict, we'll next check the internal library process_dict
       elif pointercategory in process_dict:
 
         #we'll have convention that only processdict entries can have functionpointers, not proces_dict entries
-
+        #so we don't need as many steps as above, can just assume processing functions are present
         processdict[targetcategory]['dualprocess'] = process_dict[pointercategory]['dualprocess']
         processdict[targetcategory]['singleprocess'] = process_dict[pointercategory]['singleprocess']
         processdict[targetcategory]['postprocess'] = process_dict[pointercategory]['postprocess']
@@ -23578,7 +23598,8 @@ class AutoMunge:
             processdict[targetcategory]['defaultparams'] = defaultparams
           else:
             processdict[targetcategory]['defaultparams'] = process_dict[pointercategory]['defaultparams']
-              
+
+      #if pointercategory wasn't found in either of processdict or process_dict
       else:
         
         check_functionpointer_result = True
@@ -26178,7 +26199,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.83'
+    automungeversion = '4.84'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
