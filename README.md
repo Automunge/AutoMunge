@@ -1340,6 +1340,7 @@ processdict =  {'newt' : {'dualprocess' : am.process_mnmx_class, \
 #And 'info_retention' is boolean to signal whether there will be any information
 #loss to recovered data from inversion. For format of inverseprocess functions
 #please refer to the code base.
+```
 
 Optionally, a user can set alternate default parameters to be passed to the associated
 transfomation functions by including the 'defaultparams' key. These updates to default
@@ -1357,12 +1358,34 @@ processdict =  {'DLmm' : {'dualprocess' : am.process_DPmm_class, \
                           'labelctgy' : 'DLmm'}}
 ```
 
-#For advanced users:
-#Note that when populating a processdict for a transformation category, the
-#inversion function should be consistent with the transformation category that
-#was populated in the column_dict data structure as part of the forward pass
-#transformations in the dualprocess or singleprocess processdict entries.
+Since specification of transformation functions can be kind of cumbersome in order
+to dig out from the codebase naming conventions for internally defined functions, a
+simplification is available when populating a processdict for a user passed entry by
+way of the 'functionpointer' category. When a functionpointer category entry is included, 
+the trasnformation functions are automatically populated, such as with entries for 
+dualprocess, singleprocess, postprocess, inverseprocess, and info_retention. defaultparam 
+entries are also accessed, and if the new category specification contains any redundant 
+defaultparam entries with the pointer category the new category entries will take 
+precedence. 
+
+In other words, if you are populating a new processdict transformation 
+category and you want the transformation functions to match an existing category, you 
+can simply pass the existing category as a functionpointer entry to the new category. 
+Here is an example if we want to match the DLmm category demonstrated above for a new 
+category 'newt', such as would be useful if we wanted to define an alternate DLmm family 
+tree in a corresponding newt transformdict entry.
 ```
+processdict =  {'newt' : {'functionpointer' : 'DLmm', \
+                          'NArowtype' : 'numeric', \
+                          'MLinfilltype' : 'numeric', \
+                          'labelctgy' : 'DLmm'}}
+```
+
+As an asterisk for advanced users:
+Note that when populating a processdict for a transformation category, the
+inversion function should be consistent with the transformation category that
+was populated in the column_dict data structure as part of the forward pass
+transformations in the dualprocess or singleprocess processdict entries.
 
 * evalcat: modularizes the automated evaluation of column properties for assignment 
 of root transformation categories, allowing user to pass custom functions for this 
