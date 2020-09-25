@@ -3024,9 +3024,8 @@ class AutoMunge:
     #singleprocess funciton will be instead which processes a single column
     #at a time and is neutral to whether that set is from train or test data.
     
-    #starting in version 1.79, this also stores entries for 'NArowtype' and
-    #'MLinfilltype', which were added to facilitate user definition of 
-    #custom processing functions
+    #note that the functionpointer entry is currenlty only available for user passed processdict
+    #this internal library process_dict does not accept functionpointer entries
     
     #NArowtype entries are:
     # - 'numeric' for source columns with expected numeric entries
@@ -22969,8 +22968,8 @@ class AutoMunge:
     """
     #Here's we'll do a third check on assigncat
     #to ensure that for any listed root categories, 
-    #any category entries to corresponding family tree primitives in process_dict 
-    #have a corresponding entry in the transform_dict
+    #any category entries to corresponding family tree primitives in transform_dict 
+    #have a corresponding entry in the process_dict
     #note that transformdict entries not required for root categories, 
     #unless they are also entries to a family tree
     """
@@ -23426,6 +23425,205 @@ class AutoMunge:
       print("")
       
     return result
+
+  def check_processdict(self, processdict):
+    """
+    #runs validations on user passed processdict
+    #assumes any conversion from functionpointer already taken place
+    
+    #checks that NArowtype and MLinfilltype have valid entries
+    #checks that labelctgy is present
+    #checks that dualprocess postprocess and singleprocess have entries
+    """
+    
+    check_processdict_result = False
+    
+    for entry in processdict:
+      
+      if 'NArowtype' not in processdict[entry]:
+        check_processdict_result = True
+        print("error: processdict missing 'NArowtype' entry for category: ", entry)
+        print()
+      else:
+        if processdict[entry]['NArowtype'] not in \
+        ['numeric', 'integer', 'justNaN', 'exclude', 'positivenumeric', 'nonnegativenumeric', \
+        'nonzeronumeric', 'parsenumeric', 'parsenumeric_commas', 'parsenumeric_EU', 'datetime']:
+          check_processdict_result = True
+          print("error: invalid 'NArowtype' processdict entry for category: ", entry)
+          print()
+        
+      if 'MLinfilltype' not in processdict[entry]:
+        check_processdict_result = True
+        print("error: processdict missing 'MLinfilltype' entry for category: ", entry)
+        print()
+      else:
+        if processdict[entry]['MLinfilltype'] not in \
+        ['numeric', 'singlct', 'binary', 'multirt', 'concurrent_act', 'concurrent_nmbr', '1010', \
+        'exclude', 'boolexclude', 'totalexclude']:
+          check_processdict_result = True
+          print("error: invalid 'MLinfilltype' processdict entry for category: ", entry)
+          print()
+        
+      if 'labelctgy' not in processdict[entry]:
+        check_processdict_result = True
+        print("error: processdict missing 'labelctgy' entry for category: ", entry)
+        print()
+      # else:
+      #   #this isn't a full validation, just checking that labelctgy is a valid entry in processdict
+      #   if processdict[entry]['labelctgy'] not in processdict:
+      #     check_processdict_result = True
+      #     print("error: invalid 'labelctgy' processdict entry for category: ", entry)
+      #     print()
+      
+      if ('dualprocess' not in processdict[entry] or 'postprocess' not in processdict[entry] or \
+          'singleprocess' not in processdict[entry]):
+        check_processdict_result = True
+        print("error: processdict entry missing processing function entrys for categery: ", entry)
+        print("requires entries for 'dualprocess', 'postprocess', and 'singleprocess'")
+        print()
+      else:
+        pass
+        #for now won't validate the transfomration function entries
+        #since there are scenarios where a processdict is for a root category not used as a transformation category
+        #in which case these entries could just be all None
+      
+    return check_processdict_result
+
+  def grab_processdict_functions_support(self, targetcategory, pointercategory, processdict, process_dict, \
+                                         i, check_functionpointer_result):
+    """
+    #support function for grab_processdict_functions
+    #takes as input the targetcategory that has a pointer entry
+    #and the associated pointercategory
+    #where if pointercategory itself has a pointer, calls this function recursively
+    #to find the associated functions
+    #and assign them to targetcategory entry in processdict
+    #where first checks processdict and if not present checks process_dict
+    #where processdcit is user passed data strcuture
+    #and process_dcit is internal library prior to consolidation
+    #we'll have convention that only processdict entries can have functionpointers, not proces_dict entries
+    #ie only externally defined processdict can have functionpointers
+    #tracks a counter i to ensure don't get caught in infinite loop, defaults to 111 cycles
+    """
+    
+    if i > 111:
+      
+      print("error: functionpointer cycled through 111 entries without finding a stopping point")
+      print("for processdict category entry: ", targetcategory)
+      print("likely infinite loop")
+      
+      check_functionpointer_result = True
+      
+    else:
+      
+      i+=1
+      
+      if pointercategory in processdict:
+        
+        if 'functionpointer' in processdict[pointercategory]:
+          
+          pointercategory = processdict[pointercategory]['functionpointer']
+            
+          processdict, i, check_functionpointer_result = \
+          self.grab_processdict_functions_support(targetcategory, pointercategory, processdict, process_dict, \
+                                                  i, check_functionpointer_result)
+            
+        else:
+
+          if 'dualprocess' not in processdict[pointercategory] or \
+          'singleprocess' not in processdict[pointercategory] or \
+          'postprocess' not in processdict[pointercategory]:
+
+            check_functionpointer_result = True
+            print("error: processdict entry found without functionpointer or dualprocess / singleprocess / postprocess")
+            print("for processdict entry ", pointercategory)
+            print()
+
+          else:
+            
+            processdict[targetcategory]['dualprocess'] = processdict[pointercategory]['dualprocess']
+            processdict[targetcategory]['singleprocess'] = processdict[pointercategory]['singleprocess']
+            processdict[targetcategory]['postprocess'] = processdict[pointercategory]['postprocess']
+            
+            if 'inverseprocess' in processdict[pointercategory]:
+              processdict[targetcategory]['inverseprocess'] = processdict[pointercategory]['inverseprocess']
+            if 'info_retention' in processdict[pointercategory]:
+              processdict[targetcategory]['info_retention'] = processdict[pointercategory]['info_retention']
+              
+            if 'defaultparams' in processdict[pointercategory]:
+              if 'defaultparams' in processdict[targetcategory]:
+                defaultparams = deepcopy(processdict[pointercategory]['defaultparams'])
+                defaultparams.update(processdict[targetcategory]['defaultparams'])
+                processdict[targetcategory]['defaultparams'] = defaultparams
+              else:
+                processdict[targetcategory]['defaultparams'] = processdict[pointercategory]['defaultparams']
+                
+      elif pointercategory in process_dict:
+
+        #we'll have convention that only processdict entries can have functionpointers, not proces_dict entries
+
+        processdict[targetcategory]['dualprocess'] = process_dict[pointercategory]['dualprocess']
+        processdict[targetcategory]['singleprocess'] = process_dict[pointercategory]['singleprocess']
+        processdict[targetcategory]['postprocess'] = process_dict[pointercategory]['postprocess']
+        
+        if 'inverseprocess' in process_dict[pointercategory]:
+          processdict[targetcategory]['inverseprocess'] = process_dict[pointercategory]['inverseprocess']
+        if 'info_retention' in process_dict[pointercategory]:
+          processdict[targetcategory]['info_retention'] = process_dict[pointercategory]['info_retention']
+          
+        if 'defaultparams' in process_dict[pointercategory]:
+          if 'defaultparams' in processdict[targetcategory]:
+            defaultparams = deepcopy(process_dict[pointercategory]['defaultparams'])
+            defaultparams.update(processdict[targetcategory]['defaultparams'])
+            processdict[targetcategory]['defaultparams'] = defaultparams
+          else:
+            processdict[targetcategory]['defaultparams'] = process_dict[pointercategory]['defaultparams']
+              
+      else:
+        
+        check_functionpointer_result = True
+        
+        print("error: user passed processdict entry for category ", targetcategory)
+        print("contained a functionpointer that did not point to a category with function definitions")
+        print()
+
+    return processdict, i, check_functionpointer_result
+  
+  def grab_processdict_functions(self, processdict, process_dict):
+    """
+    #checks for functionpointer entries in user passed processdict
+    #when present populates that category with associated functions
+    #where processdict is user passed data structure
+    #and process_dict is internal library prior to consolidation
+    #and functionpointer refers to an option to populate processdict
+    #with an entry that grabs processing functions from another prcoess_dict entry
+    #i.e. singleprocess, dualprocess, postprocess, 
+    #and if present inverseprocess, info_retention
+    #functionpointer first checks the processdict, and if pointer not present checks the process_dict
+    #note that functionpointer also grabs defaultparams
+    #although if any defaultparam entries in the set with functionpointer they will override corresponding entries
+    #for example if category with pointer has defaultparam entires for suffix
+    #which points to anotehr category with differnt defaultparam entries for suffix
+    #the entry in the set with the pointer takes precedence
+    #note that in cases where processing functions already present in a set with pointer, they will be overwritten
+    #we'll have convention that only processdict entries can have functionpointers, not proces_dict entries
+    """
+    
+    check_functionpointer_result = False
+    
+    for entry in processdict:
+      
+      if 'functionpointer' in processdict[entry]:
+        
+        i = 0
+        targetcategory = entry
+        pointercategory = processdict[entry]['functionpointer']
+        
+        processdict, i, check_functionpointer_result = \
+        self.grab_processdict_functions_support(targetcategory, pointercategory, processdict, process_dict, \
+                                               i, check_functionpointer_result)
+
+    return processdict, check_functionpointer_result
   
   def assigncat_str_convert(self, assigncat):
     """
@@ -24608,8 +24806,11 @@ class AutoMunge:
     #initialize processing dicitonaries
     transform_dict = self.assembletransformdict(binstransform, NArw_marker)
 
+    #transformdict is user passed data structure
+    #vs transform_dict which is the internal library
     if bool(transformdict) is not False:
-
+      
+      #perform some validaitons on transformdict
       check_transformdict_result1, check_transformdict_result2, transformdict = \
       self.check_transformdict(transformdict)
 
@@ -24621,15 +24822,8 @@ class AutoMunge:
       
       miscparameters_results.update({'check_transformdict2_result1' : check_transformdict2_result1, \
                                      'check_transformdict2_result2' : check_transformdict2_result2})
-      
-  #       #first print a notification if we are overwriting anything
-  #       for keytd in list(transformdict.keys()):
-  #         #keytd = key
-  #         if keytd in list(transform_dict.keys()):
-  #           print("Note that a key in the user passed transformdict already exists in library")
-  #           print("Overwriting entry for trasnformdict key ", keytd)
 
-      #now update the trasnformdict
+      #now consolidate the transform_dict and transformdict into single dictionary
       transform_dict.update(transformdict)
       
     #check for infinite loops in user passed transformdict
@@ -24653,17 +24847,27 @@ class AutoMunge:
         if 'bool_PCA_excl' not in ML_cmnd['PCA_cmnd']:
           ML_cmnd['PCA_cmnd'].update({'bool_PCA_excl':True})
 
+    #processdict is user passed data strucure, vs process_dcit which is the internal library
     if bool(processdict) is not False:
+      
+      #this function checks if any category entries in user passed processdict 
+      #have their processing functions assigned by way of a functionpointer entry
+      #and if so populate the entry with the associated processing functions
+      processdict, check_functionpointer_result = \
+      self.grab_processdict_functions(processdict, process_dict)
+      miscparameters_results.update({'check_functionpointer_result' : check_functionpointer_result})
+      
+      #this funcion applies some misc validations on processdict
+      check_processdict_result = \
+      self.check_processdict(processdict)
+      miscparameters_results.update({'check_processdict_result' : check_processdict_result})
 
-  #       #first print a notification if we are overwriting anything
-  #       for keypd in list(processdict.keys()):
-  #         #keypd = key
-  #         if keypd in list(processdict.keys()):
-  #           print("Note that a key in the user passed processdict already exists in library")
-  #           print("Overwriting entry for processdict key ", keypd)
-
-      #now update the processdict
+      #now consolidate user passed entries from processdict and internal library in process_dict
       process_dict.update(processdict)
+      
+    else:
+      miscparameters_results.update({'check_functionpointer_result' : False})
+      miscparameters_results.update({'check_processdict_result' : False})
       
     #here we confirm that all of the keys of assigncat have corresponding entries in process_dict
     check_assigncat_result2 = self.check_assigncat2(assigncat, transform_dict)
@@ -24830,6 +25034,7 @@ class AutoMunge:
     if trainID_columns_in_df_test is True:
       testID_column = trainID_column
 
+    #non-range indexes we'll move into the ID sets for consistent shuffling and validation splits
     if type(df_train.index) != pd.RangeIndex:
       #if df_train.index.names == [None]:
       if None in df_train.index.names:
@@ -24860,7 +25065,7 @@ class AutoMunge:
     df_train_tempID = pd.DataFrame({indexcolumn:range(0,df_train.shape[0])})
     tempIDlist = []
     
-    #extract the ID columns from train and test set
+    #extract the ID columns from train set
     if trainID_column is not False:
       df_trainID = pd.DataFrame(df_train[trainID_column])
 
@@ -24892,8 +25097,7 @@ class AutoMunge:
     tempIDlist = []
     df_test_tempID = pd.DataFrame({indexcolumn:range(0,df_test.shape[0])})
     
-    #extract the ID columns from train and test set
-#     if test_plug_marker is False:
+    #extract the ID columns from test set
     #decided to do this stuff even if there's a dummy set for df_test 
     #to ensure downstream stuff works
     if testID_column is not False:
@@ -24925,7 +25129,7 @@ class AutoMunge:
 
     #carve out the validation rows
 
-    #set randomness seed number
+    #set randomness seed number (sorry I was trying to be cute here)
     answer = randomseed
 
     #ok now carve out the validation rows. We'll process these later
@@ -25190,7 +25394,6 @@ class AutoMunge:
         print("processing column: ", column)
         print("    root category: ", category)
 
-
       ##
       #now process family
       df_train, df_test, postprocess_dict = \
@@ -25218,6 +25421,7 @@ class AutoMunge:
 #       #now we'll apply the floatprecision transformation
 #       df_train = self.floatprecision_transform(df_train, columnkeylist, floatprecision)
 #       df_test = self.floatprecision_transform(df_test, columnkeylist, floatprecision)
+      #(floatprocsiion is now done at conclusion of transforms below)
 
       ##
       #so last line I believe returns string if only one entry, so let's run a test
@@ -25237,8 +25441,6 @@ class AutoMunge:
                                                        'columnkeylist' : columnkeylist, \
                                                        'columnkey' : columnkey}})
 
-#           for newcolumn in postprocess_dict['origcolumn'][column]['columnkeylist']:
-#             postprocess_dict['newcolumn'].update({newcolumn : {'origcolumn' : column}})
       ##
       #printout display progress
       if printstatus is True:
@@ -25342,12 +25544,6 @@ class AutoMunge:
           final_assigncat[labelscategory].append(labels_column)
         else:
           final_assigncat.update({labelscategory:[labels_column]})
-
-        #this now moved into evalcategory function:
-  #         #we've previously introduced the convention that for default numeric label sets
-  #         #we forgo z-score normalization, here let's make that distinction
-  #         if labelscategory in ['nmbr']:
-  #           labelscategory = 'exc3'
 
       #apply assignnan_convert
       df_labels = self.assignnan_convert(df_labels, labels_column, labelscategory, assignnan, postprocess_dict)
@@ -25679,15 +25875,12 @@ class AutoMunge:
           print(PCActgy)
           print("")
 
-
         PCA_suffixoverlap_results = \
         self.df_check_suffixoverlap(df_train, list(PCAset_train), suffixoverlap_results = {})
 
         miscparameters_results.update({'PCA_suffixoverlap_results':PCA_suffixoverlap_results})
 
         #reattach the excluded columns to PCA set
-#         df_train = pd.concat([PCAset_train, df_train[PCAexcl_posttransform]], axis=1)
-#         df_test = pd.concat([PCAset_test, df_test[PCAexcl_posttransform]], axis=1)
         df_train = pd.concat([PCAset_train.set_index(df_train.index), df_train[PCAexcl_posttransform]], axis=1)
         df_test = pd.concat([PCAset_test.set_index(df_test.index), df_test[PCAexcl_posttransform]], axis=1)
 
@@ -25939,7 +26132,8 @@ class AutoMunge:
         postprocess_dict['excl_columns_without_suffix'].append(cd_column[:-5])
         
     if excl_suffix is False:
-      #we'll duplicate excl columns in postprocess_dict['column_dict'] to have entries both with and without suffix as keys
+      #we'll duplicate excl columns in postprocess_dict['column_dict'] to list both with and without suffix as keys
+      #I don't think this redundant entry is used anywhere, just thought might prove helpful downstream
       for excl_column_with_suffix in postprocess_dict['excl_columns_with_suffix']:
         excl_index = postprocess_dict['excl_columns_with_suffix'].index(excl_column_with_suffix)
         excl_column_without_suffix = postprocess_dict['excl_columns_without_suffix'][excl_index]
@@ -25984,14 +26178,14 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.82'
+    automungeversion = '4.83'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
                        + str(application_timestamp)
 
-    #here we'll populate the postprocess_dci8t that is returned from automunge
-    #as it. will be. used in the postmunge call beow to process validation sets
+    #here we'll populate the postprocess_dictt that is returned from automunge
+    #as it will be used in the postmunge call below to process validation sets
     postprocess_dict.update({'origtraincolumns' : columns_train, \
                              'origcolumns_all' : origcolumns_all, \
                              'finalcolumns_train' : finalcolumns_train, \
@@ -32407,6 +32601,8 @@ class AutoMunge:
     # #(going to leave this out for now in case has large memory overhead impact
     # #as in some scenarios postprocess_dict can be a large file)
     # postprocess_dict = deepcopy(postprocess_dict)
+    #I believe the only edits made to postproces_dict in postmunge are to track infill status
+    #which are reset after use
 
     #traindata only matters when transforms apply different methods for train vs test
     #such as for noise injection to train data for differential privacy
@@ -32532,6 +32728,7 @@ class AutoMunge:
 #     elif inplace is True:
 #       pass
 
+    #_______
     #here is where inversion is performed if selected
     if inversion is not False:
 
@@ -32544,6 +32741,7 @@ class AutoMunge:
                             pandasoutput, LabelSmoothing)
       
       return df_test, recovered_list, inversion_info_dict
+    #_______
 
     if type(df_test.index) != pd.RangeIndex:
       #if df_train.index.names == [None]:
@@ -32676,12 +32874,13 @@ class AutoMunge:
       print()
       return
 
+    #__________
     #here we'll perform drift report if elected
     #if driftreport is True:
     if driftreport in [True, 'report_full']:
 
-      #returns a new partially populated postpr4ocess_dict containing
-      #column_dict entries populated with newly calculated normalizaiton parameters
+      #returns a new partially populated postprocess_dict containing
+      #column_dict entries populated with newly calculated normalization parameters
       #for now we'll just print the results in the function, a future expansion may
       #return these to the user somehow, need to put some thought into that
       drift_ppd, drift_report = self.prepare_driftreport(df_test, postprocess_dict, printstatus)
@@ -32728,6 +32927,8 @@ class AutoMunge:
         print("")
       
       return [], [], [], [], postreports_dict
+    #end drift report section
+    #__________
 
     #create an empty dataframe to serve as a store for each column's NArows
     #the column id's for this df will follow convention from NArows of 
@@ -32752,6 +32953,7 @@ class AutoMunge:
       #get too complex, this type of functionality could be a future extension
       #for now let's just make explicit assumption that test set has same 
       #properties as train set
+      #(this approach greatly benefits latency)
 
       category = traincategory
 
@@ -33001,12 +33203,8 @@ class AutoMunge:
 
         PCAset_test, postprocess_dict = \
         self.postPCAfunction(PCAset_test, postprocess_dict)
-        
-        #we want the indexes to match
-#         PCAset_test.set_index(df_test.index)
 
         #reattach the excluded columns to PCA set
-        #df_test = pd.concat([PCAset_test, df_test[PCAexcl_posttransform]], axis=1)
         df_test = pd.concat([PCAset_test.set_index(df_test.index), df_test[PCAexcl_posttransform]], axis=1)
 
         #printout display progress
