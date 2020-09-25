@@ -22926,16 +22926,6 @@ class AutoMunge:
     #have corresponding entries in transform_dict, (which may include user
     #passed entries in transformdict parameter)
     
-    #a future extension may also do a comparable check comparing assigncat to 
-    #entries of process_dict, however note that a process_dict entry for a
-    #root category is only required when that root category is also found as
-    #an entry to a family tree primitive in the transform_dict    
-    
-    #(in other words :)
-    #All passed assigncat entries require an entry as a root category in transform_dict, 
-    #but only those categories also used as entries in the family tree primitives 
-    #for a root category in transform_dict require a corresponding entry in process_dict.
-    
     #Note that in many cases a root category may be passed as a family tree primitive 
     #entry to it's own family tree set. The root category is used to access the family tree,
     #and the family tree primitive entries are used to access the transform functions and etc.
@@ -22958,9 +22948,6 @@ class AutoMunge:
         print("")
         print("assigncat key missing transform_dict entry: ", assigncat_key)
         print("")
-        print("All passed assigncat entries require an entry as a root category in transform_dict")
-        print("(but only those categories also used as entries in the family tree primitives")
-        print("for a root category in transform_dict require a corresponding entry in process_dict.)")
 
     return result
   
@@ -23149,6 +23136,27 @@ class AutoMunge:
       downstream_entries = []
 
     return result1, result2
+
+  def check_transform_dict_roots(self, transform_dict, process_dict):
+    """
+    #validates that transform_dict root categories after consolidation
+    #have corresponding entries in process_dict after consolidation
+    """
+    
+    check_transform_dict_roots_result = False
+    
+    for entry in transform_dict:
+      
+      if entry not in process_dict:
+        
+        check_transform_dict_roots_result = True
+        
+        print("error: a root category was found in transformdict")
+        print("without a corresponding entry in processdict")
+        print("for transformdict root category: ", entry)
+        print()
+        
+    return check_transform_dict_roots_result
   
   def check_haltingproblem(self, transformdict, transform_dict, max_check_count = 111):
     """
@@ -24889,6 +24897,11 @@ class AutoMunge:
     else:
       miscparameters_results.update({'check_functionpointer_result' : False})
       miscparameters_results.update({'check_processdict_result' : False})
+
+    #now that both transform_dict and process_dict are consolidated, validate transformdict roots have processdict entries
+    check_transform_dict_roots_result = \
+    self.check_transform_dict_roots(transform_dict, process_dict)
+    miscparameters_results.update({'check_transform_dict_roots_result' : check_transform_dict_roots_result})
       
     #here we confirm that all of the keys of assigncat have corresponding entries in process_dict
     check_assigncat_result2 = self.check_assigncat2(assigncat, transform_dict)
@@ -26199,7 +26212,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.84'
+    automungeversion = '4.85'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -31093,7 +31106,7 @@ class AutoMunge:
       elif noisedistribution == 'laplace':
         normal_samples = np.random.laplace(loc=mu, scale=sigma, size=(mdf_test.shape[0]))
         
-      binomial_samples = np.random.binomial(n=1, p=flip_prob, size=(mdf_train.shape[0]))
+      binomial_samples = np.random.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0]))
       
       mdf_test[DPnm_column] = pd.DataFrame(normal_samples) * pd.DataFrame(binomial_samples)
     
@@ -34664,6 +34677,8 @@ class AutoMunge:
     inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
     
     df[inputcolumn] = df[normkey].copy()
+
+    df[inputcolumn] = df[inputcolumn].astype(int, errors='ignore')
     
     df[inputcolumn] = df[inputcolumn] * bn_width + bn_min
     
