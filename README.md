@@ -1362,11 +1362,14 @@ Since specification of transformation functions can be kind of cumbersome in ord
 to dig out from the codebase naming conventions for internally defined functions, a
 simplification is available when populating a processdict for a user passed entry by
 way of the 'functionpointer' category. When a functionpointer category entry is included, 
-the transformation functions are automatically populated, such as with entries for 
-dualprocess, singleprocess, postprocess, inverseprocess, and info_retention. defaultparam 
-entries are also accessed, and if the new category specification contains any redundant 
-defaultparam entries with the pointer category the new category entries will take 
-precedence. 
+the transformation functions are automatically populated based on entries found in 
+processdict entries of the pointer, such as with entries for dualprocess, singleprocess, 
+postprocess, inverseprocess, and info_retention. For cases where a functionpointer points 
+to a processdict entry that itself has a functionpointer entry, chains of pointers are 
+followed until an entry with defined processing functions is reached. defaultparam 
+entries of each pointer link are also accessed for update, and if the new category 
+specification contains any redundant defaultparam entries with those found in a pointer 
+category the new category entries take precedence. 
 
 In other words, if you are populating a new processdict transformation 
 category and you want the transformation functions to match an existing category, you 
