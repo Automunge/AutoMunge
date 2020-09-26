@@ -10961,13 +10961,13 @@ class AutoMunge:
       ordl_dict2.update({newcolumn : i})
       i += 1
       
+    suffixoverlap_results = \
+    self.df_check_suffixoverlap(mdf_train, column + '_src4', suffixoverlap_results)
+      
     mdf_train[column + '_src4'] = 0
     mdf_test[column + '_src4'] = 0
     
     for newcolumn in newcolumns:
-      
-      suffixoverlap_results = \
-      self.df_check_suffixoverlap(mdf_train, column + '_src4', suffixoverlap_results)
       
       mdf_train[column + '_src4'] = \
       np.where(mdf_train[newcolumn] == 1, ordl_dict2[newcolumn], mdf_train[column + '_src4'])
@@ -26212,7 +26212,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.85'
+    automungeversion = '4.86'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
