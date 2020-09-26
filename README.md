@@ -6501,13 +6501,13 @@ def process_mnm8_class(mdf_train, mdf_test, column, category, \
   suffixoverlap_results = {}
 
   #create the new column, using the category key as a suffix identifier
-  
-  #wthe new column can be created with a copy operation, or to ensure no overlap with 
+  #the new column can be created with a copy operation, or to ensure no overlap with 
   #existing columns can make use of following internal functions
   #the first copies parallel to the validation, the second is just the validation
   
   #mdf_train, suffixoverlap_results = \
   #am.df_copy_train(mdf_train, column, column + '_mnm8', suffixoverlap_results)
+  
   #or to run validation independant of copy operation could also run
   #suffixoverlap_results = \
   #am.df_check_suffixoverlap(mdf_train, [column + '_mnm8'], suffixoverlap_results)
