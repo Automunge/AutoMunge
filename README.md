@@ -6502,18 +6502,20 @@ def process_mnm8_class(mdf_train, mdf_test, column, category, \
 
   #create the new column, using the category key as a suffix identifier
   
-  #copy source column into new column
-  mdf_train[column + '_mnm8'] = mdf_train[column].copy()
-  mdf_test[column + '_mnm8'] = mdf_test[column].copy()
+  #wthe new column can be created with a copy operation, or to ensure no overlap with 
+  #existing columns can make use of following internal functions
+  #the first copies parallel to the validation, the second is just the validation
   
-  #note that to incorproate a suffix overlap validation into the copy operation on train set
-  #could instead use internal function 
   #mdf_train, suffixoverlap_results = \
   #am.df_copy_train(mdf_train, column, column + '_mnm8', suffixoverlap_results)
   #or to run validation independant of copy operation could also run
   #suffixoverlap_results = \
   #am.df_check_suffixoverlap(mdf_train, [column + '_mnm8'], suffixoverlap_results)
   #(using am. for externally defined functions or self. for internally defined)
+  
+  #or just copy source column into new column
+  mdf_train[column + '_mnm8'] = mdf_train[column].copy()
+  mdf_test[column + '_mnm8'] = mdf_test[column].copy()
   
   #perform an initial (default) infill method, here we use mean as a plug, automunge
   #may separately perform a infill method per user specifications elsewhere
