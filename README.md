@@ -2925,6 +2925,7 @@ for identified overlap entries.
 				      aggregated activations of terms in the sublist)
   - driftreport postmunge metrics: overlap_dict / splt_newcolumns_splt / minsplit
   - inversion available: yes with partial recovery
+* src3: comparable to src2 with additional support for test set entries not found in train set
 * src4: searches categorical sets for overlaps with user passed search string and returns ordinal column
 for identified overlap entries. (Note for multiple activations encoding priority given to end of list entries).
   - default infill: none
@@ -2934,7 +2935,6 @@ for identified overlap entries. (Note for multiple activations encoding priority
 				     (note search parameter list can included embedded lists of terms for 
 				      aggregated activations of terms in the sublist)
 				     'case': bool to indicate case sensitivity of search, defaults True
-				     (note that 'case' not yet built into src2 variant)
   - driftreport postmunge metrics: overlap_dict / splt_newcolumns_splt / minsplit
   - inversion available: yes with partial recovery
 * nmrc/nmr2/nmr3: parses strings and returns any number groupings, prioritized by longest length
