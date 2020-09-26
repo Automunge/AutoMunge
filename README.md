@@ -26,7 +26,7 @@
 ## Introduction
 [Automunge](https://automunge.com) is a python library platform for preparing 
 tabular data for machine learning. A user has options between automated inference 
-of column properties for application of appropriate simple numerical encoding
+of column properties for application of appropriate simple feature engineering
 methods, or may also assign to distinct columns custom feature engineering 
 transformations, custom sets (e.g. "family trees") of feature engineering 
 transformations, and select from options for missing data infill. The feature 
@@ -241,9 +241,9 @@ that wasn't available at initial address with the postmunge(.) function.
 The feature engineering transformations are recorded with a series of suffixes 
 appended to the column header title in the returned sets, for one example the 
 application of z-score normalization returns a column with header origname + '\_nmbr'. 
-As another example, for one-hot encoded sets the set of columns are returned with
-header origname + '\_category' where category is the category from the set indicated 
-by a column. Each transformation category has a unique suffix appender.
+As another example, for binary encoded sets the set of columns are returned with
+header origname + '\_1010_#' where # is integer to distinguish columns in same set.
+Each transformation category has a unique suffix appender.
 
 In automation, for numerical data, the functions generate a series of derived
 transformations resulting in multiple child columns. For numerical data, if the
@@ -260,14 +260,12 @@ second) and returns year z-score normalized, a pair of sets for combined month/d
 and combined hour / minute / second with sin and cos transformations at period of 
 time-scale, and also returns binned sets identifying business hours, weekdays, and 
 US holidays. For binary categorical data the functions return a single column with 
-1/0 designation. For multimodal categorical data the functions return one-hot 
-encoded sets using the naming convention origname + _ + category. (I believe this 
-automation of the one-hot encoding method to be a particularly useful feature of 
-the tool.) For all cases the functions generate a supplemental column (NArw)
-with a boolean identifier for cells that were subject to infill due to missing or 
-improperly formatted data. (Please note that I don't consider the current methods 
-of numerical set distribution evaluation highly sophisticated and have some work to 
-do here). 
+1/0 designation. For multimodal categorical data the functions return binary
+encoded sets where categoric entries may be distinguished by zero, one, or more
+simultaneous column activations. Alternatives for one-hot encoding, ordinal encoding, 
+and etc are also available. For all cases the functions may generate a supplemental 
+column (NArw) with a boolean identifier for cells that were subject to infill due 
+to missing or improperly formatted data when the NArw_marker parameter is activated.
 
 The functions also include a method we call 'ML infill' which if elected
 predicts infill for missing values in both the train and test sets using
@@ -523,8 +521,7 @@ postmunge(.) function.
 to columns returned in trainID.
 
 * testlabels: a set of numerically encoded labels corresponding to the
-test set if a label column was passed. Note that the function
-assumes the label column is originally included in the train set.
+test set if a label column was passed.
 
 * labelsencoding_dict: a dictionary that can be used to reverse encode
 predictions that were generated from a downstream model (such as to
@@ -808,7 +805,7 @@ This defaults to 42, a nice round number.
 
 * eval_ratio: a 0-1 float or integer for number of rows, defaults to 0.5, serves
 to reduce the overhead of the category evaluation functions under automation by only
-evaluating this sampled ratio of rows instead fo thte full set. Makes automunge faster.
+evaluating this sampled ratio of rows instead from the full set. Makes automunge faster.
 To accomodate small data sets, the convention is that eval_ratio is only applied
 when training set has > 2,000 rows.
 
@@ -832,9 +829,10 @@ application of Label Smoothing will be applied to each set individually.
 * LSfit: a _True/False_ indication for basis of label smoothing parameters. The default
 of False means the assumption will be for level distribution of labels, passing True
 means any label smoothing will evaluate distribution of label activations such as to fit
-the smoothing factor to specific cells based on the activated column and target column.
-The LSfit parameters of transformations will be based on properties derived from the
-train set labels, such as for consistent encoding to the other sets (test or validation).
+the null activations in a returned column as a function of ratios of label activation 
+distributions associated with a particular activation. The LSfit parameters of 
+transformations will be based on properties derived from the train set labels, such as 
+for consistent encoding to the other sets (test or validation).
 
 * numbercategoryheuristic: an integer used as a heuristic. When a 
 categorical set has more unique values than this heuristic, it defaults 
@@ -861,7 +859,7 @@ to perform a feature importance evaluation. If selected automunge will
 return a summary of feature importance findings in the featureimportance
 returned dictionary. This also activates the trimming of derived sets
 that did not meet the importance threshold if [featurepct < 1.0 and 
-featuremethod = 'pct'] or if [fesaturemetric > 0.0 and featuremethod = 
+featuremethod = 'pct'] or if [featuremetric > 0.0 and featuremethod = 
 'metric']. Note this defaults to False because it cannot operate without
 a designated label column in the train set. (Note that any user-specified
 size of validationratios if passed are used in this method, otherwise 
@@ -905,7 +903,7 @@ can pass Binary = [False, 'target_column_1', 'target_column_2']. Note that
 when applied a column named 'Binary' is used in derivation, thus this is a 
 reserved column header when applying this transform.
 
-* PCAn_components: defaults to False for no PCA dimensionality reduction performed
+* PCAn_components: defaults to False for no PCA dimensionality reduction performed.
 If passed as _None_ not performed unless # features exceeds 0.5 # rows as a heuristic.
 A user can pass _an integer_ to define the number of PCA derived features for 
 purposes of dimensionality reduction, such integer to be less than the otherwise 
@@ -1075,13 +1073,14 @@ tree primitive associated with the transform, which may be different than the
 root category of the family tree assigned in assigncat. The set of family 
 trees definitions for root categories are included below for reference.
 
-As example to demonstrate edge case for cases where transformation category 
+As an example to demonstrate edge case for cases where transformation category 
 does not match transformation function (based on entries to transformdict and 
 processdict). If we want to pass a parameter to turn off UPCS transform included 
 in or19 family tree for or19 category for instance, we would pass the parameter 
 to or19 instead of UPCS because assignparam inspects the transformation category 
-instead of the transformation function, and UPCS fucntion is the processdict 
-entry for or19 category (even though 'activate' is an UPCS transform parameter).
+instead of the transformation function, and UPCS function is the processdict 
+entry for or19 category entry in the family tree primitives associated with the
+or19 root category (even though 'activate' is an UPCS transform parameter).
 (This clarification intended for advanced users to avoid ambiguity.)
 ```
 assignparam = {'or19' : {'column1' : {'activate' : False}}}
@@ -1283,7 +1282,7 @@ processdict =  {'newt' : {'dualprocess' : am.process_mnmx_class, \
 #NArowtype: can be entries of {'numeric', 'integer', 'justNaN', 'exclude', 
 #                              'positivenumeric', 'nonnegativenumeric', 
 #                              'nonzeronumeric', 'parsenumeric', 'parsenumeric_commas', 
-#                              'datetime'}
+#                              'parsenumeric_EU', 'datetime'}
 # - 'numeric' for source columns with expected numeric entries
 # - 'integer' for source columns with expected integer entries
 # - 'justNaN' for source columns that may have expected entries other than numeric
@@ -1299,9 +1298,10 @@ processdict =  {'newt' : {'dualprocess' : am.process_mnmx_class, \
 # - 'datetime' marks for infill cells that aren't recognized as datetime objects
 # ** Note that NArowtype also is used as basis for metrics evaluated in drift assessment of source columns
 # ** Note that by default any np.inf values are converted to NaN for infill
+# ** Note that by default python None entries are treated as targets for infill
 
 #MLinfilltype: can be entries {'numeric', 'singlct', 'binary', 'multirt', 'concurrent_act', 'concurrent_nmbr', 
-#                              '1010', 'exclude', 'boolexclude'}
+#                              '1010', 'exclude', 'boolexclude', 'totalexclude'}
 #              'numeric' refers to columns where predictive algorithms treat
 #                        as a regression for numeric sets
 #              'singlct' single column sets with ordinal entries (integers)
@@ -1434,9 +1434,9 @@ and inversion is supported.
 * printstatus: user can pass _True/False_ indicating whether the function will print 
 status of processing during operation. Defaults to True.
 
-Ok well we'll demonstrate further below how to build custom processing functions,
-for now this just gives you sufficient tools to build sets of processing using
-the built in sets in the library.
+Ok well we'll demonstrate further below how to build custom transformation functions,
+for now you should have sufficient tools to build sets of transformation categories 
+using the family tree primitives and etc.
 
 ...
 
@@ -1642,7 +1642,7 @@ presence of consistent labels column header as was passed to automunge(.).
 
 * pandasoutput: a selector for format of returned sets. Defaults to _False_
 for returned Numpy arrays. If set to _True_ returns pandas dataframes
-(note that index is not always preserved, non-integer indexes are extracted 
+(note that index is not preserved, non-range indexes are extracted 
 to the ID sets, and automunge(.) generates an application specific range 
 integer index in ID sets corresponding to the order of rows as they were 
 passed to function).
@@ -6716,11 +6716,6 @@ def process_mnm8_class(df, column, category, postprocess_dict, params = {}):
   #etc
   
   return df, column_dict_list
-
-#For a full demonstration check out my essay 
-"Automunge 1.79: An Open Source Platform for Feature Engineering"
-
-
 ```
 
 ## Conclusion
