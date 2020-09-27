@@ -2491,6 +2491,9 @@ and comparable to test set independent of test set row count
 in multiple forms appropriate for each of these different types, such as to allow the ML training to identify
 which is most useful. Reference the family trees below for composition details (can do a control-F search for ntgr etc).
   - default NArowtype: 'integer'
+  - ntgr set includes: ord4, retn, 1010, ordl
+  - ntg2 set includes: ord4, retn, 1010, ordl, pwr2
+  - ntg3 set includes: ord4, retn, ordl, por2
 ### Date-Time Data Normalizations
 * date/dat2: for datetime formatted data, segregates data by time scale to multiple
 columns (year/month/day/hour/minute/second) and then performs z-score normalization
