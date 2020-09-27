@@ -1996,6 +1996,9 @@ downstream cousins / offspring generations / supplements column / no offspring
 Here is a quick description of the transformation functions associated 
 with each key which can either be assigned to a family tree primitive (or used 
 as a root key). We're continuing to build out this library of transformations.
+In some cases different transformation categories may be assocaited with the
+same set of transformation funcitons, but may be distinguished by different
+family tree aggregations of transformation category sets.
 
 Note the design philosophy is that any transform can be applied to any type 
 of data and if the data is not suited (such as applying a numeric transform
@@ -2095,14 +2098,19 @@ elif max<=0 and min<=0 x=(x-max)/(max-min)
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: mean / MAD / datamax / maximum / minimum
   - inversion available: yes with full recovery
-* lgnm: normalization intended for lognormal distributed numerical sets
-Achieved by performing a logn transform upstream of a nmbr normalization.
+* lgnm: normalization intended for lognormal distributed numerical sets,
+achieved by performing a logn transform upstream of a nmbr normalization.
+  - default infill: mean
+  - default NArowtype: positivenumeric
   - suffix appender: '_logn_nmbr'
+  - assignparam parameters accepted: can pass params to nmbr consistent with nmbr documentation above
+  - driftreport postmunge metrics: consistent with both logn and nmbr
   - inversion available: yes with full recovery
 ### Numerical Set Transformations
 * bxcx/bxc2/bxc3/bxc4/bxc5: performs Box-Cox power law transformation. Applies infill to 
 values <= 0. Note we currently have a test for overflow in returned results and if found 
-set to 0. Please note that this method makes use of scipy.stats.boxcox.
+set to 0. Please note that this method makes use of scipy.stats.boxcox. Please refer to
+family trees below for full set of transfomration categories asscoiated with these roots.
   - default infill: mean
   - default NArowtype: positivenumeric
   - suffix appender: '_bxcx'
@@ -2178,6 +2186,7 @@ set to 0. Please note that this method makes use of scipy.stats.boxcox.
   - default NArowtype: positivenumeric
   - suffix appender: '_10^#' where # is integer indicating target powers of 10 for column
   - assignparam parameters accepted: 'negvalues', boolean defaults to False, True bins values <0
+                                     (recomend using pwr2 instead of this parameter since won't update NArowtype)
   - driftreport postmunge metrics: powerlabelsdict / meanlog / maxlog / 
 	                           <column> + '_ratio' (column specific)
   - inversion available: yes with partial recovery
@@ -2185,7 +2194,8 @@ set to 0. Please note that this method makes use of scipy.stats.boxcox.
   - default infill: no activation
   - default NArowtype: nonzeronumeric
   - suffix appender: '\_10^#' or '\_-10^#' where # is integer indicating target powers of 10 for column
-  - assignparam parameters accepted: none
+  - assignparam parameters accepted: 'negvalues', boolean defaults to True, True bins values <0
+                                     (recomend using pwrs instead of this parameter since won't update NArowtype)
   - driftreport postmunge metrics: powerlabelsdict / labels_train / missing_cols / 
 			           <column> + '_ratio' (column specific)
   - inversion available: yes with partial recovery
@@ -2202,6 +2212,14 @@ value fell with respect to powers of 10 (comparable to pwor with negvalues param
   - default infill: zero (a distinct encoding)
   - default NArowtype: nonzeronumeric
   - suffix appender: '_por2'
+  - assignparam parameters accepted: 'negvalues', boolean defaults to True, True bins values <0
+  - driftreport postmunge metrics: train_replace_dict / test_replace_dict / ordl_activations_dict
+  - inversion available: yes with partial recovery
+* pwbn: comparable to pwor but followed by a binary encoding, such as may be useful for data with 
+high variability
+  - default infill: zero (a distinct encoding)
+  - default NArowtype: nonzeronumeric
+  - suffix appender: '_pwor_1010_#' (where # is integer for binary encoding activation number) 
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: train_replace_dict / test_replace_dict / ordl_activations_dict
   - inversion available: yes with partial recovery
@@ -2215,7 +2233,7 @@ high variability
   - inversion available: yes with partial recovery
 * bins: for numerical sets, outputs a set of 6 columns indicating where a
 value fell with respect to number of standard deviations from the mean of the
-set (i.e. <-2:0, -2-1:1, -10:2, 01:3, 12:4, >2:5)
+set (i.e. integer suffix represent # from mean as <-2:0, -2-1:1, -10:2, 01:3, 12:4, >2:5)
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '\_bins\_#' where # is integer identifier of bin
@@ -2224,7 +2242,7 @@ set (i.e. <-2:0, -2-1:1, -10:2, 01:3, 12:4, >2:5)
   - inversion available: yes with partial recovery
 * bsor: for numerical sets, outputs an ordinal encoding indicating where a
 value fell with respect to number of standard deviations from the mean of the
-set (i.e. <-2:0, -2-1:1, -10:2, 01:3, 12:4, >2:5)
+set (i.e. integer encoding represent # from mean as <-2:0, -2-1:1, -10:2, 01:3, 12:4, >2:5)
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '_bsor'
@@ -2236,7 +2254,8 @@ set (i.e. <-2:0, -2-1:1, -10:2, 01:3, 12:4, >2:5)
 bins default to width of 1/1000/1000000 eg for bnwd/bnwK/bnwM
   - default infill: mean
   - default NArowtype: numeric
-  - suffix appender: '\_bswd\_#1\_#2' where #1 is the width and #2 is the bin identifier (# from min)
+  - suffix appender: '\_bnwd\_#1\_#2' where #1 is the width and #2 is the bin identifier (# from min)
+                     and 'bnwd' as bnwK or bnwM based on variant
   - assignparam parameters accepted: 'width' to set bin width
   - driftreport postmunge metrics: binsmean / bn_min / bn_max / bn_delta / bn_count / bins_id / 
 			           bins_cuts / bn_width_bnwd (or bnwK/bnwM) / textcolumns / 
@@ -2263,10 +2282,10 @@ bin count defaults to 5/7/9 eg for bnep/bne7/bne9
                                    <column> + '_ratio' (column specific)
   - inversion available: yes with partial recovery
 * bneo/bn7o/bn9o: for numerical set graining to equal population bins for ordinal encoded bins. 
-bin count defaults to 5/7/9 eg for bne0/bn7o/bn9o
+bin count defaults to 5/7/9 eg for bneo/bn7o/bn9o
   - default infill: adjacent cell
   - default NArowtype: numeric
-  - suffix appender: '\_bne0' (or bn7o/bn9o)
+  - suffix appender: '\_bneo' (or bn7o/bn9o)
   - assignparam parameters accepted: 'bincount' to set number of bins
   - driftreport postmunge metrics: binsmean / bn_min / bn_max / bn_delta / bn_count / bins_id / 
 			           bins_cuts / bincount / ordl_activations_dict
@@ -2302,20 +2321,20 @@ bin count defaults to 5/7/9 eg for bne0/bn7o/bn9o
   - default NArowtype: numeric
   - suffix appender: '_bkt4'
   - assignparam parameters accepted: 'buckets', a list of numbers, to set bucket boundaries
-					   defaults to [0,1,2] (arbitrary plug values)
+                                     defaults to [0,1,2] (arbitrary plug values)
   - driftreport postmunge metrics: binsmean / buckets / bins_cuts / bins_id / ordl_activations_dict
   - inversion available: yes with partial recovery
 * note that bins each have variants for one-hot vs ordinal vs binary encodings
-binary  : bkb3, bkb4, bsbn, bnwb, bnKb, bnMb, bneb, bn7b, bn9b, pwbn, por3
-ordinal : bkt3, bkt4, bsor, bnwo, bnKo, bnMo, bneo, bn7o, bn9o, pwor, por2
 one-hot : bkt1, bkt2, bins, bnwd, bnwK, bnwM, bnep, bne7, bne9, pwrs, pwr2
+ordinal : bkt3, bkt4, bsor, bnwo, bnKo, bnMo, bneo, bn7o, bn9o, pwor, por2
+binary  : bkb3, bkb4, bsbn, bnwb, bnKb, bnMb, bneb, bn7b, bn9b, pwbn, por3
 * tlbn: returns equal population bins in separate columns with activations replaced by min-max scaled 
 values within that segment's range (between 0-1) and other values subject to an infill of -1 
 (intended for use to evaluate feature importance of different segments of a numerical set's distribution
 with metric2 results from a feature importance evaluation)
   - default infill: no activation (this is the recommended infill for this transform)
   - default NArowtype: numeric
-  - suffix appender: '\_tlbn\_#' where # is the bin identifier
+  - suffix appender: '\_tlbn\_#' where # is the bin identifier,  and max# is right tail / min# is left tail
   - assignparam parameters accepted: 'bincount' to set number of bins (defaults to 9)
   - driftreport postmunge metrics: binsmean / bn_min / bn_max / bn_delta / bn_count / bins_id / 
 			           bins_cuts / bincount_tlbn / textcolumns / <column> + '_ratio' (column specific)
@@ -2371,14 +2390,10 @@ to set with >2 entries applies infill to those entries beyond two most common.
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: missing / 1 / 0 / extravalues / oneratio / zeroratio
   - inversion available: yes with full recovery
-* bnr2: converts sets with two values to boolean identifiers. Defaults to assigning
-1 to most common value and 0 to second most common, unless 1 or 0 is already included
-in most common of the set then defaults to maintaining those designations. If applied 
-to set with >2 entries applies infill to those entries beyond two most common. (Same
-as bnry except for default infill.)
+* bnr2: (Same as bnry except for default infill.)
   - default infill: least common value
   - default NArowtype: justNaN
-  - suffix appender: '_bnry'
+  - suffix appender: '_bnr2'
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: missing / 1 / 0 / extravalues / oneratio / zeroratio
   - inversion available: yes with full recovery
@@ -2461,20 +2476,20 @@ and comparable to test set independent of test set row count
   - driftreport postmunge metrics: activate
   - inversion available: yes with partial recovery
 * new processing functions Unht / Utxt / Utx2 / Utx3 / Uord / Uor2 / Uor3 / Uor6 / U101 / Ucct
-  - comparable to functions onht / text / txt2 / txt3 / ordl / ord2 / ord3 / ors6 / 1010 / Ucct
+  - comparable to functions onht / text / txt2 / txt3 / ordl / ord2 / ord3 / ors6 / 1010 / ucct
   - but upstream conversion of all strings to uppercase characters prior to encoding
   - (e.g. 'USA' and 'usa' would be consistently encoded)
   - default infill: in uppercase conversion NaN's are assigned distinct encoding 'NAN'
-  - and may be assigned other 9infill methods in assigninfill
+  - and may be assigned other infill methods in assigninfill
   - default NArowtype: 'justNaN'
   - suffix appender: '_UPCS'
   - assignparam parameters accepted: none
-  - driftreport postmunge metrics: comparable to functions text / txt2 / txt3 / ordl / ord2 / ord3 / ors6 / 1010
+  - driftreport postmunge metrics: comparable to functions text / txt2 / txt3 / ordl / ord2 / ord3 / ors6 / 1010 / ucct
   - inversion available: yes
 * ntgr/ntg2/ntg3: sets of transformations intended for application to integer sets of unknown interpretation
 (such as may be continuous variables, discrete relational variables, or categoric). The ntgr family encodes
 in multiple forms appropriate for each of these different types, such as to allow the ML training to identify
-which is most useful. Reference the family trees below for composition details.
+which is most useful. Reference the family trees below for composition details (can do a control-F search for ntgr etc).
   - default NArowtype: 'integer'
 ### Date-Time Data Normalizations
 * date/dat2: for datetime formatted data, segregates data by time scale to multiple
@@ -2490,8 +2505,7 @@ columns (year/month/day/hour/minute/second) and then performs z-score normalizat
   - default infill: mean
   - default NArowtype: datetime
   - suffix appender: includes appenders for (_year, _mnth, _days, _hour, _mint, _scnd)
-  - driftreport postmunge metrics: meanyear / stdyear / meanmonth / stdmonth / meanday / stdday / 
-			           meanhour / stdhour / meanmint / stdmint / meanscnd / stdscnd
+  - driftreport postmunge metrics: timemean / timemax / timemin / timestd
   - inversion available: pending
 * mnsn/mncs/dysn/dycs/hrsn/hrcs/misn/mics/scsn/sccs: segregated by time scale and 
 dual columns with sin and cos transformations for time scale period (eg 12 months, 24 hrs, 7 days, etc)
@@ -2499,24 +2513,36 @@ dual columns with sin and cos transformations for time scale period (eg 12 month
   - default NArowtype: datetime
   - suffix appender: includes appenders for (mnsn/mncs/dysn/dycs/hrsn/hrcs/misn/mics/scsn/sccs)
   - assignparam parameters accepted: none
-  - driftreport postmunge metrics: mean_mnsn / mean_mncs / mean_dysn / mean_dycs / mean_hrsn / mean_hrcs
-			           mean_misn / mean_mscs / mean_scsn / mean_sccs
+  - driftreport postmunge metrics: timemean / timemax / timemin / timestd
   - inversion available: pending
 * mdsn/mdcs: similar sin/cos treatment, but for combined month/day, note that periodicity is based on 
-number of days in specific months, including account for leap year, or if month not specified defaults to 
-average days in a month (30.42) periodicity
+number of days in specific months, including account for leap year, with 12 month periodicity
   - default infill: mean
   - default NArowtype: datetime
   - suffix appender: includes appenders for (mdsn/mdcs)
   - assignparam parameters accepted: none
-  - driftreport postmunge metrics: mean_mdsn / mean_mdcs 
+  - driftreport postmunge metrics: timemean / timemax / timemin / timestd
   - inversion available: pending
-* hmss/hmsc: similar sin/cos treatment, but for combined hour/minute/second
+* dhms/dhmc: similar sin/cos treatment, but for combined day/hour/min, with 7 day periodicity
+  - default infill: mean
+  - default NArowtype: datetime
+  - suffix appender: includes appenders for (dhms/dhmc)
+  - assignparam parameters accepted: none
+  - driftreport postmunge metrics: timemean / timemax / timemin / timestd
+  - inversion available: pending
+* hmss/hmsc: similar sin/cos treatment, but for combined hour/minute/second, with 24 hour periodicity
   - default infill: mean
   - default NArowtype: datetime
   - suffix appender: includes appenders for (hmss/hmsc)
   - assignparam parameters accepted: none
-  - driftreport postmunge metrics: mean_hmss / mean_hmsc
+  - driftreport postmunge metrics: timemean / timemax / timemin / timestd
+  - inversion available: pending
+* mssn/mscs: similar sin/cos treatment, but for combined minute/second, with 1 hour periodicity
+  - default infill: mean
+  - default NArowtype: datetime
+  - suffix appender: includes appenders for (hmss/hmsc)
+  - assignparam parameters accepted: none
+  - driftreport postmunge metrics: timemean / timemax / timemin / timestd
   - inversion available: pending
 * dat6: default transformation set for time series data, returns:
 'year', 'mdsn', 'mdcs', 'hmss', 'hmsc', 'bshr', 'wkdy', 'hldy'
@@ -2554,6 +2580,7 @@ average days in a month (30.42) periodicity
 hours (9-5, time zone unaware)
   - default infill: datetime
   - default NArowtype: justNaN
+  - suffix appender: '_bshr'
   - assignparam parameters accepted: 'start' and 'end', which default to 9 and 17
   - driftreport postmunge metrics: activationratio
   - inversion available: pending
@@ -2672,7 +2699,7 @@ on number of activations), followed by a 1010 binary encoding
 * excl: passes source column un-altered, no transforms or infill. (Note that returned data may not be 
 numeric and predictive methods like ML infill and feature selection may not work for that scenario.)
 Note that the excl transform is unique in that it is an in-place operation for efficiency purposes, and
-so may only be passed in a user defined transformdict as an entry to cousins primitive, although it's 
+so may only be passed in a user defined transformdict as an entry to cousins primitive, although its 
 application "replaces" the source column. (Note that for any other transform a cousins primitive entry 
 only supplements the source column, 'excl' is the exception to the rule). For comparable functionality 
 eligible for other primitive entries in a passed transformdict please use 'exc6' transform instead. 
@@ -2685,6 +2712,8 @@ Note that for assignnan designation of infill designations, excl is excluded fro
   - driftreport postmunge metrics: none
   - inversion available: yes
 * exc2/exc3/exc4: passes source column unaltered other than force to numeric, mode infill applied
+(exc3 and exc4 have downstream standard deviation or power of 10 bins aggregated such as may be beneficial
+when applying TrainLabelFreqLevel to a numeric label set)
   - default infill: mode
   - default NArowtype: numeric
   - suffix appender: '_exc2'
@@ -2788,10 +2817,9 @@ sets that may include scientific units for instance, as prefixes will not be not
 for overlaps, e.g. this wouldn't distinguish between kilometer and meter for instance.
 Note that overlap lengths below 5 characters are ignored unless that value is overridden
 by passing 'minsplit' parameter through assignparam.
-* splt: searches categorical sets for overlaps between strings and returns new boolean column
+* splt: searches categorical sets for overlaps between string character subsets and returns new boolean column
 for identified overlap categories. Note this treats numeric values as strings eg 1.3 = '1.3'.
-Note that priority is given to overlaps of higher length, and by default overlap searches
-start at 20 character length and go down to 5 character length.
+Note that priority is given to overlaps of higher length, and by default overlap go down to 5 character length.
   - default infill: none
   - default NArowtype: justNaN
   - suffix appender: '\_splt\_##*##' where ##*## is target identified string overlap 
@@ -2838,6 +2866,8 @@ Note that this version runs risk of high dimensionality of returned data in comp
   - assignparam parameters accepted: 'int_headers': True/False, defaults as False, when True returned column headers 
                                      are encoded with integers, such as for privacy preserving of data contents
                                      'minsplit': indicating lowest character length for recognized overlaps, defaults to 1
+                                     'concurrent_activations':  True/False, defaults to True, when True
+                                     entries may have activations for multiple simultaneous overlaps
   - driftreport postmunge metrics: overlap_dict / splt_newcolumns_sbst / minsplit
   - inversion available: yes with partial recovery
 * sbs3: comaprable to sbst, but with returned columns aggregated by a binary encoding to reduce dimensionality
@@ -3005,7 +3035,8 @@ for identified overlap entries. (Note for multiple activations encoding priority
   - or21 / or22 comparable to or19 / or20 but use spl2/spl5 instead of spl9/sp10, 
   which allows string parsing to handle test set entries not found in the train set
   - assignparam parameters accepted: 'minsplit': indicating lowest character length for recognized overlaps 
-  (note that parameter has to be assigned to specific categories such as spl2/spl5 etc)
+  (note that parameter has to be assigned to specific categories such as spl2/spl5 etc), also other parameters
+associated with constituent functions
   - driftreport postmunge metrics: comparable to constituent functions
   - inversion available: yes with full recovery
 
