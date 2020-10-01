@@ -2111,7 +2111,7 @@ achieved by performing a logn transform upstream of a nmbr normalization.
 values <= 0. Note we currently have a test for overflow in returned results and if found 
 set to 0. Please note that this method makes use of scipy.stats.boxcox. Please refer to
 family trees below for full set of transfomration categories asscoiated with these roots.
-  - default infill: mean
+  - default infill: mean (i.e. mean of values > 0)
   - default NArowtype: positivenumeric
   - suffix appender: '_bxcx'
   - assignparam parameters accepted: none
