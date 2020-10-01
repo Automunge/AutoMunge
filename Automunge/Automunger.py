@@ -13192,6 +13192,11 @@ class AutoMunge:
     else:
       mean = trnsfrm_mean
 
+    #edge case
+    if mean != mean or mean <= 0:
+      mean = 0
+      bxcx_lmbda = False
+
     #replace missing data with training set mean
     df[bxcxcolumn] = df[bxcxcolumn].fillna(mean)
     
@@ -26212,7 +26217,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.86'
+    automungeversion = '4.87'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
