@@ -2020,6 +2020,7 @@ infill.
       cap and floor based on pre-transform values
     - 'muilitplier' and 'offset' to apply multiplier and offset to posttransform values, default to 1,0,
       note that multiplier is applied prior to offset
+    - 'adjinfill', boolean, defaults to False, True makes default infill adjacent cell instead of mean imputation
   - driftreport postmunge metrics: mean / std / max / min
   - inversion available: yes with full recovery
 * mean/mea2/mea3: mean normalization (like z-score in the numerator and min-max in the denominator)<br/>
@@ -2042,10 +2043,12 @@ My intuition says z-score has some benefits but really up to the user which they
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '_mnmx'
-  - assignparam parameters accepted: 'cap' and 'floor', default to False for no floor or cap, 
-  True means floor/cap based on training set min/max, otherwise passed values serve as floor/cap to scaling, 
-  noting that if cap<max then max reset to cap and if floor>min then min reset to floor
-  cap and floor based on pre-transform values
+  - assignparam parameters accepted: 
+    - 'cap' and 'floor', default to False for no floor or cap, 
+      True means floor/cap based on training set min/max, otherwise passed values serve as floor/cap to scaling, 
+      noting that if cap<max then max reset to cap and if floor>min then min reset to floor
+      cap and floor based on pre-transform values
+    - 'adjinfill', boolean, defaults to False, True makes default infill adjacent cell instead of mean imputation
   - driftreport postmunge metrics: minimum / maximum / maxminusmin / mean / std / cap / floor
   - inversion available: yes with full recovery
 * mnm3/mnm4: min-max scaling with outliers capped at 0.01 and 0.99 quantiles
@@ -2078,6 +2081,7 @@ elif max<=0 and min<=0 x=(x-max)/(max-min)
       note that multiplier is applied prior to offset
     - 'divisor' to select between default of 'minmax' or 'mad, 'std', where minmax means scaling by divisor of max-min
 	std based on scaling by divisor of standard deviation and mad by median absolute deviation
+    - 'adjinfill', boolean, defaults to False, True makes default infill adjacent cell instead of mean imputation
   - driftreport postmunge metrics: minimum / maximum / mean / std
   - inversion available: yes with full recovery
 * rtbn: retain normalization supplemented by ordinal encoded standard deviation bins
@@ -2185,8 +2189,9 @@ family trees below for full set of transfomration categories asscoiated with the
   - default infill: no activation
   - default NArowtype: positivenumeric
   - suffix appender: '_10^#' where # is integer indicating target powers of 10 for column
-  - assignparam parameters accepted: 'negvalues', boolean defaults to False, True bins values <0
-                                     (recomend using pwr2 instead of this parameter since won't update NArowtype)
+  - assignparam parameters accepted: 
+    - 'negvalues', boolean defaults to False, True bins values <0
+      (recomend using pwr2 instead of this parameter since won't update NArowtype)
   - driftreport postmunge metrics: powerlabelsdict / meanlog / maxlog / 
 	                           <column> + '_ratio' (column specific)
   - inversion available: yes with partial recovery
@@ -2194,8 +2199,9 @@ family trees below for full set of transfomration categories asscoiated with the
   - default infill: no activation
   - default NArowtype: nonzeronumeric
   - suffix appender: '\_10^#' or '\_-10^#' where # is integer indicating target powers of 10 for column
-  - assignparam parameters accepted: 'negvalues', boolean defaults to True, True bins values <0
-                                     (recomend using pwrs instead of this parameter since won't update NArowtype)
+  - assignparam parameters accepted: 
+    - 'negvalues', boolean defaults to True, True bins values <0
+      (recomend using pwrs instead of this parameter since won't update NArowtype)
   - driftreport postmunge metrics: powerlabelsdict / labels_train / missing_cols / 
 			           <column> + '_ratio' (column specific)
   - inversion available: yes with partial recovery
@@ -2204,7 +2210,8 @@ value fell with respect to powers of 10
   - default infill: zero
   - default NArowtype: positivenumeric
   - suffix appender: '_pwor'
-  - assignparam parameters accepted: 'negvalues', boolean defaults to False, True bins values <0
+  - assignparam parameters accepted: 
+    - 'negvalues', boolean defaults to False, True bins values <0
   - driftreport postmunge metrics: meanlog / maxlog / ordl_activations_dict
   - inversion available: yes with partial recovery
 * por2: for numerical sets, outputs an ordinal encoding indicating where a
@@ -2212,7 +2219,8 @@ value fell with respect to powers of 10 (comparable to pwor with negvalues param
   - default infill: zero (a distinct encoding)
   - default NArowtype: nonzeronumeric
   - suffix appender: '_por2'
-  - assignparam parameters accepted: 'negvalues', boolean defaults to True, True bins values <0
+  - assignparam parameters accepted: 
+    - 'negvalues', boolean defaults to True, True bins values <0
   - driftreport postmunge metrics: train_replace_dict / test_replace_dict / ordl_activations_dict
   - inversion available: yes with partial recovery
 * pwbn: comparable to pwor but followed by a binary encoding, such as may be useful for data with 
@@ -2237,7 +2245,8 @@ set (i.e. integer suffix represent # from mean as <-2:0, -2-1:1, -10:2, 01:3, 12
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '\_bins\_#' where # is integer identifier of bin
-  - assignparam parameters accepted: bincount integer for number of bins, defaults to 6
+  - assignparam parameters accepted: 
+    - bincount integer for number of bins, defaults to 6
   - driftreport postmunge metrics: binsmean / binsstd / <column> + '_ratio' (column specific)
   - inversion available: yes with partial recovery
 * bsor: for numerical sets, outputs an ordinal encoding indicating where a
@@ -2246,7 +2255,8 @@ set (i.e. integer encoding represent # from mean as <-2:0, -2-1:1, -10:2, 01:3, 
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '_bsor'
-  - assignparam parameters accepted: bincount as integer for # of bins (defaults to 6)
+  - assignparam parameters accepted: 
+    - bincount as integer for # of bins (defaults to 6)
   - driftreport postmunge metrics: ordinal_dict / ordl_activations_dict / binsmean / binsstd
   - inversion available: yes with partial recovery
 * bnwd/bnwK/bnwM: for numerical set graining to fixed width bins for one-hot encoded bins 
@@ -2256,7 +2266,8 @@ bins default to width of 1/1000/1000000 eg for bnwd/bnwK/bnwM
   - default NArowtype: numeric
   - suffix appender: '\_bnwd\_#1\_#2' where #1 is the width and #2 is the bin identifier (# from min)
                      and 'bnwd' as bnwK or bnwM based on variant
-  - assignparam parameters accepted: 'width' to set bin width
+  - assignparam parameters accepted: 
+    - 'width' to set bin width
   - driftreport postmunge metrics: binsmean / bn_min / bn_max / bn_delta / bn_count / bins_id / 
 			           bins_cuts / bn_width_bnwd (or bnwK/bnwM) / textcolumns / 
                                    <column> + '_ratio' (column specific)
@@ -2267,7 +2278,8 @@ bins default to width of 1/1000/1000000 eg for bnwd/bnwK/bnwM
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '_bnwo' (or '_bnKo', '_bnMo')
-  - assignparam parameters accepted: 'width' to set bin width
+  - assignparam parameters accepted: 
+    - 'width' to set bin width
   - driftreport postmunge metrics: binsmean / bn_min / bn_max / bn_delta / bn_count / bins_id / 
 			           bins_cuts / bn_width / ordl_activations_dict
   - inversion available: yes with partial recovery
@@ -2286,7 +2298,8 @@ bin count defaults to 5/7/9 eg for bneo/bn7o/bn9o
   - default infill: adjacent cell
   - default NArowtype: numeric
   - suffix appender: '\_bneo' (or bn7o/bn9o)
-  - assignparam parameters accepted: 'bincount' to set number of bins
+  - assignparam parameters accepted: 
+    - 'bincount' to set number of bins
   - driftreport postmunge metrics: binsmean / bn_min / bn_max / bn_delta / bn_count / bins_id / 
 			           bins_cuts / bincount / ordl_activations_dict
   - inversion available: yes with partial recovery
@@ -2294,8 +2307,9 @@ bin count defaults to 5/7/9 eg for bneo/bn7o/bn9o
   - default infill: no activation
   - default NArowtype: numeric
   - suffix appender: '\_bkt1\_#1' where #1 is the bin identifier (# from min)
-  - assignparam parameters accepted: 'buckets', a list of numbers, to set bucket boundaries (leave out +/-'inf')
-					   defaults to [0,1,2] (arbitrary plug values)
+  - assignparam parameters accepted: 
+    - 'buckets', a list of numbers, to set bucket boundaries (leave out +/-'inf')
+      defaults to [0,1,2] (arbitrary plug values)
   - driftreport postmunge metrics: binsmean / buckets_bkt1 / bins_cuts / bins_id / textcolumns / 
 					   <column> + '_ratio' (column specific)
   - inversion available: yes with partial recovery
@@ -2303,8 +2317,9 @@ bin count defaults to 5/7/9 eg for bneo/bn7o/bn9o
   - default infill: no activation
   - default NArowtype: numeric
   - suffix appender: '\_bkt2\_#1' where #1 is the bin identifier (# from min)
-  - assignparam parameters accepted: 'buckets', a list of numbers, to set bucket boundaries
-					   defaults to [0,1,2] (arbitrary plug values)
+  - assignparam parameters accepted: 
+    - 'buckets', a list of numbers, to set bucket boundaries
+      defaults to [0,1,2] (arbitrary plug values)
   - driftreport postmunge metrics: binsmean / buckets_bkt2 / bins_cuts / bins_id / textcolumns / 
 					   <column> + '_ratio' (column specific)
   - inversion available: yes with partial recovery
@@ -2312,16 +2327,18 @@ bin count defaults to 5/7/9 eg for bneo/bn7o/bn9o
   - default infill: unique activation
   - default NArowtype: numeric
   - suffix appender: '_bkt3'
-  - assignparam parameters accepted: 'buckets', a list of numbers, to set bucket boundaries (leave out +/-'inf')
-					   defaults to [0,1,2] (arbitrary plug values)
+  - assignparam parameters accepted: 
+    - 'buckets', a list of numbers, to set bucket boundaries (leave out +/-'inf')
+      defaults to [0,1,2] (arbitrary plug values)
   - driftreport postmunge metrics: binsmean / buckets / bins_cuts / bins_id / ordl_activations_dict
   - inversion available: yes with partial recovery
 * bkt4: for numerical set graining to user specified ordinal encoded bins. First and last bins bounded.
   - default infill: unique activation
   - default NArowtype: numeric
   - suffix appender: '_bkt4'
-  - assignparam parameters accepted: 'buckets', a list of numbers, to set bucket boundaries
-                                     defaults to [0,1,2] (arbitrary plug values)
+  - assignparam parameters accepted: 
+    - 'buckets', a list of numbers, to set bucket boundaries
+      defaults to [0,1,2] (arbitrary plug values)
   - driftreport postmunge metrics: binsmean / buckets / bins_cuts / bins_id / ordl_activations_dict
   - inversion available: yes with partial recovery
 * note that bins each have variants for one-hot vs ordinal vs binary encodings
@@ -2335,7 +2352,8 @@ with metric2 results from a feature importance evaluation)
   - default infill: no activation (this is the recommended infill for this transform)
   - default NArowtype: numeric
   - suffix appender: '\_tlbn\_#' where # is the bin identifier,  and max# is right tail / min# is left tail
-  - assignparam parameters accepted: 'bincount' to set number of bins (defaults to 9)
+  - assignparam parameters accepted: 
+    - 'bincount' to set number of bins (defaults to 9)
   - driftreport postmunge metrics: binsmean / bn_min / bn_max / bn_delta / bn_count / bins_id / 
 			           bins_cuts / bincount_tlbn / textcolumns / <column> + '_ratio' (column specific)
   - inversion available: no
@@ -2348,8 +2366,8 @@ normalization which scales data with min/max while retaining +/- sign
   - default infill: adjacent cells
   - default NArowtype: numeric
   - suffix appender: '_dxdt'
-  - assignparam parameters accepted: 'periods' sets number of time steps offset to evaluate
-  defaults to 1
+  - assignparam parameters accepted: 
+    - 'periods' sets number of time steps offset to evaluate, defaults to 1
   - driftreport postmunge metrics: positiveratio / negativeratio / zeroratio / minimum / maximum / mean / std
   - inversion available: no
 * dxd2/d2d2/d3d2/d4d2/d5d2/d6d2: denoised rate of change (average of last two or more rows minus average
@@ -2358,8 +2376,8 @@ and d2d2), all returned sets include 'retn' normalization
   - default infill: adjacent cells
   - default NArowtype: numeric
   - suffix appender: '_dxd2'
-  - assignparam parameters accepted: 'periods' sets number of time steps offset to evaluate
-  defaults to 2
+  - assignparam parameters accepted: 
+    - 'periods' sets number of time steps offset to evaluate, defaults to 2
   - driftreport postmunge metrics: positiveratio / negativeratio / zeroratio / minimum / maximum / mean / std
   - inversion available: no
 * nmdx/nmd2/nmd3/nmd4/nmd5/nmd6: comparable to dxdt but includes upstream of sequential transforms a 
@@ -2373,10 +2391,10 @@ not supported for shift transforms, infill only available as adjacent cell
   - default infill: adjacent cells
   - default NArowtype: numeric
   - suffix appender: '_shft' / '_shf2' / '_shf3'
-  - assignparam parameters accepted: 'periods' sets number of time steps offset to evaluate
-                                     defaults to 1/2/3
-                                     'suffix' sets the suffix appender of returned column
-                                     as may be useful to disginguish if applying this multiple times
+  - assignparam parameters accepted: 
+    - 'periods' sets number of time steps offset to evaluate, defaults to 1/2/3
+    - 'suffix' sets the suffix appender of returned column
+      as may be useful to disginguish if applying this multiple times
   - driftreport postmunge metrics: positiveratio / negativeratio / zeroratio / minimum / maximum / mean / std
   - inversion available: yes
 ### Categorical Set Encodings
@@ -2464,15 +2482,16 @@ and comparable to test set independent of test set row count
   - default infill: none
   - default NArowtype: justNaN
   - suffix appender: '_aggt'
-  - assignparam parameters accepted: 'aggregate' as a list or as a list of lists of aggregation sets
+  - assignparam parameters accepted: 
+    - 'aggregate' as a list or as a list of lists of aggregation sets
   - driftreport postmunge metrics: aggregate
   - inversion available: yes with partial recovery
 * UPCS: convert string entries to all uppercase characters
   - default infill: none
   - default NArowtype: justNaN
   - suffix appender: '_UPCS'
-  - assignparam parameters accepted: 'activate', boolean defaults to True, 
-                                     False makes this a passthrough without conversion
+  - assignparam parameters accepted: 
+    - 'activate', boolean defaults to True, False makes this a passthrough without conversion
   - driftreport postmunge metrics: activate
   - inversion available: yes with partial recovery
 * new processing functions Unht / Utxt / Utx2 / Utx3 / Uord / Uor2 / Uor3 / Uor6 / U101 / Ucct
@@ -2495,6 +2514,8 @@ which is most useful. Reference the family trees below for composition details (
   - ntg2 set includes: ord4, retn, 1010, ordl, pwr2
   - ntg3 set includes: ord4, retn, ordl, por2
 ### Date-Time Data Normalizations
+Date time processing transforms are implementations of two master functions: time and tmcs, which accept
+various parameters associated with suffix, time scale, and sin/cos periodicity, etc.
 * date/dat2: for datetime formatted data, segregates data by time scale to multiple
 columns (year/month/day/hour/minute/second) and then performs z-score normalization
   - default infill: mean
@@ -2584,7 +2605,8 @@ hours (9-5, time zone unaware)
   - default infill: datetime
   - default NArowtype: justNaN
   - suffix appender: '_bshr'
-  - assignparam parameters accepted: 'start' and 'end', which default to 9 and 17
+  - assignparam parameters accepted: 
+    - 'start' and 'end', which default to 9 and 17
   - driftreport postmunge metrics: activationratio
   - inversion available: pending
 * hldy: boolean identifier indicating whether a datetime object is a US Federal
@@ -2592,8 +2614,9 @@ holiday
   - default infill: none
   - default NArowtype: datetime
   - suffix appender: '_hldy'
-  - assignparam parameters accepted: 'holiday_list', should be passed as a list of strings
-    of dates of additional holidays to be recognized e.g. ['2020/03/30']
+  - assignparam parameters accepted: 
+    - 'holiday_list', should be passed as a list of strings of dates of additional holidays to be recognized 
+      e.g. ['2020/03/30']
   - driftreport postmunge metrics: activationratio
   - inversion available: pending
 ### Differential Privacy Noise Injections
@@ -2608,11 +2631,12 @@ on flip_prob parameter.
   - default infill: the DP function does not apply a default infill assume upstream nmbr cleans data
   - default NArowtype: numeric
   - suffix appender: '_nmbr_DPnb'
-  - assignparam parameters accepted: 'noisedistribution' as {'normal', 'laplace'}, defaults to normal
-                                     'flip_prob' for percent of values with noise injection,
-	                             'mu' for noise mean and 'sigma' for noise scale
-	                             (defaults to 1.0, 0.03, 0, 1.0 respectively), parameters should be
-	                             passed to 'DPnb' transformation category from family tree
+  - assignparam parameters accepted: 
+    - 'noisedistribution' as {'normal', 'laplace'}, defaults to normal
+    - 'flip_prob' for percent of values with noise injection,
+    - 'mu' for noise mean and 'sigma' for noise scale
+      (defaults to 1.0, 0.03, 0, 1.0 respectively), parameters should be
+      passed to 'DPnb' transformation category from family tree
   - driftreport postmunge metrics: mu, sigma for DPnm, upstream z score via nmbr for others
   - inversion available: yes
 * DPmm: applies a min-max scaling followed by a noise injection to train data sampled
@@ -2621,11 +2645,12 @@ remains in range 0-1 (by scaling neg noise when input <0.5 and scaling pos noise
   - default infill: the DP function does not apply a default infill assume upstream mnmx cleans data
   - default NArowtype: numeric
   - suffix appender: '_mnmx_DPmm'
-  - assignparam parameters accepted: 'noisedistribution' as {'normal', 'laplace'}, defaults to normal
-                                     'flip_prob' for percent of values with noise injection,
-                                     'mu' for noise mean and 'sigma' for noise scale
-                                     (defaults to 1.0, 0, 0.03 respectively), parameters should be
-                                     passed to 'DPmm' transformation category from family tree
+  - assignparam parameters accepted: 
+    - 'noisedistribution' as {'normal', 'laplace'}, defaults to normal
+    - 'flip_prob' for percent of values with noise injection,
+    - 'mu' for noise mean and 'sigma' for noise scale
+      (defaults to 1.0, 0, 0.03 respectively), parameters should be
+      passed to 'DPmm' transformation category from family tree
   - driftreport postmunge metrics: mu, sigma for DPnm, upstream minmax via mnmx for others
   - inversion available: yes
 * DPrt: applies a retn normalization with a noise injection to train data sampled
@@ -2633,13 +2658,15 @@ from a Gaussian which defaults to 0 mu and 0.03 sigma. Note that noise is scaled
 remains in range 0-1 (by scaling neg noise when input <0.5 and scaling pos noise when input >0.5)
   - default infill: comparable to retn with mean (calculated before noise injection)
   - suffix appender: '_DPrt'
-  - assignparam parameters accepted: parameters comparable to retn divisor / offset / multiplier / 
-                                     cap / floor defaulting to 'minmax'/0/1/False/False, also
-                                     'noisedistribution' as {'normal', 'laplace'}, defaults to normal
-                                     'mu' for noise mean and 'sigma' for noise standard deviation
-                                     (defaults to 0, 0.03 respectively), also 'flip_prob' for ratio 
-                                     of data with injections (defaults to 1.0). Parameters should be
-                                     passed to 'DPrt' transformation category from family tree.
+  - assignparam parameters accepted: 
+    - parameters comparable to retn divisor / offset / multiplier / 
+    - cap / floor defaulting to 'minmax'/0/1/False/False, also
+    - 'adjinfill' to change default infill from mean imputation to adjacent cell
+    - 'noisedistribution' as {'normal', 'laplace'}, defaults to normal
+    - 'mu' for noise mean and 'sigma' for noise standard deviation
+      (defaults to 0, 0.03 respectively), 
+    - also 'flip_prob' for ratio of data with injections (defaults to 1.0). 
+    - Parameters should be passed to 'DPrt' transformation category from family tree.
   - driftreport postmunge metrics: mu, sigma, flip_prob for DPrt, also metrics comparable to retn
   - inversion available: yes
 * DLmm/DLnb/DLrt: comparable to DPmm/DPnb/DPrt but applies laplace distributed noise instead of gaussian
@@ -2650,9 +2677,10 @@ flips the activation per parameter flip_prob which defaults to 0.03
   - default infill: the DP function does not apply a default infill assume upstream bnry cleans data
   - default NArowtype: justNaN
   - suffix appender: '_bnry_DPbn'
-  - assignparam parameters accepted: 'flip_prob' for percent of activation flips
-	                             (defaults to 0.06), parameters should be
-	                             passed to 'DPbn' transformation category from family tree
+  - assignparam parameters accepted: 
+    - 'flip_prob' for percent of activation flips
+      (defaults to 0.06), parameters should be
+      passed to 'DPbn' transformation category from family tree
   - driftreport postmunge metrics: flip_prob for DPbn, upstream binary via bnry for others
   - inversion available: yes
 * DPod: applies an ordinal encoding (ord3) followed by a noise injection to train data which
@@ -2662,9 +2690,10 @@ on number of activations)
   - default infill: the DP function does not apply a default infill assume upstream ord3 cleans data
   - default NArowtype: justNaN
   - suffix appender: '_ord3_DPod'
-  - assignparam parameters accepted: 'flip_prob' for percent of activation flips
-	                             (defaults to 0.06), parameters should be
-	                             passed to 'DPod' transformation category from family tree
+  - assignparam parameters accepted: 
+    - 'flip_prob' for percent of activation flips
+      (defaults to 0.06), parameters should be
+      passed to 'DPod' transformation category from family tree
   - driftreport postmunge metrics: flip_prob for DPod, upstream ordinal via ord3 for others
   - inversion available: yes
 * DPoh: applies an ordinal encoding (ord3) followed by a noise injection to train data which
@@ -2674,9 +2703,10 @@ on number of activations), followed by a one-hot encoding
   - default infill: the DP function does not apply a default infill assume upstream ord3 cleans data
   - default NArowtype: justNaN
   - suffix appender: '\_ord3\_DPod\_onht\_#' where # is integer for each categoric entry
-  - assignparam parameters accepted: 'flip_prob' for percent of activation flips
-	                             (defaults to 0.06), parameters should be
-	                             passed to 'DPo2' transformation category from family tree
+  - assignparam parameters accepted: 
+    - 'flip_prob' for percent of activation flips
+      (defaults to 0.06), 
+    - parameters should be passed to 'DPo2' transformation category from family tree
   - driftreport postmunge metrics: flip_prob for DPod, upstream ordinal via ord3 and downstream onht for others
   - inversion available: yes
 * DP10: applies an ordinal encoding (ord3) followed by a noise injection to train data which
@@ -2686,9 +2716,9 @@ on number of activations), followed by a 1010 binary encoding
   - default infill: the DP function does not apply a default infill assume upstream ord3 cleans data
   - default NArowtype: justNaN
   - suffix appender: '\_ord3\_DPod\_1010\_#' where # is integer for each column which collectively encode categoric entries
-  - assignparam parameters accepted: 'flip_prob' for percent of activation flips
-	                             (defaults to 0.06), parameters should be
-	                             passed to 'DPo3' transformation category from family tree
+  - assignparam parameters accepted: 
+    - 'flip_prob' for percent of activation flips (defaults to 0.06), 
+    - parameters should be passed to 'DPo3' transformation category from family tree
   - driftreport postmunge metrics: flip_prob for DPod, upstream ordinal via ord3 and downstream 1010 for others
   - inversion available: yes
 ### Misc. Functions
@@ -2826,15 +2856,20 @@ Note that priority is given to overlaps of higher length, and by default overlap
   - default infill: none
   - default NArowtype: justNaN
   - suffix appender: '\_splt\_##*##' where ##*## is target identified string overlap 
-  - assignparam parameters accepted: 'minsplit': indicating lowest character length for recognized overlaps 
-                                     'space_and_punctuation': True/False, defaults to True, when passed as
-                                     False character overlaps are not recorded which include space or punctuation
-                                     based on characters in excluded_characters parameter
-                                     'excluded_characters': a list of strings which are excluded from overlap 
-                                     identification when space_and_punctuation set as False, defaults to
-                                     `[' ', ',', '.', '?', '!', '(', ')']`
-                                     'int_headers': True/False, defaults as False, when True returned column headers 
-                                     are encoded with integers, such as for privacy preserving of data contents
+  - assignparam parameters accepted: 
+    - 'minsplit': indicating lowest character length for recognized overlaps 
+    - 'space_and_punctuation': True/False, defaults to True, when passed as
+      False character overlaps are not recorded which include space or punctuation
+      based on characters in excluded_characters parameter
+    - 'excluded_characters': a list of strings which are excluded from overlap 
+      identification when space_and_punctuation set as False, defaults to
+      `[' ', ',', '.', '?', '!', '(', ')']`
+    - 'concurrent_activations': defaults as False, True makes comaprable to sp15, 
+      although recomend using sp15 instead for correct MLinfilltype
+    - 'suffix': returned column suffix appender, defaults to '_splt'
+    - 'int_headers': True/False, defaults as False, when True returned column headers 
+      are encoded with integers, such as for privacy preserving of data contents
+    - 'test_same_as_train': defaults False, True makes this comparable to spl8
   - driftreport postmunge metrics: overlap_dict / splt_newcolumns_splt / minsplit
   - inversion available: yes with partial recovery
 * sp15: similar to splt, but allows concurrent activations for multiple detected overlaps (spelled sp-fifteen)
@@ -2842,17 +2877,8 @@ Note that this version runs risk of high dimensionality of returned data in comp
   - default infill: none
   - default NArowtype: justNaN
   - suffix appender: '\_sp15\_##*##' where ##*## is target identified string overlap 
-  - assignparam parameters accepted: 'minsplit': indicating lowest character length for recognized overlaps 
-                                     'space_and_punctuation': True/False, defaults to True, when passed as
-                                     False character overlaps are not recorded which include space or punctuation
-                                     based on characters in excluded_characters parameter
-                                     'excluded_characters': a list of strings which are excluded from overlap 
-                                     identification when space_and_punctuation set as False, defaults to
-                                     `[' ', ',', '.', '?', '!', '(', ')']`
-                                     'concurrent_activations': True/False, defaults to True, when True
-                                     entries may have activations for multiple simultaneous overlaps
-                                     'int_headers': True/False, defaults as False, when True returned column headers 
-                                     are encoded with integers, such as for privacy preserving of data contents
+  - assignparam parameters accepted: 
+    - comparable to splt
   - driftreport postmunge metrics: overlap_dict / splt_newcolumns_sp15 / minsplit
   - inversion available: yes with partial recovery
 * sp19: comaprable to sp15, but with returned columns aggregated by a binary encoding to reduce dimensionality
@@ -2866,11 +2892,14 @@ Note that this version runs risk of high dimensionality of returned data in comp
   - default infill: none
   - default NArowtype: justNaN
   - suffix appender: '\_sbst\_##*##' where ##*## is target identified string overlap 
-  - assignparam parameters accepted: 'int_headers': True/False, defaults as False, when True returned column headers 
-                                     are encoded with integers, such as for privacy preserving of data contents
-                                     'minsplit': indicating lowest character length for recognized overlaps, defaults to 1
-                                     'concurrent_activations':  True/False, defaults to True, when True
-                                     entries may have activations for multiple simultaneous overlaps
+  - assignparam parameters accepted: 
+    - 'int_headers': True/False, defaults as False, when True returned column headers 
+      are encoded with integers, such as for privacy preserving of data contents
+    - 'minsplit': indicating lowest character length for recognized overlaps, defaults to 1
+    - 'concurrent_activations':  True/False, defaults to True, when True
+      entries may have activations for multiple simultaneous overlaps
+    - 'test_same_as_train': defaults False, True makes this comaprable to sbs2
+    - 'suffix': returned column suffix appender, defaults to '_sbst'
   - driftreport postmunge metrics: overlap_dict / splt_newcolumns_sbst / minsplit
   - inversion available: yes with partial recovery
 * sbs3: comaprable to sbst, but with returned columns aggregated by a binary encoding to reduce dimensionality
@@ -2885,13 +2914,17 @@ entries with the abbreviated string overlap
   - default infill: none
   - default NArowtype: justNaN
   - suffix appender: '_spl2'
-  - assignparam parameters accepted: 'minsplit': indicating lowest character length for recognized overlaps 
-                                     'space_and_punctuation': True/False, defaults to True, when passed as
-                                     False character overlaps are not recorded which include space or punctuation
-                                     based on characters in excluded_characters parameter
-                                     'excluded_characters': a list of strings which are excluded from overlap 
-                                     identification when space_and_punctuation set as False, defaults to
-                                     `[' ', ',', '.', '?', '!', '(', ')']`
+  - assignparam parameters accepted: 
+    - 'minsplit': indicating lowest character length for recognized overlaps 
+    - 'space_and_punctuation': True/False, defaults to True, when passed as
+      False character overlaps are not recorded which include space or punctuation
+      based on characters in excluded_characters parameter
+    - 'excluded_characters': a list of strings which are excluded from overlap 
+      identification when space_and_punctuation set as False, defaults to
+      `[' ', ',', '.', '?', '!', '(', ')']`
+    - 'test_same_as_train': defaults False, True makes this comaprable to spl9
+    - 'suffix': returned column suffix appender, defaults to '_spl2'
+    - 'consolidate_nonoverlaps': defaults to False, True makes this comparble to spl5
   - driftreport postmunge metrics: overlap_dict / spl2_newcolumns / spl2_overlap_dict / spl2_test_overlap_dict / 
                                    minsplit
   - inversion available: yes with partial recovery
@@ -2900,13 +2933,8 @@ entries with the abbreviated string overlap
   - default infill: none
   - default NArowtype: justNaN
   - suffix appender: '_spl5'
-  - assignparam parameters accepted: 'minsplit': indicating lowest character length for recognized overlaps 
-                                     'space_and_punctuation': True/False, defaults to True, when passed as
-                                     False character overlaps are not recorded which include space or punctuation
-                                     based on characters in excluded_characters parameter
-                                     'excluded_characters': a list of strings which are excluded from overlap 
-                                     identification when space_and_punctuation set as False, defaults to
-                                     `[' ', ',', '.', '?', '!', '(', ')']`
+  - assignparam parameters accepted:
+    - comaprable to spl2, consolidate_nonoverlaps as True
   - driftreport postmunge metrics: overlap_dict / spl2_newcolumns / spl2_overlap_dict / spl2_test_overlap_dict / 
                                    spl5_zero_dict / minsplit
   - inversion available: yes with partial recovery
@@ -2915,13 +2943,8 @@ within the overlaps
   - default infill: none
   - default NArowtype: justNaN
   - suffix appender: '_spl5'
-  - assignparam parameters accepted: 'minsplit': indicating lowest character length for recognized overlaps 
-                                     'space_and_punctuation': True/False, defaults to True, when passed as
-                                     False character overlaps are not recorded which include space or punctuation
-                                     based on characters in excluded_characters parameter
-                                     'excluded_characters': a list of strings which are excluded from overlap 
-                                     identification when space_and_punctuation set as False, defaults to
-                                     `[' ', ',', '.', '?', '!', '(', ')']`
+  - assignparam parameters accepted:
+    - comparable to spl2
   - driftreport postmunge metrics: overlap_dict / spl2_newcolumns / spl2_overlap_dict / spl2_test_overlap_dict / 
                                    spl5_zero_dict / minsplit
   - inversion available: yes with partial recovery
@@ -2929,13 +2952,8 @@ within the overlaps
   - default infill: none
   - default NArowtype: justNaN
   - suffix appender: '_spl5'
-  - assignparam parameters accepted: 'minsplit': indicating lowest character length for recognized overlaps 
-                                     'space_and_punctuation': True/False, defaults to True, when passed as
-                                     False character overlaps are not recorded which include space or punctuation
-                                     based on characters in excluded_characters parameter
-                                     'excluded_characters': a list of strings which are excluded from overlap 
-                                     identification when space_and_punctuation set as False, defaults to
-                                     `[' ', ',', '.', '?', '!', '(', ')']`
+  - assignparam parameters accepted: 
+    - comparble to spl5, minsplit defaults to 2
   - driftreport postmunge metrics: overlap_dict / srch_newcolumns_srch / search
   - inversion available: yes with partial recovery
 * srch: searches categorical sets for overlaps with user passed search string and returns new boolean column
@@ -2943,19 +2961,21 @@ for identified overlap entries.
   - default infill: none
   - default NArowtype: justNaN
   - suffix appender: '\_srch\_##*##' where ##*## is target identified search string
-  - assignparam parameters accepted: 'search': a list of strings, defaults as empty set
-				     (note search parameter list can included embedded lists of terms for 
-				      aggregated activations of terms in the sublist)
-				     'case': bool to indicate case sensitivity of search, defaults True
+  - assignparam parameters accepted: 
+    - 'search': a list of strings, defaults as empty set
+      (note search parameter list can included embedded lists of terms for 
+      aggregated activations of terms in the sublist)
+    - 'case': bool to indicate case sensitivity of search, defaults True
   - driftreport postmunge metrics: overlap_dict / splt_newcolumns_splt / minsplit
   - inversion available: yes with partial recovery
 * src2: comparable to srch but expected to be more efficient when target set has narrow range of entries
   - default infill: none
   - default NArowtype: justNaN
   - suffix appender: '\_src2_##*##' where ##*## is target identified search string
-  - assignparam parameters accepted: 'search': a list of strings, defaults as empty set
-				     (note search parameter list can included embedded lists of terms for 
-				      aggregated activations of terms in the sublist)
+  - assignparam parameters accepted: 
+    - 'search': a list of strings, defaults as empty set
+      (note search parameter list can included embedded lists of terms for 
+      aggregated activations of terms in the sublist)
   - driftreport postmunge metrics: overlap_dict / splt_newcolumns_splt / minsplit
   - inversion available: yes with partial recovery
 * src3: comparable to src2 with additional support for test set entries not found in train set
@@ -2964,10 +2984,11 @@ for identified overlap entries. (Note for multiple activations encoding priority
   - default infill: none
   - default NArowtype: justNaN
   - suffix appender: '\_src4'
-  - assignparam parameters accepted: 'search': a list of strings, defaults as empty set
-				     (note search parameter list can included embedded lists of terms for 
-				      aggregated activations of terms in the sublist)
-				     'case': bool to indicate case sensitivity of search, defaults True
+  - assignparam parameters accepted: 
+    - 'search': a list of strings, defaults as empty set
+      (note search parameter list can included embedded lists of terms for 
+      aggregated activations of terms in the sublist)
+    - 'case': bool to indicate case sensitivity of search, defaults True
   - driftreport postmunge metrics: overlap_dict / splt_newcolumns_splt / minsplit
   - inversion available: yes with partial recovery
 * nmrc/nmr2/nmr3: parses strings and returns any number groupings, prioritized by longest length
