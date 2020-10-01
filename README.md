@@ -2633,9 +2633,9 @@ on flip_prob parameter.
   - suffix appender: '_nmbr_DPnb'
   - assignparam parameters accepted: 
     - 'noisedistribution' as {'normal', 'laplace'}, defaults to normal
-    - 'flip_prob' for percent of values with noise injection,
-    - 'mu' for noise mean and 'sigma' for noise scale
-      (defaults to 1.0, 0.03, 0, 1.0 respectively), 
+    - 'flip_prob' for percent of values with noise injection, defaults to 1.0
+    - 'mu' for noise mean, defaults to 0
+    - 'sigma' for noise scale, defaults to 0.06
     - parameters should be passed to 'DPnb' transformation category from family tree
   - driftreport postmunge metrics: mu, sigma for DPnm, upstream z score via nmbr for others
   - inversion available: yes
@@ -2647,9 +2647,9 @@ remains in range 0-1 (by scaling neg noise when input <0.5 and scaling pos noise
   - suffix appender: '_mnmx_DPmm'
   - assignparam parameters accepted: 
     - 'noisedistribution' as {'normal', 'laplace'}, defaults to normal
-    - 'flip_prob' for percent of values with noise injection,
-    - 'mu' for noise mean and 'sigma' for noise scale
-      (defaults to 1.0, 0, 0.03 respectively), 
+    - 'flip_prob' for percent of values with noise injection, defaults to 1.0
+    - 'mu' for noise mean, defaults to 0
+    - 'sigma' for noise scale, defaults to 0.03
     - parameters should be passed to 'DPmm' transformation category from family tree
   - driftreport postmunge metrics: mu, sigma for DPnm, upstream minmax via mnmx for others
   - inversion available: yes
@@ -2663,8 +2663,8 @@ remains in range 0-1 (by scaling neg noise when input <0.5 and scaling pos noise
     - cap / floor defaulting to 'minmax'/0/1/False/False, also
     - 'adjinfill' to change default infill from mean imputation to adjacent cell
     - 'noisedistribution' as {'normal', 'laplace'}, defaults to normal
-    - 'mu' for noise mean and 'sigma' for noise standard deviation
-      (defaults to 0, 0.03 respectively), 
+    - 'mu' for noise mean, defaults to 0, 
+    - 'sigma' for noise scale, defautls to 0.03
     - also 'flip_prob' for ratio of data with injections (defaults to 1.0). 
     - Parameters should be passed to 'DPrt' transformation category from family tree.
   - driftreport postmunge metrics: mu, sigma, flip_prob for DPrt, also metrics comparable to retn
@@ -2678,7 +2678,7 @@ flips the activation per parameter flip_prob which defaults to 0.03
   - default NArowtype: justNaN
   - suffix appender: '_bnry_DPbn'
   - assignparam parameters accepted: 
-    - 'flip_prob' for percent of activation flips (defaults to 0.06), 
+    - 'flip_prob' for percent of activation flips (defaults to 0.03), 
     - parameters should be passed to 'DPbn' transformation category from family tree
   - driftreport postmunge metrics: flip_prob for DPbn, upstream binary via bnry for others
   - inversion available: yes
@@ -2690,7 +2690,7 @@ on number of activations)
   - default NArowtype: justNaN
   - suffix appender: '_ord3_DPod'
   - assignparam parameters accepted: 
-    - 'flip_prob' for percent of activation flips (defaults to 0.06), 
+    - 'flip_prob' for percent of activation flips (defaults to 0.03), 
     - parameters should be passed to 'DPod' transformation category from family tree
   - driftreport postmunge metrics: flip_prob for DPod, upstream ordinal via ord3 for others
   - inversion available: yes
@@ -2702,7 +2702,7 @@ on number of activations), followed by a one-hot encoding
   - default NArowtype: justNaN
   - suffix appender: '\_ord3\_DPod\_onht\_#' where # is integer for each categoric entry
   - assignparam parameters accepted: 
-    - 'flip_prob' for percent of activation flips (defaults to 0.06), 
+    - 'flip_prob' for percent of activation flips (defaults to 0.03), 
     - parameters should be passed to 'DPo2' transformation category from family tree
   - driftreport postmunge metrics: flip_prob for DPod, upstream ordinal via ord3 and downstream onht for others
   - inversion available: yes
@@ -2714,7 +2714,7 @@ on number of activations), followed by a 1010 binary encoding
   - default NArowtype: justNaN
   - suffix appender: '\_ord3\_DPod\_1010\_#' where # is integer for each column which collectively encode categoric entries
   - assignparam parameters accepted: 
-    - 'flip_prob' for percent of activation flips (defaults to 0.06), 
+    - 'flip_prob' for percent of activation flips (defaults to 0.03), 
     - parameters should be passed to 'DPo3' transformation category from family tree
   - driftreport postmunge metrics: flip_prob for DPod, upstream ordinal via ord3 and downstream 1010 for others
   - inversion available: yes
