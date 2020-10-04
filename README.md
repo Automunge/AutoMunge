@@ -309,16 +309,15 @@ systematic study of the class imbalance problem in convolutional neural
 networks" - Buda, Maki, Mazurowski.
 
 The function also can perform dimensionality reduction of the sets via 
-principal component analysis (PCA). The function automatically performs a 
-transformation when the number of features is more than 50% of the number
-of observations in the train set (this is a somewhat arbitrary heuristic).
-Alternately, the user can pass a desired number of features and their 
-preference of type and parameters between linear PCA, Sparse PCA, or Kernel 
-PCA - all currently implemented in Scikit-Learn.
+principal component analysis (PCA), where the user can pass a desired number 
+of features and their preference of type and parameters between linear PCA, 
+Sparse PCA, or Kernel PCA - all currently implemented in Scikit-Learn.
 
 The function also can perform dimensionality reduction of the sets via
 the Binary option which takes the set of columns with boolean {1/0} encodings
-and collectively applies a binary transform to reduce the number of columns.
+and collectively applies a binary transform to consolidate these columns to
+a set where distinct activation sets may be represented by a distinct activation set
+in a reduced number of columns with zero, one, or more simultaneous activations.
 
 ## automunge(.)
 
