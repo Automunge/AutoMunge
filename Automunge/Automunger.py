@@ -3430,14 +3430,15 @@ class AutoMunge:
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mnmx'}})
-    process_dict.update({'mnm6' : {'dualprocess' : self.process_mnm6_class, \
+    process_dict.update({'mnm6' : {'dualprocess' : self.process_mnmx_class, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_mnm6_class, \
+                                  'postprocess' : self.postprocess_mnmx_class, \
                                   'inverseprocess' : self.inverseprocess_mnmx, \
+                                  'defaultparams' : {'floor' : True}, \
                                   'info_retention' : False, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
-                                  'labelctgy' : 'mnm6'}})
+                                  'labelctgy' : 'mnmx'}})
     process_dict.update({'mnm7' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
@@ -6863,6 +6864,12 @@ class AutoMunge:
     
     suffixoverlap_results = {}
     
+    #adjinfill accepts True/False to change default infill from mean inputation to adjacent cell
+    if 'adjinfill' in params:
+      adjinfill = params['adjinfill']
+    else:
+      adjinfill = False
+    
     #copy source column into new column
     mdf_train, suffixoverlap_results = \
     self.df_copy_train(mdf_train, column, column + '_MADn', suffixoverlap_results)
@@ -6883,6 +6890,12 @@ class AutoMunge:
     mean = mdf_train[column + '_MADn'].mean() 
     if mean != mean:
       mean = 0
+      
+    if adjinfill is True:
+      mdf_train[column + '_MADn'] = mdf_train[column + '_MADn'].fillna(method='ffill')
+      mdf_test[column + '_MADn'] = mdf_test[column + '_MADn'].fillna(method='ffill')
+      mdf_train[column + '_MADn'] = mdf_train[column + '_MADn'].fillna(method='bfill')
+      mdf_test[column + '_MADn'] = mdf_test[column + '_MADn'].fillna(method='bfill')
 
     #replace missing data with training set mean
     mdf_train[column + '_MADn'] = mdf_train[column + '_MADn'].fillna(mean)
@@ -6911,7 +6924,8 @@ class AutoMunge:
     nmbrcolumns = [column + '_MADn']
 
     nmbrnormalization_dict = {column + '_MADn' : {'mean' : mean, 'MAD' : MAD, \
-                                                  'maximum':maximum, 'minimum':minimum}}
+                                                  'maximum':maximum, 'minimum':minimum, \
+                                                  'adjinfill':adjinfill}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -6952,6 +6966,12 @@ class AutoMunge:
     
     suffixoverlap_results = {}
     
+    #adjinfill accepts True/False to change default infill from mean inputation to adjacent cell
+    if 'adjinfill' in params:
+      adjinfill = params['adjinfill']
+    else:
+      adjinfill = False
+    
     #copy source column into new column
     mdf_train, suffixoverlap_results = \
     self.df_copy_train(mdf_train, column, column + '_MAD3', suffixoverlap_results)
@@ -6970,13 +6990,16 @@ class AutoMunge:
 
     #get mean of training data
     mean = mdf_train[column + '_MAD3'].mean()
-    
     if mean != mean:
       mean = 0
+      
+    if adjinfill is True:
+      mdf_train[column + '_MAD3'] = mdf_train[column + '_MAD3'].fillna(method='ffill')
+      mdf_test[column + '_MAD3'] = mdf_test[column + '_MAD3'].fillna(method='ffill')
+      mdf_train[column + '_MAD3'] = mdf_train[column + '_MAD3'].fillna(method='bfill')
+      mdf_test[column + '_MAD3'] = mdf_test[column + '_MAD3'].fillna(method='bfill')
     
     #replace missing data with training set mean
-    if mean != mean:
-      mean = 0
     mdf_train[column + '_MAD3'] = mdf_train[column + '_MAD3'].fillna(mean)
     mdf_test[column + '_MAD3'] = mdf_test[column + '_MAD3'].fillna(mean)
 
@@ -7006,7 +7029,7 @@ class AutoMunge:
     nmbrcolumns = [column + '_MAD3']
 
     nmbrnormalization_dict = {column + '_MAD3' : {'mean' : mean, 'MAD' : MAD, 'datamax' : datamax, \
-                                                  'maximum':maximum, 'minimum':minimum}}
+                                                  'maximum':maximum, 'minimum':minimum, 'adjinfill':adjinfill}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -7206,6 +7229,12 @@ class AutoMunge:
       qmin = params['qmin']
     else:
       qmin = 0.01
+      
+    #adjinfill accepts True/False to change default infill from mean inputation to adjacent cell
+    if 'adjinfill' in params:
+      adjinfill = params['adjinfill']
+    else:
+      adjinfill = False
     
     #copy source column into new column
     mdf_train, suffixoverlap_results = \
@@ -7248,9 +7277,14 @@ class AutoMunge:
 
     #get mean of training data
     mean = mdf_train[column + '_mnm3'].mean()    
-
     if mean != mean:
       mean = 0
+      
+    if adjinfill is True:
+      mdf_train[column + '_mnm3'] = mdf_train[column + '_mnm3'].fillna(method='ffill')
+      mdf_test[column + '_mnm3'] = mdf_test[column + '_mnm3'].fillna(method='ffill')
+      mdf_train[column + '_mnm3'] = mdf_train[column + '_mnm3'].fillna(method='bfill')
+      mdf_test[column + '_mnm3'] = mdf_test[column + '_mnm3'].fillna(method='bfill')
     
     #replace missing data with training set mean
     mdf_train[column + '_mnm3'] = mdf_train[column + '_mnm3'].fillna(mean)
@@ -7281,7 +7315,8 @@ class AutoMunge:
                                                   'mean' : mean, \
                                                   'std' : std, \
                                                   'qmax' : qmax, \
-                                                  'qmin' : qmin }}
+                                                  'qmin' : qmin, \
+                                                  'adjinfill' : adjinfill }}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -7302,106 +7337,6 @@ class AutoMunge:
 
       column_dict_list.append(column_dict.copy())
 
-    return mdf_train, mdf_test, column_dict_list
-
-  def process_mnm6_class(self, mdf_train, mdf_test, column, category, \
-                         postprocess_dict, params = {}):
-    '''
-    #process_mnm6_class(mdf_train, mdf_test, column, category)
-    #function to scale data to minimum of 0 and maximum of 1 \
-    #based on min/max values from training set for this column
-    #takes as arguement pandas dataframe of training and test data (mdf_train), (mdf_test)\
-    #and the name of the column string ('column') and parent category (category)
-    #replaces missing or improperly formatted data with mean of remaining values
-    #returns same dataframes with new column of name column + '_mnmx'
-    #note this is a "dualprocess" function since is applied to both dataframes
-    
-    #note that this differs from mnmx in that a floor is placed on the test set at min(train)
-    #expect this approach works better when the numerical distribution is thin tailed
-    #if only have training but not test data handy, use same training data for both
-    #dataframe inputs
-    '''
-    
-    suffixoverlap_results = {}
-    
-    #copy source column into new column
-    mdf_train, suffixoverlap_results = \
-    self.df_copy_train(mdf_train, column, column + '_mnm6', suffixoverlap_results)
-    
-    mdf_test[column + '_mnm6'] = mdf_test[column].copy()
-
-    #convert all values to either numeric or NaN
-    mdf_train[column + '_mnm6'] = pd.to_numeric(mdf_train[column + '_mnm6'], errors='coerce')
-    mdf_test[column + '_mnm6'] = pd.to_numeric(mdf_test[column + '_mnm6'], errors='coerce')
-    
-    #a few more metrics collected for driftreport
-    #get standard deviation of training data
-    std = mdf_train[column + '_mnm6'].std()
-
-    #get mean of training data
-    mean = mdf_train[column + '_mnm6'].mean()    
-
-    if mean != mean:
-      mean = 0
-    
-    #replace missing data with training set mean
-    mdf_train[column + '_mnm6'] = mdf_train[column + '_mnm6'].fillna(mean)
-    mdf_test[column + '_mnm6'] = mdf_test[column + '_mnm6'].fillna(mean)
-    
-    #get maximum value of training column
-    maximum = mdf_train[column + '_mnm6'].max()
-    
-    #get minimum value of training column
-    minimum = mdf_train[column + '_mnm6'].min()
-    
-    #avoid outlier div by zero when max = min
-    maxminusmin = maximum - minimum
-    if maxminusmin == 0:
-      maxminusmin = 1
-    
-    #perform min-max scaling to train and test sets using values from train
-    mdf_train[column + '_mnm6'] = (mdf_train[column + '_mnm6'] - minimum) / \
-                                  (maxminusmin)
-    
-    mdf_test[column + '_mnm6'] = (mdf_test[column + '_mnm6'] - minimum) / \
-                                 (maxminusmin)
-    
-    #replace values in test < 0 with 0
-    mdf_test.loc[mdf_train[column + '_mnm6'] < 0, (column + '_mnm6')] \
-    = 0
-
-#     #change data type for memory savings
-#     mdf_train[column + '_mnm6'] = mdf_train[column + '_mnm6'].astype(np.float32)
-#     mdf_test[column + '_mnm6'] = mdf_test[column + '_mnm6'].astype(np.float32)
-    
-    #create list of columns
-    nmbrcolumns = [column + '_mnm6']
-
-    nmbrnormalization_dict = {column + '_mnm6' : {'minimum' : minimum, \
-                                                  'maximum' : maximum, \
-                                                  'maxminusmin' : maxminusmin, \
-                                                  'mean' : mean, \
-                                                  'std' : std}}
-
-    #store some values in the nmbr_dict{} for use later in ML infill methods
-    column_dict_list = []
-
-    for nc in nmbrcolumns:
-
-      column_dict = { nc : {'category' : 'mnm6', \
-                           'origcategory' : category, \
-                           'normalization_dict' : nmbrnormalization_dict, \
-                           'origcolumn' : column, \
-                           'inputcolumn' : column, \
-                           'columnslist' : nmbrcolumns, \
-                           'categorylist' : [nc], \
-                           'infillmodel' : False, \
-                           'infillcomplete' : False, \
-                           'suffixoverlap_results' : suffixoverlap_results, \
-                           'deletecolumn' : False}}
-
-      column_dict_list.append(column_dict.copy())
-      
     return mdf_train, mdf_test, column_dict_list
   
   def process_retn_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
@@ -7680,6 +7615,12 @@ class AutoMunge:
       floor = params['floor']
     else:
       floor = False
+      
+    #adjinfill accepts True/False to change default infill from mean inputation to adjacent cell
+    if 'adjinfill' in params:
+      adjinfill = params['adjinfill']
+    else:
+      adjinfill = False
     
     #copy source column into new column
     mdf_train, suffixoverlap_results = \
@@ -7732,11 +7673,17 @@ class AutoMunge:
     std = mdf_train[column + '_mean'].std()
 
     #get mean of training data
-    mean = mdf_train[column + '_mean'].mean()    
-
-    #replace missing data with training set mean
+    mean = mdf_train[column + '_mean'].mean()
     if mean != mean:
       mean = 0
+
+    if adjinfill is True:
+      mdf_train[column + '_mean'] = mdf_train[column + '_mean'].fillna(method='ffill')
+      mdf_test[column + '_mean'] = mdf_test[column + '_mean'].fillna(method='ffill')
+      mdf_train[column + '_mean'] = mdf_train[column + '_mean'].fillna(method='bfill')
+      mdf_test[column + '_mean'] = mdf_test[column + '_mean'].fillna(method='bfill')
+      
+    #replace missing data with training set mean
     mdf_train[column + '_mean'] = mdf_train[column + '_mean'].fillna(mean)
     mdf_test[column + '_mean'] = mdf_test[column + '_mean'].fillna(mean)
     
@@ -7767,7 +7714,8 @@ class AutoMunge:
                                                   'offset' : offset, \
                                                   'multiplier': multiplier, \
                                                   'cap' : cap, \
-                                                  'floor' : floor}}
+                                                  'floor' : floor, \
+                                                  'adjinfill' : adjinfill}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -26285,7 +26233,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.88'
+    automungeversion = '4.89'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -26954,16 +26902,18 @@ class AutoMunge:
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
     MAD = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['MAD']
+    adjinfill = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['adjinfill']
 
     #copy original column for implementation
     mdf_test[column + '_MADn'] = mdf_test[column].copy()
 
-
     #convert all values to either numeric or NaN
     mdf_test[column + '_MADn'] = pd.to_numeric(mdf_test[column + '_MADn'], errors='coerce')
-
-    #get mean of training data
-    mean = mean  
+    
+    if adjinfill is True:
+      mdf_test[column + '_MADn'] = mdf_test[column + '_MADn'].fillna(method='ffill')
+      mdf_test[column + '_MADn'] = mdf_test[column + '_MADn'].fillna(method='bfill')
 
     #replace missing data with training set mean
     mdf_test[column + '_MADn'] = mdf_test[column + '_MADn'].fillna(mean)
@@ -27005,15 +26955,18 @@ class AutoMunge:
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['MAD']
     datamax = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['datamax']
+    adjinfill = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['adjinfill']
 
     #copy original column for implementation
     mdf_test[column + '_MAD3'] = mdf_test[column].copy()
 
     #convert all values to either numeric or NaN
     mdf_test[column + '_MAD3'] = pd.to_numeric(mdf_test[column + '_MAD3'], errors='coerce')
-
-    #get mean of training data
-    mean = mean  
+    
+    if adjinfill is True:
+      mdf_test[column + '_MAD3'] = mdf_test[column + '_MAD3'].fillna(method='ffill')
+      mdf_test[column + '_MAD3'] = mdf_test[column + '_MAD3'].fillna(method='bfill')
 
     #replace missing data with training set mean
     mdf_test[column + '_MAD3'] = mdf_test[column + '_MAD3'].fillna(mean)
@@ -27122,6 +27075,9 @@ class AutoMunge:
 
     quantilemax = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['quantilemax']
+    
+    adjinfill = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['adjinfill']
 
     #copy original column for implementation
     mdf_test[column + '_mnm3'] = mdf_test[column].copy()
@@ -27138,6 +27094,10 @@ class AutoMunge:
     #replace values < quantile10 with quantile10
     mdf_test.loc[mdf_test[column + '_mnm3'] < quantilemin, (column + '_mnm3')] \
     = quantilemin
+      
+    if adjinfill is True:
+      mdf_test[column + '_mnm3'] = mdf_test[column + '_mnm3'].fillna(method='ffill')
+      mdf_test[column + '_mnm3'] = mdf_test[column + '_mnm3'].fillna(method='bfill')
     
     #replace missing data with training set mean
     mdf_test[column + '_mnm3'] = mdf_test[column + '_mnm3'].fillna(mean)
@@ -27153,64 +27113,6 @@ class AutoMunge:
 
 #     #change data type for memory savings
 #     mdf_test[column + '_mnm3'] = mdf_test[column + '_mnm3'].astype(np.float32)
-
-    return mdf_test
-
-  def postprocess_mnm6_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
-    '''
-    #postprocess_mnm6_class(mdf_test, column, postprocess_dict, columnkey)
-    #function to scale data to minimum of 0 and maximum of 1 based on training distribution
-    #takes as arguement pandas dataframe of training and test data (mdf_train), (mdf_test)\
-    #and the name of the column string ('column'), and the normalization parameters \
-    #stored in postprocess_dict
-    #replaces missing or improperly formatted data with mean of training values
-    #leaves original specified column in dataframe
-    #returns transformed dataframe
-    
-    #note that this differs from mnmx in that a floor is placed on the test set at min(train)
-    #expect this approach works better when the numerical distribution is thin tailed
-    #if only have training but not test data handy, use same training data for both dataframe inputs
-    '''
-        
-    #retrieve normalizastion parameters from postprocess_dict
-    normkey = column + '_mnm6'
-    
-    mean = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
-    
-    minimum = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['minimum']
-    
-    maximum = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['maximum']
-
-    #copy original column for implementation
-    mdf_test[column + '_mnm6'] = mdf_test[column].copy()
-
-    #convert all values to either numeric or NaN
-    mdf_test[column + '_mnm6'] = pd.to_numeric(mdf_test[column + '_mnm6'], errors='coerce')
-
-    #get mean of training data
-    mean = mean
-
-    #replace missing data with training set mean
-    mdf_test[column + '_mnm6'] = mdf_test[column + '_mnm6'].fillna(mean)
-    
-    #avoid outlier div by zero when max = min
-    maxminusmin = maximum - minimum
-    if maxminusmin == 0:
-      maxminusmin = 1
-
-    #perform min-max scaling to test set using values from train
-    mdf_test[column + '_mnm6'] = (mdf_test[column + '_mnm6'] - minimum) / \
-                                 (maxminusmin)
-    
-    #replace values in test < 0 with 0
-    mdf_test.loc[mdf_test[column + '_mnm6'] < 0, (column + '_mnm6')] \
-    = 0
-
-#     #change data type for memory savings
-#     mdf_test[column + '_mnm6'] = mdf_test[column + '_mnm6'].astype(np.float32)
 
     return mdf_test
 
@@ -27353,6 +27255,9 @@ class AutoMunge:
     
     floor = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['floor']
+    
+    adjinfill = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['adjinfill']
 
     #copy original column for implementation
     mdf_test[column + '_mean'] = mdf_test[column].copy()
@@ -27369,9 +27274,10 @@ class AutoMunge:
       #replace values in test < floor with floor
       mdf_test.loc[mdf_test[column + '_mean'] < floor, (column + '_mean')] \
       = floor
-
-    #get mean of training data
-    mean = mean  
+      
+    if adjinfill is True:
+      mdf_test[column + '_mean'] = mdf_test[column + '_mean'].fillna(method='ffill')
+      mdf_test[column + '_mean'] = mdf_test[column + '_mean'].fillna(method='bfill')
 
     #replace missing data with training set mean
     mdf_test[column + '_mean'] = mdf_test[column + '_mean'].fillna(mean)
