@@ -2035,6 +2035,7 @@ My intuition says z-score has some benefits but really up to the user which they
       cap and floor based on pre-transform values
     - 'muilitplier' and 'offset' to apply multiplier and offset to posttransform values, default to 1,0,
       note that multiplier is applied prior to offset
+    - 'adjinfill', boolean, defaults to False, True makes default infill adjacent cell instead of mean imputation
   - driftreport postmunge metrics: minimum / maximum / mean / std
   - inversion available: yes with full recovery
 * mnmx/mnm2/mnm5/mmdx/mmd2/mmd3: vanilla min-max scaling<br/>
@@ -2054,15 +2055,18 @@ My intuition says z-score has some benefits but really up to the user which they
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '_mnm3'
-  - assignparam parameters accepted: qmax or qmin to change the quantiles from 0.99/0.01
+  - assignparam parameters accepted: 
+    - qmax or qmin to change the quantiles from 0.99/0.01
+    - 'adjinfill', boolean, defaults to False, True makes default infill adjacent cell instead of mean imputation
   - driftreport postmunge metrics: quantilemin / quantilemax / mean / std
   - inversion available: yes
 * mnm6: min-max scaling with test floor set capped at min of train set (ensures
 test set returned values >= 0, such as might be useful for kernel PCA for instance)
   - default infill: mean
   - default NArowtype: numeric
-  - suffix appender: '_mnm6'
-  - assignparam parameters accepted: none
+  - suffix appender: '_mnmx'
+  - assignparam parameters accepted:
+    - 'adjinfill', boolean, defaults to False, True makes default infill adjacent cell instead of mean imputation
   - driftreport postmunge metrics: minimum / maximum / mean / std
   - inversion available: yes
 * retn: related to min/max scaling but retains +/- of values, based on conditions
@@ -2090,7 +2094,8 @@ elif max<=0 and min<=0 x=(x-max)/(max-min)
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '_MADn'
-  - assignparam parameters accepted: none
+  - assignparam parameters accepted:
+    - 'adjinfill', boolean, defaults to False, True makes default infill adjacent cell instead of mean imputation
   - driftreport postmunge metrics: mean / MAD / maximum / minimum
   - inversion available: yes with full recovery
 * MAD3: mean absolute deviation normalization, subtract set maximum<br/>
@@ -2098,7 +2103,8 @@ elif max<=0 and min<=0 x=(x-max)/(max-min)
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '_MAD3'
-  - assignparam parameters accepted: none
+  - assignparam parameters accepted:
+    - 'adjinfill', boolean, defaults to False, True makes default infill adjacent cell instead of mean imputation
   - driftreport postmunge metrics: mean / MAD / datamax / maximum / minimum
   - inversion available: yes with full recovery
 * lgnm: normalization intended for lognormal distributed numerical sets,
@@ -3467,7 +3473,6 @@ present in dataframe and return results in postprocess_dict['miscparameters_resu
 - '_mltp'
 - '_mncs'
 - '_mnm3'
-- '_mnm6'
 - '_mnmx'
 - '_mnsn'
 - '_mnth'
