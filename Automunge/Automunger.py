@@ -6351,7 +6351,7 @@ class AutoMunge:
                            'origcolumn' : column, \
                            'inputcolumn' : column, \
                            'columnslist' : nmbrcolumns, \
-                           'categorylist' : [nc], \
+                           'categorylist' : nmbrcolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
                            'suffixoverlap_results' : suffixoverlap_results, \
@@ -6444,7 +6444,7 @@ class AutoMunge:
                            'origcolumn' : column, \
                            'inputcolumn' : column, \
                            'columnslist' : nmbrcolumns, \
-                           'categorylist' : [nc], \
+                           'categorylist' : nmbrcolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
                            'suffixoverlap_results' : suffixoverlap_results, \
@@ -6550,7 +6550,7 @@ class AutoMunge:
                            'origcolumn' : column, \
                            'inputcolumn' : column, \
                            'columnslist' : nmbrcolumns, \
-                           'categorylist' : [nc], \
+                           'categorylist' : nmbrcolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
                            'suffixoverlap_results' : suffixoverlap_results, \
@@ -6938,7 +6938,7 @@ class AutoMunge:
                            'origcolumn' : column, \
                            'inputcolumn' : column, \
                            'columnslist' : nmbrcolumns, \
-                           'categorylist' : [nc], \
+                           'categorylist' : nmbrcolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
                            'suffixoverlap_results' : suffixoverlap_results, \
@@ -7042,7 +7042,7 @@ class AutoMunge:
                            'origcolumn' : column, \
                            'inputcolumn' : column, \
                            'columnslist' : nmbrcolumns, \
-                           'categorylist' : [nc], \
+                           'categorylist' : nmbrcolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
                            'suffixoverlap_results' : suffixoverlap_results, \
@@ -7191,7 +7191,7 @@ class AutoMunge:
                            'origcolumn' : column, \
                            'inputcolumn' : column, \
                            'columnslist' : nmbrcolumns, \
-                           'categorylist' : [nc], \
+                           'categorylist' : nmbrcolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
                            'suffixoverlap_results' : suffixoverlap_results, \
@@ -7329,7 +7329,7 @@ class AutoMunge:
                            'origcolumn' : column, \
                            'inputcolumn' : column, \
                            'columnslist' : nmbrcolumns, \
-                           'categorylist' : [nc], \
+                           'categorylist' : nmbrcolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
                            'suffixoverlap_results' : suffixoverlap_results, \
@@ -7728,7 +7728,7 @@ class AutoMunge:
                            'origcolumn' : column, \
                            'inputcolumn' : column, \
                            'columnslist' : nmbrcolumns, \
-                           'categorylist' : [nc], \
+                           'categorylist' : nmbrcolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
                            'suffixoverlap_results' : suffixoverlap_results, \
@@ -7936,7 +7936,7 @@ class AutoMunge:
                            'origcolumn' : column, \
                            'inputcolumn' : column, \
                            'columnslist' : bnrycolumns, \
-                           'categorylist' : [bc], \
+                           'categorylist' : bnrycolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
                            'suffixoverlap_results' : suffixoverlap_results, \
@@ -8146,7 +8146,7 @@ class AutoMunge:
                            'origcolumn' : column, \
                            'inputcolumn' : column, \
                            'columnslist' : bnrycolumns, \
-                           'categorylist' : [bc], \
+                           'categorylist' : bnrycolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
                            'suffixoverlap_results' : suffixoverlap_results, \
@@ -8461,9 +8461,6 @@ class AutoMunge:
     #store some values in the text_dict{} for use later in ML infill methods
     column_dict_list = []
 
-    categorylist = textcolumns.copy()
-#     categorylist.remove(columnNArw)
-
     for tc in textcolumns:
     
       #new parameter collected for driftreport
@@ -8479,7 +8476,7 @@ class AutoMunge:
                            'origcolumn' : column, \
                            'inputcolumn' : column, \
                            'columnslist' : textcolumns, \
-                           'categorylist' : categorylist, \
+                           'categorylist' : textcolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
                            'suffixoverlap_results' : suffixoverlap_results, \
@@ -12452,7 +12449,7 @@ class AutoMunge:
                            'origcolumn' : column, \
                            'inputcolumn' : column, \
                            'columnslist' : datecolumns, \
-                           'categorylist' : [dc], \
+                           'categorylist' : datecolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
                            'suffixoverlap_results' : suffixoverlap_results, \
@@ -12509,7 +12506,7 @@ class AutoMunge:
                            'origcolumn' : column, \
                            'inputcolumn' : column, \
                            'columnslist' : datecolumns, \
-                           'categorylist' : [dc], \
+                           'categorylist' : datecolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
                            'deletecolumn' : False, \
@@ -12592,7 +12589,7 @@ class AutoMunge:
                            'origcolumn' : column, \
                            'inputcolumn' : column, \
                            'columnslist' : datecolumns, \
-                           'categorylist' : [dc], \
+                           'categorylist' : datecolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
                            'suffixoverlap_results' : suffixoverlap_results, \
@@ -12669,7 +12666,7 @@ class AutoMunge:
                            'origcolumn' : column, \
                            'inputcolumn' : column, \
                            'columnslist' : datecolumns, \
-                           'categorylist' : [dc], \
+                           'categorylist' : datecolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
                            'suffixoverlap_results' : suffixoverlap_results, \
@@ -12756,7 +12753,7 @@ class AutoMunge:
                            'origcolumn' : column, \
                            'inputcolumn' : column, \
                            'columnslist' : datecolumns, \
-                           'categorylist' : [dc], \
+                           'categorylist' : datecolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
                            'suffixoverlap_results' : suffixoverlap_results, \
@@ -13268,7 +13265,7 @@ class AutoMunge:
                            'origcolumn' : column, \
                            'inputcolumn' : column, \
                            'columnslist' : nmbrcolumns, \
-                           'categorylist' : [nc], \
+                           'categorylist' : nmbrcolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
                            'suffixoverlap_results' : suffixoverlap_results, \
@@ -13351,7 +13348,7 @@ class AutoMunge:
                            'origcolumn' : column, \
                            'inputcolumn' : column, \
                            'columnslist' : nmbrcolumns, \
-                           'categorylist' : [nc], \
+                           'categorylist' : nmbrcolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
                            'suffixoverlap_results' : suffixoverlap_results, \
@@ -13433,7 +13430,7 @@ class AutoMunge:
                            'origcolumn' : column, \
                            'inputcolumn' : column, \
                            'columnslist' : nmbrcolumns, \
-                           'categorylist' : [nc], \
+                           'categorylist' : nmbrcolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
                            'suffixoverlap_results' : suffixoverlap_results, \
@@ -13515,7 +13512,7 @@ class AutoMunge:
                            'origcolumn' : column, \
                            'inputcolumn' : column, \
                            'columnslist' : nmbrcolumns, \
-                           'categorylist' : [nc], \
+                           'categorylist' : nmbrcolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
                            'suffixoverlap_results' : suffixoverlap_results, \
@@ -14153,8 +14150,6 @@ class AutoMunge:
     #store some values in the text_dict{} for use later in ML infill methods
     column_dict_list = []
     
-    categorylist = powercolumns.copy()
-    
     for pc in powercolumns:
       
       #new parameter collected for driftreport
@@ -14173,7 +14168,7 @@ class AutoMunge:
                            'origcolumn' : column, \
                            'inputcolumn' : column, \
                            'columnslist' : powercolumns, \
-                           'categorylist' : categorylist, \
+                           'categorylist' : powercolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
                            'suffixoverlap_results' : suffixoverlap_results, \
@@ -14364,8 +14359,6 @@ class AutoMunge:
     
     powercolumns = [pworcolumn]
     
-    categorylist = powercolumns.copy()
-    
     #new driftreport metric ordl_activations_dict
     ordl_activations_dict = {}
     for unique in mdf_train[pworcolumn].unique():
@@ -14391,7 +14384,7 @@ class AutoMunge:
                            'origcolumn' : column, \
                            'inputcolumn' : column, \
                            'columnslist' : powercolumns, \
-                           'categorylist' : categorylist, \
+                           'categorylist' : powercolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
                            'suffixoverlap_results' : suffixoverlap_results, \
@@ -14542,21 +14535,19 @@ class AutoMunge:
                                         'normalizedinput' : normalizedinput, \
                                         tc_ratio : tcratio}}
 
-        if nc in textcolumns:
+        column_dict = { nc : {'category' : 'bins', \
+                              'origcategory' : category, \
+                              'normalization_dict' : nmbrnormalization_dict, \
+                              'origcolumn' : column, \
+                              'inputcolumn' : column, \
+                              'columnslist' : textcolumns, \
+                              'categorylist' : textcolumns, \
+                              'infillmodel' : False, \
+                              'infillcomplete' : False, \
+                              'suffixoverlap_results' : suffixoverlap_results, \
+                              'deletecolumn' : False}}
 
-          column_dict = { nc : {'category' : 'bins', \
-                               'origcategory' : category, \
-                               'normalization_dict' : nmbrnormalization_dict, \
-                               'origcolumn' : column, \
-                               'inputcolumn' : column, \
-                               'columnslist' : textcolumns, \
-                               'categorylist' : textcolumns, \
-                               'infillmodel' : False, \
-                               'infillcomplete' : False, \
-                               'suffixoverlap_results' : suffixoverlap_results, \
-                               'deletecolumn' : False}}
-
-          column_dict_list.append(column_dict.copy())
+        column_dict_list.append(column_dict.copy())
           
     else:
       
@@ -14696,21 +14687,19 @@ class AutoMunge:
                                         'bincuts' : bincuts, \
                                         'binlabels' : binlabels}}
 
-        if nc in nmbrcolumns:
+        column_dict = { nc : {'category' : 'bsor', \
+                              'origcategory' : category, \
+                              'normalization_dict' : nmbrnormalization_dict, \
+                              'origcolumn' : column, \
+                              'inputcolumn' : column, \
+                              'columnslist' : nmbrcolumns, \
+                              'categorylist' : nmbrcolumns, \
+                              'infillmodel' : False, \
+                              'infillcomplete' : False, \
+                              'suffixoverlap_results' : suffixoverlap_results, \
+                              'deletecolumn' : False}}
 
-          column_dict = { nc : {'category' : 'bsor', \
-                               'origcategory' : category, \
-                               'normalization_dict' : nmbrnormalization_dict, \
-                               'origcolumn' : column, \
-                               'inputcolumn' : column, \
-                               'columnslist' : nmbrcolumns, \
-                               'categorylist' : nmbrcolumns, \
-                               'infillmodel' : False, \
-                               'infillcomplete' : False, \
-                               'suffixoverlap_results' : suffixoverlap_results, \
-                               'deletecolumn' : False}}
-
-          column_dict_list.append(column_dict.copy())
+        column_dict_list.append(column_dict.copy())
 
     else:
       
@@ -14816,15 +14805,12 @@ class AutoMunge:
     del mdf_train[binscolumn]
     del mdf_test[binscolumn]
 
-    #create list of columns
-    nmbrcolumns = textcolumns
-
     #nmbrnormalization_dict = {'mean' : mean, 'std' : std}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
 
-    for nc in nmbrcolumns:
+    for nc in textcolumns:
       
       #new parameter collected for driftreport
       tc_ratio = nc + '_ratio'
@@ -14842,21 +14828,19 @@ class AutoMunge:
                                       'textcolumns' : textcolumns, \
                                       tc_ratio : tcratio}}
 
-      if nc in textcolumns:
+      column_dict = { nc : {'category' : 'bnwd', \
+                            'origcategory' : category, \
+                            'normalization_dict' : nmbrnormalization_dict, \
+                            'origcolumn' : column, \
+                            'inputcolumn' : column, \
+                            'columnslist' : textcolumns, \
+                            'categorylist' : textcolumns, \
+                            'infillmodel' : False, \
+                            'infillcomplete' : False, \
+                            'suffixoverlap_results' : suffixoverlap_results, \
+                            'deletecolumn' : False}}
 
-        column_dict = { nc : {'category' : 'bnwd', \
-                             'origcategory' : category, \
-                             'normalization_dict' : nmbrnormalization_dict, \
-                             'origcolumn' : column, \
-                             'inputcolumn' : column, \
-                             'columnslist' : nmbrcolumns, \
-                             'categorylist' : textcolumns, \
-                             'infillmodel' : False, \
-                             'infillcomplete' : False, \
-                             'suffixoverlap_results' : suffixoverlap_results, \
-                             'deletecolumn' : False}}
-
-        column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict.copy())
        
     return mdf_train, mdf_test, column_dict_list
 
@@ -14966,21 +14950,19 @@ class AutoMunge:
                                       'activations_list' : activations_list, \
                                       'ordl_activations_dict' : ordl_activations_dict}}
 
-      if nc in nmbrcolumns:
+      column_dict = { nc : {'category' : 'bnwo', \
+                            'origcategory' : category, \
+                            'normalization_dict' : nmbrnormalization_dict, \
+                            'origcolumn' : column, \
+                            'inputcolumn' : column, \
+                            'columnslist' : nmbrcolumns, \
+                            'categorylist' : nmbrcolumns, \
+                            'infillmodel' : False, \
+                            'infillcomplete' : False, \
+                            'suffixoverlap_results' : suffixoverlap_results, \
+                            'deletecolumn' : False}}
 
-        column_dict = { nc : {'category' : 'bnwo', \
-                             'origcategory' : category, \
-                             'normalization_dict' : nmbrnormalization_dict, \
-                             'origcolumn' : column, \
-                             'inputcolumn' : column, \
-                             'columnslist' : nmbrcolumns, \
-                             'categorylist' : nmbrcolumns, \
-                             'infillmodel' : False, \
-                             'infillcomplete' : False, \
-                             'suffixoverlap_results' : suffixoverlap_results, \
-                             'deletecolumn' : False}}
-
-        column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict.copy())
 
     return mdf_train, mdf_test, column_dict_list
 
@@ -15131,15 +15113,12 @@ class AutoMunge:
       bins_id = False
       bins_cuts = False
 
-    #create list of columns
-    nmbrcolumns = textcolumns
-
     #nmbrnormalization_dict = {'mean' : mean, 'std' : std}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
 
-    for nc in nmbrcolumns:
+    for nc in textcolumns:
       
       #new parameter collected for driftreport
       tc_ratio = nc + '_ratio'
@@ -15157,21 +15136,19 @@ class AutoMunge:
                                       'textcolumns' : textcolumns, \
                                       tc_ratio : tcratio}}
 
-      if nc in textcolumns:
+      column_dict = { nc : {'category' : 'bnep', \
+                            'origcategory' : category, \
+                            'normalization_dict' : nmbrnormalization_dict, \
+                            'origcolumn' : column, \
+                            'inputcolumn' : column, \
+                            'columnslist' : textcolumns, \
+                            'categorylist' : textcolumns, \
+                            'infillmodel' : False, \
+                            'infillcomplete' : False, \
+                            'suffixoverlap_results' : suffixoverlap_results, \
+                            'deletecolumn' : False}}
 
-        column_dict = { nc : {'category' : 'bnep', \
-                             'origcategory' : category, \
-                             'normalization_dict' : nmbrnormalization_dict, \
-                             'origcolumn' : column, \
-                             'inputcolumn' : column, \
-                             'columnslist' : nmbrcolumns, \
-                             'categorylist' : textcolumns, \
-                             'infillmodel' : False, \
-                             'infillcomplete' : False, \
-                             'suffixoverlap_results' : suffixoverlap_results, \
-                             'deletecolumn' : False}}
-
-        column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict.copy())
        
     return mdf_train, mdf_test, column_dict_list
 
@@ -15335,21 +15312,19 @@ class AutoMunge:
                                       'bincount' : bincount, \
                                       'ordl_activations_dict' : ordl_activations_dict}}
 
-      if nc in nmbrcolumns:
+      column_dict = { nc : {'category' : 'bneo', \
+                            'origcategory' : category, \
+                            'normalization_dict' : nmbrnormalization_dict, \
+                            'origcolumn' : column, \
+                            'inputcolumn' : column, \
+                            'columnslist' : nmbrcolumns, \
+                            'categorylist' : nmbrcolumns, \
+                            'infillmodel' : False, \
+                            'infillcomplete' : False, \
+                            'suffixoverlap_results' : suffixoverlap_results, \
+                            'deletecolumn' : False}}
 
-        column_dict = { nc : {'category' : 'bneo', \
-                             'origcategory' : category, \
-                             'normalization_dict' : nmbrnormalization_dict, \
-                             'origcolumn' : column, \
-                             'inputcolumn' : column, \
-                             'columnslist' : nmbrcolumns, \
-                             'categorylist' : nmbrcolumns, \
-                             'infillmodel' : False, \
-                             'infillcomplete' : False, \
-                             'suffixoverlap_results' : suffixoverlap_results, \
-                             'deletecolumn' : False}}
-
-        column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict.copy())
 
     return mdf_train, mdf_test, column_dict_list
   
@@ -15497,7 +15472,6 @@ class AutoMunge:
 
           tlbn_column = binscolumn + '_' + str(i)
 
-
           if i == 0:
 
             mdf_train[tlbn_column] = \
@@ -15533,7 +15507,6 @@ class AutoMunge:
 #         mdf_train[textcolumn] = mdf_train[textcolumn].astype(np.int8)
 #         mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.int8)
 
-
       #delete the support column
       del mdf_train[binscolumn]
       del mdf_test[binscolumn]
@@ -15549,15 +15522,12 @@ class AutoMunge:
       bins_id = False
       bins_cuts = False
 
-    #create list of columns
-    nmbrcolumns = textcolumns
-
     #nmbrnormalization_dict = {'mean' : mean, 'std' : std}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
 
-    for nc in nmbrcolumns:
+    for nc in textcolumns:
 
       #new parameter collected for driftreport
       tc_ratio = nc + '_ratio'
@@ -15574,21 +15544,19 @@ class AutoMunge:
                                       'textcolumns' : textcolumns, \
                                       tc_ratio : tcratio}}
 
-      if nc in textcolumns:
+      column_dict = { nc : {'category' : 'tlbn', \
+                            'origcategory' : category, \
+                            'normalization_dict' : nmbrnormalization_dict, \
+                            'origcolumn' : column, \
+                            'inputcolumn' : column, \
+                            'columnslist' : textcolumns, \
+                            'categorylist' : textcolumns, \
+                            'infillmodel' : False, \
+                            'infillcomplete' : False, \
+                            'suffixoverlap_results' : suffixoverlap_results, \
+                            'deletecolumn' : False}}
 
-        column_dict = { nc : {'category' : 'tlbn', \
-                             'origcategory' : category, \
-                             'normalization_dict' : nmbrnormalization_dict, \
-                             'origcolumn' : column, \
-                             'inputcolumn' : column, \
-                             'columnslist' : nmbrcolumns, \
-                             'categorylist' : textcolumns, \
-                             'infillmodel' : False, \
-                             'infillcomplete' : False, \
-                             'suffixoverlap_results' : suffixoverlap_results, \
-                             'deletecolumn' : False}}
-
-        column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict.copy())
        
     return mdf_train, mdf_test, column_dict_list
   
@@ -15689,7 +15657,7 @@ class AutoMunge:
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
 
-    for nc in nmbrcolumns:
+    for nc in textcolumns:
       
       #new parameter collected for driftreport
       tc_ratio = nc + '_ratio'
@@ -15702,21 +15670,19 @@ class AutoMunge:
                                       'textcolumns' : textcolumns, \
                                        tc_ratio : tcratio}}
 
-      if nc in textcolumns:
+      column_dict = { nc : {'category' : 'bkt1', \
+                            'origcategory' : category, \
+                            'normalization_dict' : nmbrnormalization_dict, \
+                            'origcolumn' : column, \
+                            'inputcolumn' : column, \
+                            'columnslist' : textcolumns, \
+                            'categorylist' : textcolumns, \
+                            'infillmodel' : False, \
+                            'infillcomplete' : False, \
+                            'suffixoverlap_results' : suffixoverlap_results, \
+                            'deletecolumn' : False}}
 
-        column_dict = { nc : {'category' : 'bkt1', \
-                             'origcategory' : category, \
-                             'normalization_dict' : nmbrnormalization_dict, \
-                             'origcolumn' : column, \
-                             'inputcolumn' : column, \
-                             'columnslist' : nmbrcolumns, \
-                             'categorylist' : textcolumns, \
-                             'infillmodel' : False, \
-                             'infillcomplete' : False, \
-                             'suffixoverlap_results' : suffixoverlap_results, \
-                             'deletecolumn' : False}}
-
-        column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict.copy())
        
     return mdf_train, mdf_test, column_dict_list
   
@@ -15809,15 +15775,12 @@ class AutoMunge:
     del mdf_train[binscolumn]
     del mdf_test[binscolumn]
 
-    #create list of columns
-    nmbrcolumns = textcolumns
-
     #nmbrnormalization_dict = {'mean' : mean, 'std' : std}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
 
-    for nc in nmbrcolumns:
+    for nc in textcolumns:
       
       #new parameter collected for driftreport
       tc_ratio = nc + '_ratio'
@@ -15830,21 +15793,19 @@ class AutoMunge:
                                       'textcolumns' : textcolumns, \
                                        tc_ratio : tcratio}}
 
-      if nc in textcolumns:
+      column_dict = { nc : {'category' : 'bkt2', \
+                            'origcategory' : category, \
+                            'normalization_dict' : nmbrnormalization_dict, \
+                            'origcolumn' : column, \
+                            'inputcolumn' : column, \
+                            'columnslist' : textcolumns, \
+                            'categorylist' : textcolumns, \
+                            'infillmodel' : False, \
+                            'infillcomplete' : False, \
+                            'suffixoverlap_results' : suffixoverlap_results, \
+                            'deletecolumn' : False}}
 
-        column_dict = { nc : {'category' : 'bkt2', \
-                             'origcategory' : category, \
-                             'normalization_dict' : nmbrnormalization_dict, \
-                             'origcolumn' : column, \
-                             'inputcolumn' : column, \
-                             'columnslist' : nmbrcolumns, \
-                             'categorylist' : textcolumns, \
-                             'infillmodel' : False, \
-                             'infillcomplete' : False, \
-                             'suffixoverlap_results' : suffixoverlap_results, \
-                             'deletecolumn' : False}}
-
-        column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict.copy())
        
     return mdf_train, mdf_test, column_dict_list
   
@@ -15946,21 +15907,19 @@ class AutoMunge:
                                       'infill_activation' : infill_activation, \
                                       'ordl_activations_dict' : ordl_activations_dict}}
 
-      if nc in nmbrcolumns:
+      column_dict = { nc : {'category' : 'bkt3', \
+                            'origcategory' : category, \
+                            'normalization_dict' : nmbrnormalization_dict, \
+                            'origcolumn' : column, \
+                            'inputcolumn' : column, \
+                            'columnslist' : nmbrcolumns, \
+                            'categorylist' : nmbrcolumns, \
+                            'infillmodel' : False, \
+                            'infillcomplete' : False, \
+                            'suffixoverlap_results' : suffixoverlap_results, \
+                            'deletecolumn' : False}}
 
-        column_dict = { nc : {'category' : 'bkt3', \
-                             'origcategory' : category, \
-                             'normalization_dict' : nmbrnormalization_dict, \
-                             'origcolumn' : column, \
-                             'inputcolumn' : column, \
-                             'columnslist' : nmbrcolumns, \
-                             'categorylist' : nmbrcolumns, \
-                             'infillmodel' : False, \
-                             'infillcomplete' : False, \
-                             'suffixoverlap_results' : suffixoverlap_results, \
-                             'deletecolumn' : False}}
-
-        column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict.copy())
 
     return mdf_train, mdf_test, column_dict_list
   
@@ -16074,21 +16033,19 @@ class AutoMunge:
                                       'infill_activation' : infill_activation, \
                                       'ordl_activations_dict' : ordl_activations_dict}}
 
-      if nc in nmbrcolumns:
+      column_dict = { nc : {'category' : 'bkt4', \
+                            'origcategory' : category, \
+                            'normalization_dict' : nmbrnormalization_dict, \
+                            'origcolumn' : column, \
+                            'inputcolumn' : column, \
+                            'columnslist' : nmbrcolumns, \
+                            'categorylist' : nmbrcolumns, \
+                            'infillmodel' : False, \
+                            'infillcomplete' : False, \
+                            'suffixoverlap_results' : suffixoverlap_results, \
+                            'deletecolumn' : False}}
 
-        column_dict = { nc : {'category' : 'bkt4', \
-                             'origcategory' : category, \
-                             'normalization_dict' : nmbrnormalization_dict, \
-                             'origcolumn' : column, \
-                             'inputcolumn' : column, \
-                             'columnslist' : nmbrcolumns, \
-                             'categorylist' : nmbrcolumns, \
-                             'infillmodel' : False, \
-                             'infillcomplete' : False, \
-                             'suffixoverlap_results' : suffixoverlap_results, \
-                             'deletecolumn' : False}}
-
-        column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict.copy())
 
     return mdf_train, mdf_test, column_dict_list
 
@@ -16805,7 +16762,7 @@ class AutoMunge:
                                       'normalization_dict' : {column + '_null':{}}, \
                                       'origcolumn' : column, \
                                       'inputcolumn' : column, \
-                                      'columnslist' : [column], \
+                                      'columnslist' : [], \
                                       'categorylist' : [], \
                                       'infillmodel' : False, \
                                       'infillcomplete' : False, \
@@ -17110,7 +17067,7 @@ class AutoMunge:
                            'origcolumn' : column, \
                            'inputcolumn' : column, \
                            'columnslist' : nmbrcolumns, \
-                           'categorylist' : [nc], \
+                           'categorylist' : nmbrcolumns, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
                            'suffixoverlap_results' : suffixoverlap_results, \
@@ -26233,7 +26190,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.89'
+    automungeversion = '4.90'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
