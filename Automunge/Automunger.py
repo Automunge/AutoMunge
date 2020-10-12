@@ -5808,23 +5808,6 @@ class AutoMunge:
           #apply that value to the column_dict columnslist as well
           column_dict[key2]['columnslist'] = postprocess_dict['column_dict'][key1]['columnslist']
 
-          #now we'll combine the normalization dictionary
-          #remember that we are updating the strucutre to include the column+'_ctgy'
-          #identifier as a key
-
-          #first we'll append column_dict normalization_dict onto postprocess_dict, 
-          postprocess_dict['column_dict'][key1]['normalization_dict'].update(column_dict[key2]['normalization_dict'])
-
-          #then we'll copy postprocess_dict normalization_dict back onto column_dict
-          column_dict[key2]['normalization_dict'] = postprocess_dict['column_dict'][key1]['normalization_dict']
-
-          #now save the postprocess_dict normalization dicitonary to the column_dict
-          #the idea is that every normalization parameter for every column is saved in 
-          #every normalizaiton dict. Not extremely efficient but todo otherwise we 
-          #would need to update our approach in postmunge in getting a column key
-          column_dict[key2]['normalization_dict'] = \
-          postprocess_dict['column_dict'][key1]['normalization_dict']
-
     #now append column_dict onto postprocess_dict
     postprocess_dict['column_dict'].update(column_dict)
 
@@ -19555,7 +19538,7 @@ class AutoMunge:
 
     return df
 
-  def LabelFrequencyLevelizer(self, train_df, labels_df, labelsencoding_dict, \
+  def LabelFrequencyLevelizer(self, train_df, labels_df, \
                                 postprocess_dict, process_dict, LabelSmoothing):
     """
     #LabelFrequencyLevelizer(.)
@@ -19571,9 +19554,6 @@ class AutoMunge:
     
     columns_labels = list(labels_df)
     
-    #labelscategory = next(iter(labelsencoding_dict))
-    #labelscategory = 
-    
     #find origcateogry of am_labels from FSpostprocess_dict
     labelcolumnkey = list(labels_df)[0]
     origcolumn = postprocess_dict['column_dict'][labelcolumnkey]['origcolumn']
@@ -19584,7 +19564,6 @@ class AutoMunge:
     
     MLinfilltype = postprocess_dict['process_dict'][labelscategory]['MLinfilltype']
     
-    #labels = list(labelsencoding_dict[labelscategory].keys())
     labels = list(labels_df)
     #labels.sort()
     
@@ -19764,7 +19743,7 @@ class AutoMunge:
 
     return train_df, labels_df
   
-  def trainFSmodel(self, am_subset, am_labels, randomseed, labelsencoding_dict, \
+  def trainFSmodel(self, am_subset, am_labels, randomseed, \
                    process_dict, postprocess_dict, labelctgy, ML_cmnd):
     
     if len(list(am_labels)) > 0:
@@ -19822,7 +19801,7 @@ class AutoMunge:
     return shuffleset2
     
   def shuffleaccuracy(self, np_shuffleset, np_labels, FSmodel, randomseed, \
-                      labelsencoding_dict, process_dict, labelctgy, postprocess_dict):
+                      process_dict, labelctgy, postprocess_dict):
     '''
     measures accuracy of predictions of shuffleset (which had permutation method)
     against the model trained on the unshuffled set
@@ -20138,7 +20117,7 @@ class AutoMunge:
         #apply function trainFSmodel
         #FSmodel, baseaccuracy = \
         FSmodel = \
-        self.trainFSmodel(am_train, am_labels, randomseed, labelsencoding_dict, \
+        self.trainFSmodel(am_train, am_labels, randomseed, \
                           FSprocess_dict, FSpostprocess_dict, labelctgy, ML_cmnd)
         
         if FSmodel is False:
@@ -20158,7 +20137,7 @@ class AutoMunge:
 
           #update v2.11 baseaccuracy should be based on validation set
           baseaccuracy = self.shuffleaccuracy(am_validation1, am_validationlabels1, \
-                                              FSmodel, randomseed, labelsencoding_dict, \
+                                              FSmodel, randomseed, \
                                               FSprocess_dict, labelctgy, FSpostprocess_dict)
 
           #get list of columns
@@ -20215,7 +20194,7 @@ class AutoMunge:
 
               #determine resulting accuracy after shuffle
               columnaccuracy = self.shuffleaccuracy(shuffleset, am_validationlabels1, \
-                                                    FSmodel, randomseed, labelsencoding_dict, \
+                                                    FSmodel, randomseed, \
                                                     FSprocess_dict, labelctgy, FSpostprocess_dict)
 
               #I think this will clear some memory
@@ -20246,7 +20225,7 @@ class AutoMunge:
 
             #determine resulting accuracy after shuffle
             columnaccuracy2 = self.shuffleaccuracy(shuffleset2, am_validationlabels1, \
-                                                  FSmodel, randomseed, labelsencoding_dict, \
+                                                  FSmodel, randomseed, \
                                                   FSprocess_dict, labelctgy, FSpostprocess_dict)
 
             metric2 = baseaccuracy - columnaccuracy2
@@ -25617,8 +25596,6 @@ class AutoMunge:
 
       finalcolumns_labels = list(df_labels)
 
-      labelsnormalization_dict = postprocess_dict['column_dict'][finalcolumns_labels[0]]['normalization_dict']
-
       #we're going to create an entry to postprocess_dict to
       #store a columnkey for each of the original columns
       postprocess_dict['origcolumn'].update({labels_column : {'category' : labelscategory, \
@@ -25626,7 +25603,11 @@ class AutoMunge:
                                                               'columnkey' : columnkey}})
       
       #labelsencoding_dict is returned from automunge(.) and supports the reverse encoding of labels after predictions
-      labelsencoding_dict[labelscategory] = labelsnormalization_dict
+      #note that postmunge inversion parameter is a cleaner method for label inversion now available
+      labelsencoding_dict[labelscategory] = {}
+      for finalcolumn_labels in finalcolumns_labels:
+        labelsnormalization_dict = postprocess_dict['column_dict'][finalcolumn_labels]['normalization_dict']
+        labelsencoding_dict[labelscategory].update(labelsnormalization_dict)
 
       #markers for label smoothing printouts
       trainsmoothing = False
@@ -26043,7 +26024,7 @@ class AutoMunge:
         
       #apply LabelFrequencyLevelizer defined function
       df_train, df_labels = \
-      self.LabelFrequencyLevelizer(df_train, df_labels, labelsencoding_dict, \
+      self.LabelFrequencyLevelizer(df_train, df_labels, \
                                    postprocess_dict, process_dict, LabelSmoothing_train)
 
       #extract trainID
@@ -26086,7 +26067,7 @@ class AutoMunge:
 
       #apply LabelFrequencyLevelizer defined function
       df_test, df_testlabels = \
-      self.LabelFrequencyLevelizer(df_test, df_testlabels, labelsencoding_dict, \
+      self.LabelFrequencyLevelizer(df_test, df_testlabels, \
                                    postprocess_dict, process_dict, LabelSmoothing_test)
         
       #extract testID
@@ -26190,7 +26171,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.90'
+    automungeversion = '4.91'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -32125,7 +32106,7 @@ class AutoMunge:
         #apply function trainFSmodel
         #FSmodel, baseaccuracy = \
         FSmodel = \
-        self.trainFSmodel(am_train, am_labels, randomseed, labelsencoding_dict, \
+        self.trainFSmodel(am_train, am_labels, randomseed, \
                           FSprocess_dict, FSpostprocess_dict, labelctgy, ML_cmnd)
         
         if FSmodel is False:
@@ -32145,7 +32126,7 @@ class AutoMunge:
 
           #update v2.11 baseaccuracy should be based on validation set
           baseaccuracy = self.shuffleaccuracy(am_validation1, am_validationlabels1, \
-                                              FSmodel, randomseed, labelsencoding_dict, \
+                                              FSmodel, randomseed, \
                                               FSprocess_dict, labelctgy, FSpostprocess_dict)
 
           #get list of columns
@@ -32201,7 +32182,7 @@ class AutoMunge:
 
               #determine resulting accuracy after shuffle
               columnaccuracy = self.shuffleaccuracy(shuffleset, am_validationlabels1, \
-                                                    FSmodel, randomseed, labelsencoding_dict, \
+                                                    FSmodel, randomseed, \
                                                     FSprocess_dict, labelctgy, FSpostprocess_dict)
 
               #I think this will clear some memory
@@ -32232,10 +32213,10 @@ class AutoMunge:
 
             #determine resulting accuracy after shuffle
     #           columnaccuracy2 = self.shuffleaccuracy(shuffleset2, am_labels, FSmodel, \
-    #                                                 randomseed, labelsencoding_dict, \
+    #                                                 randomseed, \
     #                                                 process_dict)
             columnaccuracy2 = self.shuffleaccuracy(shuffleset2, am_validationlabels1, \
-                                                  FSmodel, randomseed, labelsencoding_dict, \
+                                                  FSmodel, randomseed, \
                                                   FSprocess_dict, labelctgy, FSpostprocess_dict)
 
             metric2 = baseaccuracy - columnaccuracy2
@@ -33253,7 +33234,7 @@ class AutoMunge:
 
       #apply LabelFrequencyLevelizer defined function
       df_test, df_testlabels = \
-      self.LabelFrequencyLevelizer(df_test, df_testlabels, labelsencoding_dict, \
+      self.LabelFrequencyLevelizer(df_test, df_testlabels, \
                                    postprocess_dict, process_dict, LabelSmoothing)
 
       #extract trainID
