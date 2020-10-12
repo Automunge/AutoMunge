@@ -6650,7 +6650,7 @@ def process_mnm8_class(mdf_train, mdf_test, column, category, \
   #Here we populate the normalization dictionary with any values derived from
   #the train set that we'll need to process the test set.
   #note that if we're returning a multicolumn set we'll need one of these
-  #for each column_dict entry populated below
+  #for each column_dict entry populated below, using that column as the key
   #note any stats collected for driftreport are also saved here.
   nmbrnormalization_dict = {column + '_mnm8' : {'quantilemin' : quantilemin, \
                                                 'quantilemax' : quantilemax, \
