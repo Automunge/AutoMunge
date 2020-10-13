@@ -2410,21 +2410,24 @@ to set with >2 entries applies infill to those entries beyond two most common.
   - default infill: most common value
   - default NArowtype: justNaN
   - suffix appender: '_bnry'
-  - assignparam parameters accepted: none
+  - assignparam parameters accepted:
+    - 'adjinfill', boolean, defaults to False, True makes default infill adjacent cell
   - driftreport postmunge metrics: missing / 1 / 0 / extravalues / oneratio / zeroratio
   - inversion available: yes with full recovery
 * bnr2: (Same as bnry except for default infill.)
   - default infill: least common value
   - default NArowtype: justNaN
   - suffix appender: '_bnr2'
-  - assignparam parameters accepted: none
+  - assignparam parameters accepted:
+    - 'adjinfill', boolean, defaults to False, True makes default infill adjacent cell
   - driftreport postmunge metrics: missing / 1 / 0 / extravalues / oneratio / zeroratio
   - inversion available: yes with full recovery
 * text/txt2: converts categorical sets to one-hot encoded set of boolean identifiers
   - default infill: all entries zero
   - default NArowtype: justNaN
   - suffix appender: '_(category)' where category is the categoric entry target of column activations
-  - assignparam parameters accepted: none
+  - assignparam parameters accepted:
+    - 'adjinfill', boolean, defaults to False, True makes default infill adjacent cell
   - driftreport postmunge metrics: textlabelsdict_text / <column> + '_ratio' (column specific)
   - inversion available: yes with full recovery
 * onht: converts categorical sets to one-hot encoded set of boolean identifiers 
@@ -2432,7 +2435,8 @@ to set with >2 entries applies infill to those entries beyond two most common.
   - default infill: all entries zero (for dedicated column signalling infill / activations in every row use onh2)
   - default NArowtype: justNaN
   - suffix appender: '_onht\_#' where # integer corresponds to the target entry of a column
-  - assignparam parameters accepted: none
+  - assignparam parameters accepted:
+    - 'adjinfill', boolean, defaults to False, True makes default infill adjacent cell
   - driftreport postmunge metrics: textlabelsdict_text / <column> + '_ratio' (column specific)
 			           text_categorylist is key between columns and target entries
   - inversion available: yes with full recovery
@@ -2440,7 +2444,8 @@ to set with >2 entries applies infill to those entries beyond two most common.
   - default infill: plug value 'zzzinfill'
   - default NArowtype: justNaN
   - suffix appender: '_ordl'
-  - assignparam parameters accepted: none
+  - assignparam parameters accepted:
+    - 'adjinfill', boolean, defaults to False, True makes default infill adjacent cell
   - driftreport postmunge metrics: ordinal_dict / ordinal_overlap_replace / ordinal_activations_dict
   - inversion available: yes with full recovery
 * ord3: converts categorical sets to ordinally encoded set of integer identifiers
@@ -2448,7 +2453,8 @@ sorted first by frequency of category occurrence, second basis for common count 
   - default infill: plug value 'zzzinfill'
   - default NArowtype: justNaN
   - suffix appender: '_ord3'
-  - assignparam parameters accepted: none
+  - assignparam parameters accepted:
+    - 'adjinfill', boolean, defaults to False, True makes default infill adjacent cell
   - driftreport postmunge metrics: ordinal_dict / ordinal_overlap_replace / ordinal_activations_dict
   - inversion available: yes with full recovery
 * ord4: derived by an ord3 transform followed by a mnmx transform. Useful as a scaled metric
@@ -2461,7 +2467,8 @@ efficient than one-hot encoding)
   - default infill: plug value 'zzzinfill'
   - default NArowtype: justNaN
   - suffix appender: '\_1010\_#' where # is integer indicating order of 1010 columns
-  - assignparam parameters accepted: none
+  - assignparam parameters accepted:
+    - 'adjinfill', boolean, defaults to False, True makes default infill adjacent cell
   - driftreport postmunge metrics: _1010_binary_encoding_dict / _1010_overlap_replace / 
 	                           _1010_binary_column_count / _1010_activations_dict
   (for example if 1010 encoded to three columns based on number of categories <8,
