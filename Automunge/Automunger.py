@@ -8405,7 +8405,7 @@ class AutoMunge:
       
     #replace NA with a dummy variable
     mdf_train[tempcolumn] = mdf_train[tempcolumn].fillna('zzzinfill')
-    mdf_test[tempcolumn] = mdf_test[tempcolumn].fillna('zzzinfill')      
+    mdf_test[tempcolumn] = mdf_test[tempcolumn].fillna('zzzinfill')
 
     #replace numerical with string equivalent
     mdf_train[tempcolumn] = mdf_train[tempcolumn].astype(str)
