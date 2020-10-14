@@ -19253,8 +19253,8 @@ class AutoMunge:
     #where hyperparam_tuner can be one of {False, 'gridCV', 'randomCV'}
     #and randomCV_n_iter can be passed as an integer when hyperparam_tuner passed as randomCV
     
-    #model initialization makes use of initRandomForestClassifier function
-    #and default values for Random Forest Classifer are initialized with populateMLinfilldefaults
+    #model initialization makes use of initRandomForestRegressor function
+    #and default values for Random Forest Regressor are initialized with populateMLinfilldefaults
     """
     
     #initialize defaults dictionary, these are the default parameters for random forest model initialization
