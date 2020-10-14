@@ -18426,7 +18426,7 @@ class AutoMunge:
 
     return model
   
-  def inspect_ML_cmnd(self, ML_cmnd, MLinfill_type, MLinfill_alg):
+  def inspect_ML_cmnd(self, ML_cmnd, autoML_type, MLinfill_alg):
     """
     #Inspects ML_cmnd to determine if any of the parameters passed
     #for regressor or classifier are passed as lists instead of distinct
@@ -18447,7 +18447,7 @@ class AutoMunge:
     #initialize tune_marker to default
     tune_marker = False
     
-    if MLinfill_type == 'default':
+    if autoML_type == 'randomforest':
     
       if 'MLinfill_cmnd' in ML_cmnd:
 
@@ -18463,7 +18463,7 @@ class AutoMunge:
     
     return tune_marker
   
-  def assemble_param_sets(self, ML_cmnd, MLinfill_type, MLinfill_alg):
+  def assemble_param_sets(self, ML_cmnd, autoML_type, MLinfill_alg):
     """
     #assembles ML_cmnd passed parameters into two sets
     #for hyoeroparameter tuning operation
@@ -18488,7 +18488,7 @@ class AutoMunge:
     static_params = {}
     tune_params = {}
     
-    if MLinfill_type == 'default':
+    if autoML_type == 'randomforest':
       
       if 'MLinfill_cmnd' in ML_cmnd:
         
@@ -18512,7 +18512,7 @@ class AutoMunge:
 
   def predictinfill(self, category, df_train_filltrain, df_train_filllabel, \
                     df_train_fillfeatures, df_test_fillfeatures, randomseed, \
-                    postprocess_dict, ML_cmnd, columnslist = []):
+                    postprocess_dict, ML_cmnd, autoMLer, printstatus, columnslist = []):
     '''
     #predictinfill(category, df_train_filltrain, df_train_filllabel, \
     #df_train_fillfeatures, df_test_fillfeatures, randomseed, columnslist), \
@@ -18523,178 +18523,70 @@ class AutoMunge:
     #df_testinfill based on derivations using scikit-learn, with the lenth of \
     #infill consistent with the number of True values from NArows, and the trained \
     #model
-    #a reasonable extension of this funciton would be to allow ML inference with \
-    #other ML architectures such a SVM or something SGD based for instance
+    #accepts autoMLer populated with architecture options which is applied based on entries to ML_cmnd
     '''
-    
-    #initialize defaults dictionary
-    MLinfilldefaults = \
-    self.populateMLinfilldefaults(randomseed)
-    
-    #initialize ML_cmnd
-    #ML_cmnd = postprocess_dict['ML_cmnd']
-    ML_cmnd = ML_cmnd
-    
-    #currenlty we only have support for MLinfill_type of 'default'
-    #this is what tell's us to use scikit Random Forest Regressor / Classifier
-    #let's make sure it's populated in ML_cmnd if set was passed as empty
-    if 'MLinfill_type' not in ML_cmnd:
-      ML_cmnd.update({'MLinfill_type' : 'default'})
-      
-    #currenlty we only have support for hyperparam_tuner of 'grid'
-    #this is what tell's us to use scikit gridsearchCV
-    #let's make sure it's populated in ML_cmnd if set was passed as empty
-    if 'hyperparam_tuner' not in ML_cmnd:
-      ML_cmnd.update({'hyperparam_tuner' : 'gridCV'})
-    
-    #new hyperparameter tuning support for RandomSearchCV
-    #if user passes ML_cmnd['hyperparam_tuner'] = 'randomCV'
-    #a user may assign number of iterations via ML_cmnd['randomCV_n_iter']
-    #otherwise defaults to randomCV_n_iter = 10
-    if ML_cmnd['hyperparam_tuner'] == 'randomCV':
-      if 'randomCV_n_iter' not in ML_cmnd:
-        ML_cmnd.update({'randomCV_n_iter' : 10})
-      randomCV_n_iter = ML_cmnd['randomCV_n_iter']
 
-    #this is a different MLinfilltype, specific to the category's process_dict entry
-    #check out the assembleprocessdict fucntion definition notes for the potential values
+    #if autoML_type not specified than we'll apply default (randomforest)
+    if 'autoML_type' not in ML_cmnd:
+      ML_cmnd.update({'autoML_type' : 'randomforest'})
+    
+    #grab autoML_type from ML_cmnd, this will be one of our keys for autoMLer dictionary
+    autoML_type = ML_cmnd['autoML_type']
+  
+    #MLinfilltype distinguishes between classifier/regressor, single/multi column, ordinal/onehot/binary, etc
+    #see potential values documented in assembleprocessdict function
     MLinfilltype = postprocess_dict['process_dict'][category]['MLinfilltype']
     
-    #convert dataframes to numpy arrays
+    #convert dataframes to numpy arrays for universal compatibility with ML algorithms
     df_train_filltrain = df_train_filltrain.values
     df_train_filllabel = df_train_filllabel.values
     df_train_fillfeatures = df_train_fillfeatures.values
     df_test_fillfeatures = df_test_fillfeatures.values
-
-    #
-    #if a numerical set
+    
+    #if a numeric target set
     if MLinfilltype in ['numeric', 'concurrent_nmbr']:
-
+      
+      #edge case if training data has zero rows (such as if column was all NaN) 
       if df_train_filltrain.shape[0] == 0:
         df_traininfill = np.zeros(shape=(1,len(columnslist)))
         df_testinfill = np.zeros(shape=(1,len(columnslist)))
 
         model = False
-
+      
       else:
 
-        #this is to address a not weird error message suggesting I reshape the y with ravel()
+        #single label column needs to be flattened from [[#,...]] to [#,...] with ravel
         df_train_filllabel = np.ravel(df_train_filllabel)
-
-        #currently this only supports MLinfill_type of 'default'
-        if 'MLinfill_type' in ML_cmnd:
-          MLinfill_type = ML_cmnd['MLinfill_type']
-
-        if 'hyperparam_tuner' in ML_cmnd:
-          MLinfill_tuner = ML_cmnd['hyperparam_tuner']
-
-        if MLinfill_type == 'default':
-          #'numeric' MLinfilltype uses regressor
-          MLinfill_alg = 'RandomForestRegressor'
-        else:
-          #future extension for other options
-          MLinfill_alg = 'RandomForestRegressor'
-
-        #tune marker tells us if user passed some parameters as a list for hyperparameter tuning
-        tune_marker = self.inspect_ML_cmnd(ML_cmnd, MLinfill_type, MLinfill_alg)
-
-        if tune_marker is True:
-
-          #static_params are user passed parameters that won't be tuned, 
-          #tune_params are user passed params (passed as list or range) that will be tuned
-          static_params, tune_params = self.assemble_param_sets(ML_cmnd, MLinfill_type, MLinfill_alg)
-
-          #we'll create a temp ML_cmnd to initialize a tuning model
-          temp_ML_cmnd = {'MLinfill_cmnd':{MLinfill_alg : static_params}}
-
-          #then we'll initialize a tuning model
-          #note that this populates the parameters to be tuned with defaults
-          #my understanding is that scikit gridsearch still allows tuning for parameters
-          #that were previously initialized in the model
-          if MLinfill_alg == 'RandomForestRegressor':
-            tuning_model = self.initRandomForestRegressor(temp_ML_cmnd, MLinfilldefaults)
-          else:
-            #future extension
-            print("error: MLinfill_type currently only supports 'default'.")
-            tuning_model = False
-
-          #for now we'll default to grid scoring of ‘neg_mean_squared_error’
-          #I'm not positive this is the best default choice for regressor, 
-          #seem to remember seeing this used somewher
-          #worth some further research
-          grid_scoring = 'neg_mean_squared_error'
-
-          #now we'll initialize a grid search
-          if MLinfill_tuner == 'gridCV':
-            tune_search = GridSearchCV(tuning_model, cv=5, iid='deprecated', \
-                                       param_grid = tune_params, scoring = grid_scoring)
-          elif MLinfill_tuner == 'randomCV':
-            tune_search = RandomizedSearchCV(tuning_model, cv=5, iid='deprecated', \
-                                         param_distributions = tune_params, scoring = grid_scoring, \
-                                         n_iter = randomCV_n_iter)
-          else:
-            print("error: hyperparam_tuner currently only supports 'gridCV' or 'randomCV'.")
-
-          #now we'll run a fit on the grid search
-          #for now won't pass any fit parameters
-          fit_params = {}
-          tune_search.fit(df_train_filltrain, df_train_filllabel, **fit_params)
-
-          #acess the tuned parameters based on the tuning operation
-          tuned_params = tune_search.best_params_
-
-          if postprocess_dict['printstatus'] is True:
-
-            #print("")
-            print("tuned parameters:")
-            print(tuned_params)
-            print("")
-
-          #now assemble final static params by incorporating the tuned params
-          static_params.update(tuned_params)
-
-          #now initialize our tuned model
-          #first create another temp_ML_cmnd for the tuned set
-          temp_ML_cmnd_two = {'MLinfill_cmnd':{MLinfill_alg : static_params}}
-
-          model = self.initRandomForestRegressor(temp_ML_cmnd_two, MLinfilldefaults)
-
-        else:
-
-          #train linear regression model using scikit-learn for numerical prediction
-          #model = LinearRegression()
-          #model = PassiveAggressiveRegressor(random_state = randomseed)
-          #model = Ridge(random_state = randomseed)
-          #model = RidgeCV()
-          #note that SVR doesn't have an argument for random_state
-          #model = SVR()
-          #model = RandomForestRegressor(n_estimators=100, random_state = randomseed, verbose=0)
-          model = self.initRandomForestRegressor(ML_cmnd, MLinfilldefaults)
-
-        model.fit(df_train_filltrain, df_train_filllabel)    
-
-#           #predict infill values
-#           df_traininfill = model.predict(df_train_fillfeatures)
-
+        
+        #now call our training function
+        #which handles tuning if applicable, model initialization, and training
+        
+        #ML_application is another key to access the function, distinguishes between classification and regression
+        ML_application = 'regression'
+        
+        model = \
+        autoMLer[autoML_type][ML_application]['train'](ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus)
+        
         #only run following if we have any train rows needing infill
         if df_train_fillfeatures.shape[0] > 0:
-          df_traininfill = model.predict(df_train_fillfeatures)
+          df_traininfill = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, model, df_train_fillfeatures, printstatus)
         else:
           df_traininfill = np.array([0])
 
         #only run following if we have any test rows needing infill
         if df_test_fillfeatures.shape[0] > 0:
-          df_testinfill = model.predict(df_test_fillfeatures)
+          df_testinfill = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, model, df_test_fillfeatures, printstatus)
         else:
           df_testinfill = np.array([0])
 
       #convert infill values to dataframe
       df_traininfill = pd.DataFrame(df_traininfill, columns = ['infill'])
       df_testinfill = pd.DataFrame(df_testinfill, columns = ['infill'])
-
-    #if category == 'bnry':
+      
+    #if target is categoric, such as ordinal or boolean integers
     if MLinfilltype in ['singlct', 'binary', 'concurrent_act']:
-
+      
+      #edge case if training data has zero rows (such as if column was all NaN) 
       if df_train_filltrain.shape[0] == 0:
         df_traininfill = np.zeros(shape=(1,len(columnslist)))
         df_testinfill = np.zeros(shape=(1,len(columnslist)))
@@ -18702,133 +18594,36 @@ class AutoMunge:
         model = False
 
       else:
-
-        #this is to address a not weird error message suggesting I reshape the y with ravel()
+        
+        #single label column needs to be flattened from [[#,...]] to [#,...] with ravel
         df_train_filllabel = np.ravel(df_train_filllabel)
-
-        #currently this only supports MLinfill_type of 'default'
-        if 'MLinfill_type' in ML_cmnd:
-          MLinfill_type = ML_cmnd['MLinfill_type']
-
-        if 'hyperparam_tuner' in ML_cmnd:
-          MLinfill_tuner = ML_cmnd['hyperparam_tuner']
-
-        if MLinfill_type == 'default':
-          #'numeric' MLinfilltype uses regressor
-          MLinfill_alg = 'RandomForestClassifier'
-        else:
-          #future extension for other options
-          MLinfill_alg = 'RandomForestClassifier'
-
-        #tune marker tells us if user passed some parameters as a list for hyperparameter tuning
-        tune_marker = self.inspect_ML_cmnd(ML_cmnd, MLinfill_type, MLinfill_alg)
-
-        if tune_marker is True:
-
-          #static_params are user passed parameters that won't be tuned, 
-          #tune_params are user passed params (passed as list or range) that will be tuned
-          static_params, tune_params = self.assemble_param_sets(ML_cmnd, MLinfill_type, MLinfill_alg)
-
-          #we'll create a temp ML_cmnd to initialize a tuning model
-          temp_ML_cmnd = {'MLinfill_cmnd':{MLinfill_alg : static_params}}
-
-          #then we'll initialize a tuning model
-          #note that this populates the parameters to be tuned with defaults
-          #my understanding is that scikit gridsearch still allows tuning for parameters
-          #that were previously initialized in the model
-          if MLinfill_alg == 'RandomForestClassifier':
-            tuning_model = self.initRandomForestClassifier(temp_ML_cmnd, MLinfilldefaults)
-          else:
-            #future extension
-            tuning_model = False
-
-          #for now we'll default to grid scoring of ‘roc_auc’
-          #I'm not positive this is the best default choice for classifier, 
-          #seem to remember seeing this used somewher
-          #worth some further research
-          #grid_scoring = 'roc_auc'
-          #on second thought I think accuracy more generalizable for edge cases
-          grid_scoring = 'accuracy'
-
-          #now we'll initialize a grid search
-          if MLinfill_tuner == 'gridCV':
-            tune_search = GridSearchCV(tuning_model, cv=5, iid='deprecated', \
-                                       param_grid = tune_params, scoring = grid_scoring)
-          elif MLinfill_tuner == 'randomCV':
-            tune_search = RandomizedSearchCV(tuning_model, cv=5, iid='deprecated', \
-                                         param_distributions = tune_params, scoring = grid_scoring, \
-                                         n_iter = randomCV_n_iter)
-          else:
-            print("error: hyperparam_tuner currently only supports 'gridCV' or 'randomCV'.")
-
-          #now we'll run a fit on the grid search
-          #for now won't pass any fit parameters
-          fit_params = {}
-          tune_search.fit(df_train_filltrain, df_train_filllabel, **fit_params)
-
-          #acess the tuned parameters based on the tuning operation
-          tuned_params = tune_search.best_params_
-
-          if postprocess_dict['printstatus'] is True:
-
-            #print("")
-            print("tuned parameters:")
-            print(tuned_params)
-            print("")
-
-          #now assemble final static params by incorporating the tuned params
-          static_params.update(tuned_params)
-
-          #now initialize our tuned model
-          #first create another temp_ML_cmnd for the tuned set
-          temp_ML_cmnd_two = {'MLinfill_cmnd':{MLinfill_alg : static_params}}
-
-          if MLinfill_alg == 'RandomForestClassifier':
-            model = self.initRandomForestClassifier(temp_ML_cmnd_two, MLinfilldefaults)
-          else:
-            #future extension
-            model = False
-
-        else:
-
-          #train logistic regression model using scikit-learn for binary classifier
-          #model = LogisticRegression()
-          #model = LogisticRegression(random_state = randomseed)
-          #model = SGDClassifier(random_state = randomseed)
-          #model = SVC(random_state = randomseed)
-          #model = RandomForestClassifier(n_estimators=100, random_state = randomseed, verbose=0)
-
-          if MLinfill_alg == 'RandomForestClassifier':
-            model = self.initRandomForestClassifier(ML_cmnd, MLinfilldefaults)
-          else:
-            #future extension
-            model = False
-
-        model.fit(df_train_filltrain, df_train_filllabel)
-
-#           #predict infill values
-#           df_traininfill = model.predict(df_train_fillfeatures)
-
+        
+        #now call our training function
+        #which handles tuning if applicable, model initialization, and training
+        
+        #ML_application is another key to access the function, distinguishes between classification and regression
+        ML_application = 'classification'
+        
+        model = \
+        autoMLer[autoML_type][ML_application]['train'](ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus)
+        
         #only run following if we have any train rows needing infill
         if df_train_fillfeatures.shape[0] > 0:
-          df_traininfill = model.predict(df_train_fillfeatures)
+          df_traininfill = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, model, df_train_fillfeatures, printstatus)
         else:
           df_traininfill = np.array([0])
 
         #only run following if we have any test rows needing infill
         if df_test_fillfeatures.shape[0] > 0:
-          df_testinfill = model.predict(df_test_fillfeatures)
+          df_testinfill = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, model, df_test_fillfeatures, printstatus)
         else:
           df_testinfill = np.array([0])
 
       #convert infill values to dataframe
       df_traininfill = pd.DataFrame(df_traininfill, columns = ['infill'])
       df_testinfill = pd.DataFrame(df_testinfill, columns = ['infill'])
-
-#       print('category is bnry, df_traininfill is')
-#       print(df_traininfill)
-
-    #if category in ['text', 'bins', 'bint']:
+      
+    #if target is multi column categoric (onehot encoded) / (binary encoded handled seperately)
     if MLinfilltype in ['multirt']:
 
       if df_train_filltrain.shape[0] == 0:
@@ -18838,147 +18633,44 @@ class AutoMunge:
         model = False
 
       else:
-
-#         #FUTURE EXTENSION - Label Smoothing for ML infill
-#         if ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['LabelSmoothing'] >0.0 and
-#         ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['LabelSmoothing'] < 1.0 and
-#         str(ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['LabelSmoothing']) != 'False':
-
-#           epsilon = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['LabelSmoothing']
-
-#           #apply_LabelSmoothing_numpy will be comparable to apply_LabelSmoothing
-#           #but intended for numpy arrays, making use of fact that #columns = len(categorylist) for MLinfill
-#           df_traininfill = self.apply_LabelSmoothing_numpy(df_traininfill, epsilon)
-
-        #muiltirt sets as edge case may sometimes be returned with one column
+        
+        #future extension - Label Smoothing for ML infill
+        #(might incorporate this into the training function to be activated by ML_cmnd)
+        
+        #muiltirt sets as edge case may sometimes be returned with one column, then need ravel flattening
         if df_train_filllabel.shape[1] == 1:
           df_train_filllabel = np.ravel(df_train_filllabel)
-
-        #currently this only supports MLinfill_type of 'default'
-        if 'MLinfill_type' in ML_cmnd:
-          MLinfill_type = ML_cmnd['MLinfill_type']
-
-        if 'hyperparam_tuner' in ML_cmnd:
-          MLinfill_tuner = ML_cmnd['hyperparam_tuner']
-
-        if MLinfill_type == 'default':
-          #'numeric' MLinfilltype uses regressor
-          MLinfill_alg = 'RandomForestClassifier'
-        else:
-          #future extension for other options
-          MLinfill_alg = 'RandomForestClassifier'
-
-        #tune marker tells us if user passed some parameters as a list for hyperparameter tuning
-        tune_marker = self.inspect_ML_cmnd(ML_cmnd, MLinfill_type, MLinfill_alg)
-
-        if tune_marker is True:
-
-          #static_params are user passed parameters that won't be tuned, 
-          #tune_params are user passed params (passed as list or range) that will be tuned
-          static_params, tune_params = self.assemble_param_sets(ML_cmnd, MLinfill_type, MLinfill_alg)
-
-          #we'll create a temp ML_cmnd to initialize a tuning model
-          temp_ML_cmnd = {'MLinfill_cmnd':{MLinfill_alg : static_params}}
-
-          #then we'll initialize a tuning model
-          #note that this populates the parameters to be tuned with defaults
-          #my understanding is that scikit gridsearch still allows tuning for parameters
-          #that were previously initialized in the model
-          if MLinfill_alg == 'RandomForestClassifier':
-            tuning_model = self.initRandomForestClassifier(temp_ML_cmnd, MLinfilldefaults)
-          else:
-            #future extension
-            tuning_model = False
-
-          #for now we'll default to grid scoring of ‘roc_auc’
-          #I'm not positive this is the best default choice for classifier, 
-          #seem to remember seeing this used somewher
-          #worth some further research
-          #grid_scoring = 'roc_auc'
-          #on second thought I think accuracy more generalizable for edge cases
-          grid_scoring = 'accuracy'
-
-          #now we'll initialize a grid search
-          if MLinfill_tuner == 'gridCV':
-            tune_search = GridSearchCV(tuning_model, cv=5, iid='deprecated', \
-                                       param_grid = tune_params, scoring = grid_scoring)
-          elif MLinfill_tuner == 'randomCV':
-            tune_search = RandomizedSearchCV(tuning_model, cv=5, iid='deprecated', \
-                                         param_distributions = tune_params, scoring = grid_scoring, \
-                                         n_iter = randomCV_n_iter)
-          else:
-            print("error: hyperparam_tuner currently only supports 'gridCV' or 'randomCV'.")
-
-
-          #now we'll run a fit on the grid search
-          #for now won't pass any fit parameters
-          fit_params = {}
-          tune_search.fit(df_train_filltrain, df_train_filllabel, **fit_params)
-
-          #acess the tuned parameters based on the tuning operation
-          tuned_params = tune_search.best_params_
-
-          if postprocess_dict['printstatus'] is True:
-
-            #print("")
-            print("tuned parameters:")
-            print(tuned_params)
-            print("")
-
-          #now assemble final static params by incorporating the tuned params
-          static_params.update(tuned_params)
-
-          #now initialize our tuned model
-          #first create another temp_ML_cmnd for the tuned set
-          temp_ML_cmnd_two = {'MLinfill_cmnd':{MLinfill_alg : static_params}}
-
-          if MLinfill_alg == 'RandomForestClassifier':
-            model = self.initRandomForestClassifier(temp_ML_cmnd_two, MLinfilldefaults)
-          else:
-            #future extension
-            model = False
-
-        else:
-
-          #train logistic regression model using scikit-learn for binary classifier
-          #model = LogisticRegression()
-          #model = LogisticRegression(random_state = randomseed)
-          #model = SGDClassifier(random_state = randomseed)
-          #model = SVC(random_state = randomseed)
-          #model = RandomForestClassifier(n_estimators=100, random_state = randomseed, verbose=0)
-
-          if MLinfill_alg == 'RandomForestClassifier':
-            model = self.initRandomForestClassifier(ML_cmnd, MLinfilldefaults)
-          else:
-            #future extension
-            model = False
-
-        model.fit(df_train_filltrain, df_train_filllabel)
-
-#           #predict infill values
-#           df_traininfill = model.predict(df_train_fillfeatures)
-
+          
+        #now call our training function
+        #which handles tuning if applicable, model initialization, and training
+        
+        #ML_application is another key to access the function, distinguishes between classification and regression
+        ML_application = 'classification'
+        
+        model = \
+        autoMLer[autoML_type][ML_application]['train'](ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus)
+        
         #only run following if we have any train rows needing infill
         if df_train_fillfeatures.shape[0] > 0:
-          df_traininfill = model.predict(df_train_fillfeatures)
+          df_traininfill = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, model, df_train_fillfeatures, printstatus)
         else:
           #this needs to have same number of columns as text category
           df_traininfill = np.zeros(shape=(1,len(columnslist)))
-
+        
         #only run following if we have any test rows needing infill
         if df_test_fillfeatures.shape[0] > 0:
-          df_testinfill = model.predict(df_test_fillfeatures)
+          df_testinfill = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, model, df_test_fillfeatures, printstatus)
         else:
           #this needs to have same number of columns as text category
           df_testinfill = np.zeros(shape=(1,len(columnslist)))
-
-      #convert infill values to dataframe
-#         if len(columnslist) > 1:
+          
+      #convert infill values to dataframe (this column labeleling also works for single column case)
       df_traininfill = pd.DataFrame(df_traininfill, columns = columnslist)
       df_testinfill = pd.DataFrame(df_testinfill, columns = columnslist)
-
+    
+    #if target is a binary encoded categoric set
     if MLinfilltype in ['1010']:
-
+      
       if df_train_filltrain.shape[0] == 0:
 
         df_traininfill = np.zeros(shape=(1,len(columnslist)))
@@ -18991,133 +18683,23 @@ class AutoMunge:
         #convert from binary to one-hot encoding
         df_train_filllabel = \
         self.convert_1010_to_onehot(df_train_filllabel)
-
-#         #FUTURE EXTENSION - Label Smoothing for ML infill
-#         if ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['LabelSmoothing'] >0.0 and
-#         ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['LabelSmoothing'] < 1.0 and
-#         str(ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['LabelSmoothing']) != 'False':
-
-#           epsilon = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['LabelSmoothing']
-
-#           #apply_LabelSmoothing_numpy will be comparable to apply_LabelSmoothing
-#           #but intended for numpy arrays, making use of fact that #columns = len(categorylist) for MLinfill
-#           df_traininfill = self.apply_LabelSmoothing_numpy(df_traininfill, epsilon)
-
-        #muiltirt sets as edge case may sometimes be returned with one column
+        
+        #for edge case may sometimes be returned with one column, then need ravel flattening
         if df_train_filllabel.shape[1] == 1:
           df_train_filllabel = np.ravel(df_train_filllabel)
-
-        #currently this only supports MLinfill_type of 'default'
-        if 'MLinfill_type' in ML_cmnd:
-          MLinfill_type = ML_cmnd['MLinfill_type']
-
-        if 'hyperparam_tuner' in ML_cmnd:
-          MLinfill_tuner = ML_cmnd['hyperparam_tuner']
-
-        if MLinfill_type == 'default':
-          #'numeric' MLinfilltype uses regressor
-          MLinfill_alg = 'RandomForestClassifier'
-        else:
-          #future extension for other options
-          MLinfill_alg = 'RandomForestClassifier'
-
-        #tune marker tells us if user passed some parameters as a list for hyperparameter tuning
-        tune_marker = self.inspect_ML_cmnd(ML_cmnd, MLinfill_type, MLinfill_alg)
-
-        if tune_marker is True:
-
-          #static_params are user passed parameters that won't be tuned, 
-          #tune_params are user passed params (passed as list or range) that will be tuned
-          static_params, tune_params = self.assemble_param_sets(ML_cmnd, MLinfill_type, MLinfill_alg)
-
-          #we'll create a temp ML_cmnd to initialize a tuning model
-          temp_ML_cmnd = {'MLinfill_cmnd':{MLinfill_alg : static_params}}
-
-          #then we'll initialize a tuning model
-          #note that this populates the parameters to be tuned with defaults
-          #my understanding is that scikit gridsearch still allows tuning for parameters
-          #that were previously initialized in the model
-          if MLinfill_alg == 'RandomForestClassifier':
-            tuning_model = self.initRandomForestClassifier(temp_ML_cmnd, MLinfilldefaults)
-          else:
-            #future extension
-            tuning_model = False
-
-          #for now we'll default to grid scoring of ‘roc_auc’
-          #I'm not positive this is the best default choice for classifier, 
-          #seem to remember seeing this used somewher
-          #worth some further research
-          #grid_scoring = 'roc_auc'
-          #on second thought I think accuracy more generalizable for edge cases
-          grid_scoring = 'accuracy'
-
-
-          #now we'll initialize a grid search
-          if MLinfill_tuner == 'gridCV':
-            tune_search = GridSearchCV(tuning_model, cv=5, iid='deprecated', \
-                                       param_grid = tune_params, scoring = grid_scoring)
-          elif MLinfill_tuner == 'randomCV':
-            tune_search = RandomizedSearchCV(tuning_model, cv=5, iid='deprecated', \
-                                         param_distributions = tune_params, scoring = grid_scoring, \
-                                         n_iter = randomCV_n_iter)
-          else:
-            print("error: hyperparam_tuner currently only supports 'gridCV' or 'randomCV'.")
-
-          #now we'll run a fit on the grid search
-          #for now won't pass any fit parameters
-          fit_params = {}
-          tune_search.fit(df_train_filltrain, df_train_filllabel, **fit_params)
-
-          #acess the tuned parameters based on the tuning operation
-          tuned_params = tune_search.best_params_
-
-          if postprocess_dict['printstatus'] is True:
-
-            #print("")
-            print("tuned parameters:")
-            print(tuned_params)
-            print("")
-
-          #now assemble final static params by incorporating the tuned params
-          static_params.update(tuned_params)
-
-          #now initialize our tuned model
-          #first create another temp_ML_cmnd for the tuned set
-          temp_ML_cmnd_two = {'MLinfill_cmnd':{MLinfill_alg : static_params}}
-
-          if MLinfill_alg == 'RandomForestClassifier':
-            model = self.initRandomForestClassifier(temp_ML_cmnd_two, MLinfilldefaults)
-          else:
-            #future extension
-            model = False
-
-        else:
-
-          #train logistic regression model using scikit-learn for binary classifier
-          #model = LogisticRegression()
-          #model = LogisticRegression(random_state = randomseed)
-          #model = SGDClassifier(random_state = randomseed)
-          #model = SVC(random_state = randomseed)
-          #model = RandomForestClassifier(n_estimators=100, random_state = randomseed, verbose=0)
-
-          if MLinfill_alg == 'RandomForestClassifier':
-            model = self.initRandomForestClassifier(ML_cmnd, MLinfilldefaults)
-          else:
-            #future extension
-            model = False
-
-        model.fit(df_train_filltrain, df_train_filllabel)
-
-#           #predict infill values
-#           df_traininfill = model.predict(df_train_fillfeatures)
-
-#           #convert from one-hot to binary encoding
-#           df_traininfill = \
-#           self.convert_onehot_to_1010(df_traininfill)
-
+          
+        #now call our training function
+        #which handles tuning if applicable, model initialization, and training
+        
+        #ML_application is another key to access the function, distinguishes between classification and regression
+        ML_application = 'classification'
+        
+        model = \
+        autoMLer[autoML_type][ML_application]['train'](ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus)
+        
         #only run following if we have any train rows needing infill
         if df_train_fillfeatures.shape[0] > 0:
-          df_traininfill = model.predict(df_train_fillfeatures)
+          df_traininfill = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, model, df_train_fillfeatures, printstatus)
 
           df_traininfill = \
           self.convert_onehot_to_1010(df_traininfill)
@@ -19125,10 +18707,10 @@ class AutoMunge:
         else:
           #this needs to have same number of columns as text category
           df_traininfill = np.zeros(shape=(1,len(columnslist)))
-
+        
         #only run following if we have any test rows needing infill
         if df_test_fillfeatures.shape[0] > 0:
-          df_testinfill = model.predict(df_test_fillfeatures)
+          df_testinfill = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, model, df_test_fillfeatures, printstatus)
 
           df_testinfill = \
           self.convert_onehot_to_1010(df_testinfill)
@@ -19136,12 +18718,12 @@ class AutoMunge:
         else:
           #this needs to have same number of columns as text category
           df_testinfill = np.zeros(shape=(1,len(columnslist)))
-
+        
       #convert infill values to dataframe
       df_traininfill = pd.DataFrame(df_traininfill, columns = columnslist)
       df_testinfill = pd.DataFrame(df_testinfill, columns = columnslist)
-
-    #if category in ['date', 'NArw', 'null']:
+      
+    #if target category excluded from ML infill:
     if MLinfilltype in ['exclude', 'boolexclude', 'totalexclude']:
 
       #create empty sets for now
@@ -19377,7 +18959,7 @@ class AutoMunge:
 
   def MLinfillfunction (self, df_train, df_test, column, postprocess_dict, \
                         masterNArows_train, masterNArows_test, randomseed, \
-                        ML_cmnd):
+                        ML_cmnd, printstatus):
     '''
     #new function ML infill, generalizes the MLinfill application between categories
     #def MLinfill (df_train, df_test, column, postprocess_dict, \
@@ -19398,6 +18980,7 @@ class AutoMunge:
       categorylist = postprocess_dict['column_dict'][column]['categorylist']
       origcolumn = postprocess_dict['column_dict'][column]['origcolumn']
       category = postprocess_dict['column_dict'][column]['category']
+      autoMLer = postprocess_dict['autoMLer']
       
       if len(categorylist) == 1 or \
       postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
@@ -19422,8 +19005,8 @@ class AutoMunge:
       #predict infill values using defined function predictinfill(.)
       df_traininfill, df_testinfill, model = \
       self.predictinfill(category, df_train_filltrain, df_train_filllabel, \
-                    df_train_fillfeatures, df_test_fillfeatures, \
-                    randomseed, postprocess_dict, ML_cmnd, columnslist = categorylist)
+                        df_train_fillfeatures, df_test_fillfeatures, randomseed, \
+                        postprocess_dict, ML_cmnd, autoMLer, printstatus, columnslist = categorylist)
 
       #now we'll add our trained model to the postprocess_dict
       postprocess_dict['column_dict'][column]['infillmodel'] \
@@ -19500,6 +19083,276 @@ class AutoMunge:
           df_test[dtype_column].astype({dtype_column:df_temp_dtype[dtype_column].dtypes})
 
     return df_train, df_test, postprocess_dict
+
+  def assemble_autoMLer(self):
+    """
+    #populates the "autoMLer" data structure that supports application of autoML for ML infill
+    #first tier is platform e.g. 'randomforest', 'autoML_1', 'auto_ML2'
+    #(currently just randomforest supported, intent is to build in support for a few autoML platforms)
+    #second tier is application i.e. 'classification', 'regression'
+    #third tier is action i.e. 'train', 'predict'
+    #third tier is populated with associated functions, which follow convention
+    
+    #train:
+    #model = train_function(ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus)
+    
+    #predict:
+    #infill = predict_function(ML_cmnd, model, df_train_fillfeatures, printstatus)
+
+    #the intent is to incorproate some additional autoML options here in future extension
+    """
+    
+    autoMLer = {}
+    
+    autoMLer.update({'randomforest' : {'classification' : {'train'   : self.train_randomforest_classifier, \
+                                                           'predict' : self.predict_randomforest_classifier}, \
+                                       'regression'     : {'train'   : self.train_randomforest_regressor, \
+                                                           'predict' : self.predict_randomforest_regressor}}})
+    
+    return autoMLer
+
+  def train_randomforest_classifier(self, ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus):
+    """
+    #performs tuning if appropriate based on ML_cmnd
+    #initializes model
+    #trains model
+    
+    #uses scikit-learn random forest models
+    
+    #where tuning is activated by passing parameters to the model as lists or distributions instead of distinct values
+    #and uses grid search or random search based on ML_cmnd
+    #see also ML_cmnd documentation in read me
+    
+    #determination of whether parameters passed as targets for tuning is by inspect_ML_cmnd function
+    #and if tuning applied aggregation of entries distinguishing tuning targets use assemble_param_sets function
+    
+    #in short, in addition to parameters passed to model
+    #ML_cmnd also accepts arguments for hyperparam_tuner and randomCV_n_iter
+    #where hyperparam_tuner can be one of {False, 'gridCV', 'randomCV'}
+    #and randomCV_n_iter can be passed as an integer when hyperparam_tuner passed as randomCV
+    
+    #model initialization makes use of initRandomForestClassifier function
+    #and default values for Random Forest Classifer are initialized with populateMLinfilldefaults
+    """
+    
+    #initialize defaults dictionary, these are the default parameters for random forest model initialization
+    MLinfilldefaults = \
+    self.populateMLinfilldefaults(randomseed)
+    
+    #ML_cmnd accepts specification for type of tuner when hyperparaemter tuning applied, else defaults to gridCV
+    if 'hyperparam_tuner' in ML_cmnd:
+      MLinfill_tuner = ML_cmnd['hyperparam_tuner']
+    else:
+      ML_cmnd.update({'hyperparam_tuner' : 'gridCV'})
+      MLinfill_tuner = 'gridCV'
+      
+    #if randomCV tuner applied, number of iterations accepted as randomCV_n_iter, else defaults to 100
+    if MLinfill_tuner == 'randomCV':
+      if 'randomCV_n_iter' not in ML_cmnd:
+        ML_cmnd.update({'randomCV_n_iter' : 100})
+      randomCV_n_iter = ML_cmnd['randomCV_n_iter']
+    
+    autoML_type = ML_cmnd['autoML_type']
+    MLinfill_alg = 'RandomForestClassifier'
+    
+    #tune marker tells us if user passed some parameters as a list for hyperparameter tuning
+    tune_marker = self.inspect_ML_cmnd(ML_cmnd, autoML_type, MLinfill_alg)
+    
+    if tune_marker is True:
+    
+      #static_params are user passed parameters that won't be tuned, 
+      #tune_params are user passed params (passed as list or range) that will be tuned
+      static_params, tune_params = self.assemble_param_sets(ML_cmnd, autoML_type, MLinfill_alg)
+    
+      #we'll create a temp ML_cmnd to initialize a tuning model
+      temp_ML_cmnd = {'MLinfill_cmnd':{MLinfill_alg : static_params}}
+      
+      #then we'll initialize a tuning model
+      #note that this populates the parameters to be tuned with defaults
+      #my understanding is that scikit gridsearch still allows tuning for parameters
+      #that were previously initialized in the model
+      tuning_model = self.initRandomForestClassifier(temp_ML_cmnd, MLinfilldefaults)
+    
+      #for now we'll default to grid scoring of ‘accuracy’
+      #I've heard that F1 score is a better general default, but not sure how it handles edge cases
+      #need to do a little more investsigation on this point
+      grid_scoring = 'accuracy'
+      
+      #now we'll initialize a grid search
+      if MLinfill_tuner == 'gridCV':
+        tune_search = GridSearchCV(tuning_model, cv=5, iid='deprecated', \
+                                   param_grid = tune_params, scoring = grid_scoring)
+      elif MLinfill_tuner == 'randomCV':
+        tune_search = RandomizedSearchCV(tuning_model, cv=5, iid='deprecated', \
+                                     param_distributions = tune_params, scoring = grid_scoring, \
+                                     n_iter = randomCV_n_iter)
+      else:
+        print("error: hyperparam_tuner currently only supports 'gridCV' or 'randomCV'.")      
+      
+      #now we'll run a fit on the grid search
+      #for now won't pass any fit parameters
+      fit_params = {}
+      tune_search.fit(df_train_filltrain, df_train_filllabel, **fit_params)    
+    
+      #acess the tuned parameters based on the tuning operation
+      tuned_params = tune_search.best_params_    
+
+      if postprocess_dict['printstatus'] is True:
+
+        #print("")
+        print("tuned parameters:")
+        print(tuned_params)
+        print("")
+
+      #now assemble final static params by incorporating the tuned params
+      static_params.update(tuned_params)
+
+      #now initialize our tuned model
+      #first create another temp_ML_cmnd for the tuned set
+      temp_ML_cmnd_two = {'MLinfill_cmnd':{MLinfill_alg : static_params}}
+
+      model = self.initRandomForestClassifier(temp_ML_cmnd_two, MLinfilldefaults)
+
+    else:
+      
+      model = self.initRandomForestClassifier(ML_cmnd, MLinfilldefaults)
+
+    model.fit(df_train_filltrain, df_train_filllabel)
+
+    return model
+
+  def predict_randomforest_classifier(self, ML_cmnd, model, fillfeatures, printstatus):
+    """
+    #runs and inference operation
+    #on corresponding model trained in train_randomforest_classifier
+    #for random forest
+    #returns infill predictions
+    """
+    
+    infill = model.predict(fillfeatures)
+    
+    return infill
+
+  def train_randomforest_regressor(self, ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus):
+    """
+    #performs tuning if appropriate based on ML_cmnd
+    #initializes model
+    #trains model
+    
+    #uses scikit-learn random forest models
+    
+    #where tuning is activated by passing parameters to the model as lists or distributions instead of distinct values
+    #and uses grid search or random search based on ML_cmnd
+    #see also ML_cmnd documentation in read me
+    
+    #determination of whether parameters passed as targets for tuning is by inspect_ML_cmnd function
+    #and if tuning applied aggregation of entries distinguishing tuning targets use assemble_param_sets function
+    
+    #in short, in addition to parameters passed to model
+    #ML_cmnd also accepts arguments for hyperparam_tuner and randomCV_n_iter
+    #where hyperparam_tuner can be one of {False, 'gridCV', 'randomCV'}
+    #and randomCV_n_iter can be passed as an integer when hyperparam_tuner passed as randomCV
+    
+    #model initialization makes use of initRandomForestClassifier function
+    #and default values for Random Forest Classifer are initialized with populateMLinfilldefaults
+    """
+    
+    #initialize defaults dictionary, these are the default parameters for random forest model initialization
+    MLinfilldefaults = \
+    self.populateMLinfilldefaults(randomseed)
+    
+    #ML_cmnd accepts specification for type of tuner when hyperparaemter tuning applied, else defaults to gridCV
+    if 'hyperparam_tuner' in ML_cmnd:
+      MLinfill_tuner = ML_cmnd['hyperparam_tuner']
+    else:
+      ML_cmnd.update({'hyperparam_tuner' : 'gridCV'})
+      MLinfill_tuner = 'gridCV'
+      
+    #if randomCV tuner applied, number of iterations accepted as randomCV_n_iter, else defaults to 100
+    if MLinfill_tuner == 'randomCV':
+      if 'randomCV_n_iter' not in ML_cmnd:
+        ML_cmnd.update({'randomCV_n_iter' : 100})
+      randomCV_n_iter = ML_cmnd['randomCV_n_iter']
+    
+    autoML_type = ML_cmnd['autoML_type']
+    MLinfill_alg = 'RandomForestRegressor'
+    
+    #tune marker tells us if user passed some parameters as a list for hyperparameter tuning
+    tune_marker = self.inspect_ML_cmnd(ML_cmnd, autoML_type, MLinfill_alg)
+    
+    if tune_marker is True:
+    
+      #static_params are user passed parameters that won't be tuned, 
+      #tune_params are user passed params (passed as list or range) that will be tuned
+      static_params, tune_params = self.assemble_param_sets(ML_cmnd, autoML_type, MLinfill_alg)
+    
+      #we'll create a temp ML_cmnd to initialize a tuning model
+      temp_ML_cmnd = {'MLinfill_cmnd':{MLinfill_alg : static_params}}
+      
+      #then we'll initialize a tuning model
+      #note that this populates the parameters to be tuned with defaults
+      #my understanding is that scikit gridsearch still allows tuning for parameters
+      #that were previously initialized in the model
+      tuning_model = self.initRandomForestRegressor(temp_ML_cmnd, MLinfilldefaults)
+    
+      #for now we'll default to grid scoring of ‘neg_mean_squared_error’
+      #am not positive this is best default this is worth some further investigation when get a chance
+      grid_scoring = 'neg_mean_squared_error'
+      
+      #now we'll initialize a grid search
+      if MLinfill_tuner == 'gridCV':
+        tune_search = GridSearchCV(tuning_model, cv=5, iid='deprecated', \
+                                   param_grid = tune_params, scoring = grid_scoring)
+      elif MLinfill_tuner == 'randomCV':
+        tune_search = RandomizedSearchCV(tuning_model, cv=5, iid='deprecated', \
+                                     param_distributions = tune_params, scoring = grid_scoring, \
+                                     n_iter = randomCV_n_iter)
+      else:
+        print("error: hyperparam_tuner currently only supports 'gridCV' or 'randomCV'.")      
+      
+      #now we'll run a fit on the grid search
+      #for now won't pass any fit parameters
+      fit_params = {}
+      tune_search.fit(df_train_filltrain, df_train_filllabel, **fit_params)    
+    
+      #acess the tuned parameters based on the tuning operation
+      tuned_params = tune_search.best_params_    
+
+      if postprocess_dict['printstatus'] is True:
+
+        #print("")
+        print("tuned parameters:")
+        print(tuned_params)
+        print("")
+
+      #now assemble final static params by incorporating the tuned params
+      static_params.update(tuned_params)
+
+      #now initialize our tuned model
+      #first create another temp_ML_cmnd for the tuned set
+      temp_ML_cmnd_two = {'MLinfill_cmnd':{MLinfill_alg : static_params}}
+
+      model = self.initRandomForestRegressor(temp_ML_cmnd_two, MLinfilldefaults)
+
+    else:
+      
+      model = self.initRandomForestRegressor(ML_cmnd, MLinfilldefaults)
+
+    model.fit(df_train_filltrain, df_train_filllabel)
+
+    return model
+
+  def predict_randomforest_regressor(self, ML_cmnd, model, fillfeatures, printstatus):
+    """
+    #runs and inference operation
+    #on corresponding model trained in train_randomforest_classifier
+    #for random forest
+    #returns infill predictions
+    """
+    
+    infill = model.predict(fillfeatures)
+    
+    return infill
 
   def convert_1010_to_onehot(self, np_1010):  
     """
@@ -19834,7 +19687,7 @@ class AutoMunge:
     return train_df, labels_df
   
   def trainFSmodel(self, am_subset, am_labels, randomseed, \
-                   process_dict, postprocess_dict, labelctgy, ML_cmnd):
+                   process_dict, postprocess_dict, labelctgy, ML_cmnd, printstatus):
     
     if len(list(am_labels)) > 0:
 
@@ -19845,7 +19698,7 @@ class AutoMunge:
       _infilla, _infillb, FSmodel = \
       self.predictinfill(labelctgy, am_subset, am_labels, \
                          df_train_fillfeatures_plug, df_test_fillfeatures_plug, \
-                         randomseed, postprocess_dict, ML_cmnd, \
+                         randomseed, postprocess_dict, ML_cmnd, postprocess_dict['autoMLer'], printstatus, \
                          columnslist = categorylist)
 
       del _infilla, _infillb
@@ -20208,7 +20061,8 @@ class AutoMunge:
         #FSmodel, baseaccuracy = \
         FSmodel = \
         self.trainFSmodel(am_train, am_labels, randomseed, \
-                          FSprocess_dict, FSpostprocess_dict, labelctgy, ML_cmnd)
+                          FSprocess_dict, FSpostprocess_dict, labelctgy, ML_cmnd, \
+                          printstatus)
         
         if FSmodel is False:
           
@@ -20871,7 +20725,8 @@ class AutoMunge:
 
               df_train, df_test, postprocess_dict = \
               self.MLinfillfunction(df_train, df_test, column, postprocess_dict, \
-                                    masterNArows_train, masterNArows_test, randomseed, ML_cmnd)
+                                    masterNArows_train, masterNArows_test, randomseed, ML_cmnd, \
+                                    printstatus)
     
       for columnname in df_train.columns:
         postprocess_dict['column_dict'][columnname]['infillcomplete'] = False
@@ -21105,7 +20960,7 @@ class AutoMunge:
 
             df_test, postprocess_dict = \
             self.postMLinfillfunction (df_test, column, postprocess_dict, \
-                                       masterNArows_test)
+                                       masterNArows_test, printstatus)
 
       for columnname in df_test.columns:
         postprocess_dict['column_dict'][columnname]['infillcomplete'] = False
@@ -24960,6 +24815,10 @@ class AutoMunge:
     miscparameters_results.update({'check_assigncat_result2' : check_assigncat_result2, \
                                    'check_assigncat_result3' : check_assigncat_result3})
 
+    #initialize autoMLer which is data structure to support ML infill
+    #a future extension may allow user to pass custom entries
+    autoMLer = self.assemble_autoMLer()
+
     #feature selection analysis performed here if elected
     if featureselection is True:
 
@@ -25355,7 +25214,8 @@ class AutoMunge:
     postprocess_dict = {'column_dict' : {}, 'origcolumn' : {}, \
                         'process_dict' : process_dict, \
                         'printstatus' : printstatus, \
-                        'randomseed' : randomseed }
+                        'randomseed' : randomseed, \
+                        'autoMLer' : autoMLer }
     
     #mirror assigncat which will populate the returned categories from eval function
     final_assigncat = deepcopy(assigncat)
@@ -26261,7 +26121,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.92'
+    automungeversion = '4.93'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -31761,7 +31621,7 @@ class AutoMunge:
     return df_test_fillfeatures
 
   def predictpostinfill(self, category, model, df_test_fillfeatures, \
-                        postprocess_dict, columnslist = []):
+                        postprocess_dict, ML_cmnd, autoMLer, printstatus, columnslist = []):
     '''
     #predictpostinfill(category, model, df_test_fillfeatures, \
     #columnslist = []), function that takes as input \
@@ -31776,174 +31636,97 @@ class AutoMunge:
     #other ML architectures such a SVM or something SGD based for instance
     '''
     
+    #MLinfilltype distinguishes between classifier/regressor, single/multi column, ordinal/onehot/binary, etc
+    #see potential values documented in assembleprocessdict function
     MLinfilltype = postprocess_dict['process_dict'][category]['MLinfilltype']
     
+    #grab autoML_type from ML_cmnd, this will be one of our keys for autoMLer dictionary
+    autoML_type = ML_cmnd['autoML_type']
+    
     #convert dataframes to numpy arrays
-  #   df_train_filltrain = df_train_filltrain.values
-  #   df_train_filllabel = df_train_filllabel.values
-  #   df_train_fillfeatures = df_train_fillfeatures.values
     df_test_fillfeatures = df_test_fillfeatures.values
-
-    #ony run the following if we have any rows needing infill
-  #   if df_train_fillfeatures.shape[0] > 0:
-    #since we don't have df_train_fillfeatures to work with we'll look at the 
-    #model which will be set to False if there was no infill model trained
-    #if model[0] is not False:
+    
+    #ony run the following if we successfuly trained a model in automunge
     if model is not False:
-
-      #if category in ['nmbr', 'bxcx', 'nbr2']:
+      
+      #if target category is numeric:
       if MLinfilltype in ['numeric', 'concurrent_nmbr']:
-
-  #       #train linear regression model using scikit-learn for numerical prediction
-  #       #model = LinearRegression()
-  #       #model = PassiveAggressiveRegressor(random_state = randomseed)
-  #       #model = Ridge(random_state = randomseed)
-  #       #model = RidgeCV()
-  #       #note that SVR doesn't have an argument for random_state
-  #       model = SVR()
-  #       model.fit(df_train_filltrain, df_train_filllabel)    
-
-  #       #predict infill values
-  #       df_traininfill = model.predict(df_train_fillfeatures)
-
+        
+        ML_application = 'regression'
+    
         #only run following if we have any test rows needing infill
         if df_test_fillfeatures.shape[0] > 0:
-          df_testinfill = model.predict(df_test_fillfeatures)
+          df_testinfill = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, model, df_test_fillfeatures, printstatus)
         else:
           df_testinfill = np.array([0])
 
         #convert infill values to dataframe
-  #       df_traininfill = pd.DataFrame(df_traininfill, columns = ['infill'])
         df_testinfill = pd.DataFrame(df_testinfill, columns = ['infill'])
-
-  #       print('category is nmbr, df_traininfill is')
-  #       print(df_traininfill)
-
-#       if category == 'bxcx':
-
-#   #       model = SVR()
-#   #       model.fit(df_train_filltrain, df_train_filllabel)   
-
-#   #       #predict infill values
-#   #       df_traininfill = model.predict(df_train_fillfeatures)
-
-#         #only run following if we have any test rows needing infill
-#         if df_test_fillfeatures.shape[0] > 0:
-#           df_testinfill = model.predict(df_test_fillfeatures)
-#         else:
-#           df_testinfill = np.array([0])
-
-#         #convert infill values to dataframe
-#   #       df_traininfill = pd.DataFrame(df_traininfill, columns = ['infill'])
-#         df_testinfill = pd.DataFrame(df_testinfill, columns = ['infill'])     
-
-      #if category == 'bnry':
+        
+      #if target category is single column categoric (eg ordinal or boolean integer)
       if MLinfilltype in ['singlct', 'binary', 'concurrent_act']:
-
-  #       #train logistic regression model using scikit-learn for binary classifier
-  #       #model = LogisticRegression()
-  #       #model = LogisticRegression(random_state = randomseed)
-  #       #model = SGDClassifier(random_state = randomseed)
-  #       model = SVC(random_state = randomseed)
-
-  #       model.fit(df_train_filltrain, df_train_filllabel)
-
-  #       #predict infill values
-  #       df_traininfill = model.predict(df_train_fillfeatures)
-
+        
+        ML_application = 'classification'
+        
         #only run following if we have any test rows needing infill
         if df_test_fillfeatures.shape[0] > 0:
-          df_testinfill = model.predict(df_test_fillfeatures)
+          df_testinfill = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, model, df_test_fillfeatures, printstatus)
         else:
           df_testinfill = np.array([0])
 
         #convert infill values to dataframe
-  #       df_traininfill = pd.DataFrame(df_traininfill, columns = ['infill'])
         df_testinfill = pd.DataFrame(df_testinfill, columns = ['infill'])
-
-
-      #if category in ['text', 'bins', 'bint']:
+        
+      #if target category is multi-column categoric (one hot encoding) / (binary encoded sets handled sepreately)
       if MLinfilltype in ['multirt']:
-
-  #       #train logistic regression model using scikit-learn for binary classifier
-  #       #with multi_class argument activated
-  #       #model = LogisticRegression()
-  #       #model = SGDClassifier(random_state = randomseed)
-  #       model = SVC(random_state = randomseed)
-
-  #       model.fit(df_train_filltrain, df_train_filllabel_argmax)
-
-  #       #predict infill values
-  #       df_traininfill = model.predict(df_train_fillfeatures)
-
+        
+        ML_application = 'classification'
+        
         #only run following if we have any test rows needing infill
         if df_test_fillfeatures.shape[0] > 0:
-          df_testinfill = model.predict(df_test_fillfeatures)
+          df_testinfill = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, model, df_test_fillfeatures, printstatus)
         else:
-          #this needs to have same number of columns as text category
+          #this needs to have same number of columns
           df_testinfill = np.zeros(shape=(1,len(columnslist)))
           
         #convert infill values to dataframe
-  #       df_traininfill = pd.DataFrame(df_traininfill, columns = columnslist)
-        df_testinfill = pd.DataFrame(df_testinfill, columns = columnslist) 
-          
+        df_testinfill = pd.DataFrame(df_testinfill, columns = columnslist)
+      
+      #if target is binary encoded
       if MLinfilltype in ['1010']:
-
-  #       #train logistic regression model using scikit-learn for binary classifier
-  #       #with multi_class argument activated
-  #       #model = LogisticRegression()
-  #       #model = SGDClassifier(random_state = randomseed)
-  #       model = SVC(random_state = randomseed)
-
-  #       model.fit(df_train_filltrain, df_train_filllabel_argmax)
-
-  #       #predict infill values
-  #       df_traininfill = model.predict(df_train_fillfeatures)
-
+        
+        ML_application = 'classification'
+        
         #only run following if we have any test rows needing infill
         if df_test_fillfeatures.shape[0] > 0:
-          df_testinfill = model.predict(df_test_fillfeatures)
+          df_testinfill = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, model, df_test_fillfeatures, printstatus)
           
           df_testinfill = \
           self.convert_onehot_to_1010(df_testinfill)
           
         else:
-          #this needs to have same number of columns as text category
+          #this needs to have same number of columns
           df_testinfill = np.zeros(shape=(1,len(columnslist)))
-
+        
         #convert infill values to dataframe
-  #       df_traininfill = pd.DataFrame(df_traininfill, columns = columnslist)
-        df_testinfill = pd.DataFrame(df_testinfill, columns = columnslist) 
-
-
-  #       print('category is text, df_traininfill is')
-  #       print(df_traininfill)
-
-      #if category == 'date':
+        df_testinfill = pd.DataFrame(df_testinfill, columns = columnslist)         
+        
+      #if target is exlcuded from ML infill
       if MLinfilltype in ['exclude', 'boolexclude', 'totalexclude']:
 
-        #create empty sets for now
-        #an extension of this method would be to implement a comparable infill \
-        #method for the time category, based on the columns output from the \
-        #preprocessing
-  #       df_traininfill = pd.DataFrame({'infill' : [0]}) 
+        #create empty sets
         df_testinfill = pd.DataFrame({'infill' : [0]}) 
 
-  #       model = False
-
-  #       print('category is text, df_traininfill is')
-  #       print(df_traininfill)
-
-    #else if we didn't have any infill rows let's create some plug values
+    #else if we didn't have a trained model let's create some plug values
     else:
 
       df_testinfill = np.zeros(shape=(1,len(columnslist)))
       df_testinfill = pd.DataFrame(df_testinfill, columns = columnslist) 
-  
+    
     return df_testinfill
 
   def postMLinfillfunction(self, df_test, column, postprocess_dict, \
-                            masterNArows_test):
+                            masterNArows_test, printstatus):
 
     '''
     #new function ML infill, generalizes the MLinfill application
@@ -31988,7 +31771,8 @@ class AutoMunge:
       #predict infill values using defined function predictinfill(.)
       df_testinfill = \
       self.predictpostinfill(category, model, df_test_fillfeatures, \
-                             postprocess_dict, columnslist = categorylist)
+                            postprocess_dict, postprocess_dict['ML_cmnd'], postprocess_dict['autoMLer'], \
+                            printstatus, columnslist = categorylist)
 
       #if model is not False:
       if postprocess_dict['column_dict'][column]['infillmodel'] is not False:
@@ -32243,7 +32027,8 @@ class AutoMunge:
         #FSmodel, baseaccuracy = \
         FSmodel = \
         self.trainFSmodel(am_train, am_labels, randomseed, \
-                          FSprocess_dict, FSpostprocess_dict, labelctgy, ML_cmnd)
+                          FSprocess_dict, FSpostprocess_dict, labelctgy, ML_cmnd, \
+                          printstatus)
         
         if FSmodel is False:
           
