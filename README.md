@@ -138,7 +138,7 @@ am.automunge(df_train, df_test = False, \
              numbercategoryheuristic = 63, pandasoutput = False, NArw_marker = False, \
              featureselection = False, featurepct = 1.0, featuremetric = 0.0, featuremethod = 'default', \
              Binary = False, PCAn_components = False, PCAexcl = [], excl_suffix = False, \
-             ML_cmnd = {'MLinfill_type':'default', \
+             ML_cmnd = {'autoML_type':'randomforest', \
                         'MLinfill_cmnd':{'RandomForestClassifier':{}, 'RandomForestRegressor':{}}, \
                         'PCA_type':'default', \
                         'PCA_cmnd':{}}, \
@@ -366,7 +366,7 @@ am.automunge(df_train, df_test = False, \
              numbercategoryheuristic = 63, pandasoutput = False, NArw_marker = False, \
              featureselection = False, featurepct = 1.0, featuremetric = 0.0, featuremethod = 'default', \
              Binary = False, PCAn_components = False, PCAexcl = [], excl_suffix = False, \
-             ML_cmnd = {'MLinfill_type':'default', \
+             ML_cmnd = {'autoML_type':'randomforest', \
                         'MLinfill_cmnd':{'RandomForestClassifier':{}, 'RandomForestRegressor':{}}, \
                         'PCA_type':'default', \
                         'PCA_cmnd':{}}, \
@@ -602,7 +602,7 @@ am.automunge(df_train, df_test = False, \
              numbercategoryheuristic = 63, pandasoutput = False, NArw_marker = False, \
              featureselection = False, featurepct = 1.0, featuremetric = 0.0, featuremethod = 'default', \
              Binary = False, PCAn_components = False, PCAexcl = [], excl_suffix = False, \
-             ML_cmnd = {'MLinfill_type':'default', \
+             ML_cmnd = {'autoML_type':'randomforest', \
                         'MLinfill_cmnd':{'RandomForestClassifier':{}, 'RandomForestRegressor':{}}, \
                         'PCA_type':'default', \
                         'PCA_cmnd':{}}, \
@@ -924,20 +924,20 @@ little easier at small cost of aesthetics of any 'excl' pass-through column head
 * ML_cmnd: 
 
 ```
-ML_cmnd = {'MLinfill_type':'default', \
+ML_cmnd = {'autoML_type':'randomforest', \
            'MLinfill_cmnd':{'RandomForestClassifier':{}, 'RandomForestRegressor':{}}, \
            'PCA_type':'default', \
            'PCA_cmnd':{}}
 ```
 The ML_cmnd allows a user to pass parameters to the predictive algorithms
 used for ML infill / feature importance evaluation or PCA. Currently the only
-option for 'MLinfill_type' is default which uses Scikit-learn's Random 
+option for 'autoML_type' is randomforest which uses a Scikit-learn Random 
 Forest implementation, the intent is to add other options in a future extension.
 For example, a user who doesn't mind a little extra training time for ML infill 
 could increase the passed n_estimators beyond the scikit default of 100.
 
 ```
-ML_cmnd = {'MLinfill_type':'default', \
+ML_cmnd = {'autoML_type':'randomforest', \
            'MLinfill_cmnd':{'RandomForestClassifier':{'n_estimators':1000}, \
                             'RandomForestRegressor':{'n_estimators':1000}}, \
            'PCA_type':'default', \
@@ -949,7 +949,7 @@ predictive algorithms by instead of passing distinct values passing lists or
 range of values. The hyperparameter tuning defaults to grid search for cases 
 where user passes parameters as lists or ranges, for example:
 ```
-ML_cmnd = {'MLinfill_type':'default', \
+ML_cmnd = {'autoML_type':'randomforest', \
            'hyperparam_tuner':'gridCV', \
            'MLinfill_cmnd':{'RandomForestClassifier':{'max_depth':range(4,6)}, \
                             'RandomForestRegressor' :{'max_depth':[3,6,12]}}}
@@ -957,7 +957,7 @@ ML_cmnd = {'MLinfill_type':'default', \
 A user can also perform randomized search via ML_cmnd, and pass parameters as 
 distributions via scipy stats module such as:
 ```
-ML_cmnd = {'MLinfill_type'    : 'default', \
+ML_cmnd = {'autoML_type':'randomforest', \
            'hyperparam_tuner' : 'randomCV', \
            'randomCV_n_iter'  : 15, \
            'MLinfill_cmnd':{'RandomForestClassifier':{'max_depth':stats.randint(3,6)}, \
@@ -971,7 +971,7 @@ argument noted above. A user can also pass parameters to the PCA functions
 through the PCA_cmnd, for example one could pass a kernel type for KernelPCA
 as:
 ```
-ML_cmnd = {'MLinfill_type':'default', \
+ML_cmnd = {'autoML_type':'randomforest', \
            'MLinfill_cmnd':{'RandomForestClassifier':{}, \
                             'RandomForestRegressor':{}}, \
            'PCA_type':'KernelPCA', \
