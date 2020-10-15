@@ -42,7 +42,7 @@ from sklearn.metrics import accuracy_score
 
 #imports for shuffleaccuracy
 from sklearn.metrics import accuracy_score
-from sklearn.metrics import mean_squared_log_error
+#from sklearn.metrics import mean_squared_error
 
 #imports for PCA dimensionality reduction
 from sklearn.decomposition import PCA
@@ -18527,6 +18527,7 @@ class AutoMunge:
     '''
 
     #if autoML_type not specified than we'll apply default (randomforest)
+    #note this is only a temporary update to ML_cmnd and is not returned from function call
     if 'autoML_type' not in ML_cmnd:
       ML_cmnd.update({'autoML_type' : 'randomforest'})
     
@@ -19197,7 +19198,7 @@ class AutoMunge:
       #acess the tuned parameters based on the tuning operation
       tuned_params = tune_search.best_params_    
 
-      if postprocess_dict['printstatus'] is True:
+      if printstatus is True:
 
         #print("")
         print("tuned parameters:")
@@ -19318,7 +19319,7 @@ class AutoMunge:
       #acess the tuned parameters based on the tuning operation
       tuned_params = tune_search.best_params_    
 
-      if postprocess_dict['printstatus'] is True:
+      if printstatus is True:
 
         #print("")
         print("tuned parameters:")
@@ -19742,7 +19743,7 @@ class AutoMunge:
         shuffleset2 = self.df_shuffle_series(shuffleset2, clcolumn, randomseed)
     
     return shuffleset2
-    
+
   def shuffleaccuracy(self, np_shuffleset, np_labels, FSmodel, randomseed, \
                       process_dict, labelctgy, postprocess_dict):
     '''
@@ -19750,9 +19751,24 @@ class AutoMunge:
     against the model trained on the unshuffled set
     '''
 
+    ML_cmnd = postprocess_dict['ML_cmnd']
+
+    autoMLer = postprocess_dict['autoMLer']
+
+    #if autoML_type not specified than we'll apply default (randomforest)
+    #note this is only a temporary update to ML_cmnd and is not returned from function call
+    if 'autoML_type' not in postprocess_dict['ML_cmnd']:
+      postprocess_dict['ML_cmnd'].update({'autoML_type' : 'randomforest'})
+    #grab autoML_type from ML_cmnd, this will be one of our keys for autoMLer dictionary
+    autoML_type = postprocess_dict['ML_cmnd']['autoML_type']
+
     labelscategory = labelctgy
-    
     MLinfilltype = process_dict[labelscategory]['MLinfilltype']
+    
+    if MLinfilltype in ['numeric', 'concurrent_nmbr']:
+      ML_application = 'regression'
+    elif MLinfilltype in ['singlct', 'binary', 'concurrent_act', 'multirt', '1010']:
+      ML_application = 'classification'
     
     #if labelscategory in ['nmbr']:
     if MLinfilltype in ['numeric', 'concurrent_nmbr']:
@@ -19765,17 +19781,19 @@ class AutoMunge:
       np_labels = np.ravel(np_labels)
       
       #generate predictions
-      np_predictions = FSmodel.predict(np_shuffleset)
+      np_predictions = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, FSmodel, np_shuffleset, False)
+      #np_predictions = FSmodel.predict(np_shuffleset)
       
-      #just in case this returned any negative predictions
-      np_predictions = np.absolute(np_predictions)
-      #and we're trying to generalize here so will go ahead and apply to labels
-      np_labels = np.absolute(np_labels)
+#       #just in case this returned any negative predictions
+#       np_predictions = np.absolute(np_predictions)
+#       #and we're trying to generalize here so will go ahead and apply to labels
+#       np_labels = np.absolute(np_labels)
       
       #evaluate accuracy metric
       #columnaccuracy = accuracy_score(np_labels, np_predictions)
       #columnaccuracy = mean_squared_log_error(np_labels, np_predictions)
-      columnaccuracy = 1 - mean_squared_log_error(np_labels, np_predictions)
+      #columnaccuracy = 1 - mean_squared_log_error(np_labels, np_predictions)
+      columnaccuracy = mean_squared_error(np_labels, np_predictions)
       
     #if labelscategory in ['bnry']:
     if MLinfilltype in ['singlct', 'binary', 'concurrent_act']:
@@ -19788,7 +19806,8 @@ class AutoMunge:
       np_labels = np.ravel(np_labels)
       
       #generate predictions
-      np_predictions = FSmodel.predict(np_shuffleset)
+      np_predictions = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, FSmodel, np_shuffleset, False)
+      #np_predictions = FSmodel.predict(np_shuffleset)
       
       #evaluate accuracy metric
       columnaccuracy = accuracy_score(np_labels, np_predictions)
@@ -19805,7 +19824,8 @@ class AutoMunge:
         np_labels = np.ravel(np_labels)
       
       #generate predictions
-      np_predictions = FSmodel.predict(np_shuffleset)
+      np_predictions = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, FSmodel, np_shuffleset, False)
+      #np_predictions = FSmodel.predict(np_shuffleset)
       
       #evaluate accuracy metric
       #columnaccuracy = accuracy_score(np_labels, np_predictions)
@@ -19821,7 +19841,8 @@ class AutoMunge:
       self.convert_1010_to_onehot(np_labels)
       
       #generate predictions
-      np_predictions = FSmodel.predict(np_shuffleset)
+      np_predictions = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, FSmodel, np_shuffleset, False)
+      #np_predictions = FSmodel.predict(np_shuffleset)
       
       #evaluate accuracy metric
       #columnaccuracy = accuracy_score(np_labels, np_predictions)
@@ -26121,7 +26142,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.93'
+    automungeversion = '4.94'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
