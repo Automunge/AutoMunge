@@ -856,10 +856,10 @@ around the processdict parameter.
 * featureselection: a boolean identifier _(True/False)_ telling the function 
 to perform a feature importance evaluation. If selected automunge will
 return a summary of feature importance findings in the featureimportance
-returned dictionary. This also activates the trimming of derived sets
+returned dictionary. This also can activate the trimming of derived sets
 that did not meet the importance threshold if [featurepct < 1.0 and 
 featuremethod = 'pct'] or if [featuremetric > 0.0 and featuremethod = 
-'metric'], which can be turned off with featuremethod='default. Note this 
+'metric'], which by default is turned off with featuremethod='default'. Note this 
 defaults to False because it cannot operate without a designated label 
 column in the train set. (Note that any user-specified size of validationratios 
 if passed are used in this method, otherwise defaults to 0.2.) Note that sorted 
