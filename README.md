@@ -563,7 +563,7 @@ for keys,values in featureimportance.items():
     print()
 ```
 Note that additional feature importance results are available in
-postprocess_dict['FS_sorted'].
+postprocess_dict['FS_sorted']. 
 
 * postprocess_dict: a returned python dictionary that includes
 normalization parameters and trained machine learning models used to
@@ -859,11 +859,13 @@ return a summary of feature importance findings in the featureimportance
 returned dictionary. This also activates the trimming of derived sets
 that did not meet the importance threshold if [featurepct < 1.0 and 
 featuremethod = 'pct'] or if [featuremetric > 0.0 and featuremethod = 
-'metric']. Note this defaults to False because it cannot operate without
-a designated label column in the train set. (Note that any user-specified
-size of validationratios if passed are used in this method, otherwise 
-defaults to 0.2.) Note that sorted feature importance results are returned
-in postprocess_dict['FS_sorted'], including columns sorted by metric and metric2.
+'metric'], which can be turned off with featuremethod='default. Note this 
+defaults to False because it cannot operate without a designated label 
+column in the train set. (Note that any user-specified size of validationratios 
+if passed are used in this method, otherwise defaults to 0.2.) Note that sorted 
+feature importance results are returned in postprocess_dict['FS_sorted'], 
+including columns sorted by metric and metric2. Note that feature importance 
+model training inspects same ML_cmnd parameters as ML infill. 
 
 * featurepct: the percentage of derived columns that are kept in the output
 based on the feature importance evaluation. Accepts float in the range 0-1.
@@ -1666,7 +1668,8 @@ test set passed to postmunge. Defaults to False. The results are returned in the
 postreports_dict object returned from postmunge as postreports_dict['featureimportance']. 
 The results will also be printed out if printstatus is activated.  Note that sorted 
 feature importance results are returned in postreports_dict['FS_sorted'], including 
-columns sorted by metric and metric2.
+columns sorted by metric and metric2. Relies on ML_cmnd parameters from original
+automunge(.) call.
 
 * driftreport: activates a drift report evaluation, in which the normalization 
 parameters are recalculated for the columns of the test data passed to postmunge 
