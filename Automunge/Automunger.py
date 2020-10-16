@@ -42,7 +42,7 @@ from sklearn.metrics import accuracy_score
 
 #imports for shuffleaccuracy
 from sklearn.metrics import accuracy_score
-#from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_squared_log_error
 
 #imports for PCA dimensionality reduction
 from sklearn.decomposition import PCA
@@ -19784,16 +19784,16 @@ class AutoMunge:
       np_predictions = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, FSmodel, np_shuffleset, False)
       #np_predictions = FSmodel.predict(np_shuffleset)
       
-#       #just in case this returned any negative predictions
-#       np_predictions = np.absolute(np_predictions)
-#       #and we're trying to generalize here so will go ahead and apply to labels
-#       np_labels = np.absolute(np_labels)
+      #just in case this returned any negative predictions
+      np_predictions = np.absolute(np_predictions)
+      #and we're trying to generalize here so will go ahead and apply to labels
+      np_labels = np.absolute(np_labels)
       
       #evaluate accuracy metric
       #columnaccuracy = accuracy_score(np_labels, np_predictions)
+      #columnaccuracy = mean_squared_error(np_labels, np_predictions)
       #columnaccuracy = mean_squared_log_error(np_labels, np_predictions)
-      #columnaccuracy = 1 - mean_squared_log_error(np_labels, np_predictions)
-      columnaccuracy = mean_squared_error(np_labels, np_predictions)
+      columnaccuracy = 1 - mean_squared_log_error(np_labels, np_predictions)
       
     #if labelscategory in ['bnry']:
     if MLinfilltype in ['singlct', 'binary', 'concurrent_act']:
@@ -26142,7 +26142,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.94'
+    automungeversion = '4.95'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
