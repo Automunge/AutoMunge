@@ -18603,7 +18603,10 @@ class AutoMunge:
         #which handles tuning if applicable, model initialization, and training
         
         #ML_application is another key to access the function, distinguishes between classification and regression
-        ML_application = 'classification'
+        if MLinfilltype == 'singlct':
+          ML_application = 'ordinalclassification'
+        else:
+          ML_application = 'booleanclassification'
         
         model = \
         autoMLer[autoML_type][ML_application]['train'](ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus)
@@ -18646,7 +18649,7 @@ class AutoMunge:
         #which handles tuning if applicable, model initialization, and training
         
         #ML_application is another key to access the function, distinguishes between classification and regression
-        ML_application = 'classification'
+        ML_application = 'onehotclassification'
         
         model = \
         autoMLer[autoML_type][ML_application]['train'](ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus)
@@ -18693,7 +18696,7 @@ class AutoMunge:
         #which handles tuning if applicable, model initialization, and training
         
         #ML_application is another key to access the function, distinguishes between classification and regression
-        ML_application = 'classification'
+        ML_application = 'onehotclassification'
         
         model = \
         autoMLer[autoML_type][ML_application]['train'](ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus)
@@ -19101,14 +19104,20 @@ class AutoMunge:
     #infill = predict_function(ML_cmnd, model, df_train_fillfeatures, printstatus)
 
     #the intent is to incorproate some additional autoML options here in future extension
+    
+    #note that binary encoded sets use onehotclassification by way of 1010->text conversion in predictinfill function
     """
     
     autoMLer = {}
     
-    autoMLer.update({'randomforest' : {'classification' : {'train'   : self.train_randomforest_classifier, \
-                                                           'predict' : self.predict_randomforest_classifier}, \
-                                       'regression'     : {'train'   : self.train_randomforest_regressor, \
-                                                           'predict' : self.predict_randomforest_regressor}}})
+    autoMLer.update({'randomforest' : {'booleanclassification'  : {'train'   : self.train_randomforest_classifier, \
+                                                                   'predict' : self.predict_randomforest_classifier}, \
+                                       'ordinalclassification'  : {'train'   : self.train_randomforest_classifier, \
+                                                                   'predict' : self.predict_randomforest_classifier}, \
+                                       'onehotclassification'   : {'train'   : self.train_randomforest_classifier, \
+                                                                   'predict' : self.predict_randomforest_classifier}, \
+                                       'regression'             : {'train'   : self.train_randomforest_regressor, \
+                                                                   'predict' : self.predict_randomforest_regressor}}})
     
     return autoMLer
 
@@ -19767,8 +19776,12 @@ class AutoMunge:
     
     if MLinfilltype in ['numeric', 'concurrent_nmbr']:
       ML_application = 'regression'
-    elif MLinfilltype in ['singlct', 'binary', 'concurrent_act', 'multirt', '1010']:
-      ML_application = 'classification'
+    elif MLinfilltype in ['singlct']:
+      ML_application = 'ordinalclassification'
+    elif MLinfilltype in ['binary', 'concurrent_act']:
+      ML_application = 'booleanclassification'
+    elif MLinfilltype in ['multirt', '1010']:
+      ML_application = 'onehotclassification'
     
     #if labelscategory in ['nmbr']:
     if MLinfilltype in ['numeric', 'concurrent_nmbr']:
@@ -26142,7 +26155,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.95'
+    automungeversion = '4.96'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -31687,7 +31700,10 @@ class AutoMunge:
       #if target category is single column categoric (eg ordinal or boolean integer)
       if MLinfilltype in ['singlct', 'binary', 'concurrent_act']:
         
-        ML_application = 'classification'
+        if MLinfilltype == 'singlct':
+          ML_application = 'ordinalclassification'
+        else:
+          ML_application = 'booleanclassification'
         
         #only run following if we have any test rows needing infill
         if df_test_fillfeatures.shape[0] > 0:
@@ -31701,7 +31717,7 @@ class AutoMunge:
       #if target category is multi-column categoric (one hot encoding) / (binary encoded sets handled sepreately)
       if MLinfilltype in ['multirt']:
         
-        ML_application = 'classification'
+        ML_application = 'onehotclassification'
         
         #only run following if we have any test rows needing infill
         if df_test_fillfeatures.shape[0] > 0:
@@ -31716,7 +31732,7 @@ class AutoMunge:
       #if target is binary encoded
       if MLinfilltype in ['1010']:
         
-        ML_application = 'classification'
+        ML_application = 'onehotclassification'
         
         #only run following if we have any test rows needing infill
         if df_test_fillfeatures.shape[0] > 0:
