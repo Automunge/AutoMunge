@@ -311,7 +311,8 @@ networks" - Buda, Maki, Mazurowski.
 The function also can perform dimensionality reduction of the sets via 
 principal component analysis (PCA), where the user can pass a desired number 
 of features and their preference of type and parameters between linear PCA, 
-Sparse PCA, or Kernel PCA - all currently implemented in Scikit-Learn.
+Sparse PCA, or Kernel PCA - all currently implemented in Scikit-Learn. (We
+recommend cuation in applying PCA with fat tailed distributions.)
 
 The function also can perform dimensionality reduction of the sets via
 the Binary option which takes the set of columns with boolean {1/0} encodings
