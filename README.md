@@ -698,7 +698,7 @@ columns to be excluded from processing but consistently shuffled and
 partitioned. An integer column index or list of integer column indexes 
 may also be passed such as if the source dataset was a numpy array. Note
 that if ID columns are same between a train and test set, can leave this
-as False and trainID_column will be applied to test set automatically.
+as False (or True) and trainID_column will be applied to test set automatically.
 
 * valpercent1: a float value between 0 and 1 which designates the percent
 of the training data which will be set aside for the first validation
@@ -966,7 +966,18 @@ ML_cmnd = {'autoML_type':'randomforest', \
            'MLinfill_cmnd':{'RandomForestClassifier':{'max_depth':stats.randint(3,6)}, \
                             'RandomForestRegressor' :{'max_depth':[3,6,12]}}}
 ```
+There is an experimental option available to use an alternate autoML framework for ML infill 
+via the AutoGluon library. This library must first be installed and imported externally to 
+the function call. Further parameter support is pending. Again this one is still somewhat 
+experimental.
+```
+#requires installing and then importing AutoGLuon external to the function call as:
+import autogluon.core as ag
+from autogluon.tabular import TabularPrediction as task
 
+#than can activate for ML infill by passing ML_cmnd as
+ML_cmnd = {'autoML_type':'autogluon'}
+```
 A user can also assign specific methods for PCA transforms. Current PCA_types
 supported include 'PCA', 'SparsePCA', and 'KernelPCA', all via Scikit-Learn.
 Note that the n_components are passed separately with the PCAn_components 
@@ -1631,7 +1642,8 @@ also pass a list of string columns titles such as to carve out multiple
 columns to be excluded from processing but consistently shuffled and 
 partitioned. An integer column index or list of integer column indexes 
 may also be passed such as if the source dataset was a numpy array. This
-can also be passed as True when ID columns are same as automunge train set.
+can also be passed as True (or False) when ID columns are same as automunge 
+train set and will be automatically recognized.
 
 * labelscolumn: default to _False_ indicates that a labels column is not 
 included in the test set passed to postmunge. A user can either pass
@@ -1641,6 +1653,8 @@ the original train set. An integer column index may also be passed such
 as if the source dataset was a numpy array. A user should take care to set 
 this parameter if they are passing data with labels. Note that True signals
 presence of consistent labels column header as was passed to automunge(.).
+Note that if a label column is included consistent with label column from
+automunge(.) call it will be automatically applied as labelscolumn.
 
 * pandasoutput: a selector for format of returned sets. Defaults to _False_
 for returned Numpy arrays. If set to _True_ returns pandas dataframes
