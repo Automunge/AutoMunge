@@ -20268,6 +20268,11 @@ class AutoMunge:
                                               FSmodel, randomseed, \
                                               FSprocess_dict, labelctgy, FSpostprocess_dict)
 
+          if printstatus is True:
+            print("Base Accuracy of feature importance model:")
+            print(baseaccuracy)
+            print()
+
           #get list of columns
           am_train_columns = list(am_train)
 
@@ -20404,7 +20409,11 @@ class AutoMunge:
             print('metric2 = ', values['metric2'])
             print("")
 
-    FS_sorted = {'metric_key':{}, 'column_key':{}, 'metric2_key':{}, 'metric2_column_key':{}}
+    FS_sorted = {'baseaccuracy' : baseaccuracy, \
+                 'metric_key':{}, \
+                 'column_key':{}, \
+                 'metric2_key':{}, \
+                 'metric2_column_key':{}}
     
     #first we'll handle first metric based on source column
     for FS_origcolumn in FS_origcolumns:
@@ -26307,7 +26316,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.97'
+    automungeversion = '4.98'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -32381,7 +32390,11 @@ class AutoMunge:
               print('metric2 = ', values['metric2'])
               print()
               
-    FS_sorted = {'metric_key':{}, 'column_key':{}, 'metric2_key':{}, 'metric2_column_key':{}}
+    FS_sorted = {'baseaccuracy':baseaccuracy, \
+                 'metric_key':{}, \
+                 'column_key':{}, \
+                 'metric2_key':{}, \
+                 'metric2_column_key':{}}
     
     #first we'll handle first metric based on source column
     for FS_origcolumn in FS_origcolumns:
