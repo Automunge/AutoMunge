@@ -18570,13 +18570,13 @@ class AutoMunge:
         
         #only run following if we have any train rows needing infill
         if df_train_fillfeatures.shape[0] > 0:
-          df_traininfill = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, model, df_train_fillfeatures, printstatus)
+          df_traininfill = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, model, df_train_fillfeatures, printstatus, columnslist)
         else:
           df_traininfill = np.array([0])
 
         #only run following if we have any test rows needing infill
         if df_test_fillfeatures.shape[0] > 0:
-          df_testinfill = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, model, df_test_fillfeatures, printstatus)
+          df_testinfill = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, model, df_test_fillfeatures, printstatus, columnslist)
         else:
           df_testinfill = np.array([0])
 
@@ -18613,13 +18613,13 @@ class AutoMunge:
         
         #only run following if we have any train rows needing infill
         if df_train_fillfeatures.shape[0] > 0:
-          df_traininfill = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, model, df_train_fillfeatures, printstatus)
+          df_traininfill = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, model, df_train_fillfeatures, printstatus, columnslist)
         else:
           df_traininfill = np.array([0])
 
         #only run following if we have any test rows needing infill
         if df_test_fillfeatures.shape[0] > 0:
-          df_testinfill = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, model, df_test_fillfeatures, printstatus)
+          df_testinfill = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, model, df_test_fillfeatures, printstatus, columnslist)
         else:
           df_testinfill = np.array([0])
 
@@ -18656,14 +18656,14 @@ class AutoMunge:
         
         #only run following if we have any train rows needing infill
         if df_train_fillfeatures.shape[0] > 0:
-          df_traininfill = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, model, df_train_fillfeatures, printstatus)
+          df_traininfill = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, model, df_train_fillfeatures, printstatus, columnslist)
         else:
           #this needs to have same number of columns as text category
           df_traininfill = np.zeros(shape=(1,len(columnslist)))
         
         #only run following if we have any test rows needing infill
         if df_test_fillfeatures.shape[0] > 0:
-          df_testinfill = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, model, df_test_fillfeatures, printstatus)
+          df_testinfill = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, model, df_test_fillfeatures, printstatus, columnslist)
         else:
           #this needs to have same number of columns as text category
           df_testinfill = np.zeros(shape=(1,len(columnslist)))
@@ -18703,7 +18703,7 @@ class AutoMunge:
         
         #only run following if we have any train rows needing infill
         if df_train_fillfeatures.shape[0] > 0:
-          df_traininfill = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, model, df_train_fillfeatures, printstatus)
+          df_traininfill = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, model, df_train_fillfeatures, printstatus, list(range(df_train_filllabel.shape[1])))
 
           df_traininfill = \
           self.convert_onehot_to_1010(df_traininfill)
@@ -18714,7 +18714,7 @@ class AutoMunge:
         
         #only run following if we have any test rows needing infill
         if df_test_fillfeatures.shape[0] > 0:
-          df_testinfill = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, model, df_test_fillfeatures, printstatus)
+          df_testinfill = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, model, df_test_fillfeatures, printstatus, list(range(df_train_filllabel.shape[1])))
 
           df_testinfill = \
           self.convert_onehot_to_1010(df_testinfill)
@@ -19117,7 +19117,15 @@ class AutoMunge:
                                        'onehotclassification'   : {'train'   : self.train_randomforest_classifier, \
                                                                    'predict' : self.predict_randomforest_classifier}, \
                                        'regression'             : {'train'   : self.train_randomforest_regressor, \
-                                                                   'predict' : self.predict_randomforest_regressor}}})
+                                                                   'predict' : self.predict_randomforest_regressor}}, 
+                     'autogluon'    : {'booleanclassification'  : {'train'   : self.train_autogluon, \
+                                                                   'predict' : self.predict_autogluon}, \
+                                       'ordinalclassification'  : {'train'   : self.train_autogluon, \
+                                                                   'predict' : self.predict_autogluon}, \
+                                       'onehotclassification'   : {'train'   : self.train_autogluon, \
+                                                                   'predict' : self.predict_autogluon}, \
+                                       'regression'             : {'train'   : self.train_autogluon, \
+                                                                   'predict' : self.predict_autogluon}}})
     
     return autoMLer
 
@@ -19231,12 +19239,14 @@ class AutoMunge:
 
     return model
 
-  def predict_randomforest_classifier(self, ML_cmnd, model, fillfeatures, printstatus):
+  def predict_randomforest_classifier(self, ML_cmnd, model, fillfeatures, printstatus, columnslist=[]):
     """
     #runs and inference operation
     #on corresponding model trained in train_randomforest_classifier
     #for random forest
     #returns infill predictions
+
+    #the columnslist parameter is used to handle an edge case for when predict_autogluon is called
     """
     
     infill = model.predict(fillfeatures)
@@ -19352,17 +19362,154 @@ class AutoMunge:
 
     return model
 
-  def predict_randomforest_regressor(self, ML_cmnd, model, fillfeatures, printstatus):
+  def predict_randomforest_regressor(self, ML_cmnd, model, fillfeatures, printstatus, columnslist=[]):
     """
     #runs and inference operation
     #on corresponding model trained in train_randomforest_classifier
     #for random forest
     #returns infill predictions
+
+    #the columnslist parameter is used to handle an edge case for when predict_autogluon is called
     """
     
     infill = model.predict(fillfeatures)
     
     return infill
+
+  def train_autogluon(self, ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus):
+    """
+    #Trains a model for ML infill using AutoGluon library
+    #assumes that AutoGluon is imported external to the automunge(.) function call as
+    
+    import autogluon.core as ag
+    from autogluon.tabular import TabularPrediction as task
+    
+    #currently applies default parameters to training operation, extended parameter support pending
+    
+    #same function used for both classification and regression relying on AutoGluon to infer label type
+    """
+
+    try:
+    
+      #autogluon accepts dataframes instead of numpy arrays
+      df_train_filltrain = pd.DataFrame(df_train_filltrain)
+      df_train_filltrain.columns = ['train_' + str(x) for x in list(df_train_filltrain.columns)]
+      df_train_filllabel = pd.DataFrame(df_train_filllabel)
+      
+      ag_label_column = list(df_train_filllabel.columns)
+
+      if len(ag_label_column) == 1:
+        ag_label_column = ag_label_column[0]
+      else:
+        df_train_filllabel = self.convert_onehot_to_singlecolumn(df_train_filllabel)
+        ag_label_column = list(df_train_filllabel.columns)[0]
+
+      #autogluon accepts labels as part of training set
+      df_train_filltrain = pd.concat([df_train_filltrain, df_train_filllabel], axis=1)
+
+      # #now get name of columns, ag_label_column is the label, ag_trainset_columns is the other columns
+      # ag_trainset_columns = list(df_train_filltrain.columns)
+      # ag_label_column = ag_trainset_columns[-1]
+      # ag_trainset_columns.remove(ag_label_column)
+
+      #apply the autogluon data set loader
+      df_train_filltrain = task.Dataset(df_train_filltrain)
+
+      #train the model
+      model = task.fit(train_data=df_train_filltrain, label=ag_label_column)
+      
+      return model
+        
+    except ValueError:
+      return False
+
+  def predict_autogluon(self, ML_cmnd, model, fillfeatures, printstatus, columnslist=[]):
+    """
+    #runs and inference operation
+    #on corresponding model trained in train_AutoGluon_classifier
+    #for AutoGluon
+    #returns infill predictions
+
+    #the columnslist parameter is used to handle an edge case
+    """
+    
+    if model is not False:
+
+      #fillfeatures = fillfeatures.values
+      fillfeatures = pd.DataFrame(fillfeatures)
+      fillfeatures.columns = ['train_' + str(x) for x in list(fillfeatures.columns)]
+
+      #load dataset
+      fillfeatures = task.Dataset(fillfeatures)
+      
+      infill = model.predict(fillfeatures)
+      
+      if len(columnslist) > 1:
+        
+        infill = self.convert_singlecolumn_to_onehot(infill, columnslist)
+      
+  #     infill = np.array(infill)
+      
+      return infill
+    
+    else:
+
+      infill = np.zeros(shape=(1,len(columnslist)))
+      
+      return infill
+
+  def convert_onehot_to_singlecolumn(self, df):
+    """
+    #support function for autoML libraries that don't accept multicolumn labels
+    #converts onehot encoded sets to single column
+    #with entries corresponding to the column header
+    #for cases where a row did not have an entry (such as all zeros)
+    #we'll populate with -1
+    #which since these are dervied from a numpy set won't overlap with headers
+    """
+    
+    df[-1] = -1
+    
+    for column in df:
+      if column != -1:
+        df[-1] = np.where(df[column]==1, column, df[-1])
+      
+    df2 = pd.DataFrame(df[-1].copy())
+    df2 = df2.rename(columns = {-1:'labels'})
+    
+    df2['labels'] = df2['labels'].astype(str)
+        
+    return df2
+
+  def convert_singlecolumn_to_onehot(self, df, columnslist):
+    """
+    #support function for autoML libraries that don't accept multicolumn labels
+    #converts single column encoded sets back to onehot
+    #with entries corresponding to the column header
+    #where the entries will be
+    #for cases where a row did not have an entry (such as all zeros)
+    #we'll populate with -1
+    #which since these are dervied from a numpy set won't overlap with headers
+    """
+    
+    df = pd.DataFrame(df)
+    df[0] = df[0].astype(int)
+    df = df.rename(columns = {0:'labels'})
+    
+    df2 = pd.DataFrame(np.zeros(shape = (df.shape[0], len(columnslist))))
+    
+    df2.columns = list(range(len(columnslist)))
+    
+    df = pd.concat([df, df2], axis=1)
+    
+    del df2
+    
+    for entry in list(range(len(columnslist))):
+      df[entry] = np.where(df['labels'] == entry, 1, 0)
+      
+    del df['labels']
+    
+    return df
 
   def convert_1010_to_onehot(self, np_1010):  
     """
@@ -19764,6 +19911,9 @@ class AutoMunge:
 
     autoMLer = postprocess_dict['autoMLer']
 
+    columnslist_for_predict = postprocess_dict['finalcolumns_labels']
+    printstatus_for_predict = postprocess_dict['printstatus']
+
     #if autoML_type not specified than we'll apply default (randomforest)
     #note this is only a temporary update to ML_cmnd and is not returned from function call
     if 'autoML_type' not in postprocess_dict['ML_cmnd']:
@@ -19794,7 +19944,7 @@ class AutoMunge:
       np_labels = np.ravel(np_labels)
       
       #generate predictions
-      np_predictions = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, FSmodel, np_shuffleset, False)
+      np_predictions = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, FSmodel, np_shuffleset, printstatus_for_predict, columnslist_for_predict)
       #np_predictions = FSmodel.predict(np_shuffleset)
       
       #just in case this returned any negative predictions
@@ -19819,7 +19969,7 @@ class AutoMunge:
       np_labels = np.ravel(np_labels)
       
       #generate predictions
-      np_predictions = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, FSmodel, np_shuffleset, False)
+      np_predictions = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, FSmodel, np_shuffleset, printstatus_for_predict, columnslist_for_predict)
       #np_predictions = FSmodel.predict(np_shuffleset)
       
       #evaluate accuracy metric
@@ -19837,7 +19987,7 @@ class AutoMunge:
         np_labels = np.ravel(np_labels)
       
       #generate predictions
-      np_predictions = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, FSmodel, np_shuffleset, False)
+      np_predictions = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, FSmodel, np_shuffleset, printstatus_for_predict, columnslist_for_predict)
       #np_predictions = FSmodel.predict(np_shuffleset)
       
       #evaluate accuracy metric
@@ -19854,7 +20004,7 @@ class AutoMunge:
       self.convert_1010_to_onehot(np_labels)
       
       #generate predictions
-      np_predictions = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, FSmodel, np_shuffleset, False)
+      np_predictions = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, FSmodel, np_shuffleset, printstatus_for_predict, columnslist_for_predict)
       #np_predictions = FSmodel.predict(np_shuffleset)
       
       #evaluate accuracy metric
@@ -24994,7 +25144,7 @@ class AutoMunge:
     
     #we'll have convention that if testID_column=False, if trainID_column in df_test etc
     trainID_columns_in_df_test = False
-    if testID_column is False:
+    if testID_column is False or testID_column is True:
       if trainID_column is not False:
         trainID_columns_in_df_test = True
         if isinstance(trainID_column, list):
@@ -25008,30 +25158,32 @@ class AutoMunge:
     if trainID_columns_in_df_test is True:
       testID_column = trainID_column
 
+    if trainID_column is False:
+      trainID_column = []
+    elif isinstance(trainID_column, str):
+      trainID_column = [trainID_column]
+    elif not isinstance(trainID_column, list):
+      print("error, trainID_column allowable values are False, string, or list")
+
     #non-range indexes we'll move into the ID sets for consistent shuffling and validation splits
     if type(df_train.index) != pd.RangeIndex:
       #if df_train.index.names == [None]:
       if None in df_train.index.names:
         df_train = df_train.rename_axis('Orig_index_' +  str(application_number))
-      if trainID_column is False:
-        trainID_column = []
-      elif isinstance(trainID_column, str):
-        trainID_column = [trainID_column]
-      elif not isinstance(trainID_column, list):
-        print("error, trainID_column allowable values are False, string, or list")
       trainID_column = trainID_column + list(df_train.index.names)
       df_train = df_train.reset_index(drop=False)
+
+    if testID_column is False:
+      testID_column = []
+    elif isinstance(testID_column, str):
+      testID_column = [testID_column]
+    elif not isinstance(testID_column, list):
+      print("error, testID_column allowable values are False, string, or list")
 
     if type(df_test.index) != pd.RangeIndex:
       #if df_train.index.names == [None]:
       if None in df_test.index.names:
         df_test = df_test.rename_axis('Orig_index_' +  str(application_number))
-      if testID_column is False:
-        testID_column = []
-      elif isinstance(testID_column, str):
-        testID_column = [testID_column]
-      elif not isinstance(testID_column, list):
-        print("error, testID_column allowable values are False, string, or list")
       testID_column = testID_column + list(df_test.index.names)
       df_test = df_test.reset_index(drop=False)
 
@@ -25043,12 +25195,12 @@ class AutoMunge:
     if trainID_column is not False:
       df_trainID = pd.DataFrame(df_train[trainID_column])
 
-      if isinstance(trainID_column, str):
-        trainID_column = [trainID_column]
-      elif isinstance(trainID_column, list):
-        trainID_column = trainID_column
-      else:
-        print("error, trainID_column value must be False, str, or list")
+      # if isinstance(trainID_column, str):
+      #   trainID_column = [trainID_column]
+      # elif isinstance(trainID_column, list):
+      #   trainID_column = trainID_column
+      # else:
+      #   print("error, trainID_column value must be False, str, or list")
       
       df_train_tempID.index = df_trainID.index
         
@@ -25077,12 +25229,12 @@ class AutoMunge:
     if testID_column is not False:
       df_testID = pd.DataFrame(df_test[testID_column])
 
-      if isinstance(testID_column, str):
-        testID_column = [testID_column]
-      elif isinstance(testID_column, list):
-        testID_column = testID_column
-      else:
-        print("error, testID_column value must be False, str, or list")
+      # if isinstance(testID_column, str):
+      #   testID_column = [testID_column]
+      # elif isinstance(testID_column, list):
+      #   testID_column = testID_column
+      # else:
+      #   print("error, testID_column value must be False, str, or list")
       
       df_test_tempID.index = df_testID.index
       
@@ -26155,7 +26307,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.96'
+    automungeversion = '4.97'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -31690,7 +31842,7 @@ class AutoMunge:
     
         #only run following if we have any test rows needing infill
         if df_test_fillfeatures.shape[0] > 0:
-          df_testinfill = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, model, df_test_fillfeatures, printstatus)
+          df_testinfill = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, model, df_test_fillfeatures, printstatus, columnslist)
         else:
           df_testinfill = np.array([0])
 
@@ -31707,7 +31859,7 @@ class AutoMunge:
         
         #only run following if we have any test rows needing infill
         if df_test_fillfeatures.shape[0] > 0:
-          df_testinfill = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, model, df_test_fillfeatures, printstatus)
+          df_testinfill = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, model, df_test_fillfeatures, printstatus, columnslist)
         else:
           df_testinfill = np.array([0])
 
@@ -31721,7 +31873,7 @@ class AutoMunge:
         
         #only run following if we have any test rows needing infill
         if df_test_fillfeatures.shape[0] > 0:
-          df_testinfill = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, model, df_test_fillfeatures, printstatus)
+          df_testinfill = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, model, df_test_fillfeatures, printstatus, columnslist)
         else:
           #this needs to have same number of columns
           df_testinfill = np.zeros(shape=(1,len(columnslist)))
@@ -31736,7 +31888,7 @@ class AutoMunge:
         
         #only run following if we have any test rows needing infill
         if df_test_fillfeatures.shape[0] > 0:
-          df_testinfill = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, model, df_test_fillfeatures, printstatus)
+          df_testinfill = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, model, df_test_fillfeatures, printstatus, columnslist)
           
           df_testinfill = \
           self.convert_onehot_to_1010(df_testinfill)
@@ -32660,30 +32812,51 @@ class AutoMunge:
       return df_test, recovered_list, inversion_info_dict
     #_______
 
+    #we'll have convention that if testID_column=False, if trainID_column in df_test etc
+    trainID_columns_in_df_test = False
+    if testID_column is False or testID_column is True:
+      if postprocess_dict['trainID_column_orig'] is not False:
+        trainID_columns_in_df_test = True
+        if isinstance(postprocess_dict['trainID_column_orig'], list):
+          for trainIDcolumn in postprocess_dict['trainID_column_orig']:
+            if trainIDcolumn not in df_test.columns:
+              trainID_columns_in_df_test = False
+              break
+        elif isinstance(postprocess_dict['trainID_column_orig'], str):
+          if postprocess_dict['trainID_column_orig'] not in df_test.columns:
+            trainID_columns_in_df_test = False
+    if trainID_columns_in_df_test is True:
+      testID_column = postprocess_dict['trainID_column_orig']
+
+    if testID_column is False:
+      testID_column = []
+    elif isinstance(testID_column, str):
+      testID_column = [testID_column]
+    elif not isinstance(testID_column, list):
+      if testID_column is not True:
+        print("error, testID_column allowable values are boolean, string, or list")
+    if testID_column is True:
+      if isinstance(postprocess_dict['trainID_column_orig'], str):
+        testID_column = [postprocess_dict['trainID_column_orig']]
+      elif isinstance(postprocess_dict['trainID_column_orig'], list):
+        testID_column = postprocess_dict['trainID_column_orig']
+      elif postprocess_dict['trainID_column_orig'] is False:
+        testID_column = []
+
     if type(df_test.index) != pd.RangeIndex:
       #if df_train.index.names == [None]:
       if None in df_test.index.names:
         df_test = df_test.rename_axis('Orig_index_' +  str(postprocess_dict['application_number']))
-      if testID_column is False:
-        testID_column = []
-      elif isinstance(testID_column, str):
-        testID_column = [testID_column]
-      elif not isinstance(testID_column, list):
-        if testID_column is not True:
-          print("error, testID_column allowable values are boolean, string, or list")
-      if testID_column is True:
-        if isinstance(postprocess_dict['trainID_column_orig'], str):
-          testID_column = [postprocess_dict['trainID_column_orig']]
-        elif isinstance(postprocess_dict['trainID_column_orig'], list):
-          testID_column = postprocess_dict['trainID_column_orig']
-        elif postprocess_dict['trainID_column_orig'] is False:
-          testID_column = []
       testID_column = testID_column + list(df_test.index.names)
       df_test = df_test.reset_index(drop=False)
 
+    if labelscolumn is False or labelscolumn is True:
+      if postprocess_dict['labels_column'] in list(df_test):
+        labelscolumn = postprocess_dict['labels_column']
+
     if labelscolumn is not False:
       labels_column = postprocess_dict['labels_column']
-#       if labels_column in list(df_test):
+    
 #         df_test = df_test.dropna(subset=[labels_column])
 
       if labelscolumn is not True:
@@ -32710,12 +32883,12 @@ class AutoMunge:
 
       df_testID = pd.DataFrame(df_test[testID_column])
 
-      if isinstance(testID_column, str):
-        testID_column = [testID_column]
-      elif isinstance(testID_column, list):
-        testID_column = testID_column
-      else:
-        print("error, testID_column value must be False, str, or list")
+      # if isinstance(testID_column, str):
+      #   testID_column = [testID_column]
+      # elif isinstance(testID_column, list):
+      #   testID_column = testID_column
+      # else:
+      #   print("error, testID_column value must be False, str, or list")
       
       df_test_tempID.index = df_testID.index
       
