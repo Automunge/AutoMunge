@@ -563,8 +563,8 @@ for keys,values in featureimportance.items():
     print('metric2 = ', values['metric2'])
     print()
 ```
-Note that additional feature importance results are available in
-postprocess_dict['FS_sorted']. 
+Note that additional feature importance results, including the base accuracy of
+the feature iumportance model, are available in postprocess_dict['FS_sorted']. 
 
 * postprocess_dict: a returned python dictionary that includes
 normalization parameters and trained machine learning models used to
