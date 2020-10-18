@@ -1827,6 +1827,8 @@ unique values in train set default to categorical encoding via 'text'.
 - ord3: for categorical data, if the number of unique entries in the column exceeds 
 the parameter 'numbercategoryheuristic' (which defaults to 63), the encoding will 
 instead be by 'ord3' which is an ordinal (integer) encoding sorted by most common value.
+- ord5: for all unique entry categoric sets, comparable to an alphabetical sorted ordinal
+encoding ordl but excluded from ML infill
 - text: for categorical data of 3 unique values excluding infill (eg NaN), the 
 column is encoded via one-hot encoding.
 - bnry: for categorical data of <=2 unique values excluding infill (eg NaN), the 
@@ -1847,8 +1849,6 @@ transform. (lb10 and lbte have comparable family trees)
 - lbor: for categorical data, if the number of unique entries in the column exceeds 
 the parameter 'numbercategoryheuristic' (which defaults to 63), the encoding will 
 instead be by 'ord3' which is an ordinal (integer) encoding sorted by most common value.
-- ord5: for all unique entry categoric sets, comparable to an alphabetical sorted ordinal
-encoding ordl but excluded from ML infill
 - lbte: for categorical data of 3 unique values excluding infill (eg NaN), the 
 column is encoded via one-hot encoding.
 - lbbn: for categorical data of <=2 unique values excluding infill (eg NaN), the 
