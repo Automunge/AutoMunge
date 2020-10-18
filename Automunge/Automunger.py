@@ -2985,6 +2985,15 @@ class AutoMunge:
                                      'coworkers'     : [], \
                                      'friends'       : []}})
 
+    transform_dict.update({'lbo5' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['ordl'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+
     transform_dict.update({'lbos' : {'parents'       : ['lbos'], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : [], \
@@ -5649,6 +5658,14 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'ord3'}})
+    process_dict.update({'lbo5' : {'dualprocess' : self.process_ordl_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_ordl_class, \
+                                  'inverseprocess' : self.inverseprocess_ordl, \
+                                  'info_retention' : True, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'exclude', \
+                                  'labelctgy' : 'ordl'}})
     process_dict.update({'lbos' : {'dualprocess' : self.process_ord3_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_ord3_class, \
@@ -17495,15 +17512,22 @@ class AutoMunge:
       
       #special cases for evlauation of labels column
       if labels is True:
-        
-        if category == 'nmbr':
+
+        #(defaultnumerical = 'nmbr')
+        if category == defaultnumerical:
           category = 'lbnm'
           
-        if category == '1010':
+        #(defaultcategorical = '1010')
+        if category == defaultcategorical:
           category = 'lb10'
           
-        if category == 'ord3':
+        #(defaultordinal = 'ord3')
+        if category == defaultordinal:
           category = 'lbor'
+
+        #(defaultordinal_allunique = 'ord5')
+        if category == defaultordinal_allunique:
+          category = 'lbo5'
           
         if category == 'text':
           category = 'lbte'
@@ -17511,7 +17535,8 @@ class AutoMunge:
         if category == 'bnry':
           category = 'lbbn'
           
-        if category == 'dat6':
+        #(defaultdatetime = 'dat6')
+        if category == defaultdatetime:
           category = 'lbda'
     
     return category
@@ -18533,10 +18558,10 @@ class AutoMunge:
 
   def predictinfill(self, category, df_train_filltrain, df_train_filllabel, \
                     df_train_fillfeatures, df_test_fillfeatures, randomseed, \
-                    postprocess_dict, ML_cmnd, autoMLer, printstatus, columnslist = []):
+                    postprocess_dict, ML_cmnd, autoMLer, printstatus, categorylist = []):
     '''
     #predictinfill(category, df_train_filltrain, df_train_filllabel, \
-    #df_train_fillfeatures, df_test_fillfeatures, randomseed, columnslist), \
+    #df_train_fillfeatures, df_test_fillfeatures, randomseed, categorylist), \
     #function that takes as input \
     #a category string, the output of createMLinfillsets(.), a seed for randomness \
     #and a list of columns produced by a text class preprocessor when applicable and 
@@ -18570,8 +18595,8 @@ class AutoMunge:
       
       #edge case if training data has zero rows (such as if column was all NaN) 
       if df_train_filltrain.shape[0] == 0:
-        df_traininfill = np.zeros(shape=(1,len(columnslist)))
-        df_testinfill = np.zeros(shape=(1,len(columnslist)))
+        df_traininfill = np.zeros(shape=(1,len(categorylist)))
+        df_testinfill = np.zeros(shape=(1,len(categorylist)))
 
         model = False
       
@@ -18591,13 +18616,13 @@ class AutoMunge:
         
         #only run following if we have any train rows needing infill
         if df_train_fillfeatures.shape[0] > 0:
-          df_traininfill = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, model, df_train_fillfeatures, printstatus, columnslist)
+          df_traininfill = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, model, df_train_fillfeatures, printstatus, categorylist)
         else:
           df_traininfill = np.array([0])
 
         #only run following if we have any test rows needing infill
         if df_test_fillfeatures.shape[0] > 0:
-          df_testinfill = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, model, df_test_fillfeatures, printstatus, columnslist)
+          df_testinfill = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, model, df_test_fillfeatures, printstatus, categorylist)
         else:
           df_testinfill = np.array([0])
 
@@ -18610,8 +18635,8 @@ class AutoMunge:
       
       #edge case if training data has zero rows (such as if column was all NaN) 
       if df_train_filltrain.shape[0] == 0:
-        df_traininfill = np.zeros(shape=(1,len(columnslist)))
-        df_testinfill = np.zeros(shape=(1,len(columnslist)))
+        df_traininfill = np.zeros(shape=(1,len(categorylist)))
+        df_testinfill = np.zeros(shape=(1,len(categorylist)))
 
         model = False
 
@@ -18634,13 +18659,13 @@ class AutoMunge:
         
         #only run following if we have any train rows needing infill
         if df_train_fillfeatures.shape[0] > 0:
-          df_traininfill = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, model, df_train_fillfeatures, printstatus, columnslist)
+          df_traininfill = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, model, df_train_fillfeatures, printstatus, categorylist)
         else:
           df_traininfill = np.array([0])
 
         #only run following if we have any test rows needing infill
         if df_test_fillfeatures.shape[0] > 0:
-          df_testinfill = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, model, df_test_fillfeatures, printstatus, columnslist)
+          df_testinfill = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, model, df_test_fillfeatures, printstatus, categorylist)
         else:
           df_testinfill = np.array([0])
 
@@ -18652,8 +18677,8 @@ class AutoMunge:
     if MLinfilltype in ['multirt']:
 
       if df_train_filltrain.shape[0] == 0:
-        df_traininfill = np.zeros(shape=(1,len(columnslist)))
-        df_testinfill = np.zeros(shape=(1,len(columnslist)))
+        df_traininfill = np.zeros(shape=(1,len(categorylist)))
+        df_testinfill = np.zeros(shape=(1,len(categorylist)))
 
         model = False
 
@@ -18677,29 +18702,29 @@ class AutoMunge:
         
         #only run following if we have any train rows needing infill
         if df_train_fillfeatures.shape[0] > 0:
-          df_traininfill = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, model, df_train_fillfeatures, printstatus, columnslist)
+          df_traininfill = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, model, df_train_fillfeatures, printstatus, categorylist)
         else:
           #this needs to have same number of columns as text category
-          df_traininfill = np.zeros(shape=(1,len(columnslist)))
+          df_traininfill = np.zeros(shape=(1,len(categorylist)))
         
         #only run following if we have any test rows needing infill
         if df_test_fillfeatures.shape[0] > 0:
-          df_testinfill = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, model, df_test_fillfeatures, printstatus, columnslist)
+          df_testinfill = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, model, df_test_fillfeatures, printstatus, categorylist)
         else:
           #this needs to have same number of columns as text category
-          df_testinfill = np.zeros(shape=(1,len(columnslist)))
+          df_testinfill = np.zeros(shape=(1,len(categorylist)))
           
       #convert infill values to dataframe (this column labeleling also works for single column case)
-      df_traininfill = pd.DataFrame(df_traininfill, columns = columnslist)
-      df_testinfill = pd.DataFrame(df_testinfill, columns = columnslist)
+      df_traininfill = pd.DataFrame(df_traininfill, columns = categorylist)
+      df_testinfill = pd.DataFrame(df_testinfill, columns = categorylist)
     
     #if target is a binary encoded categoric set
     if MLinfilltype in ['1010']:
       
       if df_train_filltrain.shape[0] == 0:
 
-        df_traininfill = np.zeros(shape=(1,len(columnslist)))
-        df_testinfill = np.zeros(shape=(1,len(columnslist)))
+        df_traininfill = np.zeros(shape=(1,len(categorylist)))
+        df_testinfill = np.zeros(shape=(1,len(categorylist)))
 
         model = False
 
@@ -18723,9 +18748,8 @@ class AutoMunge:
         autoMLer[autoML_type][ML_application]['train'](ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus)
 
         #this is to support 1010 infill predictions in postmunge
-        #note that columnslist as used in predictinfill is actually passed to function as categorylist, intend to clean this up when get a chance
-        for entry in columnslist:
-          postprocess_dict['column_dict'][entry].update({'_1010_columnslist_proxy_for_postmunge_MLinfill' : list(range(df_train_filllabel.shape[1]))})
+        for entry in categorylist:
+          postprocess_dict['column_dict'][entry].update({'_1010_categorylist_proxy_for_postmunge_MLinfill' : list(range(df_train_filllabel.shape[1]))})
         
         #only run following if we have any train rows needing infill
         if df_train_fillfeatures.shape[0] > 0:
@@ -18736,7 +18760,7 @@ class AutoMunge:
 
         else:
           #this needs to have same number of columns as text category
-          df_traininfill = np.zeros(shape=(1,len(columnslist)))
+          df_traininfill = np.zeros(shape=(1,len(categorylist)))
         
         #only run following if we have any test rows needing infill
         if df_test_fillfeatures.shape[0] > 0:
@@ -18747,11 +18771,11 @@ class AutoMunge:
 
         else:
           #this needs to have same number of columns as text category
-          df_testinfill = np.zeros(shape=(1,len(columnslist)))
+          df_testinfill = np.zeros(shape=(1,len(categorylist)))
         
       #convert infill values to dataframe
-      df_traininfill = pd.DataFrame(df_traininfill, columns = columnslist)
-      df_testinfill = pd.DataFrame(df_testinfill, columns = columnslist)
+      df_traininfill = pd.DataFrame(df_traininfill, columns = categorylist)
+      df_testinfill = pd.DataFrame(df_testinfill, columns = categorylist)
       
     #if target category excluded from ML infill:
     if MLinfilltype in ['exclude', 'boolexclude', 'totalexclude']:
@@ -19036,7 +19060,7 @@ class AutoMunge:
       df_traininfill, df_testinfill, model, postprocess_dict = \
       self.predictinfill(category, df_train_filltrain, df_train_filllabel, \
                         df_train_fillfeatures, df_test_fillfeatures, randomseed, \
-                        postprocess_dict, ML_cmnd, autoMLer, printstatus, columnslist = categorylist)
+                        postprocess_dict, ML_cmnd, autoMLer, printstatus, categorylist = categorylist)
 
       #now we'll add our trained model to the postprocess_dict
       postprocess_dict['column_dict'][column]['infillmodel'] \
@@ -19265,14 +19289,14 @@ class AutoMunge:
 
     return model
 
-  def predict_randomforest_classifier(self, ML_cmnd, model, fillfeatures, printstatus, columnslist=[]):
+  def predict_randomforest_classifier(self, ML_cmnd, model, fillfeatures, printstatus, categorylist=[]):
     """
     #runs and inference operation
     #on corresponding model trained in train_randomforest_classifier
     #for random forest
     #returns infill predictions
 
-    #the columnslist parameter is used to handle an edge case for when predict_autogluon is called
+    #the categorylist parameter is used to handle an edge case for when predict_autogluon is called
     """
     
     infill = model.predict(fillfeatures)
@@ -19388,14 +19412,14 @@ class AutoMunge:
 
     return model
 
-  def predict_randomforest_regressor(self, ML_cmnd, model, fillfeatures, printstatus, columnslist=[]):
+  def predict_randomforest_regressor(self, ML_cmnd, model, fillfeatures, printstatus, categorylist=[]):
     """
     #runs and inference operation
     #on corresponding model trained in train_randomforest_classifier
     #for random forest
     #returns infill predictions
 
-    #the columnslist parameter is used to handle an edge case for when predict_autogluon is called
+    #the categorylist parameter is used to handle an edge case for when predict_autogluon is called
     """
     
     infill = model.predict(fillfeatures)
@@ -19452,14 +19476,16 @@ class AutoMunge:
     except ValueError:
       return False
 
-  def predict_autogluon(self, ML_cmnd, model, fillfeatures, printstatus, columnslist=[]):
+  def predict_autogluon(self, ML_cmnd, model, fillfeatures, printstatus, categorylist=[]):
     """
     #runs and inference operation
     #on corresponding model trained in train_AutoGluon_classifier
     #for AutoGluon
     #returns infill predictions
 
-    #the columnslist parameter is used to handle an edge case
+    #the categorylist parameter is used to handle an edge case
+    #note that in some cases the passed categorylist may be a proxy list of equivalent length
+    #such as a range of integers
     """
 
     # import autogluon.core as ag
@@ -19477,9 +19503,9 @@ class AutoMunge:
       try:
         infill = model.predict(fillfeatures)
         
-        if len(columnslist) > 1:
+        if len(categorylist) > 1:
           
-          infill = self.convert_singlecolumn_to_onehot(infill, columnslist)
+          infill = self.convert_singlecolumn_to_onehot(infill, categorylist)
         
     #     infill = np.array(infill)
         
@@ -19487,11 +19513,11 @@ class AutoMunge:
       
       except ValueError:
 
-        return np.zeros(shape=(fillfeatures.shape[0],len(columnslist)))
+        return np.zeros(shape=(fillfeatures.shape[0],len(categorylist)))
     
     else:
 
-      infill = np.zeros(shape=(1,len(columnslist)))
+      infill = np.zeros(shape=(1,len(categorylist)))
       
       return infill
 
@@ -19896,7 +19922,7 @@ class AutoMunge:
       self.predictinfill(labelctgy, am_subset, am_labels, \
                          df_train_fillfeatures_plug, df_test_fillfeatures_plug, \
                          randomseed, postprocess_dict, ML_cmnd, postprocess_dict['autoMLer'], printstatus, \
-                         columnslist = categorylist)
+                         categorylist = categorylist)
 
       del _infilla, _infillb
       
@@ -19940,7 +19966,7 @@ class AutoMunge:
     
     return shuffleset2
 
-  def shuffleaccuracy(self, np_shuffleset, np_labels, FSmodel, randomseed, \
+  def shuffleaccuracy(self, np_shuffleset, np_labels, FSmodel, randomseed, label_categorylist, \
                       process_dict, labelctgy, postprocess_dict):
     '''
     measures accuracy of predictions of shuffleset (which had permutation method)
@@ -19950,8 +19976,9 @@ class AutoMunge:
     ML_cmnd = postprocess_dict['ML_cmnd']
 
     autoMLer = postprocess_dict['autoMLer']
+    
+    categorylist_for_predict = label_categorylist
 
-    columnslist_for_predict = postprocess_dict['finalcolumns_labels']
     printstatus_for_predict = postprocess_dict['printstatus']
 
     #if autoML_type not specified than we'll apply default (randomforest)
@@ -19984,7 +20011,7 @@ class AutoMunge:
       np_labels = np.ravel(np_labels)
       
       #generate predictions
-      np_predictions = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, FSmodel, np_shuffleset, printstatus_for_predict, columnslist_for_predict)
+      np_predictions = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, FSmodel, np_shuffleset, printstatus_for_predict, categorylist_for_predict)
       #np_predictions = FSmodel.predict(np_shuffleset)
       
       #just in case this returned any negative predictions
@@ -20009,7 +20036,7 @@ class AutoMunge:
       np_labels = np.ravel(np_labels)
       
       #generate predictions
-      np_predictions = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, FSmodel, np_shuffleset, printstatus_for_predict, columnslist_for_predict)
+      np_predictions = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, FSmodel, np_shuffleset, printstatus_for_predict, categorylist_for_predict)
       #np_predictions = FSmodel.predict(np_shuffleset)
       
       #evaluate accuracy metric
@@ -20027,7 +20054,7 @@ class AutoMunge:
         np_labels = np.ravel(np_labels)
       
       #generate predictions
-      np_predictions = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, FSmodel, np_shuffleset, printstatus_for_predict, columnslist_for_predict)
+      np_predictions = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, FSmodel, np_shuffleset, printstatus_for_predict, categorylist_for_predict)
       #np_predictions = FSmodel.predict(np_shuffleset)
       
       #evaluate accuracy metric
@@ -20044,7 +20071,7 @@ class AutoMunge:
       self.convert_1010_to_onehot(np_labels)
       
       #generate predictions
-      np_predictions = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, FSmodel, np_shuffleset, printstatus_for_predict, columnslist_for_predict)
+      np_predictions = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, FSmodel, np_shuffleset, printstatus_for_predict, categorylist_for_predict)
       #np_predictions = FSmodel.predict(np_shuffleset)
       
       #evaluate accuracy metric
@@ -20305,7 +20332,7 @@ class AutoMunge:
 
           #update v2.11 baseaccuracy should be based on validation set
           baseaccuracy = self.shuffleaccuracy(am_validation1, am_validationlabels1, \
-                                              FSmodel, randomseed, \
+                                              FSmodel, randomseed, am_categorylist, \
                                               FSprocess_dict, labelctgy, FSpostprocess_dict)
 
           if printstatus is True:
@@ -20367,7 +20394,7 @@ class AutoMunge:
 
               #determine resulting accuracy after shuffle
               columnaccuracy = self.shuffleaccuracy(shuffleset, am_validationlabels1, \
-                                                    FSmodel, randomseed, \
+                                                    FSmodel, randomseed, am_categorylist, \
                                                     FSprocess_dict, labelctgy, FSpostprocess_dict)
 
               #I think this will clear some memory
@@ -20398,7 +20425,7 @@ class AutoMunge:
 
             #determine resulting accuracy after shuffle
             columnaccuracy2 = self.shuffleaccuracy(shuffleset2, am_validationlabels1, \
-                                                  FSmodel, randomseed, \
+                                                  FSmodel, randomseed, am_categorylist, \
                                                   FSprocess_dict, labelctgy, FSpostprocess_dict)
 
             metric2 = baseaccuracy - columnaccuracy2
@@ -26356,7 +26383,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.99'
+    automungeversion = '5.00'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -31856,10 +31883,10 @@ class AutoMunge:
     return df_test_fillfeatures
 
   def predictpostinfill(self, category, model, df_test_fillfeatures, \
-                        postprocess_dict, ML_cmnd, autoMLer, printstatus, columnslist = []):
+                        postprocess_dict, ML_cmnd, autoMLer, printstatus, categorylist = []):
     '''
     #predictpostinfill(category, model, df_test_fillfeatures, \
-    #columnslist = []), function that takes as input \
+    #categorylist = []), function that takes as input \
     #a category string, a model trained as part of automunge on the coresponding \
     #column from the train set, the output of createpostMLinfillsets(.), a seed \
     #for randomness, and a list of columns \
@@ -31891,7 +31918,7 @@ class AutoMunge:
     
         #only run following if we have any test rows needing infill
         if df_test_fillfeatures.shape[0] > 0:
-          df_testinfill = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, model, df_test_fillfeatures, printstatus, columnslist)
+          df_testinfill = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, model, df_test_fillfeatures, printstatus, categorylist)
         else:
           df_testinfill = np.array([0])
 
@@ -31908,7 +31935,7 @@ class AutoMunge:
         
         #only run following if we have any test rows needing infill
         if df_test_fillfeatures.shape[0] > 0:
-          df_testinfill = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, model, df_test_fillfeatures, printstatus, columnslist)
+          df_testinfill = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, model, df_test_fillfeatures, printstatus, categorylist)
         else:
           df_testinfill = np.array([0])
 
@@ -31922,35 +31949,35 @@ class AutoMunge:
         
         #only run following if we have any test rows needing infill
         if df_test_fillfeatures.shape[0] > 0:
-          df_testinfill = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, model, df_test_fillfeatures, printstatus, columnslist)
+          df_testinfill = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, model, df_test_fillfeatures, printstatus, categorylist)
         else:
           #this needs to have same number of columns
-          df_testinfill = np.zeros(shape=(1,len(columnslist)))
+          df_testinfill = np.zeros(shape=(1,len(categorylist)))
           
         #convert infill values to dataframe
-        df_testinfill = pd.DataFrame(df_testinfill, columns = columnslist)
+        df_testinfill = pd.DataFrame(df_testinfill, columns = categorylist)
       
       #if target is binary encoded
       if MLinfilltype in ['1010']:
         
         ML_application = 'onehotclassification'
 
-        _1010_columnslist_proxy_for_postmunge_MLinfill = \
-        postprocess_dict['column_dict'][columnslist[0]]['_1010_columnslist_proxy_for_postmunge_MLinfill']
+        _1010_categorylist_proxy_for_postmunge_MLinfill = \
+        postprocess_dict['column_dict'][categorylist[0]]['_1010_categorylist_proxy_for_postmunge_MLinfill']
         
         #only run following if we have any test rows needing infill
         if df_test_fillfeatures.shape[0] > 0:
-          df_testinfill = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, model, df_test_fillfeatures, printstatus, _1010_columnslist_proxy_for_postmunge_MLinfill)
+          df_testinfill = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, model, df_test_fillfeatures, printstatus, _1010_categorylist_proxy_for_postmunge_MLinfill)
           
           df_testinfill = \
           self.convert_onehot_to_1010(df_testinfill)
           
         else:
           #this needs to have same number of columns
-          df_testinfill = np.zeros(shape=(1,len(columnslist)))
+          df_testinfill = np.zeros(shape=(1,len(categorylist)))
         
         #convert infill values to dataframe
-        df_testinfill = pd.DataFrame(df_testinfill, columns = columnslist)         
+        df_testinfill = pd.DataFrame(df_testinfill, columns = categorylist)         
         
       #if target is exlcuded from ML infill
       if MLinfilltype in ['exclude', 'boolexclude', 'totalexclude']:
@@ -31961,8 +31988,8 @@ class AutoMunge:
     #else if we didn't have a trained model let's create some plug values
     else:
 
-      df_testinfill = np.zeros(shape=(1,len(columnslist)))
-      df_testinfill = pd.DataFrame(df_testinfill, columns = columnslist) 
+      df_testinfill = np.zeros(shape=(1,len(categorylist)))
+      df_testinfill = pd.DataFrame(df_testinfill, columns = categorylist) 
     
     return df_testinfill
 
@@ -32013,7 +32040,7 @@ class AutoMunge:
       df_testinfill = \
       self.predictpostinfill(category, model, df_test_fillfeatures, \
                             postprocess_dict, postprocess_dict['ML_cmnd'], postprocess_dict['autoMLer'], \
-                            printstatus, columnslist = categorylist)
+                            printstatus, categorylist = categorylist)
 
       #if model is not False:
       if postprocess_dict['column_dict'][column]['infillmodel'] is not False:
@@ -32288,7 +32315,7 @@ class AutoMunge:
 
           #update v2.11 baseaccuracy should be based on validation set
           baseaccuracy = self.shuffleaccuracy(am_validation1, am_validationlabels1, \
-                                              FSmodel, randomseed, \
+                                              FSmodel, randomseed, am_categorylist, \
                                               FSprocess_dict, labelctgy, FSpostprocess_dict)
 
           #get list of columns
@@ -32344,7 +32371,7 @@ class AutoMunge:
 
               #determine resulting accuracy after shuffle
               columnaccuracy = self.shuffleaccuracy(shuffleset, am_validationlabels1, \
-                                                    FSmodel, randomseed, \
+                                                    FSmodel, randomseed, am_categorylist, \
                                                     FSprocess_dict, labelctgy, FSpostprocess_dict)
 
               #I think this will clear some memory
@@ -32378,7 +32405,7 @@ class AutoMunge:
     #                                                 randomseed, \
     #                                                 process_dict)
             columnaccuracy2 = self.shuffleaccuracy(shuffleset2, am_validationlabels1, \
-                                                  FSmodel, randomseed, \
+                                                  FSmodel, randomseed, am_categorylist, \
                                                   FSprocess_dict, labelctgy, FSpostprocess_dict)
 
             metric2 = baseaccuracy - columnaccuracy2
