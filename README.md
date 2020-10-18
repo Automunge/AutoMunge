@@ -878,12 +878,13 @@ columns that "made the cut". This item only used if featuremethod passed as
 are trimmed from the output. Note that this item only used if featuremethod 
 passed as 'metric'.
 
-* featuremethod: can be passed as one of _{'pct', 'metric', 'default',_ 
-_'report'}_ where 'pct' or 'metric' to select which feature importance method 
-is used for trimming the derived sets as a form of dimensionality reduction. 
-Or can pass as 'default' for ignoring the featurepct/featuremetric parameters 
-or can pass as 'report' to return the featureimportance results with no further
-processing (other returned sets are empty). Defaults to 'default'.
+* featuremethod: can be passed as one of _{'default', 'pct', 'metric','report'}_ 
+where 'pct' or 'metric' to select which feature importance method is used for 
+trimming the derived sets as a form of dimensionality reduction. Or can pass as 
+'default' for ignoring the featurepct/featuremetric parameters or can pass as 
+'report' to return the featureimportance results with no further processing 
+(other returned sets are empty other than postprocess_dict with 
+FS_sorted results). Defaults to 'default'.
 
 * Binary: a dimensionality reduction technique whereby the set of columns
 with boolean encodings are collectively encoded with binary encoding such
