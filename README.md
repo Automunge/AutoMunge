@@ -967,15 +967,11 @@ ML_cmnd = {'autoML_type':'randomforest', \
                             'RandomForestRegressor' :{'max_depth':[3,6,12]}}}
 ```
 There is an experimental option available to use an alternate autoML framework for ML infill 
-via the AutoGluon library. This library must first be installed and imported externally to 
-the function call. Further parameter support is pending. Again this one is still somewhat 
-experimental.
+via the AutoGluon library. Further parameter support is pending. Again this one is still somewhat 
+experimental. (If AutoGluon doesn't want to train a model for some particular column you can 
+run again after assigning that column to a different infill in assigninfill.)
 ```
-#requires installing and then importing AutoGLuon external to the function call as:
-import autogluon.core as ag
-from autogluon.tabular import TabularPrediction as task
-
-#than can activate for ML infill by passing ML_cmnd as
+#can activate AutoGluon for ML infill and feature importance by passing ML_cmnd as
 ML_cmnd = {'autoML_type':'autogluon'}
 ```
 A user can also assign specific methods for PCA transforms. Current PCA_types
