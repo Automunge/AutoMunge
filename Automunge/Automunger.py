@@ -20199,6 +20199,8 @@ class AutoMunge:
     if labels_column is False:
       
       FSmodel = False
+
+      baseaccuracy = False
       
       #printout display progress
       if printstatus is True:
@@ -25074,6 +25076,11 @@ class AutoMunge:
     
     miscparameters_results.update({'check_assigncat_result2' : check_assigncat_result2, \
                                    'check_assigncat_result3' : check_assigncat_result3})
+        
+    #if user passes as True labels_column passed based on final column (including single column scenario)
+    #this is here so it can get carried through to featureselect function
+    if labels_column is True:
+      labels_column = trainlabels[-1]
 
     #initialize autoMLer which is data structure to support ML infill
     #a future extension may allow user to pass custom entries
@@ -25175,11 +25182,6 @@ class AutoMunge:
     miscparameters_results.update({'check_assignnan_toplevelentries_result' : check_assignnan_toplevelentries_result, \
                                    'check_assignnan_categories_result'      : check_assignnan_categories_result, \
                                    'check_assignnan_columns_result'         : check_assignnan_columns_result})
-        
-    #if user passes as True labels_column passed based on final column (including single column scenario)
-    #labels_column = True
-    if labels_column is True:
-      labels_column = trainlabels[-1]
     
     #populate the assign_param now that we've coverted column labels to strings
     if bool(assignparam) is not False:
@@ -26383,7 +26385,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.00'
+    automungeversion = '5.01'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -32169,6 +32171,8 @@ class AutoMunge:
     if labelscolumn is False:
       
       FSmodel = False
+
+      baseaccuracy = False
       
       #printout display progress
       if printstatus is True:
@@ -32769,6 +32773,10 @@ class AutoMunge:
     #quick conversion of any passed column idenitfiers to str
     labelscolumn = self.parameter_str_convert(labelscolumn)
     testID_column = self.parameter_str_convert(testID_column)
+
+    if labelscolumn is False or labelscolumn is True:
+      if postprocess_dict['labels_column'] in list(df_test):
+        labelscolumn = postprocess_dict['labels_column']
     
     #check the range of parameters 
     #(generally speaking other than passed dictionaries, dataframes, or column identifiers)
@@ -32805,6 +32813,7 @@ class AutoMunge:
         FS_sorted = {}
 
       else:
+
         FSmodel, FScolumn_dict, FS_sorted = \
         self.postfeatureselect(df_test, labelscolumn, testID_column, \
                                postprocess_dict, printstatus)
@@ -32933,9 +32942,9 @@ class AutoMunge:
       testID_column = testID_column + list(df_test.index.names)
       df_test = df_test.reset_index(drop=False)
 
-    if labelscolumn is False or labelscolumn is True:
-      if postprocess_dict['labels_column'] in list(df_test):
-        labelscolumn = postprocess_dict['labels_column']
+    # if labelscolumn is False or labelscolumn is True:
+    #   if postprocess_dict['labels_column'] in list(df_test):
+    #     labelscolumn = postprocess_dict['labels_column']
 
     if labelscolumn is not False:
       labels_column = postprocess_dict['labels_column']
