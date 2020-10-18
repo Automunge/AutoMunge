@@ -1247,6 +1247,15 @@ class AutoMunge:
                                      'niecesnephews' : [], \
                                      'coworkers'     : [], \
                                      'friends'       : []}})
+
+    transform_dict.update({'ord5' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['ord5'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
     
     transform_dict.update({'ucct' : {'parents'       : [], \
                                      'siblings'      : [], \
@@ -4275,6 +4284,14 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'ord3'}})
+    process_dict.update({'ord5' : {'dualprocess' : self.process_ordl_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_ordl_class, \
+                                  'inverseprocess' : self.inverseprocess_ordl, \
+                                  'info_retention' : True, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'exclude', \
+                                  'labelctgy' : 'ordl'}})
     process_dict.update({'ucct' : {'dualprocess' : self.process_ucct_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_ucct_class, \
@@ -17185,6 +17202,8 @@ class AutoMunge:
       defaultcategorical = '1010'
       
       defaultordinal = 'ord3'
+
+      defaultordinal_allunique = 'ord5'
       
       defaultnumerical = 'nmbr'
       #defaultnumerical = 'mean'
@@ -17426,6 +17445,8 @@ class AutoMunge:
       if category == defaultcategorical:
         if nunique > numbercategoryheuristic:
           category = defaultordinal
+        if nunique == df.shape[0]:
+          category = defaultordinal_allunique
 
       #new statistical tests for numerical sets from v2.25
       #I don't consider mytself an expert here, these are kind of a placeholder while I conduct more research
@@ -18700,6 +18721,11 @@ class AutoMunge:
         
         model = \
         autoMLer[autoML_type][ML_application]['train'](ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus)
+
+        #this is to support 1010 infill predictions in postmunge
+        #note that columnslist as used in predictinfill is actually passed to function as categorylist, intend to clean this up when get a chance
+        for entry in columnslist:
+          postprocess_dict['column_dict'][entry].update({'_1010_columnslist_proxy_for_postmunge_MLinfill' : list(range(df_train_filllabel.shape[1]))})
         
         #only run following if we have any train rows needing infill
         if df_train_fillfeatures.shape[0] > 0:
@@ -18739,7 +18765,7 @@ class AutoMunge:
 
       model = False
     
-    return df_traininfill, df_testinfill, model
+    return df_traininfill, df_testinfill, model, postprocess_dict
 
   def createMLinfillsets(self, df_train, df_test, column, trainNArows, testNArows, \
                          category, randomseed, postprocess_dict, columnslist = [], \
@@ -19007,7 +19033,7 @@ class AutoMunge:
                          categorylist = categorylist)
 
       #predict infill values using defined function predictinfill(.)
-      df_traininfill, df_testinfill, model = \
+      df_traininfill, df_testinfill, model, postprocess_dict = \
       self.predictinfill(category, df_train_filltrain, df_train_filllabel, \
                         df_train_fillfeatures, df_test_fillfeatures, randomseed, \
                         postprocess_dict, ML_cmnd, autoMLer, printstatus, columnslist = categorylist)
@@ -19389,6 +19415,9 @@ class AutoMunge:
     #same function used for both classification and regression relying on AutoGluon to infer label type
     """
 
+    # import autogluon.core as ag
+    from autogluon.tabular import TabularPrediction as task
+
     try:
     
       #autogluon accepts dataframes instead of numpy arrays
@@ -19432,6 +19461,9 @@ class AutoMunge:
 
     #the columnslist parameter is used to handle an edge case
     """
+
+    # import autogluon.core as ag
+    from autogluon.tabular import TabularPrediction as task
     
     if model is not False:
 
@@ -19442,15 +19474,20 @@ class AutoMunge:
       #load dataset
       fillfeatures = task.Dataset(fillfeatures)
       
-      infill = model.predict(fillfeatures)
-      
-      if len(columnslist) > 1:
+      try:
+        infill = model.predict(fillfeatures)
         
-        infill = self.convert_singlecolumn_to_onehot(infill, columnslist)
+        if len(columnslist) > 1:
+          
+          infill = self.convert_singlecolumn_to_onehot(infill, columnslist)
+        
+    #     infill = np.array(infill)
+        
+        return infill
       
-  #     infill = np.array(infill)
-      
-      return infill
+      except ValueError:
+
+        return np.zeros(shape=(fillfeatures.shape[0],len(columnslist)))
     
     else:
 
@@ -19493,6 +19530,7 @@ class AutoMunge:
     """
     
     df = pd.DataFrame(df)
+
     df[0] = df[0].astype(int)
     df = df.rename(columns = {0:'labels'})
     
@@ -19508,6 +19546,8 @@ class AutoMunge:
       df[entry] = np.where(df['labels'] == entry, 1, 0)
       
     del df['labels']
+
+    df = df.values
     
     return df
 
@@ -19852,7 +19892,7 @@ class AutoMunge:
       df_test_fillfeatures_plug = am_subset[:][:1].copy()
       categorylist = postprocess_dict['column_dict'][list(am_labels)[0]]['categorylist']
 
-      _infilla, _infillb, FSmodel = \
+      _infilla, _infillb, FSmodel, postprocess_dict = \
       self.predictinfill(labelctgy, am_subset, am_labels, \
                          df_train_fillfeatures_plug, df_test_fillfeatures_plug, \
                          randomseed, postprocess_dict, ML_cmnd, postprocess_dict['autoMLer'], printstatus, \
@@ -26316,7 +26356,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '4.98'
+    automungeversion = '4.99'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -31894,10 +31934,13 @@ class AutoMunge:
       if MLinfilltype in ['1010']:
         
         ML_application = 'onehotclassification'
+
+        _1010_columnslist_proxy_for_postmunge_MLinfill = \
+        postprocess_dict['column_dict'][columnslist[0]]['_1010_columnslist_proxy_for_postmunge_MLinfill']
         
         #only run following if we have any test rows needing infill
         if df_test_fillfeatures.shape[0] > 0:
-          df_testinfill = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, model, df_test_fillfeatures, printstatus, columnslist)
+          df_testinfill = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, model, df_test_fillfeatures, printstatus, _1010_columnslist_proxy_for_postmunge_MLinfill)
           
           df_testinfill = \
           self.convert_onehot_to_1010(df_testinfill)
