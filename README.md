@@ -1849,6 +1849,8 @@ transform. (lb10 and lbte have comparable family trees)
 - lbor: for categorical data, if the number of unique entries in the column exceeds 
 the parameter 'numbercategoryheuristic' (which defaults to 63), the encoding will 
 instead be by 'ord3' which is an ordinal (integer) encoding sorted by most common value.
+- lbo5: for categorical data with all unique entries, the encoding will instead be by 
+'ordl' which is an ordinal (integer) encoding alphabetically sorted.
 - lbte: for categorical data of 3 unique values excluding infill (eg NaN), the 
 column is encoded via one-hot encoding.
 - lbbn: for categorical data of <=2 unique values excluding infill (eg NaN), the 
@@ -3231,6 +3233,7 @@ avoid unintentional duplication.
 - 'lbbn',
 - 'lbda',
 - 'lbnm',
+- 'lbo5',
 - 'lbor',
 - 'lbos',
 - 'lbte',
@@ -6464,6 +6467,15 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'siblings'      : [], \
                                      'auntsuncles'   : ['ord3'], \
                                      'cousins'       : [], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+
+    transform_dict.update({'lbo5' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['ordl'], \
+                                     'cousins'       : [NArw], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
                                      'coworkers'     : [], \
