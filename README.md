@@ -1847,6 +1847,8 @@ transform. (lb10 and lbte have comparable family trees)
 - lbor: for categorical data, if the number of unique entries in the column exceeds 
 the parameter 'numbercategoryheuristic' (which defaults to 63), the encoding will 
 instead be by 'ord3' which is an ordinal (integer) encoding sorted by most common value.
+- ord5: for all unique entry categoric sets, comparable to an alphabetical sorted ordinal
+encoding ordl but excluded from ML infill
 - lbte: for categorical data of 3 unique values excluding infill (eg NaN), the 
 column is encoded via one-hot encoding.
 - lbbn: for categorical data of <=2 unique values excluding infill (eg NaN), the 
@@ -2454,7 +2456,7 @@ to set with >2 entries applies infill to those entries beyond two most common.
   - driftreport postmunge metrics: textlabelsdict_text / <column> + '_ratio' (column specific)
 			           text_categorylist is key between columns and target entries
   - inversion available: yes with full recovery
-* ordl/ord2: converts categorical sets to ordinally encoded set of integer identifiers
+* ordl/ord2/ord5: converts categorical sets to ordinally encoded set of integer identifiers
   - default infill: plug value 'zzzinfill'
   - default NArowtype: justNaN
   - suffix appender: '_ordl'
@@ -3337,6 +3339,7 @@ avoid unintentional duplication.
 - 'ord2',
 - 'ord3',
 - 'ord4',
+- 'ord5',
 - 'ordd',
 - 'ordl',
 - 'ors2',
@@ -4723,6 +4726,15 @@ If you want to skip to the next section you can click here: [Custom Transformati
     transform_dict.update({'ord3' : {'parents'       : [], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : ['ord3'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+
+    transform_dict.update({'ord5' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['ord5'], \
                                      'cousins'       : [NArw], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
