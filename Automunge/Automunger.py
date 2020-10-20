@@ -20255,6 +20255,8 @@ class AutoMunge:
 
       if am_labels.empty is True:
         FSmodel = False
+
+        baseaccuracy = False
         
         #printout display progress
         if printstatus is True:
@@ -20322,6 +20324,8 @@ class AutoMunge:
           FScolumn_dict = {}
           
           FS_origcolumns = list(FSpostprocess_dict['origcolumn'])
+
+          baseaccuracy = False
           
           #printout display progress
           if printstatus is True:
@@ -24769,14 +24773,16 @@ class AutoMunge:
       
       if column not in populated_columns:
         
-        if column in postprocess_dict['returned_PCA_columns']:
+        if 'returned_PCA_columns' in postprocess_dict and \
+        column in postprocess_dict['returned_PCA_columns']:
           
           #add to numeric
           columntype_report['continuous'].append(column)
           
           populated_columns.append(column)
           
-        elif column in postprocess_dict['returned_Binary_columns']:
+        elif 'returned_Binary_columns' in postprocess_dict and \
+        column in postprocess_dict['returned_Binary_columns']:
           
           #initialize binary_sets
           columntype_report['binary_sets'].append([])
@@ -24791,8 +24797,10 @@ class AutoMunge:
 
             populated_columns.append(column)
           
-        elif postprocess_dict['excl_suffix'] is False \
-        and column in postprocess_dict['excl_columns_without_suffix']:
+        elif 'excl_suffix' in postprocess_dict and \
+        'excl_columns_without_suffix' in postprocess_dict and \
+        postprocess_dict['excl_suffix'] is False and \
+        column in postprocess_dict['excl_columns_without_suffix']:
             
           #add column to passthrough
           columntype_report['passthrough'].append(column)
@@ -24833,12 +24841,12 @@ class AutoMunge:
             for entry in postprocess_dict['column_dict'][column]['categorylist']:
               
               columntype_report['onehot_sets'][-1] = \
-              columntype_report['onehot_sets'][-1] + [column]
+              columntype_report['onehot_sets'][-1] + [entry]
               
               #add to onehot
-              columntype_report['onehot'].append(column)
+              columntype_report['onehot'].append(entry)
               
-              populated_columns.append(column)
+              populated_columns.append(entry)
               
           elif MLinfilltype in ['1010']:
               
@@ -24848,12 +24856,12 @@ class AutoMunge:
             for entry in postprocess_dict['column_dict'][column]['categorylist']:
 
               columntype_report['binary_sets'][-1] = \
-              columntype_report['binary_sets'][-1] + [column]
+              columntype_report['binary_sets'][-1] + [entry]
 
               #add to binary
-              columntype_report['binary'].append(column)
+              columntype_report['binary'].append(entry)
 
-              populated_columns.append(column)
+              populated_columns.append(entry)
               
           elif MLinfilltype in ['exclude', 'totalexclude']:
             
@@ -25076,11 +25084,6 @@ class AutoMunge:
     
     miscparameters_results.update({'check_assigncat_result2' : check_assigncat_result2, \
                                    'check_assigncat_result3' : check_assigncat_result3})
-        
-    #if user passes as True labels_column passed based on final column (including single column scenario)
-    #this is here so it can get carried through to featureselect function
-    if labels_column is True:
-      labels_column = trainlabels[-1]
 
     #initialize autoMLer which is data structure to support ML infill
     #a future extension may allow user to pass custom entries
@@ -25165,6 +25168,11 @@ class AutoMunge:
     for column in df_train.columns:
       trainlabels.append(str(column))
     df_train.columns = trainlabels
+        
+    #if user passes as True labels_column passed based on final column (including single column scenario)
+    #this is here so it can get carried through to featureselect function
+    if labels_column is True:
+      labels_column = trainlabels[-1]
     
     #confirm all unique column headers
     check_columnheaders_result = \
@@ -26385,7 +26393,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.01'
+    automungeversion = '5.02'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -32167,6 +32175,17 @@ class AutoMunge:
       print("_______________")
       print("Begin Feature Importance evaluation")
       print("")
+
+
+    #this converts any numeric columns labels, such as from a passed numpy array, to strings
+    testlabels=[]
+    for column in df_test.columns:
+      testlabels.append(str(column))
+    df_test.columns = testlabels
+
+    if labelscolumn is False or labelscolumn is True:
+      if postprocess_dict['labels_column'] in list(df_test):
+        labelscolumn = postprocess_dict['labels_column']
       
     if labelscolumn is False:
       
@@ -32240,6 +32259,8 @@ class AutoMunge:
 
       if am_labels.empty is True:
         FSmodel = False
+
+        baseaccuracy = False
         
         #printout display progress
         if printstatus is True:
@@ -32308,6 +32329,8 @@ class AutoMunge:
           FScolumn_dict = {}
           
           FS_origcolumns = list(FSpostprocess_dict['origcolumn'])
+
+          baseaccuracy = False
           
           #printout display progress
           if printstatus is True:
@@ -32321,6 +32344,11 @@ class AutoMunge:
           baseaccuracy = self.shuffleaccuracy(am_validation1, am_validationlabels1, \
                                               FSmodel, randomseed, am_categorylist, \
                                               FSprocess_dict, labelctgy, FSpostprocess_dict)
+
+          if printstatus is True:
+            print("Base Accuracy of feature importance model:")
+            print(baseaccuracy)
+            print()
 
           #get list of columns
           am_train_columns = list(am_train)
@@ -32773,10 +32801,6 @@ class AutoMunge:
     #quick conversion of any passed column idenitfiers to str
     labelscolumn = self.parameter_str_convert(labelscolumn)
     testID_column = self.parameter_str_convert(testID_column)
-
-    if labelscolumn is False or labelscolumn is True:
-      if postprocess_dict['labels_column'] in list(df_test):
-        labelscolumn = postprocess_dict['labels_column']
     
     #check the range of parameters 
     #(generally speaking other than passed dictionaries, dataframes, or column identifiers)
@@ -32858,6 +32882,10 @@ class AutoMunge:
     for column in df_test.columns:
       testlabels.append(str(column))
     df_test.columns = testlabels
+
+    if labelscolumn is False or labelscolumn is True:
+      if postprocess_dict['labels_column'] in list(df_test):
+        labelscolumn = postprocess_dict['labels_column']
 
     #initialize processing dicitonaries
 
