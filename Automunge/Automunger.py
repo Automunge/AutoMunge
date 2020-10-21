@@ -11763,6 +11763,8 @@ class AutoMunge:
     #adresses infill with new point which we arbitrarily set as 'zzzinfill'
     #intended to show up as last point in set alphabetically
     #for categories presetn in test set not present in train set use this 'zzz' category
+    #as implemented this function does not distinguish between numbers and string equivalents
+    #eg the number 2 and the string '2' are consistently encoded
     '''
     
     suffixoverlap_results = {}
@@ -11772,6 +11774,13 @@ class AutoMunge:
       adjinfill = params['adjinfill']
     else:
       adjinfill = False
+      
+    #ordered_overide is boolean to indicate if order of integer encoding basis will 
+    #defer to cases when a column is a pandas categorical ordered set
+    if 'ordered_overide' in params:
+      ordered_overide = params['ordered_overide']
+    else:
+      ordered_overide = True
     
     #create new column for trasnformation
     mdf_train, suffixoverlap_results = \
@@ -11779,7 +11788,7 @@ class AutoMunge:
     
     mdf_test[column + '_ordl'] = mdf_test[column].copy()
     
-    #convert column to category
+    #convert column to category if it isn't already
     mdf_train[column + '_ordl'] = mdf_train[column + '_ordl'].astype('category')
     mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype('category')
 
@@ -11803,27 +11812,47 @@ class AutoMunge:
     mdf_train[column + '_ordl'] = mdf_train[column + '_ordl'].astype(str)
     mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype(str)
     
-    #extract categories for column labels
-    #note that .unique() extracts the labels as a numpy array
-    labels_train = list(mdf_train[column + '_ordl'].unique())
-    labels_train.sort()
-    labels_test = list(mdf_test[column + '_ordl'].unique())
-    labels_test.sort()
+    ordered = False
+    if ordered_overide:
+      if mdf_train[column].dtype.name == 'category':
+        if mdf_train[column].cat.ordered:
+          ordered = True
+          labels_train = list(mdf_train[column].cat.categories)
+          labels_train = [str(x) for x in labels_train]
+          if mdf_test[column].dtype.name == 'category':
+            if mdf_test[column].cat.ordered:
+              labels_test = list(mdf_test[column].cat.categories)
+              labels_test = [str(x) for x in labels_test]
+            else:
+              labels_test = list(mdf_test[column + '_ordl'].unique())
+              labels_test.sort()
+          else:
+            labels_test = list(mdf_test[column + '_ordl'].unique())
+            labels_test.sort()
+            
+    if ordered is False:
+      
+      #extract categories for column labels
+      #note that .unique() extracts the labels as a numpy array
+      labels_train = list(mdf_train[column + '_ordl'].unique())
+      labels_train.sort()
+      labels_test = list(mdf_test[column + '_ordl'].unique())
+      labels_test.sort()
 
     #if infill not present in train set, insert
     if 'zzzinfill' not in labels_train:
       labels_train = labels_train + ['zzzinfill']
-      labels_train.sort()
+#       labels_train.sort()
     if 'zzzinfill' not in labels_test:
       labels_test = labels_test + ['zzzinfill']
-      labels_test.sort()
+#       labels_test.sort()
     
     listlength = len(labels_train)
     
     #____
     #quick check if there are any overlaps between binary encodings and prior unique values in the column
     #as would interfere with the replacement operation
-    #(I know this is an outlier scenario, just trying to be thorough)
+    #=> I don't think this is an issue since column converted to string, leaving this here for reference
     
     overlap_list = []
     overlap_replace = {}
@@ -11836,17 +11865,30 @@ class AutoMunge:
     
     #here we replace the overlaps with version with jibberish suffix
     if len(overlap_list) > 0:
-      mdf_train[column + '_ordl'] = mdf_train[column + '_ordl'].replace(overlap_replace)
-      mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].replace(overlap_replace)
       
       #then we'll redo the encodings
       
-      #extract categories for column labels
-      #note that .unique() extracts the labels as a numpy array
-      labels_train = list(mdf_train[column + '_ordl'].unique())
-      labels_train.sort()
-      labels_test = list(mdf_test[column + '_ordl'].unique())
-      labels_test.sort()
+      if ordered is True:
+        #this replaces entries with overlap while retaining order
+        for foundoverlap in overlap_replace:
+          labels_train = [overlap_replace[foundoverlap] if x == foundoverlap else x for x in labels_train]
+          labels_test = [overlap_replace[foundoverlap] if x == foundoverlap else x for x in labels_test]
+          
+        #then replace encoding overlap entries in the returned column
+        mdf_train[column + '_ordl'] = mdf_train[column + '_ordl'].replace(overlap_replace)
+        mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].replace(overlap_replace)
+
+      if ordered is False:
+        
+        mdf_train[column + '_ordl'] = mdf_train[column + '_ordl'].replace(overlap_replace)
+        mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].replace(overlap_replace)
+
+        #extract categories for column labels
+        #note that .unique() extracts the labels as a numpy array
+        labels_train = list(mdf_train[column + '_ordl'].unique())
+        labels_train.sort()
+        labels_test = list(mdf_test[column + '_ordl'].unique())
+        labels_test.sort()
       
     #clear up memory
     del overlap_list
@@ -11912,7 +11954,9 @@ class AutoMunge:
                                   'activations_list' : activations_list, \
                                   'ordinal_overlap_replace' : overlap_replace, \
                                   'ordl_activations_dict' : ordl_activations_dict, \
-                                  'adjinfill' : adjinfill}}
+                                  'adjinfill' : adjinfill, \
+                                  'ordered_overide' : ordered_overide, \
+                                  'ordered' : ordered}}
     
       column_dict = {tc : {'category' : 'ordl', \
                            'origcategory' : category, \
@@ -11930,6 +11974,7 @@ class AutoMunge:
     
     return mdf_train, mdf_test, column_dict_list
 
+
   def process_ord3_class(self, mdf_train, mdf_test, column, category, \
                          postprocess_dict, params = {}):
     '''
@@ -11939,6 +11984,8 @@ class AutoMunge:
     #adresses infill with new point which we arbitrarily set as 'zzzinfill'
     #intended to show up as last point in set alphabetically
     #for categories presetn in test set not present in train set use this 'zzz' category
+    #as implemented this function does not distinguish between numbers and string equivalents
+    #eg the number 2 and the string '2' are consistently encoded
     '''
     
     suffixoverlap_results = {}
@@ -11948,6 +11995,13 @@ class AutoMunge:
       adjinfill = params['adjinfill']
     else:
       adjinfill = False
+      
+    #ordered_overide is boolean to indicate if order of integer encoding basis will 
+    #defer to cases when a column is a pandas categorical ordered set
+    if 'ordered_overide' in params:
+      ordered_overide = params['ordered_overide']
+    else:
+      ordered_overide = True
     
     #create new column for trasnformation
     mdf_train, suffixoverlap_results = \
@@ -11955,7 +12009,7 @@ class AutoMunge:
     
     mdf_test[column + '_ord3'] = mdf_test[column].copy()
     
-    #convert column to category
+    #convert column to category if it isn't already
     mdf_train[column + '_ord3'] = mdf_train[column + '_ord3'].astype('category')
     mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype('category')
 
@@ -11975,20 +12029,38 @@ class AutoMunge:
     mdf_train[column + '_ord3'] = mdf_train[column + '_ord3'].fillna('zzzinfill')
     mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].fillna('zzzinfill')
 
-    #replace numerical with string equivalent
+    #replace numerical with string equivalent (this operation changes dtype from category to object)
     mdf_train[column + '_ord3'] = mdf_train[column + '_ord3'].astype(str)
     mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype(str)
     
-    #extract categories for column labels
-    #with values sorted by frequency of occurance from most to least
-    labels_train = pd.DataFrame(mdf_train[column + '_ord3'].value_counts())
-    labels_train = labels_train.rename_axis('zzzinfill').sort_values(by = [column + '_ord3', 'zzzinfill'], ascending = [False, True])
-    labels_train = list(labels_train.index)
-    
-#     labels_train = list(mdf_train[column + '_ordl'].unique())
-#     labels_train.sort()
-    labels_test = list(mdf_test[column + '_ord3'].unique())
-    labels_test.sort()
+    ordered = False
+    if ordered_overide:
+      if mdf_train[column].dtype.name == 'category':
+        if mdf_train[column].cat.ordered:
+          ordered = True
+          labels_train = list(mdf_train[column].cat.categories)
+          labels_train = [str(x) for x in labels_train]
+          if mdf_test[column].dtype.name == 'category':
+            if mdf_test[column].cat.ordered:
+              labels_test = list(mdf_test[column].cat.categories)
+              labels_test = [str(x) for x in labels_test]
+            else:
+              labels_test = list(mdf_test[column + '_ord3'].unique())
+              labels_test.sort()
+          else:
+            labels_test = list(mdf_test[column + '_ord3'].unique())
+            labels_test.sort()
+            
+    if ordered is False:
+      
+      #extract categories for column labels
+      #with values sorted by frequency of occurance from most to least
+      labels_train = pd.DataFrame(mdf_train[column + '_ord3'].value_counts())
+      labels_train = labels_train.rename_axis('zzzinfill').sort_values(by = [column + '_ord3', 'zzzinfill'], ascending = [False, True])
+      labels_train = list(labels_train.index)
+      
+      labels_test = list(mdf_test[column + '_ord3'].unique())
+      labels_test.sort()
 
     #if infill not present in train set, insert
     if 'zzzinfill' not in labels_train:
@@ -11996,14 +12068,14 @@ class AutoMunge:
 #       labels_train.sort()
     if 'zzzinfill' not in labels_test:
       labels_test = labels_test + ['zzzinfill']
-      labels_test.sort()
+#       labels_test.sort()
     
     listlength = len(labels_train)
     
     #____
     #quick check if there are any overlaps between binary encodings and prior unique values in the column
     #as would interfere with the replacement operation
-    #(I know this is an outlier scenario, just trying to be thorough)
+    #=> I don't think this is an issue since column converted to string, leaving this here for reference
     
     overlap_list = []
     overlap_replace = {}
@@ -12016,21 +12088,34 @@ class AutoMunge:
     
     #here we replace the overlaps with version with jibberish suffix
     if len(overlap_list) > 0:
-      mdf_train[column + '_ord3'] = mdf_train[column + '_ord3'].replace(overlap_replace)
-      mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].replace(overlap_replace)
       
-      #then we'll redo the encodings
-      
-      #extract categories for column labels
-      #note that .unique() extracts the labels as a numpy array
-      labels_train = pd.DataFrame(mdf_train[column + '_ord3'].value_counts())
-      labels_train = labels_train.rename_axis('zzzinfill').sort_values(by = [column + '_ord3', 'zzzinfill'], ascending = [False, True])
-      labels_train = list(labels_train.index)
-      
-#       labels_train = list(mdf_train[column + '_ord2'].unique())
-#       labels_train.sort()
-      labels_test = list(mdf_test[column + '_ord3'].unique())
-      labels_test.sort()
+      if ordered is True:
+        #this replaces entries with overlap while retaining order
+        for foundoverlap in overlap_replace:
+          labels_train = [overlap_replace[foundoverlap] if x == foundoverlap else x for x in labels_train]
+          labels_test = [overlap_replace[foundoverlap] if x == foundoverlap else x for x in labels_test]
+          
+        #then replace encoding overlap entries in the returned column
+        mdf_train[column + '_ord3'] = mdf_train[column + '_ord3'].replace(overlap_replace)
+        mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].replace(overlap_replace)
+
+      if ordered is False:
+            
+        mdf_train[column + '_ord3'] = mdf_train[column + '_ord3'].replace(overlap_replace)
+        mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].replace(overlap_replace)
+
+        #then we'll redo the encodings
+
+        #extract categories for column labels
+        #note that .unique() extracts the labels as a numpy array
+        labels_train = pd.DataFrame(mdf_train[column + '_ord3'].value_counts())
+        labels_train = labels_train.rename_axis('zzzinfill').sort_values(by = [column + '_ord3', 'zzzinfill'], ascending = [False, True])
+        labels_train = list(labels_train.index)
+
+  #       labels_train = list(mdf_train[column + '_ord2'].unique())
+  #       labels_train.sort()
+        labels_test = list(mdf_test[column + '_ord3'].unique())
+        labels_test.sort()
       
     #clear up memory
     del overlap_list
@@ -12096,7 +12181,9 @@ class AutoMunge:
                                   'activations_list' : activations_list, \
                                   'ordinal_overlap_replace' : overlap_replace, \
                                   'ordl_activations_dict' : ordl_activations_dict, \
-                                  'adjinfill' : adjinfill}}
+                                  'adjinfill' : adjinfill, \
+                                  'ordered_overide' : ordered_overide, \
+                                  'ordered' : ordered}}
     
       column_dict = {tc : {'category' : 'ord3', \
                            'origcategory' : category, \
@@ -17374,8 +17461,8 @@ class AutoMunge:
         category = 'bnry'
 
       #else if most common in column is NaN, re-evaluate using the second most common type
-      #(I suspect the below might have a bug somewhere but is working on my current 
-      #tests so will leave be for now)
+      #(I suspect the below might be impacted if there are three dtypes instead of two,
+      #in which case the 50% ratio rule may not be valid, that is kind of remote edge case)
       #elif df[column].isna().sum() >= df.shape[0] / 2:
       if len(mc2) > 1:
       
@@ -24790,12 +24877,12 @@ class AutoMunge:
           for entry in postprocess_dict['returned_Binary_columns']:
 
             columntype_report['binary_sets'][-1] = \
-            columntype_report['binary_sets'][-1] + [column]
+            columntype_report['binary_sets'][-1] + [entry]
 
             #add to binary
-            columntype_report['binary'].append(column)
+            columntype_report['binary'].append(entry)
 
-            populated_columns.append(column)
+            populated_columns.append(entry)
           
         elif 'excl_suffix' in postprocess_dict and \
         'excl_columns_without_suffix' in postprocess_dict and \
@@ -26393,7 +26480,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.02'
+    automungeversion = '5.03'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
