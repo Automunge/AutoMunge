@@ -2466,6 +2466,8 @@ to set with >2 entries applies infill to those entries beyond two most common.
   - suffix appender: '_ordl'
   - assignparam parameters accepted:
     - 'adjinfill', boolean, defaults to False, True makes default infill adjacent cell
+    - 'ordered_overide', boolean defaults True, when True instects for Pandas ordered categorical and 
+      if found integer encoding order defers to that basis
   - driftreport postmunge metrics: ordinal_dict / ordinal_overlap_replace / ordinal_activations_dict
   - inversion available: yes with full recovery
 * ord3: converts categorical sets to ordinally encoded set of integer identifiers
@@ -2475,6 +2477,8 @@ sorted first by frequency of category occurrence, second basis for common count 
   - suffix appender: '_ord3'
   - assignparam parameters accepted:
     - 'adjinfill', boolean, defaults to False, True makes default infill adjacent cell
+    - 'ordered_overide', boolean defaults True, when True instects for Pandas ordered categorical and 
+      if found integer encoding order defers to that basis
   - driftreport postmunge metrics: ordinal_dict / ordinal_overlap_replace / ordinal_activations_dict
   - inversion available: yes with full recovery
 * ord4: derived by an ord3 transform followed by a mnmx transform. Useful as a scaled metric
