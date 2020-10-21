@@ -11811,7 +11811,7 @@ class AutoMunge:
     #replace numerical with string equivalent
     mdf_train[column + '_ordl'] = mdf_train[column + '_ordl'].astype(str)
     mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype(str)
-    
+
     ordered = False
     if ordered_overide:
       if mdf_train[column].dtype.name == 'category':
@@ -19153,13 +19153,8 @@ class AutoMunge:
       postprocess_dict['column_dict'][column]['infillmodel'] \
       = model
 
-      #troubleshooting note: it occurs to me that we're only saving our
-      #trained model in the postprocess_dict for one of the text columns
-      #not all, however since this will be the first column to be 
-      #addressed here and also in the postmunge function (they're in 
-      #same order) my expectation is that this will not be an issue and \
-      #accidental bonus since we're only saving once results in reduced
-      #file size
+      #note: we're only saving trained model in the postprocess_dict for one 
+      #of columns from multicolumn set to reduce file size
       
       #only insert infill if we have a valid model
       if model is not False:
@@ -24719,8 +24714,8 @@ class AutoMunge:
     #don't apply to totalexclude MLinfilltype
     if postprocess_dict['process_dict'][category]['MLinfilltype'] not in ['totalexclude']:
 
-      df[column] = np.where(df[column] == np.inf, np.nan, df[column])
-      df[column] = np.where(df[column] == -np.inf, np.nan, df[column])
+      df.loc[df[column] == np.inf, column] = np.nan
+      df.loc[df[column] == -np.inf, column] = np.nan
     
     return df
 
@@ -24781,8 +24776,8 @@ class AutoMunge:
     #great we've got our designated infill values, now just convert to nan
     for entry in nanpoints:
       
-      df[column] = np.where(df[column] == entry, np.nan, df[column])
-      
+      df.loc[df[column] == entry, column] = np.nan
+
     return df
   
   def df_split(self, df, ratio, shuffle_param, randomseed):
@@ -25672,10 +25667,10 @@ class AutoMunge:
       #and global just means this value treated universally as nan
       #where values are passed in automunge(.) parameter assignnan
       #assignnan = {'categories':{'cat1':[], 'cat2':[]}, 'columns':{'col1':[], 'col2':[]}, 'global':[]}
-      
+
       df_train = self.assignnan_convert(df_train, column, category, assignnan, postprocess_dict)
       df_test = self.assignnan_convert(df_test, column, category, assignnan, postprocess_dict)
-      
+
       #we also have convention that infinity values are by default subjected to infill
       #based on understanding that ML libraries in general do not accept thesae kind of values
       df_train = self.convert_inf_to_nan(df_train, column, category, postprocess_dict)
@@ -26480,7 +26475,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.03'
+    automungeversion = '5.04'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -33332,8 +33327,6 @@ class AutoMunge:
       labelstransform_dict = transform_dict
       labelsprocess_dict = process_dict
 
-      #ok this replaces some methods from 1.76 and earlier for finding a column key
-      #troubleshoot "find labels category"
       columnkey = postprocess_dict['origcolumn'][labels_column]['columnkey']        
       #traincategory = postprocess_dict['column_dict'][columnkey]['origcategory']
       labelscategory = postprocess_dict['origcolumn'][labels_column]['category']
