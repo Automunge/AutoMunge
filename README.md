@@ -2460,7 +2460,7 @@ to set with >2 entries applies infill to those entries beyond two most common.
   - driftreport postmunge metrics: textlabelsdict_text / <column> + '_ratio' (column specific)
 			           text_categorylist is key between columns and target entries
   - inversion available: yes with full recovery
-* ordl/ord2/ord5: converts categorical sets to ordinally encoded set of integer identifiers
+* ordl/ord2/ord5: converts categoric sets to ordinal integer encoded set, encodings sorted alphabetically
   - default infill: plug value 'zzzinfill'
   - default NArowtype: justNaN
   - suffix appender: '_ordl'
@@ -2470,8 +2470,8 @@ to set with >2 entries applies infill to those entries beyond two most common.
       if found integer encoding order defers to that basis
   - driftreport postmunge metrics: ordinal_dict / ordinal_overlap_replace / ordinal_activations_dict
   - inversion available: yes with full recovery
-* ord3: converts categorical sets to ordinally encoded set of integer identifiers
-sorted first by frequency of category occurrence, second basis for common count entries is alphabetical
+* ord3: converts categoric sets to ordinal integer encoded set, sorted first by frequency of category 
+occurrence, second basis for common count entries is alphabetical
   - default infill: plug value 'zzzinfill'
   - default NArowtype: justNaN
   - suffix appender: '_ord3'
