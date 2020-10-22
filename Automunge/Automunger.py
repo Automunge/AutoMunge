@@ -8245,26 +8245,31 @@ class AutoMunge:
     mdf_test[tempcolumn] = mdf_test[tempcolumn].fillna('zzzinfill')
 
     #replace numerical with string equivalent
-    mdf_train[tempcolumn] = mdf_train[tempcolumn].astype(str)
-    mdf_test[tempcolumn] = mdf_test[tempcolumn].astype(str)
+#     mdf_train[tempcolumn] = mdf_train[tempcolumn].astype(str)
+#     mdf_test[tempcolumn] = mdf_test[tempcolumn].astype(str)
+    mdf_train[tempcolumn] = mdf_train[tempcolumn].astype('object')
+    mdf_test[tempcolumn] = mdf_test[tempcolumn].astype('object')
 
     #extract categories for column labels
     #note that .unique() extracts the labels as a numpy array
     labels_train = mdf_train[tempcolumn].unique()
-    labels_train.sort(axis=0)
+#     labels_train.sort(axis=0)
+    labels_train = sorted(labels_train, key=str)
     labels_train = list(labels_train)
     orig_labels_train = list(labels_train.copy())
     labels_test = mdf_test[tempcolumn].unique()
-    labels_test.sort(axis=0)
+#     labels_test.sort(axis=0)
+    labels_test = sorted(labels_test, key=str)
     labels_test = list(labels_test)
 
-    #pandas one hot encoder
-    df_train_cat = pd.get_dummies(mdf_train[tempcolumn])
-    df_test_cat = pd.get_dummies(mdf_test[tempcolumn])
-
-    #append column header name to each category listing
-    labels_train = [column + '_' + entry for entry in labels_train]
-    labels_test = [column + '_' + entry for entry in labels_test]
+    #pandas one hot encoding doesn't sort integers and strings properly so using my own
+    df_train_cat = pd.DataFrame(mdf_train[tempcolumn])
+    df_test_cat = pd.DataFrame(mdf_test[tempcolumn])
+    for entry in labels_train:
+      df_train_cat[entry] = np.where(mdf_train[tempcolumn] == entry, 1, 0)
+      df_test_cat[entry] = np.where(mdf_test[tempcolumn] == entry, 1, 0)
+    del df_train_cat[tempcolumn]
+    del df_test_cat[tempcolumn]
     
     labels_dict = {}
     i = 0
@@ -8274,17 +8279,10 @@ class AutoMunge:
     
     #convert sparse array to pandas dataframe with column labels
     df_train_cat.columns = labels_train
-    df_test_cat.columns = labels_test
+    df_test_cat.columns = labels_train
 
     #Get missing columns in test set that are present in training set
-    missing_cols = set( df_train_cat.columns ) - set( df_test_cat.columns )
-
-    #Add a missing column in test set with default value equal to 0
-    for c in missing_cols:
-        df_test_cat[c] = 0
-    #Ensure the order of column in the test set is in the same order than in train set
-    #Note this also removes categories in test set that aren't present in training set
-    df_test_cat = df_test_cat[df_train_cat.columns]
+    missing_cols = set( df_train_cat.columns ) - set( labels_test )
     
     suffixoverlap_results = \
     self.df_check_suffixoverlap(mdf_train, list(df_train_cat), suffixoverlap_results)
@@ -8324,8 +8322,8 @@ class AutoMunge:
     normalizationdictvalues = labels_train
     normalizationdictkeys = textcolumns
     
-    normalizationdictkeys.sort()
-    normalizationdictvalues.sort()
+    normalizationdictkeys = sorted(normalizationdictkeys, key=str)
+    normalizationdictvalues = sorted(normalizationdictvalues, key=str)
     
     #textlabelsdict = dict(zip(normalizationdictkeys, normalizationdictvalues))
     textlabelsdict = dict(zip(normalizationdictvalues, orig_labels_train))
@@ -8348,9 +8346,6 @@ class AutoMunge:
     textcolumns = [labels_dict[entry] for entry in textcolumns]
     
     inverse_labels_dict = {value:key for key,value in labels_dict.items()}
-    for key in inverse_labels_dict:
-      inverse_labels_dict[key] = inverse_labels_dict[key][len(column) + 1:]
-
 
     for tc in textcolumns:
     
@@ -12111,6 +12106,12 @@ class AutoMunge:
         labels_train = list(labels_train.index)
 
         labels_test = list(mdf_test[column + '_ord3'].unique())
+        
+      #if infill not present in train set, insert
+      if 'zzzinfill' not in labels_train:
+        labels_train = labels_train + ['zzzinfill']
+      if 'zzzinfill' not in labels_test:
+        labels_test = labels_test + ['zzzinfill']
       
     #clear up memory
     del overlap_list
@@ -12394,23 +12395,29 @@ class AutoMunge:
     mdf_test[column + '_1010'] = mdf_test[column + '_1010'].fillna('zzzinfill')
 
     #replace numerical with string equivalent
-    mdf_train[column + '_1010'] = mdf_train[column + '_1010'].astype(str)
-    mdf_test[column + '_1010'] = mdf_test[column + '_1010'].astype(str)
+#     mdf_train[column + '_1010'] = mdf_train[column + '_1010'].astype(str)
+#     mdf_test[column + '_1010'] = mdf_test[column + '_1010'].astype(str)
+    mdf_train[column + '_1010'] = mdf_train[column + '_1010'].astype('object')
+    mdf_test[column + '_1010'] = mdf_test[column + '_1010'].astype('object')
     
     #extract categories for column labels
     #note that .unique() extracts the labels as a numpy array
     labels_train = list(mdf_train[column + '_1010'].unique())
-    labels_train.sort()
+#     labels_train.sort()
+    labels_train = sorted(labels_train, key=str)
     labels_test = list(mdf_test[column + '_1010'].unique())
-    labels_test.sort()
+#     labels_test.sort()
+    labels_test = sorted(labels_test, key=str)
 
     #if infill not present in train set, insert
     if 'zzzinfill' not in labels_train:
       labels_train = labels_train + ['zzzinfill']
-      labels_train.sort()
+      labels_train = sorted(labels_train, key=str)
+#       labels_train.sort()
     if 'zzzinfill' not in labels_test:
       labels_test = labels_test + ['zzzinfill']
-      labels_test.sort()
+      labels_test = sorted(labels_test, key=str)
+#       labels_test.sort()
     
     #get length of the list
     listlength = len(labels_train)
@@ -12467,6 +12474,8 @@ class AutoMunge:
     
     #here we replace the overlaps with version with jibberish suffix
     if len(overlap_list) > 0:
+      mdf_train[column + '_1010'] = mdf_train[column + '_1010'].astype('object')
+      mdf_test[column + '_1010'] = mdf_test[column + '_1010'].astype('object')
       mdf_train[column + '_1010'] = mdf_train[column + '_1010'].replace(overlap_replace)
       mdf_test[column + '_1010'] = mdf_test[column + '_1010'].replace(overlap_replace)
       
@@ -12475,9 +12484,12 @@ class AutoMunge:
       #extract categories for column labels
       #note that .unique() extracts the labels as a numpy array
       labels_train = list(mdf_train[column + '_1010'].unique())
-      labels_train.sort()
+      labels_train = sorted(labels_train, key=str)
+#       labels_train.sort()
+      
       labels_test = list(mdf_test[column + '_1010'].unique())
-      labels_test.sort()
+      labels_test = sorted(labels_test, key=str)
+#       labels_test.sort()
       
       #initialize dictionaryt to store encodings
       binary_encoding_dict = {}
@@ -12514,6 +12526,7 @@ class AutoMunge:
     #____
     
     #replace the cateogries in train set via ordinal trasnformation
+    mdf_train[column + '_1010'] = mdf_train[column + '_1010'].astype('object')
     mdf_train[column + '_1010'] = mdf_train[column + '_1010'].replace(binary_encoding_dict)      
     
     #in test set, we'll need to strike any categories that weren't present in train
@@ -12521,10 +12534,12 @@ class AutoMunge:
     testspecificcategories = list(set(labels_test)-set(labels_train))
     
     #so we'll just replace those items with our plug value
+    mdf_test[column + '_1010'] = mdf_test[column + '_1010'].astype('object')
     testplug_dict = dict(zip(testspecificcategories, ['zzzinfill'] * len(testspecificcategories)))
     mdf_test[column + '_1010'] = mdf_test[column + '_1010'].replace(testplug_dict)    
     
     #now we'll apply the 1010 transformation to the test set
+    mdf_test[column + '_1010'] = mdf_test[column + '_1010'].astype('object')
     mdf_test[column + '_1010'] = mdf_test[column + '_1010'].replace(binary_encoding_dict)    
 
     #ok let's create a list of columns to store each entry of the binary encoding
@@ -12817,7 +12832,7 @@ class AutoMunge:
     df[column + '_wkds'] = df[column + '_wkds'].fillna(7)
     
     #reduce memory footprint
-    df[column+'_wkds'] = df[column+'_wkds'].astype(np.int8)
+    df[column+'_wkds'] = df[column+'_wkds'].astype(int)
     
     #create list of columns
     datecolumns = [column+'_wkds']
@@ -26470,7 +26485,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.05'
+    automungeversion = '5.06'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -27718,7 +27733,8 @@ class AutoMunge:
 
       #replace numerical with string equivalent
       #mdf_train[column] = mdf_train[column].astype(str)
-      mdf_test[tempcolumn] = mdf_test[tempcolumn].astype(str)
+#       mdf_test[tempcolumn] = mdf_test[tempcolumn].astype(str)
+      mdf_test[tempcolumn] = mdf_test[tempcolumn].astype('object')
 
       #textcolumns = postprocess_dict['column_dict'][columnkey]['columnslist']
       textcolumns = \
@@ -27732,35 +27748,28 @@ class AutoMunge:
 
       #we'll get the category names from the textcolumns array by stripping the \
       #prefixes of column name + '_'
-      prefixlength = len(column)+1
+#       prefixlength = len(column)+1
       labels_train = textcolumns[:]
-      for textcolumn in labels_train:
-        textcolumn = textcolumn[prefixlength :]
+#       for textcolumn in labels_train:
+#         textcolumn = textcolumn[prefixlength :]
       #labels_train.sort(axis=0)
-      labels_train.sort()
+#       labels_train.sort()
       labels_test = mdf_test[tempcolumn].unique()
-      labels_test.sort(axis=0)
+#       labels_test.sort(axis=0)
+      labels_test = sorted(labels_test, key=str)
       labels_test = list(labels_test)
 
-      #apply onehotencoding
-      df_test_cat = pd.get_dummies(mdf_test[tempcolumn])
-
-      #append column header name to each category listing
-      labels_test = [column + '_' + entry for entry in labels_test]
+      #pandas one hot encoding doesn't sort integers and strings properly so using my own
+      df_test_cat = pd.DataFrame(mdf_test[tempcolumn])
+      for entry in labels_train:
+        df_test_cat[entry] = np.where(mdf_test[tempcolumn] == entry, 1, 0)
+      del df_test_cat[tempcolumn]
 
       #convert sparse array to pandas dataframe with column labels
-      df_test_cat.columns = labels_test
+      df_test_cat.columns = labels_train
 
       #Get missing columns in test set that are present in training set
-      missing_cols = set( textcolumns ) - set( df_test_cat.columns )
-
-      #Add a missing column in test set with default value equal to 0
-      for c in missing_cols:
-          df_test_cat[c] = 0
-
-      #Ensure the order of column in the test set is in the same order than in train set
-      #Note this also removes categories in test set that aren't present in training set
-      df_test_cat = df_test_cat[textcolumns]
+      missing_cols = set( textcolumns ) - set( labels_test )
 
       del mdf_test[tempcolumn]
       
@@ -29441,10 +29450,16 @@ class AutoMunge:
     #first let'/s identify what applies
     testspecificcategories = list(set(labels_test)-set(labels_train))
     
+    #edge case, replace operation do0esn't work when column dtype is int
+    mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype('object')
+
     #so we'll just replace those items with our plug value
     testplug_dict = dict(zip(testspecificcategories, ['zzzinfill'] * len(testspecificcategories)))
     mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].replace(testplug_dict)
-    
+
+    #edge case, replace operation do0esn't work when column dtype is int
+    mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype('object')
+
     #now we'll apply the ordinal transformation to the test set
     mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].replace(ordinal_dict)
     
@@ -29521,6 +29536,8 @@ class AutoMunge:
       
     #here we replace the overlaps with version with jibberish suffix
     if len(overlap_replace) > 0:
+      #edge case, replace operation do0esn't work when column dtype is int
+      mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype('object')
       mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].replace(overlap_replace)
     
     #in test set, we'll need to strike any categories that weren't present in train
@@ -29529,9 +29546,11 @@ class AutoMunge:
     
     #so we'll just replace those items with our plug value
     testplug_dict = dict(zip(testspecificcategories, ['zzzinfill'] * len(testspecificcategories)))
+    mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype('object')
     mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].replace(testplug_dict)
     
     #now we'll apply the ordinal transformation to the test set
+    mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype('object')
     mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].replace(ordinal_dict)
     
     #just want to make sure these arent' being saved as floats for memory considerations
@@ -29661,26 +29680,31 @@ class AutoMunge:
       mdf_test[column + '_1010'] = mdf_test[column + '_1010'].fillna('zzzinfill')
 
       #replace numerical with string equivalent
-      mdf_test[column + '_1010'] = mdf_test[column + '_1010'].astype(str)
+#       mdf_test[column + '_1010'] = mdf_test[column + '_1010'].astype(str)
+      mdf_test[column + '_1010'] = mdf_test[column + '_1010'].astype('object')
 
       #extract categories for column labels
       #note that .unique() extracts the labels as a numpy array
       #train categories are in the ordinal_dict we p[ulled from normalization_dict
       labels_train = list(binary_encoding_dict.keys())
-      labels_train.sort()
+#       labels_train.sort()
       labels_test = list(mdf_test[column + '_1010'].unique())
-      labels_test.sort()
+#       labels_test.sort()
+      labels_test = sorted(labels_test, key=str)
 
       #if infill not present in train set, insert
       if 'zzzinfill' not in labels_train:
         labels_train = labels_train + ['zzzinfill']
-        labels_train.sort()
+#         labels_train.sort()
+        labels_train = sorted(labels_train, key=str)
       if 'zzzinfill' not in labels_test:
         labels_test = labels_test + ['zzzinfill']
-        labels_test.sort()    
+#         labels_test.sort()
+        labels_test = sorted(labels_test, key=str)
 
       #here we replace the overlaps with version with jibberish suffix
       if len(overlap_replace) > 0:
+        mdf_test[column + '_1010'] = mdf_test[column + '_1010'].astype('object')
         mdf_test[column + '_1010'] = mdf_test[column + '_1010'].replace(overlap_replace)
 
       #in test set, we'll need to strike any categories that weren't present in train
@@ -29689,9 +29713,11 @@ class AutoMunge:
 
       #so we'll just replace those items with our plug value
       testplug_dict = dict(zip(testspecificcategories, ['zzzinfill'] * len(testspecificcategories)))
+      mdf_test[column + '_1010'] = mdf_test[column + '_1010'].astype('object')
       mdf_test[column + '_1010'] = mdf_test[column + '_1010'].replace(testplug_dict)    
 
       #now we'll apply the 1010 transformation to the test set
+      mdf_test[column + '_1010'] = mdf_test[column + '_1010'].astype('object')
       mdf_test[column + '_1010'] = mdf_test[column + '_1010'].replace(binary_encoding_dict)   
 
       #ok let's create a list of columns to store each entry of the binary encoding
