@@ -11763,8 +11763,7 @@ class AutoMunge:
     #adresses infill with new point which we arbitrarily set as 'zzzinfill'
     #intended to show up as last point in set alphabetically
     #for categories presetn in test set not present in train set use this 'zzz' category
-    #as implemented this function does not distinguish between numbers and string equivalents
-    #eg the number 2 and the string '2' are consistently encoded
+    #as implemented this function seperately encodes numbers and string equivalent (eg 2 != '2')
     '''
     
     suffixoverlap_results = {}
@@ -11809,8 +11808,11 @@ class AutoMunge:
     mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].fillna('zzzinfill')
 
     #replace numerical with string equivalent
-    mdf_train[column + '_ordl'] = mdf_train[column + '_ordl'].astype(str)
-    mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype(str)
+#     mdf_train[column + '_ordl'] = mdf_train[column + '_ordl'].astype(str)
+#     mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype(str)
+    
+    mdf_train[column + '_ordl'] = mdf_train[column + '_ordl'].astype('object')
+    mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype('object')
 
     ordered = False
     if ordered_overide:
@@ -11818,26 +11820,24 @@ class AutoMunge:
         if mdf_train[column].cat.ordered:
           ordered = True
           labels_train = list(mdf_train[column].cat.categories)
-          labels_train = [str(x) for x in labels_train]
           if mdf_test[column].dtype.name == 'category':
             if mdf_test[column].cat.ordered:
               labels_test = list(mdf_test[column].cat.categories)
-              labels_test = [str(x) for x in labels_test]
             else:
               labels_test = list(mdf_test[column + '_ordl'].unique())
-              labels_test.sort()
+              labels_test = sorted(labels_test, key=str)
           else:
             labels_test = list(mdf_test[column + '_ordl'].unique())
-            labels_test.sort()
+            labels_test = sorted(labels_test, key=str)
             
     if ordered is False:
       
       #extract categories for column labels
       #note that .unique() extracts the labels as a numpy array
       labels_train = list(mdf_train[column + '_ordl'].unique())
-      labels_train.sort()
+      labels_train = sorted(labels_train, key=str)
       labels_test = list(mdf_test[column + '_ordl'].unique())
-      labels_test.sort()
+      labels_test = sorted(labels_test, key=str)
 
     #if infill not present in train set, insert
     if 'zzzinfill' not in labels_train:
@@ -11852,7 +11852,6 @@ class AutoMunge:
     #____
     #quick check if there are any overlaps between binary encodings and prior unique values in the column
     #as would interfere with the replacement operation
-    #=> I don't think this is an issue since column converted to string, leaving this here for reference
     
     overlap_list = []
     overlap_replace = {}
@@ -11861,7 +11860,7 @@ class AutoMunge:
         overlap_list.append(value)
         
         #here's what we'll replace with, the string suffix is arbitrary and intended as not likely to be in set
-        overlap_replace.update({value : value + 'encoding_overlap'})
+        overlap_replace.update({value : str(value) + 'encoding_overlap'})
     
     #here we replace the overlaps with version with jibberish suffix
     if len(overlap_list) > 0:
@@ -11886,9 +11885,15 @@ class AutoMunge:
         #extract categories for column labels
         #note that .unique() extracts the labels as a numpy array
         labels_train = list(mdf_train[column + '_ordl'].unique())
-        labels_train.sort()
+        labels_train = sorted(labels_train, key=str)
         labels_test = list(mdf_test[column + '_ordl'].unique())
-        labels_test.sort()
+        labels_test = sorted(labels_test, key=str)
+
+      #if infill not present in train set, insert
+      if 'zzzinfill' not in labels_train:
+        labels_train = labels_train + ['zzzinfill']
+      if 'zzzinfill' not in labels_test:
+        labels_test = labels_test + ['zzzinfill']
       
     #clear up memory
     del overlap_list
@@ -11974,7 +11979,6 @@ class AutoMunge:
     
     return mdf_train, mdf_test, column_dict_list
 
-
   def process_ord3_class(self, mdf_train, mdf_test, column, category, \
                          postprocess_dict, params = {}):
     '''
@@ -11984,8 +11988,7 @@ class AutoMunge:
     #adresses infill with new point which we arbitrarily set as 'zzzinfill'
     #intended to show up as last point in set alphabetically
     #for categories presetn in test set not present in train set use this 'zzz' category
-    #as implemented this function does not distinguish between numbers and string equivalents
-    #eg the number 2 and the string '2' are consistently encoded
+    #as implemented this function seperately encodes numbers and string equivalent (eg 2 != '2')
     '''
     
     suffixoverlap_results = {}
@@ -12030,8 +12033,11 @@ class AutoMunge:
     mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].fillna('zzzinfill')
 
     #replace numerical with string equivalent (this operation changes dtype from category to object)
-    mdf_train[column + '_ord3'] = mdf_train[column + '_ord3'].astype(str)
-    mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype(str)
+#     mdf_train[column + '_ord3'] = mdf_train[column + '_ord3'].astype(str)
+#     mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype(str)
+    
+    mdf_train[column + '_ord3'] = mdf_train[column + '_ord3'].astype('object')
+    mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype('object')
     
     ordered = False
     if ordered_overide:
@@ -12039,17 +12045,13 @@ class AutoMunge:
         if mdf_train[column].cat.ordered:
           ordered = True
           labels_train = list(mdf_train[column].cat.categories)
-          labels_train = [str(x) for x in labels_train]
           if mdf_test[column].dtype.name == 'category':
             if mdf_test[column].cat.ordered:
               labels_test = list(mdf_test[column].cat.categories)
-              labels_test = [str(x) for x in labels_test]
             else:
               labels_test = list(mdf_test[column + '_ord3'].unique())
-              labels_test.sort()
           else:
             labels_test = list(mdf_test[column + '_ord3'].unique())
-            labels_test.sort()
             
     if ordered is False:
       
@@ -12060,22 +12062,18 @@ class AutoMunge:
       labels_train = list(labels_train.index)
       
       labels_test = list(mdf_test[column + '_ord3'].unique())
-      labels_test.sort()
 
     #if infill not present in train set, insert
     if 'zzzinfill' not in labels_train:
       labels_train = labels_train + ['zzzinfill']
-#       labels_train.sort()
     if 'zzzinfill' not in labels_test:
       labels_test = labels_test + ['zzzinfill']
-#       labels_test.sort()
     
     listlength = len(labels_train)
     
     #____
     #quick check if there are any overlaps between binary encodings and prior unique values in the column
     #as would interfere with the replacement operation
-    #=> I don't think this is an issue since column converted to string, leaving this here for reference
     
     overlap_list = []
     overlap_replace = {}
@@ -12084,7 +12082,7 @@ class AutoMunge:
         overlap_list.append(value)
         
         #here's what we'll replace with, the string suffix is arbitrary and intended as not likely to be in set
-        overlap_replace.update({value : value + 'encoding_overlap'})
+        overlap_replace.update({value : str(value) + 'encoding_overlap'})
     
     #here we replace the overlaps with version with jibberish suffix
     if len(overlap_list) > 0:
@@ -12112,10 +12110,7 @@ class AutoMunge:
         labels_train = labels_train.rename_axis('zzzinfill').sort_values(by = [column + '_ord3', 'zzzinfill'], ascending = [False, True])
         labels_train = list(labels_train.index)
 
-  #       labels_train = list(mdf_train[column + '_ord2'].unique())
-  #       labels_train.sort()
         labels_test = list(mdf_test[column + '_ord3'].unique())
-        labels_test.sort()
       
     #clear up memory
     del overlap_list
@@ -26475,7 +26470,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.04'
+    automungeversion = '5.05'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -29419,23 +29414,24 @@ class AutoMunge:
     mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].fillna('zzzinfill')
     
     #replace numerical with string equivalent
-    mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype(str)    
+#     mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype(str)  
+    mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype('object')
     
     #extract categories for column labels
     #note that .unique() extracts the labels as a numpy array
     #train categories are in the ordinal_dict we p[ulled from normalization_dict
     labels_train = list(ordinal_dict.keys())
-    labels_train.sort()
+    labels_train = sorted(labels_train, key=str)
     labels_test = list(mdf_test[column + '_ordl'].unique())
-    labels_test.sort()
+    labels_test = sorted(labels_test, key=str)
     
     #if infill not present in train set, insert
     if 'zzzinfill' not in labels_train:
       labels_train = labels_train + ['zzzinfill']
-      labels_train.sort()
+      labels_train = sorted(labels_train, key=str)
     if 'zzzinfill' not in labels_test:
       labels_test = labels_test + ['zzzinfill']
-      labels_test.sort()
+      labels_test = sorted(labels_test, key=str)
       
     #here we replace the overlaps with version with jibberish suffix
     if len(overlap_replace) > 0:
@@ -29505,7 +29501,7 @@ class AutoMunge:
     mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].fillna('zzzinfill')
     
     #replace numerical with string equivalent
-    mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype(str)    
+    mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype('object')
     
     #extract categories for column labels
     #note that .unique() extracts the labels as a numpy array
@@ -29513,7 +29509,7 @@ class AutoMunge:
     labels_train = list(ordinal_dict.keys())
 #     labels_train.sort()
     labels_test = list(mdf_test[column + '_ord3'].unique())
-    labels_test.sort()
+    labels_test = sorted(labels_test, key=str)
     
     #if infill not present in train set, insert
     if 'zzzinfill' not in labels_train:
@@ -29521,7 +29517,7 @@ class AutoMunge:
 #       labels_train.sort()
     if 'zzzinfill' not in labels_test:
       labels_test = labels_test + ['zzzinfill']
-      labels_test.sort()
+      labels_test = sorted(labels_test, key=str)
       
     #here we replace the overlaps with version with jibberish suffix
     if len(overlap_replace) > 0:
@@ -35296,13 +35292,19 @@ class AutoMunge:
     
     ordinal_dict = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordinal_dict']
+    overlap_replace = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordinal_overlap_replace']
     
     inverse_ordinal_dict = {value:key for key,value in ordinal_dict.items()}
+    inverse_overlap_replace = {value:key for key,value in overlap_replace.items()}
     
     inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
     
     df[inputcolumn] = \
     df[normkey].replace(inverse_ordinal_dict)
+    
+    df[inputcolumn] = \
+    df[inputcolumn].replace(inverse_overlap_replace)
     
     return df, inputcolumn
   
@@ -35318,8 +35320,11 @@ class AutoMunge:
     
     ordinal_dict = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordinal_dict']
+    overlap_replace = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordinal_overlap_replace']
     
     inverse_ordinal_dict = {value:key for key,value in ordinal_dict.items()}
+    inverse_overlap_replace = {value:key for key,value in overlap_replace.items()}
     
     inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
 
@@ -35328,6 +35333,9 @@ class AutoMunge:
     
     df[inputcolumn] = \
     df[normkey].replace(inverse_ordinal_dict)
+    
+    df[inputcolumn] = \
+    df[inputcolumn].replace(inverse_overlap_replace)
     
     return df, inputcolumn
 
