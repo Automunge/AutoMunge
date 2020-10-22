@@ -2442,7 +2442,8 @@ to set with >2 entries applies infill to those entries beyond two most common.
     - 'adjinfill', boolean, defaults to False, True makes default infill adjacent cell
   - driftreport postmunge metrics: missing / 1 / 0 / extravalues / oneratio / zeroratio
   - inversion available: yes with full recovery
-* text/txt2: converts categorical sets to one-hot encoded set of boolean identifiers
+* text/txt2: converts categorical sets to one-hot encoded set of boolean identifiers 
+(consistently encodings numbers and numerical string equivalents due to column labeling convention)
   - default infill: all entries zero
   - default NArowtype: justNaN
   - suffix appender: '_(category)' where category is the categoric entry target of column activations
@@ -2451,7 +2452,7 @@ to set with >2 entries applies infill to those entries beyond two most common.
   - driftreport postmunge metrics: textlabelsdict_text / <column> + '_ratio' (column specific)
   - inversion available: yes with full recovery
 * onht: converts categorical sets to one-hot encoded set of boolean identifiers 
-(like text but different convention for returned column headers)
+(like text but different convention for returned column headers and distinct encodings for numbers and numerical string equivalents)
   - default infill: all entries zero (for dedicated column signalling infill / activations in every row use onh2)
   - default NArowtype: justNaN
   - suffix appender: '_onht\_#' where # integer corresponds to the target entry of a column
