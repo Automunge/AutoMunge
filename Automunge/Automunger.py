@@ -7775,12 +7775,22 @@ class AutoMunge:
       adjinfill = params['adjinfill']
     else:
       adjinfill = False
+      
+    #str_convert provides consistent encodings between numbers and string equivalent, eg 2 == '2'
+    if 'str_convert' in params:
+      str_convert = params['str_convert']
+    else:
+      str_convert = False
     
     #copy column to column + '_bnry'
     mdf_train, suffixoverlap_results = \
     self.df_copy_train(mdf_train, column, column + '_bnry', suffixoverlap_results)
     
     mdf_test[column + '_bnry'] = mdf_test[column].copy()
+    
+    if str_convert is True:
+      mdf_train[column + '_bnry'] = mdf_train[column + '_bnry'].astype(str)
+      mdf_test[column + '_bnry'] = mdf_test[column + '_bnry'].astype(str)
 
     #create plug value for missing cells as most common value
     valuecounts = pd.DataFrame(mdf_train[column + '_bnry'].value_counts())
@@ -7953,7 +7963,8 @@ class AutoMunge:
                                                   'extravalues' : extravalues, \
                                                   'oneratio' : oneratio, \
                                                   'zeroratio' : zeroratio, \
-                                                  'adjinfill' : adjinfill}}
+                                                  'adjinfill' : adjinfill, \
+                                                  'str_convert' : str_convert}}
 
     #store some values in the column_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -7995,12 +8006,22 @@ class AutoMunge:
       adjinfill = params['adjinfill']
     else:
       adjinfill = False
+      
+    #str_convert provides consistent encodings between numbers and string equivalent, eg 2 == '2'
+    if 'str_convert' in params:
+      str_convert = params['str_convert']
+    else:
+      str_convert = False
     
     #copy column to column + '_bnry'
     mdf_train, suffixoverlap_results = \
     self.df_copy_train(mdf_train, column, column + '_bnr2', suffixoverlap_results)
     
     mdf_test[column + '_bnr2'] = mdf_test[column].copy()
+    
+    if str_convert is True:
+      mdf_train[column + '_bnr2'] = mdf_train[column + '_bnr2'].astype(str)
+      mdf_test[column + '_bnr2'] = mdf_test[column + '_bnr2'].astype(str)
 
     #create plug value for missing cells as most common value
     valuecounts = pd.DataFrame(mdf_train[column + '_bnr2'].value_counts())
@@ -8176,7 +8197,8 @@ class AutoMunge:
                                                   'extravalues' : extravalues, \
                                                   'oneratio' : oneratio, \
                                                   'zeroratio' : zeroratio, \
-                                                  'adjinfill' : adjinfill}}
+                                                  'adjinfill' : adjinfill, \
+                                                  'str_convert' : str_convert}}
 
     #store some values in the column_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -26540,7 +26562,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.08'
+    automungeversion = '5.09'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -27618,6 +27640,8 @@ class AutoMunge:
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['missing']
     adjinfill = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['adjinfill']
+    str_convert = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['str_convert']
     
 #     onevalue = \
 #     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['onevalue']
@@ -27633,6 +27657,9 @@ class AutoMunge:
 
     #change column name to column + '_bnry'
     mdf_test[column + '_bnry'] = mdf_test[column].copy()
+    
+    if str_convert is True:
+      mdf_test[column + '_bnry'] = mdf_test[column + '_bnry'].astype(str)
     
     if adjinfill is True:
       mdf_test[column + '_bnry'] = mdf_test[column + '_bnry'].fillna(method='ffill')
@@ -27685,6 +27712,8 @@ class AutoMunge:
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['missing']
     adjinfill = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['adjinfill']
+    str_convert = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['str_convert']
     
 #     onevalue = \
 #     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['onevalue']
@@ -27700,6 +27729,9 @@ class AutoMunge:
 
     #change column name to column + '_bnry'
     mdf_test[column + '_bnr2'] = mdf_test[column].copy()
+    
+    if str_convert is True:
+      mdf_test[column + '_bnr2'] = mdf_test[column + '_bnr2'].astype(str)
     
     if adjinfill is True:
       mdf_test[column + '_bnr2'] = mdf_test[column + '_bnr2'].fillna(method='ffill')
