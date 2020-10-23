@@ -2434,6 +2434,8 @@ to set with >2 entries applies infill to those entries beyond two most common.
   - suffix appender: '_bnry'
   - assignparam parameters accepted:
     - 'adjinfill', boolean, defaults to False, True makes default infill adjacent cell
+    - 'str_convert', boolean defaults as False for distinct encodings between numbers and string equivalents
+      e.g. 2 != '2', when passed as True e.g. 2 == '2'
   - driftreport postmunge metrics: missing / 1 / 0 / extravalues / oneratio / zeroratio
   - inversion available: yes with full recovery
 * bnr2: (Same as bnry except for default infill.)
@@ -2442,6 +2444,8 @@ to set with >2 entries applies infill to those entries beyond two most common.
   - suffix appender: '_bnr2'
   - assignparam parameters accepted:
     - 'adjinfill', boolean, defaults to False, True makes default infill adjacent cell
+    - 'str_convert', boolean defaults as False for distinct encodings between numbers and string equivalents
+      e.g. 2 != '2', when passed as True e.g. 2 == '2'
   - driftreport postmunge metrics: missing / 1 / 0 / extravalues / oneratio / zeroratio
   - inversion available: yes with full recovery
 * text/txt2: converts categorical sets to one-hot encoded set of boolean identifiers 
