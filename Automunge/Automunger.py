@@ -8214,6 +8214,12 @@ class AutoMunge:
       adjinfill = params['adjinfill']
     else:
       adjinfill = False
+      
+    #str_convert provides consistent encodings between numbers and string equivalent, eg 2 == '2'
+    if 'str_convert' in params:
+      str_convert = params['str_convert']
+    else:
+      str_convert = False
     
     tempcolumn = column + '_onht_'
     
@@ -8244,11 +8250,13 @@ class AutoMunge:
     mdf_train[tempcolumn] = mdf_train[tempcolumn].fillna('zzzinfill')
     mdf_test[tempcolumn] = mdf_test[tempcolumn].fillna('zzzinfill')
 
-    #replace numerical with string equivalent
-#     mdf_train[tempcolumn] = mdf_train[tempcolumn].astype(str)
-#     mdf_test[tempcolumn] = mdf_test[tempcolumn].astype(str)
-    mdf_train[tempcolumn] = mdf_train[tempcolumn].astype('object')
-    mdf_test[tempcolumn] = mdf_test[tempcolumn].astype('object')
+    if str_convert is True:
+      #replace numerical with string equivalent
+      mdf_train[tempcolumn] = mdf_train[tempcolumn].astype(str)
+      mdf_test[tempcolumn] = mdf_test[tempcolumn].astype(str)
+    else:
+      mdf_train[tempcolumn] = mdf_train[tempcolumn].astype('object')
+      mdf_test[tempcolumn] = mdf_test[tempcolumn].astype('object')
 
     #extract categories for column labels
     #note that .unique() extracts the labels as a numpy array
@@ -8358,7 +8366,8 @@ class AutoMunge:
                                       'labels_dict' : labels_dict, \
                                       'inverse_labels_dict' : inverse_labels_dict, \
                                       'text_categorylist' : categorylist, \
-                                      'adjinfill' : adjinfill}}
+                                      'adjinfill' : adjinfill, \
+                                      'str_convert' : str_convert}}
       
       column_dict = {tc : {'category' : 'onht', \
                            'origcategory' : category, \
@@ -11775,6 +11784,12 @@ class AutoMunge:
       ordered_overide = params['ordered_overide']
     else:
       ordered_overide = True
+      
+    #str_convert provides consistent encodings between numbers and string equivalent, eg 2 == '2'
+    if 'str_convert' in params:
+      str_convert = params['str_convert']
+    else:
+      str_convert = False
     
     #create new column for trasnformation
     mdf_train, suffixoverlap_results = \
@@ -11803,11 +11818,12 @@ class AutoMunge:
     mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].fillna('zzzinfill')
 
     #replace numerical with string equivalent
-#     mdf_train[column + '_ordl'] = mdf_train[column + '_ordl'].astype(str)
-#     mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype(str)
-    
-    mdf_train[column + '_ordl'] = mdf_train[column + '_ordl'].astype('object')
-    mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype('object')
+    if str_convert is True:
+      mdf_train[column + '_ordl'] = mdf_train[column + '_ordl'].astype(str)
+      mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype(str)
+    else:
+      mdf_train[column + '_ordl'] = mdf_train[column + '_ordl'].astype('object')
+      mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype('object')
 
     ordered = False
     if ordered_overide:
@@ -11965,7 +11981,8 @@ class AutoMunge:
                                   'ordl_activations_dict' : ordl_activations_dict, \
                                   'adjinfill' : adjinfill, \
                                   'ordered_overide' : ordered_overide, \
-                                  'ordered' : ordered}}
+                                  'ordered' : ordered, \
+                                  'str_convert' : str_convert}}
     
       column_dict = {tc : {'category' : 'ordl', \
                            'origcategory' : category, \
@@ -12009,6 +12026,12 @@ class AutoMunge:
       ordered_overide = params['ordered_overide']
     else:
       ordered_overide = True
+      
+    #str_convert provides consistent encodings between numbers and string equivalent, eg 2 == '2'
+    if 'str_convert' in params:
+      str_convert = params['str_convert']
+    else:
+      str_convert = False
     
     #create new column for trasnformation
     mdf_train, suffixoverlap_results = \
@@ -12035,13 +12058,14 @@ class AutoMunge:
     #replace NA with a dummy variable
     mdf_train[column + '_ord3'] = mdf_train[column + '_ord3'].fillna('zzzinfill')
     mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].fillna('zzzinfill')
-
-    #replace numerical with string equivalent (this operation changes dtype from category to object)
-#     mdf_train[column + '_ord3'] = mdf_train[column + '_ord3'].astype(str)
-#     mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype(str)
     
-    mdf_train[column + '_ord3'] = mdf_train[column + '_ord3'].astype('object')
-    mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype('object')
+    if str_convert is True:
+      #replace numerical with string equivalent (this operation changes dtype from category to object)
+      mdf_train[column + '_ord3'] = mdf_train[column + '_ord3'].astype(str)
+      mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype(str)
+    else:
+      mdf_train[column + '_ord3'] = mdf_train[column + '_ord3'].astype('object')
+      mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype('object')
     
     ordered = False
     if ordered_overide:
@@ -12196,7 +12220,8 @@ class AutoMunge:
                                   'ordl_activations_dict' : ordl_activations_dict, \
                                   'adjinfill' : adjinfill, \
                                   'ordered_overide' : ordered_overide, \
-                                  'ordered' : ordered}}
+                                  'ordered' : ordered, \
+                                  'str_convert' : str_convert}}
     
       column_dict = {tc : {'category' : 'ord3', \
                            'origcategory' : category, \
@@ -12384,6 +12409,12 @@ class AutoMunge:
       adjinfill = params['adjinfill']
     else:
       adjinfill = False
+      
+    #str_convert provides consistent encodings between numbers and string equivalent, eg 2 == '2'
+    if 'str_convert' in params:
+      str_convert = params['str_convert']
+    else:
+      str_convert = False
     
     #create new column for trasnformation
     mdf_train, suffixoverlap_results = \
@@ -12411,11 +12442,13 @@ class AutoMunge:
     mdf_train[column + '_1010'] = mdf_train[column + '_1010'].fillna('zzzinfill')
     mdf_test[column + '_1010'] = mdf_test[column + '_1010'].fillna('zzzinfill')
 
-    #replace numerical with string equivalent
-#     mdf_train[column + '_1010'] = mdf_train[column + '_1010'].astype(str)
-#     mdf_test[column + '_1010'] = mdf_test[column + '_1010'].astype(str)
-    mdf_train[column + '_1010'] = mdf_train[column + '_1010'].astype('object')
-    mdf_test[column + '_1010'] = mdf_test[column + '_1010'].astype('object')
+    if str_convert is True:
+      #replace numerical with string equivalent
+      mdf_train[column + '_1010'] = mdf_train[column + '_1010'].astype(str)
+      mdf_test[column + '_1010'] = mdf_test[column + '_1010'].astype(str)
+    else:
+      mdf_train[column + '_1010'] = mdf_train[column + '_1010'].astype('object')
+      mdf_test[column + '_1010'] = mdf_test[column + '_1010'].astype('object')
     
     #extract categories for column labels
     #note that .unique() extracts the labels as a numpy array
@@ -12599,7 +12632,8 @@ class AutoMunge:
                                   '_1010_overlap_replace' : overlap_replace, \
                                   '_1010_binary_column_count' : binary_column_count, \
                                   '_1010_activations_dict' : _1010_activations_dict, \
-                                  'adjinfill' : adjinfill}}
+                                  'adjinfill' : adjinfill, \
+                                  'str_convert' : str_convert}}
     
       column_dict = {tc : {'category' : '1010', \
                            'origcategory' : category, \
@@ -23589,7 +23623,7 @@ class AutoMunge:
       if entry1 not in ['categories', 'columns', 'global']:
         
         check_assignnan_toplevelentries_result = True
-        print("error: assignparam parameter valid entries for first tier are 'categories', 'columns', and 'global'")
+        print("error: assignnan parameter valid entries for first tier are 'categories', 'columns', and 'global'")
         print()
         
     if 'categories' in assignnan:
@@ -23599,7 +23633,7 @@ class AutoMunge:
         if entry2 not in transform_dict:
           
           check_assignnan_categories_result = True
-          print("error: assignparam parameter valid entries under 'categories' must be root categories defined in transform_dict")
+          print("error: assignnan parameter valid entries under 'categories' must be root categories defined in transform_dict")
           print()
           
     if 'columns' in assignnan:
@@ -23609,7 +23643,7 @@ class AutoMunge:
         if entry2 not in df_train_list:
           
           check_assignnan_columns_result = True
-          print("error: assignparam parameter valid entries under 'columns' must be source columns from passed df_train")
+          print("error: assignnan parameter valid entries under 'columns' must be source columns from passed df_train")
           print()
 
     return check_assignnan_toplevelentries_result, check_assignnan_categories_result, check_assignnan_columns_result
@@ -26506,7 +26540,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.07'
+    automungeversion = '5.08'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -27733,6 +27767,9 @@ class AutoMunge:
       adjinfill = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['adjinfill']
       
+      str_convert = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['str_convert']
+      
       tempcolumn = column + '_onht_'
 
       #create copy of original column for later retrieval
@@ -27752,10 +27789,11 @@ class AutoMunge:
       #replace NA with a dummy variable
       mdf_test[tempcolumn] = mdf_test[tempcolumn].fillna('zzzinfill')
 
-      #replace numerical with string equivalent
-      #mdf_train[column] = mdf_train[column].astype(str)
-#       mdf_test[tempcolumn] = mdf_test[tempcolumn].astype(str)
-      mdf_test[tempcolumn] = mdf_test[tempcolumn].astype('object')
+      if str_convert is True:
+        #replace numerical with string equivalent
+        mdf_test[tempcolumn] = mdf_test[tempcolumn].astype(str)
+      else:
+        mdf_test[tempcolumn] = mdf_test[tempcolumn].astype('object')
 
       #textcolumns = postprocess_dict['column_dict'][columnkey]['columnslist']
       textcolumns = \
@@ -29426,6 +29464,9 @@ class AutoMunge:
     adjinfill = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['adjinfill']
     
+    str_convert = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['str_convert']
+    
     #create new column for trasnformation
     mdf_test[column + '_ordl'] = mdf_test[column].copy()
     
@@ -29443,9 +29484,11 @@ class AutoMunge:
     #replace NA with a dummy variable
     mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].fillna('zzzinfill')
     
-    #replace numerical with string equivalent
-#     mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype(str)  
-    mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype('object')
+    if str_convert is True:
+      #replace numerical with string equivalent
+      mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype(str)
+    else:
+      mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype('object')
     
     #extract categories for column labels
     #note that .unique() extracts the labels as a numpy array
@@ -29521,6 +29564,9 @@ class AutoMunge:
     adjinfill = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['adjinfill']
     
+    str_convert = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['str_convert']
+    
     #create new column for trasnformation
     mdf_test[column + '_ord3'] = mdf_test[column].copy()
     
@@ -29538,9 +29584,11 @@ class AutoMunge:
     #replace NA with a dummy variable
     mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].fillna('zzzinfill')
     
-    #replace numerical with string equivalent
-#     mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype(str)  
-    mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype('object')
+    if str_convert is True:
+      #replace numerical with string equivalent
+      mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype(str)  
+    else:
+      mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype('object')
     
     #extract categories for column labels
     #note that .unique() extracts the labels as a numpy array
@@ -29686,6 +29734,9 @@ class AutoMunge:
       
       adjinfill = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['adjinfill']
+      
+      str_convert = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['str_convert']
 
       #create new column for trasnformation
       mdf_test[column + '_1010'] = mdf_test[column].copy()    
@@ -29704,9 +29755,11 @@ class AutoMunge:
       #replace NA with a dummy variable
       mdf_test[column + '_1010'] = mdf_test[column + '_1010'].fillna('zzzinfill')
 
-      #replace numerical with string equivalent
-#       mdf_test[column + '_1010'] = mdf_test[column + '_1010'].astype(str)
-      mdf_test[column + '_1010'] = mdf_test[column + '_1010'].astype('object')
+      if str_convert is True:
+        #replace numerical with string equivalent
+        mdf_test[column + '_1010'] = mdf_test[column + '_1010'].astype(str)
+      else:
+        mdf_test[column + '_1010'] = mdf_test[column + '_1010'].astype('object')
 
       #extract categories for column labels
       #note that .unique() extracts the labels as a numpy array
