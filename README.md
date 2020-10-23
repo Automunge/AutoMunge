@@ -72,7 +72,7 @@ the automated "ML infill" method which predicts infill using machine learning
 models trained on the rest of the set in a fully generalized and automated 
 fashion. automunge(.) returns a populated python dictionary which can be used as 
 input along with a subsequent data set to the postmunge(.) function for 
-consistent preparation of data.
+consistent preparations such as for inference.
 
 ## Install, Initialize, and Basics
 
