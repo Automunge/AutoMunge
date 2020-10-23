@@ -246,15 +246,13 @@ header origname + '\_1010_#' where # is integer to distinguish columns in same s
 Each transformation category has a unique suffix appender.
 
 In automation, for numerical data, the functions generate a series of derived
-transformations resulting in multiple child columns. For numerical data, if the
+transformations which may result in one or more child columns. For numerical data, if the
 powertransform option is selected distribution properties are evaluated for 
 potential application of z-score normalization, min-max scaling, power law transform 
 via box-cox method, or mean absolute deviation scaling. Otherwise numerical data 
-defaults to z-score, with z-score normalization options for standard
-deviation bins for values in range <-2, -2-1, -10, 01, 12, >2 from the
-mean. For numerical sets with all positive values the functions also optionally
-can return a power-law transformed set using the box-cox method, along with
-a corresponding set with z-score normalization applied. For time-series
+defaults to z-score, with the binstransform parameter for supplmenting normalized data 
+with standard deviation bins for values in range <-2, -2-1, -10, 01, 12, >2 from the
+mean. Further transformation options are detailed below. For time-series
 data the model segregates the data by time-scale (year, month, day, hour, minute, 
 second) and returns year z-score normalized, a pair of sets for combined month/day 
 and combined hour / minute / second with sin and cos transformations at period of 
@@ -263,9 +261,11 @@ US holidays. For binary categorical data the functions return a single column wi
 1/0 designation. For multimodal categorical data the functions return binary
 encoded sets where categoric entries may be distinguished by zero, one, or more
 simultaneous column activations. Alternatives for one-hot encoding, ordinal encoding, 
-and etc are also available. For all cases the functions may generate a supplemental 
-column (NArw) with a boolean identifier for cells that were subject to infill due 
-to missing or improperly formatted data when the NArw_marker parameter is activated.
+and etc are also available. String parsing methods are available to extract and encode 
+grammatic structure shared between cateogric entries. For all cases the functions may 
+generate a supplemental column (NArw) with a boolean identifier for cells that were 
+subject to infill due to missing or improperly formatted data when the NArw_marker 
+parameter is activated.
 
 The functions also include a method we call 'ML infill' which if elected
 predicts infill for missing values in both the train and test sets using
