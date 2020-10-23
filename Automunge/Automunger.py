@@ -11869,11 +11869,12 @@ class AutoMunge:
           labels_test = [overlap_replace[foundoverlap] if x == foundoverlap else x for x in labels_test]
           
         #then replace encoding overlap entries in the returned column
+
         mdf_train[column + '_ordl'] = mdf_train[column + '_ordl'].replace(overlap_replace)
         mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].replace(overlap_replace)
 
       if ordered is False:
-        
+
         mdf_train[column + '_ordl'] = mdf_train[column + '_ordl'].replace(overlap_replace)
         mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].replace(overlap_replace)
 
@@ -11900,6 +11901,10 @@ class AutoMunge:
     listlength = len(labels_train)
     ordinal_dict = dict(zip(labels_train, range(listlength)))
     
+    #dtype operation is to address edge case if object type drifted to numeric which impacts replace
+    if mdf_train[column + '_ordl'].dtype.name != 'object':
+      mdf_train[column + '_ordl'] = mdf_train[column + '_ordl'].astype('object')
+    
     #replace the cateogries in train set via ordinal trasnformation
     mdf_train[column + '_ordl'] = mdf_train[column + '_ordl'].replace(ordinal_dict)
     
@@ -11909,9 +11914,13 @@ class AutoMunge:
     
     #so we'll just replace those items with our plug value
     testplug_dict = dict(zip(testspecificcategories, ['zzzinfill'] * len(testspecificcategories)))
+    if mdf_test[column + '_ordl'].dtype.name != 'object':
+      mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype('object')
     mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].replace(testplug_dict)
     
     #now we'll apply the ordinal transformation to the test set
+    if mdf_test[column + '_ordl'].dtype.name != 'object':
+      mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype('object')
     mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].replace(ordinal_dict)
     
     #just want to make sure these arent' being saved as floats for memory considerations
@@ -12123,6 +12132,10 @@ class AutoMunge:
     listlength = len(labels_train)
     ordinal_dict = dict(zip(labels_train, range(listlength)))
     
+    #there is an edge case for replace operation is dtyp drifted from object such as to numeric
+    if mdf_train[column + '_ord3'].dtype.name != 'object':
+      mdf_train[column + '_ord3'] = mdf_train[column + '_ord3'].astype('object')
+    
     #replace the cateogries in train set via ordinal trasnformation
     mdf_train[column + '_ord3'] = mdf_train[column + '_ord3'].replace(ordinal_dict)
     
@@ -12132,9 +12145,13 @@ class AutoMunge:
     
     #so we'll just replace those items with our plug value
     testplug_dict = dict(zip(testspecificcategories, ['zzzinfill'] * len(testspecificcategories)))
+    if mdf_test[column + '_ord3'].dtype.name != 'object':
+      mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype('object')
     mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].replace(testplug_dict)
     
     #now we'll apply the ordinal transformation to the test set
+    if mdf_test[column + '_ord3'].dtype.name != 'object':
+      mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype('object')
     mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].replace(ordinal_dict)
     
     #just want to make sure these arent' being saved as floats for memory considerations
@@ -12474,8 +12491,7 @@ class AutoMunge:
     
     #here we replace the overlaps with version with jibberish suffix
     if len(overlap_list) > 0:
-      mdf_train[column + '_1010'] = mdf_train[column + '_1010'].astype('object')
-      mdf_test[column + '_1010'] = mdf_test[column + '_1010'].astype('object')
+      
       mdf_train[column + '_1010'] = mdf_train[column + '_1010'].replace(overlap_replace)
       mdf_test[column + '_1010'] = mdf_test[column + '_1010'].replace(overlap_replace)
       
@@ -12526,7 +12542,10 @@ class AutoMunge:
     #____
     
     #replace the cateogries in train set via ordinal trasnformation
-    mdf_train[column + '_1010'] = mdf_train[column + '_1010'].astype('object')
+    
+    if mdf_train[column + '_1010'].dtype.name != 'object':
+      mdf_train[column + '_1010'] = mdf_train[column + '_1010'].astype('object')
+    
     mdf_train[column + '_1010'] = mdf_train[column + '_1010'].replace(binary_encoding_dict)      
     
     #in test set, we'll need to strike any categories that weren't present in train
@@ -12534,12 +12553,14 @@ class AutoMunge:
     testspecificcategories = list(set(labels_test)-set(labels_train))
     
     #so we'll just replace those items with our plug value
-    mdf_test[column + '_1010'] = mdf_test[column + '_1010'].astype('object')
+    if mdf_test[column + '_1010'].dtype.name != 'object':
+      mdf_test[column + '_1010'] = mdf_test[column + '_1010'].astype('object')
     testplug_dict = dict(zip(testspecificcategories, ['zzzinfill'] * len(testspecificcategories)))
     mdf_test[column + '_1010'] = mdf_test[column + '_1010'].replace(testplug_dict)    
     
     #now we'll apply the 1010 transformation to the test set
-    mdf_test[column + '_1010'] = mdf_test[column + '_1010'].astype('object')
+    if mdf_test[column + '_1010'].dtype.name != 'object':
+      mdf_test[column + '_1010'] = mdf_test[column + '_1010'].astype('object')
     mdf_test[column + '_1010'] = mdf_test[column + '_1010'].replace(binary_encoding_dict)    
 
     #ok let's create a list of columns to store each entry of the binary encoding
@@ -26485,7 +26506,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.06'
+    automungeversion = '5.07'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -29451,14 +29472,16 @@ class AutoMunge:
     testspecificcategories = list(set(labels_test)-set(labels_train))
     
     #edge case, replace operation do0esn't work when column dtype is int
-    mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype('object')
+    if mdf_test[column + '_ordl'].dtype.name != 'object':
+      mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype('object')
 
     #so we'll just replace those items with our plug value
     testplug_dict = dict(zip(testspecificcategories, ['zzzinfill'] * len(testspecificcategories)))
     mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].replace(testplug_dict)
 
     #edge case, replace operation do0esn't work when column dtype is int
-    mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype('object')
+    if mdf_test[column + '_ordl'].dtype.name != 'object':
+      mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype('object')
 
     #now we'll apply the ordinal transformation to the test set
     mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].replace(ordinal_dict)
@@ -29516,6 +29539,7 @@ class AutoMunge:
     mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].fillna('zzzinfill')
     
     #replace numerical with string equivalent
+#     mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype(str)  
     mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype('object')
     
     #extract categories for column labels
@@ -29536,8 +29560,6 @@ class AutoMunge:
       
     #here we replace the overlaps with version with jibberish suffix
     if len(overlap_replace) > 0:
-      #edge case, replace operation do0esn't work when column dtype is int
-      mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype('object')
       mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].replace(overlap_replace)
     
     #in test set, we'll need to strike any categories that weren't present in train
@@ -29546,11 +29568,14 @@ class AutoMunge:
     
     #so we'll just replace those items with our plug value
     testplug_dict = dict(zip(testspecificcategories, ['zzzinfill'] * len(testspecificcategories)))
-    mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype('object')
+    #edge case for replace operation if dtype drifted such as to numeric
+    if mdf_test[column + '_ord3'].dtype.name != 'object':
+      mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype('object')
     mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].replace(testplug_dict)
     
     #now we'll apply the ordinal transformation to the test set
-    mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype('object')
+    if mdf_test[column + '_ord3'].dtype.name != 'object':
+      mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype('object')
     mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].replace(ordinal_dict)
     
     #just want to make sure these arent' being saved as floats for memory considerations
@@ -29704,7 +29729,7 @@ class AutoMunge:
 
       #here we replace the overlaps with version with jibberish suffix
       if len(overlap_replace) > 0:
-        mdf_test[column + '_1010'] = mdf_test[column + '_1010'].astype('object')
+
         mdf_test[column + '_1010'] = mdf_test[column + '_1010'].replace(overlap_replace)
 
       #in test set, we'll need to strike any categories that weren't present in train
@@ -29713,11 +29738,13 @@ class AutoMunge:
 
       #so we'll just replace those items with our plug value
       testplug_dict = dict(zip(testspecificcategories, ['zzzinfill'] * len(testspecificcategories)))
-      mdf_test[column + '_1010'] = mdf_test[column + '_1010'].astype('object')
+      if mdf_test[column + '_1010'].dtype.name != 'object':
+        mdf_test[column + '_1010'] = mdf_test[column + '_1010'].astype('object')
       mdf_test[column + '_1010'] = mdf_test[column + '_1010'].replace(testplug_dict)    
 
       #now we'll apply the 1010 transformation to the test set
-      mdf_test[column + '_1010'] = mdf_test[column + '_1010'].astype('object')
+      if mdf_test[column + '_1010'].dtype.name != 'object':
+        mdf_test[column + '_1010'] = mdf_test[column + '_1010'].astype('object')
       mdf_test[column + '_1010'] = mdf_test[column + '_1010'].replace(binary_encoding_dict)   
 
       #ok let's create a list of columns to store each entry of the binary encoding
@@ -35328,6 +35355,9 @@ class AutoMunge:
     
     df[inputcolumn] = \
     df[normkey].replace(inverse_ordinal_dict)
+
+    if df[inputcolumn].dtype.name != 'object':
+      df[inputcolumn] = df[inputcolumn].astype('object')
     
     df[inputcolumn] = \
     df[inputcolumn].replace(inverse_overlap_replace)
@@ -35359,6 +35389,9 @@ class AutoMunge:
     
     df[inputcolumn] = \
     df[normkey].replace(inverse_ordinal_dict)
+
+    if df[inputcolumn].dtype.name != 'object':
+      df[inputcolumn] = df[inputcolumn].astype('object')
     
     df[inputcolumn] = \
     df[inputcolumn].replace(inverse_overlap_replace)
@@ -35438,6 +35471,10 @@ class AutoMunge:
         df[inputcolumn] = df[inputcolumn] + df[categorylist_entry].astype(int).astype(str)
         
     df[inputcolumn] = df[inputcolumn].replace(inverse_binary_encoding_dict)
+
+    if df[inputcolumn].dtype.name != 'object':
+      df[inputcolumn] = df[inputcolumn].astype('object')
+
     df[inputcolumn] = df[inputcolumn].replace(inverse_overlap_replace)
       
     return df, inputcolumn
