@@ -2460,6 +2460,8 @@ to set with >2 entries applies infill to those entries beyond two most common.
   - suffix appender: '_onht\_#' where # integer corresponds to the target entry of a column
   - assignparam parameters accepted:
     - 'adjinfill', boolean, defaults to False, True makes default infill adjacent cell
+    - 'str_convert', boolean defaults as False for distinct encodings between numbers and string equivalents
+      e.g. 2 != '2', when passed as True e.g. 2 == '2'
   - driftreport postmunge metrics: textlabelsdict_text / <column> + '_ratio' (column specific)
 			           text_categorylist is key between columns and target entries
   - inversion available: yes with full recovery
@@ -2471,6 +2473,8 @@ to set with >2 entries applies infill to those entries beyond two most common.
     - 'adjinfill', boolean, defaults to False, True makes default infill adjacent cell
     - 'ordered_overide', boolean defaults True, when True instects for Pandas ordered categorical and 
       if found integer encoding order defers to that basis
+    - 'str_convert', boolean defaults as False for distinct encodings between numbers and string equivalents
+      e.g. 2 != '2', when passed as True e.g. 2 == '2'
   - driftreport postmunge metrics: ordinal_dict / ordinal_overlap_replace / ordinal_activations_dict
   - inversion available: yes with full recovery
 * ord3: converts categoric sets to ordinal integer encoded set, sorted first by frequency of category 
@@ -2482,6 +2486,8 @@ occurrence, second basis for common count entries is alphabetical
     - 'adjinfill', boolean, defaults to False, True makes default infill adjacent cell
     - 'ordered_overide', boolean defaults True, when True instects for Pandas ordered categorical and 
       if found integer encoding order defers to that basis
+    - 'str_convert', boolean defaults as False for distinct encodings between numbers and string equivalents
+      e.g. 2 != '2', when passed as True e.g. 2 == '2'
   - driftreport postmunge metrics: ordinal_dict / ordinal_overlap_replace / ordinal_activations_dict
   - inversion available: yes with full recovery
 * ord4: derived by an ord3 transform followed by a mnmx transform. Useful as a scaled metric
@@ -2496,6 +2502,8 @@ efficient than one-hot encoding)
   - suffix appender: '\_1010\_#' where # is integer indicating order of 1010 columns
   - assignparam parameters accepted:
     - 'adjinfill', boolean, defaults to False, True makes default infill adjacent cell
+    - 'str_convert', boolean defaults as False for distinct encodings between numbers and string equivalents
+      e.g. 2 != '2', when passed as True e.g. 2 == '2'
   - driftreport postmunge metrics: _1010_binary_encoding_dict / _1010_overlap_replace / 
 	                           _1010_binary_column_count / _1010_activations_dict
   (for example if 1010 encoded to three columns based on number of categories <8,
