@@ -970,7 +970,9 @@ ML_cmnd = {'autoML_type':'randomforest', \
 There is an experimental option available to use an alternate autoML framework for ML infill 
 via the AutoGluon library. Further parameter support is pending. Again this one is still somewhat 
 experimental. (If AutoGluon doesn't want to train a model for some particular column you can 
-run again after assigning that column to a different infill in assigninfill.) Further information
+run again after assigning that column to a different infill in assigninfill.) Note that since AutoGluon
+saves model properties in a local folder, when you process additional data with postmunge it will
+need to be in a notebook saved in same directory as was used for automunge. Further information
 on AutoGluon library available on arxiv as [AutoGluon-Tabular: Robust and Accurate AutoML for Structured Data](https://arxiv.org/abs/2003.06505) by Nick Erickson et al.
 ```
 #can activate AutoGluon for ML infill and feature importance by passing ML_cmnd as
