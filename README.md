@@ -1060,7 +1060,8 @@ the postprocess_dict and consistently applied in postmunge(.). assignparam is
 a dictionary that should be formatted per following example:
 ```
 #template:
-assignparam = {'default_assignparam' : {'(category)' : {'(parameter)' : 42}}, \
+assignparam = {'global_assignparam'  : {'(parameter)': 42}, \
+               'default_assignparam' : {'(category)' : {'(parameter)' : 42}}, \
                         '(category)' : {'(column)'   : {'(parameter)' : 42}}}, \
 
 #example:
@@ -1105,14 +1106,25 @@ are applied within the same family tree. If more than one column identifier
 matches a column, the longest character length key which matches will be 
 applied (such as may include suffix appenders).
 
-Note that if a user wishes to overwrite the default parameters for all columns 
-without specifying them individually they can pass a 'default_assignparam' entry 
-as follows (this only overwrites those parameters that are not otherwise 
-specified in assignparam)
+Note that if a user wishes to overwrite the default parameters associated with a 
+particular category for all columns without specifying them individually they can 
+pass a 'default_assignparam' entry as follows (this only overwrites those parameters 
+that are not otherwise specified in assignparam).
 ```
 assignparam = {'category1' : {'column1' : {'param1' : 123}, 'column2' : {'param1' : 456}}, \
                'cateogry2' : {'column3' : {'param2' : 'abc', 'param3' : 'def'}}, \
                'default_assignparam' : {'category3' : {'param4' : 789}}}
+```
+Or to pass the same parameter to all transformations to all columns, can use the 
+'global_assignparam'. (In order of precendence, parameters assigned to distinct 
+category/column configurations take precedence to default_assignparam assigned to 
+categories which take precendence to global_assignparam assigned to all transformations
+which take precendence to parameters set as defaultparams in processdict definition.) 
+The global_assignparam may be useful for instance to turn off inplace trasnformations 
+such as to retain family tree column grouping correspondance in returned set. 
+Transformations that do not accept a particular parameter will just ignore.
+```
+assignparam = {'global_assignparam' : {'inplace' : False}}
 ```
 See the Library of Transformations section below for those transformations that 
 accept parameters.
