@@ -6487,7 +6487,7 @@ class AutoMunge:
       adjinfill = params['adjinfill']
     else:
       adjinfill = False
-    
+
     if inplace is not True:
       
       #copy source column into new column
@@ -24480,6 +24480,11 @@ class AutoMunge:
     """
     
     check_processdict_result = False
+
+    if 'global_assignparam' in processdict:
+      check_processdict_result = True
+      print("error: processdict has entry for 'global_assignparam'")
+      print("which is a reserved category string for use in assignparam")
     
     for entry in processdict:
       
@@ -25020,6 +25025,11 @@ class AutoMunge:
           columnkey = columnkeys[0]
 
           params = assign_param_cat[columnkey]
+
+    if 'global_assignparam' in assign_param:
+      for key2 in assign_param['global_assignparam']:
+        if key2 not in params:
+          params.update({key2 : assign_param['global_assignparam'][key2]})
       
     return params
 
@@ -27261,7 +27271,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.09'
+    automungeversion = '5.11'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
