@@ -1400,6 +1400,20 @@ processdict =  {'newt' : {'functionpointer' : 'DLmm', \
                           'MLinfilltype' : 'numeric', \
                           'labelctgy' : 'DLmm'}}
 ```
+Note that many of the transformation functions in the library have support for distinguishing between 
+inplace operations vs returning a column copied from the input. When populating a processdict entry, 
+iff the transformation function supports inplace operations and you want to apply inplace operations 
+when available based on the order of family tree primitive entries (inplace when available is 
+performed on the final replacement primitve entry for a given generation), you need to specify with 
+an 'inplace_option' processdict entry such as:
+```
+#for example 
+processdict =  {'newt' : {'functionpointer' : 'mnmx', \
+                          'inplace_option' : True, \
+                          'NArowtype' : 'numeric', \
+                          'MLinfilltype' : 'numeric', \
+                          'labelctgy' : 'mnmx'}}
+```
 
 As an asterisk for advanced users:
 Note that when populating a processdict for a transformation category, the
@@ -2779,11 +2793,6 @@ on number of activations), followed by a 1010 binary encoding
   - inversion available: no
 * excl: passes source column un-altered, no transforms or infill. (Note that returned data may not be 
 numeric and predictive methods like ML infill and feature selection may not work for that scenario.)
-Note that the excl transform is unique in that it is an in-place operation for efficiency purposes, and
-so may only be passed in a user defined transformdict as an entry to cousins primitive, although its 
-application "replaces" the source column. (Note that for any other transform a cousins primitive entry 
-only supplements the source column, 'excl' is the exception to the rule). For comparable functionality 
-eligible for other primitive entries in a passed transformdict please use 'exc6' transform instead. 
 Note that for assignnan designation of infill designations, excl is excluded from 'global' assignments
 (although may still be assigned explicitly under assignnan columns or categories entries).
   - default infill: none
@@ -2805,16 +2814,6 @@ when applying TrainLabelFreqLevel to a numeric label set)
   - default infill: mode
   - default NArowtype: integer
   - suffix appender: '_exc5'
-  - assignparam parameters accepted: none
-  - driftreport postmunge metrics: none
-  - inversion available: yes
-* exc6: passes source column un-altered, no transforms or infill. (Comparable to 'excl' but eligible 
-for entry to full set of family tree primitives in a user-defined transformdict.)
-Note that for assignnan designation of infill designations, exc6 is excluded from 'global' assignments
-(although may still be assigned explicitly under assignnan columns or categories entries).
-  - default infill: none
-  - default NArowtype: exclude
-  - suffix appender: '_exc6'
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: none
   - inversion available: yes
@@ -3239,7 +3238,6 @@ avoid unintentional duplication.
 - 'exc3',
 - 'exc4',
 - 'exc5',
-- 'exc6',
 - 'excl',
 - 'hldy',
 - 'hmsc',
@@ -3499,7 +3497,6 @@ present in dataframe and return results in postprocess_dict['miscparameters_resu
 - '_dysn'
 - '_exc2'
 - '_exc5'
-- '_exc6'
 - '_excl'
 - '_hldy'
 - '_hmsc'
@@ -6342,8 +6339,8 @@ If you want to skip to the next section you can click here: [Custom Transformati
     
     transform_dict.update({'excl' : {'parents'       : [], \
                                      'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : ['excl'], \
+                                     'auntsuncles'   : ['excl'], \
+                                     'cousins'       : [], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
                                      'coworkers'     : [], \
@@ -6379,15 +6376,6 @@ If you want to skip to the next section you can click here: [Custom Transformati
     transform_dict.update({'exc5' : {'parents'       : [], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : ['exc5'], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
-                                     'friends'       : []}})
-    
-    transform_dict.update({'exc6' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['exc6'], \
                                      'cousins'       : [], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
