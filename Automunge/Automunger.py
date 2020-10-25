@@ -2834,8 +2834,8 @@ class AutoMunge:
     
     transform_dict.update({'excl' : {'parents'       : [], \
                                      'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : ['excl'], \
+                                     'auntsuncles'   : ['excl'], \
+                                     'cousins'       : [], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
                                      'coworkers'     : [], \
@@ -2871,15 +2871,6 @@ class AutoMunge:
     transform_dict.update({'exc5' : {'parents'       : [], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : ['exc5'], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
-                                     'friends'       : []}})
-    
-    transform_dict.update({'exc6' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['exc6'], \
                                      'cousins'       : [], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
@@ -3085,222 +3076,271 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_numerical_class, \
                                   'inverseprocess' : self.inverseprocess_nmbr, \
                                   'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmbr'}})
     process_dict.update({'dxdt' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_dxdt_class, \
                                   'postprocess' : None, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'retn'}})
     process_dict.update({'d2dt' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_dxdt_class, \
                                   'postprocess' : None, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'retn'}})
     process_dict.update({'d3dt' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_dxdt_class, \
                                   'postprocess' : None, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'retn'}})
     process_dict.update({'d4dt' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_dxdt_class, \
                                   'postprocess' : None, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'retn'}})
     process_dict.update({'d5dt' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_dxdt_class, \
                                   'postprocess' : None, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'retn'}})
     process_dict.update({'d6dt' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_dxdt_class, \
                                   'postprocess' : None, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'retn'}})
     process_dict.update({'dxd2' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_dxd2_class, \
                                   'postprocess' : None, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'retn'}})
     process_dict.update({'d2d2' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_dxd2_class, \
                                   'postprocess' : None, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'retn'}})
     process_dict.update({'d3d2' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_dxd2_class, \
                                   'postprocess' : None, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'retn'}})
     process_dict.update({'d4d2' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_dxd2_class, \
                                   'postprocess' : None, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'retn'}})
     process_dict.update({'d5d2' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_dxd2_class, \
                                   'postprocess' : None, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'retn'}})
     process_dict.update({'d6d2' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_dxd2_class, \
                                   'postprocess' : None, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'retn'}})
     process_dict.update({'nmdx' : {'dualprocess' : self.process_numerical_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_numerical_class, \
+                                  'inverseprocess' : self.inverseprocess_nmbr, \
+                                  'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'retn'}})
     process_dict.update({'nmd2' : {'dualprocess' : self.process_numerical_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_numerical_class, \
+                                  'inverseprocess' : self.inverseprocess_nmbr, \
+                                  'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'retn'}})
     process_dict.update({'nmd3' : {'dualprocess' : self.process_numerical_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_numerical_class, \
+                                  'inverseprocess' : self.inverseprocess_nmbr, \
+                                  'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'retn'}})
     process_dict.update({'nmd4' : {'dualprocess' : self.process_numerical_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_numerical_class, \
+                                  'inverseprocess' : self.inverseprocess_nmbr, \
+                                  'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'retn'}})
     process_dict.update({'nmd5' : {'dualprocess' : self.process_numerical_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_numerical_class, \
+                                  'inverseprocess' : self.inverseprocess_nmbr, \
+                                  'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'retn'}})
     process_dict.update({'nmd6' : {'dualprocess' : self.process_numerical_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_numerical_class, \
+                                  'inverseprocess' : self.inverseprocess_nmbr, \
+                                  'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'retn'}})
     process_dict.update({'mmdx' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_dxdt_class, \
                                   'postprocess' : None, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmbr'}})
     process_dict.update({'mmd2' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_dxdt_class, \
                                   'postprocess' : None, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmbr'}})
     process_dict.update({'mmd3' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_dxdt_class, \
                                   'postprocess' : None, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmbr'}})
     process_dict.update({'mmd4' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_dxdt_class, \
                                   'postprocess' : None, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmbr'}})
     process_dict.update({'mmd5' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_dxdt_class, \
                                   'postprocess' : None, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmbr'}})
     process_dict.update({'mmd6' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_dxdt_class, \
                                   'postprocess' : None, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmbr'}})
     process_dict.update({'dddt' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_dxdt_class, \
                                   'postprocess' : None, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'dxdt'}})
     process_dict.update({'ddd2' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_dxdt_class, \
                                   'postprocess' : None, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'dxdt'}})
     process_dict.update({'ddd3' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_dxdt_class, \
                                   'postprocess' : None, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'dxdt'}})
     process_dict.update({'ddd4' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_dxdt_class, \
                                   'postprocess' : None, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'dxdt'}})
     process_dict.update({'ddd5' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_dxdt_class, \
                                   'postprocess' : None, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'dxdt'}})
     process_dict.update({'ddd6' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_dxdt_class, \
                                   'postprocess' : None, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'dxdt'}})
     process_dict.update({'dedt' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_dxd2_class, \
                                   'postprocess' : None, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'dxd2'}})
     process_dict.update({'ded2' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_dxd2_class, \
                                   'postprocess' : None, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'dxd2'}})
     process_dict.update({'ded3' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_dxd2_class, \
                                   'postprocess' : None, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'dxd2'}})
     process_dict.update({'ded4' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_dxd2_class, \
                                   'postprocess' : None, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'dxd2'}})
     process_dict.update({'ded5' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_dxd2_class, \
                                   'postprocess' : None, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'dxd2'}})
     process_dict.update({'ded6' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_dxd2_class, \
                                   'postprocess' : None, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'dxd2'}})
@@ -3309,6 +3349,7 @@ class AutoMunge:
                                   'postprocess' : None, \
                                   'inverseprocess' : self.inverseprocess_shft, \
                                   'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'exclude', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'shft'}})
@@ -3317,6 +3358,7 @@ class AutoMunge:
                                   'postprocess' : None, \
                                   'inverseprocess' : self.inverseprocess_shft, \
                                   'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'exclude', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'shf2'}})
@@ -3325,6 +3367,7 @@ class AutoMunge:
                                   'postprocess' : None, \
                                   'inverseprocess' : self.inverseprocess_shft, \
                                   'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'exclude', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'shf3'}})
@@ -3333,6 +3376,7 @@ class AutoMunge:
                                   'postprocess' : None, \
                                   'inverseprocess' : self.inverseprocess_shft, \
                                   'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'exclude', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'retn'}})
@@ -3341,6 +3385,7 @@ class AutoMunge:
                                   'postprocess' : None, \
                                   'inverseprocess' : self.inverseprocess_shft, \
                                   'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'exclude', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'retn'}})
@@ -3349,6 +3394,7 @@ class AutoMunge:
                                   'postprocess' : None, \
                                   'inverseprocess' : self.inverseprocess_shft, \
                                   'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'exclude', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'retn'}})
@@ -3357,6 +3403,7 @@ class AutoMunge:
                                   'postprocess' : None, \
                                   'inverseprocess' : self.inverseprocess_shft, \
                                   'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'exclude', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'retn'}})
@@ -3365,6 +3412,7 @@ class AutoMunge:
                                   'postprocess' : None, \
                                   'inverseprocess' : self.inverseprocess_shft, \
                                   'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'exclude', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'retn'}})
@@ -3373,6 +3421,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_numerical_class, \
                                   'inverseprocess' : self.inverseprocess_nmbr, \
                                   'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmbr'}})
@@ -3381,6 +3430,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_numerical_class, \
                                   'inverseprocess' : self.inverseprocess_nmbr, \
                                   'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmbr'}})
@@ -3389,6 +3439,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_MADn_class, \
                                   'inverseprocess' : self.inverseprocess_MADn, \
                                   'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'MADn'}})
@@ -3397,6 +3448,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_MADn_class, \
                                   'inverseprocess' : self.inverseprocess_MADn, \
                                   'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'MADn'}})
@@ -3405,6 +3457,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_MAD3_class, \
                                   'inverseprocess' : self.inverseprocess_MAD3, \
                                   'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'MAD3'}})
@@ -3413,6 +3466,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_mnmx_class, \
                                   'inverseprocess' : self.inverseprocess_mnmx, \
                                   'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mnmx'}})
@@ -3421,6 +3475,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_mnmx_class, \
                                   'inverseprocess' : self.inverseprocess_mnmx, \
                                   'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mnmx'}})
@@ -3429,6 +3484,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_mnm3_class, \
                                   'inverseprocess' : self.inverseprocess_mnm3, \
                                   'info_retention' : False, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mnm3'}})
@@ -3437,6 +3493,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_mnm3_class, \
                                   'inverseprocess' : self.inverseprocess_mnm3, \
                                   'info_retention' : False, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mnm3'}})
@@ -3445,6 +3502,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_mnmx_class, \
                                   'inverseprocess' : self.inverseprocess_mnmx, \
                                   'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mnmx'}})
@@ -3454,6 +3512,7 @@ class AutoMunge:
                                   'inverseprocess' : self.inverseprocess_mnmx, \
                                   'defaultparams' : {'floor' : True}, \
                                   'info_retention' : False, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mnmx'}})
@@ -3468,6 +3527,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_retn_class, \
                                   'inverseprocess' : self.inverseprocess_retn, \
                                   'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'retn'}})
@@ -3476,6 +3536,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_retn_class, \
                                   'inverseprocess' : self.inverseprocess_retn, \
                                   'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'retn'}})
@@ -3484,6 +3545,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_retn_class, \
                                   'inverseprocess' : self.inverseprocess_retn, \
                                   'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'retn'}})
@@ -3492,6 +3554,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_mean_class, \
                                   'inverseprocess' : self.inverseprocess_mean, \
                                   'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mean'}})
@@ -3500,6 +3563,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_mean_class, \
                                   'inverseprocess' : self.inverseprocess_mean, \
                                   'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mean'}})
@@ -3508,6 +3572,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_mean_class, \
                                   'inverseprocess' : self.inverseprocess_mean, \
                                   'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mean'}})
@@ -3516,6 +3581,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_binary_class, \
                                   'inverseprocess' : self.inverseprocess_bnry, \
                                   'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'binary', \
                                   'labelctgy' : 'bnry'}})
@@ -3524,6 +3590,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_binary2_class, \
                                   'inverseprocess' : self.inverseprocess_bnry, \
                                   'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'binary', \
                                   'labelctgy' : 'bnr2'}})
@@ -4910,6 +4977,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_log0_class, \
                                   'inverseprocess' : self.inverseprocess_log0, \
                                   'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'positivenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'log0'}})
@@ -4918,6 +4986,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_log0_class, \
                                   'inverseprocess' : self.inverseprocess_log0, \
                                   'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'positivenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'log0'}})
@@ -4926,6 +4995,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_logn_class, \
                                   'inverseprocess' : self.inverseprocess_logn, \
                                   'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'positivenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'logn'}})
@@ -4934,6 +5004,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_logn_class, \
                                   'inverseprocess' : self.inverseprocess_logn, \
                                   'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'positivenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmbr'}})
@@ -4942,6 +5013,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_sqrt_class, \
                                   'inverseprocess' : self.inverseprocess_sqrt, \
                                   'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'nonnegativenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'sqrt'}})
@@ -4950,6 +5022,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_addd_class, \
                                   'inverseprocess' : self.inverseprocess_addd, \
                                   'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'addd'}})
@@ -4958,6 +5031,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_sbtr_class, \
                                   'inverseprocess' : self.inverseprocess_sbtr, \
                                   'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'sbtr'}})
@@ -4966,6 +5040,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_mltp_class, \
                                   'inverseprocess' : self.inverseprocess_mltp, \
                                   'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mltp'}})
@@ -4974,6 +5049,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_divd_class, \
                                   'inverseprocess' : self.inverseprocess_divd, \
                                   'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'divd'}})
@@ -4982,6 +5058,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_rais_class, \
                                   'inverseprocess' : self.inverseprocess_rais, \
                                   'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'rais'}})
@@ -4990,6 +5067,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_absl_class, \
                                   'inverseprocess' : self.inverseprocess_absl, \
                                   'info_retention' : False, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'absl'}})
@@ -5014,6 +5092,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_bkt3_class, \
                                   'inverseprocess' : self.inverseprocess_bkt3, \
                                   'info_retention' : False, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'bkt3'}})
@@ -5022,6 +5101,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_bkt4_class, \
                                   'inverseprocess' : self.inverseprocess_bkt4, \
                                   'info_retention' : False, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'bkt4'}})
@@ -5089,6 +5169,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_bsor_class, \
                                   'inverseprocess' : self.inverseprocess_bsor, \
                                   'info_retention' : False, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'bsor'}})
@@ -5098,6 +5179,7 @@ class AutoMunge:
                                   'inverseprocess' : self.inverseprocess_bsor, \
                                   'info_retention' : False, \
                                   'defaultparams' : {'normalizedinput' : True}, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'bsor'}})
@@ -5132,6 +5214,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_bnwo_class, \
                                   'inverseprocess' : self.inverseprocess_bnwo, \
                                   'info_retention' : False, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'bnwo'}})
@@ -5140,6 +5223,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_bnwo_class, \
                                   'inverseprocess' : self.inverseprocess_bnwo, \
                                   'info_retention' : False, \
+                                  'inplace_option' : True, \
                                   'defaultparams' : {'suffix':'_bnKo', 'width':1000}, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'singlct', \
@@ -5149,6 +5233,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_bnwo_class, \
                                   'inverseprocess' : self.inverseprocess_bnwo, \
                                   'info_retention' : False, \
+                                  'inplace_option' : True, \
                                   'defaultparams' : {'suffix':'_bnMo', 'width':1000000}, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'singlct', \
@@ -5184,6 +5269,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_bneo_class, \
                                   'inverseprocess' : self.inverseprocess_bneo, \
                                   'info_retention' : False, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'bneo'}})
@@ -5193,6 +5279,7 @@ class AutoMunge:
                                   'inverseprocess' : self.inverseprocess_bneo, \
                                   'info_retention' : False, \
                                   'defaultparams' : {'suffix':'_bn7o', 'bincount':7}, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'bneo'}})
@@ -5202,6 +5289,7 @@ class AutoMunge:
                                   'inverseprocess' : self.inverseprocess_bneo, \
                                   'info_retention' : False, \
                                   'defaultparams' : {'suffix':'_bn9o', 'bincount':9}, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'bneo'}})
@@ -5216,6 +5304,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_pwor_class, \
                                   'inverseprocess' : self.inverseprocess_por2, \
                                   'info_retention' : False, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'positivenumeric', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'pwor'}})
@@ -5224,6 +5313,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_pwor_class, \
                                   'inverseprocess' : self.inverseprocess_por2, \
                                   'info_retention' : False, \
+                                  'inplace_option' : True, \
                                   'defaultparams' : {'negvalues' : True}, \
                                   'NArowtype' : 'nonzeronumeric', \
                                   'MLinfilltype' : 'singlct', \
@@ -5233,6 +5323,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_pwor_class, \
                                   'inverseprocess' : self.inverseprocess_por2, \
                                   'info_retention' : False, \
+                                  'inplace_option' : True, \
                                   'defaultparams' : {'negvalues' : True}, \
                                   'NArowtype' : 'nonzeronumeric', \
                                   'MLinfilltype' : 'singlct', \
@@ -5242,6 +5333,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_bkt3_class, \
                                   'inverseprocess' : self.inverseprocess_bkt3, \
                                   'info_retention' : False, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : '1010'}})
@@ -5250,6 +5342,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_bkt4_class, \
                                   'inverseprocess' : self.inverseprocess_bkt4, \
                                   'info_retention' : False, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : '1010'}})
@@ -5258,6 +5351,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_bsor_class, \
                                   'inverseprocess' : self.inverseprocess_bsor, \
                                   'info_retention' : False, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : '1010'}})
@@ -5266,6 +5360,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_bnwo_class, \
                                   'inverseprocess' : self.inverseprocess_bnwo, \
                                   'info_retention' : False, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : '1010'}})
@@ -5275,6 +5370,7 @@ class AutoMunge:
                                   'inverseprocess' : self.inverseprocess_bnwo, \
                                   'info_retention' : False, \
                                   'defaultparams' : {'suffix':'_bnKo', 'width':1000}, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : '1010'}})
@@ -5284,6 +5380,7 @@ class AutoMunge:
                                   'inverseprocess' : self.inverseprocess_bnwo, \
                                   'info_retention' : False, \
                                   'defaultparams' : {'suffix':'_bnMo', 'width':1000000}, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : '1010'}})
@@ -5292,6 +5389,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_bneo_class, \
                                   'inverseprocess' : self.inverseprocess_bneo, \
                                   'info_retention' : False, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : '1010'}})
@@ -5301,6 +5399,7 @@ class AutoMunge:
                                   'inverseprocess' : self.inverseprocess_bneo, \
                                   'info_retention' : False, \
                                   'defaultparams' : {'suffix':'_bn7o', 'bincount':7}, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : '1010'}})
@@ -5310,6 +5409,7 @@ class AutoMunge:
                                   'inverseprocess' : self.inverseprocess_bneo, \
                                   'info_retention' : False, \
                                   'defaultparams' : {'suffix':'_bn9o', 'bincount':9}, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : '1010'}})
@@ -5326,6 +5426,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_numerical_class, \
                                   'inverseprocess' : self.inverseprocess_nmbr, \
                                   'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'DPnb'}})
@@ -5334,6 +5435,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_DPnb_class, \
                                   'inverseprocess' : self.inverseprocess_UPCS, \
                                   'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'DPnb'}})
@@ -5342,6 +5444,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_mnmx_class, \
                                   'inverseprocess' : self.inverseprocess_mnmx, \
                                   'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'DPmm'}})
@@ -5366,6 +5469,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_numerical_class, \
                                   'inverseprocess' : self.inverseprocess_nmbr, \
                                   'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'DLnb'}})
@@ -5383,6 +5487,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_mnmx_class, \
                                   'inverseprocess' : self.inverseprocess_mnmx, \
                                   'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'DLmm'}})
@@ -5409,6 +5514,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_binary_class, \
                                   'inverseprocess' : self.inverseprocess_bnry, \
                                   'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'binary', \
                                   'labelctgy' : 'DPbn'}})
@@ -5533,6 +5639,7 @@ class AutoMunge:
                                   'postprocess' : None, \
                                   'inverseprocess' : self.inverseprocess_excl, \
                                   'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'exclude', \
                                   'MLinfilltype' : 'totalexclude', \
                                   'labelctgy' : 'excl'}})
@@ -5541,6 +5648,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_exc2_class, \
                                   'inverseprocess' : self.inverseprocess_UPCS, \
                                   'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'exc2'}})
@@ -5549,6 +5657,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_exc2_class, \
                                   'inverseprocess' : self.inverseprocess_UPCS, \
                                   'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'exc2'}})
@@ -5557,6 +5666,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_exc2_class, \
                                   'inverseprocess' : self.inverseprocess_UPCS, \
                                   'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'exc2'}})
@@ -5565,20 +5675,14 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_exc5_class, \
                                   'inverseprocess' : self.inverseprocess_UPCS, \
                                   'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'integer', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'exc5'}})
-    process_dict.update({'exc6' : {'dualprocess' : None, \
-                                  'singleprocess' : self.process_exc6_class, \
-                                  'postprocess' : None, \
-                                  'inverseprocess' : self.inverseprocess_UPCS, \
-                                  'info_retention' : True, \
-                                  'NArowtype' : 'exclude', \
-                                  'MLinfilltype' : 'totalexclude', \
-                                  'labelctgy' : 'excl'}})
     process_dict.update({'shfl' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_shfl_class, \
                                   'postprocess' : None, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'exclude', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'shfl'}})
@@ -5587,6 +5691,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_numerical_class, \
                                   'inverseprocess' : self.inverseprocess_nmbr, \
                                   'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmbr'}})
@@ -5707,35 +5812,28 @@ class AutoMunge:
     #populated in the transform_dict by assembletransformdict
     
     #we will run in order of
-    #parents, auntsuncles, siblings, cousins
+    #siblings, cousins, parents, auntsuncles
     '''
+    
+    inplaceperformed = False
+    
+    #final upstream transform from parents or auntsuncles is elligible for inplace
+    #as long as no supplement transforms were applied
+    final_upstream = False
+    if len(transform_dict[category]['auntsuncles']) == 0:
+      if len(transform_dict[category]['parents']) > 0:
+        final_upstream = transform_dict[category]['parents'][-1]
+    else:
+      if len(transform_dict[category]['auntsuncles']) > 0:
+        final_upstream = transform_dict[category]['auntsuncles'][-1]
 
-    #process the parents (with downstream, with replacement)
-    for parent in transform_dict[category]['parents']:
-
-      if parent != None:
-
-        df_train, df_test, postprocess_dict = \
-        self.processparent(df_train, df_test, column, parent, origcategory, \
-                          process_dict, transform_dict, postprocess_dict, assign_param)
-        
-    #process the auntsuncles (no downstream, with replacement)
-    for auntuncle in transform_dict[category]['auntsuncles']:
-
-      if auntuncle != None:
-
-        #note we use the processcousin function here
-        df_train, df_test, postprocess_dict = \
-        self.processcousin(df_train, df_test, column, auntuncle, origcategory, \
-                            process_dict, transform_dict, postprocess_dict, assign_param)
-        
     #process the siblings (with downstream, supplemental)
     for sibling in transform_dict[category]['siblings']:
 
       if sibling != None:
         #note we use the processparent function here
-        df_train, df_test, postprocess_dict = \
-        self.processparent(df_train, df_test, column, sibling, origcategory, \
+        df_train, df_test, postprocess_dict, inplaceperformed = \
+        self.processparent(df_train, df_test, column, sibling, origcategory, final_upstream, \
                           process_dict, transform_dict, postprocess_dict, assign_param)
     
     #process the cousins (no downstream, supplemental)
@@ -5745,17 +5843,40 @@ class AutoMunge:
       if cousin != None:
 
         #note we use the processcousin function here
-        df_train, df_test, postprocess_dict = \
-        self.processcousin(df_train, df_test, column, cousin, origcategory, \
+        df_train, df_test, postprocess_dict, inplaceperformed = \
+        self.processcousin(df_train, df_test, column, cousin, origcategory, final_upstream, \
+                            process_dict, transform_dict, postprocess_dict, assign_param)
+
+    #process the parents (with downstream, with replacement)
+    for parent in transform_dict[category]['parents']:
+
+      if parent != None:
+
+        df_train, df_test, postprocess_dict, inplaceperformed = \
+        self.processparent(df_train, df_test, column, parent, origcategory, final_upstream, \
+                          process_dict, transform_dict, postprocess_dict, assign_param)
+        
+    #process the auntsuncles (no downstream, with replacement)
+    for auntuncle in transform_dict[category]['auntsuncles']:
+
+      if auntuncle != None:
+
+        #note we use the processcousin function here
+        df_train, df_test, postprocess_dict, inplaceperformed = \
+        self.processcousin(df_train, df_test, column, auntuncle, origcategory, final_upstream, \
                             process_dict, transform_dict, postprocess_dict, assign_param)
 
     #if we had replacement transformations performed then mark column for deletion
     #(circle of life)
     if len(transform_dict[category]['auntsuncles']) \
-    + len(transform_dict[category]['parents']) > 0:
+    + len(transform_dict[category]['parents']) > 0 \
+    and inplaceperformed is False:
       #here we'll only address downstream generaitons
       if column in postprocess_dict['column_dict']:
         postprocess_dict['column_dict'][column]['deletecolumn'] = True
+      else:
+        if column not in postprocess_dict['orig_noinplace']:
+          postprocess_dict['orig_noinplace'].append(column)
 
     return df_train, df_test, postprocess_dict
 
@@ -5773,7 +5894,7 @@ class AutoMunge:
     if len(transform_dict[category]['auntsuncles']) \
     + len(transform_dict[category]['parents']) > 0:
       
-      if column in df_train.columns:
+      if column in postprocess_dict['orig_noinplace']:
         del df_train[column]
         del df_test[column]
 
@@ -5848,7 +5969,7 @@ class AutoMunge:
     #return column_dict, postprocess_dict
     return postprocess_dict
 
-  def processcousin(self, df_train, df_test, column, cousin, origcategory, \
+  def processcousin(self, df_train, df_test, column, cousin, origcategory, final_upstream, \
                      process_dict, transform_dict, postprocess_dict, assign_param):
     '''
     #cousin is one of the primitives for processfamily function, and it involves
@@ -5864,6 +5985,11 @@ class AutoMunge:
     #               'spl2' : {'column2' : {'minsplit' : 3}}}
 
     '''
+    
+    inplaceperformed = False
+    inplacecandidate = False
+    if final_upstream == cousin:
+      inplacecandidate = True
 
     params = self.grab_params(assign_param, cousin, column)
 
@@ -5874,12 +6000,47 @@ class AutoMunge:
 
     #if this is a dual process function
     if process_dict[cousin]['dualprocess'] != None:
+      
+      if inplacecandidate is True:
+        if 'inplace_option' in process_dict[cousin]:
+          if process_dict[cousin]['inplace_option'] is True:
+            if 'inplace' not in params:
+              inplaceperformed = True
+              params.update({'inplace' : True})
+            elif ('inplace' in params and params['inplace'] != False):
+              inplaceperformed = True
+              params.update({'inplace' : True})
+            else:
+              inplaceperformed = False
+      else:
+        #user cannot manually specify inplace by design
+        if ('inplace' in params and params['inplace'] is True):
+          inplaceperformed = False
+          params.update({'inplace' : False})
+
       df_train, df_test, column_dict_list = \
       process_dict[cousin]['dualprocess'](df_train, df_test, column, origcategory, \
                                           postprocess_dict, params)
 
     #else if this is a single process function process train and test seperately
     elif process_dict[cousin]['singleprocess'] != None:
+      
+      if inplacecandidate is True:
+        if 'inplace_option' in process_dict[cousin]:
+          if process_dict[cousin]['inplace_option'] is True:
+            if 'inplace' not in params:
+              inplaceperformed = True
+              params.update({'inplace' : True})
+            elif ('inplace' in params and params['inplace'] != False):
+              inplaceperformed = True
+              params.update({'inplace' : True})
+            else:
+              inplaceperformed = False
+      else:
+        #user cannot manually specify inplace by design
+        if ('inplace' in params and params['inplace'] is True):
+          inplaceperformed = False
+          params.update({'inplace' : False})
 
       df_train, column_dict_list =  \
       process_dict[cousin]['singleprocess'](df_train, column, origcategory, \
@@ -5893,9 +6054,9 @@ class AutoMunge:
     for column_dict in column_dict_list:
       postprocess_dict = self.dictupdate(column, column_dict, postprocess_dict)
 
-    return df_train, df_test, postprocess_dict
+    return df_train, df_test, postprocess_dict, inplaceperformed
 
-  def processparent(self, df_train, df_test, column, parent, origcategory, \
+  def processparent(self, df_train, df_test, column, parent, origcategory, final_upstream, \
                     process_dict, transform_dict, postprocess_dict, assign_param):
     '''
     #parent is one of the primitives for processfamily function, and it involves
@@ -5911,10 +6072,15 @@ class AutoMunge:
     #               'spl2' : {'column2' : {'minsplit' : 3}}}
     
     #we want to apply in order of
-    #upstream process, children, coworkers, niecesnephews, friends
+    #upstream process, niecesnephews, friends, children, coworkers
     '''
 
     #upstream process
+    
+    inplaceperformed = False
+    inplacecandidate = False
+    if final_upstream == parent:
+      inplacecandidate = True
     
     params = self.grab_params(assign_param, parent, column)
 
@@ -5925,6 +6091,23 @@ class AutoMunge:
     
     #if this is a dual process function
     if process_dict[parent]['dualprocess'] != None:
+      
+      if inplacecandidate is True:
+        if 'inplace_option' in process_dict[parent]:
+          if process_dict[parent]['inplace_option'] is True:
+            if 'inplace' not in params:
+              inplaceperformed = True
+              params.update({'inplace' : True})
+            elif ('inplace' in params and params['inplace'] != False):
+              inplaceperformed = True
+              params.update({'inplace' : True})
+            else:
+              inplaceperformed = False
+      else:
+        #user cannot manually specify inplace by design
+        if ('inplace' in params and params['inplace'] is True):
+          inplaceperformed = False
+          params.update({'inplace' : False})
 
       df_train, df_test, column_dict_list = \
       process_dict[parent]['dualprocess'](df_train, df_test, column, origcategory, \
@@ -5932,6 +6115,23 @@ class AutoMunge:
 
     #else if this is a single process function process train and test seperately
     elif process_dict[parent]['singleprocess'] != None:
+      
+      if inplacecandidate is True:
+        if 'inplace_option' in process_dict[parent]:
+          if process_dict[parent]['inplace_option'] is True:
+            if 'inplace' not in params:
+              inplaceperformed = True
+              params.update({'inplace' : True})
+            elif ('inplace' in params and params['inplace'] != False):
+              inplaceperformed = True
+              params.update({'inplace' : True})
+            else:
+              inplaceperformed = False
+      else:
+        #user cannot manually specify inplace by design
+        if ('inplace' in params and params['inplace'] is True):
+          inplaceperformed = False
+          params.update({'inplace' : False})
 
       df_train, column_dict_list =  \
       process_dict[parent]['singleprocess'](df_train, column, origcategory, \
@@ -5954,29 +6154,16 @@ class AutoMunge:
     #if transform_dict[parent] != None:
     
     #process any children
-    for child in transform_dict[parent]['children']:
-
-      if child != None:
-
-        #process the child
-        #note the function applied is processparent (using recursion)
-        #parent column
-        df_train, df_test, postprocess_dict = \
-        self.processparent(df_train, df_test, parentcolumn, child, origcategory, \
-                           process_dict, transform_dict, postprocess_dict, assign_param)
-  #         self.processfamily(df_train, df_test, parentcolumn, child, origcategory, \
-  #                            process_dict, transform_dict, postprocess_dict)
-
-    #process any coworkers
-    for coworker in transform_dict[parent]['coworkers']:
-
-      if coworker != None:
-
-        #process the coworker
-        #note the function applied is processcousin
-        df_train, df_test, postprocess_dict = \
-        self.processcousin(df_train, df_test, parentcolumn, coworker, origcategory, \
-                           process_dict, transform_dict, postprocess_dict, assign_param)
+    
+    #final upstream transform from parents or auntsuncles is elligible for inplace
+    #as long as no supplement transforms were applied
+    final_downstream = False
+    if len(transform_dict[parent]['coworkers']) == 0:
+      if len(transform_dict[parent]['children']) > 0:
+        final_downstream = transform_dict[parent]['children'][-1]
+    else:
+      if len(transform_dict[parent]['coworkers']) > 0:
+        final_downstream = transform_dict[parent]['coworkers'][-1]
 
     #process any niecesnephews
     #note the function applied is comparable to processsibling, just a different
@@ -5988,8 +6175,8 @@ class AutoMunge:
         #process the niecenephew
         #note the function applied is processparent (using recursion)
         #parent column
-        df_train, df_test, postprocess_dict = \
-        self.processparent(df_train, df_test, parentcolumn, niecenephew, origcategory, \
+        df_train, df_test, postprocess_dict, parent_inplaceperformed = \
+        self.processparent(df_train, df_test, parentcolumn, niecenephew, origcategory, final_downstream, \
                            process_dict, transform_dict, postprocess_dict, assign_param)
   #         self.processfamily(df_train, df_test, parentcolumn, niecenephew, origcategory, \
   #                            process_dict, transform_dict, postprocess_dict)
@@ -6001,8 +6188,32 @@ class AutoMunge:
 
         #process the friend
         #note the function applied is processcousin
-        df_train, df_test, postprocess_dict = \
-        self.processcousin(df_train, df_test, parentcolumn, friend, origcategory, \
+        df_train, df_test, postprocess_dict, parent_inplaceperformed = \
+        self.processcousin(df_train, df_test, parentcolumn, friend, origcategory, final_downstream, \
+                           process_dict, transform_dict, postprocess_dict, assign_param)
+    
+    for child in transform_dict[parent]['children']:
+
+      if child != None:
+
+        #process the child
+        #note the function applied is processparent (using recursion)
+        #parent column
+        df_train, df_test, postprocess_dict, parent_inplaceperformed = \
+        self.processparent(df_train, df_test, parentcolumn, child, origcategory, final_downstream, \
+                           process_dict, transform_dict, postprocess_dict, assign_param)
+  #         self.processfamily(df_train, df_test, parentcolumn, child, origcategory, \
+  #                            process_dict, transform_dict, postprocess_dict)
+
+    #process any coworkers
+    for coworker in transform_dict[parent]['coworkers']:
+
+      if coworker != None:
+
+        #process the coworker
+        #note the function applied is processcousin
+        df_train, df_test, postprocess_dict, parent_inplaceperformed = \
+        self.processcousin(df_train, df_test, parentcolumn, coworker, origcategory, final_downstream, \
                            process_dict, transform_dict, postprocess_dict, assign_param)
 
   #     #if we had replacement transformations performed then delete the original column 
@@ -6017,15 +6228,20 @@ class AutoMunge:
   # #       else:
   # #         postprocess_dict['column_dict'].update({parentcolumn : {'deletecolumn' : True}})
 
+
     #if we had replacement transformations performed then mark column for deletion
     #(circle of life)
     if len(transform_dict[parent]['children']) \
-    + len(transform_dict[parent]['coworkers']) > 0:
+    + len(transform_dict[parent]['coworkers']) > 0 \
+    and parent_inplaceperformed is False:
       #here we'll only address downstream generaitons
       if parentcolumn in postprocess_dict['column_dict']:
         postprocess_dict['column_dict'][parentcolumn]['deletecolumn'] = True
+      else:
+        if parentcolumn not in postprocess_dict['orig_noinplace']:
+          postprocess_dict['orig_noinplace'].append(parentcolumn)
 
-    return df_train, df_test, postprocess_dict
+    return df_train, df_test, postprocess_dict, inplaceperformed
 
   def df_copy_train(self, df_train, column, newcolumn, suffixoverlap_results = {}):
     """
@@ -6236,6 +6452,11 @@ class AutoMunge:
     
     suffixoverlap_results = {}
     
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
     #initialize parameters
     #offset is just an added constant applied after multiplier
     if 'offset' in params:
@@ -6267,11 +6488,21 @@ class AutoMunge:
     else:
       adjinfill = False
     
-    #copy source column into new column
-    mdf_train, suffixoverlap_results = \
-    self.df_copy_train(mdf_train, column, column + '_nmbr', suffixoverlap_results)
+    if inplace is not True:
+      
+      #copy source column into new column
+      mdf_train, suffixoverlap_results = \
+      self.df_copy_train(mdf_train, column, column + '_nmbr', suffixoverlap_results)
+
+      mdf_test[column + '_nmbr'] = mdf_test[column].copy()
     
-    mdf_test[column + '_nmbr'] = mdf_test[column].copy()
+    else:
+      
+      suffixoverlap_results = \
+      self.df_check_suffixoverlap(mdf_train, column + '_nmbr', suffixoverlap_results)
+      
+      mdf_train.rename(columns = {column : column + '_nmbr'}, inplace = True)
+      mdf_test.rename(columns = {column : column + '_nmbr'}, inplace = True)
 
     #convert all values to either numeric or NaN
     mdf_train[column + '_nmbr'] = pd.to_numeric(mdf_train[column + '_nmbr'], errors='coerce')
@@ -6391,18 +6622,29 @@ class AutoMunge:
     
     suffixoverlap_results = {}
     
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
     #initialize parameters
     if 'periods' in params:
-        
       periods = params['periods']
+    else:
+      periods = 1
+    
+    if inplace is not True:
+      
+      #copy source column into new column
+      df, suffixoverlap_results = \
+      self.df_copy_train(df, column, column + '_dxdt', suffixoverlap_results)
     
     else:
       
-      periods = 1
-    
-    #copy source column into new column
-    df, suffixoverlap_results = \
-    self.df_copy_train(df, column, column + '_dxdt', suffixoverlap_results)
+      suffixoverlap_results = \
+      self.df_check_suffixoverlap(df, column + '_dxdt', suffixoverlap_results)
+      
+      df.rename(columns = {column : column + '_dxdt'}, inplace = True)
     
     #convert all values to either numeric or NaN
     df[column + '_dxdt'] = pd.to_numeric(df[column + '_dxdt'], errors='coerce')
@@ -6486,15 +6728,29 @@ class AutoMunge:
     
     suffixoverlap_results = {}
     
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
     #initialize parameters
     if 'periods' in params:
       periods = params['periods']
     else:
       periods = 2
     
-    #copy source column into new column
-    df, suffixoverlap_results = \
-    self.df_copy_train(df, column, column + '_dxd2', suffixoverlap_results)
+    if inplace is not True:
+      
+      #copy source column into new column
+      df, suffixoverlap_results = \
+      self.df_copy_train(df, column, column + '_dxd2', suffixoverlap_results)
+    
+    else:
+      
+      suffixoverlap_results = \
+      self.df_check_suffixoverlap(df, column + '_dxd2', suffixoverlap_results)
+      
+      df.rename(columns = {column : column + '_dxd2'}, inplace = True)
     
     #convert all values to either numeric or NaN
     df[column + '_dxd2'] = pd.to_numeric(df[column + '_dxd2'], errors='coerce')
@@ -6589,6 +6845,11 @@ class AutoMunge:
     
     suffixoverlap_results = {}
     
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
     #initialize parameters
     if 'periods' in params:
       periods = params['periods']
@@ -6601,9 +6862,18 @@ class AutoMunge:
       
     shft_column = column + '_' + suffix
     
-    #copy source column into new column
-    df, suffixoverlap_results = \
-    self.df_copy_train(df, column, shft_column, suffixoverlap_results)
+    if inplace is not True:
+      
+      #copy source column into new column
+      df, suffixoverlap_results = \
+      self.df_copy_train(df, column, shft_column, suffixoverlap_results)
+    
+    else:
+      
+      suffixoverlap_results = \
+      self.df_check_suffixoverlap(df, shft_column, suffixoverlap_results)
+      
+      df.rename(columns = {column : shft_column}, inplace = True)
     
     #convert all values to either numeric or NaN
     df[shft_column] = pd.to_numeric(df[shft_column], errors='coerce')
@@ -6685,6 +6955,11 @@ class AutoMunge:
     
     suffixoverlap_results = {}
     
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
     #initialize parameters
     if 'periods' in params:
       periods = params['periods']
@@ -6697,9 +6972,18 @@ class AutoMunge:
       
     shft_column = column + '_' + suffix
     
-    #copy source column into new column
-    df, suffixoverlap_results = \
-    self.df_copy_train(df, column, shft_column, suffixoverlap_results)
+    if inplace is not True:
+      
+      #copy source column into new column
+      df, suffixoverlap_results = \
+      self.df_copy_train(df, column, shft_column, suffixoverlap_results)
+    
+    else:
+      
+      suffixoverlap_results = \
+      self.df_check_suffixoverlap(df, shft_column, suffixoverlap_results)
+      
+      df.rename(columns = {column : shft_column}, inplace = True)
     
     #convert all values to either numeric or NaN
     df[shft_column] = pd.to_numeric(df[shft_column], errors='coerce')
@@ -6781,6 +7065,11 @@ class AutoMunge:
     
     suffixoverlap_results = {}
     
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
     #initialize parameters
     if 'periods' in params:
       periods = params['periods']
@@ -6793,9 +7082,18 @@ class AutoMunge:
       
     shft_column = column + '_' + suffix
     
-    #copy source column into new column
-    df, suffixoverlap_results = \
-    self.df_copy_train(df, column, shft_column, suffixoverlap_results)
+    if inplace is not True:
+      
+      #copy source column into new column
+      df, suffixoverlap_results = \
+      self.df_copy_train(df, column, shft_column, suffixoverlap_results)
+    
+    else:
+      
+      suffixoverlap_results = \
+      self.df_check_suffixoverlap(df, shft_column, suffixoverlap_results)
+      
+      df.rename(columns = {column : shft_column}, inplace = True)
     
     #convert all values to either numeric or NaN
     df[shft_column] = pd.to_numeric(df[shft_column], errors='coerce')
@@ -6881,17 +7179,32 @@ class AutoMunge:
     
     suffixoverlap_results = {}
     
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
     #adjinfill accepts True/False to change default infill from mean inputation to adjacent cell
     if 'adjinfill' in params:
       adjinfill = params['adjinfill']
     else:
       adjinfill = False
     
-    #copy source column into new column
-    mdf_train, suffixoverlap_results = \
-    self.df_copy_train(mdf_train, column, column + '_MADn', suffixoverlap_results)
+    if inplace is not True:
+      
+      #copy source column into new column
+      mdf_train, suffixoverlap_results = \
+      self.df_copy_train(mdf_train, column, column + '_MADn', suffixoverlap_results)
+
+      mdf_test[column + '_MADn'] = mdf_test[column].copy()
     
-    mdf_test[column + '_MADn'] = mdf_test[column].copy()
+    else:
+      
+      suffixoverlap_results = \
+      self.df_check_suffixoverlap(mdf_train, column + '_MADn', suffixoverlap_results)
+      
+      mdf_train.rename(columns = {column : column + '_MADn'}, inplace = True)
+      mdf_test.rename(columns = {column : column + '_MADn'}, inplace = True)
 
     #convert all values to either numeric or NaN
     mdf_train[column + '_MADn'] = pd.to_numeric(mdf_train[column + '_MADn'], errors='coerce')
@@ -6983,17 +7296,32 @@ class AutoMunge:
     
     suffixoverlap_results = {}
     
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
     #adjinfill accepts True/False to change default infill from mean inputation to adjacent cell
     if 'adjinfill' in params:
       adjinfill = params['adjinfill']
     else:
       adjinfill = False
     
-    #copy source column into new column
-    mdf_train, suffixoverlap_results = \
-    self.df_copy_train(mdf_train, column, column + '_MAD3', suffixoverlap_results)
+    if inplace is not True:
+      
+      #copy source column into new column
+      mdf_train, suffixoverlap_results = \
+      self.df_copy_train(mdf_train, column, column + '_MAD3', suffixoverlap_results)
+
+      mdf_test[column + '_MAD3'] = mdf_test[column].copy()
     
-    mdf_test[column + '_MAD3'] = mdf_test[column].copy()
+    else:
+      
+      suffixoverlap_results = \
+      self.df_check_suffixoverlap(mdf_train, column + '_MAD3', suffixoverlap_results)
+      
+      mdf_train.rename(columns = {column : column + '_MAD3'}, inplace = True)
+      mdf_test.rename(columns = {column : column + '_MAD3'}, inplace = True)
 
     #convert all values to either numeric or NaN
     mdf_train[column + '_MAD3'] = pd.to_numeric(mdf_train[column + '_MAD3'], errors='coerce')
@@ -7087,6 +7415,11 @@ class AutoMunge:
     
     suffixoverlap_results = {}
     
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
     #for cap ands floor, False means not applied, True means based on set's found max/min in train set
     
     #initialize parameters
@@ -7108,11 +7441,21 @@ class AutoMunge:
     else:
       adjinfill = False
     
-    #copy source column into new column
-    mdf_train, suffixoverlap_results = \
-    self.df_copy_train(mdf_train, column, column + '_mnmx', suffixoverlap_results)
+    if inplace is not True:
+      
+      #copy source column into new column
+      mdf_train, suffixoverlap_results = \
+      self.df_copy_train(mdf_train, column, column + '_mnmx', suffixoverlap_results)
+
+      mdf_test[column + '_mnmx'] = mdf_test[column].copy()
     
-    mdf_test[column + '_mnmx'] = mdf_test[column].copy()
+    else:
+      
+      suffixoverlap_results = \
+      self.df_check_suffixoverlap(mdf_train, column + '_mnmx', suffixoverlap_results)
+      
+      mdf_train.rename(columns = {column : column + '_mnmx'}, inplace = True)
+      mdf_test.rename(columns = {column : column + '_mnmx'}, inplace = True)
 
     #convert all values to either numeric or NaN
     mdf_train[column + '_mnmx'] = pd.to_numeric(mdf_train[column + '_mnmx'], errors='coerce')
@@ -7235,6 +7578,11 @@ class AutoMunge:
     '''
     
     suffixoverlap_results = {}
+    
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
 
     #initialize parameters
     if 'qmax' in params:
@@ -7253,11 +7601,21 @@ class AutoMunge:
     else:
       adjinfill = False
     
-    #copy source column into new column
-    mdf_train, suffixoverlap_results = \
-    self.df_copy_train(mdf_train, column, column + '_mnm3', suffixoverlap_results)
+    if inplace is not True:
+      
+      #copy source column into new column
+      mdf_train, suffixoverlap_results = \
+      self.df_copy_train(mdf_train, column, column + '_mnm3', suffixoverlap_results)
+
+      mdf_test[column + '_mnm3'] = mdf_test[column].copy()
     
-    mdf_test[column + '_mnm3'] = mdf_test[column].copy()
+    else:
+      
+      suffixoverlap_results = \
+      self.df_check_suffixoverlap(mdf_train, column + '_mnm3', suffixoverlap_results)
+      
+      mdf_train.rename(columns = {column : column + '_mnm3'}, inplace = True)
+      mdf_test.rename(columns = {column : column + '_mnm3'}, inplace = True)
 
     #convert all values to either numeric or NaN
     mdf_train[column + '_mnm3'] = pd.to_numeric(mdf_train[column + '_mnm3'], errors='coerce')
@@ -7386,6 +7744,11 @@ class AutoMunge:
     
     suffixoverlap_results = {}
     
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
     #initialize parameters
     
     #accepts divisor parameters of 'minmax' or 'std', eg divisor for normalization equation
@@ -7425,11 +7788,21 @@ class AutoMunge:
     else:
       adjinfill = False
     
-    #copy source column into new column
-    mdf_train, suffixoverlap_results = \
-    self.df_copy_train(mdf_train, column, column + '_retn', suffixoverlap_results)
+    if inplace is not True:
+      
+      #copy source column into new column
+      mdf_train, suffixoverlap_results = \
+      self.df_copy_train(mdf_train, column, column + '_retn', suffixoverlap_results)
+
+      mdf_test[column + '_retn'] = mdf_test[column].copy()
     
-    mdf_test[column + '_retn'] = mdf_test[column].copy()
+    else:
+      
+      suffixoverlap_results = \
+      self.df_check_suffixoverlap(mdf_train, column + '_retn', suffixoverlap_results)
+      
+      mdf_train.rename(columns = {column : column + '_retn'}, inplace = True)
+      mdf_test.rename(columns = {column : column + '_retn'}, inplace = True)
 
     #convert all values to either numeric or NaN
     mdf_train[column + '_retn'] = pd.to_numeric(mdf_train[column + '_retn'], errors='coerce')
@@ -7612,6 +7985,11 @@ class AutoMunge:
     
     suffixoverlap_results = {}
     
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
     #initialize parameters
     if 'offset' in params:
       offset = params['offset']
@@ -7639,11 +8017,21 @@ class AutoMunge:
     else:
       adjinfill = False
     
-    #copy source column into new column
-    mdf_train, suffixoverlap_results = \
-    self.df_copy_train(mdf_train, column, column + '_mean', suffixoverlap_results)
+    if inplace is not True:
+      
+      #copy source column into new column
+      mdf_train, suffixoverlap_results = \
+      self.df_copy_train(mdf_train, column, column + '_mean', suffixoverlap_results)
+
+      mdf_test[column + '_mean'] = mdf_test[column].copy()
     
-    mdf_test[column + '_mean'] = mdf_test[column].copy()
+    else:
+      
+      suffixoverlap_results = \
+      self.df_check_suffixoverlap(mdf_train, column + '_mean', suffixoverlap_results)
+      
+      mdf_train.rename(columns = {column : column + '_mean'}, inplace = True)
+      mdf_test.rename(columns = {column : column + '_mean'}, inplace = True)
 
     #convert all values to either numeric or NaN
     mdf_train[column + '_mean'] = pd.to_numeric(mdf_train[column + '_mean'], errors='coerce')
@@ -7770,6 +8158,11 @@ class AutoMunge:
     
     suffixoverlap_results = {}
     
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
     #adjinfill accepts True/False to change default infill from mean inputation to adjacent cell
     if 'adjinfill' in params:
       adjinfill = params['adjinfill']
@@ -7782,11 +8175,21 @@ class AutoMunge:
     else:
       str_convert = False
     
-    #copy column to column + '_bnry'
-    mdf_train, suffixoverlap_results = \
-    self.df_copy_train(mdf_train, column, column + '_bnry', suffixoverlap_results)
+    if inplace is not True:
+      
+      #copy source column into new column
+      mdf_train, suffixoverlap_results = \
+      self.df_copy_train(mdf_train, column, column + '_bnry', suffixoverlap_results)
+
+      mdf_test[column + '_bnry'] = mdf_test[column].copy()
     
-    mdf_test[column + '_bnry'] = mdf_test[column].copy()
+    else:
+      
+      suffixoverlap_results = \
+      self.df_check_suffixoverlap(mdf_train, column + '_bnry', suffixoverlap_results)
+      
+      mdf_train.rename(columns = {column : column + '_bnry'}, inplace = True)
+      mdf_test.rename(columns = {column : column + '_bnry'}, inplace = True)
     
     if str_convert is True:
       mdf_train[column + '_bnry'] = mdf_train[column + '_bnry'].astype(str)
@@ -8001,6 +8404,11 @@ class AutoMunge:
     
     suffixoverlap_results = {}
     
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
     #adjinfill accepts True/False to change default infill from mean inputation to adjacent cell
     if 'adjinfill' in params:
       adjinfill = params['adjinfill']
@@ -8013,11 +8421,21 @@ class AutoMunge:
     else:
       str_convert = False
     
-    #copy column to column + '_bnry'
-    mdf_train, suffixoverlap_results = \
-    self.df_copy_train(mdf_train, column, column + '_bnr2', suffixoverlap_results)
+    if inplace is not True:
+      
+      #copy source column into new column
+      mdf_train, suffixoverlap_results = \
+      self.df_copy_train(mdf_train, column, column + '_bnr2', suffixoverlap_results)
+
+      mdf_test[column + '_bnr2'] = mdf_test[column].copy()
     
-    mdf_test[column + '_bnr2'] = mdf_test[column].copy()
+    else:
+      
+      suffixoverlap_results = \
+      self.df_check_suffixoverlap(mdf_train, column + '_bnr2', suffixoverlap_results)
+      
+      mdf_train.rename(columns = {column : column + '_bnr2'}, inplace = True)
+      mdf_test.rename(columns = {column : column + '_bnr2'}, inplace = True)
     
     if str_convert is True:
       mdf_train[column + '_bnr2'] = mdf_train[column + '_bnr2'].astype(str)
@@ -8591,9 +9009,23 @@ class AutoMunge:
     
     suffixoverlap_results = {}
     
-    #create new column
-    df, suffixoverlap_results = \
-    self.df_copy_train(df, column, column + '_lngt', suffixoverlap_results)
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
+    if inplace is not True:
+      
+      #copy source column into new column
+      df, suffixoverlap_results = \
+      self.df_copy_train(df, column, column + '_lngt', suffixoverlap_results)
+    
+    else:
+      
+      suffixoverlap_results = \
+      self.df_check_suffixoverlap(df, column + '_lngt', suffixoverlap_results)
+      
+      df.rename(columns = {column : column + '_lngt'}, inplace = True)
     
     df[column + '_lngt'] = df[column + '_lngt'].astype(str).apply(len)
     
@@ -8652,14 +9084,28 @@ class AutoMunge:
     
     suffixoverlap_results = {}
     
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
     if 'activate' in params:
       activate = params['activate']
     else:
       activate = True
     
-    #create new column
-    df, suffixoverlap_results = \
-    self.df_copy_train(df, column, column + '_UPCS', suffixoverlap_results)
+    if inplace is not True:
+      
+      #copy source column into new column
+      df, suffixoverlap_results = \
+      self.df_copy_train(df, column, column + '_UPCS', suffixoverlap_results)
+    
+    else:
+      
+      suffixoverlap_results = \
+      self.df_check_suffixoverlap(df, column + '_UPCS', suffixoverlap_results)
+      
+      df.rename(columns = {column : column + '_UPCS'}, inplace = True)
     
     #convert to uppercase string based on activate parameter
     if activate is True:
@@ -12543,7 +12989,7 @@ class AutoMunge:
         
         #here's what we'll replace with, the string suffix is arbitrary and intended as not likely to be in set
         overlap_replace.update({value : value + encoding_overlap_suffix})
-    
+
     #here we replace the overlaps with version with jibberish suffix
     if len(overlap_list) > 0:
       
@@ -12561,6 +13007,16 @@ class AutoMunge:
       labels_test = list(mdf_test[column + '_1010'].unique())
       labels_test = sorted(labels_test, key=str)
 #       labels_test.sort()
+
+      #if infill not present in train set, insert
+      if 'zzzinfill' not in labels_train:
+        labels_train = labels_train + ['zzzinfill']
+        labels_train = sorted(labels_train, key=str)
+  #       labels_train.sort()
+      if 'zzzinfill' not in labels_test:
+        labels_test = labels_test + ['zzzinfill']
+        labels_test = sorted(labels_test, key=str)
+  #       labels_test.sort()
       
       #initialize dictionaryt to store encodings
       binary_encoding_dict = {}
@@ -13571,11 +14027,26 @@ class AutoMunge:
     
     suffixoverlap_results = {}
     
-    #copy source column into new column
-    mdf_train, suffixoverlap_results = \
-    self.df_copy_train(mdf_train, column, column + '_log0', suffixoverlap_results)
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
     
-    mdf_test[column + '_log0'] = mdf_test[column].copy()
+    if inplace is not True:
+      
+      #copy source column into new column
+      mdf_train, suffixoverlap_results = \
+      self.df_copy_train(mdf_train, column, column + '_log0', suffixoverlap_results)
+
+      mdf_test[column + '_log0'] = mdf_test[column].copy()
+    
+    else:
+      
+      suffixoverlap_results = \
+      self.df_check_suffixoverlap(mdf_train, column + '_log0', suffixoverlap_results)
+      
+      mdf_train.rename(columns = {column : column + '_log0'}, inplace = True)
+      mdf_test.rename(columns = {column : column + '_log0'}, inplace = True)
 
     #convert all values to either numeric or NaN
     mdf_train[column + '_log0'] = pd.to_numeric(mdf_train[column + '_log0'], errors='coerce')
@@ -13653,11 +14124,26 @@ class AutoMunge:
     
     suffixoverlap_results = {}
     
-    #copy source column into new column
-    mdf_train, suffixoverlap_results = \
-    self.df_copy_train(mdf_train, column, column + '_logn', suffixoverlap_results)
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
     
-    mdf_test[column + '_logn'] = mdf_test[column].copy()
+    if inplace is not True:
+      
+      #copy source column into new column
+      mdf_train, suffixoverlap_results = \
+      self.df_copy_train(mdf_train, column, column + '_logn', suffixoverlap_results)
+
+      mdf_test[column + '_logn'] = mdf_test[column].copy()
+    
+    else:
+      
+      suffixoverlap_results = \
+      self.df_check_suffixoverlap(mdf_train, column + '_logn', suffixoverlap_results)
+      
+      mdf_train.rename(columns = {column : column + '_logn'}, inplace = True)
+      mdf_test.rename(columns = {column : column + '_logn'}, inplace = True)
 
     #convert all values to either numeric or NaN
     mdf_train[column + '_logn'] = pd.to_numeric(mdf_train[column + '_logn'], errors='coerce')
@@ -13735,11 +14221,26 @@ class AutoMunge:
     
     suffixoverlap_results = {}
     
-    #copy source column into new column
-    mdf_train, suffixoverlap_results = \
-    self.df_copy_train(mdf_train, column, column + '_sqrt', suffixoverlap_results)
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
     
-    mdf_test[column + '_sqrt'] = mdf_test[column].copy()
+    if inplace is not True:
+      
+      #copy source column into new column
+      mdf_train, suffixoverlap_results = \
+      self.df_copy_train(mdf_train, column, column + '_sqrt', suffixoverlap_results)
+
+      mdf_test[column + '_sqrt'] = mdf_test[column].copy()
+    
+    else:
+      
+      suffixoverlap_results = \
+      self.df_check_suffixoverlap(mdf_train, column + '_sqrt', suffixoverlap_results)
+      
+      mdf_train.rename(columns = {column : column + '_sqrt'}, inplace = True)
+      mdf_test.rename(columns = {column : column + '_sqrt'}, inplace = True)
 
     #convert all values to either numeric or NaN
     mdf_train[column + '_sqrt'] = pd.to_numeric(mdf_train[column + '_sqrt'], errors='coerce')
@@ -13818,6 +14319,11 @@ class AutoMunge:
     
     suffixoverlap_results = {}
     
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
     if 'add' in params:
         
       add = params['add']
@@ -13826,11 +14332,21 @@ class AutoMunge:
       
       add = 1
     
-    #copy source column into new column
-    mdf_train, suffixoverlap_results = \
-    self.df_copy_train(mdf_train, column, column + '_addd', suffixoverlap_results)
+    if inplace is not True:
+      
+      #copy source column into new column
+      mdf_train, suffixoverlap_results = \
+      self.df_copy_train(mdf_train, column, column + '_addd', suffixoverlap_results)
+
+      mdf_test[column + '_addd'] = mdf_test[column].copy()
     
-    mdf_test[column + '_addd'] = mdf_test[column].copy()
+    else:
+      
+      suffixoverlap_results = \
+      self.df_check_suffixoverlap(mdf_train, column + '_addd', suffixoverlap_results)
+      
+      mdf_train.rename(columns = {column : column + '_addd'}, inplace = True)
+      mdf_test.rename(columns = {column : column + '_addd'}, inplace = True)
 
     #convert all values to either numeric or NaN
     mdf_train[column + '_addd'] = pd.to_numeric(mdf_train[column + '_addd'], errors='coerce')
@@ -13893,6 +14409,11 @@ class AutoMunge:
     
     suffixoverlap_results = {}
     
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
     if 'subtract' in params:
         
       subtract = params['subtract']
@@ -13901,11 +14422,21 @@ class AutoMunge:
       
       subtract = 1
     
-    #copy source column into new column
-    mdf_train, suffixoverlap_results = \
-    self.df_copy_train(mdf_train, column, column + '_sbtr', suffixoverlap_results)
+    if inplace is not True:
+      
+      #copy source column into new column
+      mdf_train, suffixoverlap_results = \
+      self.df_copy_train(mdf_train, column, column + '_sbtr', suffixoverlap_results)
+
+      mdf_test[column + '_sbtr'] = mdf_test[column].copy()
     
-    mdf_test[column + '_sbtr'] = mdf_test[column].copy()
+    else:
+      
+      suffixoverlap_results = \
+      self.df_check_suffixoverlap(mdf_train, column + '_sbtr', suffixoverlap_results)
+      
+      mdf_train.rename(columns = {column : column + '_sbtr'}, inplace = True)
+      mdf_test.rename(columns = {column : column + '_sbtr'}, inplace = True)
 
     #convert all values to either numeric or NaN
     mdf_train[column + '_sbtr'] = pd.to_numeric(mdf_train[column + '_sbtr'], errors='coerce')
@@ -13967,6 +14498,11 @@ class AutoMunge:
     
     suffixoverlap_results = {}
     
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
     if 'multiply' in params:
         
       multiply = params['multiply']
@@ -13975,11 +14511,21 @@ class AutoMunge:
       
       multiply = 2
     
-    #copy source column into new column
-    mdf_train, suffixoverlap_results = \
-    self.df_copy_train(mdf_train, column, column + '_mltp', suffixoverlap_results)
+    if inplace is not True:
+      
+      #copy source column into new column
+      mdf_train, suffixoverlap_results = \
+      self.df_copy_train(mdf_train, column, column + '_mltp', suffixoverlap_results)
+
+      mdf_test[column + '_mltp'] = mdf_test[column].copy()
     
-    mdf_test[column + '_mltp'] = mdf_test[column].copy()
+    else:
+      
+      suffixoverlap_results = \
+      self.df_check_suffixoverlap(mdf_train, column + '_mltp', suffixoverlap_results)
+      
+      mdf_train.rename(columns = {column : column + '_mltp'}, inplace = True)
+      mdf_test.rename(columns = {column : column + '_mltp'}, inplace = True)
 
     #convert all values to either numeric or NaN
     mdf_train[column + '_mltp'] = pd.to_numeric(mdf_train[column + '_mltp'], errors='coerce')
@@ -14040,6 +14586,11 @@ class AutoMunge:
     
     suffixoverlap_results = {}
     
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
     if 'divide' in params:
         
       divide = params['divide']
@@ -14052,11 +14603,21 @@ class AutoMunge:
     if divide == 0:
       divide = 1
     
-    #copy source column into new column
-    mdf_train, suffixoverlap_results = \
-    self.df_copy_train(mdf_train, column, column + '_divd', suffixoverlap_results)
+    if inplace is not True:
+      
+      #copy source column into new column
+      mdf_train, suffixoverlap_results = \
+      self.df_copy_train(mdf_train, column, column + '_divd', suffixoverlap_results)
+
+      mdf_test[column + '_divd'] = mdf_test[column].copy()
     
-    mdf_test[column + '_divd'] = mdf_test[column].copy()
+    else:
+      
+      suffixoverlap_results = \
+      self.df_check_suffixoverlap(mdf_train, column + '_divd', suffixoverlap_results)
+      
+      mdf_train.rename(columns = {column : column + '_divd'}, inplace = True)
+      mdf_test.rename(columns = {column : column + '_divd'}, inplace = True)
 
     #convert all values to either numeric or NaN
     mdf_train[column + '_divd'] = pd.to_numeric(mdf_train[column + '_divd'], errors='coerce')
@@ -14119,6 +14680,11 @@ class AutoMunge:
     
     suffixoverlap_results = {}
     
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
     if 'raiser' in params:
         
       raiser = params['raiser']
@@ -14127,11 +14693,21 @@ class AutoMunge:
       
       raiser = 2
     
-    #copy source column into new column
-    mdf_train, suffixoverlap_results = \
-    self.df_copy_train(mdf_train, column, column + '_rais', suffixoverlap_results)
+    if inplace is not True:
+      
+      #copy source column into new column
+      mdf_train, suffixoverlap_results = \
+      self.df_copy_train(mdf_train, column, column + '_rais', suffixoverlap_results)
+
+      mdf_test[column + '_rais'] = mdf_test[column].copy()
     
-    mdf_test[column + '_rais'] = mdf_test[column].copy()
+    else:
+      
+      suffixoverlap_results = \
+      self.df_check_suffixoverlap(mdf_train, column + '_rais', suffixoverlap_results)
+      
+      mdf_train.rename(columns = {column : column + '_rais'}, inplace = True)
+      mdf_test.rename(columns = {column : column + '_rais'}, inplace = True)
 
     #convert all values to either numeric or NaN
     mdf_train[column + '_rais'] = pd.to_numeric(mdf_train[column + '_rais'], errors='coerce')
@@ -14191,11 +14767,26 @@ class AutoMunge:
     
     suffixoverlap_results = {}
     
-    #copy source column into new column
-    mdf_train, suffixoverlap_results = \
-    self.df_copy_train(mdf_train, column, column + '_absl', suffixoverlap_results)
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
     
-    mdf_test[column + '_absl'] = mdf_test[column].copy()
+    if inplace is not True:
+      
+      #copy source column into new column
+      mdf_train, suffixoverlap_results = \
+      self.df_copy_train(mdf_train, column, column + '_absl', suffixoverlap_results)
+
+      mdf_test[column + '_absl'] = mdf_test[column].copy()
+    
+    else:
+      
+      suffixoverlap_results = \
+      self.df_check_suffixoverlap(mdf_train, column + '_absl', suffixoverlap_results)
+      
+      mdf_train.rename(columns = {column : column + '_absl'}, inplace = True)
+      mdf_test.rename(columns = {column : column + '_absl'}, inplace = True)
 
     #convert all values to either numeric or NaN
     mdf_train[column + '_absl'] = pd.to_numeric(mdf_train[column + '_absl'], errors='coerce')
@@ -14473,19 +15064,34 @@ class AutoMunge:
     
     suffixoverlap_results = {}
     
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
     if 'negvalues' in params:
       negvalues = params['negvalues']
     else:
       negvalues = False
     
     pworcolumn = column + '_pwor'
-
-    #store original column for later reversion
-    mdf_train, suffixoverlap_results = \
-    self.df_copy_train(mdf_train, column, pworcolumn, suffixoverlap_results)
     
-    mdf_test[pworcolumn] = mdf_test[column].copy()
-
+    if inplace is not True:
+      
+      #copy source column into new column
+      mdf_train, suffixoverlap_results = \
+      self.df_copy_train(mdf_train, column, pworcolumn, suffixoverlap_results)
+      
+      mdf_test[pworcolumn] = mdf_test[column].copy()
+    
+    else:
+      
+      suffixoverlap_results = \
+      self.df_check_suffixoverlap(mdf_train, pworcolumn, suffixoverlap_results)
+      
+      mdf_train.rename(columns = {column : pworcolumn}, inplace = True)
+      mdf_test.rename(columns = {column : pworcolumn}, inplace = True)
+    
     #convert all values to either numeric or NaN
     mdf_train[pworcolumn] = pd.to_numeric(mdf_train[pworcolumn], errors='coerce')
     mdf_test[pworcolumn] = pd.to_numeric(mdf_test[pworcolumn], errors='coerce')
@@ -14853,6 +15459,11 @@ class AutoMunge:
     
     suffixoverlap_results = {}
     
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
     if 'bincount' in params:
       bincount = params['bincount']
     else:
@@ -14868,12 +15479,22 @@ class AutoMunge:
     
     if bincount > 0:
 
-      #store original column for later reversion
-      mdf_train, suffixoverlap_results = \
-      self.df_copy_train(mdf_train, column, binscolumn, suffixoverlap_results)
+      if inplace is not True:
 
-      mdf_test[binscolumn] = mdf_test[column].copy()
+        #copy source column into new column
+        mdf_train, suffixoverlap_results = \
+        self.df_copy_train(mdf_train, column, binscolumn, suffixoverlap_results)
 
+        mdf_test[binscolumn] = mdf_test[column].copy()
+
+      else:
+
+        suffixoverlap_results = \
+        self.df_check_suffixoverlap(mdf_train, binscolumn, suffixoverlap_results)
+
+        mdf_train.rename(columns = {column : binscolumn}, inplace = True)
+        mdf_test.rename(columns = {column : binscolumn}, inplace = True)
+      
       #convert all values to either numeric or NaN
       mdf_train[binscolumn] = pd.to_numeric(mdf_train[binscolumn], errors='coerce')
       mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
@@ -15139,6 +15760,11 @@ class AutoMunge:
     
     suffixoverlap_results = {}
     
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
     if 'width' in params:
       bn_width = params['width']
     else:
@@ -15151,12 +15777,22 @@ class AutoMunge:
       
     binscolumn = column + suffix
 
-    #store original column for later reversion
-    mdf_train, suffixoverlap_results = \
-    self.df_copy_train(mdf_train, column, binscolumn, suffixoverlap_results)
-    
-    mdf_test[binscolumn] = mdf_test[column].copy()
+    if inplace is not True:
 
+      #copy source column into new column
+      mdf_train, suffixoverlap_results = \
+      self.df_copy_train(mdf_train, column, binscolumn, suffixoverlap_results)
+
+      mdf_test[binscolumn] = mdf_test[column].copy()
+
+    else:
+
+      suffixoverlap_results = \
+      self.df_check_suffixoverlap(mdf_train, binscolumn, suffixoverlap_results)
+
+      mdf_train.rename(columns = {column : binscolumn}, inplace = True)
+      mdf_test.rename(columns = {column : binscolumn}, inplace = True)
+    
     #convert all values to either numeric or NaN
     mdf_train[binscolumn] = pd.to_numeric(mdf_train[binscolumn], errors='coerce')
     mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
@@ -15447,6 +16083,11 @@ class AutoMunge:
     
     suffixoverlap_results = {}
     
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
     if 'bincount' in params:
       bincount = params['bincount']
     else:
@@ -15459,11 +16100,21 @@ class AutoMunge:
       
     binscolumn = column + suffix
 
-    #copy original column
-    mdf_train, suffixoverlap_results = \
-    self.df_copy_train(mdf_train, column, binscolumn, suffixoverlap_results)
-    
-    mdf_test[binscolumn] = mdf_test[column].copy()
+    if inplace is not True:
+
+      #copy source column into new column
+      mdf_train, suffixoverlap_results = \
+      self.df_copy_train(mdf_train, column, binscolumn, suffixoverlap_results)
+
+      mdf_test[binscolumn] = mdf_test[column].copy()
+
+    else:
+
+      suffixoverlap_results = \
+      self.df_check_suffixoverlap(mdf_train, binscolumn, suffixoverlap_results)
+
+      mdf_train.rename(columns = {column : binscolumn}, inplace = True)
+      mdf_test.rename(columns = {column : binscolumn}, inplace = True)
 
     #convert all values to either numeric or NaN
     mdf_train[binscolumn] = pd.to_numeric(mdf_train[binscolumn], errors='coerce')
@@ -16103,6 +16754,11 @@ class AutoMunge:
     
     suffixoverlap_results = {}
     
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
     if 'buckets' in params:
         
       buckets = params['buckets']
@@ -16113,11 +16769,21 @@ class AutoMunge:
       
     binscolumn = column + '_bkt3'
 
-    #store original column for later reversion
-    mdf_train, suffixoverlap_results = \
-    self.df_copy_train(mdf_train, column, binscolumn, suffixoverlap_results)
-    
-    mdf_test[binscolumn] = mdf_test[column].copy()
+    if inplace is not True:
+
+      #copy source column into new column
+      mdf_train, suffixoverlap_results = \
+      self.df_copy_train(mdf_train, column, binscolumn, suffixoverlap_results)
+
+      mdf_test[binscolumn] = mdf_test[column].copy()
+
+    else:
+
+      suffixoverlap_results = \
+      self.df_check_suffixoverlap(mdf_train, binscolumn, suffixoverlap_results)
+
+      mdf_train.rename(columns = {column : binscolumn}, inplace = True)
+      mdf_test.rename(columns = {column : binscolumn}, inplace = True)
 
     #convert all values to either numeric or NaN
     mdf_train[binscolumn] = pd.to_numeric(mdf_train[binscolumn], errors='coerce')
@@ -16216,6 +16882,11 @@ class AutoMunge:
     
     suffixoverlap_results = {}
     
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
     if 'buckets' in params:
         
       buckets = params['buckets']
@@ -16226,11 +16897,21 @@ class AutoMunge:
       
     binscolumn = column + '_bkt4'
 
-    #store original column for later reversion
-    mdf_train, suffixoverlap_results = \
-    self.df_copy_train(mdf_train, column, binscolumn, suffixoverlap_results)
-    
-    mdf_test[binscolumn] = mdf_test[column].copy()
+    if inplace is not True:
+
+      #copy source column into new column
+      mdf_train, suffixoverlap_results = \
+      self.df_copy_train(mdf_train, column, binscolumn, suffixoverlap_results)
+
+      mdf_test[binscolumn] = mdf_test[column].copy()
+
+    else:
+
+      suffixoverlap_results = \
+      self.df_check_suffixoverlap(mdf_train, binscolumn, suffixoverlap_results)
+
+      mdf_train.rename(columns = {column : binscolumn}, inplace = True)
+      mdf_test.rename(columns = {column : binscolumn}, inplace = True)
 
     #convert all values to either numeric or NaN
     mdf_train[binscolumn] = pd.to_numeric(mdf_train[binscolumn], errors='coerce')
@@ -17112,15 +17793,25 @@ class AutoMunge:
     """
     
     suffixoverlap_results = {}
+
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
     
     exclcolumn = column + '_excl'
-    #df[exclcolumn] = df[column].copy()
-    #del df[column]
+
+    if inplace is not True:
+
+      df, suffixoverlap_results = \
+      self.df_copy_train(df, column, exclcolumn, suffixoverlap_results)
+
+    else:
     
-    suffixoverlap_results = \
-    self.df_check_suffixoverlap(df, exclcolumn, suffixoverlap_results)
-    
-    df.rename(columns = {column : exclcolumn}, inplace = True)
+      suffixoverlap_results = \
+      self.df_check_suffixoverlap(df, exclcolumn, suffixoverlap_results)
+      
+      df.rename(columns = {column : exclcolumn}, inplace = True)
 
     #decided against this to maximize efficiency
     #there are some workflow scenarios where a lot of excl columns in postmunge
@@ -17159,12 +17850,28 @@ class AutoMunge:
     
     suffixoverlap_results = {}
     
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
     exclcolumn = column + '_exc2'
     
-    mdf_train, suffixoverlap_results = \
-    self.df_copy_train(mdf_train, column, exclcolumn, suffixoverlap_results)
-    
-    mdf_test[exclcolumn] = mdf_test[column].copy()
+    if inplace is not True:
+
+      #copy source column into new column
+      mdf_train, suffixoverlap_results = \
+      self.df_copy_train(mdf_train, column, exclcolumn, suffixoverlap_results)
+
+      mdf_test[exclcolumn] = mdf_test[column].copy()
+
+    else:
+
+      suffixoverlap_results = \
+      self.df_check_suffixoverlap(mdf_train, exclcolumn, suffixoverlap_results)
+
+      mdf_train.rename(columns = {column : exclcolumn}, inplace = True)
+      mdf_test.rename(columns = {column : exclcolumn}, inplace = True)
     
     #del df[column]
     
@@ -17215,12 +17922,28 @@ class AutoMunge:
     
     suffixoverlap_results = {}
     
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
     exclcolumn = column + '_exc5'
     
-    mdf_train, suffixoverlap_results = \
-    self.df_copy_train(mdf_train, column, exclcolumn, suffixoverlap_results)
-    
-    mdf_test[exclcolumn] = mdf_test[column].copy()
+    if inplace is not True:
+
+      #copy source column into new column
+      mdf_train, suffixoverlap_results = \
+      self.df_copy_train(mdf_train, column, exclcolumn, suffixoverlap_results)
+
+      mdf_test[exclcolumn] = mdf_test[column].copy()
+
+    else:
+
+      suffixoverlap_results = \
+      self.df_check_suffixoverlap(mdf_train, exclcolumn, suffixoverlap_results)
+
+      mdf_train.rename(columns = {column : exclcolumn}, inplace = True)
+      mdf_test.rename(columns = {column : exclcolumn}, inplace = True)
     
     #del df[column]
     
@@ -17265,44 +17988,6 @@ class AutoMunge:
 
     return mdf_train, mdf_test, column_dict_list
   
-  def process_exc6_class(self, df, column, category, postprocess_dict, params = {}):
-    """
-    #comparable to excl (direct pass-through, no infill) 
-    #but uses a copy operation instead of inplace
-    #thus can be used as entry in any family tree primitive
-    #in a user passed transformdict
-    """
-    
-    suffixoverlap_results = {}
-    
-    exclcolumn = column + '_exc6'
-
-    df, suffixoverlap_results = \
-    self.df_copy_train(df, column, exclcolumn, suffixoverlap_results)
-    
-    #del df[column]
-    
-    #df.rename(columns = {column : exclcolumn}, inplace = True)
-    
-    column_dict_list = []
-
-    column_dict = {exclcolumn : {'category' : 'exc6', \
-                                 'origcategory' : category, \
-                                 'normalization_dict' : {exclcolumn:{}}, \
-                                 'origcolumn' : column, \
-                                 'inputcolumn' : column, \
-                                 'columnslist' : [exclcolumn], \
-                                 'categorylist' : [exclcolumn], \
-                                 'infillmodel' : False, \
-                                 'infillcomplete' : False, \
-                                 'suffixoverlap_results' : suffixoverlap_results, \
-                                 'deletecolumn' : False}}
-    
-    #now append column_dict onto postprocess_dict
-    column_dict_list.append(column_dict.copy())
-
-    return df, column_dict_list
-  
   def process_shfl_class(self, df, column, category, postprocess_dict, params = {}):
     '''
     #function to shuffle data in a column
@@ -17312,9 +17997,23 @@ class AutoMunge:
     
     suffixoverlap_results = {}
     
-    #copy source column into new column
-    df, suffixoverlap_results = \
-    self.df_copy_train(df, column, column + '_shfl', suffixoverlap_results)
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
+    if inplace is not True:
+      
+      #copy source column into new column
+      df, suffixoverlap_results = \
+      self.df_copy_train(df, column, column + '_shfl', suffixoverlap_results)
+    
+    else:
+      
+      suffixoverlap_results = \
+      self.df_check_suffixoverlap(df, column + '_shfl', suffixoverlap_results)
+      
+      df.rename(columns = {column : column + '_shfl'}, inplace = True)
     
     #we've introduced that randomseed is now accessible throughout in the postprocess_dict
     random = postprocess_dict['randomseed']
@@ -21162,7 +21861,7 @@ class AutoMunge:
               self.MLinfillfunction(df_train, df_test, column, postprocess_dict, \
                                     masterNArows_train, masterNArows_test, randomseed, ML_cmnd, \
                                     printstatus)
-    
+
       for columnname in df_train.columns:
         postprocess_dict['column_dict'][columnname]['infillcomplete'] = False
       
@@ -23390,15 +24089,14 @@ class AutoMunge:
 
       if replacements == 0:
         
-        if 'excl' not in transformdict[transformkey]['cousins']:
-        
-          transformdict[transformkey]['cousins'].append('excl')
+        transformdict[transformkey]['auntsuncles'].append('excl')
 
-          result1 = True
+        result1 = True
           
-      #this ensures 'excl' is final transform in the cousins list
-      transformdict[transformkey]['cousins'].append('excl')
-      transformdict[transformkey]['cousins'].remove('excl')
+      #this ensures 'excl' is final transform in the auntsuncles list if included
+      #such as to prioritize applying inplace on excl
+      transformdict[transformkey]['auntsuncles'].append('excl')
+      transformdict[transformkey]['auntsuncles'].remove('excl')
           
     for transformkey in sorted(transformdict):
       if 'excl' in transformdict[transformkey]['parents'] \
@@ -25653,6 +26351,7 @@ class AutoMunge:
     #column post processing, and will contain a column specific and category \
     #specific (i.e. nmbr, bnry, text, date) set of variable.
     postprocess_dict = {'column_dict' : {}, 'origcolumn' : {}, \
+                        'orig_noinplace' : [], \
                         'process_dict' : process_dict, \
                         'printstatus' : printstatus, \
                         'randomseed' : randomseed, \
@@ -26923,33 +27622,20 @@ class AutoMunge:
     #populated in the transform_dict by assembletransformdict.
     
     #we will run in order of
-    #parents, auntsuncles, siblings, cousins
+    #siblings, cousins, parents, auntsuncles
     '''
 
-  #     print("postprocessfamily")
-  #     print("column = ", column)
-  #     print("category = ", category)
-
-  
-    #process the parents (with downstream, with replacement)
-    for parent in transform_dict[category]['parents']:
-
-  #       print("parent = ", parent)
-
-      if parent != None:
-        df_test = \
-        self.postprocessparent(df_test, column, parent, origcategory, process_dict, \
-                              transform_dict, postprocess_dict, columnkey, assign_param)
-        
-    #process the auntsuncles (no downstream, with replacement)
-    for auntuncle in transform_dict[category]['auntsuncles']:
-
-  #       print("auntuncle = ", auntuncle)
-
-      if auntuncle != None:
-        df_test = \
-        self.postprocesscousin(df_test, column, auntuncle, origcategory, process_dict, \
-                                transform_dict, postprocess_dict, columnkey, assign_param)
+    inplaceperformed = False
+    
+    #final upstream transform from parents or auntsuncles is elligible for inplace
+    #as long as no supplement transforms were applied
+    final_upstream = False
+    if len(transform_dict[category]['auntsuncles']) == 0:
+      if len(transform_dict[category]['parents']) > 0:
+        final_upstream = transform_dict[category]['parents'][-1]
+    else:
+      if len(transform_dict[category]['auntsuncles']) > 0:
+        final_upstream = transform_dict[category]['auntsuncles'][-1]
         
     #process the siblings (with downstream, supplemental)
     for sibling in transform_dict[category]['siblings']:
@@ -26959,7 +27645,7 @@ class AutoMunge:
       if sibling != None:
         #note we use the processparent function here
         df_test = \
-        self.postprocessparent(df_test, column, sibling, origcategory, process_dict, \
+        self.postprocessparent(df_test, column, sibling, origcategory, final_upstream, process_dict, \
                               transform_dict, postprocess_dict, columnkey, assign_param)
   
     #process the cousins (no downstream, supplemental)
@@ -26970,7 +27656,27 @@ class AutoMunge:
       if cousin != None:
         #note we use the processsibling function here
         df_test = \
-        self.postprocesscousin(df_test, column, cousin, origcategory, process_dict, \
+        self.postprocesscousin(df_test, column, cousin, origcategory, final_upstream, process_dict, \
+                                transform_dict, postprocess_dict, columnkey, assign_param)
+  
+    #process the parents (with downstream, with replacement)
+    for parent in transform_dict[category]['parents']:
+
+  #       print("parent = ", parent)
+
+      if parent != None:
+        df_test = \
+        self.postprocessparent(df_test, column, parent, origcategory, final_upstream, process_dict, \
+                              transform_dict, postprocess_dict, columnkey, assign_param)
+        
+    #process the auntsuncles (no downstream, with replacement)
+    for auntuncle in transform_dict[category]['auntsuncles']:
+
+  #       print("auntuncle = ", auntuncle)
+
+      if auntuncle != None:
+        df_test = \
+        self.postprocesscousin(df_test, column, auntuncle, origcategory, final_upstream, process_dict, \
                                 transform_dict, postprocess_dict, columnkey, assign_param)
 
   #     #if we had replacement transformations performed then delete the original column 
@@ -26990,7 +27696,8 @@ class AutoMunge:
     #then delete the original column
     if len(transform_dict[category]['auntsuncles']) \
     + len(transform_dict[category]['parents']) > 0:
-      del df_test[column]
+      if column in postprocess_dict['orig_noinplace']:
+        del df_test[column]
 
     #if we had replacement transformations performed on downstream generation \
     #then delete the associated parent column 
@@ -27012,9 +27719,14 @@ class AutoMunge:
 
     return df_test
 
-  def postprocesscousin(self, df_test, column, cousin, origcategory, process_dict, \
+  def postprocesscousin(self, df_test, column, cousin, origcategory, final_upstream, process_dict, \
                        transform_dict, postprocess_dict, columnkey, assign_param):
 
+    inplaceperformed = False
+    inplacecandidate = False
+    if final_upstream == cousin:
+      inplacecandidate = True
+    
     params = self.grab_params(assign_param, cousin, column)
 
     if 'defaultparams' in process_dict[cousin]:
@@ -27024,28 +27736,68 @@ class AutoMunge:
     
     #if this is a dual process function
     if process_dict[cousin]['postprocess'] != None:
+      
+      if inplacecandidate is True:
+        if 'inplace_option' in process_dict[cousin]:
+          if process_dict[cousin]['inplace_option'] is True:
+            if 'inplace' not in params:
+              inplaceperformed = True
+              params.update({'inplace' : True})
+            elif ('inplace' in params and params['inplace'] != False):
+              inplaceperformed = True
+              params.update({'inplace' : True})
+            else:
+              inplaceperformed = False
+      else:
+        #user cannot manually specify inplace by design
+        if ('inplace' in params and params['inplace'] is True):
+          inplaceperformed = False
+          params.update({'inplace' : False})
+      
       df_test = \
       process_dict[cousin]['postprocess'](df_test, column, postprocess_dict, \
                                             columnkey, params)
 
     #else if this is a single process function
     elif process_dict[cousin]['singleprocess'] != None:
-
+      
+      if inplacecandidate is True:
+        if 'inplace_option' in process_dict[cousin]:
+          if process_dict[cousin]['inplace_option'] is True:
+            if 'inplace' not in params:
+              inplaceperformed = True
+              params.update({'inplace' : True})
+            elif ('inplace' in params and params['inplace'] != False):
+              inplaceperformed = True
+              params.update({'inplace' : True})
+            else:
+              inplaceperformed = False
+      else:
+        #user cannot manually specify inplace by design
+        if ('inplace' in params and params['inplace'] is True):
+          inplaceperformed = False
+          params.update({'inplace' : False})
+            
       df_test, _1 = \
       process_dict[cousin]['singleprocess'](df_test, column, origcategory, \
                                             postprocess_dict, params)
 
     return df_test
 
-  def postprocessparent(self, df_test, column, parent, origcategory, process_dict, \
+  def postprocessparent(self, df_test, column, parent, origcategory, final_upstream, process_dict, \
                       transform_dict, postprocess_dict, columnkey, assign_param):
     """
     #we want to apply in order of
-    #upstream process, children, coworkers, niecesnephews, friends
+    #upstream process, niecesnephews, friends, children, coworkers
     """
     
     #this is used to derive the new columns from the trasform
     origcolumnsset = set(df_test)
+    
+    inplaceperformed = False
+    inplacecandidate = False
+    if final_upstream == parent:
+      inplacecandidate = True
 
     params = self.grab_params(assign_param, parent, column)
 
@@ -27056,14 +27808,48 @@ class AutoMunge:
 
     #if this is a dual process function
     if process_dict[parent]['postprocess'] != None:
-
+      
+      if inplacecandidate is True:
+        if 'inplace_option' in process_dict[parent]:
+          if process_dict[parent]['inplace_option'] is True:
+            if 'inplace' not in params:
+              inplaceperformed = True
+              params.update({'inplace' : True})
+            elif ('inplace' in params and params['inplace'] != False):
+              inplaceperformed = True
+              params.update({'inplace' : True})
+            else:
+              inplaceperformed = False
+      else:
+        #user cannot manually specify inplace by design
+        if ('inplace' in params and params['inplace'] is True):
+          inplaceperformed = False
+          params.update({'inplace' : False})
+            
       df_test = \
       process_dict[parent]['postprocess'](df_test, column, postprocess_dict, \
                                             columnkey, params)
 
     #else if this is a single process function process train and test seperately
     elif process_dict[parent]['singleprocess'] != None:
-
+      
+      if inplacecandidate is True:
+        if 'inplace_option' in process_dict[parent]:
+          if process_dict[parent]['inplace_option'] is True:
+            if 'inplace' not in params:
+              inplaceperformed = True
+              params.update({'inplace' : True})
+            elif ('inplace' in params and params['inplace'] != False):
+              inplaceperformed = True
+              params.update({'inplace' : True})
+            else:
+              inplaceperformed = False
+      else:
+        #user cannot manually specify inplace by design
+        if ('inplace' in params and params['inplace'] is True):
+          inplaceperformed = False
+          params.update({'inplace' : False})
+      
       df_test, _1 = \
       process_dict[parent]['singleprocess'](df_test, column, origcategory, \
                                             postprocess_dict, params)
@@ -27074,64 +27860,70 @@ class AutoMunge:
     #derive the new columns from the trasform
     categorylist = list(origcolumnsset^newcolumnsset)
 
-    if len(categorylist) > 1:
-      #future extension
-      pass
+    for entry in categorylist:
+      if entry in postprocess_dict['column_dict']:
+        if column == postprocess_dict['column_dict'][entry]['inputcolumn']:
+          parentcolumn = entry
+      
+    #final upstream transform from parents or auntsuncles is elligible for inplace
+    #as long as no supplement transforms were applied
+    final_downstream = False
+    if len(transform_dict[parent]['coworkers']) == 0:
+      if len(transform_dict[parent]['children']) > 0:
+        final_downstream = transform_dict[parent]['children'][-1]
+    else:
+      if len(transform_dict[parent]['coworkers']) > 0:
+        final_downstream = transform_dict[parent]['coworkers'][-1]
 
-    elif len(categorylist) > 0:
-      parentcolumn = categorylist[0]
+    #process any niecesnephews
+    for niecenephew in transform_dict[parent]['niecesnephews']:
 
-      #process any children
-      for child in transform_dict[parent]['children']:
+      if niecenephew != None:
 
-        if child != None:
+        #process the niecenephew
+        #note the function applied is postprocessparent (using recursion)
+        df_test = \
+        self.postprocessparent(df_test, parentcolumn, niecenephew, origcategory, final_downstream, \
+                                process_dict, transform_dict, postprocess_dict, columnkey, assign_param)
+#         self.postprocessfamily(df_test, parentcolumn, niecenephew, origcategory, \
+#                                process_dict, transform_dict, postprocess_dict, columnkey)
+        
+    #process any friends
+    for friend in transform_dict[parent]['friends']:
 
-          #process the child
-          #note the function applied is postprocessparent (using recursion)
-          #parent column
-          df_test = \
-          self.postprocessparent(df_test, parentcolumn, child, origcategory, process_dict, \
-                                 transform_dict, postprocess_dict, columnkey, assign_param)
-  #         self.postprocessfamily(df_test, parentcolumn, child, origcategory, process_dict, \
-  #                               transform_dict, postprocess_dict, columnkey)
+      if friend != None:
 
-      #process any coworkers
-      for coworker in transform_dict[parent]['coworkers']:
+        #process the friend
+        #note the function applied is processcousin
+        df_test = \
+        self.postprocesscousin(df_test, parentcolumn, friend, origcategory, final_downstream, \
+                                process_dict, transform_dict, postprocess_dict, columnkey, assign_param)
 
-        if coworker != None:
+    #process any children
+    for child in transform_dict[parent]['children']:
 
-          #process the coworker
-          #note the function applied is processcousin
-          df_test = \
-          self.postprocesscousin(df_test, parentcolumn, coworker, origcategory, \
-                                 process_dict, transform_dict, postprocess_dict, columnkey, assign_param)
+      if child != None:
+
+        #process the child
+        #note the function applied is postprocessparent (using recursion)
+        #parent column
+        df_test = \
+        self.postprocessparent(df_test, parentcolumn, child, origcategory, final_downstream, process_dict, \
+                                transform_dict, postprocess_dict, columnkey, assign_param)
+#         self.postprocessfamily(df_test, parentcolumn, child, origcategory, process_dict, \
+#                               transform_dict, postprocess_dict, columnkey)
+
+    #process any coworkers
+    for coworker in transform_dict[parent]['coworkers']:
+
+      if coworker != None:
+
+        #process the coworker
+        #note the function applied is processcousin
+        df_test = \
+        self.postprocesscousin(df_test, parentcolumn, coworker, origcategory, final_downstream, \
+                                process_dict, transform_dict, postprocess_dict, columnkey, assign_param)
           
-      #process any niecesnephews
-      #note the function applied is comparable to processsibling, just a different
-      #parent column
-      for niecenephew in transform_dict[parent]['niecesnephews']:
-
-        if niecenephew != None:
-
-          #process the niecenephew
-          #note the function applied is postprocessparent (using recursion)
-          df_test = \
-          self.postprocessparent(df_test, parentcolumn, niecenephew, origcategory, \
-                                 process_dict, transform_dict, postprocess_dict, columnkey, assign_param)
-  #         self.postprocessfamily(df_test, parentcolumn, niecenephew, origcategory, \
-  #                                process_dict, transform_dict, postprocess_dict, columnkey)
-          
-      #process any friends
-      for friend in transform_dict[parent]['friends']:
-
-        if friend != None:
-
-          #process the friend
-          #note the function applied is processcousin
-          df_test = \
-          self.postprocesscousin(df_test, parentcolumn, friend, origcategory, \
-                                 process_dict, transform_dict, postprocess_dict, columnkey, assign_param)
-
   #     #if we had replacement transformations performed then delete the original column 
   #     #(circle of life)
   #     if len(transform_dict[parent]['children']) \
@@ -27154,6 +27946,11 @@ class AutoMunge:
     #if only have training but not test data handy, use same training data for both dataframe inputs
     '''
     
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
     #retrieve normalizastion parameters from postprocess_dict
     normkey = column + '_nmbr'
     
@@ -27171,9 +27968,12 @@ class AutoMunge:
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['floor']
     adjinfill = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['adjinfill']
-
-    #copy original column for implementation
-    mdf_test[column + '_nmbr'] = mdf_test[column].copy()
+    
+    if inplace is not True:
+      #copy source column into new column
+      mdf_test[column + '_nmbr'] = mdf_test[column].copy()
+    else:
+      mdf_test.rename(columns = {column : column + '_nmbr'}, inplace = True)
 
     #convert all values to either numeric or NaN
     mdf_test[column + '_nmbr'] = pd.to_numeric(mdf_test[column + '_nmbr'], errors='coerce')
@@ -27224,6 +28024,11 @@ class AutoMunge:
     #if only have training but not test data handy, use same training data for both dataframe inputs
     '''
     
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
     #retrieve normalizastion parameters from postprocess_dict
     normkey = column + '_MADn'
     
@@ -27234,8 +28039,11 @@ class AutoMunge:
     adjinfill = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['adjinfill']
 
-    #copy original column for implementation
-    mdf_test[column + '_MADn'] = mdf_test[column].copy()
+    if inplace is not True:
+      mdf_test[column + '_MADn'] = mdf_test[column].copy()
+    
+    else:
+      mdf_test.rename(columns = {column : column + '_MADn'}, inplace = True)
 
     #convert all values to either numeric or NaN
     mdf_test[column + '_MADn'] = pd.to_numeric(mdf_test[column + '_MADn'], errors='coerce')
@@ -27275,6 +28083,11 @@ class AutoMunge:
     #if only have training but not test data handy, use same training data for both dataframe inputs
     '''
     
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
     #retrieve normalizastion parameters from postprocess_dict
     normkey = column + '_MAD3'
     
@@ -27287,8 +28100,11 @@ class AutoMunge:
     adjinfill = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['adjinfill']
 
-    #copy original column for implementation
-    mdf_test[column + '_MAD3'] = mdf_test[column].copy()
+    if inplace is not True:
+      mdf_test[column + '_MAD3'] = mdf_test[column].copy()
+    
+    else:
+      mdf_test.rename(columns = {column : column + '_MAD3'}, inplace = True)
 
     #convert all values to either numeric or NaN
     mdf_test[column + '_MAD3'] = pd.to_numeric(mdf_test[column + '_MAD3'], errors='coerce')
@@ -27328,6 +28144,11 @@ class AutoMunge:
     #if only have training but not test data handy, use same training data for both dataframe inputs
     '''
     
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
     #retrieve normalizastion parameters from postprocess_dict
     normkey = column + '_mnmx'
     
@@ -27343,9 +28164,12 @@ class AutoMunge:
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['floor']
     adjinfill = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['adjinfill']
-
-    #copy original column for implementation
-    mdf_test[column + '_mnmx'] = mdf_test[column].copy()
+    
+    if inplace is not True:
+      #copy source column into new column
+      mdf_test[column + '_mnmx'] = mdf_test[column].copy()
+    else:
+      mdf_test.rename(columns = {column : column + '_mnmx'}, inplace = True)
 
     #convert all values to either numeric or NaN
     mdf_test[column + '_mnmx'] = pd.to_numeric(mdf_test[column + '_mnmx'], errors='coerce')
@@ -27392,6 +28216,11 @@ class AutoMunge:
     #expect this approach works better when the numerical distribution is thin tailed
     #if only have training but not test data handy, use same training data for both dataframe inputs
     '''
+    
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
 
     #retrieve normalizastion parameters from postprocess_dict
     normkey = column + '_mnm3'
@@ -27407,9 +28236,12 @@ class AutoMunge:
     
     adjinfill = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['adjinfill']
-
-    #copy original column for implementation
-    mdf_test[column + '_mnm3'] = mdf_test[column].copy()
+    
+    if inplace is not True:
+      mdf_test[column + '_mnm3'] = mdf_test[column].copy()
+    
+    else:
+      mdf_test.rename(columns = {column : column + '_mnm3'}, inplace = True)
 
     #convert all values to either numeric or NaN
     mdf_test[column + '_mnm3'] = pd.to_numeric(mdf_test[column + '_mnm3'], errors='coerce')
@@ -27473,6 +28305,11 @@ class AutoMunge:
     #multiplier/offset based on posttransform values, muoltiplier applied betfore offset
     """
     
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
     #retrieve normalizastion parameters from postprocess_dict
     normkey = column + '_retn'
     
@@ -27497,8 +28334,11 @@ class AutoMunge:
     adjinfill = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['adjinfill']
     
-    #copy original column for implementation
-    mdf_test[column + '_retn'] = mdf_test[column].copy()
+    if inplace is not True:
+      #copy source column into new column
+      mdf_test[column + '_retn'] = mdf_test[column].copy()
+    else:
+      mdf_test.rename(columns = {column : column + '_retn'}, inplace = True)
 
     #convert all values to either numeric or NaN
     mdf_test[column + '_retn'] = pd.to_numeric(mdf_test[column + '_retn'], errors='coerce')
@@ -27558,6 +28398,11 @@ class AutoMunge:
     #if only have training but not test data handy, use same training data for both dataframe inputs
     '''
     
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
     #retrieve normalizastion parameters from postprocess_dict
     normkey = column + '_mean'
     
@@ -27588,8 +28433,11 @@ class AutoMunge:
     adjinfill = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['adjinfill']
 
-    #copy original column for implementation
-    mdf_test[column + '_mean'] = mdf_test[column].copy()
+    if inplace is not True:
+      mdf_test[column + '_mean'] = mdf_test[column].copy()
+    
+    else:
+      mdf_test.rename(columns = {column : column + '_mean'}, inplace = True)
 
     #convert all values to either numeric or NaN
     mdf_test[column + '_mean'] = pd.to_numeric(mdf_test[column + '_mean'], errors='coerce')
@@ -27634,6 +28482,11 @@ class AutoMunge:
     #returns error message if more than two categories remain
     '''
     
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
     #retrieve normalization parameters
     normkey = column + '_bnry'
     binary_missing_plug = \
@@ -27655,8 +28508,11 @@ class AutoMunge:
     zerovalue = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey][0]
 
-    #change column name to column + '_bnry'
-    mdf_test[column + '_bnry'] = mdf_test[column].copy()
+    if inplace is not True:
+      mdf_test[column + '_bnry'] = mdf_test[column].copy()
+    
+    else:
+      mdf_test.rename(columns = {column : column + '_bnry'}, inplace = True)
     
     if str_convert is True:
       mdf_test[column + '_bnry'] = mdf_test[column + '_bnry'].astype(str)
@@ -27706,6 +28562,11 @@ class AutoMunge:
     #returns error message if more than two categories remain
     '''
     
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
     #retrieve normalization parameters
     normkey = column + '_bnr2'
     binary_missing_plug = \
@@ -27727,8 +28588,11 @@ class AutoMunge:
     zerovalue = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey][0]
 
-    #change column name to column + '_bnry'
-    mdf_test[column + '_bnr2'] = mdf_test[column].copy()
+    if inplace is not True:
+      mdf_test[column + '_bnr2'] = mdf_test[column].copy()
+    
+    else:
+      mdf_test.rename(columns = {column : column + '_bnr2'}, inplace = True)
     
     if str_convert is True:
       mdf_test[column + '_bnr2'] = mdf_test[column + '_bnr2'].astype(str)
@@ -30083,14 +30947,21 @@ class AutoMunge:
     #returns same dataframes with new column of name column + '_log0'
     '''
     
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
     #retrieve normalizastion parameters from postprocess_dict
     normkey = column + '_log0'
     
     meanlog = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['meanlog']
 
-    #copy original column for implementation
-    mdf_test[column + '_log0'] = mdf_test[column].copy()
+    if inplace is not True:
+      mdf_test[column + '_log0'] = mdf_test[column].copy()
+    else:
+      mdf_test.rename(columns = {column : column + '_log0'}, inplace = True)
 
     #convert all values to either numeric or NaN
     mdf_test[column + '_log0'] = pd.to_numeric(mdf_test[column + '_log0'], errors='coerce')
@@ -30127,14 +30998,21 @@ class AutoMunge:
     #returns same dataframes with new column of name column + '_logn'
     '''
     
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
     #retrieve normalizastion parameters from postprocess_dict
     normkey = column + '_logn'
     
     meanlog = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['meanlog']
 
-    #copy original column for implementation
-    mdf_test[column + '_logn'] = mdf_test[column].copy()
+    if inplace is not True:
+      mdf_test[column + '_logn'] = mdf_test[column].copy()
+    else:
+      mdf_test.rename(columns = {column : column + '_logn'}, inplace = True)
 
     #convert all values to either numeric or NaN
     mdf_test[column + '_logn'] = pd.to_numeric(mdf_test[column + '_logn'], errors='coerce')
@@ -30159,7 +31037,301 @@ class AutoMunge:
 #     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].astype(np.float32)
 
     return mdf_test
+
+  def postprocess_sqrt_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+        
+    '''
+    #function to apply square root transform
+    #takes as arguement pandas dataframe of training and test data (mdf_train), (mdf_test)\
+    #and the name of the column string ('column') and parent category (category)
+    #applies a square root transform
+    #replaces zeros, negative, and missing or improperly formatted data with post-log mean as default infill
+    #returns same dataframes with new column of name column + '_log0'
+    '''
+    
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
+    #retrieve normalizastion parameters from postprocess_dict
+    normkey = column + '_sqrt'
+    
+    meansqrt = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['meansqrt']
+
+    if inplace is not True:
+      mdf_test[column + '_sqrt'] = mdf_test[column].copy()
+    else:
+      mdf_test.rename(columns = {column : column + '_sqrt'}, inplace = True)
+
+    #convert all values to either numeric or NaN
+    mdf_test[column + '_sqrt'] = pd.to_numeric(mdf_test[column + '_sqrt'], errors='coerce')
+    
+    #replace all non-positive with nan for the log operation
+    mdf_test.loc[mdf_test[column + '_sqrt'] < 0, (column + '_sqrt')] = np.nan
+    
+    #log transform column
+    #note that this replaces negative values with nan which we will infill with meanlog
+    mdf_test[column + '_sqrt'] = np.sqrt(mdf_test[column + '_sqrt'])
+
+    #get mean of training data
+    meansqrt = meansqrt  
+
+    #replace missing data with training set mean
+    mdf_test[column + '_sqrt'] = mdf_test[column + '_sqrt'].fillna(meansqrt)
+
+#     #replace missing data with 0
+#     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].fillna(0)
+
+#     #change data type for memory savings
+#     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].astype(np.float32)
+
+    return mdf_test
+
+  def postprocess_addd_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+    '''
+    #postprocess_addd_class(.)
+    #function to apply addition transform
+    #takes as arguement pandas dataframe of training and test data (mdf_train), (mdf_test)\
+    #and the name of the column string ('column') and parent category (category)
+    #accepts parameter 'add' for amount of addition, otherwise defaults to adding 1
+    #applies an addition transform
+    #replaces non-numeric entries with set mean after addition
+    #returns same dataframes with new column of name column + '_addd'
+    '''
+    
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
+    #retrieve normalizastion parameters from postprocess_dict
+    normkey = column + '_addd'
+    
+    mean = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
+    
+    add = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['add']
+
+    if inplace is not True:
+      mdf_test[column + '_addd'] = mdf_test[column].copy()
+    else:
+      mdf_test.rename(columns = {column : column + '_addd'}, inplace = True)
+
+    #convert all values to either numeric or NaN
+    mdf_test[column + '_addd'] = pd.to_numeric(mdf_test[column + '_addd'], errors='coerce')
+    
+    #lperform addition
+    mdf_test[column + '_addd'] = mdf_test[column + '_addd'] + add
+    
+    #replace missing data with training set mean
+    mdf_test[column + '_addd'] = mdf_test[column + '_addd'].fillna(mean)
+
+    return mdf_test
   
+  def postprocess_sbtr_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+    '''
+    #postprocess_sbtr_class(.)
+    #function to apply subtraction transform
+    #takes as arguement pandas dataframe of training and test data (mdf_train), (mdf_test)\
+    #and the name of the column string ('column') and parent category (category)
+    #accepts parameter 'subtract' for amount of subtraction, otherwise defaults to subtracting 1
+    #applies a subtraction transform
+    #replaces non-numeric entries with set mean after subtraction
+    #returns same dataframes with new column of name column + '_sbtr'
+    '''
+    
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+        
+    #retrieve normalizastion parameters from postprocess_dict
+    normkey = column + '_sbtr'
+    
+    mean = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
+    
+    subtract = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['subtract']
+
+    if inplace is not True:
+      mdf_test[column + '_sbtr'] = mdf_test[column].copy()
+    else:
+      mdf_test.rename(columns = {column : column + '_sbtr'}, inplace = True)
+
+    #convert all values to either numeric or NaN
+    mdf_test[column + '_sbtr'] = pd.to_numeric(mdf_test[column + '_sbtr'], errors='coerce')
+    
+    #lperform subtraction
+    mdf_test[column + '_sbtr'] = mdf_test[column + '_sbtr'] - subtract
+    
+    #replace missing data with training set mean
+    mdf_test[column + '_sbtr'] = mdf_test[column + '_sbtr'].fillna(mean)
+
+    return mdf_test
+  
+  def postprocess_mltp_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+    '''
+    #postprocess_mltp_class(.)
+    #function to apply multiplication transform
+    #takes as arguement pandas dataframe of training and test data (mdf_train), (mdf_test)\
+    #and the name of the column string ('column') and parent category (category)
+    #accepts parameter 'multiply' for amount of addition, otherwise defaults to multiplying 2
+    #applies an multiplication transform
+    #replaces non-numeric entries with set mean after addition
+    #returns same dataframes with new column of name column + '_mltp'
+    '''
+    
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
+    #retrieve normalizastion parameters from postprocess_dict
+    normkey = column + '_mltp'
+    
+    mean = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
+    
+    multiply = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['multiply']
+
+    if inplace is not True:
+      mdf_test[column + '_mltp'] = mdf_test[column].copy()
+    else:
+      mdf_test.rename(columns = {column : column + '_mltp'}, inplace = True)
+
+    #convert all values to either numeric or NaN
+    mdf_test[column + '_mltp'] = pd.to_numeric(mdf_test[column + '_mltp'], errors='coerce')
+    
+    #lperform addition
+    mdf_test[column + '_mltp'] = mdf_test[column + '_mltp'] * multiply
+    
+    #replace missing data with training set mean
+    mdf_test[column + '_mltp'] = mdf_test[column + '_mltp'].fillna(mean)
+
+    return mdf_test
+    
+  def postprocess_divd_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+    '''
+    #postprocess_divd_class(.)
+    #function to apply division transform
+    #accepts parameter 'divide' for amount of division, otherwise defaults to dividing by 2
+    #applies an division transform
+    #replaces non-numeric entries with set mean after division
+    #returns same dataframes with new column of name column + '_divd'
+    '''
+    
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
+    #retrieve normalizastion parameters from postprocess_dict
+    normkey = column + '_divd'
+    
+    mean = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
+    
+    divide = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['divide']
+
+    if inplace is not True:
+      mdf_test[column + '_divd'] = mdf_test[column].copy()
+    else:
+      mdf_test.rename(columns = {column : column + '_divd'}, inplace = True)
+
+    #convert all values to either numeric or NaN
+    mdf_test[column + '_divd'] = pd.to_numeric(mdf_test[column + '_divd'], errors='coerce')
+    
+    #lperform addition
+    mdf_test[column + '_divd'] = mdf_test[column + '_divd'] / divide
+    
+    #replace missing data with training set mean
+    mdf_test[column + '_divd'] = mdf_test[column + '_divd'].fillna(mean)
+
+    return mdf_test
+  
+  def postprocess_rais_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+    '''
+    #postprocess_rais_class(.)
+    #function to apply raise to a power transform
+    #accepts parameter 'raiser' for amount of power, otherwise defaults to square (raise by 2)
+    #applies an raise transform
+    #replaces non-numeric entries with set mean after raise
+    #returns same dataframes with new column of name column + '_rais'
+    '''
+    
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+        
+    #retrieve normalizastion parameters from postprocess_dict
+    normkey = column + '_rais'
+    
+    mean = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
+    
+    raiser = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['raiser']
+
+    if inplace is not True:
+      mdf_test[column + '_rais'] = mdf_test[column].copy()
+    else:
+      mdf_test.rename(columns = {column : column + '_rais'}, inplace = True)
+
+    #convert all values to either numeric or NaN
+    mdf_test[column + '_rais'] = pd.to_numeric(mdf_test[column + '_rais'], errors='coerce')
+    
+    #lperform addition
+    mdf_test[column + '_rais'] = mdf_test[column + '_rais'] ** raiser
+    
+    #replace missing data with training set mean
+    mdf_test[column + '_rais'] = mdf_test[column + '_rais'].fillna(mean)
+
+    return mdf_test
+    
+  def postprocess_absl_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+    '''
+    #postprocess_absl_class(.)
+    #function to apply absolute transform
+    #does not accept paraemters
+    #applies an absolute transform
+    #replaces non-numeric entries with set mean after transform
+    #returns same dataframes with new column of name column + '_absl'
+    '''
+    
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
+    #retrieve normalizastion parameters from postprocess_dict
+    normkey = column + '_absl'
+    
+    mean = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
+
+    if inplace is not True:
+      mdf_test[column + '_absl'] = mdf_test[column].copy()
+    else:
+      mdf_test.rename(columns = {column : column + '_absl'}, inplace = True)
+
+    #convert all values to either numeric or NaN
+    mdf_test[column + '_absl'] = pd.to_numeric(mdf_test[column + '_absl'], errors='coerce')
+    
+    #lperform addition
+    mdf_test[column + '_absl'] = mdf_test[column + '_absl'].abs()
+    
+    #replace missing data with training set mean
+    mdf_test[column + '_absl'] = mdf_test[column + '_absl'].fillna(mean)
+
+    return mdf_test
+
   def postprocess_pwrs_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #processes a numerical set by creating bins corresponding to powers
@@ -30315,6 +31487,11 @@ class AutoMunge:
     #negative values allows, comparable to pwr2
     '''
     
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
     #get normkey
     normkey = column + '_pwor'
     
@@ -30324,8 +31501,10 @@ class AutoMunge:
     
     pworcolumn = column + '_pwor'
 
-    #store original column for later reversion
-    mdf_test[pworcolumn] = mdf_test[column].copy()
+    if inplace is not True:
+      mdf_test[pworcolumn] = mdf_test[column].copy()
+    else:
+      mdf_test.rename(columns = {column : pworcolumn}, inplace = True)
 
     #convert all values to either numeric or NaN
     mdf_test[pworcolumn] = pd.to_numeric(mdf_test[pworcolumn], errors='coerce')
@@ -30416,251 +31595,6 @@ class AutoMunge:
     
     return mdf_test
 
-  def postprocess_sqrt_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
-        
-    '''
-    #function to apply square root transform
-    #takes as arguement pandas dataframe of training and test data (mdf_train), (mdf_test)\
-    #and the name of the column string ('column') and parent category (category)
-    #applies a square root transform
-    #replaces zeros, negative, and missing or improperly formatted data with post-log mean as default infill
-    #returns same dataframes with new column of name column + '_log0'
-    '''
-    
-    #retrieve normalizastion parameters from postprocess_dict
-    normkey = column + '_sqrt'
-    
-    meansqrt = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['meansqrt']
-
-    #copy original column for implementation
-    mdf_test[column + '_sqrt'] = mdf_test[column].copy()
-
-    #convert all values to either numeric or NaN
-    mdf_test[column + '_sqrt'] = pd.to_numeric(mdf_test[column + '_sqrt'], errors='coerce')
-    
-    #replace all non-positive with nan for the log operation
-    mdf_test.loc[mdf_test[column + '_sqrt'] < 0, (column + '_sqrt')] = np.nan
-    
-    #log transform column
-    #note that this replaces negative values with nan which we will infill with meanlog
-    mdf_test[column + '_sqrt'] = np.sqrt(mdf_test[column + '_sqrt'])
-
-    #get mean of training data
-    meansqrt = meansqrt  
-
-    #replace missing data with training set mean
-    mdf_test[column + '_sqrt'] = mdf_test[column + '_sqrt'].fillna(meansqrt)
-
-#     #replace missing data with 0
-#     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].fillna(0)
-
-#     #change data type for memory savings
-#     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].astype(np.float32)
-
-    return mdf_test
-
-  def postprocess_addd_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
-    '''
-    #postprocess_addd_class(.)
-    #function to apply addition transform
-    #takes as arguement pandas dataframe of training and test data (mdf_train), (mdf_test)\
-    #and the name of the column string ('column') and parent category (category)
-    #accepts parameter 'add' for amount of addition, otherwise defaults to adding 1
-    #applies an addition transform
-    #replaces non-numeric entries with set mean after addition
-    #returns same dataframes with new column of name column + '_addd'
-    '''
-    
-    #retrieve normalizastion parameters from postprocess_dict
-    normkey = column + '_addd'
-    
-    mean = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
-    
-    add = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['add']
-
-    #copy original column for implementation
-    mdf_test[column + '_addd'] = mdf_test[column].copy()
-
-    #convert all values to either numeric or NaN
-    mdf_test[column + '_addd'] = pd.to_numeric(mdf_test[column + '_addd'], errors='coerce')
-    
-    #lperform addition
-    mdf_test[column + '_addd'] = mdf_test[column + '_addd'] + add
-    
-    #replace missing data with training set mean
-    mdf_test[column + '_addd'] = mdf_test[column + '_addd'].fillna(mean)
-
-    return mdf_test
-  
-  def postprocess_sbtr_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
-    '''
-    #postprocess_sbtr_class(.)
-    #function to apply subtraction transform
-    #takes as arguement pandas dataframe of training and test data (mdf_train), (mdf_test)\
-    #and the name of the column string ('column') and parent category (category)
-    #accepts parameter 'subtract' for amount of subtraction, otherwise defaults to subtracting 1
-    #applies a subtraction transform
-    #replaces non-numeric entries with set mean after subtraction
-    #returns same dataframes with new column of name column + '_sbtr'
-    '''
-        
-    #retrieve normalizastion parameters from postprocess_dict
-    normkey = column + '_sbtr'
-    
-    mean = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
-    
-    subtract = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['subtract']
-
-    #copy original column for implementation
-    mdf_test[column + '_sbtr'] = mdf_test[column].copy()
-
-    #convert all values to either numeric or NaN
-    mdf_test[column + '_sbtr'] = pd.to_numeric(mdf_test[column + '_sbtr'], errors='coerce')
-    
-    #lperform subtraction
-    mdf_test[column + '_sbtr'] = mdf_test[column + '_sbtr'] - subtract
-    
-    #replace missing data with training set mean
-    mdf_test[column + '_sbtr'] = mdf_test[column + '_sbtr'].fillna(mean)
-
-    return mdf_test
-  
-  def postprocess_mltp_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
-    '''
-    #postprocess_mltp_class(.)
-    #function to apply multiplication transform
-    #takes as arguement pandas dataframe of training and test data (mdf_train), (mdf_test)\
-    #and the name of the column string ('column') and parent category (category)
-    #accepts parameter 'multiply' for amount of addition, otherwise defaults to multiplying 2
-    #applies an multiplication transform
-    #replaces non-numeric entries with set mean after addition
-    #returns same dataframes with new column of name column + '_mltp'
-    '''
-    
-    #retrieve normalizastion parameters from postprocess_dict
-    normkey = column + '_mltp'
-    
-    mean = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
-    
-    multiply = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['multiply']
-
-    #copy original column for implementation
-    mdf_test[column + '_mltp'] = mdf_test[column].copy()
-
-    #convert all values to either numeric or NaN
-    mdf_test[column + '_mltp'] = pd.to_numeric(mdf_test[column + '_mltp'], errors='coerce')
-    
-    #lperform addition
-    mdf_test[column + '_mltp'] = mdf_test[column + '_mltp'] * multiply
-    
-    #replace missing data with training set mean
-    mdf_test[column + '_mltp'] = mdf_test[column + '_mltp'].fillna(mean)
-
-    return mdf_test
-    
-  def postprocess_divd_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
-    '''
-    #postprocess_divd_class(.)
-    #function to apply division transform
-    #accepts parameter 'divide' for amount of division, otherwise defaults to dividing by 2
-    #applies an division transform
-    #replaces non-numeric entries with set mean after division
-    #returns same dataframes with new column of name column + '_divd'
-    '''
-    
-    #retrieve normalizastion parameters from postprocess_dict
-    normkey = column + '_divd'
-    
-    mean = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
-    
-    divide = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['divide']
-
-    #copy original column for implementation
-    mdf_test[column + '_divd'] = mdf_test[column].copy()
-
-    #convert all values to either numeric or NaN
-    mdf_test[column + '_divd'] = pd.to_numeric(mdf_test[column + '_divd'], errors='coerce')
-    
-    #lperform addition
-    mdf_test[column + '_divd'] = mdf_test[column + '_divd'] / divide
-    
-    #replace missing data with training set mean
-    mdf_test[column + '_divd'] = mdf_test[column + '_divd'].fillna(mean)
-
-    return mdf_test
-  
-  def postprocess_rais_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
-    '''
-    #postprocess_rais_class(.)
-    #function to apply raise to a power transform
-    #accepts parameter 'raiser' for amount of power, otherwise defaults to square (raise by 2)
-    #applies an raise transform
-    #replaces non-numeric entries with set mean after raise
-    #returns same dataframes with new column of name column + '_rais'
-    '''
-        
-    #retrieve normalizastion parameters from postprocess_dict
-    normkey = column + '_rais'
-    
-    mean = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
-    
-    raiser = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['raiser']
-
-    #copy original column for implementation
-    mdf_test[column + '_rais'] = mdf_test[column].copy()
-
-    #convert all values to either numeric or NaN
-    mdf_test[column + '_rais'] = pd.to_numeric(mdf_test[column + '_rais'], errors='coerce')
-    
-    #lperform addition
-    mdf_test[column + '_rais'] = mdf_test[column + '_rais'] ** raiser
-    
-    #replace missing data with training set mean
-    mdf_test[column + '_rais'] = mdf_test[column + '_rais'].fillna(mean)
-
-    return mdf_test
-    
-  def postprocess_absl_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
-    '''
-    #postprocess_absl_class(.)
-    #function to apply absolute transform
-    #does not accept paraemters
-    #applies an absolute transform
-    #replaces non-numeric entries with set mean after transform
-    #returns same dataframes with new column of name column + '_absl'
-    '''
-    
-    #retrieve normalizastion parameters from postprocess_dict
-    normkey = column + '_absl'
-    
-    mean = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
-
-    #copy original column for implementation
-    mdf_test[column + '_absl'] = mdf_test[column].copy()
-
-    #convert all values to either numeric or NaN
-    mdf_test[column + '_absl'] = pd.to_numeric(mdf_test[column + '_absl'], errors='coerce')
-    
-    #lperform addition
-    mdf_test[column + '_absl'] = mdf_test[column + '_absl'].abs()
-    
-    #replace missing data with training set mean
-    mdf_test[column + '_absl'] = mdf_test[column + '_absl'].fillna(mean)
-
-    return mdf_test
-
   def postprocess_bins_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #bins processes a numerical set by creating bins coresponding to post z score
@@ -30738,6 +31672,11 @@ class AutoMunge:
     #bsor is comparable to bins but returns ordinal encoded column
     '''
     
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
     if 'bincount' in params:
       bincount = params['bincount']
     else:
@@ -30758,9 +31697,11 @@ class AutoMunge:
       
       binscolumn = column + '_bsor'
 
-      #store original column for later reversion
-      mdf_test[binscolumn] = mdf_test[column].copy()
-
+      if inplace is not True:
+        mdf_test[binscolumn] = mdf_test[column].copy()
+      else:
+        mdf_test.rename(columns = {column : binscolumn}, inplace = True)
+      
       #convert all values to either numeric or NaN
       mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
 
@@ -30884,6 +31825,11 @@ class AutoMunge:
     #such as after z-score normalization)
     '''
     
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
     if 'suffix' in params:
       suffix = params['suffix']
     else:
@@ -30903,8 +31849,10 @@ class AutoMunge:
 
     binscolumn = column + suffix
     
-    #store original column for later reversion
-    mdf_test[binscolumn] = mdf_test[column].copy()
+    if inplace is not True:
+      mdf_test[binscolumn] = mdf_test[column].copy()
+    else:
+      mdf_test.rename(columns = {column : binscolumn}, inplace = True)
 
     #convert all values to either numeric or NaN
     mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
@@ -31031,6 +31979,11 @@ class AutoMunge:
     #such as after z-score normalization)
     '''
     
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
     if 'suffix' in params:
       suffix = params['suffix']
     else:
@@ -31050,8 +32003,10 @@ class AutoMunge:
 
     binscolumn = column + suffix
     
-    #copy original column
-    mdf_test[binscolumn] = mdf_test[column].copy()
+    if inplace is not True:
+      mdf_test[binscolumn] = mdf_test[column].copy()
+    else:
+      mdf_test.rename(columns = {column : binscolumn}, inplace = True)
 
     #convert all values to either numeric or NaN
     mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
@@ -31381,6 +32336,11 @@ class AutoMunge:
     #segments without activations are included
     '''
     
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
     #retrieve normalization parameters from postprocess_dict
     normkey = column +'_bkt3'
     
@@ -31393,8 +32353,10 @@ class AutoMunge:
 
     binscolumn = column + '_bkt3'
     
-    #store original column for later reversion
-    mdf_test[binscolumn] = mdf_test[column].copy()
+    if inplace is not True:
+      mdf_test[binscolumn] = mdf_test[column].copy()
+    else:
+      mdf_test.rename(columns = {column : binscolumn}, inplace = True)
 
     #convert all values to either numeric or NaN
     mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
@@ -31428,6 +32390,11 @@ class AutoMunge:
     #segments without activations are included
     '''
     
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
     #retrieve normalization parameters from postprocess_dict
     normkey = column +'_bkt4'
     
@@ -31440,8 +32407,10 @@ class AutoMunge:
 
     binscolumn = column + '_bkt4'
     
-    #store original column for later reversion
-    mdf_test[binscolumn] = mdf_test[column].copy()
+    if inplace is not True:
+      mdf_test[binscolumn] = mdf_test[column].copy()
+    else:
+      mdf_test.rename(columns = {column : binscolumn}, inplace = True)
 
     #convert all values to either numeric or NaN
     mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
@@ -31913,6 +32882,11 @@ class AutoMunge:
     #we'll simply maintain the same column but with a suffix to the header
     '''
     
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
     #retrieve normalizastion parameters from postprocess_dict
     normkey = column + '_exc2'
     
@@ -31921,7 +32895,10 @@ class AutoMunge:
     
     exclcolumn = column + '_exc2'
     
-    mdf_test[exclcolumn] = mdf_test[column].copy()
+    if inplace is not True:
+      mdf_test[exclcolumn] = mdf_test[column].copy()
+    else:
+      mdf_test.rename(columns = {column : exclcolumn}, inplace = True)
     
     #del df[column]
     
@@ -31941,6 +32918,11 @@ class AutoMunge:
     #we'll simply maintain the same column but with a suffix to the header
     '''
     
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
     #retrieve normalizastion parameters from postprocess_dict
     normkey = column + '_exc5'
     
@@ -31949,7 +32931,10 @@ class AutoMunge:
     
     exclcolumn = column + '_exc5'
     
-    mdf_test[exclcolumn] = mdf_test[column].copy()
+    if inplace is not True:
+      mdf_test[exclcolumn] = mdf_test[column].copy()
+    else:
+      mdf_test.rename(columns = {column : exclcolumn}, inplace = True)
     
     #del df[column]
     
