@@ -170,7 +170,7 @@ am.automunge(df_train, df_test = False, \
                           'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
                           'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], 'DPrt':[], \
                           'DPnb':[], 'DPmm':[], 'DPbn':[], 'DPod':[], 'DP10':[], 'DPoh':[], \
-                          'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[], 'exc6':[], \
+                          'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[], \
                           'null':[], 'copy':[], 'shfl':[], 'eval':[], 'ptfm':[]}, \
              assignparam = {'default_assignparam' : {'(category)' : {'(parameter)' : 42}}, \
                                      '(category)' : {'(column)'   : {'(parameter)' : 42}}}, \
@@ -399,7 +399,7 @@ am.automunge(df_train, df_test = False, \
                           'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
                           'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], 'DPrt':[], \
                           'DPnb':[], 'DPmm':[], 'DPbn':[], 'DPod':[], 'DP10':[], 'DPoh':[], \
-                          'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[], 'exc6':[], \
+                          'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[], \
                           'null':[], 'copy':[], 'shfl':[], 'eval':[], 'ptfm':[]}, \
              assignparam = {'default_assignparam' : {'(category)' : {'(parameter)' : 42}}, \
                                      '(category)' : {'(column)'   : {'(parameter)' : 42}}}, \
@@ -635,7 +635,7 @@ am.automunge(df_train, df_test = False, \
                           'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
                           'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], 'DPrt':[], \
                           'DPnb':[], 'DPmm':[], 'DPbn':[], 'DPod':[], 'DP10':[], 'DPoh':[], \
-                          'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[], 'exc6':[], \
+                          'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[], \
                           'null':[], 'copy':[], 'shfl':[], 'eval':[], 'ptfm':[]}, \
              assignparam = {'default_assignparam' : {'(category)' : {'(parameter)' : 42}}, \
                                      '(category)' : {'(column)'   : {'(parameter)' : 42}}}, \
@@ -1032,7 +1032,7 @@ assigncat = {'nmbr':[], 'retn':[], 'mnmx':[], 'mean':[], 'MAD3':[], 'lgnm':[], \
              'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
              'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], 'DPrt':[], \
              'DPnb':[], 'DPmm':[], 'DPbn':[], 'DPod':[], 'DP10':[], 'DPoh':[], \
-             'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[], 'exc6':[], \
+             'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[], \
              'null':[], 'copy':[], 'shfl':[], 'eval':[], 'ptfm':[]}
 ```         
 
