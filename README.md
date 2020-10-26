@@ -1054,8 +1054,8 @@ Note that for single entry column assignments a user can just pass the string or
 of the column header without the list brackets.
 
 * assignparam
-A user may pass column-specific parameters to those transformation functions
-that accept parameters. Any parameters passed to automunge(.) will be saved in
+A user may pass column-specific or category specific parameters to those transformation 
+functions that accept parameters. Any parameters passed to automunge(.) will be saved in
 the postprocess_dict and consistently applied in postmunge(.). assignparam is 
 a dictionary that should be formatted per following example:
 ```
@@ -1072,7 +1072,11 @@ assignparam = {'category1' : {'column1' : {'param1' : 123}, 'column2' : {'param1
 In other words: The first layer keys are the transformation category for 
 which parameters are intended. The second layer keys are string identifiers 
 for the columns for which the parameters are intended. The third layer keys 
-are the parameters whose values are to be passed.
+are the parameters whose values are to be passed. To specify new default
+parameters for a given trasnformation category 'default_assignparam' can
+be applied, or to specificy global parameters for all transfomation functions
+'global_assignparam' can be applied. Transforms that do not accept a particular 
+parameter will just ignore the specification.
 
 As an example with actual parameters, consider the transformation category 
 'splt' intended for 'column1', which accepts parameter 'minsplit' for minimum 
@@ -1081,30 +1085,31 @@ default of 5:
 ```
 assignparam = {'splt' : {'column1' : {'minsplit' : 4}}}
 ```
-
 Note that the category identifier should be the category entry to the family 
 tree primitive associated with the transform, which may be different than the 
 root category of the family tree assigned in assigncat. The set of family 
-trees definitions for root categories are included below for reference.
-
-As an example to demonstrate edge case for cases where transformation category 
-does not match transformation function (based on entries to transformdict and 
+trees definitions for root categories are included below for reference. As an 
+example to demonstrate edge case for cases where transformation category does 
+not match transformation function (based on entries to transformdict and 
 processdict). If we want to pass a parameter to turn off UPCS transform included 
-in or19 family tree for or19 category for instance, we would pass the parameter 
-to or19 instead of UPCS because assignparam inspects the transformation category 
-instead of the transformation function, and UPCS function is the processdict 
-entry for or19 category entry in the family tree primitives associated with the
-or19 root category (even though 'activate' is an UPCS transform parameter).
-(This clarification intended for advanced users to avoid ambiguity.)
+in or19 family tree and associuated with the or19 transformation category for 
+instance, we would pass the parameter to or19 instead of UPCS because assignparam 
+inspects the transformation category associated with the transformation function, 
+and UPCS function is the processdict entry for or19 category entry in the family 
+tree primitives associated with the or19 root category, even though 'activate' is 
+an UPCS transform parameter. (This clarification intended for advanced users to 
+avoid ambiguity.)
 ```
 assignparam = {'or19' : {'column1' : {'activate' : False}}}
 ```
-
 Note that column string identifiers may just be the source column string or may 
-include the suffix appenders such as if multiple versions of transformations 
-are applied within the same family tree. If more than one column identifier 
-matches a column, the longest character length key which matches will be 
-applied (such as may include suffix appenders).
+include the suffix appenders for downstream columns serving as input to the 
+target trasnformation function, such as may be useful if multiple versions of 
+the same transformation are applied within the same family tree. If more than 
+one column identifier matches a column in assignparam entry to a transformation 
+category (such as both the source column and the derived column serving as input 
+to the transformation function), the derived column (such as may include suffix 
+appenders) will take precedence.
 
 Note that if a user wishes to overwrite the default parameters associated with a 
 particular category for all columns without specifying them individually they can 
@@ -1116,16 +1121,18 @@ assignparam = {'category1' : {'column1' : {'param1' : 123}, 'column2' : {'param1
                'default_assignparam' : {'category3' : {'param4' : 789}}}
 ```
 Or to pass the same parameter to all transformations to all columns, can use the 
-'global_assignparam'. (In order of precendence, parameters assigned to distinct 
-category/column configurations take precedence to default_assignparam assigned to 
-categories which take precendence to global_assignparam assigned to all transformations
-which take precendence to parameters set as defaultparams in processdict definition.) 
-The global_assignparam may be useful for instance to turn off inplace trasnformations 
-such as to retain family tree column grouping correspondance in returned set. 
-Transformations that do not accept a particular parameter will just ignore.
+'global_assignparam'. The global_assignparam may be useful for instance to turn off 
+inplace trasnformations such as to retain family tree column grouping correspondance 
+in returned set. Transformations that do not accept a particular parameter will just 
+ignore.
 ```
 assignparam = {'global_assignparam' : {'inplace' : False}}
 ```
+In order of precendence, parameters assigned to distinct category/column configurations 
+take precedence to default_assignparam assigned to categories which take precendence to 
+global_assignparam assigned to all transformations which take precendence to parameters 
+set as defaultparams in processdict definition. 
+
 See the Library of Transformations section below for those transformations that 
 accept parameters.
 
