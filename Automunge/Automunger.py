@@ -5991,12 +5991,7 @@ class AutoMunge:
     if final_upstream == cousin:
       inplacecandidate = True
 
-    params = self.grab_params(assign_param, cousin, column)
-
-    if 'defaultparams' in process_dict[cousin]:
-      defaultparams = process_dict[cousin]['defaultparams']
-      defaultparams.update(params)
-      params = defaultparams
+    params = self.grab_params(assign_param, cousin, column, process_dict[cousin], postprocess_dict)
 
     #if this is a dual process function
     if process_dict[cousin]['dualprocess'] != None:
@@ -6082,12 +6077,7 @@ class AutoMunge:
     if final_upstream == parent:
       inplacecandidate = True
     
-    params = self.grab_params(assign_param, parent, column)
-
-    if 'defaultparams' in process_dict[parent]:
-      defaultparams = process_dict[parent]['defaultparams']
-      defaultparams.update(params)
-      params = defaultparams
+    params = self.grab_params(assign_param, parent, column, process_dict[parent], postprocess_dict)
     
     #if this is a dual process function
     if process_dict[parent]['dualprocess'] != None:
@@ -24388,18 +24378,38 @@ class AutoMunge:
 
     return result
   
-  def check_assignparam(self, assignparam):
+  def check_assignparam(self, assignparam, process_dict):
     """
     #Here we'll do a quick check to validate the passed assign param.
-    #actually currently drawing a blank for what needs validation
-    #let's save building out this function for a future extension
     
     #reminder the format of assign_param is e.g.
     #assignparam = {'splt' : {'column1' : {'minsplit' : 4}}, \
     #               'spl2' : {'column2' : {'minsplit' : 3}}}
+    
+    #we'll validate that any category entries are valid
+    #we won't validate column entries since they may be dervied columns which we don't know yet
     """
     
     result = False
+    
+    for key in assignparam:
+      
+      if key not in ['global_assignparam', 'default_assignparam'] \
+      and key not in process_dict:
+        
+        result = True
+        print("error, assignparam category key ", key)
+        print("was not found in process_dict")
+        
+      elif key == 'default_assignparam':
+        
+        for key2 in assignparam['default_assignparam']:
+          
+          if key2 not in process_dict:
+            
+            result = True
+            print("error, assignparam['default_assignparam'] category key ", key2)
+            print("was not found in process_dict")
     
     return result
   
@@ -24484,6 +24494,11 @@ class AutoMunge:
     if 'global_assignparam' in processdict:
       check_processdict_result = True
       print("error: processdict has entry for 'global_assignparam'")
+      print("which is a reserved category string for use in assignparam")
+
+    if 'default_assignparam' in processdict:
+      check_processdict_result = True
+      print("error: processdict has entry for 'default_assignparam'")
       print("which is a reserved category string for use in assignparam")
     
     for entry in processdict:
@@ -24865,172 +24880,66 @@ class AutoMunge:
 #             df[columnkey] = df[columnkey].astype(np.float64)
 
     return df
-  
-#   def assembleassignparam(self):
-#     """
-#     #just a placeholder function for consistency with other methods
-#     """
-    
-#     assign_param = {}
-    
-#     return assign_param
-  
-  def assemble_assign_param(self, assignparam, list_df_train):
+
+  def grab_params(self, assign_param, category, column, processdict_entry, postprocess_dict):
     """
-    #assignparam is the user passed dictionary
-    #list_df_train is a list of source columns passed to automunge
-    #returns an assign_param popuated to extract any default_assignparm parameters
-    #and populated in the format for accesing using traditional assign_partam format
-    """
-    #assignparam is the dictionary passed to automunge
-    #we'll convert it to assign_param (with underscore) based on any default_assignparam entries
-    
-    #assignparam follows form
-#     assignparam = {'category1' : {'column1' : {'param1' : 123}, 'column2' : {'param1' : 456}}, \
-#                    'cateogry2' : {'column3' : {'param2' : 'abc', 'param3' : 'def'}}}
-    
-    #if any default_assignparam entries they follow form
-#     assignparam = {'category1' : {'column1' : {'param1' : 123}, 'column2' : {'param1' : 456}}, \
-#                    'category2' : {'column3' : {'param2' : 'abc'}}, \
-#                    'default_assignparam' : {'category2' : {'param2' : 'ghi', 'param3' : 'def'}}}
-
-    #such that the default_assignparam entries would be populated as new assigned parameters
-    #for all columns that were not otherwise specified 
-    #e.g. in this example, because category2 has column3 specified for param2
-    #the population with defaults will defer to that specification, however because
-    #the default_assignparam for category2 includes another parameter param3, that 
-    #param3 will now be included in the assign_param[category2][column3] entry
-  
-    #initialize assign_param
-    assign_param = {}
-    
-    if 'default_assignparam' in assignparam:
-      
-      #key1 are category entries passed in assignparam['default_assignparam']
-      for key1 in assignparam['default_assignparam']:
-        
-        if key1 not in assignparam:
-          
-          #for column passed in df_train
-          for sourcecolumn in list_df_train:
-
-            if key1 not in assign_param:
-
-              assign_param.update({key1 : {sourcecolumn : assignparam['default_assignparam'][key1]}})
-
-            else:
-
-              assign_param[key1][sourcecolumn] = assignparam['default_assignparam'][key1]
-        
-        #else if category entry from default_assignparam key1 not a category key in assignparam
-        else:
-
-          for sourcecolumn in list_df_train:
-
-            if sourcecolumn in assignparam[key1]:
-
-              #key2 are the column identifiers embedded as subkey to the assignparam categories
-              for key2 in assignparam[key1]:
-
-                #if key2 in list_df_train:
-                if key2 == sourcecolumn:
-
-                  #key3_set is a set of parameters specified to specifric columns in assignparam
-                  key3_set = set(list(assignparam[key1][key2]))
-
-                  #key4_set is a set of default parameters specified in assignparam['default_assignparam']
-                  #for each category
-                  key4_set = set(list(assignparam['default_assignparam'][key1]))
-
-                  notyetspecifiedparams = key4_set - key3_set
-
-                  #key5 are the parameters not yet specified for this column in this category
-                  for key5 in notyetspecifiedparams:
-
-                    assignparam[key1][key2].update({key5 : assignparam['default_assignparam'][key1][key5]})
-
-                    if key1 not in assign_param:
-
-                      assign_param.update({key1 : {sourcecolumn : assignparam[key1][key2]}})
-
-                    else:
-
-                      if key2 in assign_param[key1]:
-
-                        assign_param[key1][key2].update(assignparam[key1][key2])
-
-                      else:
-                        
-                        assign_param[key1].update({key2 : assignparam[key1][key2]})
-
-            else:
-              
-              if key1 not in assign_param:
-                
-                assign_param.update({key1 : {sourcecolumn : assignparam['default_assignparam'][key1]}})
-
-              else:
-                
-                if sourcecolumn in assign_param[key1]:
-                  
-                  assign_param[key1][sourcecolumn].update(assignparam['default_assignparam'][key1])
-                  
-                else:
-                  
-                  assign_param[key1].update({sourcecolumn : assignparam['default_assignparam'][key1]})
-                  
-    #else for those assignparam entries not affected by default_assignparam
-    #we'll just pass through to assign_param
-    for key6 in assignparam:
-    
-      if key6 not in assign_param and key6 != 'default_assignparam':
-        
-        assign_param[key6] = assignparam[key6]
-        
-    return assign_param
-  
-  def grab_params(self, assign_param, category, column):
-    """
-    #takes as input the assign_param dictionary, category string and column identifier string
-    #checks if there are any entries in assign_param matching the category and column
-    #note that the column string may include suffix apeponders
-    #reminder the format of assign_param is e.g.
-    #assignparam = {'splt' : {'column1' : {'param1_splt' : 4}}, \
-    #               'spl2' : {'column2' : {'param1_spl2' : 3}}}
-    #returns either an empty dictionary or the associated parameters
+    #In order of precendence, parameters assigned to distinct 
+    #category/column configurations take precedence 
+    #to default_assignparam assigned to categories which take precendence 
+    #to global_assignparam assigned to all transformations which take precendence 
+    #to parameters set as defaultparams in processdict definition.
     """
     
-    columnkeys = []
     params = {}
+    
+    if 'defaultparams' in processdict_entry:
+      
+      #key are parameters
+      for key in processdict_entry['defaultparams']:
+        
+        params.update({key : processdict_entry['defaultparams'][key]})
 
     #if assign_param is not empty
     if bool(assign_param):
-
-      #category is the category being passed to process functions, let's see if it's in assign_param
-      if category in assign_param:
-
-        assign_param_cat = assign_param[category]
-
-        for key in assign_param_cat:
-
-          if column.startswith(key):
-
-            columnkeys.append(key)
-
-        if len(columnkeys) > 0:
-
-          #we'll take the columnkey with longeest length that matches column
-          #note this columnkey may include suffix appenders
-          columnkeys.sort(key = len, reverse = True)
-          columnkey = columnkeys[0]
-
-          params = assign_param_cat[columnkey]
-
-    if 'global_assignparam' in assign_param:
-      for key2 in assign_param['global_assignparam']:
-        if key2 not in params:
-          params.update({key2 : assign_param['global_assignparam'][key2]})
       
+      if 'global_assignparam' in assign_param:
+        
+        #key are parameters
+        for key in assign_param['global_assignparam']:
+          
+          params.update({key : assign_param['global_assignparam'][key]})
+          
+      if 'default_assignparam' in assign_param:
+        
+        if category in assign_param['default_assignparam']:
+            
+          #key are parameters
+          for key in assign_param['default_assignparam'][category]:
+
+            params.update({key : assign_param['default_assignparam'][category][key]})
+                
+      if category in assign_param:
+        
+        #distinct category/column configurations can either be assigned
+        #using the source column or the derived column serving as input to the transform
+        #in case both are present the dervied column specifciation takes precedence
+          
+        if column in assign_param[category]:
+
+          #key are parameters
+          for key in assign_param[category][column]:
+
+            params.update({key : assign_param[category][column][key]})
+
+        #we won't use the source column entry if a derived column entry was specfied
+        elif column in postprocess_dict['column_dict'] \
+        and postprocess_dict['column_dict'][column]['origcolumn'] in assign_param[category]:
+
+          #key are parameters
+          for key in assign_param[category][postprocess_dict['column_dict'][column]['origcolumn']]:
+
+            params.update({key : assign_param[category][postprocess_dict['column_dict'][column]['origcolumn']][key]})
+    
     return params
 
   def apply_LabelSmoothing(self, df, targetcolumn, epsilon, label_categorylist, label_category, categorycomplete_dict, LSfit, LSfitparams_dict):
@@ -25825,7 +25734,7 @@ class AutoMunge:
                              'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
                              'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], 'DPrt':[], \
                              'DPnb':[], 'DPmm':[], 'DPbn':[], 'DPod':[], 'DP10':[], 'DPoh':[], \
-                             'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[], 'exc6':[], \
+                             'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[], \
                              'null':[], 'copy':[], 'shfl':[], 'eval':[], 'ptfm':[]}, \
                 assignparam = {'default_assignparam' : {'(category)' : {'(parameter)' : 42}}, \
                                         '(category)' : {'(column)'   : {'(parameter)' : 42}}}, \
@@ -25864,7 +25773,6 @@ class AutoMunge:
     check_assigncat_result = self.check_assigncat(assigncat)
     check_assigninfill_result = self.check_assigninfill(assigninfill)
     check_ML_cmnd_result = self.check_ML_cmnd(ML_cmnd)
-    check_assignparam = self.check_assignparam(assignparam)
 
     #check the range of parameters 
     #(generally speaking other than passed dictionaries, dataframes, or column identifiers)
@@ -25878,8 +25786,7 @@ class AutoMunge:
 
     miscparameters_results.update({'check_assigncat_result' : check_assigncat_result, \
                                    'check_assigninfill_result' : check_assigninfill_result, \
-                                   'check_ML_cmnd_result' : check_ML_cmnd_result, \
-                                   'check_assignparam' : check_assignparam})
+                                   'check_ML_cmnd_result' : check_ML_cmnd_result})
     
     #initialize processing dicitonaries
     transform_dict = self.assembletransformdict(binstransform, NArw_marker)
@@ -25961,6 +25868,9 @@ class AutoMunge:
     
     miscparameters_results.update({'check_assigncat_result2' : check_assigncat_result2, \
                                    'check_assigncat_result3' : check_assigncat_result3})
+
+    check_assignparam = self.check_assignparam(assignparam, process_dict)
+    miscparameters_results.update({'check_assignparam' : check_assignparam})
 
     #initialize autoMLer which is data structure to support ML infill
     #a future extension may allow user to pass custom entries
@@ -26068,15 +25978,10 @@ class AutoMunge:
                                    'check_assignnan_categories_result'      : check_assignnan_categories_result, \
                                    'check_assignnan_columns_result'         : check_assignnan_columns_result})
     
-    #populate the assign_param now that we've coverted column labels to strings
-    if bool(assignparam) is not False:
-
-      #assemble the assign_param
-      assign_param = self.assemble_assign_param(assignparam, trainlabels)
-      
-    else:
-      
-      assign_param = assignparam
+    #we originally had the convention that some preprocessing was done on assignparam here
+    #to create assign_param
+    #keeping the assign_param convention in cases we later reintroduce
+    assign_param = assignparam
 
     #we'll introduce convention that if df_test provided as False then we'll create
     #a dummy set derived from df_train's first rows
@@ -27271,7 +27176,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.11'
+    automungeversion = '5.12'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -27737,12 +27642,7 @@ class AutoMunge:
     if final_upstream == cousin:
       inplacecandidate = True
     
-    params = self.grab_params(assign_param, cousin, column)
-
-    if 'defaultparams' in process_dict[cousin]:
-      defaultparams = process_dict[cousin]['defaultparams']
-      defaultparams.update(params)
-      params = defaultparams
+    params = self.grab_params(assign_param, cousin, column, process_dict[cousin], postprocess_dict)
     
     #if this is a dual process function
     if process_dict[cousin]['postprocess'] != None:
@@ -27809,12 +27709,7 @@ class AutoMunge:
     if final_upstream == parent:
       inplacecandidate = True
 
-    params = self.grab_params(assign_param, parent, column)
-
-    if 'defaultparams' in process_dict[parent]:
-      defaultparams = process_dict[parent]['defaultparams']
-      defaultparams.update(params)
-      params = defaultparams
+    params = self.grab_params(assign_param, parent, column, process_dict[parent], postprocess_dict)
 
     #if this is a dual process function
     if process_dict[parent]['postprocess'] != None:
