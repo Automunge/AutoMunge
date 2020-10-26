@@ -567,7 +567,7 @@ Note that additional feature importance results, including the base accuracy of
 the feature iumportance model, are available in postprocess_dict['FS_sorted']. 
 
 * postprocess_dict: a returned python dictionary that includes
-normalization parameters and trained machine learning models used to
+normalization parameters and trained ML infill models used to
 generate consistent processing of additional train or test data such as 
 may not have been available at initial application of automunge. It is 
 recommended that this dictionary be externally saved on each application 
