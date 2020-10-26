@@ -5876,7 +5876,10 @@ class AutoMunge:
         postprocess_dict['column_dict'][column]['deletecolumn'] = True
       else:
         if column not in postprocess_dict['orig_noinplace']:
-          postprocess_dict['orig_noinplace'].append(column)
+          postprocess_dict['orig_noinplace'].append(column)  
+    elif inplaceperformed is True:
+      if column in postprocess_dict['column_dict']:
+        postprocess_dict['column_dict'][column]['deletecolumn'] = 'inplace'
 
     return df_train, df_test, postprocess_dict
 
@@ -5903,14 +5906,20 @@ class AutoMunge:
     
     newcolumns = set(df_train) - set(templist1)
     
+    #this one is for columns replaced as part of inplace operation
+    if len(newcolumns) > 0:
+      anewcolumn = list(newcolumns)[0]
+      for newcolumn in postprocess_dict['column_dict'][anewcolumn]['columnslist']:
+        if postprocess_dict['column_dict'][newcolumn]['deletecolumn'] == 'inplace':
+          for newcolumn2 in newcolumns:
+            if newcolumn in postprocess_dict['column_dict'][newcolumn2]['columnslist']:        
+              postprocess_dict['column_dict'][newcolumn2]['columnslist'].remove(newcolumn)
+    
+    #this one is for columns we manually delete
     for newcolumn in newcolumns:
-      
       if postprocess_dict['column_dict'][newcolumn]['deletecolumn'] is True:
-        
         for newcolumn2 in newcolumns:
-          
           if newcolumn in postprocess_dict['column_dict'][newcolumn2]['columnslist']:
-        
             postprocess_dict['column_dict'][newcolumn2]['columnslist'].remove(newcolumn)
           
         #now we'll delete column
@@ -6142,6 +6151,9 @@ class AutoMunge:
       parentcolumn = list(column_dict.keys())[0]
 
     #if transform_dict[parent] != None:
+
+    #initialize in case no downstream performed
+    parent_inplaceperformed = False
     
     #process any children
     
@@ -6206,19 +6218,6 @@ class AutoMunge:
         self.processcousin(df_train, df_test, parentcolumn, coworker, origcategory, final_downstream, \
                            process_dict, transform_dict, postprocess_dict, assign_param)
 
-  #     #if we had replacement transformations performed then delete the original column 
-  #     #(circle of life)
-  #     if len(transform_dict[parent]['children']) \
-  #     + len(transform_dict[parent]['coworkers']) > 0:
-  #       del df_train[parentcolumn]
-  #       del df_test[parentcolumn]
-  # #       if column in postprocess_dict['column_dict']:
-  # #         postprocess_dict['column_dict'][parentcolumn]['deletecolumn'] = True
-
-  # #       else:
-  # #         postprocess_dict['column_dict'].update({parentcolumn : {'deletecolumn' : True}})
-
-
     #if we had replacement transformations performed then mark column for deletion
     #(circle of life)
     if len(transform_dict[parent]['children']) \
@@ -6230,6 +6229,9 @@ class AutoMunge:
       else:
         if parentcolumn not in postprocess_dict['orig_noinplace']:
           postprocess_dict['orig_noinplace'].append(parentcolumn)
+    elif parent_inplaceperformed is True:
+      if parentcolumn in postprocess_dict['column_dict']:
+        postprocess_dict['column_dict'][parentcolumn]['deletecolumn'] = 'inplace'
 
     return df_train, df_test, postprocess_dict, inplaceperformed
 
@@ -27176,7 +27178,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.12'
+    automungeversion = '5.13'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
