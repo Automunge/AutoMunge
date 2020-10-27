@@ -1420,11 +1420,11 @@ processdict =  {'newt' : {'functionpointer' : 'DLmm', \
                           'labelctgy' : 'DLmm'}}
 ```
 Note that many of the transformation functions in the library have support for distinguishing between 
-inplace operations vs returning a column copied from the input. When populating a processdict entry, 
-iff the transformation function supports inplace operations and you want to apply inplace operations 
-when available based on the order of family tree primitive entries (inplace when available is 
-performed on the final replacement primitve entry for a given generation), you need to specify with 
-an 'inplace_option' processdict entry such as:
+inplace operations vs returning a column copied from the input. Inplace operations are expected to 
+reduce memory overhead. When populating a processdict entry, iff the transformation function supports 
+inplace operations and you want to apply inplace operations when available based on the order of family 
+tree primitive entries (inplace when available is performed on the final replacement primitve entry 
+for a given generation), you need to specify with an 'inplace_option' processdict entry such as:
 ```
 #for example 
 processdict =  {'newt' : {'functionpointer' : 'mnmx', \
