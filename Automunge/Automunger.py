@@ -5934,9 +5934,10 @@ class AutoMunge:
     #this one is for columns replaced as part of inplace operation
     if len(newcolumns) > 0:
       anewcolumn = list(newcolumns)[0]
-      for newcolumn in postprocess_dict['column_dict'][anewcolumn]['columnslist']:
+      temp_columnslist = postprocess_dict['column_dict'][anewcolumn]['columnslist'].copy()
+      for newcolumn in temp_columnslist:
         if postprocess_dict['column_dict'][newcolumn]['deletecolumn'] == 'inplace':
-          for newcolumn2 in newcolumns:
+          for newcolumn2 in temp_columnslist:
             if newcolumn in postprocess_dict['column_dict'][newcolumn2]['columnslist']:        
               postprocess_dict['column_dict'][newcolumn2]['columnslist'].remove(newcolumn)
     
@@ -6019,6 +6020,10 @@ class AutoMunge:
     #               'spl2' : {'column2' : {'minsplit' : 3}}}
 
     '''
+
+    #for checking type of processdict entries of custom externally defined transformation functions
+    def check_function():
+      return
     
     inplaceperformed = False
     inplacecandidate = False
@@ -6029,7 +6034,8 @@ class AutoMunge:
 
     #if this is a dual process function
     if 'dualprocess' in process_dict[cousin] \
-    and isinstance(process_dict[cousin]['dualprocess'], type(self.processcousin)):
+    and (isinstance(process_dict[cousin]['dualprocess'], type(self.processcousin)) \
+    or isinstance(process_dict[cousin]['dualprocess'], type(check_function))):
       
       if inplacecandidate is True:
         if 'inplace_option' in process_dict[cousin]:
@@ -6054,7 +6060,8 @@ class AutoMunge:
 
     #else if this is a single process function process train and test seperately
     elif 'singleprocess' in process_dict[cousin] \
-    and isinstance(process_dict[cousin]['singleprocess'], type(self.processcousin)):
+    and (isinstance(process_dict[cousin]['singleprocess'], type(self.processcousin)) \
+    or isinstance(process_dict[cousin]['singleprocess'], type(check_function))):
       
       if inplacecandidate is True:
         if 'inplace_option' in process_dict[cousin]:
@@ -6106,6 +6113,10 @@ class AutoMunge:
     #upstream process, niecesnephews, friends, children, coworkers
     '''
 
+    #for checking type of processdict entries of custom externally defined transformation functions
+    def check_function():
+      return
+
     #upstream process
     
     inplaceperformed = False
@@ -6117,7 +6128,8 @@ class AutoMunge:
     
     #if this is a dual process function
     if 'dualprocess' in process_dict[parent] \
-    and isinstance(process_dict[parent]['dualprocess'], type(self.processparent)):
+    and (isinstance(process_dict[parent]['dualprocess'], type(self.processparent)) \
+    or isinstance(process_dict[parent]['dualprocess'], type(check_function))):
       
       if inplacecandidate is True:
         if 'inplace_option' in process_dict[parent]:
@@ -6142,7 +6154,8 @@ class AutoMunge:
 
     #else if this is a single process function process train and test seperately
     elif 'singleprocess' in process_dict[parent] \
-    and isinstance(process_dict[parent]['singleprocess'], type(self.processparent)):
+    and (isinstance(process_dict[parent]['singleprocess'], type(self.processparent)) \
+    or isinstance(process_dict[parent]['singleprocess'], type(check_function))):
       
       if inplacecandidate is True:
         if 'inplace_option' in process_dict[parent]:
@@ -27305,7 +27318,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.15'
+    automungeversion = '5.16'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -27661,9 +27674,11 @@ class AutoMunge:
   def postprocessfamily(self, df_test, column, category, origcategory, process_dict, \
                         transform_dict, postprocess_dict, columnkey, assign_param):
     '''
-    #as automunge runs a for loop through each column in automunge, this is the  
-    #processing function applied which runs through the family primitives
+    #as postmunge runs a for loop through each column, this is the  
+    #first tier processing function applied which runs through the family primitives
     #populated in the transform_dict by assembletransformdict.
+    #a little simpler than the processfamily version in automunge
+    #since doesn't have to populate data structures, just applied transforms
     
     #we will run in order of
     #siblings, cousins, parents, auntsuncles
@@ -27765,6 +27780,15 @@ class AutoMunge:
 
   def postprocesscousin(self, df_test, column, cousin, origcategory, final_upstream, process_dict, \
                        transform_dict, postprocess_dict, columnkey, assign_param):
+    """
+    #postprocesscousin is comparable to processcousin but applied in postmunge instead of automunge
+    #a little simpler in that doesn't have to populate data structures, just applies transform functions
+    #for dualprocess case applies postprocess instead of dualprocess
+    """
+
+    #for checking type of processdict entries of custom externally defined transformation functions
+    def check_function():
+      return
 
     inplaceperformed = False
     inplacecandidate = False
@@ -27775,7 +27799,8 @@ class AutoMunge:
     
     #if this is a dual process function
     if 'postprocess' in process_dict[cousin] \
-    and isinstance(process_dict[cousin]['postprocess'], type(self.postprocesscousin)):
+    and (isinstance(process_dict[cousin]['postprocess'], type(self.postprocesscousin)) \
+    or isinstance(process_dict[cousin]['postprocess'], type(check_function))):
       
       if inplacecandidate is True:
         if 'inplace_option' in process_dict[cousin]:
@@ -27800,7 +27825,8 @@ class AutoMunge:
 
     #else if this is a single process function
     elif 'singleprocess' in process_dict[cousin] \
-    and isinstance(process_dict[cousin]['singleprocess'], type(self.postprocesscousin)):
+    and (isinstance(process_dict[cousin]['singleprocess'], type(self.postprocesscousin)) \
+    or isinstance(process_dict[cousin]['singleprocess'], type(check_function))):
       
       if inplacecandidate is True:
         if 'inplace_option' in process_dict[cousin]:
@@ -27828,9 +27854,17 @@ class AutoMunge:
   def postprocessparent(self, df_test, column, parent, origcategory, final_upstream, process_dict, \
                       transform_dict, postprocess_dict, columnkey, assign_param):
     """
+    #postprocessparent is comparable to processparent but applied in postmunge instead of automunge
+    #a little simpler in that doesn't have to populate data structures, just applies transform functions
+    #for dualprocess case applies postprocess instead of dualprocess
+
     #we want to apply in order of
     #upstream process, niecesnephews, friends, children, coworkers
     """
+
+    #for checking type of processdict entries of custom externally defined transformation functions
+    def check_function():
+      return
     
     #this is used to derive the new columns from the trasform
     origcolumnsset = set(df_test)
@@ -27844,7 +27878,8 @@ class AutoMunge:
 
     #if this is a dual process function
     if 'postprocess' in process_dict[parent] \
-    and isinstance(process_dict[parent]['postprocess'], type(self.postprocessparent)):
+    and (isinstance(process_dict[parent]['postprocess'], type(self.postprocessparent)) \
+    or isinstance(process_dict[parent]['postprocess'], type(check_function))):
       
       if inplacecandidate is True:
         if 'inplace_option' in process_dict[parent]:
@@ -27869,7 +27904,8 @@ class AutoMunge:
 
     #else if this is a single process function process train and test seperately
     elif 'singleprocess' in process_dict[parent] \
-    and isinstance(process_dict[parent]['singleprocess'], type(self.postprocessparent)):
+    and (isinstance(process_dict[parent]['singleprocess'], type(self.postprocessparent)) \
+    or isinstance(process_dict[parent]['singleprocess'], type(check_function))):
       
       if inplacecandidate is True:
         if 'inplace_option' in process_dict[parent]:
