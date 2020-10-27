@@ -4341,6 +4341,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_ordl_class, \
                                   'inverseprocess' : self.inverseprocess_ordl, \
                                   'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'ordl'}})
@@ -4349,6 +4350,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_ordl_class, \
                                   'inverseprocess' : self.inverseprocess_ordl, \
                                   'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'mnmx'}})
@@ -4357,6 +4359,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_ord3_class, \
                                   'inverseprocess' : self.inverseprocess_ord3, \
                                   'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'ord3'}})
@@ -4365,6 +4368,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_ordl_class, \
                                   'inverseprocess' : self.inverseprocess_ordl, \
                                   'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'ordl'}})
@@ -4379,6 +4383,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_ord3_class, \
                                   'inverseprocess' : self.inverseprocess_ord3, \
                                   'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'mnmx'}})
@@ -4936,6 +4941,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_ord3_class, \
                                   'inverseprocess' : self.inverseprocess_ord3, \
                                   'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'integer', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'mnmx'}})
@@ -4944,6 +4950,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_ord3_class, \
                                   'inverseprocess' : self.inverseprocess_ord3, \
                                   'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'integer', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'mnmx'}})
@@ -4952,6 +4959,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_ord3_class, \
                                   'inverseprocess' : self.inverseprocess_ord3, \
                                   'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'integer', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'mnmx'}})
@@ -5531,6 +5539,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_ord3_class, \
                                   'inverseprocess' : self.inverseprocess_ord3, \
                                   'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'DPod'}})
@@ -5547,6 +5556,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_ord3_class, \
                                   'inverseprocess' : self.inverseprocess_ord3, \
                                   'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'onht'}})
@@ -5579,6 +5589,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_ord3_class, \
                                   'inverseprocess' : self.inverseprocess_ord3, \
                                   'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : '1010'}})
@@ -5708,6 +5719,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_ord3_class, \
                                   'inverseprocess' : self.inverseprocess_ord3, \
                                   'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'ord3'}})
@@ -5760,6 +5772,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_ord3_class, \
                                   'inverseprocess' : self.inverseprocess_ord3, \
                                   'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'ord3'}})
@@ -5768,6 +5781,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_ordl_class, \
                                   'inverseprocess' : self.inverseprocess_ordl, \
                                   'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'ordl'}})
@@ -5776,6 +5790,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_ord3_class, \
                                   'inverseprocess' : self.inverseprocess_ord3, \
                                   'info_retention' : True, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'ord3'}})
@@ -12232,6 +12247,11 @@ class AutoMunge:
     
     suffixoverlap_results = {}
     
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
     #adjinfill accepts True/False to change default infill from mean inputation to adjacent cell
     if 'adjinfill' in params:
       adjinfill = params['adjinfill']
@@ -12251,11 +12271,35 @@ class AutoMunge:
     else:
       str_convert = False
     
-    #create new column for trasnformation
-    mdf_train, suffixoverlap_results = \
-    self.df_copy_train(mdf_train, column, column + '_ordl', suffixoverlap_results)
+    if inplace is not True:
+      
+      #copy source column into new column
+      mdf_train, suffixoverlap_results = \
+      self.df_copy_train(mdf_train, column, column + '_ordl', suffixoverlap_results)
+
+      mdf_test[column + '_ordl'] = mdf_test[column].copy()
     
-    mdf_test[column + '_ordl'] = mdf_test[column].copy()
+    else:
+      
+      suffixoverlap_results = \
+      self.df_check_suffixoverlap(mdf_train, column + '_ordl', suffixoverlap_results)
+      
+      mdf_train.rename(columns = {column : column + '_ordl'}, inplace = True)
+      mdf_test.rename(columns = {column : column + '_ordl'}, inplace = True)
+      
+    ordered = False
+    if ordered_overide:
+      if mdf_train[column + '_ordl'].dtype.name == 'category':
+        if mdf_train[column + '_ordl'].cat.ordered:
+          ordered = True
+          labels_train = list(mdf_train[column + '_ordl'].cat.categories)
+          if mdf_test[column + '_ordl'].dtype.name == 'category':
+            if mdf_test[column + '_ordl'].cat.ordered:
+              labels_test = list(mdf_test[column + '_ordl'].cat.categories)
+            else:
+              ordered = False
+          else:
+            ordered = False
     
     #convert column to category if it isn't already
     mdf_train[column + '_ordl'] = mdf_train[column + '_ordl'].astype('category')
@@ -12281,25 +12325,12 @@ class AutoMunge:
     if str_convert is True:
       mdf_train[column + '_ordl'] = mdf_train[column + '_ordl'].astype(str)
       mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype(str)
+      if ordered is True:
+        labels_train = [str(x) for x in labels_train]
+        labels_test = [str(x) for x in labels_test]
     else:
       mdf_train[column + '_ordl'] = mdf_train[column + '_ordl'].astype('object')
       mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype('object')
-
-    ordered = False
-    if ordered_overide:
-      if mdf_train[column].dtype.name == 'category':
-        if mdf_train[column].cat.ordered:
-          ordered = True
-          labels_train = list(mdf_train[column].cat.categories)
-          if mdf_test[column].dtype.name == 'category':
-            if mdf_test[column].cat.ordered:
-              labels_test = list(mdf_test[column].cat.categories)
-            else:
-              labels_test = list(mdf_test[column + '_ordl'].unique())
-              labels_test = sorted(labels_test, key=str)
-          else:
-            labels_test = list(mdf_test[column + '_ordl'].unique())
-            labels_test = sorted(labels_test, key=str)
             
     if ordered is False:
       
@@ -12474,6 +12505,11 @@ class AutoMunge:
     
     suffixoverlap_results = {}
     
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
     #adjinfill accepts True/False to change default infill from mean inputation to adjacent cell
     if 'adjinfill' in params:
       adjinfill = params['adjinfill']
@@ -12493,11 +12529,35 @@ class AutoMunge:
     else:
       str_convert = False
     
-    #create new column for trasnformation
-    mdf_train, suffixoverlap_results = \
-    self.df_copy_train(mdf_train, column, column + '_ord3', suffixoverlap_results)
+    if inplace is not True:
+      
+      #copy source column into new column
+      mdf_train, suffixoverlap_results = \
+      self.df_copy_train(mdf_train, column, column + '_ord3', suffixoverlap_results)
+
+      mdf_test[column + '_ord3'] = mdf_test[column].copy()
     
-    mdf_test[column + '_ord3'] = mdf_test[column].copy()
+    else:
+      
+      suffixoverlap_results = \
+      self.df_check_suffixoverlap(mdf_train, column + '_ord3', suffixoverlap_results)
+      
+      mdf_train.rename(columns = {column : column + '_ord3'}, inplace = True)
+      mdf_test.rename(columns = {column : column + '_ord3'}, inplace = True)
+    
+    ordered = False
+    if ordered_overide:
+      if mdf_train[column + '_ord3'].dtype.name == 'category':
+        if mdf_train[column + '_ord3'].cat.ordered:
+          ordered = True
+          labels_train = list(mdf_train[column + '_ord3'].cat.categories)
+          if mdf_test[column + '_ord3'].dtype.name == 'category':
+            if mdf_test[column + '_ord3'].cat.ordered:
+              labels_test = list(mdf_test[column + '_ord3'].cat.categories)
+            else:
+              ordered = False
+          else:
+            ordered = False
     
     #convert column to category if it isn't already
     mdf_train[column + '_ord3'] = mdf_train[column + '_ord3'].astype('category')
@@ -12523,23 +12583,12 @@ class AutoMunge:
       #replace numerical with string equivalent (this operation changes dtype from category to object)
       mdf_train[column + '_ord3'] = mdf_train[column + '_ord3'].astype(str)
       mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype(str)
+      if ordered is True:
+        labels_train = [str(x) for x in labels_train]
+        labels_test = [str(x) for x in labels_test]
     else:
       mdf_train[column + '_ord3'] = mdf_train[column + '_ord3'].astype('object')
       mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype('object')
-    
-    ordered = False
-    if ordered_overide:
-      if mdf_train[column].dtype.name == 'category':
-        if mdf_train[column].cat.ordered:
-          ordered = True
-          labels_train = list(mdf_train[column].cat.categories)
-          if mdf_test[column].dtype.name == 'category':
-            if mdf_test[column].cat.ordered:
-              labels_test = list(mdf_test[column].cat.categories)
-            else:
-              labels_test = list(mdf_test[column + '_ord3'].unique())
-          else:
-            labels_test = list(mdf_test[column + '_ord3'].unique())
             
     if ordered is False:
       
@@ -27178,7 +27227,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.13'
+    automungeversion = '5.14'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -30255,6 +30304,11 @@ class AutoMunge:
     #for categories presetn in test set not present in train set use this 'zzz' category
     '''
     
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
     normkey = column + '_ordl'
     
     #grab normalization parameters from postprocess_dict
@@ -30270,8 +30324,11 @@ class AutoMunge:
     str_convert = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['str_convert']
     
-    #create new column for trasnformation
-    mdf_test[column + '_ordl'] = mdf_test[column].copy()
+    if inplace is not True:
+      #copy source column into new column
+      mdf_test[column + '_ordl'] = mdf_test[column].copy()
+    else:
+      mdf_test.rename(columns = {column : column + '_ordl'}, inplace = True)
     
     #convert column to category
     mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype('category')
@@ -30355,6 +30412,11 @@ class AutoMunge:
     #for categories presetn in test set not present in train set use this 'zzz' category
     '''
     
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
     normkey = column + '_ord3'
     
     #grab normalization parameters from postprocess_dict
@@ -30370,8 +30432,11 @@ class AutoMunge:
     str_convert = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['str_convert']
     
-    #create new column for trasnformation
-    mdf_test[column + '_ord3'] = mdf_test[column].copy()
+    if inplace is not True:
+      #copy source column into new column
+      mdf_test[column + '_ord3'] = mdf_test[column].copy()
+    else:
+      mdf_test.rename(columns = {column : column + '_ord3'}, inplace = True)
     
     #convert column to category
     mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype('category')
