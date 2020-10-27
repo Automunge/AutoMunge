@@ -1273,7 +1273,6 @@ Note that when we define a new transform such as 'newt' above, we also need
 to define a corresponding processdict entry for the new category, which we 
 demonstrate here:
 
-
 * processdict: allows a user to define their own processing functions and transformation category properties 
 corresponding to new transformdict entries. All transformation categories used in transformdict, including
 those used as root categories as well as transformation category entries to family tree primitives associated
@@ -1397,18 +1396,19 @@ processdict =  {'DLmm' : {'dualprocess' : am.process_DPmm_class, \
 Since specification of transformation functions can be kind of cumbersome in order
 to dig out from the codebase naming conventions for internally defined functions, a
 simplification is available when populating a processdict for a user passed entry by
-way of the 'functionpointer' category. When a functionpointer category entry is included, 
-the transformation functions are automatically populated based on entries found in 
+way of the 'functionpointer' entry. When a functionpointer category entry is included, 
+the transformation functions and other entries are automatically populated based on entries found in 
 processdict entries of the pointer, such as with entries for dualprocess, singleprocess, 
-postprocess, inverseprocess, and info_retention. For cases where a functionpointer points 
-to a processdict entry that itself has a functionpointer entry, chains of pointers are 
-followed until an entry with defined processing functions is reached. defaultparam 
-entries of each pointer link are also accessed for update, and if the new category 
+postprocess, inverseprocess, and info_retention, and also the other processdict entries. 
+For cases where a functionpointer points to a processdict entry that itself has a functionpointer 
+entry, chains of pointers are followed until an entry with defined processing functions is reached. 
+defaultparam entries of each pointer link are also accessed for update, and if the new category 
 specification contains any redundant defaultparam entries with those found in a pointer 
-category the new category entries take precedence. 
+category the new category entries take precedence. Similarly for chains of pointers the nearer
+links of other entries take precedence.
 
 In other words, if you are populating a new processdict transformation 
-category and you want the transformation functions to match an existing category, you 
+category and you want the transformation functions and other entries to match an existing category, you 
 can simply pass the existing category as a functionpointer entry to the new category. 
 Here is an example if we want to match the DLmm category demonstrated above for a new 
 category 'newt', such as would be useful if we wanted to define an alternate DLmm family 
@@ -1418,6 +1418,9 @@ processdict =  {'newt' : {'functionpointer' : 'DLmm', \
                           'NArowtype' : 'numeric', \
                           'MLinfilltype' : 'numeric', \
                           'labelctgy' : 'DLmm'}}
+			  
+#or an even simpler approach if no overwrites are desired could just be to copy everything
+processdict =  {'newt' : {'functionpointer' : 'DLmm'}}
 ```
 Note that many of the transformation functions in the library have support for distinguishing between 
 inplace operations vs returning a column copied from the input. Inplace operations are expected to 
