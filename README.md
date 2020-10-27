@@ -6563,10 +6563,12 @@ simplest possible way for consistent processing of additional data with just a s
 function call. The transformation functions will need to be channeled through pandas 
 and incorporate a handful of simple data structures, which we'll demonstrate below.
 
-Let's say we want to recreate the mm3 category which caps outliers at 0.01 and 0.99
-quantiles, but instead make it the 0.001 and 0.999 quantiles. Well we'll call this 
-category mnm8. So in order to pass a custom transformation function, first we'll need 
-to define a new root category transformdict and a corresponding processdict.
+Let's say we want to recreate the mnm3 category which caps outliers at 0.01 and 0.99
+quantiles, but instead make it the 0.001 and 0.999 quantiles. (Of course that is already
+possible in easier fashion by just passing parameters to the transfomration funciton, 
+this is just to demosnrtate.) Well we'll call this new category mnm8. So in order to 
+pass a custom transformation function, first we'll need to define a new root category 
+transformdict and a corresponding processdict.
 
 ```
 #Let's create a really simple family tree for the new root category mnmn8 which
