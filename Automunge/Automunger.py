@@ -3062,6 +3062,15 @@ class AutoMunge:
     # - '1010' for binary encoded columns, will be converted to onehot for ML
     # - 'boolexclude' boolean set suitable for Binary transform but exluded from MLinfill
     # - 'totalexclude' sets excluded from all methods that inspect MLinfill, such as for excl category
+
+    #at least one of sets of ('dualprocess' and 'postprocess') or ('singleprocess') needs to be specified
+    #'inverseprocess' is optional and supports postmunge inversion
+    #'info_retention' is optional boolean required with inversion to prioritize transforms with more information retention
+    #'inplace_option' is optional boolean to signal when a transfomration function accepts inplace operations
+    #'labelctgy' is associated with feature importance and signals which transform is target for predictive model
+    #for cases when a family tree returns multiple configurations and category isapplied to a label set
+
+    #note to self that any future updates such as additional supported entries should be carried through to functionpointer functions
     '''
     
     process_dict = {}
@@ -3742,6 +3751,7 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'multirt', \
                                   'labelctgy' : 'splt'}})
+
     process_dict.update({'spl2' : {'dualprocess' : self.process_spl2_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_spl2_class, \
@@ -6018,7 +6028,8 @@ class AutoMunge:
     params = self.grab_params(assign_param, cousin, column, process_dict[cousin], postprocess_dict)
 
     #if this is a dual process function
-    if process_dict[cousin]['dualprocess'] != None:
+    if 'dualprocess' in process_dict[cousin] \
+    and isinstance(process_dict[cousin]['dualprocess'], type(self.processcousin)):
       
       if inplacecandidate is True:
         if 'inplace_option' in process_dict[cousin]:
@@ -6042,7 +6053,8 @@ class AutoMunge:
                                           postprocess_dict, params)
 
     #else if this is a single process function process train and test seperately
-    elif process_dict[cousin]['singleprocess'] != None:
+    elif 'singleprocess' in process_dict[cousin] \
+    and isinstance(process_dict[cousin]['singleprocess'], type(self.processcousin)):
       
       if inplacecandidate is True:
         if 'inplace_option' in process_dict[cousin]:
@@ -6104,7 +6116,8 @@ class AutoMunge:
     params = self.grab_params(assign_param, parent, column, process_dict[parent], postprocess_dict)
     
     #if this is a dual process function
-    if process_dict[parent]['dualprocess'] != None:
+    if 'dualprocess' in process_dict[parent] \
+    and isinstance(process_dict[parent]['dualprocess'], type(self.processparent)):
       
       if inplacecandidate is True:
         if 'inplace_option' in process_dict[parent]:
@@ -6128,7 +6141,8 @@ class AutoMunge:
                                           postprocess_dict, params)
 
     #else if this is a single process function process train and test seperately
-    elif process_dict[parent]['singleprocess'] != None:
+    elif 'singleprocess' in process_dict[parent] \
+    and isinstance(process_dict[parent]['singleprocess'], type(self.processparent)):
       
       if inplacecandidate is True:
         if 'inplace_option' in process_dict[parent]:
@@ -6195,8 +6209,6 @@ class AutoMunge:
         df_train, df_test, postprocess_dict, parent_inplaceperformed = \
         self.processparent(df_train, df_test, parentcolumn, niecenephew, origcategory, final_downstream, \
                            process_dict, transform_dict, postprocess_dict, assign_param)
-  #         self.processfamily(df_train, df_test, parentcolumn, niecenephew, origcategory, \
-  #                            process_dict, transform_dict, postprocess_dict)
 
     #process any friends
     for friend in transform_dict[parent]['friends']:
@@ -6219,8 +6231,6 @@ class AutoMunge:
         df_train, df_test, postprocess_dict, parent_inplaceperformed = \
         self.processparent(df_train, df_test, parentcolumn, child, origcategory, final_downstream, \
                            process_dict, transform_dict, postprocess_dict, assign_param)
-  #         self.processfamily(df_train, df_test, parentcolumn, child, origcategory, \
-  #                            process_dict, transform_dict, postprocess_dict)
 
     #process any coworkers
     for coworker in transform_dict[parent]['coworkers']:
@@ -24589,17 +24599,18 @@ class AutoMunge:
       #     print("error: invalid 'labelctgy' processdict entry for category: ", entry)
       #     print()
       
-      if ('dualprocess' not in processdict[entry] or 'postprocess' not in processdict[entry] or \
-          'singleprocess' not in processdict[entry]):
+      #we'll have convention that at least one entry for processing funtions required
+      #even thought there is scenario where no corresponding function populated
+      #such as when processdict is for a root category not used as a transformation category
+      if ('singleprocess' not in processdict[entry]) and ('dualprocess' not in processdict[entry] or 'postprocess' not in processdict[entry]):
         check_processdict_result = True
         print("error: processdict entry missing processing function entrys for categery: ", entry)
-        print("requires entries for 'dualprocess', 'postprocess', and 'singleprocess'")
+        print("requires entries for (both 'dualprocess' and 'postprocess') or (entry for 'singleprocess')")
+        print("(alternately a valid 'functionpointer' entry can be included)")
         print()
       else:
         pass
-        #for now won't validate the transfomration function entries
-        #since there are scenarios where a processdict is for a root category not used as a transformation category
-        #in which case these entries could just be all None
+        #for now won't validate the transformation function entries
       
     return check_processdict_result
 
@@ -24642,6 +24653,14 @@ class AutoMunge:
         #if function poitner points to a category that itself has a functionpointer
         if 'functionpointer' in processdict[pointercategory]:
           
+          if 'inverseprocess' in processdict[pointercategory] \
+          and 'inverseprocess' not in processdict[targetcategory]:
+            processdict[targetcategory]['inverseprocess'] = processdict[pointercategory]['inverseprocess']
+
+          if 'info_retention' in processdict[pointercategory] \
+          and 'info_retention' not in processdict[targetcategory]:
+            processdict[targetcategory]['info_retention'] = processdict[pointercategory]['info_retention']
+          
           #for chains of functionpointers, we'll still update defaultparams for each link
           if 'defaultparams' in processdict[pointercategory]:
             if 'defaultparams' in processdict[targetcategory]:
@@ -24650,6 +24669,22 @@ class AutoMunge:
               processdict[targetcategory]['defaultparams'] = defaultparams
             else:
               processdict[targetcategory]['defaultparams'] = processdict[pointercategory]['defaultparams']
+              
+          if 'inplace_option' in processdict[pointercategory] \
+          and 'inplace_option' not in processdict[targetcategory]:
+            processdict[targetcategory]['inplace_option'] = processdict[pointercategory]['inplace_option']
+
+          if 'NArowtype' in processdict[pointercategory] \
+          and 'NArowtype' not in processdict[targetcategory]:
+            processdict[targetcategory]['NArowtype'] = processdict[pointercategory]['NArowtype']
+
+          if 'MLinfilltype' in processdict[pointercategory] \
+          and 'MLinfilltype' not in processdict[targetcategory]:
+            processdict[targetcategory]['MLinfilltype'] = processdict[pointercategory]['MLinfilltype']
+
+          if 'labelctgy' in processdict[pointercategory] \
+          and 'labelctgy' not in processdict[targetcategory]:
+            processdict[targetcategory]['labelctgy'] = processdict[pointercategory]['labelctgy']
           
           #now new pointer category is the functionpointer entry of the prior functionpointer entry
           pointercategory = processdict[pointercategory]['functionpointer']
@@ -24662,25 +24697,30 @@ class AutoMunge:
         else:
           
           #function pointers have to point to a category with either a funcitonpointer or processing function entries
-          if 'dualprocess' not in processdict[pointercategory] or \
-          'singleprocess' not in processdict[pointercategory] or \
-          'postprocess' not in processdict[pointercategory]:
+          if ('singleprocess' not in processdict[pointercategory]) and \
+              ('dualprocess' not in processdict[pointercategory] or 'postprocess' not in processdict[pointercategory]):
 
             check_functionpointer_result = True
-            print("error: processdict entry found without functionpointer or dualprocess / singleprocess / postprocess")
+            print("error: processdict entry found without functionpointer or (dualprocess / postprocess) or singleprocess")
             print("for processdict entry ", pointercategory)
             print()
 
           #so if processing function entries were present, we can grab them and pass to targetcategory
           else:
             
-            processdict[targetcategory]['dualprocess'] = processdict[pointercategory]['dualprocess']
-            processdict[targetcategory]['singleprocess'] = processdict[pointercategory]['singleprocess']
-            processdict[targetcategory]['postprocess'] = processdict[pointercategory]['postprocess']
+            if 'dualprocess' in processdict[pointercategory]:
+              processdict[targetcategory]['dualprocess'] = processdict[pointercategory]['dualprocess']
+            if 'singleprocess' in processdict[pointercategory]:
+              processdict[targetcategory]['singleprocess'] = processdict[pointercategory]['singleprocess']
+            if 'postprocess' in processdict[pointercategory]['postprocess']:
+              processdict[targetcategory]['postprocess'] = processdict[pointercategory]['postprocess']
             
-            if 'inverseprocess' in processdict[pointercategory]:
+            if 'inverseprocess' in processdict[pointercategory] \
+            and 'inverseprocess' not in processdict[targetcategory]:
               processdict[targetcategory]['inverseprocess'] = processdict[pointercategory]['inverseprocess']
-            if 'info_retention' in processdict[pointercategory]:
+              
+            if 'info_retention' in processdict[pointercategory] \
+            and 'info_retention' not in processdict[targetcategory]:
               processdict[targetcategory]['info_retention'] = processdict[pointercategory]['info_retention']
               
             if 'defaultparams' in processdict[pointercategory]:
@@ -24690,19 +24730,41 @@ class AutoMunge:
                 processdict[targetcategory]['defaultparams'] = defaultparams
               else:
                 processdict[targetcategory]['defaultparams'] = processdict[pointercategory]['defaultparams']
+                
+            if 'inplace_option' in processdict[pointercategory] \
+            and 'inplace_option' not in processdict[targetcategory]:
+              processdict[targetcategory]['inplace_option'] = processdict[pointercategory]['inplace_option']
+              
+            if 'NArowtype' in processdict[pointercategory] \
+            and 'NArowtype' not in processdict[targetcategory]:
+              processdict[targetcategory]['NArowtype'] = processdict[pointercategory]['NArowtype']
+
+            if 'MLinfilltype' in processdict[pointercategory] \
+            and 'MLinfilltype' not in processdict[targetcategory]:
+              processdict[targetcategory]['MLinfilltype'] = processdict[pointercategory]['MLinfilltype']
+
+            if 'labelctgy' in processdict[pointercategory] \
+            and 'labelctgy' not in processdict[targetcategory]:
+              processdict[targetcategory]['labelctgy'] = processdict[pointercategory]['labelctgy']
       
       #if pointercategory wasn't in user passed processdict, we'll next check the internal library process_dict
       elif pointercategory in process_dict:
 
         #we'll have convention that only processdict entries can have functionpointers, not proces_dict entries
         #so we don't need as many steps as above, can just assume processing functions are present
-        processdict[targetcategory]['dualprocess'] = process_dict[pointercategory]['dualprocess']
-        processdict[targetcategory]['singleprocess'] = process_dict[pointercategory]['singleprocess']
-        processdict[targetcategory]['postprocess'] = process_dict[pointercategory]['postprocess']
+        if 'dualprocess' in process_dict[pointercategory]:
+          processdict[targetcategory]['dualprocess'] = process_dict[pointercategory]['dualprocess']
+        if 'singleprocess' in process_dict[pointercategory]:
+          processdict[targetcategory]['singleprocess'] = process_dict[pointercategory]['singleprocess']
+        if 'postprocess' in process_dict[pointercategory]:
+          processdict[targetcategory]['postprocess'] = process_dict[pointercategory]['postprocess']
         
-        if 'inverseprocess' in process_dict[pointercategory]:
+        if 'inverseprocess' in process_dict[pointercategory] \
+        and 'inverseprocess' not in processdict[targetcategory]:
           processdict[targetcategory]['inverseprocess'] = process_dict[pointercategory]['inverseprocess']
-        if 'info_retention' in process_dict[pointercategory]:
+        
+        if 'info_retention' in process_dict[pointercategory] \
+        and 'info_retention' not in processdict[targetcategory]:
           processdict[targetcategory]['info_retention'] = process_dict[pointercategory]['info_retention']
           
         if 'defaultparams' in process_dict[pointercategory]:
@@ -24712,6 +24774,22 @@ class AutoMunge:
             processdict[targetcategory]['defaultparams'] = defaultparams
           else:
             processdict[targetcategory]['defaultparams'] = process_dict[pointercategory]['defaultparams']
+            
+        if 'inplace_option' in process_dict[pointercategory] \
+        and 'inplace_option' not in processdict[targetcategory]:
+          processdict[targetcategory]['inplace_option'] = process_dict[pointercategory]['inplace_option']
+          
+        if 'NArowtype' in process_dict[pointercategory] \
+        and 'NArowtype' not in processdict[targetcategory]:
+          processdict[targetcategory]['NArowtype'] = process_dict[pointercategory]['NArowtype']
+          
+        if 'MLinfilltype' in process_dict[pointercategory] \
+        and 'MLinfilltype' not in processdict[targetcategory]:
+          processdict[targetcategory]['MLinfilltype'] = process_dict[pointercategory]['MLinfilltype']
+          
+        if 'labelctgy' in process_dict[pointercategory] \
+        and 'labelctgy' not in processdict[targetcategory]:
+          processdict[targetcategory]['labelctgy'] = process_dict[pointercategory]['labelctgy']
 
       #if pointercategory wasn't found in either of processdict or process_dict
       else:
@@ -27227,7 +27305,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.14'
+    automungeversion = '5.15'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -27696,7 +27774,8 @@ class AutoMunge:
     params = self.grab_params(assign_param, cousin, column, process_dict[cousin], postprocess_dict)
     
     #if this is a dual process function
-    if process_dict[cousin]['postprocess'] != None:
+    if 'postprocess' in process_dict[cousin] \
+    and isinstance(process_dict[cousin]['postprocess'], type(self.postprocesscousin)):
       
       if inplacecandidate is True:
         if 'inplace_option' in process_dict[cousin]:
@@ -27720,7 +27799,8 @@ class AutoMunge:
                                             columnkey, params)
 
     #else if this is a single process function
-    elif process_dict[cousin]['singleprocess'] != None:
+    elif 'singleprocess' in process_dict[cousin] \
+    and isinstance(process_dict[cousin]['singleprocess'], type(self.postprocesscousin)):
       
       if inplacecandidate is True:
         if 'inplace_option' in process_dict[cousin]:
@@ -27763,7 +27843,8 @@ class AutoMunge:
     params = self.grab_params(assign_param, parent, column, process_dict[parent], postprocess_dict)
 
     #if this is a dual process function
-    if process_dict[parent]['postprocess'] != None:
+    if 'postprocess' in process_dict[parent] \
+    and isinstance(process_dict[parent]['postprocess'], type(self.postprocessparent)):
       
       if inplacecandidate is True:
         if 'inplace_option' in process_dict[parent]:
@@ -27787,7 +27868,8 @@ class AutoMunge:
                                             columnkey, params)
 
     #else if this is a single process function process train and test seperately
-    elif process_dict[parent]['singleprocess'] != None:
+    elif 'singleprocess' in process_dict[parent] \
+    and isinstance(process_dict[parent]['singleprocess'], type(self.postprocessparent)):
       
       if inplacecandidate is True:
         if 'inplace_option' in process_dict[parent]:
@@ -27841,8 +27923,6 @@ class AutoMunge:
         df_test = \
         self.postprocessparent(df_test, parentcolumn, niecenephew, origcategory, final_downstream, \
                                 process_dict, transform_dict, postprocess_dict, columnkey, assign_param)
-#         self.postprocessfamily(df_test, parentcolumn, niecenephew, origcategory, \
-#                                process_dict, transform_dict, postprocess_dict, columnkey)
         
     #process any friends
     for friend in transform_dict[parent]['friends']:
@@ -27866,8 +27946,6 @@ class AutoMunge:
         df_test = \
         self.postprocessparent(df_test, parentcolumn, child, origcategory, final_downstream, process_dict, \
                                 transform_dict, postprocess_dict, columnkey, assign_param)
-#         self.postprocessfamily(df_test, parentcolumn, child, origcategory, process_dict, \
-#                               transform_dict, postprocess_dict, columnkey)
 
     #process any coworkers
     for coworker in transform_dict[parent]['coworkers']:
@@ -27879,12 +27957,6 @@ class AutoMunge:
         df_test = \
         self.postprocesscousin(df_test, parentcolumn, coworker, origcategory, final_downstream, \
                                 process_dict, transform_dict, postprocess_dict, columnkey, assign_param)
-          
-  #     #if we had replacement transformations performed then delete the original column 
-  #     #(circle of life)
-  #     if len(transform_dict[parent]['children']) \
-  #     + len(transform_dict[parent]['coworkers']) > 0:
-  #       del df_test[parentcolumn]
 
     return df_test
   
