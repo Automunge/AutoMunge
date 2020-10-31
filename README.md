@@ -846,8 +846,8 @@ and automunge(.) generates an application specific range integer index in ID set
 corresponding to the order of rows as they were passed to function).
 
 * NArw_marker: a boolean identifier _(True/False)_ which indicates if the
-returned sets will include columns with markers for rows subject to 
-infill (columns with suffix 'NArw'). This value defaults to False. Note 
+returned sets will include columns with markers for source column entries subject to 
+infill (columns with suffix '\_NArw'). This value defaults to False. Note 
 that the properties of cells qualifying as candidate for infill are based
 on the 'NArowtype' of the root category of transformations associated with 
 the column, see Library of Transformations section below for catalog, the
