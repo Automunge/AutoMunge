@@ -24166,25 +24166,6 @@ class AutoMunge:
       #such as to prioritize applying inplace on excl
       transformdict[transformkey]['auntsuncles'].append('excl')
       transformdict[transformkey]['auntsuncles'].remove('excl')
-          
-    for transformkey in sorted(transformdict):
-      if 'excl' in transformdict[transformkey]['parents'] \
-      or 'excl' in transformdict[transformkey]['auntsuncles'] \
-      or 'excl' in transformdict[transformkey]['children'] \
-      or 'excl' in transformdict[transformkey]['coworkers'] \
-      or 'excl' in transformdict[transformkey]['siblings'] \
-      or 'excl' in transformdict[transformkey]['friends'] \
-      or 'excl' in transformdict[transformkey]['niecesnephews']:
-        
-        result2 = True
-        
-        print("Error warning: 'excl' transform found in in family tree ")
-        print("of user passed transformdict in root category: ", transformkey)
-        print("'excl' transform is an in-place operator ")
-        print("and only allowed as an entry in the cousins primitive.")
-        print("Please use 'exc6' instead which is a direct pass-through ")
-        print("relying on a copy operation instead of in-place operation.")
-        print()
 
     return result1, result2, transformdict
   
@@ -27323,7 +27304,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.17'
+    automungeversion = '5.18'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
