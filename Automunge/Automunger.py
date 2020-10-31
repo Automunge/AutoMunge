@@ -6410,7 +6410,7 @@ class AutoMunge:
           print("")
           
     return postprocess_dict
-  
+
   def process_NArw_class(self, df, column, category, postprocess_dict, params = {}):
     '''
     #processing funciton that creates a boolean column indicating 1 for rows
@@ -6422,15 +6422,10 @@ class AutoMunge:
     
     suffixoverlap_results = {}
     
-    #add a second column with boolean expression indicating a missing cell
-    #(using NArows(.) function defined below, column name will be column+'_NArows')
-    NArows_nmbr = self.getNArows(df, column, category, postprocess_dict)
-    
     suffixoverlap_results = \
     self.df_check_suffixoverlap(df, column + '_NArw', suffixoverlap_results)
-    
-    df[column + '_NArw'] = NArows_nmbr.copy()
-    del NArows_nmbr
+
+    df[column + '_NArw'] = self.getNArows(df, column, category, postprocess_dict)
 
     #change NArows data type to 8-bit (1 byte) integers for memory savings
     df[column + '_NArw'] = df[column + '_NArw'].astype(np.int8)
@@ -20682,7 +20677,10 @@ class AutoMunge:
           for labelcolumn in labels:
             if postprocess_dict['column_dict'][labelcolumn]['category'] == labelscategory:
               singlctcolumn = labelcolumn
+          #if the label category is custom processdict entry with improperly specced labelctgy just apply this heuristic (remote edge case)
           if singlctcolumn is False:
+            print("label category processdict entry contained a labelctgy not found in the transformdict entry, applying heuristic")
+            print()
             singlctcolumn = labels[0]
         
         uniquevalues = list(labels_df[singlctcolumn].unique())
@@ -21224,7 +21222,14 @@ class AutoMunge:
               
             break
 
-        if len(am_categorylist) == 1:
+        if len(am_categorylist) == 0:
+          if printstatus is True:
+            #this is a remote edge case, printout added for troubleshooting support
+            print("Label category processdict entry contained a labelctgy entry not found in transformdict entry")
+            print("Feature Seclection model training will not run without valid labelgctgy processdict entry")
+            print()
+
+        elif len(am_categorylist) == 1:
           am_labels = pd.DataFrame(am_labels[am_categorylist[0]])
           am_validationlabels1 = pd.DataFrame(am_validationlabels1[am_categorylist[0]])
 
@@ -27318,7 +27323,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.16'
+    automungeversion = '5.17'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -33577,7 +33582,14 @@ class AutoMunge:
               
             break
 
-        if len(am_categorylist) == 1:
+        if len(am_categorylist) == 0:
+          if printstatus is True:
+            #this is a remote edge case, printout added for troubleshooting support
+            print("Label category processdict entry contained a labelctgy entry not found in transformdict entry")
+            print("Feature Seclection model training will not run without valid labelgctgy processdict entry")
+            print()
+
+        elif len(am_categorylist) == 1:
           am_labels = pd.DataFrame(am_labels[am_categorylist[0]])
           am_validationlabels1 = pd.DataFrame(am_validationlabels1[am_categorylist[0]])
 
