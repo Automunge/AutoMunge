@@ -2876,6 +2876,16 @@ class AutoMunge:
                                      'niecesnephews' : [], \
                                      'coworkers'     : [], \
                                      'friends'       : []}})
+
+    #exc6 was removed from library, is now same as excl, just including here so no printout for prior code demonstrations 
+    transform_dict.update({'exc6' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['excl'], \
+                                     'cousins'       : [], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
     
     transform_dict.update({'shfl' : {'parents'       : [], \
                                      'siblings'      : [], \
@@ -5700,6 +5710,15 @@ class AutoMunge:
                                   'NArowtype' : 'integer', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'exc5'}})
+    process_dict.update({'exc6' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_excl_class, \
+                                  'postprocess' : None, \
+                                  'inverseprocess' : self.inverseprocess_excl, \
+                                  'info_retention' : True, \
+                                  'inplace_option' : True, \
+                                  'NArowtype' : 'exclude', \
+                                  'MLinfilltype' : 'totalexclude', \
+                                  'labelctgy' : 'excl'}})
     process_dict.update({'shfl' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_shfl_class, \
                                   'postprocess' : None, \
