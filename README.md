@@ -1346,7 +1346,7 @@ processdict =  {'newt' : {'dualprocess' : am.process_mnmx_class, \
 #                        will be converted to onehot for ML
 #              'exclude' for columns which will be excluded from ML infill
 #              'boolexclude' boolean set suitable for Binary transform but excluded from all infill (eg NArw entries)
-#              'totalexclude' for complete passthroughs (eg excl, exc6) without infill and excluded 
+#              'totalexclude' for complete passthroughs (eg excl) without infill and excluded 
 #                        from inf conversion and assignnan global option
 
 #labelctgy: should be a string entry of a single transform category as recorded by the associated transformation
