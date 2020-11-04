@@ -105,7 +105,7 @@ labelsencoding_dict, finalcolumns_train, finalcolumns_test, \
 featureimportance, postprocess_dict \
 = am.automunge(df_train)
 ```
-or for subsequent consistent processing of train or test data, using the
+Or for subsequent consistent processing of train or test data, using the
 dictionary returned from original application of automunge(.), run:
 
 ```
