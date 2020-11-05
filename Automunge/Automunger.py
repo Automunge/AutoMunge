@@ -11970,6 +11970,8 @@ class AutoMunge:
     
     df[nmrc_column] = df[nmrc_column].astype(str)
     df[nmrc_column] = df[nmrc_column].replace(overlap_dict)
+
+    df[nmrc_column] = pd.to_numeric(df[nmrc_column], errors='coerce')
     
     #get mean of training data
     mean = df[nmrc_column].mean()
@@ -12222,7 +12224,10 @@ class AutoMunge:
     #great now that test_overlap_dict is populated
     mdf_test[nmrc_column] = mdf_test[nmrc_column].astype(str)
     mdf_test[nmrc_column] = mdf_test[nmrc_column].replace(test_overlap_dict)
-    
+
+    mdf_train[nmrc_column] = pd.to_numeric(mdf_train[nmrc_column], errors='coerce')
+    mdf_test[nmrc_column] = pd.to_numeric(mdf_test[nmrc_column], errors='coerce')
+
     #get mean of training data
     mean = mdf_train[nmrc_column].mean()
     if mean != mean:
@@ -19535,12 +19540,6 @@ class AutoMunge:
     #see potential values documented in assembleprocessdict function
     MLinfilltype = postprocess_dict['process_dict'][category]['MLinfilltype']
     
-    #convert dataframes to numpy arrays for universal compatibility with ML algorithms
-    df_train_filltrain = df_train_filltrain.values
-    df_train_filllabel = df_train_filllabel.values
-    df_train_fillfeatures = df_train_fillfeatures.values
-    df_test_fillfeatures = df_test_fillfeatures.values
-    
     #if a numeric target set
     if MLinfilltype in ['numeric', 'concurrent_nmbr']:
       
@@ -19552,9 +19551,6 @@ class AutoMunge:
         model = False
       
       else:
-
-        #single label column needs to be flattened from [[#,...]] to [#,...] with ravel
-        df_train_filllabel = np.ravel(df_train_filllabel)
         
         #now call our training function
         #which handles tuning if applicable, model initialization, and training
@@ -19592,9 +19588,6 @@ class AutoMunge:
         model = False
 
       else:
-        
-        #single label column needs to be flattened from [[#,...]] to [#,...] with ravel
-        df_train_filllabel = np.ravel(df_train_filllabel)
         
         #now call our training function
         #which handles tuning if applicable, model initialization, and training
@@ -19637,10 +19630,6 @@ class AutoMunge:
         
         #future extension - Label Smoothing for ML infill
         #(might incorporate this into the training function to be activated by ML_cmnd)
-        
-        #muiltirt sets as edge case may sometimes be returned with one column, then need ravel flattening
-        if df_train_filllabel.shape[1] == 1:
-          df_train_filllabel = np.ravel(df_train_filllabel)
           
         #now call our training function
         #which handles tuning if applicable, model initialization, and training
@@ -19684,10 +19673,6 @@ class AutoMunge:
         #convert from binary to one-hot encoding
         df_train_filllabel = \
         self.convert_1010_to_onehot(df_train_filllabel)
-        
-        #for edge case may sometimes be returned with one column, then need ravel flattening
-        if df_train_filllabel.shape[1] == 1:
-          df_train_filllabel = np.ravel(df_train_filllabel)
           
         #now call our training function
         #which handles tuning if applicable, model initialization, and training
@@ -19723,7 +19708,7 @@ class AutoMunge:
         else:
           #this needs to have same number of columns as text category
           df_testinfill = np.zeros(shape=(1,len(categorylist)))
-        
+
       #convert infill values to dataframe
       df_traininfill = pd.DataFrame(df_traininfill, columns = categorylist)
       df_testinfill = pd.DataFrame(df_testinfill, columns = categorylist)
@@ -20149,6 +20134,13 @@ class AutoMunge:
     #and default values for Random Forest Classifer are initialized with populateMLinfilldefaults
     """
     
+    df_train_filltrain = df_train_filltrain.values
+    df_train_filllabel = df_train_filllabel.values
+    
+    #sometimes may be one column, then need ravel flattening
+    if df_train_filllabel.shape[1] == 1:
+      df_train_filllabel = np.ravel(df_train_filllabel)
+    
     #initialize defaults dictionary, these are the default parameters for random forest model initialization
     MLinfilldefaults = \
     self.populateMLinfilldefaults(randomseed)
@@ -20245,6 +20237,8 @@ class AutoMunge:
     #the categorylist parameter is used to handle an edge case for when predict_autogluon is called
     """
     
+    fillfeatures = fillfeatures.values
+    
     infill = model.predict(fillfeatures)
     
     return infill
@@ -20272,6 +20266,12 @@ class AutoMunge:
     #model initialization makes use of initRandomForestRegressor function
     #and default values for Random Forest Regressor are initialized with populateMLinfilldefaults
     """
+    
+    df_train_filltrain = df_train_filltrain.values
+    df_train_filllabel = df_train_filllabel.values
+    
+    #single label column needs to be flattened from [[#,...]] to [#,...] with ravel
+    df_train_filllabel = np.ravel(df_train_filllabel)
     
     #initialize defaults dictionary, these are the default parameters for random forest model initialization
     MLinfilldefaults = \
@@ -20368,6 +20368,8 @@ class AutoMunge:
     #the categorylist parameter is used to handle an edge case for when predict_autogluon is called
     """
     
+    fillfeatures = fillfeatures.values
+    
     infill = model.predict(fillfeatures)
     
     return infill
@@ -20389,11 +20391,15 @@ class AutoMunge:
     from autogluon.tabular import TabularPrediction as task
 
     try:
-    
-      #autogluon accepts dataframes instead of numpy arrays
-      df_train_filltrain = pd.DataFrame(df_train_filltrain)
+      
+      #column headers matter for convert_onehot_to_singlecolumn methods, reset as integers
+      #I'm not sure why simply renaming columns to integers doesn't work here
+      # df_train_filltrain.columns = list(range(len(list(df_train_filltrain.columns))))
+      # df_train_filllabel.columns = list(range(len(list(df_train_filllabel.columns))))
+      df_train_filltrain = pd.DataFrame(df_train_filltrain.values)
+      df_train_filllabel = pd.DataFrame(df_train_filllabel.values)
+
       df_train_filltrain.columns = ['train_' + str(x) for x in list(df_train_filltrain.columns)]
-      df_train_filllabel = pd.DataFrame(df_train_filllabel)
       
       ag_label_column = list(df_train_filllabel.columns)
 
@@ -20438,9 +20444,10 @@ class AutoMunge:
     from autogluon.tabular import TabularPrediction as task
     
     if model is not False:
+      
+      # fillfeatures.columns = list(range(len(list(fillfeatures.columns))))
+      fillfeatures = pd.DataFrame(fillfeatures.values)
 
-      #fillfeatures = fillfeatures.values
-      fillfeatures = pd.DataFrame(fillfeatures)
       fillfeatures.columns = ['train_' + str(x) for x in list(fillfeatures.columns)]
 
       #load dataset
@@ -20523,44 +20530,42 @@ class AutoMunge:
     
     return df
 
-  def convert_1010_to_onehot(self, np_1010):  
+  def convert_1010_to_onehot(self, df_array):  
     """
-    takes as input numpy array encoded in 1010 format
+    takes as input dataframe encoded in 1010 format
     and translates to a one-hot encoding equivalent
     with number of columns based on 2^n where n is number of 1010 columns
     and potentially with columns with all 0
     """
 
-    #create a dataframe because my numpy sauce is weak
-    df_array = pd.DataFrame(np_1010)
+    received_column_count = df_array.shape[1]
 
     #initialize a column to store encodings
-    df_array['onehot'] = ''
+    #this relies on convention that received columns with suffix appenders have '_' included to ensure no overlap
+    df_array['-1'] = ''
 
     #populate column to store encodings 
     for column in df_array.columns:
-      if column != 'onehot':
-        df_array['onehot'] = \
-        df_array['onehot'] + df_array[column].astype(int).astype(str)
+      if column != '-1':
+        df_array['-1'] = \
+        df_array['-1'] + df_array[column].astype(int).astype(str)
 
     #discard other columns
-    df_array = pd.DataFrame(df_array['onehot'])
+    df_array = pd.DataFrame(df_array['-1'])
 
     #create list of columns for the encoding with binary encodings
     #this will be full list of range of values based on number of 1010 columns
-    textcolumns = list(range(2**np_1010.shape[1]))
-    textcolumns = ['onehot_' + str(format(item, f"0{np_1010.shape[1]}b")) for item in textcolumns]
+    #postprocess_textsupport_class support function needs string headers
+    #this relies on convention that received columns with suffix appenders have '_' included to ensure no overlap
+    textcolumns = list(range(2**received_column_count))
+    textcolumns = ['-1' + str(format(item, f"0{received_column_count}b")) for item in textcolumns]
 
-  #   df_onehot = \
-  #   postprocess_textsupport_class(df_array, 'onehot', temp_ppd, 'columnkey')
     df_onehot = \
-    self.postprocess_textsupport_class(df_array, 'onehot', {}, 'tempkey', {'textcolumns':textcolumns})
+    self.postprocess_textsupport_class(df_array, '-1', {}, 'tempkey', {'textcolumns':textcolumns})
 
-    del df_onehot['onehot']
+    del df_onehot['-1']
 
-    np_onehot = df_onehot.values
-
-    return np_onehot
+    return df_onehot
   
   def convert_onehot_to_1010(self, np_onehot):
     """
@@ -20863,8 +20868,8 @@ class AutoMunge:
     
     if len(list(am_labels)) > 0:
 
-      df_train_fillfeatures_plug = am_subset[:][:1].copy()
-      df_test_fillfeatures_plug = am_subset[:][:1].copy()
+      df_train_fillfeatures_plug = pd.DataFrame(am_subset[:][:1].copy())
+      df_test_fillfeatures_plug = pd.DataFrame(am_subset[:][:1].copy())
       categorylist = postprocess_dict['column_dict'][list(am_labels)[0]]['categorylist']
 
       _infilla, _infillb, FSmodel, postprocess_dict = \
@@ -20920,6 +20925,8 @@ class AutoMunge:
     '''
     measures accuracy of predictions of shuffleset (which had permutation method)
     against the model trained on the unshuffled set
+
+    np_shuffleset and np_labels are now recast as pandas dataframe, leaving the "np" in place for convenience
     '''
 
     ML_cmnd = postprocess_dict['ML_cmnd']
@@ -20951,13 +20958,6 @@ class AutoMunge:
     
     #if labelscategory in ['nmbr']:
     if MLinfilltype in ['numeric', 'concurrent_nmbr']:
-          
-      #convert dataframes to numpy arrays
-      np_shuffleset = np_shuffleset.values
-      np_labels = np_labels.values
-      
-      #this is to address a weird error message suggesting I reshape the y with ravel()
-      np_labels = np.ravel(np_labels)
       
       #generate predictions
       np_predictions = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, FSmodel, np_shuffleset, printstatus_for_predict, categorylist_for_predict)
@@ -20977,13 +20977,6 @@ class AutoMunge:
     #if labelscategory in ['bnry']:
     if MLinfilltype in ['singlct', 'binary', 'concurrent_act']:
       
-      #convert dataframes to numpy arrays
-      np_shuffleset = np_shuffleset.values
-      np_labels = np_labels.values
-      
-      #this is to address a weird error message suggesting I reshape the y with ravel()
-      np_labels = np.ravel(np_labels)
-      
       #generate predictions
       np_predictions = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, FSmodel, np_shuffleset, printstatus_for_predict, categorylist_for_predict)
       #np_predictions = FSmodel.predict(np_shuffleset)
@@ -20994,14 +20987,6 @@ class AutoMunge:
     #if labelscategory in ['text']:
     if MLinfilltype in ['multirt']:
       
-      #convert dataframes to numpy arrays
-      np_shuffleset = np_shuffleset.values
-      np_labels = np_labels.values
-      
-      #muiltirt sets as edge case may sometimes be returned with one column
-      if np_labels.shape[1] == 1:
-        np_labels = np.ravel(np_labels)
-      
       #generate predictions
       np_predictions = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, FSmodel, np_shuffleset, printstatus_for_predict, categorylist_for_predict)
       #np_predictions = FSmodel.predict(np_shuffleset)
@@ -21011,10 +20996,6 @@ class AutoMunge:
       columnaccuracy = accuracy_score(np_labels, np_predictions)
 
     if MLinfilltype in ['1010']:
-
-      #convert dataframes to numpy arrays
-      np_shuffleset = np_shuffleset.values
-      np_labels = np_labels.values
       
       np_labels = \
       self.convert_1010_to_onehot(np_labels)
@@ -27323,7 +27304,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.18'
+    automungeversion = '5.19'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -30401,6 +30382,8 @@ class AutoMunge:
     #great now that test_overlap_dict is populated
     mdf_test[nmrc_column] = mdf_test[nmrc_column].astype(str)
     mdf_test[nmrc_column] = mdf_test[nmrc_column].replace(test_overlap_dict)
+
+    mdf_test[nmrc_column] = pd.to_numeric(mdf_test[nmrc_column], errors='coerce')
     
     #replace missing data with training set mean as default infill
     mdf_test[nmrc_column] = mdf_test[nmrc_column].fillna(mean)
@@ -33200,9 +33183,6 @@ class AutoMunge:
     
     #grab autoML_type from ML_cmnd, this will be one of our keys for autoMLer dictionary
     autoML_type = ML_cmnd['autoML_type']
-    
-    #convert dataframes to numpy arrays
-    df_test_fillfeatures = df_test_fillfeatures.values
     
     #ony run the following if we successfuly trained a model in automunge
     if model is not False:
