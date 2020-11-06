@@ -18497,7 +18497,7 @@ class AutoMunge:
     
     return category
 
-  def getNArows(self, df, column, category, postprocess_dict, \
+  def getNArows(self, df2, column, category, postprocess_dict, \
                 drift_dict = {}, driftassess = False):
     '''
     #NArows(df, column), function that when fed a dataframe, \
@@ -18517,7 +18517,11 @@ class AutoMunge:
     
     NArowtype = postprocess_dict['process_dict'][category]['NArowtype']
     
-    df2 = pd.DataFrame(df[column].copy())
+    #originally these evaluations were performed on a copy of the received column
+    #struck that approach to reduce memory overhead from copy operation
+    #small tradeoff in that edits here (such as cast to numeric) 
+    #are preserved outside of this function
+    # df2 = pd.DataFrame(df[column].copy())
     
     #if category == 'text':
     if NArowtype in ['justNaN']:
@@ -18810,8 +18814,8 @@ class AutoMunge:
 #       NArows = pd.DataFrame(np.zeros((df2.shape[0], 1)), columns=[column+'_NArows'])
       #NArows = NArows.rename(columns = {column:column+'_NArows'})
       
-      df2[column] = False
-      NArows = pd.DataFrame(df2[column])
+      NArows = pd.DataFrame(df2[column].copy())
+      NArows[column] = False
       NArows = NArows.rename(columns = {column:column+'_NArows'})
 #       NArows[column+'_NArows'] = False
       
@@ -18969,11 +18973,11 @@ class AutoMunge:
 
                 overlap_dict.update({unique : True})
     
-    df[column] = df[column].astype(str)
-    df[column] = df[column].replace(overlap_dict)
-#     df[column] = df[column].astype(np.int8)
-    
     NArows = pd.DataFrame(df[column].copy())
+
+    NArows[column] = NArows[column].astype(str)
+    NArows[column] = NArows[column].replace(overlap_dict)
+#     df[column] = df[column].astype(np.int8)
     
     NArows.columns = [column+'_NArows']
     
@@ -19051,11 +19055,11 @@ class AutoMunge:
 
                 overlap_dict.update({unique : True})
     
-    df[column] = df[column].astype(str)
-    df[column] = df[column].replace(overlap_dict)
-#     df[column] = df[column].astype(np.int8)
-    
     NArows = pd.DataFrame(df[column].copy())
+
+    NArows[column] = NArows[column].astype(str)
+    NArows[column] = NArows[column].replace(overlap_dict)
+#     df[column] = df[column].astype(np.int8)
     
     NArows.columns = [column+'_NArows']
     
@@ -19133,11 +19137,11 @@ class AutoMunge:
 
                 overlap_dict.update({unique : True})
     
-    df[column] = df[column].astype(str)
-    df[column] = df[column].replace(overlap_dict)
-#     df[column] = df[column].astype(np.int8)
-    
     NArows = pd.DataFrame(df[column].copy())
+
+    NArows[column] = NArows[column].astype(str)
+    NArows[column] = NArows[column].replace(overlap_dict)
+#     df[column] = df[column].astype(np.int8)
     
     NArows.columns = [column+'_NArows']
     
@@ -27304,7 +27308,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.19'
+    automungeversion = '5.20'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
