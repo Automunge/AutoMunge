@@ -852,8 +852,8 @@ infill (columns with suffix '\_NArw'). This value defaults to False. Note
 that the properties of cells qualifying as candidate for infill are based
 on the 'NArowtype' of the root category of transformations associated with 
 the column, see Library of Transformations section below for catalog, the
-various NArowtype options are also further clarified below in discussion 
-around the processdict parameter.
+various NArowtype options (such as justNaN, numeric, positivenumeric, etc)
+are also further clarified below in discussion around the processdict parameter.
 
 * featureselection: a boolean identifier _(True/False)_ telling the function 
 to perform a feature importance evaluation. If selected automunge will
