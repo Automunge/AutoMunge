@@ -179,7 +179,7 @@ am.automunge(df_train, df_test = False, \
                              'modeinfill':[], 'lcinfill':[], 'naninfill':[]}, \
              assignnan = {'categories':{}, 'columns':{}, 'global':[]}, \
              transformdict = {}, processdict = {}, evalcat = False, \
-             privacy_encode = True, printstatus = True)
+             privacy_encode = False, printstatus = True)
 ```
 
 Please remember to save the automunge(.) returned object postprocess_dict 
@@ -408,7 +408,7 @@ am.automunge(df_train, df_test = False, \
                              'modeinfill':[], 'lcinfill':[], 'naninfill':[]}, \
              assignnan = {'categories':{}, 'columns':{}, 'global':[]}, \
              transformdict = {}, processdict = {}, evalcat = False, \
-             privacy_encode = True, printstatus = True)
+             privacy_encode = False, printstatus = True)
 ```
 
 Or for the postmunge function:
@@ -644,7 +644,7 @@ am.automunge(df_train, df_test = False, \
                              'modeinfill':[], 'lcinfill':[], 'naninfill':[]}, \
              assignnan = {'categories':{}, 'columns':{}, 'global':[]}, \
              transformdict = {}, processdict = {}, evalcat = False, \
-             privacy_encode = True, printstatus = True)
+             privacy_encode = False, printstatus = True)
 ```
 
 * df_train: a pandas dataframe or numpy array containing a structured 
