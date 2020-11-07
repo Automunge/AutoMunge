@@ -1089,8 +1089,9 @@ assignparam = {'splt' : {'column1' : {'minsplit' : 4}}}
 Note that the category identifier should be the category entry to the family 
 tree primitive associated with the transform, which may be different than the 
 root category of the family tree assigned in assigncat. The set of family 
-trees definitions for root categories are included below for reference. As an 
-example to demonstrate edge case for cases where transformation category does 
+tree definitions for root categories are included below for reference. 
+
+As an example to demonstrate edge case for cases where transformation category does 
 not match transformation function (based on entries to transformdict and 
 processdict), if we want to pass a parameter to turn off UPCS transform included 
 in or19 family tree and associuated with the or19 transformation category for 
