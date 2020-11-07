@@ -1206,6 +1206,30 @@ are examples of entries intended for infill corresponding to each. In cases of r
 global takes precendence over columns which takes precedence over categories. Note that lists of terms 
 can also be passed as single values such as string / number for internal conversion to list.
 
+Assignnan also supports stochastic and range based injections, such as to target for infill specific
+segments of a set's distribution. 'injections' can be passed to assignnan as:
+```
+assignnan =     {'injections' : {'(column)' : {'inject_ratio' : (float), \
+                                               'range' : {'ratio'  : (float), \
+                                                          'ranges' : [[min1, max1], [min2, max2]]}, \
+                                               'minmax_range' : {'ratio'  : (float), \
+                                                                 'ranges' : [[min1, max1], [min2, max2]]}, \
+                                               'entries' : ['(entry1)', '(entry2)'], \
+                                               'entry_ratio' : {'(entry1)' : float, \
+                                                                '(entry2)' : float}
+                                              }
+                                }
+                }
+    
+#where injections may be specified for each source column passed to automunge(.)
+#- inject_ratio is uniform randomly injected nan points to ratio of entries
+#- range is injection within a specified range based on ratio float defaulting to 1.0
+#- minmax_range is injection within scaled range (accepting floats 0-1 based on received 
+#column max and min (returned column is not scaled)
+#- entries are full replacement of specific entries to a categoric set
+#- entry_ratio are partial injection to specific entries to a categoric set per specified float ratio 
+```
+
 * transformdict: allows a user to pass a custom tree of transformations.
 Note that a user may define their own (traditionally 4 character) string "root"
 identifiers for a series of processing steps using the categories of processing 
