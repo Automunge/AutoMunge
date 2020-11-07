@@ -24394,10 +24394,10 @@ class AutoMunge:
     
     for entry1 in assignnan:
       
-      if entry1 not in ['categories', 'columns', 'global']:
+      if entry1 not in ['categories', 'columns', 'global', 'injections']:
         
         check_assignnan_toplevelentries_result = True
-        print("error: assignnan parameter valid entries for first tier are 'categories', 'columns', and 'global'")
+        print("error: assignnan parameter valid entries for first tier are 'categories', 'columns', 'global', and 'injections'")
         print()
         
     if 'categories' in assignnan:
@@ -24418,6 +24418,16 @@ class AutoMunge:
           
           check_assignnan_columns_result = True
           print("error: assignnan parameter valid entries under 'columns' must be source columns from passed df_train")
+          print()
+
+    if 'injections' in assignnan:
+      
+      for entry3 in assignnan['injections']:        
+        
+        if entry3 not in df_train_list:
+          
+          check_assignnan_columns_result = True
+          print("error: assignnan parameter valid entries under 'injections' must be source columns from passed df_train")
           print()
 
     return check_assignnan_toplevelentries_result, check_assignnan_categories_result, check_assignnan_columns_result
@@ -25570,6 +25580,10 @@ class AutoMunge:
     
     #where in case of specification redundancy column designation takes precedence
     #and where category is reffering to the root category associated with a column
+    
+    #some further options for nan injections are documented in the assignnan_inject
+    #including stochastic and range injections
+    #which is called at the conclusion of this one
     """
     
     nanpoints = []
@@ -25613,7 +25627,159 @@ class AutoMunge:
     for entry in nanpoints:
       
       df.loc[df[column] == entry, column] = np.nan
+      
+    #finally some further options for nan injections are supported 
+    #including stochastic and range injections
+    #as documented further in assignnan_inject function
+    if 'injections' in assignnan:
+      df = self.assignnan_inject(df, column, assignnan, postprocess_dict['randomseed'])
+    
+    return df
 
+  def assignnan_inject(self, df, column, assignnan, randomseed):
+    """
+    #allows custom range or stochastic nan injections to distinct source columns
+    #assignnan now accepts entries as
+    
+    {'injections' : {'(column)' : {'inject_ratio' : (float), \
+                                   'range' : {'ratio'  : (float), \
+                                              'ranges' : [[min1, max1], [min2, max2]]}, \
+                                   'minmax_range' : {'ratio'  : (float), \
+                                                     'ranges' : [[min1, max1], [min2, max2]]}, \
+                                   'entries' : ['(entry1)', '(entry2)'], \
+                                   'entry_ratio' : {'(entry1)' : float, \
+                                                    '(entry2)' : float}
+                                  }
+                    }
+    }
+    
+    #where injections may be specified for each source column passed to automunge(.)
+    #- inject_ratio is uniform randomly injected nan points to ratio of entries
+    #- range is injection within a specified range based on ratio float defaulting to 1.0
+    #- minmax_range is injection within scaled range (accepting floats 0-1 based on received 
+    #column max and min (returned column is not scaled
+    #- entries are full replacement of specific entries to a categoric set
+    #- entry_ratio are partial injection to specific entries to a categoric set, 
+    #per specified float ratio 
+    
+    #the purposes of these options are to support some experiments on missing data infill
+    
+    #currently assignnan_inject only supports dataframes with range integer index
+    #this is deemed acceptable since this functionality not intended for mainstream use
+    """
+    
+    if 'injections' in assignnan:
+      
+      #for injections functinoality we'll reset index to range integer
+      #non-range indexes will have already been copied into ID set
+      if type(df.index) != pd.RangeIndex:
+        df = df.reset_index(drop=True)
+      
+      for columnkey in assignnan['injections']:
+        if columnkey in df:
+          for actionkey in assignnan['injections'][columnkey]:
+            if actionkey not in ['inject_ratio', 'range', 'minmax_range', 'entries', 'entry_ratio']:
+              print("assignnan['injections'] has an invalid action entry")
+              print("for column: ", columnkey)
+              print("and action: ", actionkey)
+              print("accepted form of injetion specifications are documented in read me")
+              
+            elif actionkey == 'inject_ratio':
+              #inject_ratio is uniform randomly injected nan points to ratio of entries
+              ratio = assignnan['injections'][columnkey][actionkey]
+              index = list(pd.DataFrame(df.index).sample(frac=ratio, replace=False, random_state=randomseed).values.ravel())
+              df.loc[index, columnkey] = np.nan
+              
+            elif actionkey == 'range':
+              #range inserts nan in designated ranges of numeric set
+              #accepts parameter for injection ratio, we'll actually use for our method 1-ratio
+              if 'ratio' in assignnan['injections'][columnkey][actionkey]:
+                ratio = 1 - assignnan['injections'][columnkey][actionkey]['ratio']
+              else:
+                ratio = 1 - 1
+              if 'ranges' in assignnan['injections'][columnkey][actionkey]:
+                #ranges is a list of list, each sub list with two entries for min and max inclusive
+                for range_list in assignnan['injections'][columnkey][actionkey]['ranges']:
+                  rangemin = range_list[0]
+                  rangemax = range_list[-1]
+                  #we'll create a support dataframe to populate masks
+                  df_mask = pd.DataFrame()
+                  df_mask['lessthan'] = np.where(df[columnkey]<=rangemax, 1, 0)
+                  df_mask['greaterthan'] = np.where(df[columnkey]>=rangemin, 1, 0)
+                  #this populates mask with 1's for candidates for injection, 0's elsewhere
+                  df_mask['mask'] = df_mask['lessthan'] * df_mask['greaterthan']
+                  #this populates mask with nan for injection candidates and 1 elsewhere
+                  df_mask['mask'] = np.where(df_mask['mask'] == 1, np.nan, 1)
+                  if ratio > 0:
+                    #this get's index list of mask nan entries for use with .loc
+                    index = list(pd.DataFrame(df_mask[df_mask['mask'] != df_mask['mask']].index).sample(frac=ratio, replace=False, random_state=randomseed).values.ravel())
+                    #this reverts some of the nans if ratio was passed as <1
+                    df_mask.loc[index, 'mask'] = 1
+                  #now inject the nan to the target column in df
+                  df[columnkey] = df[columnkey] * df_mask['mask']
+                  del df_mask
+                  
+            elif actionkey == 'minmax_range':
+              #minmax_range is similar to range but the max and min are recieved in range 0-1
+              #and applied corresponding to a minmax scaling of recieved set
+              #(set is returned without scaling)
+              #range inserts nan in designated ranges of numeric set
+              #accepts parameter for injection ratio, we'll actually use for our method 1-ratio
+              if 'ratio' in assignnan['injections'][columnkey][actionkey]:
+                ratio = 1 - assignnan['injections'][columnkey][actionkey]['ratio']
+              else:
+                ratio = 1 - 1
+              if 'ranges' in assignnan['injections'][columnkey][actionkey]:
+                #this might return nan if target column does not contain numeric entries
+                setmin = df[columnkey].min()
+                setmax = df[columnkey].max()
+                #ranges is a list of list, each sub list with two entries for min and max inclusive
+                for range_list in assignnan['injections'][columnkey][actionkey]['ranges']:
+                  rangemin = range_list[0]
+                  rangemax = range_list[-1]
+                  #now scale these ranges based on inverse of min-max scaling formula
+                  #minmax = (xi - min)/(max - min)
+                  # => xi = minmax * (max - min) + min
+                  rangemin = rangemin * (setmax - setmin) + setmin
+                  rangemax = rangemax * (setmax - setmin) + setmin
+                  #the rest is comparable to unscaled range option
+                  #we'll create a support dataframe to populate masks
+                  df_mask = pd.DataFrame()
+                  df_mask['lessthan'] = np.where(df[columnkey]<=rangemax, 1, 0)
+                  df_mask['greaterthan'] = np.where(df[columnkey]>=rangemin, 1, 0)
+                  #this populates mask with 1's for candidates for injection, 0's elsewhere
+                  df_mask['mask'] = df_mask['lessthan'] * df_mask['greaterthan']
+                  #this populates mask with nan for injection candidates and 1 elsewhere
+                  df_mask['mask'] = np.where(df_mask['mask'] == 1, np.nan, 1)
+                  if ratio > 0:
+                    #this get's index list of mask nan entries for use with .loc
+                    index = list(pd.DataFrame(df_mask[df_mask['mask'] != df_mask['mask']].index).sample(frac=ratio, replace=False, random_state=randomseed).values.ravel())
+                    #this reverts some of the nans if ratio was passed as <1
+                    df_mask.loc[index, 'mask'] = 1
+                  #now inject the nan to the target column in df
+                  df[columnkey] = df[columnkey] * df_mask['mask']
+                  del df_mask
+                  
+            elif actionkey == 'entries':
+              #entries are full replacement of specific entries to a categoric set
+              for targetentry in assignnan['injections'][columnkey][actionkey]:
+                df[columnkey] = np.where(df[columnkey] == targetentry, np.nan, df[columnkey])
+                
+            elif actionkey == 'entry_ratio':
+              #entry_ratio are partial injection to specific entries to a categoric set, 
+              #per specified float ratio in range 0-1
+              for targetentry in assignnan['injections'][columnkey][actionkey]:
+                ratio = 1 - assignnan['injections'][columnkey][actionkey][targetentry]
+                df_mask = pd.DataFrame()
+                #here we'll use convention that 1 is a target for injection 0 remains static
+                df_mask['mask'] = np.where(df[columnkey] == targetentry, 1, 0)
+                if ratio > 0:
+                  #this get's index list of mask 1 entries for use with .loc
+                  index = list(pd.DataFrame(df_mask[df_mask['mask'] == 1].index).sample(frac=ratio, replace=False, random_state=randomseed).values.ravel())
+                  #this reverts some of the 1's if ratio was passed as <1
+                  df_mask.loc[index, 'mask'] = 0
+                df[columnkey] = np.where(df_mask['mask'] == 1, np.nan, df[columnkey])
+                
     return df
   
   def df_split(self, df, ratio, shuffle_param, randomseed):
@@ -27308,7 +27474,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.20'
+    automungeversion = '5.21'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
