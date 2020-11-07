@@ -24468,7 +24468,7 @@ class AutoMunge:
     
     for key in assignparam:
       
-      if key not in ['global_assignparam', 'default_assignparam'] \
+      if key not in ['global_assignparam', 'default_assignparam', '(category)'] \
       and key not in process_dict:
         
         result = True
@@ -24479,7 +24479,7 @@ class AutoMunge:
         
         for key2 in assignparam['default_assignparam']:
           
-          if key2 not in process_dict:
+          if key2 != '(category)' and key2 not in process_dict:
             
             result = True
             print("error, assignparam['default_assignparam'] category key ", key2)
@@ -27474,7 +27474,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.21'
+    automungeversion = '5.22'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
