@@ -135,7 +135,7 @@ am.automunge(df_train, df_test = False, \
              TrainLabelFreqLevel = False, powertransform = False, binstransform = False, \
              MLinfill = False, infilliterate=1, randomseed = 42, eval_ratio = .5, \
              LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, LSfit = False, \
-             numbercategoryheuristic = 63, pandasoutput = False, NArw_marker = False, \
+             numbercategoryheuristic = 127, pandasoutput = False, NArw_marker = False, \
              featureselection = False, featurepct = 1.0, featuremetric = 0.0, featuremethod = 'default', \
              Binary = False, PCAn_components = False, PCAexcl = [], excl_suffix = False, \
              ML_cmnd = {'autoML_type':'randomforest', \
@@ -364,7 +364,7 @@ am.automunge(df_train, df_test = False, \
              TrainLabelFreqLevel = False, powertransform = False, binstransform = False, \
              MLinfill = False, infilliterate=1, randomseed = 42, eval_ratio = .5, \
              LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, LSfit = False, \
-             numbercategoryheuristic = 63, pandasoutput = False, NArw_marker = False, \
+             numbercategoryheuristic = 127, pandasoutput = False, NArw_marker = False, \
              featureselection = False, featurepct = 1.0, featuremetric = 0.0, featuremethod = 'default', \
              Binary = False, PCAn_components = False, PCAexcl = [], excl_suffix = False, \
              ML_cmnd = {'autoML_type':'randomforest', \
@@ -600,7 +600,7 @@ am.automunge(df_train, df_test = False, \
              TrainLabelFreqLevel = False, powertransform = False, binstransform = False, \
              MLinfill = False, infilliterate=1, randomseed = 42, eval_ratio = .5, \
              LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, LSfit = False, \
-             numbercategoryheuristic = 63, pandasoutput = False, NArw_marker = False, \
+             numbercategoryheuristic = 127, pandasoutput = False, NArw_marker = False, \
              featureselection = False, featurepct = 1.0, featuremetric = 0.0, featuremethod = 'default', \
              Binary = False, PCAn_components = False, PCAexcl = [], excl_suffix = False, \
              ML_cmnd = {'autoML_type':'randomforest', \
@@ -837,8 +837,8 @@ for consistent encoding to the other sets (test or validation).
 
 * numbercategoryheuristic: an integer used as a heuristic. When a 
 categorical set has more unique values than this heuristic, it defaults 
-to categorical treatment via ordinal processing via 'ord3', otherwise 
-categorical sets default to binary encoding via '1010'. This defaults to 63.
+to categorical treatment via ordinal processing via 'ordl', otherwise 
+categorical sets default to binary encoding via '1010'. This defaults to 127.
 
 * pandasoutput: a selector for format of returned sets. Defaults to _False_
 for returned Numpy arrays. If set to _True_ returns pandas dataframes
@@ -1913,10 +1913,12 @@ even when parameter NArw_marker passed as True.
 - lb10: for categorical data, columns are subject to one-hot encoding via the 'text'
 transform. (lb10 and lbte have comparable family trees)
 - lbor: for categorical data, if the number of unique entries in the column exceeds 
-the parameter 'numbercategoryheuristic' (which defaults to 63), the encoding will 
-instead be by 'ord3' which is an ordinal (integer) encoding sorted by most common value.
+the parameter 'numbercategoryheuristic' (which defaults to 127), the encoding will 
+instead be by 'ordl' which is an ordinal (integer) encoding alphabetically sorted.
+lbor is excluded from ML infill.
 - lbo5: for categorical data with all unique entries, the encoding will instead be by 
-'ordl' which is an ordinal (integer) encoding alphabetically sorted.
+'ordl' which is an ordinal (integer) encoding alphabetically sorted. lbo5 is excluded 
+from ML infill.
 - lbte: for categorical data of 3 unique values excluding infill (eg NaN), the 
 column is encoded via one-hot encoding.
 - lbbn: for categorical data of <=2 unique values excluding infill (eg NaN), the 
@@ -2746,7 +2748,7 @@ on flip_prob parameter.
   - suffix appender: '_nmbr_DPnb'
   - assignparam parameters accepted: 
     - 'noisedistribution' as {'normal', 'laplace'}, defaults to normal
-    - 'flip_prob' for percent of values with noise injection, defaults to 1.0
+    - 'flip_prob' for percent of entries recieving noise injection, defaults to 0.03
     - 'mu' for noise mean, defaults to 0
     - 'sigma' for noise scale, defaults to 0.06
     - parameters should be passed to 'DPnb' transformation category from family tree
@@ -2760,7 +2762,7 @@ remains in range 0-1 (by scaling neg noise when input <0.5 and scaling pos noise
   - suffix appender: '_mnmx_DPmm'
   - assignparam parameters accepted: 
     - 'noisedistribution' as {'normal', 'laplace'}, defaults to normal
-    - 'flip_prob' for percent of values with noise injection, defaults to 1.0
+    - 'flip_prob' for percent of entries recieving noise injection, defaults to 0.03
     - 'mu' for noise mean, defaults to 0
     - 'sigma' for noise scale, defaults to 0.03
     - parameters should be passed to 'DPmm' transformation category from family tree
@@ -2778,7 +2780,7 @@ remains in range 0-1 (by scaling neg noise when input <0.5 and scaling pos noise
     - 'noisedistribution' as {'normal', 'laplace'}, defaults to normal
     - 'mu' for noise mean, defaults to 0, 
     - 'sigma' for noise scale, defautls to 0.03
-    - also 'flip_prob' for ratio of data with injections (defaults to 1.0). 
+    - 'flip_prob' for percent of entries recieving noise injection, defaults to 0.03
     - Parameters should be passed to 'DPrt' transformation category from family tree.
   - driftreport postmunge metrics: mu, sigma, flip_prob for DPrt, also metrics comparable to retn
   - inversion available: yes
