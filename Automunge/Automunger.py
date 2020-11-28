@@ -17127,7 +17127,7 @@ class AutoMunge:
     if 'flip_prob' in params:
       flip_prob = params['flip_prob']
     else:
-      flip_prob = 1.0
+      flip_prob = 0.03
       
     if 'noisedistribution' in params:
       noisedistribution = params['noisedistribution']
@@ -17219,7 +17219,7 @@ class AutoMunge:
     if 'flip_prob' in params:
       flip_prob = params['flip_prob']
     else:
-      flip_prob = 1.
+      flip_prob = 0.03
       
     if 'noisedistribution' in params:
       noisedistribution = params['noisedistribution']
@@ -17385,7 +17385,7 @@ class AutoMunge:
     if 'flip_prob' in params:
       flip_prob = params['flip_prob']
     else:
-      flip_prob = 1.
+      flip_prob = 0.03
       
     if 'noisedistribution' in params:
       noisedistribution = params['noisedistribution']
@@ -18174,7 +18174,10 @@ class AutoMunge:
       #defaultcategorical = 'text'
       defaultcategorical = '1010'
       
-      defaultordinal = 'ord3'
+      #defaultordinal = 'ord3'
+      #defaultordinal applied when unique values exceeds numbercategoryheuristic
+      #setting this to ord5 to exclude form ML infill as models may have difficulty with high cardinality
+      defaultordinal = 'ord5'
 
       defaultordinal_allunique = 'ord5'
       
@@ -20186,7 +20189,8 @@ class AutoMunge:
       #for now we'll default to grid scoring of ‘accuracy’
       #I've heard that F1 score is a better general default, but not sure how it handles edge cases
       #need to do a little more investsigation on this point
-      grid_scoring = 'accuracy'
+      #grid_scoring = 'accuracy'
+      grid_scoring = 'f1_weighted'
       
       #now we'll initialize a grid search
       if MLinfill_tuner == 'gridCV':
@@ -25997,7 +26001,7 @@ class AutoMunge:
                 TrainLabelFreqLevel = False, powertransform = False, binstransform = False, \
                 MLinfill = False, infilliterate=1, randomseed = 42, eval_ratio = .5, \
                 LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, LSfit = False, \
-                numbercategoryheuristic = 63, pandasoutput = False, NArw_marker = False, \
+                numbercategoryheuristic = 127, pandasoutput = False, NArw_marker = False, \
                 featureselection = False, featurepct = 1.0, featuremetric = 0.0, featuremethod = 'default', \
                 Binary = False, PCAn_components = False, PCAexcl = [], excl_suffix = False, \
                 ML_cmnd = {'MLinfill_type':'default', \
@@ -27474,7 +27478,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.22'
+    automungeversion = '5.23'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
