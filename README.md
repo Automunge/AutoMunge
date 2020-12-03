@@ -155,7 +155,7 @@ am.automunge(df_train, df_test = False, \
                           'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
                           'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
                           'shft':[], 'shf2':[], 'shf3':[], 'shf4':[], 'shf7':[], 'shf8':[], \
-                          'bnry':[], 'onht':[], 'text':[], 'txt2':[], '1010':[], 'or10':[], \
+                          'bnry':[], 'onht':[], 'text':[], 'txt2':[], '1010':[], 'hash':[], \
                           'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
                           'Unht':[], 'Utxt':[], 'Utx2':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
                           'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], 'sp19':[], 'sbst':[], \
@@ -384,7 +384,7 @@ am.automunge(df_train, df_test = False, \
                           'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
                           'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
                           'shft':[], 'shf2':[], 'shf3':[], 'shf4':[], 'shf7':[], 'shf8':[], \
-                          'bnry':[], 'onht':[], 'text':[], 'txt2':[], '1010':[], 'or10':[], \
+                          'bnry':[], 'onht':[], 'text':[], 'txt2':[], '1010':[], 'hash':[], \
                           'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
                           'Unht':[], 'Utxt':[], 'Utx2':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
                           'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], 'sp19':[], 'sbst':[], \
@@ -620,7 +620,7 @@ am.automunge(df_train, df_test = False, \
                           'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
                           'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
                           'shft':[], 'shf2':[], 'shf3':[], 'shf4':[], 'shf7':[], 'shf8':[], \
-                          'bnry':[], 'onht':[], 'text':[], 'txt2':[], '1010':[], 'or10':[], \
+                          'bnry':[], 'onht':[], 'text':[], 'txt2':[], '1010':[], 'hash':[], \
                           'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
                           'Unht':[], 'Utxt':[], 'Utx2':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
                           'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], 'sp19':[], 'sbst':[], \
@@ -1018,7 +1018,7 @@ assigncat = {'nmbr':[], 'retn':[], 'mnmx':[], 'mean':[], 'MAD3':[], 'lgnm':[], \
              'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
              'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
              'shft':[], 'shf2':[], 'shf3':[], 'shf4':[], 'shf7':[], 'shf8':[], \
-             'bnry':[], 'onht':[], 'text':[], 'txt2':[], '1010':[], 'or10':[], \
+             'bnry':[], 'onht':[], 'text':[], 'txt2':[], '1010':[], 'hash':[], \
              'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
              'Unht':[], 'Utxt':[], 'Utx2':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
              'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], 'sp19':[], 'sbst':[], \
@@ -2601,6 +2601,20 @@ and comparable to test set independent of test set row count
     - 'aggregate' as a list or as a list of lists of aggregation sets
   - driftreport postmunge metrics: aggregate
   - inversion available: yes with partial recovery
+* hash: applies "the hashing trick" to convert hihg cardinality categoric sets to set of columns with integer word encodings
+e.g. for an entry "Three word quote" may return three columns with integers corresponding to each of three words
+where integer is determined by md5 hashing, and also based on passed parameter vocab_size
+also strips out special characters, Uhsh is available if upstream uppercase conversion desired
+note that hash is exlucded form ML infill
+  - default infill: none
+  - default NArowtype: justNaN
+  - suffix appender: '_hash_#'
+  - assignparam parameters accepted: 
+    - 'vocab_size', integer defaults to 100, intended to align with vocabulary size of entries
+    - 'space', defaults to ' ', this is used to extract words by space seperator
+    - 'excluded_characters', defaults to [',', '.', '?', '!', '(', ')'], these characetrers are stripped prior to enconding
+  - driftreport postmunge metrics: col_count (number fo columns), vocab_size
+  - inversion available: no
 * UPCS: convert string entries to all uppercase characters
   - default infill: none
   - default NArowtype: justNaN
@@ -2609,8 +2623,8 @@ and comparable to test set independent of test set row count
     - 'activate', boolean defaults to True, False makes this a passthrough without conversion
   - driftreport postmunge metrics: activate
   - inversion available: yes with partial recovery
-* new processing functions Unht / Utxt / Utx2 / Utx3 / Uord / Uor2 / Uor3 / Uor6 / U101 / Ucct
-  - comparable to functions onht / text / txt2 / txt3 / ordl / ord2 / ord3 / ors6 / 1010 / ucct
+* new processing functions Unht / Utxt / Utx2 / Utx3 / Uord / Uor2 / Uor3 / Uor6 / U101 / Ucct / Uhsh
+  - comparable to functions onht / text / txt2 / txt3 / ordl / ord2 / ord3 / ors6 / 1010 / ucct / hash
   - but upstream conversion of all strings to uppercase characters prior to encoding
   - (e.g. 'USA' and 'usa' would be consistently encoded)
   - default infill: in uppercase conversion NaN's are assigned distinct encoding 'NAN'
@@ -3194,6 +3208,7 @@ avoid unintentional duplication.
 - 'NArw',
 - 'U101',
 - 'Ucct',
+- 'Uhsh',
 - 'UPCS',
 - 'Unht',
 - 'Uor2',
@@ -3289,6 +3304,7 @@ avoid unintentional duplication.
 - 'exc4',
 - 'exc5',
 - 'excl',
+- 'hash',
 - 'hldy',
 - 'hmsc',
 - 'hmss',
@@ -3548,6 +3564,7 @@ present in dataframe and return results in postprocess_dict['miscparameters_resu
 - '_exc2'
 - '_exc5'
 - '_excl'
+- '\_hash\_#' (where # is integer)
 - '_hldy'
 - '_hmsc'
 - '_hmss'
@@ -4440,6 +4457,24 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'children'      : [], \
                                      'niecesnephews' : [], \
                                      'coworkers'     : [], \
+                                     'friends'       : []}})
+
+    transform_dict.update({'hash' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['hash'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+
+    transform_dict.update({'Uhsh' : {'parents'       : ['Uhsh'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['hash'], \
                                      'friends'       : []}})
     
     transform_dict.update({'srch' : {'parents'       : [], \
@@ -6431,6 +6466,16 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'niecesnephews' : [], \
                                      'coworkers'     : [], \
                                      'friends'       : []}})
+
+    #exc6 was removed from library, is now same as excl, just including here so no printout for prior code demonstrations 
+    transform_dict.update({'exc6' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['excl'], \
+                                     'cousins'       : [], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
     
     transform_dict.update({'shfl' : {'parents'       : [], \
                                      'siblings'      : [], \
@@ -6576,7 +6621,6 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'coworkers'     : [], \
                                      'friends'       : []}})
 ```
-
 
 ...
 
