@@ -886,6 +886,24 @@ class AutoMunge:
                                      'niecesnephews' : [], \
                                      'coworkers'     : [], \
                                      'friends'       : []}})
+
+    transform_dict.update({'hash' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['hash'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+
+    transform_dict.update({'Uhsh' : {'parents'       : ['Uhsh'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['hash'], \
+                                     'friends'       : []}})
     
     transform_dict.update({'srch' : {'parents'       : [], \
                                      'siblings'      : [], \
@@ -3670,6 +3688,7 @@ class AutoMunge:
                                   'postprocess' : None, \
                                   'inverseprocess' : self.inverseprocess_UPCS, \
                                   'info_retention' : False, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'exclude'}})
@@ -3678,6 +3697,7 @@ class AutoMunge:
                                   'postprocess' : None, \
                                   'inverseprocess' : self.inverseprocess_UPCS, \
                                   'info_retention' : False, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'onht'}})
@@ -3686,6 +3706,7 @@ class AutoMunge:
                                   'postprocess' : None, \
                                   'inverseprocess' : self.inverseprocess_UPCS, \
                                   'info_retention' : False, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'text'}})
@@ -3694,6 +3715,7 @@ class AutoMunge:
                                   'postprocess' : None, \
                                   'inverseprocess' : self.inverseprocess_UPCS, \
                                   'info_retention' : False, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'text'}})
@@ -3702,6 +3724,7 @@ class AutoMunge:
                                   'postprocess' : None, \
                                   'inverseprocess' : self.inverseprocess_UPCS, \
                                   'info_retention' : False, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'text'}})
@@ -3710,6 +3733,7 @@ class AutoMunge:
                                   'postprocess' : None, \
                                   'inverseprocess' : self.inverseprocess_UPCS, \
                                   'info_retention' : False, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'ucct'}})
@@ -3718,6 +3742,7 @@ class AutoMunge:
                                   'postprocess' : None, \
                                   'inverseprocess' : self.inverseprocess_UPCS, \
                                   'info_retention' : False, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'ordl'}})
@@ -3726,6 +3751,7 @@ class AutoMunge:
                                   'postprocess' : None, \
                                   'inverseprocess' : self.inverseprocess_UPCS, \
                                   'info_retention' : False, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'mnmx'}})
@@ -3734,6 +3760,7 @@ class AutoMunge:
                                   'postprocess' : None, \
                                   'inverseprocess' : self.inverseprocess_UPCS, \
                                   'info_retention' : False, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'ord3'}})
@@ -3742,6 +3769,7 @@ class AutoMunge:
                                   'postprocess' : None, \
                                   'inverseprocess' : self.inverseprocess_UPCS, \
                                   'info_retention' : False, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'ord3'}})
@@ -3750,6 +3778,7 @@ class AutoMunge:
                                   'postprocess' : None, \
                                   'inverseprocess' : self.inverseprocess_UPCS, \
                                   'info_retention' : False, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : '1010'}})
@@ -3981,6 +4010,22 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : '1010', \
                                   'labelctgy' : 'sbs3'}})
+    process_dict.update({'hash' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_hash_class, \
+                                  'postprocess' : None, \
+                                  'inplace_option' : True, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'exclude', \
+                                  'labelctgy' : 'hash'}})
+    process_dict.update({'Uhsh' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_UPCS_class, \
+                                  'postprocess' : None, \
+                                  'inverseprocess' : self.inverseprocess_UPCS, \
+                                  'info_retention' : False, \
+                                  'inplace_option' : True, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'exclude', \
+                                  'labelctgy' : 'hash'}})
     process_dict.update({'srch' : {'dualprocess' : self.process_srch_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_srch_class, \
@@ -4461,6 +4506,7 @@ class AutoMunge:
                                    'postprocess' : None, \
                                    'inverseprocess' : self.inverseprocess_UPCS, \
                                    'info_retention' : False, \
+                                   'inplace_option' : True, \
                                    'NArowtype' : 'justNaN', \
                                    'MLinfilltype' : 'exclude', \
                                    'labelctgy' : 'ord3'}})
@@ -4469,6 +4515,7 @@ class AutoMunge:
                                    'postprocess' : None, \
                                    'inverseprocess' : self.inverseprocess_UPCS, \
                                    'info_retention' : False, \
+                                   'inplace_option' : True, \
                                    'NArowtype' : 'justNaN', \
                                    'MLinfilltype' : 'exclude', \
                                    'labelctgy' : 'ord3'}})
@@ -4477,6 +4524,7 @@ class AutoMunge:
                                    'postprocess' : None, \
                                    'inverseprocess' : self.inverseprocess_UPCS, \
                                    'info_retention' : False, \
+                                   'inplace_option' : True, \
                                    'NArowtype' : 'justNaN', \
                                    'MLinfilltype' : 'exclude', \
                                    'labelctgy' : 'ord3'}})
@@ -4485,6 +4533,7 @@ class AutoMunge:
                                    'postprocess' : None, \
                                    'inverseprocess' : self.inverseprocess_UPCS, \
                                    'info_retention' : False, \
+                                   'inplace_option' : True, \
                                    'NArowtype' : 'justNaN', \
                                    'MLinfilltype' : 'exclude', \
                                    'labelctgy' : 'ord3'}})
@@ -4493,6 +4542,7 @@ class AutoMunge:
                                    'postprocess' : None, \
                                    'inverseprocess' : self.inverseprocess_UPCS, \
                                    'info_retention' : False, \
+                                   'inplace_option' : True, \
                                    'NArowtype' : 'justNaN', \
                                    'MLinfilltype' : 'exclude', \
                                    'labelctgy' : 'ord3'}})
@@ -4501,6 +4551,7 @@ class AutoMunge:
                                    'postprocess' : None, \
                                    'inverseprocess' : self.inverseprocess_UPCS, \
                                    'info_retention' : False, \
+                                   'inplace_option' : True, \
                                    'NArowtype' : 'justNaN', \
                                    'MLinfilltype' : 'exclude', \
                                    'labelctgy' : 'ord3'}})
@@ -4509,6 +4560,7 @@ class AutoMunge:
                                    'postprocess' : None, \
                                    'inverseprocess' : self.inverseprocess_UPCS, \
                                    'info_retention' : False, \
+                                   'inplace_option' : True, \
                                    'NArowtype' : 'justNaN', \
                                    'MLinfilltype' : 'exclude', \
                                    'labelctgy' : 'ord3'}})
@@ -4517,6 +4569,7 @@ class AutoMunge:
                                    'postprocess' : None, \
                                    'inverseprocess' : self.inverseprocess_UPCS, \
                                    'info_retention' : False, \
+                                   'inplace_option' : True, \
                                    'NArowtype' : 'justNaN', \
                                    'MLinfilltype' : 'exclude', \
                                    'labelctgy' : 'ord3'}})
@@ -10943,6 +10996,180 @@ class AutoMunge:
       column_dict_list = []
     
     return mdf_train, mdf_test, column_dict_list
+
+  def process_hash_class(self, df, column, category, postprocess_dict, params = {}):
+    """
+    #applies the "hashing trick" to encode categoric sets
+    #returning a set of columns with integers corresponding to words from set vocabulary
+    #this is intended for sets with very high cardinality
+    #note that the same integer may be returned in different columns 
+    #for same word found in different entries
+    #works by segregating entries into a list of words based on space seperator
+    #stripping any special characters
+    #and hashing each word with hashlib md5 hashing algorithm
+    #which is converted to integer and taken remainder from a division by vocab_size
+    #where vocab_size is passed parameter intended to align with vocabulary size
+    #note that if vocab_size is not large enough some of words may be returned with encoding overlap
+    #returns set of columns with suffix appenders '_hash_#' where # is integer
+    #note that entries with fewer words than max word count are padded out with 0
+    #also accepts parameter for excluded_characters, space
+    #uppercase conversion if desired is performed externally by the UPCS transform
+    """
+    
+    from hashlib import md5
+    
+    suffixoverlap_results = {}
+    
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
+    #initialize parameters
+    if 'vocab_size' in params:
+      vocab_size = params['vocab_size']
+    else:
+      vocab_size = 100
+    
+    if 'excluded_characters' in params:
+      excluded_characters = params['excluded_characters']
+    else:
+      excluded_characters = [',', '.', '?', '!', '(', ')']
+
+    if 'space' in params:
+      space = params['space']
+    else:
+      space = ' '
+
+    
+    if inplace is not True:
+      
+      #copy source column into new column
+      df, suffixoverlap_results = \
+      self.df_copy_train(df, column, column + '_hash', suffixoverlap_results)
+    
+    else:
+      
+      suffixoverlap_results = \
+      self.df_check_suffixoverlap(df, column + '_hash', suffixoverlap_results)
+      
+      df.rename(columns = {column : column + '_hash'}, inplace = True)
+      
+    #convert column to string, note this means that missing data converted to 'nan'
+    df[column + '_hash'] = df[column + '_hash'].astype(str)
+    
+    #now scrub special characters
+    for scrub_punctuation in excluded_characters:
+      df[column + '_hash'] = df[column + '_hash'].str.replace(scrub_punctuation, '')
+    
+    #define some support functions
+    def assemble_wordlist(string, space = ' '):
+      """
+      converts a string to list of words by splitting words from space characters
+      assumes any desired special characters have already been stripped
+      """
+
+      wordlist = []
+      j = 0
+      for i in range(len(string)+1):
+        if i < len(string):
+          if string[i] == ' ':
+            if i > 0:
+              if string[j] != ' ':
+                wordlist.append(string[j:i])
+              j = i+1
+
+        else:
+          if j < len(string):
+            if string[j] != ' ':
+              wordlist.append(string[j:i])
+
+      return wordlist
+    
+    def md5_hash(wordlist, n):
+      """
+      applies an md5 hashing to the list of words
+      this conversion to ingtegers is known as "the hashing trick"
+      this is partly inspired by tensorflow keras_preprocessing hashing_trick function
+      requires importing from hashlib import md5
+      here n is the range of integers for vocabulary
+      0 is reserved for use to pad lists of shorter length
+      """
+      return [int(md5(word.encode()).hexdigest(), 16) % (n-1) + 1 for word in wordlist]
+    
+    def pad_hash(hash_list, max_length):
+      """
+      ensures hashing lists are all same length by padding shorter length lists with 0
+      """
+      padcount = max_length - len(hash_list)
+      pad = []
+      for i in range(padcount):
+        pad = pad + [0]
+      hash_list = hash_list + pad
+
+      return hash_list
+    def access_i(hash_list, i):
+      """
+      returns the ith element in a list
+      a support function for hashing trick
+      """
+      return hash_list[i]
+    
+    #now convert entries to lists of words
+    #e.g. this converts "Two words" to ['Two', 'words']
+    df[column + '_hash'] = df[column + '_hash'].apply(assemble_wordlist, space = space)
+    
+    #now apply hashing to convert to integers based on vocab_size
+    df[column + '_hash'] = df[column + '_hash'].apply(md5_hash, n=vocab_size)
+    
+    #get max length, i.e. for entry with most words
+    max_length = df[column + '_hash'].apply(len).max()
+    
+    #the other entries are padded out with 0 to reach same length
+    df[column + '_hash'] = df[column + '_hash'].apply(pad_hash, max_length = max_length)
+    
+    hashcolumns = []
+    for i in range(max_length):
+
+      hash_column = column + '_hash_' + str(i)
+      
+      hashcolumns += [hash_column]
+      
+      #check for column header overlap
+      suffixoverlap_results = \
+      self.df_check_suffixoverlap(df, hash_column, suffixoverlap_results)
+      
+      #now populate the column with i'th entry from hashed list
+      df[hash_column] = df[column + '_hash'].apply(access_i, i=i)
+    
+    #remove support column
+    del df[column + '_hash']
+    
+    column_dict_list = []
+
+    for hc in hashcolumns:
+      
+      hashnormalization_dict = {hc : {'hashcolumns' : hashcolumns, \
+                                      'col_count' : max_length, \
+                                      'vocab_size' : vocab_size, \
+                                      'excluded_characters' : excluded_characters, \
+                                      'space' : space}}      
+      
+      column_dict = { hc : {'category' : 'hash', \
+                           'origcategory' : category, \
+                           'normalization_dict' : hashnormalization_dict, \
+                           'origcolumn' : column, \
+                           'inputcolumn' : column, \
+                           'columnslist' : hashcolumns, \
+                           'categorylist' : hashcolumns, \
+                           'infillmodel' : False, \
+                           'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
+                           'deletecolumn' : False}}
+
+      column_dict_list.append(column_dict.copy())
+      
+    return df, column_dict_list
 
   def process_srch_class(self, mdf_train, mdf_test, column, category, \
                          postprocess_dict, params = {}):
@@ -26021,7 +26248,7 @@ class AutoMunge:
                              'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
                              'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
                              'shft':[], 'shf2':[], 'shf3':[], 'shf4':[], 'shf7':[], 'shf8':[], \
-                             'bnry':[], 'onht':[], 'text':[], 'txt2':[], '1010':[], 'or10':[], \
+                             'bnry':[], 'onht':[], 'text':[], 'txt2':[], '1010':[], 'hash':[], \
                              'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
                              'Unht':[], 'Utxt':[], 'Utx2':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
                              'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], 'sp19':[], 'sbst':[], \
@@ -27478,7 +27705,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.23'
+    automungeversion = '5.24'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
