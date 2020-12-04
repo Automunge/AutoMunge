@@ -2613,7 +2613,15 @@ note that hash is exlucded form ML infill
     - 'vocab_size', integer defaults to 100, intended to align with vocabulary size of entries
     - 'space', defaults to ' ', this is used to extract words by space seperator
     - 'excluded_characters', defaults to [',', '.', '?', '!', '(', ')'], these characetrers are stripped prior to enconding
-  - driftreport postmunge metrics: col_count (number fo columns), vocab_size
+  - driftreport postmunge metrics: col_count (number of columns), vocab_size
+  - inversion available: no
+* hsh2: similar to hash but does not parition entries by space seperator, so only returns one columns, does not scrub special characters
+  - default infill: none
+  - default NArowtype: justNaN
+  - suffix appender: '_hash_#'
+  - assignparam parameters accepted: 
+    - 'vocab_size', integer defaults to 100, intended to align with vocabulary size of entries
+  - driftreport postmunge metrics: col_count (number of columns), vocab_size
   - inversion available: no
 * UPCS: convert string entries to all uppercase characters
   - default infill: none
@@ -2623,8 +2631,8 @@ note that hash is exlucded form ML infill
     - 'activate', boolean defaults to True, False makes this a passthrough without conversion
   - driftreport postmunge metrics: activate
   - inversion available: yes with partial recovery
-* new processing functions Unht / Utxt / Utx2 / Utx3 / Uord / Uor2 / Uor3 / Uor6 / U101 / Ucct / Uhsh
-  - comparable to functions onht / text / txt2 / txt3 / ordl / ord2 / ord3 / ors6 / 1010 / ucct / hash
+* new processing functions Unht / Utxt / Utx2 / Utx3 / Uord / Uor2 / Uor3 / Uor6 / U101 / Ucct / Uhsh / Uhs2
+  - comparable to functions onht / text / txt2 / txt3 / ordl / ord2 / ord3 / ors6 / 1010 / ucct / hash / hsh2
   - but upstream conversion of all strings to uppercase characters prior to encoding
   - (e.g. 'USA' and 'usa' would be consistently encoded)
   - default infill: in uppercase conversion NaN's are assigned distinct encoding 'NAN'
@@ -4468,6 +4476,15 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'coworkers'     : [], \
                                      'friends'       : []}})
 
+    transform_dict.update({'hsh2' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['hsh2'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+
     transform_dict.update({'Uhsh' : {'parents'       : ['Uhsh'], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : [], \
@@ -4475,6 +4492,15 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'children'      : [], \
                                      'niecesnephews' : [], \
                                      'coworkers'     : ['hash'], \
+                                     'friends'       : []}})
+
+    transform_dict.update({'Uhs2' : {'parents'       : ['Uhs2'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['hsh2'], \
                                      'friends'       : []}})
     
     transform_dict.update({'srch' : {'parents'       : [], \
