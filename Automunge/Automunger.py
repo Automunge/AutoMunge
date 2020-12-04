@@ -896,6 +896,15 @@ class AutoMunge:
                                      'coworkers'     : [], \
                                      'friends'       : []}})
 
+    transform_dict.update({'hsh2' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['hsh2'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+
     transform_dict.update({'Uhsh' : {'parents'       : ['Uhsh'], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : [], \
@@ -903,6 +912,15 @@ class AutoMunge:
                                      'children'      : [], \
                                      'niecesnephews' : [], \
                                      'coworkers'     : ['hash'], \
+                                     'friends'       : []}})
+
+    transform_dict.update({'Uhs2' : {'parents'       : ['Uhs2'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['hsh2'], \
                                      'friends'       : []}})
     
     transform_dict.update({'srch' : {'parents'       : [], \
@@ -4017,7 +4035,25 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'hash'}})
+    process_dict.update({'hsh2' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_hash_class, \
+                                  'postprocess' : None, \
+                                  'inplace_option' : True, \
+                                  'defaultparams' : {'space' : '', \
+                                                     'excluded_characters' : []}, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'exclude', \
+                                  'labelctgy' : 'hash'}})
     process_dict.update({'Uhsh' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_UPCS_class, \
+                                  'postprocess' : None, \
+                                  'inverseprocess' : self.inverseprocess_UPCS, \
+                                  'info_retention' : False, \
+                                  'inplace_option' : True, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'exclude', \
+                                  'labelctgy' : 'hash'}})
+    process_dict.update({'Uhs2' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_UPCS_class, \
                                   'postprocess' : None, \
                                   'inverseprocess' : self.inverseprocess_UPCS, \
@@ -11041,7 +11077,6 @@ class AutoMunge:
     else:
       space = ' '
 
-    
     if inplace is not True:
       
       #copy source column into new column
@@ -11073,15 +11108,15 @@ class AutoMunge:
       j = 0
       for i in range(len(string)+1):
         if i < len(string):
-          if string[i] == ' ':
+          if string[i] == space:
             if i > 0:
-              if string[j] != ' ':
+              if string[j] != space:
                 wordlist.append(string[j:i])
               j = i+1
 
         else:
           if j < len(string):
-            if string[j] != ' ':
+            if string[j] != space:
               wordlist.append(string[j:i])
 
       return wordlist
@@ -11118,7 +11153,7 @@ class AutoMunge:
     #now convert entries to lists of words
     #e.g. this converts "Two words" to ['Two', 'words']
     df[column + '_hash'] = df[column + '_hash'].apply(assemble_wordlist, space = space)
-    
+
     #now apply hashing to convert to integers based on vocab_size
     df[column + '_hash'] = df[column + '_hash'].apply(md5_hash, n=vocab_size)
     
@@ -27705,7 +27740,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.24'
+    automungeversion = '5.25'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
