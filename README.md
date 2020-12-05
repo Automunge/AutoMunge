@@ -2623,6 +2623,15 @@ note that hash is exlucded form ML infill
     - 'vocab_size', integer defaults to 100, intended to align with vocabulary size of entries
   - driftreport postmunge metrics: col_count (number of columns), vocab_size
   - inversion available: no
+* hs10: similar to hsh2 but returns activations in a set of columns with binary encodings, similar to 1010
+  - default infill: none
+  - default NArowtype: justNaN
+  - suffix appender: '_hs10_#'
+  - assignparam parameters accepted: 
+    - 'vocab_size', integer defaults to 128, intended to align with vocabulary size of entries, 
+      returned column count is a function of this parameter (128 returns 7 columns)
+  - driftreport postmunge metrics: col_count (number of columns), vocab_size
+  - inversion available: no
 * UPCS: convert string entries to all uppercase characters
   - default infill: none
   - default NArowtype: justNaN
@@ -2631,8 +2640,8 @@ note that hash is exlucded form ML infill
     - 'activate', boolean defaults to True, False makes this a passthrough without conversion
   - driftreport postmunge metrics: activate
   - inversion available: yes with partial recovery
-* new processing functions Unht / Utxt / Utx2 / Utx3 / Uord / Uor2 / Uor3 / Uor6 / U101 / Ucct / Uhsh / Uhs2
-  - comparable to functions onht / text / txt2 / txt3 / ordl / ord2 / ord3 / ors6 / 1010 / ucct / hash / hsh2
+* new processing functions Unht / Utxt / Utx2 / Utx3 / Uord / Uor2 / Uor3 / Uor6 / U101 / Ucct / Uhsh / Uhs2 / Uh10
+  - comparable to functions onht / text / txt2 / txt3 / ordl / ord2 / ord3 / ors6 / 1010 / ucct / hash / hsh2 / hs10
   - but upstream conversion of all strings to uppercase characters prior to encoding
   - (e.g. 'USA' and 'usa' would be consistently encoded)
   - default infill: in uppercase conversion NaN's are assigned distinct encoding 'NAN'
@@ -3216,6 +3225,8 @@ avoid unintentional duplication.
 - 'NArw',
 - 'U101',
 - 'Ucct',
+- 'Uh10',
+- 'Uhs2',
 - 'Uhsh',
 - 'UPCS',
 - 'Unht',
@@ -3572,6 +3583,7 @@ present in dataframe and return results in postprocess_dict['miscparameters_resu
 - '_exc2'
 - '_exc5'
 - '_excl'
+- '\_hs10\_#' (where # is integer)
 - '\_hash\_#' (where # is integer)
 - '_hldy'
 - '_hmsc'
