@@ -905,6 +905,24 @@ class AutoMunge:
                                      'coworkers'     : [], \
                                      'friends'       : []}})
 
+    transform_dict.update({'hs10' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['hs10'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+
+    transform_dict.update({'Uh10' : {'parents'       : ['Uh10'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['hs10'], \
+                                     'friends'       : []}})
+
     transform_dict.update({'Uhsh' : {'parents'       : ['Uhsh'], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : [], \
@@ -4044,6 +4062,22 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'hash'}})
+    process_dict.update({'hs10' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_hs10_class, \
+                                  'postprocess' : None, \
+                                  'inplace_option' : True, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'exclude', \
+                                  'labelctgy' : 'hs10'}})
+    process_dict.update({'Uh10' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_UPCS_class, \
+                                  'postprocess' : None, \
+                                  'inverseprocess' : self.inverseprocess_UPCS, \
+                                  'info_retention' : False, \
+                                  'inplace_option' : True, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'exclude', \
+                                  'labelctgy' : 'hs10'}})
     process_dict.update({'Uhsh' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_UPCS_class, \
                                   'postprocess' : None, \
@@ -11191,6 +11225,115 @@ class AutoMunge:
                                       'space' : space}}      
       
       column_dict = { hc : {'category' : 'hash', \
+                           'origcategory' : category, \
+                           'normalization_dict' : hashnormalization_dict, \
+                           'origcolumn' : column, \
+                           'inputcolumn' : column, \
+                           'columnslist' : hashcolumns, \
+                           'categorylist' : hashcolumns, \
+                           'infillmodel' : False, \
+                           'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
+                           'deletecolumn' : False}}
+
+      column_dict_list.append(column_dict.copy())
+      
+    return df, column_dict_list
+
+  def process_hs10_class(self, df, column, category, postprocess_dict, params = {}):
+    """
+    #applies the "hashing trick" to encode categoric sets
+    #returning a set of columns binary encoded corresponding to integers returned from hash
+    #this is intended for sets with very high cardinality
+    #note that the same activation set may be returned for different entries
+    #works by hashing each entry with hashlib md5 hashing algorithm
+    #which is converted to integer and taken remainder from a division by vocab_size
+    #where vocab_size is passed parameter intended to align with vocabulary size defaulting to 128
+    #note that if vocab_size is not large enough some of words may be returned with encoding overlap
+    #returns set of columns with suffix appenders '_hs10_#' where # is integer
+    #uppercase conversion if desired is performed externally by the UPCS transform
+    """
+    
+    from hashlib import md5
+    
+    suffixoverlap_results = {}
+    
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
+    #initialize parameters
+    if 'vocab_size' in params:
+      vocab_size = params['vocab_size']
+    else:
+      vocab_size = 128
+
+    if inplace is not True:
+      
+      #copy source column into new column
+      df, suffixoverlap_results = \
+      self.df_copy_train(df, column, column + '_hs10', suffixoverlap_results)
+    
+    else:
+      
+      suffixoverlap_results = \
+      self.df_check_suffixoverlap(df, column + '_hs10', suffixoverlap_results)
+      
+      df.rename(columns = {column : column + '_hs10'}, inplace = True)
+      
+    #convert column to string, note this means that missing data converted to 'nan'
+    df[column + '_hs10'] = df[column + '_hs10'].astype(str)
+    
+    def md5_hash(entry, n):
+      """
+      applies an md5 hashing to the list of words
+      this conversion to ingtegers is known as "the hashing trick"
+      requires importing from hashlib import md5
+      here n is the range of integers for vocabulary
+      """
+      return int(md5(entry.encode()).hexdigest(), 16) % (n-1)
+
+    #now apply hashing to convert to integers based on vocab_size
+    df[column + '_hs10'] = df[column + '_hs10'].apply(md5_hash, n=vocab_size)
+    
+    binary_column_count = int(np.ceil(np.log2(vocab_size)))
+    
+    #convert integer encoding to binary
+    df[column + '_hs10'] = df[column + '_hs10'].apply(bin)
+    
+    #convert format to string of digits
+    df[column + '_hs10'] = df[column + '_hs10'].str[2:]
+    
+    #pad out zeros
+    df[column + '_hs10'] = df[column + '_hs10'].str.zfill(binary_column_count)
+    
+    hashcolumns = []
+    for i in range(binary_column_count):
+
+      hash_column = column + '_hs10_' + str(i)
+      
+      hashcolumns += [hash_column]
+      
+      #check for column header overlap
+      suffixoverlap_results = \
+      self.df_check_suffixoverlap(df, hash_column, suffixoverlap_results)
+      
+      #now populate the column with i'th entry from hashed list
+      df[hash_column] = df[column + '_hs10'].str[i]
+    
+    #remove support column
+    del df[column + '_hs10']
+    
+    column_dict_list = []
+
+    for hc in hashcolumns:
+      
+      hashnormalization_dict = {hc : {'hashcolumns' : hashcolumns, \
+                                      'col_count' : binary_column_count, \
+                                      'vocab_size' : vocab_size}}      
+      
+      column_dict = { hc : {'category' : 'hs10', \
                            'origcategory' : category, \
                            'normalization_dict' : hashnormalization_dict, \
                            'origcolumn' : column, \
@@ -27740,7 +27883,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.25'
+    automungeversion = '5.26'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
