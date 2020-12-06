@@ -2601,11 +2601,11 @@ and comparable to test set independent of test set row count
     - 'aggregate' as a list or as a list of lists of aggregation sets
   - driftreport postmunge metrics: aggregate
   - inversion available: yes with partial recovery
-* hash: applies "the hashing trick" to convert hihg cardinality categoric sets to set of columns with integer word encodings
+* hash: applies "the hashing trick" to convert high cardinality categoric sets to set of columns with integer word encodings
 e.g. for an entry "Three word quote" may return three columns with integers corresponding to each of three words
 where integer is determined by md5 hashing, and also based on passed parameter vocab_size
-also strips out special characters, Uhsh is available if upstream uppercase conversion desired
-note that hash is exlucded form ML infill
+also strips out special characters, Uhsh is available if upstream uppercase conversion desired. Note that there is a possibility
+of encoding overlap between entries with this transform. Also note that hash is excluded form ML infill
   - default infill: none
   - default NArowtype: justNaN
   - suffix appender: '_hash_#'
@@ -2615,7 +2615,7 @@ note that hash is exlucded form ML infill
     - 'excluded_characters', defaults to [',', '.', '?', '!', '(', ')'], these characetrers are stripped prior to enconding
   - driftreport postmunge metrics: col_count (number of columns), vocab_size
   - inversion available: no
-* hsh2: similar to hash but does not parition entries by space seperator, so only returns one columns, does not scrub special characters
+* hsh2: similar to hash but does not partition entries by space seperator, so only returns one column, does not scrub special characters
   - default infill: none
   - default NArowtype: justNaN
   - suffix appender: '_hash_#'
