@@ -11320,7 +11320,7 @@ class AutoMunge:
       self.df_check_suffixoverlap(df, hash_column, suffixoverlap_results)
       
       #now populate the column with i'th entry from hashed list
-      df[hash_column] = df[column + '_hs10'].str[i]
+      df[hash_column] = df[column + '_hs10'].str[i].astype(np.int8)
     
     #remove support column
     del df[column + '_hs10']
@@ -27883,7 +27883,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.26'
+    automungeversion = '5.27'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
