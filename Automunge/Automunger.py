@@ -905,6 +905,42 @@ class AutoMunge:
                                      'coworkers'     : [], \
                                      'friends'       : []}})
 
+    transform_dict.update({'hsh3' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['hsh3'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+  
+    transform_dict.update({'Uhs3' : {'parents'       : ['Uhs3'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['hsh3'], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'hs11' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['hs11'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+  
+    transform_dict.update({'Uh11' : {'parents'       : ['Uh11'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['hs11'], \
+                                     'friends'       : []}})
+
     transform_dict.update({'hs10' : {'parents'       : [], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : ['hs10'], \
@@ -4062,6 +4098,38 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'hash'}})
+    process_dict.update({'hsh3' : {'dualprocess' : self.process_hsh3_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_hsh3_class, \
+                                  'inplace_option' : True, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'exclude', \
+                                  'labelctgy' : 'hsh3'}})
+    process_dict.update({'Uhs3' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_UPCS_class, \
+                                  'postprocess' : None, \
+                                  'inverseprocess' : self.inverseprocess_UPCS, \
+                                  'info_retention' : False, \
+                                  'inplace_option' : True, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'exclude', \
+                                  'labelctgy' : 'hsh3'}})
+    process_dict.update({'hs11' : {'dualprocess' : self.process_hs11_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_hs11_class, \
+                                  'inplace_option' : True, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'exclude', \
+                                  'labelctgy' : 'hs11'}})
+    process_dict.update({'Uh11' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_UPCS_class, \
+                                  'postprocess' : None, \
+                                  'inverseprocess' : self.inverseprocess_UPCS, \
+                                  'info_retention' : False, \
+                                  'inplace_option' : True, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'exclude', \
+                                  'labelctgy' : 'hs11'}})
     process_dict.update({'hs10' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_hs10_class, \
                                   'postprocess' : None, \
@@ -11240,6 +11308,110 @@ class AutoMunge:
       
     return df, column_dict_list
 
+  def process_hsh3_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
+    """
+    #applies the "hashing trick" to encode categoric sets
+    #returning a set of columns with integers corresponding to words from set vocabulary
+    #this is intended for sets with very high cardinality
+    #note that the same integer may be returned for different entries
+    #works by hashing each unique entyry with hashlib md5 hashing algorithm
+    #which is converted to integer and taken remainder from a division by vocab_size
+    #where vocab_size is passed parameter intended to align with vocabulary size
+    #note that if vocab_size is not large enough some of words may be returned with encoding overlap
+    #returns column with suffix appenders '_hsh3'
+    #uppercase conversion if desired is performed externally by the UPCS transform
+    
+    #hsh3 is like hsh2 but instead of user passed vocab_size, it applies a heuristic to
+    #set a vocab_size based on number unique entries times heuristic_multiplier parameter which defaults to 2
+    #also accepts heuristic_cap parameter where if unique * heuristic_muyltipler > heuristic_cap
+    #then vocab_size = heuristic_cap
+    
+    #note this is a dual process function since will need to pass the derived vocab_size to postprocess function
+    """
+    
+    from hashlib import md5
+    
+    suffixoverlap_results = {}
+    
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+      
+    if 'heuristic_multiplier' in params:
+      heuristic_multiplier = params['heuristic_multiplier']
+    else:
+      heuristic_multiplier = 2
+      
+    if 'heuristic_cap' in params:
+      heuristic_cap = params['heuristic_cap']
+    else:
+      heuristic_cap = 1024
+
+    if inplace is not True:
+      
+      #copy source column into new column
+      mdf_train, suffixoverlap_results = \
+      self.df_copy_train(mdf_train, column, column + '_hsh3', suffixoverlap_results)
+      
+      mdf_test[column + '_hsh3'] = mdf_test[column].copy()
+    
+    else:
+      
+      suffixoverlap_results = \
+      self.df_check_suffixoverlap(mdf_train, column + '_hsh3', suffixoverlap_results)
+      
+      mdf_train.rename(columns = {column : column + '_hsh3'}, inplace = True)
+      mdf_test.rename(columns = {column : column + '_hsh3'}, inplace = True)
+      
+    #convert column to string, note this means that missing data converted to 'nan'
+    mdf_train[column + '_hsh3'] = mdf_train[column + '_hsh3'].astype(str)
+    mdf_test[column + '_hsh3'] = mdf_test[column + '_hsh3'].astype(str)
+    
+    #calculate the vocab_size based on heuristic_multiplier and heuristic_cap
+    vocab_size = int(mdf_train[column + '_hsh3'].nunique() * heuristic_multiplier)
+    if vocab_size > heuristic_cap:
+      vocab_size = int(heuristic_cap)
+    
+    def md5_hash(entry, n):
+      """
+      applies an md5 hashing to the list of words
+      this conversion to ingtegers is known as "the hashing trick"
+      requires importing from hashlib import md5
+      here n is the range of integers for vocabulary
+      """
+      return int(md5(entry.encode()).hexdigest(), 16) % (n-1)
+
+    #now apply hashing to convert to integers based on vocab_size
+    mdf_train[column + '_hsh3'] = mdf_train[column + '_hsh3'].apply(md5_hash, n=vocab_size)
+    mdf_test[column + '_hsh3'] = mdf_test[column + '_hsh3'].apply(md5_hash, n=vocab_size)
+    
+    hashcolumns = [column + '_hsh3']
+    
+    column_dict_list = []
+
+    for hc in hashcolumns:
+      
+      hashnormalization_dict = {hc : {'vocab_size' : vocab_size, \
+                                      'heuristic_multiplier' : heuristic_multiplier, \
+                                      'heuristic_cap' : heuristic_cap}}      
+      
+      column_dict = { hc : {'category' : 'hsh3', \
+                           'origcategory' : category, \
+                           'normalization_dict' : hashnormalization_dict, \
+                           'origcolumn' : column, \
+                           'inputcolumn' : column, \
+                           'columnslist' : hashcolumns, \
+                           'categorylist' : hashcolumns, \
+                           'infillmodel' : False, \
+                           'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
+                           'deletecolumn' : False}}
+
+      column_dict_list.append(column_dict.copy())
+      
+    return mdf_train, mdf_test, column_dict_list
+
   def process_hs10_class(self, df, column, category, postprocess_dict, params = {}):
     """
     #applies the "hashing trick" to encode categoric sets
@@ -11348,6 +11520,143 @@ class AutoMunge:
       column_dict_list.append(column_dict.copy())
       
     return df, column_dict_list
+
+  def process_hs11_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
+    """
+    #applies the "hashing trick" to encode categoric sets
+    #returning a set of columns binary encoded corresponding to integers returned from hash
+    #this is intended for sets with very high cardinality
+    #note that the same activation set may be returned for different entries
+    #works by hashing each entry with hashlib md5 hashing algorithm
+    #which is converted to integer and taken remainder from a division by vocab_size
+    #where vocab_size is passed parameter intended to align with vocabulary size defaulting to 128
+    #note that if vocab_size is not large enough some of words may be returned with encoding overlap
+    #returns set of columns with suffix appenders '_hs10_#' where # is integer
+    #uppercase conversion if desired is performed externally by the UPCS transform
+    
+    #hs11 is like hs10 but instead of user passed vocab_size, it applies a heuristic to
+    #set a vocab_size based on number unique entries times heuristic_multiplier parameter which defaults to 2
+    #also accepts heuristic_cap parameter where if unique * heuristic_muyltipler > heuristic_cap
+    #then vocab_size = heuristic_cap
+    
+    #note this is a dual process function since will need to pass the derived vocab_size to postprocess function
+    """
+    
+    from hashlib import md5
+    
+    suffixoverlap_results = {}
+    
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+      
+    if 'heuristic_multiplier' in params:
+      heuristic_multiplier = params['heuristic_multiplier']
+    else:
+      heuristic_multiplier = 2
+      
+    if 'heuristic_cap' in params:
+      heuristic_cap = params['heuristic_cap']
+    else:
+      heuristic_cap = 1024
+
+    if inplace is not True:
+      
+      #copy source column into new column
+      mdf_train, suffixoverlap_results = \
+      self.df_copy_train(mdf_train, column, column + '_hs11', suffixoverlap_results)
+      
+      mdf_test[column + '_hs11'] = mdf_test[column].copy()
+    
+    else:
+      
+      suffixoverlap_results = \
+      self.df_check_suffixoverlap(mdf_train, column + '_hs11', suffixoverlap_results)
+      
+      mdf_train.rename(columns = {column : column + '_hs11'}, inplace = True)
+      mdf_test.rename(columns = {column : column + '_hs11'}, inplace = True)
+      
+    #convert column to string, note this means that missing data converted to 'nan'
+    mdf_train[column + '_hs11'] = mdf_train[column + '_hs11'].astype(str)
+    mdf_test[column + '_hs11'] = mdf_test[column + '_hs11'].astype(str)
+    
+    #calculate the vocab_size based on heuristic_multiplier and heuristic_cap
+    vocab_size = int(mdf_train[column + '_hs11'].nunique() * heuristic_multiplier)
+    if vocab_size > heuristic_cap:
+      vocab_size = int(heuristic_cap)
+    
+    def md5_hash(entry, n):
+      """
+      applies an md5 hashing to the list of words
+      this conversion to ingtegers is known as "the hashing trick"
+      requires importing from hashlib import md5
+      here n is the range of integers for vocabulary
+      """
+      return int(md5(entry.encode()).hexdigest(), 16) % (n-1)
+
+    #now apply hashing to convert to integers based on vocab_size
+    mdf_train[column + '_hs11'] = mdf_train[column + '_hs11'].apply(md5_hash, n=vocab_size)
+    mdf_test[column + '_hs11'] = mdf_test[column + '_hs11'].apply(md5_hash, n=vocab_size)
+    
+    binary_column_count = int(np.ceil(np.log2(vocab_size)))
+    
+    #convert integer encoding to binary
+    mdf_train[column + '_hs11'] = mdf_train[column + '_hs11'].apply(bin)
+    mdf_test[column + '_hs11'] = mdf_test[column + '_hs11'].apply(bin)
+    
+    #convert format to string of digits
+    mdf_train[column + '_hs11'] = mdf_train[column + '_hs11'].str[2:]
+    mdf_test[column + '_hs11'] = mdf_test[column + '_hs11'].str[2:]
+    
+    #pad out zeros
+    mdf_train[column + '_hs11'] = mdf_train[column + '_hs11'].str.zfill(binary_column_count)
+    mdf_test[column + '_hs11'] = mdf_test[column + '_hs11'].str.zfill(binary_column_count)
+    
+    hashcolumns = []
+    for i in range(binary_column_count):
+
+      hash_column = column + '_hs11_' + str(i)
+      
+      hashcolumns += [hash_column]
+      
+      #check for column header overlap
+      suffixoverlap_results = \
+      self.df_check_suffixoverlap(mdf_train, hash_column, suffixoverlap_results)
+      
+      #now populate the column with i'th entry from hashed list
+      mdf_train[hash_column] = mdf_train[column + '_hs11'].str[i].astype(np.int8)
+      mdf_test[hash_column] = mdf_test[column + '_hs11'].str[i].astype(np.int8)
+    
+    #remove support column
+    del mdf_train[column + '_hs11']
+    del mdf_test[column + '_hs11']
+    
+    column_dict_list = []
+
+    for hc in hashcolumns:
+      
+      hashnormalization_dict = {hc : {'hashcolumns' : hashcolumns, \
+                                      'col_count' : binary_column_count, \
+                                      'vocab_size' : vocab_size, \
+                                      'heuristic_multiplier' : heuristic_multiplier, \
+                                      'heuristic_cap' : heuristic_cap}}      
+      
+      column_dict = { hc : {'category' : 'hs11', \
+                           'origcategory' : category, \
+                           'normalization_dict' : hashnormalization_dict, \
+                           'origcolumn' : column, \
+                           'inputcolumn' : column, \
+                           'columnslist' : hashcolumns, \
+                           'categorylist' : hashcolumns, \
+                           'infillmodel' : False, \
+                           'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
+                           'deletecolumn' : False}}
+
+      column_dict_list.append(column_dict.copy())
+      
+    return mdf_train, mdf_test, column_dict_list
 
   def process_srch_class(self, mdf_train, mdf_test, column, category, \
                          postprocess_dict, params = {}):
@@ -27883,7 +28192,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.27'
+    automungeversion = '5.28'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -30389,6 +30698,148 @@ class AutoMunge:
       del mdf_test[sbs3_column]
       for entry in newcolumns:
         del mdf_test[entry]
+    
+    return mdf_test
+
+  def postprocess_hsh3_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+    """
+    #applies the "hashing trick" to encode categoric sets
+    #returning a set of columns with integers corresponding to words from set vocabulary
+    #this is intended for sets with very high cardinality
+    #note that the same integer may be returned for different entries
+    #works by hashing each unique entyry with hashlib md5 hashing algorithm
+    #which is converted to integer and taken remainder from a division by vocab_size
+    #where vocab_size is passed parameter intended to align with vocabulary size
+    #note that if vocab_size is not large enough some of words may be returned with encoding overlap
+    #returns column with suffix appenders '_hsh3'
+    #uppercase conversion if desired is performed externally by the UPCS transform
+    
+    #hsh3 is like hsh2 but instead of user passed vocab_size, it applies a heuristic to
+    #set a vocab_size based on number unique entries times heuristic_multiplier parameter which defaults to 2
+    #also accepts heuristic_cap parameter where if unique * heuristic_muyltipler > heuristic_cap
+    #then vocab_size = heuristic_cap
+    
+    #note this is a dual process function since will need to pass the derived vocab_size to postprocess function
+    """
+    
+    from hashlib import md5
+    
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
+    #retrieve normalizastion parameters from postprocess_dict
+    normkey = column + '_hsh3'
+    
+    vocab_size = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['vocab_size']
+    
+    if inplace is not True:
+      #copy source column into new column
+      mdf_test[column + '_hsh3'] = mdf_test[column].copy()
+    else:
+      mdf_test.rename(columns = {column : column + '_hsh3'}, inplace = True)
+      
+    #convert column to string, note this means that missing data converted to 'nan'
+    mdf_test[column + '_hsh3'] = mdf_test[column + '_hsh3'].astype(str)
+    
+    def md5_hash(entry, n):
+      """
+      applies an md5 hashing to the list of words
+      this conversion to ingtegers is known as "the hashing trick"
+      requires importing from hashlib import md5
+      here n is the range of integers for vocabulary
+      """
+      return int(md5(entry.encode()).hexdigest(), 16) % (n-1)
+
+    #now apply hashing to convert to integers based on vocab_size
+    mdf_test[column + '_hsh3'] = mdf_test[column + '_hsh3'].apply(md5_hash, n=vocab_size)
+    
+    return mdf_test
+
+  def postprocess_hs11_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+    '''
+    #applies the "hashing trick" to encode categoric sets
+    #returning a set of columns binary encoded corresponding to integers returned from hash
+    #this is intended for sets with very high cardinality
+    #note that the same activation set may be returned for different entries
+    #works by hashing each entry with hashlib md5 hashing algorithm
+    #which is converted to integer and taken remainder from a division by vocab_size
+    #where vocab_size is passed parameter intended to align with vocabulary size defaulting to 128
+    #note that if vocab_size is not large enough some of words may be returned with encoding overlap
+    #returns set of columns with suffix appenders '_hs10_#' where # is integer
+    #uppercase conversion if desired is performed externally by the UPCS transform
+    
+    #hs11 is like hs10 but instead of user passed vocab_size, it applies a heuristic to
+    #set a vocab_size based on number unique entries times heuristic_multiplier parameter which defaults to 2
+    #also accepts heuristic_cap parameter where if unique * heuristic_muyltipler > heuristic_cap
+    #then vocab_size = heuristic_cap
+    
+    #note this is a dual process function since will need to pass the derived vocab_size to postprocess function
+    '''
+    
+    from hashlib import md5
+    
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+
+    #troubleshoot
+    print("inplace = ", inplace)
+    print()
+    
+    #retrieve normalizastion parameters from postprocess_dict
+    normkey = column + '_hs11_0'
+    
+    vocab_size = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['vocab_size']
+    binary_column_count = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['col_count']
+    
+    if inplace is not True:
+      #copy source column into new column
+      mdf_test[column + '_hs11'] = mdf_test[column].copy()
+    else:
+      mdf_test.rename(columns = {column : column + '_hs11'}, inplace = True)
+      
+    #convert column to string, note this means that missing data converted to 'nan'
+    mdf_test[column + '_hs11'] = mdf_test[column + '_hs11'].astype(str)
+    
+    def md5_hash(entry, n):
+      """
+      applies an md5 hashing to the list of words
+      this conversion to ingtegers is known as "the hashing trick"
+      requires importing from hashlib import md5
+      here n is the range of integers for vocabulary
+      """
+      return int(md5(entry.encode()).hexdigest(), 16) % (n-1)
+
+    #now apply hashing to convert to integers based on vocab_size
+    mdf_test[column + '_hs11'] = mdf_test[column + '_hs11'].apply(md5_hash, n=vocab_size)
+    
+    #convert integer encoding to binary
+    mdf_test[column + '_hs11'] = mdf_test[column + '_hs11'].apply(bin)
+    
+    #convert format to string of digits
+    mdf_test[column + '_hs11'] = mdf_test[column + '_hs11'].str[2:]
+    
+    #pad out zeros
+    mdf_test[column + '_hs11'] = mdf_test[column + '_hs11'].str.zfill(binary_column_count)
+    
+    hashcolumns = []
+    for i in range(binary_column_count):
+
+      hash_column = column + '_hs11_' + str(i)
+      
+      hashcolumns += [hash_column]
+      
+      #now populate the column with i'th entry from hashed list
+      mdf_test[hash_column] = mdf_test[column + '_hs11'].str[i].astype(np.int8)
+    
+    #remove support column
+    del mdf_test[column + '_hs11']
     
     return mdf_test
   
