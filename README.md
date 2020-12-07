@@ -2623,6 +2623,16 @@ of encoding overlap between entries with this transform. Also note that hash is 
     - 'vocab_size', integer defaults to 100, intended to align with vocabulary size of entries
   - driftreport postmunge metrics: col_count (number of columns), vocab_size
   - inversion available: no
+* hsh3: similar to hsh2 but does not accept parameter for vocab_size, instead vocab_size calculated based on number of unique
+entries found in train set times a multiplier (defaulting to 2), where if that is greater than cap then reverts to cap
+  - default infill: none
+  - default NArowtype: justNaN
+  - suffix appender: '_hsh3'
+  - assignparam parameters accepted: 
+    - 'heuristic_multiplier', float defaults to 2
+    - 'heuristic_cap', integer defaults to 1024
+  - driftreport postmunge metrics: vocab_size
+  - inversion available: no									  
 * hs10: similar to hsh2 but returns activations in a set of columns with binary encodings, similar to 1010
   - default infill: none
   - default NArowtype: justNaN
@@ -2632,6 +2642,16 @@ of encoding overlap between entries with this transform. Also note that hash is 
       returned column count is a function of this parameter (128 returns 7 columns)
   - driftreport postmunge metrics: col_count (number of columns), vocab_size
   - inversion available: no
+* hs11: similar to hs10 but does not accept parameter for vocab_size, instead vocab_size calculated based on number of unique
+entries found in train set times a multiplier (defaulting to 2), where if that is greater than cap then reverts to cap
+  - default infill: none
+  - default NArowtype: justNaN
+  - suffix appender: '_hs11_#'
+  - assignparam parameters accepted: 
+    - 'heuristic_multiplier', float defaults to 2
+    - 'heuristic_cap', integer defaults to 1024
+  - driftreport postmunge metrics: col_count (number of columns), vocab_size
+  - inversion available: no	
 * UPCS: convert string entries to all uppercase characters
   - default infill: none
   - default NArowtype: justNaN
@@ -3226,7 +3246,9 @@ avoid unintentional duplication.
 - 'U101',
 - 'Ucct',
 - 'Uh10',
+- 'Uh11',
 - 'Uhs2',
+- 'Uhs3',
 - 'Uhsh',
 - 'UPCS',
 - 'Unht',
@@ -3333,6 +3355,10 @@ avoid unintentional duplication.
 - 'hrs3',
 - 'hrs4',
 - 'hrsn',
+- 'hs10',
+- 'hs11',
+- 'hsh2',
+- 'hsh3',
 - 'lb10',
 - 'lbbn',
 - 'lbda',
@@ -3583,8 +3609,10 @@ present in dataframe and return results in postprocess_dict['miscparameters_resu
 - '_exc2'
 - '_exc5'
 - '_excl'
-- '\_hs10\_#' (where # is integer)
 - '\_hash\_#' (where # is integer)
+- '\_hs10\_#' (where # is integer)
+- '\_hs11\_#' (where # is integer)
+- '\_hsh3'
 - '_hldy'
 - '_hmsc'
 - '_hmss'
@@ -4495,6 +4523,60 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'children'      : [], \
                                      'niecesnephews' : [], \
                                      'coworkers'     : [], \
+                                     'friends'       : []}})
+
+    transform_dict.update({'hsh3' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['hsh3'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+  
+    transform_dict.update({'Uhs3' : {'parents'       : ['Uhs3'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['hsh3'], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'hs11' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['hs11'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+  
+    transform_dict.update({'Uh11' : {'parents'       : ['Uh11'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['hs11'], \
+                                     'friends'       : []}})
+
+    transform_dict.update({'hs10' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['hs10'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+
+    transform_dict.update({'Uh10' : {'parents'       : ['Uh10'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['hs10'], \
                                      'friends'       : []}})
 
     transform_dict.update({'Uhsh' : {'parents'       : ['Uhsh'], \
