@@ -26517,8 +26517,8 @@ class AutoMunge:
                              'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
                              'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
                              'shft':[], 'shf2':[], 'shf3':[], 'shf4':[], 'shf7':[], 'shf8':[], \
-                             'bnry':[], 'onht':[], 'text':[], 'txt2':[], '1010':[], 'hash':[], \
-                             'ordl':[], 'ord2':[], 'ord3':[], 'ord4':[], 'om10':[], 'mmor':[], \
+                             'bnry':[], 'onht':[], 'text':[], 'txt2':[], '1010':[], \
+                             'ordl':[], 'ord3':[], 'hash':[], 'hsh2':[], 'hs10':[], \
                              'Unht':[], 'Utxt':[], 'Utx2':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
                              'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], 'sp19':[], 'sbst':[], \
                              'spl8':[], 'spl9':[], 'sp10':[], 'sp16':[], 'sp20':[], 'sbs2':[], \
