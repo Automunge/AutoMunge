@@ -2607,7 +2607,10 @@ where integer is determined by md5 hashing, and also based on passed parameter v
 also strips out special characters, Uhsh is available if upstream uppercase conversion desired. Note that there is a possibility
 of encoding overlap between entries with this transform. Also note that hash is excluded from ML infill
 vocab_size calculated based on number of unique words found in train set times a multiplier (defaulting to 2), where if that 
-is greater than cap then reverts to cap
+is greater than cap then reverts to cap. The hashing transforms are intended as an alternative to other categoric 
+encodings which doesn't require a conversion dictionary assmebly for consistent processing of subsequent data, as 
+may benefit sets with high cardinatility (i.e. high number of unique entries). The tradeoff is that inversion
+is not supported as there is possibility of redundant encodings for different unique entries.
   - default infill: none
   - default NArowtype: justNaN
   - suffix appender: '_hash_#'
