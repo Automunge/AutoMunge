@@ -11166,7 +11166,7 @@ class AutoMunge:
             if i > 0:
               if string[j] != space:
                 wordlist.append(string[j:i])
-              j = i+1
+            j = i+1
 
         else:
           if j < len(string):
@@ -11397,7 +11397,7 @@ class AutoMunge:
     hashcolumns = []
     for i in range(binary_column_count):
 
-      hash_column = column + '_hs10' + str(i)
+      hash_column = column + '_hs10_' + str(i)
       
       hashcolumns += [hash_column]
       
@@ -27974,7 +27974,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.29'
+    automungeversion = '5.30'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -30719,7 +30719,7 @@ class AutoMunge:
     hashcolumns = []
     for i in range(binary_column_count):
 
-      hash_column = column + '_hs10' + str(i)
+      hash_column = column + '_hs10_' + str(i)
       
       hashcolumns += [hash_column]
       
