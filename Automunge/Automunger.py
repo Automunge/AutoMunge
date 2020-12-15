@@ -24302,16 +24302,16 @@ class AutoMunge:
     
     #check inversion
     inversion_valresult = False
-    if inversion not in [False, 'test', 'labels'] and not isinstance(inversion, list):
+    if inversion not in [False, 'test', 'labels', 'denselabels'] and not isinstance(inversion, list):
       inversion_valresult = True
       print("Error: invalid entry passed for inversion parameter.")
-      print("Acceptable values are one of {False, 'test', 'labels', or a list of columns}")
+      print("Acceptable values are one of {False, 'test', 'labels', 'denselabels', or a list of columns}")
       print()
-    elif inversion not in ['test', 'labels'] and not isinstance(inversion, list) \
+    elif inversion not in ['test', 'labels', 'denselabels'] and not isinstance(inversion, list) \
     and not isinstance(inversion, bool):
       inversion_valresult = True
       print("Error: invalid entry passed for inversion parameter.")
-      print("Acceptable values are one of {False, 'test', 'labels', or a list of columns}")
+      print("Acceptable values are one of {False, 'test', 'labels', 'denselabels', or a list of columns}")
       print()
       
     pm_miscparameters_results.update({'inversion_valresult' : inversion_valresult})
@@ -27974,7 +27974,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.30'
+    automungeversion = '5.31'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -38066,7 +38066,7 @@ class AutoMunge:
     
     return df_test, inputcolumn
     
-  def df_inversion_meta(self, df_test, source_columns, postprocess_dict, printstatus):
+  def df_inversion_meta(self, df_test, source_columns, postprocess_dict, printstatus, manual_path = False):
     """
     #Performs inversion of transformation sets
     #Relies on optional processdict entries of info_retention and inverseprocess
@@ -38142,31 +38142,51 @@ class AutoMunge:
       #note that this sorted by depth method is based on a heuristic
       #that the fewest number of transforms will be the most efficient
       
-      #now let's select our returned column for the path
-      best_path = False
-      info_retention_marker = False
-      
-      for depth in inverse_path_depth_eval:
-        
-        for path in inverse_path_depth_eval[depth]:
-        
-          inforetention = inforetention_eval[path]
-          transformavailable = transformavailable_eval[path]
+      #for dense labels we aren't applying heuristic to select path
+      #instead this will be run for each returned column in labels
+      if manual_path is not False:
 
-          if inforetention and transformavailable:
+        path = manual_path
+        transformavailable = transformavailable_eval[path]
+        info_retention_marker = inforetention_eval[path]
 
-            best_path = path
-            info_retention_marker = True
+        if transformavailable:
+          best_path = path
+
+        else:
+          best_path = False
+          info_retention_marker = False
+          if printstatus is True:
+            print("No transformation path available from ", path)
+            print()
+    
+      else:
+  
+        #now let's select our returned column for the path
+        best_path = False
+        info_retention_marker = False
+
+        for depth in inverse_path_depth_eval:
+
+          for path in inverse_path_depth_eval[depth]:
+
+            inforetention = inforetention_eval[path]
+            transformavailable = transformavailable_eval[path]
+
+            if inforetention and transformavailable:
+
+              best_path = path
+              info_retention_marker = True
+
+              break
+
+            elif transformavailable and best_path is False:
+
+              best_path = path
+
+          if info_retention_marker is True:
 
             break
-
-          elif transformavailable and best_path is False:
-
-            best_path = path
-            
-        if info_retention_marker is True:
-          
-          break
           
       if best_path is not False:
         #check that best path has all categorylist entries present
@@ -38418,6 +38438,103 @@ class AutoMunge:
         df_test = df_test.values
 
       return df_test, recovered_list, inversion_info_dict
+
+    #denselabels is for case where downstream model simultaneously predicts multiple labels
+    #such as when a label column presented in multiple configurations
+    #in which case we'll return an inversion for each returned column for comparison
+    #note that this implementation is a little inelligant, the printouts don't exaclty match, it works though
+    if inversion == 'denselabels':
+
+      #this is to handle edge case of excl transforms
+      #which after processing have their suffix removed from header
+      finalcolumns_labels = postprocess_dict['finalcolumns_labels']
+      source_columns = postprocess_dict['labels_column']
+
+      finalcolumns_labels = [str(c)+'_excl' if c in source_columns else c for c in finalcolumns_labels]
+
+      #confirm consistency of label sets
+
+      #check number of columns is consistent
+      if len(finalcolumns_labels)!= df_test.shape[1]:
+        print("error, different number of returned label columns in train and test sets")
+        return
+
+      #check order of column headers are consistent
+      columns_test = list(df_test)
+      if set(finalcolumns_labels) == set(columns_test):
+        if finalcolumns_labels != columns_test:
+          print("error, different order of column labels in the train and test set")
+          return
+      #this is for excl edge case again in case we had any updates to finalcolumns_labels above
+      elif set(postprocess_dict['finalcolumns_labels']) == set(columns_test):
+        if postprocess_dict['finalcolumns_labels'] != columns_test:
+          print("error, different order of column labels in the train and test set")
+          return
+
+      #assign labels to column headers if they weren't passed
+      if finalcolumns_labels != columns_test:
+        df_test.columns = finalcolumns_labels
+
+      if printstatus is True:
+        print("Performing inversion recovery of original columns for label set.")
+        print()
+
+      #first revert any label smoothing to one-hot encoding, LabelSmoothing can be passed as True
+      #for basis of LabelSmoothing_train passed to automunge, or float 0-1 matching activation setting 
+      #assumes if labels encoded in multiple smoothed configurations they have consistent activations
+      df_test = self.meta_LS_invert(LabelSmoothing, df_test, postprocess_dict)
+      
+      dense_recovered_list = []
+      recovered_categorylist = []
+      
+      j=0
+      for denselabel_column in df_test:
+        
+        if denselabel_column not in recovered_categorylist:
+
+          recovered_categorylist += postprocess_dict['column_dict'][denselabel_column]['categorylist']
+
+          df_test_invertinput = df_test.copy()
+
+          #df_test_denseinvert is a support dataframe with recovered column
+          df_test_denseinvert, recovered_list, inversion_info_dict = \
+          self.df_inversion_meta(df_test_invertinput, [postprocess_dict['labels_column']], postprocess_dict, printstatus, \
+                                 manual_path = denselabel_column)
+
+          #since each inversion will return a different version of source column
+          #we'll rename the returned source column as (source column) + '_' + (denselabel_column)
+          if postprocess_dict['labels_column'] in df_test_denseinvert:
+
+            #edge case for column overlap, just add random integers as suffix until no longer an overlap
+            for i in range(111):
+              if postprocess_dict['labels_column'] + '_' + denselabel_column in df_test:
+                denselabel_column += str(random.randint(0,9))
+              else:
+                break
+
+            df_test_denseinvert.rename(columns = {postprocess_dict['labels_column'] : \
+                                      postprocess_dict['labels_column'] + '_' + denselabel_column}, \
+                           inplace = True)
+
+            dense_recovered_list += [postprocess_dict['labels_column'] + '_' + denselabel_column]
+
+            df_test_denseinvert = pd.DataFrame(df_test_denseinvert)
+            if j==0:
+              df_test_denseinvert_final = pd.DataFrame(df_test_denseinvert.copy())
+            else:
+              df_test_denseinvert_final = pd.concat([df_test_denseinvert_final, df_test_denseinvert], axis=1)
+            j+=1
+
+      if printstatus is True:
+        print("Inversion succeeded in recovering original form for columns:")
+        print(dense_recovered_list)
+        print()
+
+      if pandasoutput is False:
+
+        df_test_denseinvert_final = df_test_denseinvert_final.values
+
+      return df_test_denseinvert_final, dense_recovered_list, inversion_info_dict
 
     if isinstance(inversion, list):
 
