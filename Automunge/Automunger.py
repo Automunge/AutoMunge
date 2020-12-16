@@ -23836,7 +23836,7 @@ class AutoMunge:
     return PCAset_train, PCAset_test, postprocess_dict, PCActgy
   
   def check_am_miscparameters(self, valpercent1, valpercent2, floatprecision, shuffletrain, \
-                             TrainLabelFreqLevel, powertransform, binstransform, MLinfill, \
+                             TrainLabelFreqLevel, dupl_rows, powertransform, binstransform, MLinfill, \
                              infilliterate, randomseed, eval_ratio, LabelSmoothing_train, LabelSmoothing_test, \
                              LabelSmoothing_val, LSfit, numbercategoryheuristic, pandasoutput, \
                              NArw_marker, featureselection, featurepct, featuremetric, \
@@ -23939,6 +23939,21 @@ class AutoMunge:
       print()
       
     miscparameters_results.update({'TrainLabelFreqLevel_valresult' : TrainLabelFreqLevel_valresult})
+
+    #check dupl_rows
+    dupl_rows_valresult = False
+    if dupl_rows not in [True, False, 'test', 'traintest']:
+      dupl_rows_valresult = True
+      print("Error: invalid entry passed for dupl_rows parameter.")
+      print("Acceptable values are one of {True, False, 'test', 'traintest'}")
+      print()
+    elif dupl_rows not in ['test', 'traintest'] and not isinstance(dupl_rows, bool):
+      dupl_rows_valresult = True
+      print("Error: invalid entry passed for dupl_rows parameter.")
+      print("Acceptable values are one of {True, False, 'test', 'traintest'}")
+      print()
+      
+    miscparameters_results.update({'dupl_rows_valresult' : dupl_rows_valresult})
     
     #check powertransform
     powertransform_valresult = False
@@ -24269,7 +24284,7 @@ class AutoMunge:
     return miscparameters_results
     
   def check_pm_miscparameters(self, pandasoutput, printstatus, TrainLabelFreqLevel, \
-                              featureeval, driftreport, LabelSmoothing, LSfit, \
+                              dupl_rows, featureeval, driftreport, LabelSmoothing, LSfit, \
                               returnedsets, shuffletrain, inversion, traindata):
     """
     #Performs validation to confirm valid entries of passed postmunge(.) parameters
@@ -24325,6 +24340,16 @@ class AutoMunge:
       print()
       
     pm_miscparameters_results.update({'TrainLabelFreqLevel_valresult' : TrainLabelFreqLevel_valresult})
+
+    #check dupl_rows
+    dupl_rows_valresult = False
+    if dupl_rows not in [True, False] or not isinstance(dupl_rows, bool):
+      dupl_rows_valresult = True
+      print("Error: invalid entry passed for dupl_rows parameter.")
+      print("Acceptable values are one of {True, False}")
+      print()
+      
+    pm_miscparameters_results.update({'dupl_rows_valresult' : dupl_rows_valresult})
     
     #check featureeval
     featureeval_valresult = False
@@ -26490,11 +26515,30 @@ class AutoMunge:
         column_map.update({postprocess_dict['column_dict'][finalcolumn2]['origcolumn'] : columnkeylist})
       
     return column_map
+
+  def dupl_rows_consolidate(self, df, df_consol_id, df_consol_labels):
+    """
+    #consolidates duplicate rows in a dataframe
+    #in other words if duplicate rows present only returns one of duplicates
+    """
+    
+    mask = pd.Series(df.duplicated())
+    mask = pd.Series(np.where(mask == True, False, True))
+
+    if df_consol_id.shape[0] == df.shape[0]:
+      df_consol_id = df_consol_id.iloc[mask.values]
+    
+    if df_consol_labels.shape[0] == df.shape[0]:
+      df_consol_labels = df_consol_labels.iloc[mask.values]
+
+    df = df.iloc[mask.values]
+    
+    return df, df_consol_id, df_consol_labels
   
   def automunge(self, df_train, df_test = False, \
                 labels_column = False, trainID_column = False, testID_column = False, \
                 valpercent1=0.0, valpercent2 = 0.0, floatprecision = 32, shuffletrain = True, \
-                TrainLabelFreqLevel = False, powertransform = False, binstransform = False, \
+                dupl_rows = False, TrainLabelFreqLevel = False, powertransform = False, binstransform = False, \
                 MLinfill = False, infilliterate=1, randomseed = 42, eval_ratio = .5, \
                 LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, LSfit = False, \
                 numbercategoryheuristic = 127, pandasoutput = False, NArw_marker = False, \
@@ -26576,7 +26620,7 @@ class AutoMunge:
     #(generally speaking other than passed dictionaries, dataframes, or column identifiers)
     miscparameters_results = \
     self.check_am_miscparameters(valpercent1, valpercent2, floatprecision, shuffletrain, \
-                                 TrainLabelFreqLevel, powertransform, binstransform, MLinfill, \
+                                 TrainLabelFreqLevel, dupl_rows, powertransform, binstransform, MLinfill, \
                                  infilliterate, randomseed, eval_ratio, LabelSmoothing_train, LabelSmoothing_test, \
                                  LabelSmoothing_val, LSfit, numbercategoryheuristic, pandasoutput, \
                                  NArw_marker, featureselection, featurepct, featuremetric, \
@@ -27805,6 +27849,13 @@ class AutoMunge:
       miscparameters_results.update({'Binary_suffixoverlap_results' : {}})
       returned_Binary_columns = []
 
+    #this is operation to consolidate duplicate rows based on dupl_rows parameter
+    #in other words, if multiple copies of same row present only returns one
+    if dupl_rows in [True, 'traintest']:
+      df_train, df_trainID, df_labels = self.dupl_rows_consolidate(df_train, df_trainID, df_labels)
+    if dupl_rows in ['test', 'traintest']:
+      df_test, df_testID, df_testlabels = self.dupl_rows_consolidate(df_test, df_testID, df_testlabels)
+
     #here is the process to levelize the frequency of label rows in train data
     #currently only label categories of 'bnry' or 'text' are considered
     #a future extension will include numerical labels by adding supplemental 
@@ -27974,7 +28025,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.31'
+    automungeversion = '5.32'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -34964,8 +35015,9 @@ class AutoMunge:
   def postmunge(self, postprocess_dict, df_test, \
                 testID_column = False, labelscolumn = False, \
                 pandasoutput = False, printstatus = True, \
-                TrainLabelFreqLevel = False, featureeval = False, driftreport = False, \
-                LabelSmoothing = False, LSfit = False, inversion = False, traindata = False, \
+                dupl_rows = False, TrainLabelFreqLevel = False, featureeval = False, \
+                LabelSmoothing = False, LSfit = False, traindata = False, \
+                driftreport = False, inversion = False, \
                 returnedsets = True, shuffletrain = False):
     """
     #This function documented in READ ME, available online at:
@@ -34997,7 +35049,7 @@ class AutoMunge:
     #(generally speaking other than passed dictionaries, dataframes, or column identifiers)
     pm_miscparameters_results = \
     self.check_pm_miscparameters(pandasoutput, printstatus, TrainLabelFreqLevel, \
-                                featureeval, driftreport, LabelSmoothing, LSfit, \
+                                dupl_rows, featureeval, driftreport, LabelSmoothing, LSfit, \
                                 returnedsets, shuffletrain, inversion, traindata)
     
     #printout display progress
@@ -35646,6 +35698,11 @@ class AutoMunge:
         print("After transform test set column count = ")
         print(df_test.shape[1])
         print("")
+
+    #this is operation to consolidate duplicate rows based on dupl_rows parameter
+    #in other words, if multiple copies of same row present only returns one
+    if dupl_rows is True:
+      df_test, df_testID, df_testlabels = self.dupl_rows_consolidate(df_test, df_testID, df_testlabels)
 
     #here is the process to levelize the frequency of label rows in train data
     #currently only label categories of 'bnry' or 'text' are considered
