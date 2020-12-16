@@ -750,7 +750,9 @@ other words, if same row included more than once, it will only be returned once.
 Defaults to False for not activated. True applies consolidation to train set only,
 'test' applies consolidation to test set only, 'traintest' applies consolidation 
 to both train and test sets seperately. Note this is applied prior to 
-TrainLabelFreqLevel if elected.
+TrainLabelFreqLevel if elected. As implemented this does not take into account
+duplicate rows in train/test data which have different labels, only one verison
+of features/label pair is returned.
 
 * TrainLabelFreqLevel: can be passed as _(True/False/'traintest'/'test')_ 
 which indicates if the TrainLabelFreqLevel method will be applied to prepare for 
@@ -1744,7 +1746,9 @@ will print status of processing during operation. Defaults to True.
 if duplicate rows will be consolidated to single instance in returned sets. (In
 other words, if same row included more than once, it will only be returned once.)
 Defaults to False for not activated. True applies consolidation to test set. Note 
-this is applied prior to TrainLabelFreqLevel if elected.
+this is applied prior to TrainLabelFreqLevel if elected. As implemented this does 
+not take into account duplicate rows in test data which have different labels, 
+only one verison of features/label pair is returned.
 
 * TrainLabelFreqLevel: a boolean identifier _(True/False)_ which indicates
 if the TrainLabelFreqLevel method will be applied to oversample test
