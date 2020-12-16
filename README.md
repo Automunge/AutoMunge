@@ -132,7 +132,7 @@ featureimportance, postprocess_dict = \
 am.automunge(df_train, df_test = False, \
              labels_column = False, trainID_column = False, testID_column = False, \
              valpercent1=0.0, valpercent2 = 0.0, floatprecision = 32, shuffletrain = True, \
-             TrainLabelFreqLevel = False, powertransform = False, binstransform = False, \
+             dupl_rows = False, TrainLabelFreqLevel = False, powertransform = False, binstransform = False, \
              MLinfill = False, infilliterate=1, randomseed = 42, eval_ratio = .5, \
              LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, LSfit = False, \
              numbercategoryheuristic = 127, pandasoutput = False, NArw_marker = False, \
@@ -211,8 +211,9 @@ labelsencoding_dict, postreports_dict = \
 am.postmunge(postprocess_dict, df_test, \
              testID_column = False, labelscolumn = False, \
              pandasoutput = False, printstatus = True, \
-             TrainLabelFreqLevel = False, featureeval = False, driftreport = False, \
+             dupl_rows = False, TrainLabelFreqLevel = False, featureeval = False, \
              LabelSmoothing = False, LSfit = False, inversion = False, traindata = False, \
+             driftreport = False, inversion = False, \
              returnedsets = True, shuffletrain = False)
 ```
 
@@ -361,7 +362,7 @@ featureimportance, postprocess_dict = \
 am.automunge(df_train, df_test = False, \
              labels_column = False, trainID_column = False, testID_column = False, \
              valpercent1=0.0, valpercent2 = 0.0, floatprecision = 32, shuffletrain = True, \
-             TrainLabelFreqLevel = False, powertransform = False, binstransform = False, \
+             dupl_rows = False, TrainLabelFreqLevel = False, powertransform = False, binstransform = False, \
              MLinfill = False, infilliterate=1, randomseed = 42, eval_ratio = .5, \
              LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, LSfit = False, \
              numbercategoryheuristic = 127, pandasoutput = False, NArw_marker = False, \
@@ -443,8 +444,9 @@ labelsencoding_dict, postreports_dict = \
 am.postmunge(postprocess_dict, df_test, \
              testID_column = False, labelscolumn = False, \
              pandasoutput = False, printstatus = True, \
-             TrainLabelFreqLevel = False, featureeval = False, driftreport = False, \
+             dupl_rows = False, TrainLabelFreqLevel = False, featureeval = False, \
              LabelSmoothing = False, LSfit = False, inversion = False, traindata = False, \
+             driftreport = False, inversion = False, \
              returnedsets = True, shuffletrain = False)
 ```
 
@@ -597,7 +599,7 @@ featureimportance, postprocess_dict = \
 am.automunge(df_train, df_test = False, \
              labels_column = False, trainID_column = False, testID_column = False, \
              valpercent1=0.0, valpercent2 = 0.0, floatprecision = 32, shuffletrain = True, \
-             TrainLabelFreqLevel = False, powertransform = False, binstransform = False, \
+             dupl_rows = False, TrainLabelFreqLevel = False, powertransform = False, binstransform = False, \
              MLinfill = False, infilliterate=1, randomseed = 42, eval_ratio = .5, \
              LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, LSfit = False, \
              numbercategoryheuristic = 127, pandasoutput = False, NArw_marker = False, \
@@ -742,7 +744,15 @@ is comparable to True for the training set and shuffles the returned test sets
 as well. Note that all corresponding returned sets are consistently shuffled 
 (such as between train/labels/trainID sets).
 
-* TrainLabelFreqLevel: a boolean identifier _(True/False/'traintest'/'test')_ 
+* dupl_rows: can be passed as _(True/False/'traintest'/'test')_ which indicates
+if duplicate rows will be consolidated to single instance in returned sets. (In
+other words, if same row included more than once, it will only be returned once.)
+Defaults to False for not activated. True applies consolidation to train set only,
+'test' applies consolidation to test set only, 'traintest' applies consolidation 
+to both train and test sets seperately. Note this is applied prior to 
+TrainLabelFreqLevel if elected.
+
+* TrainLabelFreqLevel: can be passed as _(True/False/'traintest'/'test')_ 
 which indicates if the TrainLabelFreqLevel method will be applied to prepare for 
 oversampling training data associated with underrepresented labels (aka class 
 imbalance). The method adds multiples of training data rows for those labels with 
@@ -1543,8 +1553,9 @@ labelsencoding_dict, postreports_dict = \
 am.postmunge(postprocess_dict, df_test, \
              testID_column = False, labelscolumn = False, \
              pandasoutput = False, printstatus = True, \
-             TrainLabelFreqLevel = False, featureeval = False, driftreport = False, \
+             dupl_rows = False, TrainLabelFreqLevel = False, featureeval = False, \
              LabelSmoothing = False, LSfit = False, inversion = False, traindata = False, \
+             driftreport = False, inversion = False, \
              returnedsets = True, shuffletrain = False)
 ```
 
@@ -1671,8 +1682,9 @@ labelsencoding_dict, finalcolumns_test = \
 am.postmunge(postprocess_dict, df_test, \
              testID_column = False, labelscolumn = False, \
              pandasoutput = False, printstatus = True, \
-             TrainLabelFreqLevel = False, featureeval = False, driftreport = False, \
+             dupl_rows = False, TrainLabelFreqLevel = False, featureeval = False, \
              LabelSmoothing = False, LSfit = False, inversion = False, traindata = False, \
+             driftreport = False, inversion = False, \
              returnedsets = True, shuffletrain = False)
 ```
 
@@ -1727,6 +1739,12 @@ passed to function).
 
 * printstatus: user can pass _True/False_ indicating whether the function 
 will print status of processing during operation. Defaults to True.
+
+* dupl_rows: can be passed as _(True/False\)_ which indicates
+if duplicate rows will be consolidated to single instance in returned sets. (In
+other words, if same row included more than once, it will only be returned once.)
+Defaults to False for not activated. True applies consolidation to test set. Note 
+this is applied prior to TrainLabelFreqLevel if elected.
 
 * TrainLabelFreqLevel: a boolean identifier _(True/False)_ which indicates
 if the TrainLabelFreqLevel method will be applied to oversample test
