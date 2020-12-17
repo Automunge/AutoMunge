@@ -7059,6 +7059,10 @@ S. van der Walt, S. Colbert, and G. Varoquaux. The numpy array: A
 structure for efficient numerical computation. Computing in Science 
 & Engineering, 13:22–30, 2011.
 
+Nick Erickson, Jonas Mueller, Alexander Shirkov, Hang Zhang, Pedro Larroy, 
+Mu Li, and Alexander Smola. AutoGluon-Tabular: Robust and Accurate AutoML 
+for Structured Data [arxiv:2003.06505](https://arxiv.org/abs/2003.06505)
+
 ...
 
 Have fun munging!!
