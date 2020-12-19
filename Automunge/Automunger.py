@@ -20923,8 +20923,14 @@ class AutoMunge:
       #apply the autogluon data set loader
       df_train_filltrain = task.Dataset(df_train_filltrain)
 
+      #user can pass parameters to AutoGluon in ML_cmnd['MLinfill_cmnd']['AutoGluon']
+      ag_params = {}
+      if 'MLinfill_cmnd' in ML_cmnd:
+        if 'AutoGluon' in ML_cmnd['MLinfill_cmnd']:
+          ag_params = ML_cmnd['MLinfill_cmnd']['AutoGluon']
+
       #train the model
-      model = task.fit(train_data=df_train_filltrain, label=ag_label_column)
+      model = task.fit(train_data=df_train_filltrain, label=ag_label_column, **ag_params)
       
       return model
         
@@ -28025,7 +28031,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.32'
+    automungeversion = '5.33'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
