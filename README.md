@@ -991,6 +991,15 @@ on AutoGluon library available on arxiv as [AutoGluon-Tabular: Robust and Accura
 #can activate AutoGluon for ML infill and feature importance by passing ML_cmnd as
 ML_cmnd = {'autoML_type':'autogluon'}
 ```
+Parameters can be passed to the AutoGluon fit operation by ML_cmnd['AutoGluon'], here we demonstrate passing 
+presets=‘best_quality’, which may improve model accuracy but at cost of much larger memory footprint for 
+properties saved to disk originating from using more models in the ensemble.
+```
+#can activate AutoGluon for ML infill and feature importance by passing ML_cmnd as
+ML_cmnd = {'autoML_type': 'autogluon', \
+           'AutoGluon'  : {'presets' : 'best_quality'}}
+```
+
 A user can also assign specific methods for PCA transforms. Current PCA_types
 supported include 'PCA', 'SparsePCA', and 'KernelPCA', all via Scikit-Learn.
 Note that the n_components are passed separately with the PCAn_components 
