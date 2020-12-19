@@ -997,7 +997,7 @@ properties saved to disk originating from using more models in the ensemble.
 ```
 #can activate AutoGluon for ML infill and feature importance by passing ML_cmnd as
 ML_cmnd = {'autoML_type': 'autogluon', \
-           'AutoGluon'  : {'presets' : 'best_quality'}}
+           'MLinfill_cmnd':{'AutoGluon'  : {'presets' : 'best_quality'}}}
 ```
 
 A user can also assign specific methods for PCA transforms. Current PCA_types
