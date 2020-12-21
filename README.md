@@ -981,8 +981,8 @@ ML_cmnd = {'autoML_type':'randomforest', \
                             'RandomForestRegressor' :{'max_depth':[3,6,12]}}}
 ```
 There is an experimental option available to use an alternate autoML framework for ML infill 
-via the AutoGluon library. Further parameter support is pending. Again this one is still somewhat 
-experimental. (If AutoGluon doesn't want to train a model for some particular column you can 
+via the AutoGluon library. Requires externally installing AutoGluon library. 
+(If AutoGluon doesn't want to train a model for some particular column you can 
 run again after assigning that column to a different infill in assigninfill.) Note that since AutoGluon
 saves model properties in a local folder, when you process additional data with postmunge it will
 need to be in a notebook saved in same directory as was used for automunge. Further information
@@ -999,6 +999,29 @@ properties saved to disk originating from using more models in the ensemble.
 ML_cmnd = {'autoML_type': 'autogluon', \
            'MLinfill_cmnd':{'AutoGluon'  : {'presets' : 'best_quality'}}}
 ```
+Another autoML option for ML infill and feature importance is by the CatBoost library.
+Requires externally installing CatBoost library. Uses early stopping by default for regression 
+and no early stopping by default for classifier
+```
+#CatBoost available by passing ML_cmnd as 
+ML_cmnd = {'autoML_type':'catboost'}
+```
+Can pass parameters to model initialization and fit operation as:
+```
+#example of turning on early stopping for classifier 
+#by passing a eval_ratio for validaiton set which defaults to 0.15 for regressor
+#note eval_ratio is an Automunge parameter, other parameters accepted are those from CatBoost library
+ML_cmnd = {'autoML_type':'catboost', 
+           'MLinfill_cmnd' : {'catboost_classifier_model' : {},
+                              'catboost_classifier_fit'   : {'eval_ratio' : 0.15 },
+                              'catboost_regressor_model'  : {},
+                              'catboost_regressor_fit'    : {}}}
+```
+In general, accuracy performance of autoML options are expected as AutoGluon > CatBoost > Random Forest.
+In general, latency performance of autoML options are expected as Random Forest > CatBoost > AutoGluon.
+In general, memory performance of autoML options are expected as Random Forest > CatBoost > AutoGluon.
+And where Random Forest and Catboost are more portable than AutoGluon since don't require a local model 
+repository saved to hard drive. (For now retaining Random Forest as the default.)
 
 A user can also assign specific methods for PCA transforms. Current PCA_types
 supported include 'PCA', 'SparsePCA', and 'KernelPCA', all via Scikit-Learn.
