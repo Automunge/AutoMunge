@@ -2669,13 +2669,14 @@ may benefit sets with high cardinatility (i.e. high number of unique entries). T
 is not supported as there is possibility of redundant encodings for different unique entries.
   - default infill: none
   - default NArowtype: justNaN
-  - suffix appender: '_hash_#'
+  - suffix appender: '\_hash\_#'
   - assignparam parameters accepted:
     - 'heuristic_multiplier', float defaults to 2
     - 'heuristic_cap', integer defaults to 1024
     - 'vocab_size', integer defaults to False, when assigned overrides heuristic
     - 'space', defaults to ' ', this is used to extract words by space seperator
     - 'excluded_characters', defaults to [',', '.', '?', '!', '(', ')'], these characetrers are stripped prior to enconding
+    - 'salt', arbitrary string, defaults to empty string '', appended to entries to perturb encoding basis for privacy
   - driftreport postmunge metrics: col_count (number of columns), vocab_size
   - inversion available: no
 * hsh2: similar to hash but does not partition entries by space seperator, so only returns one column, does not scrub special characters
@@ -2686,16 +2687,18 @@ is not supported as there is possibility of redundant encodings for different un
     - 'heuristic_multiplier', float defaults to 2
     - 'heuristic_cap', integer defaults to 1024
     - 'vocab_size', integer defaults to False, when assigned overrides heuristic
+    - 'salt', arbitrary string, defaults to empty string '', appended to entries to perturb encoding basis for privacy
   - driftreport postmunge metrics: col_count (number of columns), vocab_size
   - inversion available: no
 * hs10: similar to hsh2 but returns activations in a set of columns with binary encodings, similar to 1010
   - default infill: none
   - default NArowtype: justNaN
-  - suffix appender: '_hs10_#'
+  - suffix appender: '\_hs10\_#'
   - assignparam parameters accepted: 
     - 'heuristic_multiplier', float defaults to 2
     - 'heuristic_cap', integer defaults to 1024
     - 'vocab_size', integer defaults to False, when assigned overrides heuristic
+    - 'salt', arbitrary string, defaults to empty string '', appended to entries to perturb encoding basis for privacy
   - driftreport postmunge metrics: col_count (number of columns), vocab_size
   - inversion available: no
 * UPCS: convert string entries to all uppercase characters
