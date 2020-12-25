@@ -11092,8 +11092,6 @@ class AutoMunge:
     #user can manually specify a vocab_size with vocab-size parameter
     """
     
-    from hashlib import md5
-    
     suffixoverlap_results = {}
     
     if 'inplace' in params:
@@ -11131,6 +11129,14 @@ class AutoMunge:
       salt = params['salt']
     else:
       salt = ''
+      
+    #accepts either 'hash' or 'md5', 
+    #where hash is quicker since uses native python function instead of hashlib 
+    #(md5 was the original basis, hash is new default)
+    if 'hash_alg' in params:
+      hash_alg = params['hash_alg']
+    else:
+      hash_alg = 'hash'
 
     if inplace is not True:
       
@@ -11156,6 +11162,9 @@ class AutoMunge:
     for scrub_punctuation in excluded_characters:
       mdf_train[column + '_hash'] = mdf_train[column + '_hash'].str.replace(scrub_punctuation, '')
       mdf_test[column + '_hash'] = mdf_test[column + '_hash'].str.replace(scrub_punctuation, '')
+      
+    if hash_alg == 'md5':
+      from hashlib import md5
     
     #define some support functions
     def assemble_wordlist(string, space = ' '):
@@ -11181,16 +11190,19 @@ class AutoMunge:
 
       return wordlist
     
-    def md5_hash(wordlist, n, salt):
+    def md5_hash(wordlist, n, salt, hash_alg):
       """
       applies an md5 hashing to the list of words
       this conversion to ingtegers is known as "the hashing trick"
-      this is partly inspired by tensorflow keras_preprocessing hashing_trick function
+      md5 is partly inspired by tensorflow keras_preprocessing hashing_trick function
       requires importing from hashlib import md5
       here n is the range of integers for vocabulary
       0 is reserved for use to pad lists of shorter length
       """
-      return [int(md5((salt + word).encode()).hexdigest(), 16) % (n-1) + 1 for word in wordlist]
+      if hash_alg == 'md5':
+        return [int(md5((salt + word).encode()).hexdigest(), 16) % (n-1) + 1 for word in wordlist]
+      else:
+        return [hash(salt + word) % (n-1) + 1 for word in wordlist]
     
     def pad_hash(hash_list, max_length):
       """
@@ -11237,8 +11249,8 @@ class AutoMunge:
         vocab_size = int(heuristic_cap)
 
     #now apply hashing to convert to integers based on vocab_size
-    mdf_train[column + '_hash'] = mdf_train[column + '_hash'].apply(md5_hash, n=vocab_size, salt=salt)
-    mdf_test[column + '_hash'] = mdf_test[column + '_hash'].apply(md5_hash, n=vocab_size, salt=salt)
+    mdf_train[column + '_hash'] = mdf_train[column + '_hash'].apply(md5_hash, n=vocab_size, salt=salt, hash_alg=hash_alg)
+    mdf_test[column + '_hash'] = mdf_test[column + '_hash'].apply(md5_hash, n=vocab_size, salt=salt, hash_alg=hash_alg)
     
     #get max length, i.e. for entry with most words
     max_length = mdf_train[column + '_hash'].apply(len).max()
@@ -11287,7 +11299,8 @@ class AutoMunge:
                                       'max_length' : max_length, \
                                       'excluded_characters' : excluded_characters, \
                                       'space' : space, \
-                                      'salt' : salt}}
+                                      'salt' : salt, \
+                                      'hash_alg' : hash_alg}}
       
       column_dict = { hc : {'category' : 'hash', \
                            'origcategory' : category, \
@@ -11324,8 +11337,6 @@ class AutoMunge:
     #or user can manually specify a vocab_size instead of relying on heuristic
     """
     
-    from hashlib import md5
-    
     suffixoverlap_results = {}
     
     if 'inplace' in params:
@@ -11353,6 +11364,14 @@ class AutoMunge:
       salt = params['salt']
     else:
       salt = ''
+      
+    #accepts either 'hash' or 'md5', 
+    #where hash is quicker since uses native python function instead of hashlib 
+    #(md5 was the original basis, hash is new default)
+    if 'hash_alg' in params:
+      hash_alg = params['hash_alg']
+    else:
+      hash_alg = 'hash'
 
     if inplace is not True:
       
@@ -11379,19 +11398,25 @@ class AutoMunge:
       vocab_size = int(mdf_train[column + '_hs10'].nunique() * heuristic_multiplier)
       if vocab_size > heuristic_cap:
         vocab_size = int(heuristic_cap)
+      
+    if hash_alg == 'md5':
+      from hashlib import md5
     
-    def md5_hash(entry, n, salt):
+    def md5_hash(entry, n, salt, hash_alg):
       """
-      applies an md5 hashing to the list of words
+      applies hashing to the list of words
       this conversion to ingtegers is known as "the hashing trick"
-      requires importing from hashlib import md5
+      requires importing from hashlib import md5 if hash_alg = "md5"
       here n is the range of integers for vocabulary
       """
-      return int(md5((salt + entry).encode()).hexdigest(), 16) % (n-1)
+      if hash_alg == 'md5':
+        return int(md5((salt + entry).encode()).hexdigest(), 16) % (n)
+      else:
+        return hash(salt + word) % (n)
 
     #now apply hashing to convert to integers based on vocab_size
-    mdf_train[column + '_hs10'] = mdf_train[column + '_hs10'].apply(md5_hash, n=vocab_size, salt=salt)
-    mdf_test[column + '_hs10'] = mdf_test[column + '_hs10'].apply(md5_hash, n=vocab_size, salt=salt)
+    mdf_train[column + '_hs10'] = mdf_train[column + '_hs10'].apply(md5_hash, n=vocab_size, salt=salt, hash_alg=hash_alg)
+    mdf_test[column + '_hs10'] = mdf_test[column + '_hs10'].apply(md5_hash, n=vocab_size, salt=salt, hash_alg=hash_alg)
     
     binary_column_count = int(np.ceil(np.log2(vocab_size)))
     
@@ -11435,7 +11460,8 @@ class AutoMunge:
                                       'vocab_size' : vocab_size, \
                                       'heuristic_multiplier' : heuristic_multiplier, \
                                       'heuristic_cap' : heuristic_cap, \
-                                      'salt' : salt}}      
+                                      'salt' : salt, \
+                                      'hash_alg' : hash_alg}}      
       
       column_dict = { hc : {'category' : 'hs10', \
                            'origcategory' : category, \
@@ -28369,7 +28395,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.35'
+    automungeversion = '5.36'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -30903,8 +30929,6 @@ class AutoMunge:
     #user can manually specify a vocab_size with vocab-size parameter
     """
     
-    from hashlib import md5
-    
     if 'inplace' in params:
       inplace = params['inplace']
     else:
@@ -30944,6 +30968,11 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['space']
       salt = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['salt']
+      hash_alg = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['hash_alg']
+
+      if hash_alg == 'md5':
+        from hashlib import md5
 
       if inplace is not True:
         #copy source column into new column
@@ -30982,16 +31011,19 @@ class AutoMunge:
 
         return wordlist
 
-      def md5_hash(wordlist, n, salt):
+      def md5_hash(wordlist, n, salt, hash_alg):
         """
         applies an md5 hashing to the list of words
         this conversion to ingtegers is known as "the hashing trick"
-        this is partly inspired by tensorflow keras_preprocessing hashing_trick function
+        md5 is partly inspired by tensorflow keras_preprocessing hashing_trick function
         requires importing from hashlib import md5
         here n is the range of integers for vocabulary
         0 is reserved for use to pad lists of shorter length
         """
-        return [int(md5((salt + word).encode()).hexdigest(), 16) % (n-1) + 1 for word in wordlist]
+        if hash_alg == 'md5':
+          return [int(md5((salt + word).encode()).hexdigest(), 16) % (n-1) + 1 for word in wordlist]
+        else:
+          return [hash(salt + word) % (n-1) + 1 for word in wordlist]
 
       def pad_hash(hash_list, max_length):
         """
@@ -31021,7 +31053,7 @@ class AutoMunge:
       mdf_test[column + '_hash'] = mdf_test[column + '_hash'].apply(assemble_wordlist, space = space)
 
       #now apply hashing to convert to integers based on vocab_size
-      mdf_test[column + '_hash'] = mdf_test[column + '_hash'].apply(md5_hash, n=vocab_size, salt=salt)
+      mdf_test[column + '_hash'] = mdf_test[column + '_hash'].apply(md5_hash, n=vocab_size, salt=salt, hash_alg=hash_alg)
 
       #the other entries are padded out with 0 to reach same length, if a train entry has longer length it is trimmed
       mdf_test[column + '_hash'] = mdf_test[column + '_hash'].apply(pad_hash, max_length = max_length)
@@ -31068,8 +31100,6 @@ class AutoMunge:
     #or user can manually specify a vocab_size instead of relying on heuristic
     '''
     
-    from hashlib import md5
-    
     if 'inplace' in params:
       inplace = params['inplace']
     else:
@@ -31084,6 +31114,11 @@ class AutoMunge:
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['col_count']
     salt = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['salt']
+    hash_alg = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['hash_alg']
+    
+    if hash_alg == 'md5':
+      from hashlib import md5
     
     if inplace is not True:
       #copy source column into new column
@@ -31094,17 +31129,20 @@ class AutoMunge:
     #convert column to string, note this means that missing data converted to 'nan'
     mdf_test[column + '_hs10'] = mdf_test[column + '_hs10'].astype(str)
     
-    def md5_hash(entry, n, salt):
+    def md5_hash(entry, n, salt, hash_alg):
       """
-      applies an md5 hashing to the list of words
+      applies hashing to the list of words
       this conversion to ingtegers is known as "the hashing trick"
-      requires importing from hashlib import md5
+      requires importing from hashlib import md5 if hash_alg = "md5"
       here n is the range of integers for vocabulary
       """
-      return int(md5((salt + entry).encode()).hexdigest(), 16) % (n-1)
+      if hash_alg == 'md5':
+        return int(md5((salt + entry).encode()).hexdigest(), 16) % (n)
+      else:
+        return hash(salt + word) % (n)
 
     #now apply hashing to convert to integers based on vocab_size
-    mdf_test[column + '_hs10'] = mdf_test[column + '_hs10'].apply(md5_hash, n=vocab_size, salt=salt)
+    mdf_test[column + '_hs10'] = mdf_test[column + '_hs10'].apply(md5_hash, n=vocab_size, salt=salt, hash_alg=hash_alg)
     
     #convert integer encoding to binary
     mdf_test[column + '_hs10'] = mdf_test[column + '_hs10'].apply(bin)
