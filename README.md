@@ -2659,7 +2659,7 @@ and comparable to test set independent of test set row count
   - inversion available: yes with partial recovery
 * hash: applies "the hashing trick" to convert high cardinality categoric sets to set of columns with integer word encodings
 e.g. for an entry "Three word quote" may return three columns with integers corresponding to each of three words
-where integer is determined by md5 hashing, and also based on passed parameter vocab_size
+where integer is determined by hashing, and also based on passed parameter vocab_size
 also strips out special characters, Uhsh is available if upstream uppercase conversion desired. Note that there is a possibility
 of encoding overlap between entries with this transform. Also note that hash is excluded from ML infill
 vocab_size calculated based on number of unique words found in train set times a multiplier (defaulting to 2), where if that 
