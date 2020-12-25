@@ -11412,7 +11412,7 @@ class AutoMunge:
       if hash_alg == 'md5':
         return int(md5((salt + entry).encode()).hexdigest(), 16) % (n)
       else:
-        return hash(salt + word) % (n)
+        return hash(salt + entry) % (n)
 
     #now apply hashing to convert to integers based on vocab_size
     mdf_train[column + '_hs10'] = mdf_train[column + '_hs10'].apply(md5_hash, n=vocab_size, salt=salt, hash_alg=hash_alg)
@@ -28395,7 +28395,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.36'
+    automungeversion = '5.37'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -31139,7 +31139,7 @@ class AutoMunge:
       if hash_alg == 'md5':
         return int(md5((salt + entry).encode()).hexdigest(), 16) % (n)
       else:
-        return hash(salt + word) % (n)
+        return hash(salt + entry) % (n)
 
     #now apply hashing to convert to integers based on vocab_size
     mdf_test[column + '_hs10'] = mdf_test[column + '_hs10'].apply(md5_hash, n=vocab_size, salt=salt, hash_alg=hash_alg)
