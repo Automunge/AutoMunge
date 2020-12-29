@@ -11124,6 +11124,11 @@ class AutoMunge:
     else:
       space = ' '
 
+    if 'max_column_count' in params:
+      max_column_count = params['max_column_count']
+    else:
+      max_column_count = False
+
     #salt can be passed as arbitrary string to ensure privacy of encoding basis
     if 'salt' in params:
       salt = params['salt']
@@ -11167,7 +11172,7 @@ class AutoMunge:
       from hashlib import md5
     
     #define some support functions
-    def assemble_wordlist(string, space = ' '):
+    def assemble_wordlist(string, space = ' ', max_column_count = max_column_count):
       """
       converts a string to list of words by splitting words from space characters
       assumes any desired special characters have already been stripped
@@ -11175,18 +11180,48 @@ class AutoMunge:
 
       wordlist = []
       j = 0
-      for i in range(len(string)+1):
-        if i < len(string):
-          if string[i] == space:
-            if i > 0:
+      
+      if max_column_count is False:
+        for i in range(len(string)+1):
+          if i < len(string):
+            if string[i] == space:
+              if i > 0:
+                if string[j] != space:
+                  wordlist.append(string[j:i])
+              j = i+1
+
+          else:
+            if j < len(string):
               if string[j] != space:
                 wordlist.append(string[j:i])
-            j = i+1
+      
+      #else if we have a cap on number of returned columns
+      else:
+        wordlist_length = 0
+        for i in range(len(string)+1):
+          if i < len(string):
+            if string[i] == space:
+              if i > 0:
+                if string[j] != space:
+                  wordlist.append(string[j:i])
+                  wordlist_length += 1
+                  if wordlist_length == max_column_count - 1:
+                    j = i+1
+                    break
+              j = i+1
 
-        else:
+          else:
+            if j < len(string):
+              if string[j] != space:
+                wordlist.append(string[j:i])
+                wordlist_length += 1
+                j = i+1
+                if wordlist_length == max_column_count - 1:
+                  break
+
+        if wordlist_length == max_column_count - 1:
           if j < len(string):
-            if string[j] != space:
-              wordlist.append(string[j:i])
+            wordlist.append(string[j:len(string)])
 
       return wordlist
     
@@ -11229,8 +11264,8 @@ class AutoMunge:
     #now convert entries to lists of words
     #e.g. this converts "Two words" to ['Two', 'words']
     #if you don't want to split words can pass space = ''
-    mdf_train[column + '_hash'] = mdf_train[column + '_hash'].apply(assemble_wordlist, space = space)
-    mdf_test[column + '_hash'] = mdf_test[column + '_hash'].apply(assemble_wordlist, space = space)
+    mdf_train[column + '_hash'] = mdf_train[column + '_hash'].apply(assemble_wordlist, space = space, max_column_count = max_column_count)
+    mdf_test[column + '_hash'] = mdf_test[column + '_hash'].apply(assemble_wordlist, space = space, max_column_count = max_column_count)
     
     #if user didn't specify vocab_size then derive based on heuristic
     if vocab_size is False:
@@ -11300,6 +11335,7 @@ class AutoMunge:
                                       'excluded_characters' : excluded_characters, \
                                       'space' : space, \
                                       'salt' : salt, \
+                                      'max_column_count' : max_column_count, \
                                       'hash_alg' : hash_alg}}
       
       column_dict = { hc : {'category' : 'hash', \
@@ -11417,7 +11453,7 @@ class AutoMunge:
     #now apply hashing to convert to integers based on vocab_size
     mdf_train[column + '_hs10'] = mdf_train[column + '_hs10'].apply(md5_hash, n=vocab_size, salt=salt, hash_alg=hash_alg)
     mdf_test[column + '_hs10'] = mdf_test[column + '_hs10'].apply(md5_hash, n=vocab_size, salt=salt, hash_alg=hash_alg)
-    
+
     binary_column_count = int(np.ceil(np.log2(vocab_size)))
     
     #convert integer encoding to binary
@@ -18712,9 +18748,9 @@ class AutoMunge:
       #defaultordinal = 'ord3'
       #defaultordinal applied when unique values exceeds numbercategoryheuristic
       #setting this to ord5 to exclude form ML infill as models may have difficulty with high cardinality
-      defaultordinal = 'ord5'
+      defaultordinal = 'hsh2'
 
-      defaultordinal_allunique = 'ord5'
+      defaultordinal_allunique = 'hash'
       
       defaultnumerical = 'nmbr'
       #defaultnumerical = 'mean'
@@ -18956,7 +18992,8 @@ class AutoMunge:
       if category == defaultcategorical:
         if nunique > numbercategoryheuristic:
           category = defaultordinal
-        if nunique == df.shape[0]:
+        #here 0.75 is a heuristic, might be worth some fine tuning of this threshold
+        if nunique > df.shape[0] * 0.75:
           category = defaultordinal_allunique
 
       #new statistical tests for numerical sets from v2.25
@@ -28395,7 +28432,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.37'
+    automungeversion = '5.38'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -30970,6 +31007,8 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['salt']
       hash_alg = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['hash_alg']
+      max_column_count = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['max_column_count']
 
       if hash_alg == 'md5':
         from hashlib import md5
@@ -30988,7 +31027,7 @@ class AutoMunge:
         mdf_test[column + '_hash'] = mdf_test[column + '_hash'].str.replace(scrub_punctuation, '')
 
       #define some support functions
-      def assemble_wordlist(string, space = ' '):
+      def assemble_wordlist(string, space = ' ', max_column_count = max_column_count):
         """
         converts a string to list of words by splitting words from space characters
         assumes any desired special characters have already been stripped
@@ -30996,18 +31035,48 @@ class AutoMunge:
 
         wordlist = []
         j = 0
-        for i in range(len(string)+1):
-          if i < len(string):
-            if string[i] == space:
-              if i > 0:
-                if string[j] != space:
-                  wordlist.append(string[j:i])
+        
+        if max_column_count is False:
+          for i in range(len(string)+1):
+            if i < len(string):
+              if string[i] == space:
+                if i > 0:
+                  if string[j] != space:
+                    wordlist.append(string[j:i])
                 j = i+1
 
-          else:
+            else:
+              if j < len(string):
+                if string[j] != space:
+                  wordlist.append(string[j:i])
+        
+        #else if we have a cap on number of returned columns
+        else:
+          wordlist_length = 0
+          for i in range(len(string)+1):
+            if i < len(string):
+              if string[i] == space:
+                if i > 0:
+                  if string[j] != space:
+                    wordlist.append(string[j:i])
+                    wordlist_length += 1
+                    if wordlist_length == max_column_count - 1:
+                      j = i+1
+                      break
+                j = i+1
+
+            else:
+              if j < len(string):
+                if string[j] != space:
+                  wordlist.append(string[j:i])
+                  wordlist_length += 1
+                  j = i+1
+                  if wordlist_length == max_column_count - 1:
+                    break
+
+          if wordlist_length == max_column_count - 1:
             if j < len(string):
-              if string[j] != space:
-                wordlist.append(string[j:i])
+              wordlist.append(string[j:len(string)])
 
         return wordlist
 
@@ -31050,7 +31119,7 @@ class AutoMunge:
       #now convert entries to lists of words
       #e.g. this converts "Two words" to ['Two', 'words']
       #if you don't want to split words can pass space = ''
-      mdf_test[column + '_hash'] = mdf_test[column + '_hash'].apply(assemble_wordlist, space = space)
+      mdf_test[column + '_hash'] = mdf_test[column + '_hash'].apply(assemble_wordlist, space = space, max_column_count = max_column_count)
 
       #now apply hashing to convert to integers based on vocab_size
       mdf_test[column + '_hash'] = mdf_test[column + '_hash'].apply(md5_hash, n=vocab_size, salt=salt, hash_alg=hash_alg)
@@ -31078,7 +31147,7 @@ class AutoMunge:
 
         #now populate the column with i'th entry from hashed list
         mdf_test[column + '_hash'] = mdf_test[column + '_hash'].apply(access_i, i=0)
-    
+
     return mdf_test
 
   def postprocess_hs10_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
