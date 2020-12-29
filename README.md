@@ -1946,11 +1946,15 @@ number of unique entries in the column exceeds the parameter 'numbercategoryheur
 (which defaults to 63), the encoding will instead be by 'ord3' which is an ordinal
 (integer) encoding sorted by most common value. Note that numerical sets with 3
 unique values in train set default to categorical encoding via 'text'.
-- ord3: for categorical data, if the number of unique entries in the column exceeds 
-the parameter 'numbercategoryheuristic' (which defaults to 63), the encoding will 
-instead be by 'ord3' which is an ordinal (integer) encoding sorted by most common value.
-- ord5: for all unique entry categoric sets, comparable to an alphabetical sorted ordinal
-encoding ordl but excluded from ML infill
+- hsh2: for categorical data, if the number of unique entries in the column exceeds 
+the parameter 'numbercategoryheuristic' (which defaults to 127), the encoding will 
+instead be by 'hsh2' which is an ordinal (integer) encoding based on hashing.
+hsh2 is excluded from ML infill.
+- hash: for all unique entry categoric sets (based on sets with >75% unique entries), 
+the encoding will be by hash which extracts distinct words within entries returned in 
+a set of columns with an integer hashing. hash is excluded from ML infill. Note that for edge
+cases with large string entries resulting in too high dimensionality, the max_column_count
+parameter can be passed to default_assignparam in assignparam to put a cap on returned column count.
 - text: for categorical data of 3 unique values excluding infill (eg NaN), the 
 column is encoded via one-hot encoding.
 - bnry: for categorical data of <=2 unique values excluding infill (eg NaN), the 
@@ -2678,6 +2682,8 @@ is not supported as there is possibility of redundant encodings for different un
     - 'excluded_characters', defaults to [',', '.', '?', '!', '(', ')'], these characetrers are stripped prior to enconding
     - 'salt', arbitrary string, defaults to empty string '', appended to entries to perturb encoding basis for privacy
     - 'hash_alg', defaults to 'hash' for use of native python hash function for speed, 'md5' uses hashlib md5 function instead
+    - 'max_column_count', defaults to False, can pass as integer to cap the number of returned columns, in which case when
+      words are extracted the final entrty within cap will contain all remaining word and space characters
   - driftreport postmunge metrics: col_count (number of columns), vocab_size
   - inversion available: no
 * hsh2: similar to hash but does not partition entries by space seperator, so only returns one column, does not scrub special characters
