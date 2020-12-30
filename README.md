@@ -76,7 +76,7 @@ consistent preparations such as for inference.
 
 ## Install, Initialize, and Basics
 
-AutoMunge is now available for pip install for open source python data-wrangling:
+Automunge is now available for pip install for open source python data-wrangling:
 
 ```
 pip install Automunge
