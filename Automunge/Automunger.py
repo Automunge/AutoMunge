@@ -5586,7 +5586,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_DPnb_class, \
                                   'inverseprocess' : self.inverseprocess_UPCS, \
                                   'info_retention' : True, \
-                                  'inplace_option' : True, \
+                                  'inplace_option' : False, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'DPnb'}})
@@ -28432,7 +28432,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.38'
+    automungeversion = '5.39'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
