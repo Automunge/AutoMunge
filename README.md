@@ -7103,9 +7103,15 @@ S. van der Walt, S. Colbert, and G. Varoquaux. The numpy array: A
 structure for efficient numerical computation. Computing in Science 
 & Engineering, 13:22–30, 2011.
 
+In addition to the default of Scikit-learn's Random Forest predictive models, 
+Automunge includes ML infill options using the Autogluon or CatBoost libraries.
+
 Nick Erickson, Jonas Mueller, Alexander Shirkov, Hang Zhang, Pedro Larroy, 
 Mu Li, and Alexander Smola. AutoGluon-Tabular: Robust and Accurate AutoML 
 for Structured Data [arxiv:2003.06505](https://arxiv.org/abs/2003.06505)
+
+Anna Veronika Dorogush, Vasily Ershov, Andrey Gulin. CatBoost: gradient 
+boosting with categorical features support [arXiv:1810.11363](https://arxiv.org/abs/1810.11363)
 
 ...
 
