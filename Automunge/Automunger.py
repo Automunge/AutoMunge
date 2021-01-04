@@ -17158,13 +17158,13 @@ class AutoMunge:
     
     suffixoverlap_results = {}
     
+    #buckets can be passed as list for direct values or as a set to signal they are percent values
     if 'buckets' in params:
-        
       buckets = params['buckets']
-    
+      origbuckets = params['buckets']
     else:
-      
       buckets = [0,1,2]
+      origbuckets = [0,1,2]
       
     binscolumn = column + '_bkt1'
 
@@ -17183,6 +17183,20 @@ class AutoMunge:
     
     if mean != mean:
       mean = 0
+    
+    trainmax = mdf_train[binscolumn].max()
+    trainmin = mdf_train[binscolumn].min()
+    
+    #if buckets is a set instead of list that signals to convert percentages to values
+    if type(buckets) == type({1,2}):
+      buckets = sorted(list(buckets))
+      
+      if trainmax != trainmax:
+        trainmax = 0
+      if trainmin != trainmin:
+        trainmin = 0
+        
+      buckets = [(trainmax - trainmin) * x + trainmin for x in buckets]
 
     # #replace missing data with training set mean
     # mdf_train[binscolumn] = mdf_train[binscolumn].fillna(mean)
@@ -17254,7 +17268,10 @@ class AutoMunge:
                                       'bins_cuts' : bins_cuts, \
                                       'bins_id' : bins_id, \
                                       'textcolumns' : textcolumns, \
-                                       tc_ratio : tcratio}}
+                                       tc_ratio : tcratio, \
+                                      'trainmax' : trainmax, \
+                                      'trainmin' : trainmin, \
+                                      'origbuckets_bkt1' : origbuckets}}
 
       column_dict = { nc : {'category' : 'bkt1', \
                             'origcategory' : category, \
@@ -17284,13 +17301,13 @@ class AutoMunge:
     
     suffixoverlap_results = {}
     
+    #buckets can be passed as list for direct values or as a set to signal they are percent values
     if 'buckets' in params:
-        
       buckets = params['buckets']
-    
+      origbuckets = params['buckets']
     else:
-      
       buckets = [0,1,2]
+      origbuckets = [0,1,2]
       
     binscolumn = column + '_bkt2'
 
@@ -17309,6 +17326,20 @@ class AutoMunge:
     
     if mean != mean:
       mean = 0
+      
+    trainmax = mdf_train[binscolumn].max()
+    trainmin = mdf_train[binscolumn].min()
+    
+    #if buckets is a set instead of list that signals to convert percentages to values
+    if type(buckets) == type({1,2}):
+      buckets = sorted(list(buckets))
+      
+      if trainmax != trainmax:
+        trainmax = 0
+      if trainmin != trainmin:
+        trainmin = 0
+        
+      buckets = [(trainmax - trainmin) * x + trainmin for x in buckets]
 
     # #replace missing data with training set mean
     # mdf_train[binscolumn] = mdf_train[binscolumn].fillna(mean)
@@ -17377,7 +17408,10 @@ class AutoMunge:
                                       'bins_cuts' : bins_cuts, \
                                       'bins_id' : bins_id, \
                                       'textcolumns' : textcolumns, \
-                                       tc_ratio : tcratio}}
+                                       tc_ratio : tcratio, \
+                                      'trainmax' : trainmax, \
+                                      'trainmin' : trainmin, \
+                                      'origbuckets_bkt2' : origbuckets}}
 
       column_dict = { nc : {'category' : 'bkt2', \
                             'origcategory' : category, \
@@ -17448,6 +17482,20 @@ class AutoMunge:
     
     if mean != mean:
       mean = 0
+      
+    trainmax = mdf_train[binscolumn].max()
+    trainmin = mdf_train[binscolumn].min()
+    
+    #if buckets is a set instead of list that signals to convert percentages to values
+    if type(buckets) == type({1,2}):
+      buckets = sorted(list(buckets))
+      
+      if trainmax != trainmax:
+        trainmax = 0
+      if trainmin != trainmin:
+        trainmin = 0
+        
+      buckets = [(trainmax - trainmin) * x + trainmin for x in buckets]
 
     # #replace missing data with training set mean
     # mdf_train[binscolumn] = mdf_train[binscolumn].fillna(mean)
@@ -17506,7 +17554,9 @@ class AutoMunge:
                                       'bins_id' : bins_id, \
                                       'activations_list' : bins_id, \
                                       'infill_activation' : infill_activation, \
-                                      'ordl_activations_dict' : ordl_activations_dict}}
+                                      'ordl_activations_dict' : ordl_activations_dict, \
+                                      'trainmax' : trainmax, \
+                                      'trainmin' : trainmin}}
 
       column_dict = { nc : {'category' : 'bkt3', \
                             'origcategory' : category, \
@@ -17570,6 +17620,20 @@ class AutoMunge:
     #convert all values to either numeric or NaN
     mdf_train[binscolumn] = pd.to_numeric(mdf_train[binscolumn], errors='coerce')
     mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
+    
+    trainmax = mdf_train[binscolumn].max()
+    trainmin = mdf_train[binscolumn].min()
+    
+    #if buckets is a set instead of list that signals to convert percentages to values
+    if type(buckets) == type({1,2}):
+      buckets = sorted(list(buckets))
+      
+      if trainmax != trainmax:
+        trainmax = 0
+      if trainmin != trainmin:
+        trainmin = 0
+        
+      buckets = [(trainmax - trainmin) * x + trainmin for x in buckets]
     
     #set all values that fall outside of bounded buckets to nan for replacement with mean
     mdf_train.loc[mdf_train[binscolumn] <= buckets[0], (binscolumn)] = np.nan
@@ -17647,7 +17711,9 @@ class AutoMunge:
                                       'bins_id' : bins_id, \
                                       'activations_list' : bins_id, \
                                       'infill_activation' : infill_activation, \
-                                      'ordl_activations_dict' : ordl_activations_dict}}
+                                      'ordl_activations_dict' : ordl_activations_dict, \
+                                      'trainmax' : trainmax, \
+                                      'trainmin' : trainmin}}
 
       column_dict = { nc : {'category' : 'bkt4', \
                             'origcategory' : category, \
@@ -25442,8 +25508,8 @@ class AutoMunge:
      'vocab_size_hash'      : 'hash', \
      'bn_width_bnwd'        : 'bnwd', \
      'bincount_bnep'        : 'bnep', \
-     'buckets_bkt1'         : 'bkt1', \
-     'buckets_bkt2'         : 'bkt2'}
+     'origbuckets_bkt1'     : 'bkt1', \
+     'origbuckets_bkt2'     : 'bkt2'}
 
     for column_dict_entry in postprocess_dict['column_dict']:
 
@@ -28432,7 +28498,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.39'
+    automungeversion = '5.40'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -33693,9 +33759,9 @@ class AutoMunge:
       
       if column == postprocess_dict['column_dict'][columnkey]['inputcolumn']:
 
-        if 'buckets_bkt1' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
+        if 'origbuckets_bkt1' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
 
-          if postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]['buckets_bkt1'] == buckets:
+          if postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]['origbuckets_bkt1'] == buckets:
 
             normkey = columnkey
           
@@ -33774,9 +33840,9 @@ class AutoMunge:
       
       if column == postprocess_dict['column_dict'][columnkey]['inputcolumn']:
 
-        if 'buckets_bkt2' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
+        if 'origbuckets_bkt2' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
 
-          if postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]['buckets_bkt2'] == buckets:
+          if postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]['origbuckets_bkt2'] == buckets:
 
             normkey = columnkey
         
