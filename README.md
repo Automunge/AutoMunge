@@ -31,8 +31,8 @@ methods, or may also assign to distinct columns custom feature engineering
 transformations, custom sets (e.g. "family trees") of feature engineering 
 transformations, and select from options for missing data infill. The feature 
 engineering transformations may be accessed from the internal library (aka a 
-"feature store"), or may also be externally user defined with minimal requirements 
-of simple data structures. The tool includes options for automated feature 
+"feature transformation store"), or may also be externally user defined with minimal 
+requirements of simple data structures. The tool includes options for automated feature 
 importance evaluation, automated "ML infill" for derivation of missing data infill 
 predictions using machine learning models trained on the set, automated 
 preparation for oversampling for class imbalance in labels, automated dimensionality 
