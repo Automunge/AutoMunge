@@ -2460,7 +2460,7 @@ bin count defaults to 5/7/9 eg for bneo/bn7o/bn9o
   - suffix appender: '\_bkt1\_#1' where #1 is the bin identifier (# from min)
   - assignparam parameters accepted: 
     - 'buckets', a list of numbers, to set bucket boundaries (leave out +/-'inf')
-      defaults to [0,1,2] (arbitrary plug values)
+      defaults to [0,1,2] (arbitrary plug values), can also pass buckets values as percent of range by framing as a set instead of list eg {0,0.25,0.50,1}
   - driftreport postmunge metrics: binsmean / buckets_bkt1 / bins_cuts / bins_id / textcolumns / 
 					   <column> + '_ratio' (column specific)
   - inversion available: yes with partial recovery
@@ -2470,7 +2470,7 @@ bin count defaults to 5/7/9 eg for bneo/bn7o/bn9o
   - suffix appender: '\_bkt2\_#1' where #1 is the bin identifier (# from min)
   - assignparam parameters accepted: 
     - 'buckets', a list of numbers, to set bucket boundaries
-      defaults to [0,1,2] (arbitrary plug values)
+      defaults to [0,1,2] (arbitrary plug values), can also pass buckets values as percent of range by framing as a set instead of list eg {0,0.25,0.50,1}
   - driftreport postmunge metrics: binsmean / buckets_bkt2 / bins_cuts / bins_id / textcolumns / 
 					   <column> + '_ratio' (column specific)
   - inversion available: yes with partial recovery
@@ -2480,7 +2480,7 @@ bin count defaults to 5/7/9 eg for bneo/bn7o/bn9o
   - suffix appender: '_bkt3'
   - assignparam parameters accepted: 
     - 'buckets', a list of numbers, to set bucket boundaries (leave out +/-'inf')
-      defaults to [0,1,2] (arbitrary plug values)
+      defaults to [0,1,2] (arbitrary plug values), can also pass buckets values as percent of range by framing as a set instead of list eg {0,0.25,0.50,1}
   - driftreport postmunge metrics: binsmean / buckets / bins_cuts / bins_id / ordl_activations_dict
   - inversion available: yes with partial recovery
 * bkt4: for numerical set graining to user specified ordinal encoded bins. First and last bins bounded.
@@ -2489,7 +2489,7 @@ bin count defaults to 5/7/9 eg for bneo/bn7o/bn9o
   - suffix appender: '_bkt4'
   - assignparam parameters accepted: 
     - 'buckets', a list of numbers, to set bucket boundaries
-      defaults to [0,1,2] (arbitrary plug values)
+      defaults to [0,1,2] (arbitrary plug values), can also pass buckets values as percent of range by framing as a set instead of list eg {0,0.25,0.50,1}
   - driftreport postmunge metrics: binsmean / buckets / bins_cuts / bins_id / ordl_activations_dict
   - inversion available: yes with partial recovery
 * note that bins each have variants for one-hot vs ordinal vs binary encodings
