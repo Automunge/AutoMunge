@@ -7072,7 +7072,9 @@ machine learning with the Automunge platform. Feedback is welcome.
 ...
 
 As a citation, please note that the Automunge package makes use of 
-the Pandas, Scikit-learn, SciPy stats, and NumPy libraries.
+the Pandas, Scikit-learn, SciPy stats, and NumPy libraries. In addition 
+to the default of Scikit-learn's Random Forest predictive models, 
+Automunge also has options for ML infill using the AutoGluon or CatBoost libraries.
 
 Wes McKinney. Data Structures for Statistical Computing in Python,
 Proceedings of the 9th Python in Science Conference, 51-56 (2010)
@@ -7102,9 +7104,6 @@ doi: https://doi.org/10.1038/s41592-019-0686-2.
 S. van der Walt, S. Colbert, and G. Varoquaux. The numpy array: A 
 structure for efficient numerical computation. Computing in Science 
 & Engineering, 13:22–30, 2011.
-
-In addition to the default of Scikit-learn's Random Forest predictive models, 
-Automunge includes ML infill options using the AutoGluon or CatBoost libraries.
 
 Nick Erickson, Jonas Mueller, Alexander Shirkov, Hang Zhang, Pedro Larroy, 
 Mu Li, and Alexander Smola. AutoGluon-Tabular: Robust and Accurate AutoML 
