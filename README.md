@@ -2739,7 +2739,8 @@ which is most useful. Reference the family trees below for composition details (
   - ntg3 set includes: ord4, retn, ordl, por2
 ### Date-Time Data Normalizations
 Date time processing transforms are implementations of two master functions: time and tmcs, which accept
-various parameters associated with suffix, time scale, and sin/cos periodicity, etc.
+various parameters associated with suffix, time scale, and sin/cos periodicity, etc. They segment time stamps by
+time scale returned in seperate columns. If a particular time scale is not present in training data it is omitted.
 * date/dat2: for datetime formatted data, segregates data by time scale to multiple
 columns (year/month/day/hour/minute/second) and then performs z-score normalization
   - default infill: mean
