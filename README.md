@@ -2746,7 +2746,10 @@ columns (year/month/day/hour/minute/second) and then performs z-score normalizat
   - default infill: mean
   - default NArowtype: datetime
   - suffix appender: includes appenders for (_year, _mnth, _days, _hour, _mint, _scnd)
-  - assignparam parameters accepted: none
+  - assignparam parameters accepted:
+    - timezone: defaults to False as passthrough, otherwise can pass time zone abbreviation 
+      (useful to consolidate different time zones such as for bus hr bins)
+      for list of pandas accepted abbreviations see pytz.all_timezones
   - driftreport postmunge metrics: meanyear / stdyear / meanmonth / stdmonth / meanday / stdday / 
 			           meanhour / stdhour / meanmint / stdmint / meanscnd / stdscnd
   - inversion available: pending
@@ -2798,7 +2801,10 @@ number of days in specific months, including account for leap year, with 12 mont
   - default infill: mean
   - default NArowtype: datetime
   - suffix appender: includes appenders for ('year', 'mdsn', 'mdcs', 'hmss', 'hmsc', 'bshr', 'wkdy', 'hldy')
-  - assignparam parameters accepted: none
+  - assignparam parameters accepted:
+    - timezone: defaults to False as passthrough, otherwise can pass time zone abbreviation 
+      (useful to consolidate different time zones such as for bus hr bins)
+      for list of pandas accepted abbreviations see pytz.all_timezones
   - driftreport postmunge metrics: meanyear / stdyear / mean_mdsn / mean_mdcs / mean_hmss / mean_hmsc
   - inversion available: pending
 ### Date-Time Data Bins
