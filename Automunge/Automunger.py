@@ -1698,58 +1698,67 @@ class AutoMunge:
                                      'coworkers'     : [], \
                                      'friends'       : []}})
 
-    transform_dict.update({'date' : {'parents'       : [], \
+    transform_dict.update({'tmzn' : {'parents'       : [], \
                                      'siblings'      : [], \
-                                     'auntsuncles'   : ['year', 'mnth', 'days', 'hour', 'mint', 'scnd'], \
+                                     'auntsuncles'   : ['tmzn'], \
                                      'cousins'       : [NArw], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
                                      'coworkers'     : [], \
+                                     'friends'       : []}})
+
+    transform_dict.update({'date' : {'parents'       : ['date'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['year', 'mnth', 'days', 'hour', 'mint', 'scnd'], \
                                      'friends'       : []}})
   
-    transform_dict.update({'dat2' : {'parents'       : [], \
+    transform_dict.update({'dat2' : {'parents'       : ['dat2'], \
                                      'siblings'      : [], \
-                                     'auntsuncles'   : ['bshr', 'wkdy', 'hldy'], \
+                                     'auntsuncles'   : [], \
                                      'cousins'       : [NArw], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+                                     'coworkers'     : ['bshr', 'wkdy', 'hldy'], \
                                      'friends'       : []}})
     
-    transform_dict.update({'dat3' : {'parents'       : [], \
+    transform_dict.update({'dat3' : {'parents'       : ['dat3'], \
                                      'siblings'      : [], \
-                                     'auntsuncles'   : ['year', 'mnsn', 'mncs', 'dysn', 'dycs', 'hrsn', 'hrcs', 'misn', 'mics', 'scsn', 'sccs'], \
+                                     'auntsuncles'   : [], \
                                      'cousins'       : [NArw], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+                                     'coworkers'     : ['year', 'mnsn', 'mncs', 'dysn', 'dycs', 'hrsn', 'hrcs', 'misn', 'mics', 'scsn', 'sccs'], \
                                      'friends'       : []}})
     
-    transform_dict.update({'dat4' : {'parents'       : [], \
+    transform_dict.update({'dat4' : {'parents'       : ['dat4'], \
                                      'siblings'      : [], \
-                                     'auntsuncles'   : ['year', 'mdsn', 'mdcs', 'hmss', 'hmsc'], \
+                                     'auntsuncles'   : [], \
                                      'cousins'       : [NArw], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+                                     'coworkers'     : ['year', 'mdsn', 'mdcs', 'hmss', 'hmsc'], \
                                      'friends'       : []}})
     
-    transform_dict.update({'dat5' : {'parents'       : [], \
+    transform_dict.update({'dat5' : {'parents'       : ['dat5'], \
                                      'siblings'      : [], \
-                                     'auntsuncles'   : ['year', 'mdsn', 'mdcs', 'dysn', 'dycs', 'hmss', 'hmsc'], \
+                                     'auntsuncles'   : [], \
                                      'cousins'       : [NArw], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+                                     'coworkers'     : ['year', 'mdsn', 'mdcs', 'dysn', 'dycs', 'hmss', 'hmsc'], \
                                      'friends'       : []}})
     
-    transform_dict.update({'dat6' : {'parents'       : [], \
+    transform_dict.update({'dat6' : {'parents'       : ['dat6'], \
                                      'siblings'      : [], \
-                                     'auntsuncles'   : ['year', 'mdsn', 'mdcs', 'hmss', 'hmsc', 'bshr', 'wkdy', 'hldy'], \
+                                     'auntsuncles'   : [], \
                                      'cousins'       : [NArw], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+                                     'coworkers'     : ['year', 'mdsn', 'mdcs', 'hmss', 'hmsc', 'bshr', 'wkdy', 'hldy'], \
                                      'friends'       : []}})
     
     transform_dict.update({'year' : {'parents'       : [], \
@@ -2995,13 +3004,13 @@ class AutoMunge:
                                      'coworkers'     : [], \
                                      'friends'       : []}})
     
-    transform_dict.update({'datd' : {'parents'       : [], \
+    transform_dict.update({'datd' : {'parents'       : ['datd'], \
                                      'siblings'      : [], \
-                                     'auntsuncles'   : ['year', 'mdsn', 'mdcs', 'hmss', 'hmsc', 'bshr', 'wkdy', 'hldy'], \
+                                     'auntsuncles'   : [], \
                                      'cousins'       : [NArw], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+                                     'coworkers'     : ['year', 'mdsn', 'mdcs', 'hmss', 'hmsc', 'bshr', 'wkdy', 'hldy'], \
                                      'friends'       : []}})
     
     transform_dict.update({'nuld' : {'parents'       : [], \
@@ -4681,39 +4690,52 @@ class AutoMunge:
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'time'}})
-    process_dict.update({'date' : {'dualprocess' : None, \
-                                  'singleprocess' : None, \
+    process_dict.update({'tmzn' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_tmzn_class, \
                                   'postprocess' : None, \
+                                  'inplace_option' : True, \
+                                  'NArowtype' : 'datetime', \
+                                  'MLinfilltype' : 'exclude', \
+                                  'labelctgy' : 'tmzn'}})
+    process_dict.update({'date' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_tmzn_class, \
+                                  'postprocess' : None, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'time'}})
     process_dict.update({'dat2' : {'dualprocess' : None, \
-                                  'singleprocess' : None, \
+                                  'singleprocess' : self.process_tmzn_class, \
                                   'postprocess' : None, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'hldy'}})
     process_dict.update({'dat3' : {'dualprocess' : None, \
-                                  'singleprocess' : None, \
+                                  'singleprocess' : self.process_tmzn_class, \
                                   'postprocess' : None, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'tmsc'}})
     process_dict.update({'dat4' : {'dualprocess' : None, \
-                                  'singleprocess' : None, \
+                                  'singleprocess' : self.process_tmzn_class, \
                                   'postprocess' : None, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'tmsc'}})
     process_dict.update({'dat5' : {'dualprocess' : None, \
-                                  'singleprocess' : None, \
+                                  'singleprocess' : self.process_tmzn_class, \
                                   'postprocess' : None, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'tmsc'}})
     process_dict.update({'dat6' : {'dualprocess' : None, \
-                                  'singleprocess' : None, \
+                                  'singleprocess' : self.process_tmzn_class, \
                                   'postprocess' : None, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'tmsc'}})
@@ -14214,6 +14236,73 @@ class AutoMunge:
 
     return df, column_dict_list
 
+  def process_tmzn_class(self, df, column, category, postprocess_dict, params = {}):
+    '''
+    #processing funciton depending on input format of datetime data 
+    #that defaults as a passthrough
+    #and when a 'timezone' parameter is recieved, 
+    #converts timezone entries to UTC and then to the designated time zone
+    #such as may be useful when a set of timestamps includes entries from multiple time zones
+    '''
+    
+    suffixoverlap_results = {}
+    
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+      
+    #timezone can be passed as False for passthrough or timezone designation 
+    #(where timezone designation is consistent with form accepted by Pandas tz_convert)
+    if 'timezone' in params:
+      timezone = params['timezone']
+    else:
+      timezone = False
+      
+    if inplace is not True:
+      
+      #copy source column into new column
+      df, suffixoverlap_results = \
+      self.df_copy_train(df, column, column + '_tmzn', suffixoverlap_results)
+    
+    else:
+      
+      suffixoverlap_results = \
+      self.df_check_suffixoverlap(df, column + '_tmzn', suffixoverlap_results)
+      
+      df.rename(columns = {column : column + '_tmzn'}, inplace = True)
+      
+    if timezone is not False:
+
+      df[column+'_tmzn'] = pd.to_datetime(df[column+'_tmzn'], errors = 'coerce', utc=True)
+      
+      df[column+'_tmzn'] = df[column+'_tmzn'].dt.tz_convert(timezone)
+
+    #store some values in the nmbr_dict{} for use later in ML infill methods
+    column_dict_list = []
+    
+    datecolumns = [column+'_tmzn']
+    
+    normalization_dict = {column+'_tmzn' : {'timezone' : timezone}}
+
+    for dc in datecolumns:
+
+      column_dict = { dc : {'category' : 'tmzn', \
+                           'origcategory' : category, \
+                           'normalization_dict' : normalization_dict, \
+                           'origcolumn' : column, \
+                           'inputcolumn' : column, \
+                           'columnslist' : datecolumns, \
+                           'categorylist' : datecolumns, \
+                           'infillmodel' : False, \
+                           'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
+                           'deletecolumn' : False}}
+
+      column_dict_list.append(column_dict.copy())
+
+    return df, column_dict_list
+
   def process_tmsc_class(self, mdf_train, mdf_test, column, category, \
                          postprocess_dict, params = {}):
     """
@@ -18976,7 +19065,7 @@ class AutoMunge:
       #additional array needed to check for time series
 
       #df['typecolumn2'] = df[column].apply(lambda x: type(pd.to_datetime(x, errors = 'coerce')))
-      type2_df = df[column].apply(lambda x: type(pd.to_datetime(x, errors = 'coerce'))).values
+      type2_df = df[column].apply(lambda x: type(pd.to_datetime(x, errors = 'coerce', utc=True))).values
 
       #datec = collections.Counter(type2_df)
       datec = Counter(type2_df)
@@ -19545,7 +19634,7 @@ class AutoMunge:
       
     if NArowtype in ['datetime']:
       
-      df2[column] = pd.to_datetime(df2[column], errors = 'coerce')
+      df2[column] = pd.to_datetime(df2[column], errors = 'coerce', utc=True)
 
       if driftassess is True:
         drift_dict.update({column : {'nanratio' : pd.isna(df2[column]).sum() / df2[column].shape[0]}})
@@ -28608,7 +28697,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.41'
+    automungeversion = '5.42'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -32408,19 +32497,23 @@ class AutoMunge:
       suffix = '_mdsn'
       
     time_column = column + suffix
-    
-    if time_column in postprocess_dict['column_dict']:
+
+    if inplace is not True:
+      #copy source column into new column
+      mdf_test[time_column] = mdf_test[column].copy()
+    else:
+      mdf_test.rename(columns = {column : time_column}, inplace = True)
+
+    if time_column not in postprocess_dict['column_dict']:
+
+      del mdf_test[time_column]
+
+    else:
 
       scale = \
       postprocess_dict['column_dict'][time_column]['normalization_dict'][time_column]['scale']
       function = \
       postprocess_dict['column_dict'][time_column]['normalization_dict'][time_column]['function']
-
-      if inplace is not True:
-        #copy source column into new column
-        mdf_test[time_column] = mdf_test[column].copy()
-      else:
-        mdf_test.rename(columns = {column : time_column}, inplace = True)
 
       #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
       mdf_test[time_column] = pd.to_datetime(mdf_test[time_column], errors = 'coerce')
@@ -32545,8 +32638,18 @@ class AutoMunge:
       suffix = '_year'
     
     time_column = column + suffix
+
+    if inplace is not True:
+      #copy source column into new column
+      mdf_test[time_column] = mdf_test[column].copy()
+    else:
+      mdf_test.rename(columns = {column : time_column}, inplace = True)
+
+    if time_column not in postprocess_dict['column_dict']:
+
+      del mdf_test[time_column]
     
-    if time_column in postprocess_dict['column_dict']:
+    else:
 
       scale = \
       postprocess_dict['column_dict'][time_column]['normalization_dict'][time_column]['scale']
@@ -32556,12 +32659,6 @@ class AutoMunge:
       postprocess_dict['column_dict'][time_column]['normalization_dict'][time_column]['scaler']
       divisor = \
       postprocess_dict['column_dict'][time_column]['normalization_dict'][time_column]['divisor']
-
-      if inplace is not True:
-        #copy source column into new column
-        mdf_test[time_column] = mdf_test[column].copy()
-      else:
-        mdf_test.rename(columns = {column : time_column}, inplace = True)
 
       #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
       mdf_test[time_column] = pd.to_datetime(mdf_test[time_column], errors = 'coerce')
