@@ -1905,8 +1905,8 @@ DP family of transforms for differential privacy noise injection to train sets).
 as True treats df_test as a train set for purposes of these specific transforms, otherwise
 default of False treats df_test as a test set (which turns off noise injection for DP).
 
-* returnedsets: Can be passed as one of _{True, False, 'test_ID', _
-_'test_labels', 'test_ID_labels'}_. Designates the composition of the sets returned
+* returnedsets: Can be passed as one of _{True, False, 'test_ID', 'test_labels', 'test_ID_labels'}_. 
+Designates the composition of the sets returned
 from a postmunge(.) call. Defaults to True for the full composition of five returned sets.
 With other options postmunge(.) only returns a single set, where for False that set consists 
 of the test set, or for the other options returns the test set concatenated with the ID, 
