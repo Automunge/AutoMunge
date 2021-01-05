@@ -2746,7 +2746,10 @@ columns (year/month/day/hour/minute/second) and then performs z-score normalizat
   - default infill: mean
   - default NArowtype: datetime
   - suffix appender: includes appenders for (_year, _mnth, _days, _hour, _mint, _scnd)
-  - assignparam parameters accepted: none
+  - assignparam parameters accepted:
+    - timezone: defaults to False as passthrough, otherwise can pass time zone abbreviation 
+      (useful to consolidate different time zones such as for bus hr bins)
+      for list of pandas accepted abbreviations see pytz.all_timezones
   - driftreport postmunge metrics: meanyear / stdyear / meanmonth / stdmonth / meanday / stdday / 
 			           meanhour / stdhour / meanmint / stdmint / meanscnd / stdscnd
   - inversion available: pending
@@ -2798,7 +2801,10 @@ number of days in specific months, including account for leap year, with 12 mont
   - default infill: mean
   - default NArowtype: datetime
   - suffix appender: includes appenders for ('year', 'mdsn', 'mdcs', 'hmss', 'hmsc', 'bshr', 'wkdy', 'hldy')
-  - assignparam parameters accepted: none
+  - assignparam parameters accepted:
+    - timezone: defaults to False as passthrough, otherwise can pass time zone abbreviation 
+      (useful to consolidate different time zones such as for bus hr bins)
+      for list of pandas accepted abbreviations see pytz.all_timezones
   - driftreport postmunge metrics: meanyear / stdyear / mean_mdsn / mean_mdcs / mean_hmss / mean_hmsc
   - inversion available: pending
 ### Date-Time Data Bins
@@ -3748,6 +3754,7 @@ present in dataframe and return results in postprocess_dict['miscparameters_resu
 - '_strg'
 - '\_tlbn_' + i (where i is identifier of bin)
 - '\_text_' + string (where string is a categorical entry in one-hot encoded set)
+- '_tmzn'
 - '_ucct'
 - '_UPCS'
 - '_wkds'
@@ -5372,58 +5379,67 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'coworkers'     : [], \
                                      'friends'       : []}})
 
-    transform_dict.update({'date' : {'parents'       : [], \
+    transform_dict.update({'tmzn' : {'parents'       : [], \
                                      'siblings'      : [], \
-                                     'auntsuncles'   : ['year', 'mnth', 'days', 'hour', 'mint', 'scnd'], \
+                                     'auntsuncles'   : ['tmzn'], \
                                      'cousins'       : [NArw], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
                                      'coworkers'     : [], \
+                                     'friends'       : []}})
+
+    transform_dict.update({'date' : {'parents'       : ['date'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['year', 'mnth', 'days', 'hour', 'mint', 'scnd'], \
                                      'friends'       : []}})
   
-    transform_dict.update({'dat2' : {'parents'       : [], \
+    transform_dict.update({'dat2' : {'parents'       : ['dat2'], \
                                      'siblings'      : [], \
-                                     'auntsuncles'   : ['bshr', 'wkdy', 'hldy'], \
+                                     'auntsuncles'   : [], \
                                      'cousins'       : [NArw], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+                                     'coworkers'     : ['bshr', 'wkdy', 'hldy'], \
                                      'friends'       : []}})
     
-    transform_dict.update({'dat3' : {'parents'       : [], \
+    transform_dict.update({'dat3' : {'parents'       : ['dat3'], \
                                      'siblings'      : [], \
-                                     'auntsuncles'   : ['year', 'mnsn', 'mncs', 'dysn', 'dycs', 'hrsn', 'hrcs', 'misn', 'mics', 'scsn', 'sccs'], \
+                                     'auntsuncles'   : [], \
                                      'cousins'       : [NArw], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+                                     'coworkers'     : ['year', 'mnsn', 'mncs', 'dysn', 'dycs', 'hrsn', 'hrcs', 'misn', 'mics', 'scsn', 'sccs'], \
                                      'friends'       : []}})
     
-    transform_dict.update({'dat4' : {'parents'       : [], \
+    transform_dict.update({'dat4' : {'parents'       : ['dat4'], \
                                      'siblings'      : [], \
-                                     'auntsuncles'   : ['year', 'mdsn', 'mdcs', 'hmss', 'hmsc'], \
+                                     'auntsuncles'   : [], \
                                      'cousins'       : [NArw], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+                                     'coworkers'     : ['year', 'mdsn', 'mdcs', 'hmss', 'hmsc'], \
                                      'friends'       : []}})
     
-    transform_dict.update({'dat5' : {'parents'       : [], \
+    transform_dict.update({'dat5' : {'parents'       : ['dat5'], \
                                      'siblings'      : [], \
-                                     'auntsuncles'   : ['year', 'mdsn', 'mdcs', 'dysn', 'dycs', 'hmss', 'hmsc'], \
+                                     'auntsuncles'   : [], \
                                      'cousins'       : [NArw], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+                                     'coworkers'     : ['year', 'mdsn', 'mdcs', 'dysn', 'dycs', 'hmss', 'hmsc'], \
                                      'friends'       : []}})
     
-    transform_dict.update({'dat6' : {'parents'       : [], \
+    transform_dict.update({'dat6' : {'parents'       : ['dat6'], \
                                      'siblings'      : [], \
-                                     'auntsuncles'   : ['year', 'mdsn', 'mdcs', 'hmss', 'hmsc', 'bshr', 'wkdy', 'hldy'], \
+                                     'auntsuncles'   : [], \
                                      'cousins'       : [NArw], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+                                     'coworkers'     : ['year', 'mdsn', 'mdcs', 'hmss', 'hmsc', 'bshr', 'wkdy', 'hldy'], \
                                      'friends'       : []}})
     
     transform_dict.update({'year' : {'parents'       : [], \
@@ -6669,13 +6685,13 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'coworkers'     : [], \
                                      'friends'       : []}})
     
-    transform_dict.update({'datd' : {'parents'       : [], \
+    transform_dict.update({'datd' : {'parents'       : ['datd'], \
                                      'siblings'      : [], \
-                                     'auntsuncles'   : ['year', 'mdsn', 'mdcs', 'hmss', 'hmsc', 'bshr', 'wkdy', 'hldy'], \
+                                     'auntsuncles'   : [], \
                                      'cousins'       : [NArw], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+                                     'coworkers'     : ['year', 'mdsn', 'mdcs', 'hmss', 'hmsc', 'bshr', 'wkdy', 'hldy'], \
                                      'friends'       : []}})
     
     transform_dict.update({'nuld' : {'parents'       : [], \
