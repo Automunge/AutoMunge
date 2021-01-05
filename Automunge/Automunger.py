@@ -4725,6 +4725,7 @@ class AutoMunge:
                                   'defaultparams' : {'scale' : 'year', \
                                                      'suffix' : '_year', \
                                                      'normalization' : 'zscore'}, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'time'}})
@@ -4740,6 +4741,7 @@ class AutoMunge:
                                   'defaultparams' : {'scale' : 'year', \
                                                      'suffix' : '_yrsn', \
                                                      'function' : 'sin'}, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'tmsc'}})
@@ -4749,6 +4751,7 @@ class AutoMunge:
                                   'defaultparams' : {'scale' : 'year', \
                                                      'suffix' : '_yrcs', \
                                                      'function' : 'cos'}, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'tmsc'}})
@@ -4758,6 +4761,7 @@ class AutoMunge:
                                   'defaultparams' : {'scale' : 'month', \
                                                      'suffix' : '_mnth', \
                                                      'normalization' : 'zscore'}, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'time'}})
@@ -4797,6 +4801,7 @@ class AutoMunge:
                                   'defaultparams' : {'scale' : 'month', \
                                                      'suffix' : '_mnsn', \
                                                      'function' : 'sin'}, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'tmsc'}})
@@ -4806,6 +4811,7 @@ class AutoMunge:
                                   'defaultparams' : {'scale' : 'month', \
                                                      'suffix' : '_mncs', \
                                                      'function' : 'cos'}, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'tmsc'}})
@@ -4815,6 +4821,7 @@ class AutoMunge:
                                   'defaultparams' : {'scale' : 'monthday', \
                                                      'suffix' : '_mdsn', \
                                                      'function' : 'sin'}, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'tmsc'}})
@@ -4824,6 +4831,7 @@ class AutoMunge:
                                   'defaultparams' : {'scale' : 'monthday', \
                                                      'suffix' : '_mdcs', \
                                                      'function' : 'cos'}, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'tmsc'}})
@@ -4833,6 +4841,7 @@ class AutoMunge:
                                   'defaultparams' : {'scale' : 'day', \
                                                      'suffix' : '_days', \
                                                      'normalization' : 'zscore'}, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'time'}})
@@ -4866,6 +4875,7 @@ class AutoMunge:
                                   'defaultparams' : {'scale' : 'day', \
                                                      'suffix' : '_dysn', \
                                                      'function' : 'sin'}, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'tmsc'}})
@@ -4875,6 +4885,7 @@ class AutoMunge:
                                   'defaultparams' : {'scale' : 'day', \
                                                      'suffix' : '_dycs', \
                                                      'function' : 'cos'}, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'tmsc'}})
@@ -4884,6 +4895,7 @@ class AutoMunge:
                                   'defaultparams' : {'scale' : 'dayhourminute', \
                                                      'suffix' : '_dhms', \
                                                      'function' : 'sin'}, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'tmsc'}})
@@ -4893,6 +4905,7 @@ class AutoMunge:
                                   'defaultparams' : {'scale' : 'dayhourminute', \
                                                      'suffix' : '_dhmc', \
                                                      'function' : 'cos'}, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'tmsc'}})
@@ -4902,6 +4915,7 @@ class AutoMunge:
                                   'defaultparams' : {'scale' : 'hour', \
                                                      'suffix' : '_hour', \
                                                      'normalization' : 'zscore'}, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'time'}})
@@ -4929,6 +4943,7 @@ class AutoMunge:
                                   'defaultparams' : {'scale' : 'hour', \
                                                      'suffix' : '_hrsn', \
                                                      'function' : 'sin'}, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'tmsc'}})
@@ -4938,6 +4953,7 @@ class AutoMunge:
                                   'defaultparams' : {'scale' : 'hour', \
                                                      'suffix' : '_hrcs', \
                                                      'function' : 'cos'}, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'tmsc'}})
@@ -4947,6 +4963,7 @@ class AutoMunge:
                                   'defaultparams' : {'scale' : 'hourminutesecond', \
                                                      'suffix' : '_hmss', \
                                                      'function' : 'sin'}, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'tmsc'}})
@@ -4956,6 +4973,7 @@ class AutoMunge:
                                   'defaultparams' : {'scale' : 'hourminutesecond', \
                                                      'suffix' : '_hmsc', \
                                                      'function' : 'cos'}, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'tmsc'}})
@@ -4965,6 +4983,7 @@ class AutoMunge:
                                   'defaultparams' : {'scale' : 'minute', \
                                                      'suffix' : '_mint', \
                                                      'normalization' : 'zscore'}, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'time'}})
@@ -4992,6 +5011,7 @@ class AutoMunge:
                                   'defaultparams' : {'scale' : 'minute', \
                                                      'suffix' : '_misn', \
                                                      'function' : 'sin'}, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'tmsc'}})
@@ -5001,6 +5021,7 @@ class AutoMunge:
                                   'defaultparams' : {'scale' : 'minute', \
                                                      'suffix' : '_mics', \
                                                      'function' : 'cos'}, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mics'}})
@@ -5010,6 +5031,7 @@ class AutoMunge:
                                   'defaultparams' : {'scale' : 'minutesecond', \
                                                      'suffix' : '_mssn', \
                                                      'function' : 'sin'}, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'tmsc'}})
@@ -5019,6 +5041,7 @@ class AutoMunge:
                                   'defaultparams' : {'scale' : 'minutesecond', \
                                                      'suffix' : '_mscs', \
                                                      'function' : 'cos'}, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'tmsc'}})
@@ -5028,6 +5051,7 @@ class AutoMunge:
                                   'defaultparams' : {'scale' : 'second', \
                                                      'suffix' : '_scnd', \
                                                      'normalization' : 'zscore'}, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'time'}})
@@ -5043,6 +5067,7 @@ class AutoMunge:
                                   'defaultparams' : {'scale' : 'second', \
                                                      'suffix' : '_scsn', \
                                                      'function' : 'sin'}, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'tmsc'}})
@@ -5052,6 +5077,7 @@ class AutoMunge:
                                   'defaultparams' : {'scale' : 'second', \
                                                      'suffix' : '_sccs', \
                                                      'function' : 'cos'}, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'tmsc'}})
@@ -5277,24 +5303,28 @@ class AutoMunge:
     process_dict.update({'wkds' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_wkds_class, \
                                   'postprocess' : None, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'text'}})
     process_dict.update({'wkdo' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_wkds_class, \
                                   'postprocess' : None, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'ord3'}})
     process_dict.update({'mnts' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_mnts_class, \
                                   'postprocess' : None, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'text'}})
     process_dict.update({'mnto' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_mnts_class, \
                                   'postprocess' : None, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'ord3'}})
@@ -14001,11 +14031,26 @@ class AutoMunge:
     
     suffixoverlap_results = {}
     
-    suffixoverlap_results = \
-    self.df_check_suffixoverlap(df, column+'_wkds', suffixoverlap_results)
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+      
+    if inplace is not True:
+      
+      #copy source column into new column
+      df, suffixoverlap_results = \
+      self.df_copy_train(df, column, column + '_wkds', suffixoverlap_results)
+    
+    else:
+      
+      suffixoverlap_results = \
+      self.df_check_suffixoverlap(df, column + '_wkds', suffixoverlap_results)
+      
+      df.rename(columns = {column : column + '_wkds'}, inplace = True)
     
     #convert improperly formatted values to datetime in new column
-    df[column+'_wkds'] = pd.to_datetime(df[column], errors = 'coerce')
+    df[column+'_wkds'] = pd.to_datetime(df[column+'_wkds'], errors = 'coerce')
     
     #This is kind of hack for whole hour increments, if we were needing
     #to evlauate hour ranges between seperate days a different metod
@@ -14078,11 +14123,26 @@ class AutoMunge:
     
     suffixoverlap_results = {}
     
-    suffixoverlap_results = \
-    self.df_check_suffixoverlap(df, column+'_mnts', suffixoverlap_results)
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+      
+    if inplace is not True:
+      
+      #copy source column into new column
+      df, suffixoverlap_results = \
+      self.df_copy_train(df, column, column + '_mnts', suffixoverlap_results)
+    
+    else:
+      
+      suffixoverlap_results = \
+      self.df_check_suffixoverlap(df, column + '_mnts', suffixoverlap_results)
+      
+      df.rename(columns = {column : column + '_mnts'}, inplace = True)
     
     #convert improperly formatted values to datetime in new column
-    df[column+'_mnts'] = pd.to_datetime(df[column], errors = 'coerce')
+    df[column+'_mnts'] = pd.to_datetime(df[column+'_mnts'], errors = 'coerce')
     
     #This is kind of hack for whole hour increments, if we were needing
     #to evlauate hour ranges between seperate days a different metod
@@ -14169,6 +14229,11 @@ class AutoMunge:
     
     suffixoverlap_results = {}
     
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
     if 'scale' in params:
       #accepts year/month/day/hour/minute/second
       scale = params['scale']
@@ -14189,10 +14254,21 @@ class AutoMunge:
     
     time_column = column + suffix
     
-    mdf_train, suffixoverlap_results = \
-    self.df_copy_train(mdf_train, column, time_column, suffixoverlap_results)
+    if inplace is not True:
+      
+      #copy source column into new column
+      mdf_train, suffixoverlap_results = \
+      self.df_copy_train(mdf_train, column, time_column, suffixoverlap_results)
+
+      mdf_test[time_column] = mdf_test[column].copy()
     
-    mdf_test[time_column] = mdf_test[column].copy()
+    else:
+      
+      suffixoverlap_results = \
+      self.df_check_suffixoverlap(mdf_train, time_column, suffixoverlap_results)
+      
+      mdf_train.rename(columns = {column : time_column}, inplace = True)
+      mdf_test.rename(columns = {column : time_column}, inplace = True)
     
     #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
     mdf_train[time_column] = pd.to_datetime(mdf_train[time_column], errors = 'coerce')
@@ -14341,44 +14417,53 @@ class AutoMunge:
     mdf_train[time_column] = mdf_train[time_column].fillna(0)
     mdf_test[time_column] = mdf_test[time_column].fillna(0)
     
-    #apply trigometric transform
-    
-    if function == 'sin':
-      
-      mdf_train[time_column] = np.sin(mdf_train[time_column])
-      mdf_test[time_column] = np.sin(mdf_test[time_column])
-      
-    if function == 'cos':
+    #we'll only return a column if meaningful training data present
+    #because it is not uncommon for time series to only contain single time scale recording
+    if mdf_train[time_column].nunique() > 1:
 
-      mdf_train[time_column] = np.cos(mdf_train[time_column])
-      mdf_test[time_column] = np.cos(mdf_test[time_column])
-      
-    #populate data structures
-    column_dict_list = []
-    categorylist = [time_column]
-    
-    for tc in categorylist:
-      norm_dict = {tc : {'scale'         : scale, \
-                         'suffix'        : suffix, \
-                         'function'      : function, \
-                         'timemean'      : timemean, \
-                         'timemax'       : timemax, \
-                         'timemin'       : timemin, \
-                         'timestd'       : timestd}}
-      
-      column_dict = {tc : {'category' : 'tmsc', \
-                           'origcategory' : category, \
-                           'normalization_dict' : norm_dict, \
-                           'origcolumn' : column, \
-                           'inputcolumn' : column, \
-                           'columnslist' : categorylist, \
-                           'categorylist' : categorylist, \
-                           'infillmodel' : False, \
-                           'infillcomplete' : False, \
-                           'suffixoverlap_results' : suffixoverlap_results, \
-                           'deletecolumn' : False}}
+      #apply trigometric transform
 
-      column_dict_list.append(column_dict.copy())
+      if function == 'sin':
+
+        mdf_train[time_column] = np.sin(mdf_train[time_column])
+        mdf_test[time_column] = np.sin(mdf_test[time_column])
+
+      if function == 'cos':
+
+        mdf_train[time_column] = np.cos(mdf_train[time_column])
+        mdf_test[time_column] = np.cos(mdf_test[time_column])
+
+      #populate data structures
+      column_dict_list = []
+      categorylist = [time_column]
+
+      for tc in categorylist:
+        norm_dict = {tc : {'scale'         : scale, \
+                           'suffix'        : suffix, \
+                           'function'      : function, \
+                           'timemean'      : timemean, \
+                           'timemax'       : timemax, \
+                           'timemin'       : timemin, \
+                           'timestd'       : timestd}}
+
+        column_dict = {tc : {'category' : 'tmsc', \
+                             'origcategory' : category, \
+                             'normalization_dict' : norm_dict, \
+                             'origcolumn' : column, \
+                             'inputcolumn' : column, \
+                             'columnslist' : categorylist, \
+                             'categorylist' : categorylist, \
+                             'infillmodel' : False, \
+                             'infillcomplete' : False, \
+                             'suffixoverlap_results' : suffixoverlap_results, \
+                             'deletecolumn' : False}}
+
+        column_dict_list.append(column_dict.copy())
+        
+    else:
+      del mdf_train[time_column]
+      del mdf_test[time_column]
+      column_dict_list = []
     
     return mdf_train, mdf_test, column_dict_list
 
@@ -14392,6 +14477,11 @@ class AutoMunge:
     """
     
     suffixoverlap_results = {}
+    
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
     
     if 'scale' in params:
       #accepts year/month/day/hour/minute/second
@@ -14413,10 +14503,21 @@ class AutoMunge:
       
     time_column = column + suffix
     
-    mdf_train, suffixoverlap_results = \
-    self.df_copy_train(mdf_train, column, time_column, suffixoverlap_results)
+    if inplace is not True:
+      
+      #copy source column into new column
+      mdf_train, suffixoverlap_results = \
+      self.df_copy_train(mdf_train, column, time_column, suffixoverlap_results)
+
+      mdf_test[time_column] = mdf_test[column].copy()
     
-    mdf_test[time_column] = mdf_test[column].copy()
+    else:
+      
+      suffixoverlap_results = \
+      self.df_check_suffixoverlap(mdf_train, time_column, suffixoverlap_results)
+      
+      mdf_train.rename(columns = {column : time_column}, inplace = True)
+      mdf_test.rename(columns = {column : time_column}, inplace = True)
     
     #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
     mdf_train[time_column] = pd.to_datetime(mdf_train[time_column], errors = 'coerce')
@@ -14484,35 +14585,44 @@ class AutoMunge:
       mdf_train[time_column] = (mdf_train[time_column] - scaler) / divisor
       mdf_test[time_column] = (mdf_test[time_column] - scaler) / divisor
       
-    #populate data structures
-    column_dict_list = []
-    categorylist = [time_column]
-    
-    for tc in categorylist:
-      norm_dict = {tc : {'scale'         : scale, \
-                         'suffix'        : suffix, \
-                         'normalization' : normalization, \
-                         'scaler'        : scaler, \
-                         'divisor'       : divisor, \
-                         'timemean'      : timemean, \
-                         'timemax'       : timemax, \
-                         'timemin'       : timemin, \
-                         'timestd'       : timestd, \
-                         'maxminusmin'   : maxminusmin}}
+    #we'll only return a column if meaningful training data present
+    #because it is not uncommon for time series to only contain single time scale recording
+    if mdf_train[time_column].nunique() > 1:
       
-      column_dict = {tc : {'category' : 'time', \
-                           'origcategory' : category, \
-                           'normalization_dict' : norm_dict, \
-                           'origcolumn' : column, \
-                           'inputcolumn' : column, \
-                           'columnslist' : categorylist, \
-                           'categorylist' : categorylist, \
-                           'infillmodel' : False, \
-                           'infillcomplete' : False, \
-                           'suffixoverlap_results' : suffixoverlap_results, \
-                           'deletecolumn' : False}}
+      #populate data structures
+      column_dict_list = []
+      categorylist = [time_column]
 
-      column_dict_list.append(column_dict.copy())
+      for tc in categorylist:
+        norm_dict = {tc : {'scale'         : scale, \
+                           'suffix'        : suffix, \
+                           'normalization' : normalization, \
+                           'scaler'        : scaler, \
+                           'divisor'       : divisor, \
+                           'timemean'      : timemean, \
+                           'timemax'       : timemax, \
+                           'timemin'       : timemin, \
+                           'timestd'       : timestd, \
+                           'maxminusmin'   : maxminusmin}}
+
+        column_dict = {tc : {'category' : 'time', \
+                             'origcategory' : category, \
+                             'normalization_dict' : norm_dict, \
+                             'origcolumn' : column, \
+                             'inputcolumn' : column, \
+                             'columnslist' : categorylist, \
+                             'categorylist' : categorylist, \
+                             'infillmodel' : False, \
+                             'infillcomplete' : False, \
+                             'suffixoverlap_results' : suffixoverlap_results, \
+                             'deletecolumn' : False}}
+
+        column_dict_list.append(column_dict.copy())
+        
+    else:
+      del mdf_train[time_column]
+      del mdf_test[time_column]
+      column_dict_list = []
     
     return mdf_train, mdf_test, column_dict_list
 
@@ -28498,7 +28608,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.40'
+    automungeversion = '5.41'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -32286,6 +32396,11 @@ class AutoMunge:
     #accets parameter 'function' to distinguish between sin/cos
     """
     
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
     if 'suffix' in params:
       #accepts column header suffix appender
       suffix = params['suffix']
@@ -32294,113 +32409,119 @@ class AutoMunge:
       
     time_column = column + suffix
     
-    scale = \
-    postprocess_dict['column_dict'][time_column]['normalization_dict'][time_column]['scale']
-    function = \
-    postprocess_dict['column_dict'][time_column]['normalization_dict'][time_column]['function']
-    
-    mdf_test[time_column] = mdf_test[column].copy()
-    
-    #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
-    mdf_test[time_column] = pd.to_datetime(mdf_test[time_column], errors = 'coerce')
-    
-    #access time scale from one of year/month/day/hour/minute/second
-    #monthday/dayhourminute/hourminutesecond/minutesecond
-    if scale == 'year':
-      mdf_test[time_column] = mdf_test[time_column].dt.year
-      
-      #we'll scale periodicity by decade
-      mdf_test[time_column] = (mdf_test[time_column]) * 2 * np.pi / 10
-      
-    elif scale == 'month':
-      mdf_test[time_column] = mdf_test[time_column].dt.month
-      
-      #we'll scale periodicity by year
-      mdf_test[time_column] = (mdf_test[time_column]) * 2 * np.pi / 12
-      
-    elif scale == 'day':
-      mdf_test[time_column] = mdf_test[time_column].dt.day
-      
-      #we'll scale periodicity by week
-      mdf_test[time_column] = (mdf_test[time_column]) * 2 * np.pi / 7
-      
-    elif scale == 'hour':
-      mdf_test[time_column] = mdf_test[time_column].dt.hour
-      
-      #we'll scale periodicity by day
-      mdf_test[time_column] = (mdf_test[time_column]) * 2 * np.pi / 24
-      
-    elif scale == 'minute':
-      mdf_test[time_column] = mdf_test[time_column].dt.minute
-      
-      #we'll scale periodicity by hour
-      mdf_test[time_column] = (mdf_test[time_column]) * 2 * np.pi / 60
-      
-    elif scale == 'second':
-      mdf_test[time_column] = mdf_test[time_column].dt.second
-      
-      #we'll scale periodicity by minute
-      mdf_test[time_column] = (mdf_test[time_column]) * 2 * np.pi / 60
-      
-    elif scale == 'monthday':
-      tempcolumn1 = time_column + '_tmp1'
-      tempcolumn2 = time_column + '_tmp2'
-      
-      #temp1 is for number of days in month, temp2 is to handle leap year support
-      
-      mdf_test[tempcolumn1] = mdf_test[time_column].copy()
-      mdf_test[tempcolumn2] = mdf_test[time_column].copy()
-      
-      mdf_test[tempcolumn1] = mdf_test[tempcolumn1].dt.month
-      mdf_test[tempcolumn2] = mdf_test[tempcolumn2].dt.is_leap_year
-      
-      mdf_test[tempcolumn2] = \
-      np.where(mdf_test[tempcolumn2], 29, 28)
-      
-      mdf_test[tempcolumn1] = \
-      np.where(mdf_test[tempcolumn1].isin([1,3,5,7,8,10,12]), 31, mdf_test[tempcolumn1].values)
-      
-      mdf_test[tempcolumn1] = \
-      np.where(mdf_test[tempcolumn1].isin([4,6,9,11]), 30, mdf_test[tempcolumn1].values)
-      
-      mdf_test[tempcolumn1] = \
-      np.where(mdf_test[tempcolumn1].isin([2]), mdf_test[tempcolumn2], \
-      mdf_test[tempcolumn1].values)
-      
-      #combine month and day, scale for trigonomic transform, periodicity by year
-      mdf_test[time_column] = (mdf_test[time_column].dt.month + mdf_test[time_column].dt.day / \
-      mdf_test[tempcolumn1]) * 2 * np.pi / 12
-      
-      #delete the support columns
-      del mdf_test[tempcolumn1]
-      del mdf_test[tempcolumn2]
-      
-    elif scale == 'dayhourminute':
-      #we'll scale periodicity by week
-      mdf_test[time_column] = (mdf_test[time_column].dt.day + mdf_test[time_column].dt.hour / 24 + mdf_test[time_column].dt.minute / 24 / 60) * 2 * np.pi / 7
+    if time_column in postprocess_dict['column_dict']:
 
-    elif scale == 'hourminutesecond':
-      #we'll scale periodicity by day
-      mdf_test[time_column] = (mdf_test[time_column].dt.hour + mdf_test[time_column].dt.minute / 60 + mdf_test[time_column].dt.second / 60 / 60) * 2 * np.pi / 24
+      scale = \
+      postprocess_dict['column_dict'][time_column]['normalization_dict'][time_column]['scale']
+      function = \
+      postprocess_dict['column_dict'][time_column]['normalization_dict'][time_column]['function']
 
-    elif scale == 'minutesecond':
-      #we'll scale periodicity by hour
-      mdf_test[time_column] = (mdf_test[time_column].dt.minute + mdf_test[time_column].dt.second / 60) * 2 * np.pi / 60
-      
-    #default infill is adjacent cell
-    mdf_test[time_column] = mdf_test[time_column].fillna(method='ffill')
-    mdf_test[time_column] = mdf_test[time_column].fillna(method='bfill')
-    
-    #backup default infill for cases without valid entries
-    mdf_test[time_column] = mdf_test[time_column].fillna(0)
-    
-    #apply trigometric transform
-    
-    if function == 'sin':
-      mdf_test[time_column] = np.sin(mdf_test[time_column])
-      
-    if function == 'cos':
-      mdf_test[time_column] = np.cos(mdf_test[time_column])
+      if inplace is not True:
+        #copy source column into new column
+        mdf_test[time_column] = mdf_test[column].copy()
+      else:
+        mdf_test.rename(columns = {column : time_column}, inplace = True)
+
+      #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
+      mdf_test[time_column] = pd.to_datetime(mdf_test[time_column], errors = 'coerce')
+
+      #access time scale from one of year/month/day/hour/minute/second
+      #monthday/dayhourminute/hourminutesecond/minutesecond
+      if scale == 'year':
+        mdf_test[time_column] = mdf_test[time_column].dt.year
+
+        #we'll scale periodicity by decade
+        mdf_test[time_column] = (mdf_test[time_column]) * 2 * np.pi / 10
+
+      elif scale == 'month':
+        mdf_test[time_column] = mdf_test[time_column].dt.month
+
+        #we'll scale periodicity by year
+        mdf_test[time_column] = (mdf_test[time_column]) * 2 * np.pi / 12
+
+      elif scale == 'day':
+        mdf_test[time_column] = mdf_test[time_column].dt.day
+
+        #we'll scale periodicity by week
+        mdf_test[time_column] = (mdf_test[time_column]) * 2 * np.pi / 7
+
+      elif scale == 'hour':
+        mdf_test[time_column] = mdf_test[time_column].dt.hour
+
+        #we'll scale periodicity by day
+        mdf_test[time_column] = (mdf_test[time_column]) * 2 * np.pi / 24
+
+      elif scale == 'minute':
+        mdf_test[time_column] = mdf_test[time_column].dt.minute
+
+        #we'll scale periodicity by hour
+        mdf_test[time_column] = (mdf_test[time_column]) * 2 * np.pi / 60
+
+      elif scale == 'second':
+        mdf_test[time_column] = mdf_test[time_column].dt.second
+
+        #we'll scale periodicity by minute
+        mdf_test[time_column] = (mdf_test[time_column]) * 2 * np.pi / 60
+
+      elif scale == 'monthday':
+        tempcolumn1 = time_column + '_tmp1'
+        tempcolumn2 = time_column + '_tmp2'
+
+        #temp1 is for number of days in month, temp2 is to handle leap year support
+
+        mdf_test[tempcolumn1] = mdf_test[time_column].copy()
+        mdf_test[tempcolumn2] = mdf_test[time_column].copy()
+
+        mdf_test[tempcolumn1] = mdf_test[tempcolumn1].dt.month
+        mdf_test[tempcolumn2] = mdf_test[tempcolumn2].dt.is_leap_year
+
+        mdf_test[tempcolumn2] = \
+        np.where(mdf_test[tempcolumn2], 29, 28)
+
+        mdf_test[tempcolumn1] = \
+        np.where(mdf_test[tempcolumn1].isin([1,3,5,7,8,10,12]), 31, mdf_test[tempcolumn1].values)
+
+        mdf_test[tempcolumn1] = \
+        np.where(mdf_test[tempcolumn1].isin([4,6,9,11]), 30, mdf_test[tempcolumn1].values)
+
+        mdf_test[tempcolumn1] = \
+        np.where(mdf_test[tempcolumn1].isin([2]), mdf_test[tempcolumn2], \
+        mdf_test[tempcolumn1].values)
+
+        #combine month and day, scale for trigonomic transform, periodicity by year
+        mdf_test[time_column] = (mdf_test[time_column].dt.month + mdf_test[time_column].dt.day / \
+        mdf_test[tempcolumn1]) * 2 * np.pi / 12
+
+        #delete the support columns
+        del mdf_test[tempcolumn1]
+        del mdf_test[tempcolumn2]
+
+      elif scale == 'dayhourminute':
+        #we'll scale periodicity by week
+        mdf_test[time_column] = (mdf_test[time_column].dt.day + mdf_test[time_column].dt.hour / 24 + mdf_test[time_column].dt.minute / 24 / 60) * 2 * np.pi / 7
+
+      elif scale == 'hourminutesecond':
+        #we'll scale periodicity by day
+        mdf_test[time_column] = (mdf_test[time_column].dt.hour + mdf_test[time_column].dt.minute / 60 + mdf_test[time_column].dt.second / 60 / 60) * 2 * np.pi / 24
+
+      elif scale == 'minutesecond':
+        #we'll scale periodicity by hour
+        mdf_test[time_column] = (mdf_test[time_column].dt.minute + mdf_test[time_column].dt.second / 60) * 2 * np.pi / 60
+
+      #default infill is adjacent cell
+      mdf_test[time_column] = mdf_test[time_column].fillna(method='ffill')
+      mdf_test[time_column] = mdf_test[time_column].fillna(method='bfill')
+
+      #backup default infill for cases without valid entries
+      mdf_test[time_column] = mdf_test[time_column].fillna(0)
+
+      #apply trigometric transform
+
+      if function == 'sin':
+        mdf_test[time_column] = np.sin(mdf_test[time_column])
+
+      if function == 'cos':
+        mdf_test[time_column] = np.cos(mdf_test[time_column])
       
     return mdf_test
 
@@ -32412,6 +32533,11 @@ class AutoMunge:
     #accepts parameter 'normalization' to distinguish between zscore/minmax/unscaled
     """
     
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
     if 'suffix' in params:
       #accepts column header suffix appender
       suffix = params['suffix']
@@ -32420,44 +32546,50 @@ class AutoMunge:
     
     time_column = column + suffix
     
-    scale = \
-    postprocess_dict['column_dict'][time_column]['normalization_dict'][time_column]['scale']
-    normalization = \
-    postprocess_dict['column_dict'][time_column]['normalization_dict'][time_column]['normalization']
-    scaler = \
-    postprocess_dict['column_dict'][time_column]['normalization_dict'][time_column]['scaler']
-    divisor = \
-    postprocess_dict['column_dict'][time_column]['normalization_dict'][time_column]['divisor']
-    
-    mdf_test[time_column] = mdf_test[column].copy()
-    
-    #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
-    mdf_test[time_column] = pd.to_datetime(mdf_test[time_column], errors = 'coerce')
-    
-    #access time scale from one of year/month/day/hour/minute/second
-    if scale == 'year':
-      mdf_test[time_column] = mdf_test[time_column].dt.year
-    elif scale == 'month':
-      mdf_test[time_column] = mdf_test[time_column].dt.month
-    elif scale == 'day':
-      mdf_test[time_column] = mdf_test[time_column].dt.day
-    elif scale == 'hour':
-      mdf_test[time_column] = mdf_test[time_column].dt.hour
-    elif scale == 'minute':
-      mdf_test[time_column] = mdf_test[time_column].dt.minute
-    elif scale == 'second':
-      mdf_test[time_column] = mdf_test[time_column].dt.second
-      
-    #apply default infill
-    mdf_test[time_column] = mdf_test[time_column].fillna(method='ffill')
-    mdf_test[time_column] = mdf_test[time_column].fillna(method='bfill')
-    
-    #backup default infill for cases without valid entries
-    mdf_test[time_column] = mdf_test[time_column].fillna(0)
-    
-    #apply normalization
-    if normalization != 'unscaled':
-      mdf_test[time_column] = (mdf_test[time_column] - scaler) / divisor
+    if time_column in postprocess_dict['column_dict']:
+
+      scale = \
+      postprocess_dict['column_dict'][time_column]['normalization_dict'][time_column]['scale']
+      normalization = \
+      postprocess_dict['column_dict'][time_column]['normalization_dict'][time_column]['normalization']
+      scaler = \
+      postprocess_dict['column_dict'][time_column]['normalization_dict'][time_column]['scaler']
+      divisor = \
+      postprocess_dict['column_dict'][time_column]['normalization_dict'][time_column]['divisor']
+
+      if inplace is not True:
+        #copy source column into new column
+        mdf_test[time_column] = mdf_test[column].copy()
+      else:
+        mdf_test.rename(columns = {column : time_column}, inplace = True)
+
+      #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
+      mdf_test[time_column] = pd.to_datetime(mdf_test[time_column], errors = 'coerce')
+
+      #access time scale from one of year/month/day/hour/minute/second
+      if scale == 'year':
+        mdf_test[time_column] = mdf_test[time_column].dt.year
+      elif scale == 'month':
+        mdf_test[time_column] = mdf_test[time_column].dt.month
+      elif scale == 'day':
+        mdf_test[time_column] = mdf_test[time_column].dt.day
+      elif scale == 'hour':
+        mdf_test[time_column] = mdf_test[time_column].dt.hour
+      elif scale == 'minute':
+        mdf_test[time_column] = mdf_test[time_column].dt.minute
+      elif scale == 'second':
+        mdf_test[time_column] = mdf_test[time_column].dt.second
+
+      #apply default infill
+      mdf_test[time_column] = mdf_test[time_column].fillna(method='ffill')
+      mdf_test[time_column] = mdf_test[time_column].fillna(method='bfill')
+
+      #backup default infill for cases without valid entries
+      mdf_test[time_column] = mdf_test[time_column].fillna(0)
+
+      #apply normalization
+      if normalization != 'unscaled':
+        mdf_test[time_column] = (mdf_test[time_column] - scaler) / divisor
       
     return mdf_test
   
