@@ -2253,6 +2253,15 @@ elif max<=0 and min<=0 x=(x-max)/(max-min)
     - 'adjinfill', boolean, defaults to False, True makes default infill adjacent cell instead of mean imputation
   - driftreport postmunge metrics: mean / MAD / datamax / maximum / minimum
   - inversion available: yes with full recovery
+* mxab: max absolute scaling normalization<br/>
+(x) / max abosolute
+  - default infill: mean
+  - default NArowtype: numeric
+  - suffix appender: '_mxab'
+  - assignparam parameters accepted:
+    - 'adjinfill', boolean, defaults to False, True makes default infill adjacent cell instead of mean imputation
+  - driftreport postmunge metrics: minimum / maximum / maxabs / mean / std
+  - inversion available: yes with full recovery
 * lgnm: normalization intended for lognormal distributed numerical sets,
 achieved by performing a logn transform upstream of a nmbr normalization.
   - default infill: mean
@@ -3472,6 +3481,7 @@ avoid unintentional duplication.
 - 'mnts',
 - 'mscs',
 - 'mssn',
+- 'mxab',
 - 'nbr2',
 - 'nbr3',
 - 'nmbd',
@@ -3596,6 +3606,7 @@ avoid unintentional duplication.
 - 'texd',
 - 'text',
 - 'tlbn',
+- 'tmzn',
 - 'txt2',
 - 'txt3',
 - 'ucct', 
@@ -3699,6 +3710,7 @@ present in dataframe and return results in postprocess_dict['miscparameters_resu
 - '_mnts'
 - '_mscs'
 - '_mssn'
+- '_mxab'
 - '_NArows'
 - '_NArw'
 - '_nmbr'
@@ -5320,6 +5332,15 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'siblings'      : [], \
                                      'auntsuncles'   : ['mnmx', 'bins'], \
                                      'cousins'       : [], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+
+    transform_dict.update({'mxab' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['mxab'], \
+                                     'cousins'       : [NArw], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
                                      'coworkers'     : [], \
