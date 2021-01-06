@@ -1643,6 +1643,15 @@ class AutoMunge:
                                      'niecesnephews' : [], \
                                      'coworkers'     : [], \
                                      'friends'       : []}})
+
+    transform_dict.update({'mxab' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['mxab'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
     
     transform_dict.update({'retn' : {'parents'       : [], \
                                      'siblings'      : [], \
@@ -3604,6 +3613,15 @@ class AutoMunge:
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mnm7'}})
+    process_dict.update({'mxab' : {'dualprocess' : self.process_mxab_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_mxab_class, \
+                                  'inverseprocess' : self.inverseprocess_mxab, \
+                                  'info_retention' : True, \
+                                  'inplace_option' : True, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'mxab'}})
     process_dict.update({'retn' : {'dualprocess' : self.process_retn_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_retn_class, \
@@ -7931,6 +7949,117 @@ class AutoMunge:
 
       column_dict_list.append(column_dict.copy())
 
+    return mdf_train, mdf_test, column_dict_list
+
+  def process_mxab_class(self, mdf_train, mdf_test, column, category, \
+                         postprocess_dict, params = {}):
+    '''
+    #process_mxab_class(mdf_train, mdf_test, column, category)
+    #function to scale data to minimum of -1 and maximum of 1 \
+    #based on division by max absolute values from training set.
+    '''
+    
+    suffixoverlap_results = {}
+    
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+      
+    #adjinfill accepts True/False to change default infill from mean inputation to adjacent cell
+    if 'adjinfill' in params:
+      adjinfill = params['adjinfill']
+    else:
+      adjinfill = False
+    
+    if inplace is not True:
+      
+      #copy source column into new column
+      mdf_train, suffixoverlap_results = \
+      self.df_copy_train(mdf_train, column, column + '_mxab', suffixoverlap_results)
+
+      mdf_test[column + '_mxab'] = mdf_test[column].copy()
+    
+    else:
+      
+      suffixoverlap_results = \
+      self.df_check_suffixoverlap(mdf_train, column + '_mxab', suffixoverlap_results)
+      
+      mdf_train.rename(columns = {column : column + '_mxab'}, inplace = True)
+      mdf_test.rename(columns = {column : column + '_mxab'}, inplace = True)
+
+    #convert all values to either numeric or NaN
+    mdf_train[column + '_mxab'] = pd.to_numeric(mdf_train[column + '_mxab'], errors='coerce')
+    mdf_test[column + '_mxab'] = pd.to_numeric(mdf_test[column + '_mxab'], errors='coerce')
+    
+    #a few more metrics collected for driftreport
+    #get standard deviation of training data
+    std = mdf_train[column + '_mxab'].std()
+
+    #get mean of training data
+    mean = mdf_train[column + '_mxab'].mean()   
+    if mean != mean:
+      mean = 0
+      
+    if adjinfill is True:
+      mdf_train[column + '_mxab'] = mdf_train[column + '_mxab'].fillna(method='ffill')
+      mdf_test[column + '_mxab'] = mdf_test[column + '_mxab'].fillna(method='ffill')
+      mdf_train[column + '_mxab'] = mdf_train[column + '_mxab'].fillna(method='bfill')
+      mdf_test[column + '_mxab'] = mdf_test[column + '_mxab'].fillna(method='bfill')
+
+    #replace missing data with training set mean
+    mdf_train[column + '_mxab'] = mdf_train[column + '_mxab'].fillna(mean)
+    mdf_test[column + '_mxab'] = mdf_test[column + '_mxab'].fillna(mean)
+    
+    #get maximum value of training column
+    maximum = mdf_train[column + '_mxab'].max()
+    
+    #get minimum value of training column
+    minimum = mdf_train[column + '_mxab'].min()
+    
+    #get max absolute
+    maxabs = max(abs(maximum), abs(minimum))
+    
+    #avoid outlier div by zero when max = min
+    if maxabs == 0:
+      maxabs = 1
+    
+    #perform maxabs scaling to train and test sets using values from train
+    mdf_train[column + '_mxab'] = mdf_train[column + '_mxab'] / \
+                                  (maxabs)
+    
+    mdf_test[column + '_mxab'] = mdf_test[column + '_mxab'] / \
+                                 (maxabs)
+    
+    #create list of columns
+    nmbrcolumns = [column + '_mxab']
+
+    nmbrnormalization_dict = {column + '_mxab' : {'minimum' : minimum, \
+                                                  'maximum' : maximum, \
+                                                  'maxabs' : maxabs, \
+                                                  'mean' : mean, \
+                                                  'std' : std, \
+                                                  'adjinfill' : adjinfill}}
+
+    #store some values in the nmbr_dict{} for use later in ML infill methods
+    column_dict_list = []
+
+    for nc in nmbrcolumns:
+
+      column_dict = { nc : {'category' : 'mxab', \
+                           'origcategory' : category, \
+                           'normalization_dict' : nmbrnormalization_dict, \
+                           'origcolumn' : column, \
+                           'inputcolumn' : column, \
+                           'columnslist' : nmbrcolumns, \
+                           'categorylist' : nmbrcolumns, \
+                           'infillmodel' : False, \
+                           'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
+                           'deletecolumn' : False}}
+
+      column_dict_list.append(column_dict.copy())
+        
     return mdf_train, mdf_test, column_dict_list
   
   def process_retn_class(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
@@ -27222,7 +27351,7 @@ class AutoMunge:
                            'PCA_cmnd':{}}, \
                 assigncat = {'nmbr':[], 'retn':[], 'mnmx':[], 'mean':[], 'MAD3':[], 'lgnm':[], \
                              'bins':[], 'bsor':[], 'pwrs':[], 'pwr2':[], 'por2':[], 'bxcx':[], \
-                             'addd':[], 'sbtr':[], 'mltp':[], 'divd':[], \
+                             'addd':[], 'sbtr':[], 'mltp':[], 'divd':[], 'mxab':[], \
                              'log0':[], 'log1':[], 'logn':[], 'sqrt':[], 'rais':[], 'absl':[], \
                              'bnwd':[], 'bnwK':[], 'bnwM':[], 'bnwo':[], 'bnKo':[], 'bnMo':[], \
                              'bnep':[], 'bne7':[], 'bne9':[], 'bneo':[], 'bn7o':[], 'bn9o':[], \
@@ -28697,7 +28826,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.42'
+    automungeversion = '5.43'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -29717,6 +29846,54 @@ class AutoMunge:
 
 #     #change data type for memory savings
 #     mdf_test[column + '_mnm3'] = mdf_test[column + '_mnm3'].astype(np.float32)
+
+    return mdf_test
+
+  def postprocess_mxab_class(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+    '''
+    #process_mxab_class(mdf_train, mdf_test, column, category)
+    #function to scale data to minimum of -1 and maximum of 1 \
+    #based on division by max absolute values from training set.
+    '''
+    
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
+    #retrieve normalizastion parameters from postprocess_dict
+    normkey = column + '_mxab'
+    
+    maxabs = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['maxabs']
+    mean = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
+    adjinfill = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['adjinfill']
+    
+    if inplace is not True:
+      #copy source column into new column
+      mdf_test[column + '_mxab'] = mdf_test[column].copy()
+    else:
+      mdf_test.rename(columns = {column : column + '_mxab'}, inplace = True)
+
+    #convert all values to either numeric or NaN
+    mdf_test[column + '_mxab'] = pd.to_numeric(mdf_test[column + '_mxab'], errors='coerce')
+    
+    if adjinfill is True:
+      mdf_test[column + '_mxab'] = mdf_test[column + '_mxab'].fillna(method='ffill')
+      mdf_test[column + '_mxab'] = mdf_test[column + '_mxab'].fillna(method='bfill')
+
+    #replace missing data with training set mean
+    mdf_test[column + '_mxab'] = mdf_test[column + '_mxab'].fillna(mean)
+    
+    #avoid outlier div by zero 
+    if maxabs == 0:
+      maxabs = 1
+
+    #perform max abs scaling to test set using values from train
+    mdf_test[column + '_mxab'] = mdf_test[column + '_mxab'] / \
+                                 (maxabs)
 
     return mdf_test
 
@@ -37345,6 +37522,24 @@ class AutoMunge:
     inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
     
     df[inputcolumn] = df[normkey] * maxminusmin + minimum
+    
+    return df, inputcolumn
+
+  def inverseprocess_mxab(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_mxab_class
+    #assumes any relevant parameters were saved in normalization_dict
+    #does not perform infill, assumes clean data
+    """
+    
+    normkey = categorylist[0]
+    
+    maxabs = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['maxabs']
+    
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    
+    df[inputcolumn] = df[normkey] * maxabs
     
     return df, inputcolumn
   
