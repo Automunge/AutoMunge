@@ -28826,7 +28826,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.43'
+    automungeversion = '5.44'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -37150,6 +37150,12 @@ class AutoMunge:
     
     depth = 1
     
+    #this handles edge case when a transformation category recorded by a transformation function
+    #without corresponding entry in processdict
+    if category not in postprocess_dict['process_dict']:
+      print('error: transformation category was recorded by a transformation function in column_dict without coresponding entry in process_dict')
+      print('for transformation category: ', category)
+
     info_retention = False
     if 'info_retention' in postprocess_dict['process_dict'][category]:
       if postprocess_dict['process_dict'][category]['info_retention'] is True:
