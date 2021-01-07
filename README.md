@@ -1605,7 +1605,7 @@ labelsencoding_dict, postreports_dict \
 
 ## postmunge(.) returned sets:
 Here now are descriptions for the returned sets from postmunge, which
-will be followed by descriptions of the arguments which can be passed to
+will be followed by descriptions of the parameters which can be passed to
 the function. 
 
 * test: the set of features, consistently encoded and normalized as the
