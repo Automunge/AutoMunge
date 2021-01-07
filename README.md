@@ -2253,8 +2253,8 @@ elif max<=0 and min<=0 x=(x-max)/(max-min)
     - 'adjinfill', boolean, defaults to False, True makes default infill adjacent cell instead of mean imputation
   - driftreport postmunge metrics: mean / MAD / datamax / maximum / minimum
   - inversion available: yes with full recovery
-* mxab: max absolute scaling normalization<br/>
-(x) / max abosolute
+* mxab: max absolute scaling normalization (just including this one for completeness, retn is a much better option to ensure consistent scaling between sets)<br/>
+(x) / max absolute
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '_mxab'
