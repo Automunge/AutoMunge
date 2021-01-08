@@ -993,7 +993,8 @@ ML_cmnd = {'autoML_type':'autogluon'}
 ```
 Parameters can be passed to the AutoGluon fit operation by ML_cmnd['AutoGluon'], here we demonstrate passing 
 presets=‘best_quality’, which may improve model accuracy but at cost of much larger memory footprint for 
-properties saved to disk originating from using more models in the ensemble.
+properties saved to disk originating from using more models in the ensemble. Note that the random_seed 
+parameter is already passed based on the automunge(.) randomseed.
 ```
 #can activate AutoGluon for ML infill and feature importance by passing ML_cmnd as
 ML_cmnd = {'autoML_type': 'autogluon', \
@@ -1001,7 +1002,8 @@ ML_cmnd = {'autoML_type': 'autogluon', \
 ```
 Another autoML option for ML infill and feature importance is by the CatBoost library.
 Requires externally installing CatBoost library. Uses early stopping by default for regression 
-and no early stopping by default for classifier
+and no early stopping by default for classifier. Note that the random_seed 
+parameter is already passed based on the automunge(.) randomseed.
 ```
 #CatBoost available by passing ML_cmnd as 
 ML_cmnd = {'autoML_type':'catboost'}
