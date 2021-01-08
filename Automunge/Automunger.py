@@ -21409,7 +21409,7 @@ class AutoMunge:
           ag_params = ML_cmnd['MLinfill_cmnd']['AutoGluon']
 
       #train the model
-      model = task.fit(train_data=df_train_filltrain, label=ag_label_column, **ag_params)
+      model = task.fit(train_data=df_train_filltrain, label=ag_label_column, **ag_params, random_seed=randomseed)
       
       return model
         
@@ -21563,7 +21563,8 @@ class AutoMunge:
         else:
           #initialize model
           model = CatBoostClassifier(
-            **default_model_params
+            **default_model_params,
+            random_seed = randomseed
           )
 
           #train the model with validation set
@@ -21717,7 +21718,8 @@ class AutoMunge:
 
           #initialize model
           model = CatBoostRegressor(
-            **default_model_params
+            **default_model_params,
+            random_seed = randomseed
           )
 
           #train the model with validation set
@@ -28826,7 +28828,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.44'
+    automungeversion = '5.45'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
