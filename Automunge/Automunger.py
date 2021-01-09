@@ -23254,18 +23254,20 @@ class AutoMunge:
     #infilliterate allows ML infill sets to run multiple times
     #as may be bneficial if set had a high number of infill for instance
     iteration = 0
+
+    infilliterate = postprocess_dict['infilliterate']
     
     #if we're uysing this method we'll have some extra printouts
-    if postprocess_dict['infilliterate'] > 1:
+    if infilliterate > 1:
       print_infilliterate = True
     else:
       print_infilliterate = False
     
     #just the convention
-    if postprocess_dict['infilliterate'] == 0:
-      postprocess_dict['infilliterate'] = 1
+    if infilliterate == 0:
+      infilliterate = 1
     
-    while iteration < postprocess_dict['infilliterate']:
+    while iteration < infilliterate:
       
       #resent MLinfill infillcomplete markers to False
 #       if iteration > 0:
@@ -28828,7 +28830,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.45'
+    automungeversion = '5.46'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -36797,6 +36799,9 @@ class AutoMunge:
       else:
         df_testlabels = []
 
+    #reset traindata entry in postprocess_dict to avoid overwrite of external
+    postprocess_dict['traindata'] = False
+
     #printout display progress
     if printstatus is True:
 
@@ -39289,7 +39294,7 @@ class AutoMunge:
       inversion = [str(entry) for entry in inversion]
 
     #initialize objects that may be adjusted in case of Binary
-    Binary_finalcolumns_train = postprocess_dict['finalcolumns_train']
+    Binary_finalcolumns_train = postprocess_dict['finalcolumns_train'].copy()
     Binary_inversion_marker = False
 
     #if Binary was performed, treatment depends on whether it was a replace or retain
