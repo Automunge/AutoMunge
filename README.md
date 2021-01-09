@@ -1903,9 +1903,9 @@ to a process_dict entry:
 
 * traindata: boolean _{True, False}_, defaults to False. Only inspected when a transformation
 is called that treats train data different than test data (currently only relevant to 
-DP family of transforms for differential privacy noise injection to train sets). When passed 
+DP family of transforms for noise injection to train sets). When passed 
 as True treats df_test as a train set for purposes of these specific transforms, otherwise
-default of False treats df_test as a test set (which turns off noise injection for DP).
+default of False treats df_test as a test set (which turns off noise injection for DP transforms).
 
 * returnedsets: Can be passed as one of _{True, False, 'test_ID', 'test_labels', 'test_ID_labels'}_. 
 Designates the composition of the sets returned
