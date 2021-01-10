@@ -18208,10 +18208,10 @@ class AutoMunge:
     mdf_train[DPmm_column] = pd.DataFrame(normal_samples) * pd.DataFrame(binomial_samples)
     
     #cap outliers
-    mdf_train[DPmm_column] = np.where(mdf_train[DPmm_column] < -0.5, np.nan, mdf_train[DPmm_column])
-    mdf_train[DPmm_column] = np.where(mdf_train[DPmm_column] > 0.5, np.nan, mdf_train[DPmm_column])
+    mdf_train[DPmm_column] = np.where(mdf_train[DPmm_column] < -0.5, -0.5, mdf_train[DPmm_column])
+    mdf_train[DPmm_column] = np.where(mdf_train[DPmm_column] > 0.5, 0.5, mdf_train[DPmm_column])
     
-    #adjacent cell infill
+    #adjacent cell infill (this is included as a precaution shouldn't have any effect since upstream normalization)
     mdf_train[DPmm_column] = mdf_train[DPmm_column].fillna(method='ffill')
     mdf_train[DPmm_column] = mdf_train[DPmm_column].fillna(method='bfill')
     
@@ -18512,12 +18512,8 @@ class AutoMunge:
     mdf_train[DPrt_column_temp2] = pd.DataFrame(normal_samples) * pd.DataFrame(binomial_samples)
     
     #cap outliers
-    mdf_train[DPrt_column_temp2] = np.where(mdf_train[DPrt_column_temp2] < -0.5, np.nan, mdf_train[DPrt_column_temp2])
-    mdf_train[DPrt_column_temp2] = np.where(mdf_train[DPrt_column_temp2] > 0.5, np.nan, mdf_train[DPrt_column_temp2])
-    
-    #adjacent cell infill
-    mdf_train[DPrt_column_temp2] = mdf_train[DPrt_column_temp2].fillna(method='ffill')
-    mdf_train[DPrt_column_temp2] = mdf_train[DPrt_column_temp2].fillna(method='bfill')
+    mdf_train[DPrt_column_temp2] = np.where(mdf_train[DPrt_column_temp2] < -0.5, -0.5, mdf_train[DPrt_column_temp2])
+    mdf_train[DPrt_column_temp2] = np.where(mdf_train[DPrt_column_temp2] > 0.5, 0.5, mdf_train[DPrt_column_temp2])
     
     #support column to signal sign of noise, 0 is neg, 1 is pos
     mdf_train[DPrt_column_temp1] = 0
@@ -28830,7 +28826,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.46'
+    automungeversion = '5.47'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -34513,10 +34509,10 @@ class AutoMunge:
       mdf_test[DPmm_column] = pd.DataFrame(normal_samples) * pd.DataFrame(binomial_samples)
 
       #cap outliers
-      mdf_test[DPmm_column] = np.where(mdf_test[DPmm_column] < -0.5, np.nan, mdf_test[DPmm_column])
-      mdf_test[DPmm_column] = np.where(mdf_test[DPmm_column] > 0.5, np.nan, mdf_test[DPmm_column])
+      mdf_test[DPmm_column] = np.where(mdf_test[DPmm_column] < -0.5, -0.5, mdf_test[DPmm_column])
+      mdf_test[DPmm_column] = np.where(mdf_test[DPmm_column] > 0.5, 0.5, mdf_test[DPmm_column])
 
-      #adjacent cell infill
+      #adjacent cell infill (this is included as a precaution shouldn't have any effect since upstream normalization)
       mdf_test[DPmm_column] = mdf_test[DPmm_column].fillna(method='ffill')
       mdf_test[DPmm_column] = mdf_test[DPmm_column].fillna(method='bfill')
 
@@ -34680,12 +34676,8 @@ class AutoMunge:
       mdf_test[DPrt_column_temp2] = pd.DataFrame(normal_samples) * pd.DataFrame(binomial_samples)
       
       #cap outliers
-      mdf_test[DPrt_column_temp2] = np.where(mdf_test[DPrt_column] < -0.5, np.nan, mdf_test[DPrt_column_temp2])
-      mdf_test[DPrt_column_temp2] = np.where(mdf_test[DPrt_column] > 0.5, np.nan, mdf_test[DPrt_column_temp2])
-
-      #adjacent cell infill
-      mdf_test[DPrt_column_temp2] = mdf_test[DPrt_column_temp2].fillna(method='ffill')
-      mdf_test[DPrt_column_temp2] = mdf_test[DPrt_column_temp2].fillna(method='bfill')
+      mdf_test[DPrt_column_temp2] = np.where(mdf_test[DPrt_column] < -0.5, -0.5, mdf_test[DPrt_column_temp2])
+      mdf_test[DPrt_column_temp2] = np.where(mdf_test[DPrt_column] > 0.5, 0.5, mdf_test[DPrt_column_temp2])
       
       #support column to signal sign of noise, 0 is neg, 1 is pos
       mdf_test[DPrt_column_temp1] = 0
