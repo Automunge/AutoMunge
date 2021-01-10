@@ -2882,7 +2882,7 @@ on flip_prob parameter.
   - driftreport postmunge metrics: mu, sigma for DPnm, upstream z score via nmbr for others
   - inversion available: yes
 * DPmm: applies a min-max scaling followed by a noise injection to train data sampled
-from a Gaussian which defaults to 0 mu and 0.06 sigma. Note that noise is scaled to ensure output
+from a Gaussian which defaults to 0 mu and 0.03 sigma. Note that noise is scaled to ensure output
 remains in range 0-1 (by scaling neg noise when input <0.5 and scaling pos noise when input >0.5)
   - default infill: the DP function does not apply a default infill assume upstream mnmx cleans data
   - default NArowtype: numeric
