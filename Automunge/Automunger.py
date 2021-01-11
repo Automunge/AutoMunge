@@ -18706,17 +18706,9 @@ class AutoMunge:
     mdf_train[DPod_tempcolumn2] = pd.DataFrame(np.random.choice(ord_encodings, size=(mdf_train.shape[0])))
     
     #now inject noise
-    
-    #initialize return column
-    mdf_train[DPod_column] = 0
-    
-    for entry in list(ord_encodings):
-      
-      #this returns column value when DPod_tempcolumn1 is 0 or DPod_tempcolumn2 when DPod_tempcolumn1 is 1
-      mdf_train[DPod_column] = \
-      np.where(mdf_train[column] == entry, \
-               mdf_train[column] * (1 - mdf_train[DPod_tempcolumn1]) + mdf_train[DPod_tempcolumn1] * mdf_train[DPod_tempcolumn2], \
-               mdf_train[DPod_column])
+    #this returns column value when DPod_tempcolumn1 is 0 or DPod_tempcolumn2 when DPod_tempcolumn1 is 1
+    mdf_train[DPod_column] = \
+    mdf_train[column] * (1 - mdf_train[DPod_tempcolumn1]) + mdf_train[DPod_tempcolumn1] * mdf_train[DPod_tempcolumn2]
       
     del mdf_train[DPod_tempcolumn1]
     del mdf_train[DPod_tempcolumn2]
@@ -28826,7 +28818,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.47'
+    automungeversion = '5.48'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -34813,17 +34805,9 @@ class AutoMunge:
       mdf_test[DPod_tempcolumn2] = pd.DataFrame(np.random.choice(ord_encodings, size=(mdf_test.shape[0])))
     
       #now inject noise
-    
-      #initialize return column
-      mdf_test[DPod_column] = 0
-    
-      for entry in list(ord_encodings):
-        
-        #this returns column value when DPod_tempcolumn1 is 0 or DPod_tempcolumn2 when DPod_tempcolumn1 is 1
-        mdf_test[DPod_column] = \
-        np.where(mdf_test[column] == entry, \
-                 mdf_test[column] * (1 - mdf_test[DPod_tempcolumn1]) + mdf_test[DPod_tempcolumn1] * mdf_test[DPod_tempcolumn2], \
-                 mdf_test[DPod_column])
+      #this returns column value when DPod_tempcolumn1 is 0 or DPod_tempcolumn2 when DPod_tempcolumn1 is 1
+      mdf_test[DPod_column] = \
+      mdf_test[column] * (1 - mdf_test[DPod_tempcolumn1]) + mdf_test[DPod_tempcolumn1] * mdf_test[DPod_tempcolumn2]
       
       del mdf_test[DPod_tempcolumn1]
       del mdf_test[DPod_tempcolumn2]
