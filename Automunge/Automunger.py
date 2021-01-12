@@ -28642,6 +28642,9 @@ class AutoMunge:
       miscparameters_results.update({'Binary_suffixoverlap_results' : {}})
       returned_Binary_columns = []
 
+    #grab rowcount serving as basis of drift stats (here since prior to oversampling or consolidations)
+    train_rowcount = df_train.shape[0]
+
     #this is operation to consolidate duplicate rows based on dupl_rows parameter
     #in other words, if multiple copies of same row present only returns one
     if dupl_rows in [True, 'traintest']:
@@ -28818,7 +28821,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.48'
+    automungeversion = '5.49'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -28866,6 +28869,7 @@ class AutoMunge:
                              'FScolumn_dict' : FScolumn_dict, \
                              'FS_sorted' : FS_sorted, \
                              'drift_dict' : drift_dict, \
+                             'train_rowcount' : train_rowcount, \
                              'Binary' : Binary, \
                              'Binary_dict' : Binary_dict, \
                              'returned_Binary_columns' : returned_Binary_columns, \
@@ -36281,6 +36285,9 @@ class AutoMunge:
       postreports_dict.update({'sourcecolumn_drift' : {'orig_driftstats' : postprocess_dict['drift_dict'], \
                                                        'new_driftstats' : postdrift_dict}})
 
+      postreports_dict.update({'rowcount_basis' : {'automunge_train_rowcount' : postprocess_dict['train_rowcount'], \
+                                                   'postmunge_test_rowcount' : df_test.shape[0]}})
+
       if printstatus is True:
         print("_______________")
         print("Source Column Drift Report Complete")
@@ -36606,6 +36613,10 @@ class AutoMunge:
         print(df_test.shape[1])
         print("")
 
+    #populate row count basis here (before duplications or oversampling)
+    postreports_dict.update({'rowcount_basis' : {'automunge_train_rowcount' : postprocess_dict['train_rowcount'], \
+                                                  'postmunge_test_rowcount' : df_test.shape[0]}})
+                                                  
     #this is operation to consolidate duplicate rows based on dupl_rows parameter
     #in other words, if multiple copies of same row present only returns one
     if dupl_rows is True:
