@@ -1669,6 +1669,7 @@ postreports_dict = \
                            'newnotinorig': {(derivedcolumn):{'newnormparam':{(stats)}},
                            'newreturnedcolumn':{(derivedcolumn):{'orignormparam':{(stats)},
                                                                  'newnormparam':{(stats)}}}},
+'rowcount_basis': {'automunge_train_rowcount':#, 'postmunge_test_rowcount':#},
 'sourcecolumn_drift': {'orig_driftstats': {(sourcecolumn) : (stats)}, 
                        'new_driftstats' : {(sourcecolumn) : (stats)}}}
 		       
