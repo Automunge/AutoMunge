@@ -3732,7 +3732,7 @@ class AutoMunge:
                                   'inverseprocess' : self.inverseprocess_spl2, \
                                   'info_retention' : False, \
                                   'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'singlct', \
+                                  'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'text'}})
     process_dict.update({'lngt' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_lngt_class, \
@@ -3882,7 +3882,7 @@ class AutoMunge:
                                   'inverseprocess' : self.inverseprocess_spl2, \
                                   'info_retention' : False, \
                                   'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'singlct', \
+                                  'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'ord3'}})
     process_dict.update({'spl7' : {'dualprocess' : self.process_spl2_class, \
                                   'singleprocess' : None, \
@@ -4558,7 +4558,7 @@ class AutoMunge:
                                                      'test_same_as_train' : False, \
                                                      'consolidate_nonoverlaps' : False}, \
                                   'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'singlct', \
+                                  'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'ord3'}})
     process_dict.update({'or10' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
@@ -14215,7 +14215,7 @@ class AutoMunge:
     df[column + '_wkds'] = df[column + '_wkds'].fillna(7)
     
     #reduce memory footprint
-    df[column+'_wkds'] = df[column+'_wkds'].astype(int)
+    df[column+'_wkds'] = df[column+'_wkds'].astype(np.int8)
     
     #create list of columns
     datecolumns = [column+'_wkds']
@@ -16213,16 +16213,19 @@ class AutoMunge:
     #replace original column from training data
     del mdf_train[negtempcolumn]    
     del mdf_test[negtempcolumn]    
-    
-#     del mdf_train[column]    
-#     del mdf_test[column]
-    
-#     mdf_train[column] = mdf_train[column + '_temp'].copy()
-#     mdf_test[column] = mdf_test[column + '_temp'].copy()
 
-#     del mdf_train[column + '_temp']    
-#     del mdf_test[column + '_temp']
-        
+    #returned data type is conditional on the size of encoding space
+    bn_count = len(train_replace_dict)
+    if bn_count < 254:
+      mdf_train[pworcolumn] = mdf_train[pworcolumn].astype(np.uint8)
+      mdf_test[pworcolumn] = mdf_test[pworcolumn].astype(np.uint8)
+    elif bn_count < 65530:
+      mdf_train[pworcolumn] = mdf_train[pworcolumn].astype(np.uint16)
+      mdf_test[pworcolumn] = mdf_test[pworcolumn].astype(np.uint16)
+    else:
+      mdf_train[pworcolumn] = mdf_train[pworcolumn].astype(np.uint32)
+      mdf_test[pworcolumn] = mdf_test[pworcolumn].astype(np.uint32)
+   
     #store some values in the text_dict{} for use later in ML infill methods
     column_dict_list = []
     
@@ -16814,9 +16817,16 @@ class AutoMunge:
     pd.cut(mdf_test[binscolumn], bins = bins_cuts,  \
            labels = bins_id, precision=len(str(bn_count)))
     
-    #change column dtype
-    mdf_train[binscolumn] = mdf_train[binscolumn].astype(int)
-    mdf_test[binscolumn] = mdf_test[binscolumn].astype(int)
+    #returned data type is conditional on the size of encoding space
+    if bn_count < 254:
+      mdf_train[binscolumn] = mdf_train[binscolumn].astype(np.uint8)
+      mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint8)
+    elif bn_count < 65530:
+      mdf_train[binscolumn] = mdf_train[binscolumn].astype(np.uint16)
+      mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint16)
+    else:
+      mdf_train[binscolumn] = mdf_train[binscolumn].astype(np.uint32)
+      mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint32)
 
     #create list of columns
     nmbrcolumns = [binscolumn]
@@ -17183,10 +17193,17 @@ class AutoMunge:
       #and if the entire set was nan we'll infill with a 0 plug
       mdf_train[binscolumn] = mdf_train[binscolumn].fillna(0)
       mdf_test[binscolumn] = mdf_test[binscolumn].fillna(0)
-
-      #change column dtype
-      mdf_train[binscolumn] = mdf_train[binscolumn].astype(int)
-      mdf_test[binscolumn] = mdf_test[binscolumn].astype(int)
+      
+      #returned data type is conditional on the size of encoding space
+      if bn_count < 254:
+        mdf_train[binscolumn] = mdf_train[binscolumn].astype(np.uint8)
+        mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint8)
+      elif bn_count < 65530:
+        mdf_train[binscolumn] = mdf_train[binscolumn].astype(np.uint16)
+        mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint16)
+      else:
+        mdf_train[binscolumn] = mdf_train[binscolumn].astype(np.uint32)
+        mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint32)
       
     else:
       
@@ -17855,9 +17872,16 @@ class AutoMunge:
     mdf_train[binscolumn] = mdf_train[binscolumn].fillna(infill_activation)
     mdf_test[binscolumn] = mdf_test[binscolumn].fillna(infill_activation)
     
-    #change column dtype
-    mdf_train[binscolumn] = mdf_train[binscolumn].astype(int)
-    mdf_test[binscolumn] = mdf_test[binscolumn].astype(int)
+    #returned data type is conditional on the size of encoding space
+    if len(bins_cuts) < 254:
+      mdf_train[binscolumn] = mdf_train[binscolumn].astype(np.uint8)
+      mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint8)
+    elif len(bins_cuts) < 65530:
+      mdf_train[binscolumn] = mdf_train[binscolumn].astype(np.uint16)
+      mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint16)
+    else:
+      mdf_train[binscolumn] = mdf_train[binscolumn].astype(np.uint32)
+      mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint32)
 
     #create list of columns
     nmbrcolumns = [binscolumn]
@@ -18011,10 +18035,17 @@ class AutoMunge:
     #replace missing data with infill_activation
     mdf_train[binscolumn] = mdf_train[binscolumn].fillna(infill_activation)
     mdf_test[binscolumn] = mdf_test[binscolumn].fillna(infill_activation)
-    
-    #change column dtype
-    mdf_train[binscolumn] = mdf_train[binscolumn].astype(int)
-    mdf_test[binscolumn] = mdf_test[binscolumn].astype(int)
+
+    #returned data type is conditional on the size of encoding space
+    if len(bins_cuts) < 254:
+      mdf_train[binscolumn] = mdf_train[binscolumn].astype(np.uint8)
+      mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint8)
+    elif len(bins_cuts) < 65530:
+      mdf_train[binscolumn] = mdf_train[binscolumn].astype(np.uint16)
+      mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint16)
+    else:
+      mdf_train[binscolumn] = mdf_train[binscolumn].astype(np.uint32)
+      mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint32)
 
     #create list of columns
     nmbrcolumns = [binscolumn]
@@ -28821,7 +28852,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.49'
+    automungeversion = '5.50'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -33458,6 +33489,7 @@ class AutoMunge:
     #retrieve stuff from normalization dictionary
     train_replace_dict = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['train_replace_dict']
     negvalues = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['negvalues']
+    activations_list = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['activations_list']
     
     pworcolumn = column + '_pwor'
 
@@ -33551,7 +33583,16 @@ class AutoMunge:
     mdf_test[pworcolumn] = mdf_test[pworcolumn].replace(test_replace_dict)
 
     #replace original column from training data
-    del mdf_test[negtempcolumn]    
+    del mdf_test[negtempcolumn]
+    
+    #returned data type is conditional on the size of encoding space
+    bn_count = len(activations_list)
+    if bn_count < 254:
+      mdf_test[pworcolumn] = mdf_test[pworcolumn].astype(np.uint8)
+    elif bn_count < 65530:
+      mdf_test[pworcolumn] = mdf_test[pworcolumn].astype(np.uint16)
+    else:
+      mdf_test[pworcolumn] = mdf_test[pworcolumn].astype(np.uint32)
     
     return mdf_test
 
@@ -33825,9 +33866,14 @@ class AutoMunge:
     mdf_test[binscolumn] = \
     pd.cut(mdf_test[binscolumn], bins = bins_cuts,  \
            labels = bins_id, precision=len(str(bn_count)))
-    
-    #change column dtype
-    mdf_test[binscolumn] = mdf_test[binscolumn].astype(int)
+
+    #returned data type is conditional on the size of encoding space
+    if bn_count < 254:
+      mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint8)
+    elif bn_count < 65530:
+      mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint16)
+    else:
+      mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint32)
     
     return mdf_test
 
@@ -33990,9 +34036,14 @@ class AutoMunge:
 
       #and if the entire set was nan we'll infill with a 0 plug
       mdf_test[binscolumn] = mdf_test[binscolumn].fillna(0)
-
-      #change column dtype
-      mdf_test[binscolumn] = mdf_test[binscolumn].astype(int)
+      
+      #returned data type is conditional on the size of encoding space
+      if bn_count < 254:
+        mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint8)
+      elif bn_count < 65530:
+        mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint16)
+      else:
+        mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint32)
       
     else:
       
@@ -34335,8 +34386,13 @@ class AutoMunge:
     #replace missing data with infill_activation
     mdf_test[binscolumn] = mdf_test[binscolumn].fillna(infill_activation)
     
-    #change column dtype
-    mdf_test[binscolumn] = mdf_test[binscolumn].astype(int)
+    #returned data type is conditional on the size of encoding space
+    if len(bins_cuts) < 254:
+      mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint8)
+    elif len(bins_cuts) < 65530:
+      mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint16)
+    else:
+      mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint32)
     
     return mdf_test
   
@@ -34393,9 +34449,14 @@ class AutoMunge:
     
     #replace missing data with infill_activation
     mdf_test[binscolumn] = mdf_test[binscolumn].fillna(infill_activation)
-    
-    #change column dtype
-    mdf_test[binscolumn] = mdf_test[binscolumn].astype(int)
+
+    #returned data type is conditional on the size of encoding space
+    if len(bins_cuts) < 254:
+      mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint8)
+    elif len(bins_cuts) < 65530:
+      mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint16)
+    else:
+      mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint32)
     
     return mdf_test
 
