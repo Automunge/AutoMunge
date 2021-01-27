@@ -559,14 +559,16 @@ this code:
 
 ```
 #to inspect values returned in featureimportance object one could run
-for keys,values in featureimportance.items():
+for keys,values in featureimportance['FScolumn_dict'].items():
     print(keys)
     print('metric = ', values['metric'])
     print('metric2 = ', values['metric2'])
     print()
 ```
-Note that additional feature importance results, including the base accuracy of
-the feature iumportance model, are available in postprocess_dict['FS_sorted']. 
+Note that the sorted feature importance results, as well as the base accuracy of
+the feature iumportance model, are available in featureimportance['FS_sorted']. 
+Important to keep in mind that feature importance is as much a measure of the model 
+as it is of the features.
 
 * postprocess_dict: a returned python dictionary that includes
 normalization parameters and trained ML infill models used to
