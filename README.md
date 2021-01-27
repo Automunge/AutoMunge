@@ -33,8 +33,8 @@ transformations, and select from options for missing data infill. The feature
 engineering transformations may be accessed from the internal library (aka a 
 "feature transformation store"), or may also be externally user defined with minimal 
 requirements of simple data structures. The tool includes options for automated feature 
-importance evaluation, automated "ML infill" for derivation of missing data infill 
-predictions using machine learning models trained on the set, automated 
+importance evaluation, automated "ML infill" for derivation of missing data inputation 
+using machine learning models trained on the set, automated 
 preparation for oversampling for class imbalance in labels, automated dimensionality 
 reductions such as based on feature importance, principal component analysis (PCA), 
 or binary encoding, automated evaluation of data property drift between training 
