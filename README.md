@@ -3544,6 +3544,7 @@ avoid unintentional duplication.
 - 'or20',
 - 'or21',
 - 'or22',
+- 'or23',
 - 'ord2',
 - 'ord3',
 - 'ord4',
@@ -5150,6 +5151,15 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'children'      : ['nmc8'], \
                                      'niecesnephews' : ['sp18'], \
                                      'coworkers'     : ['1010'], \
+                                     'friends'       : []}})
+				     
+    transform_dict.update({'or23' : {'parents'       : ['or23'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['nmcm', 'sp19', 'ord3'], \
                                      'friends'       : []}})
     
     transform_dict.update({'om10' : {'parents'       : ['ord4'], \
