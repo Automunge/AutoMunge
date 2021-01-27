@@ -1454,6 +1454,15 @@ class AutoMunge:
                                      'niecesnephews' : ['sp18'], \
                                      'coworkers'     : ['1010'], \
                                      'friends'       : []}})
+
+    transform_dict.update({'or23' : {'parents'       : ['or23'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['nmcm', 'sp19', 'ord3'], \
+                                     'friends'       : []}})
     
     transform_dict.update({'om10' : {'parents'       : ['ord4'], \
                                      'siblings'      : [], \
@@ -4662,6 +4671,15 @@ class AutoMunge:
                                    'MLinfilltype' : 'exclude', \
                                    'labelctgy' : 'ord3'}})
     process_dict.update({'or22' : {'dualprocess' : None, \
+                                   'singleprocess' : self.process_UPCS_class, \
+                                   'postprocess' : None, \
+                                   'inverseprocess' : self.inverseprocess_UPCS, \
+                                   'info_retention' : False, \
+                                   'inplace_option' : True, \
+                                   'NArowtype' : 'justNaN', \
+                                   'MLinfilltype' : 'exclude', \
+                                   'labelctgy' : 'ord3'}})
+    process_dict.update({'or23' : {'dualprocess' : None, \
                                    'singleprocess' : self.process_UPCS_class, \
                                    'postprocess' : None, \
                                    'inverseprocess' : self.inverseprocess_UPCS, \
@@ -28865,7 +28883,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.51'
+    automungeversion = '5.52'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
