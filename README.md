@@ -135,7 +135,7 @@ am.automunge(df_train, df_test = False, \
              dupl_rows = False, TrainLabelFreqLevel = False, powertransform = False, binstransform = False, \
              MLinfill = False, infilliterate=1, randomseed = 42, eval_ratio = .5, \
              LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, LSfit = False, \
-             numbercategoryheuristic = 127, pandasoutput = False, NArw_marker = False, \
+             numbercategoryheuristic = 127, pandasoutput = True, NArw_marker = False, \
              featureselection = False, featurepct = 1.0, featuremetric = 0.0, featuremethod = 'default', \
              Binary = False, PCAn_components = False, PCAexcl = [], excl_suffix = False, \
              ML_cmnd = {'autoML_type':'randomforest', \
@@ -210,7 +210,7 @@ test, testID, testlabels, \
 labelsencoding_dict, postreports_dict = \
 am.postmunge(postprocess_dict, df_test, \
              testID_column = False, labelscolumn = False, \
-             pandasoutput = False, printstatus = True, \
+             pandasoutput = True, printstatus = True, \
              dupl_rows = False, TrainLabelFreqLevel = False, featureeval = False, \
              LabelSmoothing = False, LSfit = False, inversion = False, traindata = False, \
              driftreport = False, inversion = False, \
@@ -365,7 +365,7 @@ am.automunge(df_train, df_test = False, \
              dupl_rows = False, TrainLabelFreqLevel = False, powertransform = False, binstransform = False, \
              MLinfill = False, infilliterate=1, randomseed = 42, eval_ratio = .5, \
              LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, LSfit = False, \
-             numbercategoryheuristic = 127, pandasoutput = False, NArw_marker = False, \
+             numbercategoryheuristic = 127, pandasoutput = True, NArw_marker = False, \
              featureselection = False, featurepct = 1.0, featuremetric = 0.0, featuremethod = 'default', \
              Binary = False, PCAn_components = False, PCAexcl = [], excl_suffix = False, \
              ML_cmnd = {'autoML_type':'randomforest', \
@@ -443,7 +443,7 @@ test, testID, testlabels, \
 labelsencoding_dict, postreports_dict = \
 am.postmunge(postprocess_dict, df_test, \
              testID_column = False, labelscolumn = False, \
-             pandasoutput = False, printstatus = True, \
+             pandasoutput = True, printstatus = True, \
              dupl_rows = False, TrainLabelFreqLevel = False, featureeval = False, \
              LabelSmoothing = False, LSfit = False, inversion = False, traindata = False, \
              driftreport = False, inversion = False, \
@@ -602,7 +602,7 @@ am.automunge(df_train, df_test = False, \
              dupl_rows = False, TrainLabelFreqLevel = False, powertransform = False, binstransform = False, \
              MLinfill = False, infilliterate=1, randomseed = 42, eval_ratio = .5, \
              LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, LSfit = False, \
-             numbercategoryheuristic = 127, pandasoutput = False, NArw_marker = False, \
+             numbercategoryheuristic = 127, pandasoutput = True, NArw_marker = False, \
              featureselection = False, featurepct = 1.0, featuremetric = 0.0, featuremethod = 'default', \
              Binary = False, PCAn_components = False, PCAexcl = [], excl_suffix = False, \
              ML_cmnd = {'autoML_type':'randomforest', \
@@ -852,11 +852,12 @@ categorical set has more unique values than this heuristic, it defaults
 to categorical treatment via ordinal processing via 'ordl', otherwise 
 categorical sets default to binary encoding via '1010'. This defaults to 127.
 
-* pandasoutput: a selector for format of returned sets. Defaults to _False_
-for returned Numpy arrays. If set to _True_ returns pandas dataframes
+* pandasoutput: a selector for format of returned sets. Defaults to _True_
+for returned pandas dataframe. If set to _True_ returns pandas dataframes
 (note that index is not always preserved, non-integer indexes are extracted to the ID sets,
 and automunge(.) generates an application specific range integer index in ID sets 
-corresponding to the order of rows as they were passed to function).
+corresponding to the order of rows as they were passed to function). If set to _False_
+returns numpy arrays instead of dataframes.
 
 * NArw_marker: a boolean identifier _(True/False)_ which indicates if the
 returned sets will include columns with markers for source column entries subject to 
@@ -1588,7 +1589,7 @@ test, testID, testlabels, \
 labelsencoding_dict, postreports_dict = \
 am.postmunge(postprocess_dict, df_test, \
              testID_column = False, labelscolumn = False, \
-             pandasoutput = False, printstatus = True, \
+             pandasoutput = True, printstatus = True, \
              dupl_rows = False, TrainLabelFreqLevel = False, featureeval = False, \
              LabelSmoothing = False, LSfit = False, inversion = False, traindata = False, \
              driftreport = False, inversion = False, \
@@ -1718,7 +1719,7 @@ test, testID, testlabels, \
 labelsencoding_dict, finalcolumns_test = \
 am.postmunge(postprocess_dict, df_test, \
              testID_column = False, labelscolumn = False, \
-             pandasoutput = False, printstatus = True, \
+             pandasoutput = True, printstatus = True, \
              dupl_rows = False, TrainLabelFreqLevel = False, featureeval = False, \
              LabelSmoothing = False, LSfit = False, inversion = False, traindata = False, \
              driftreport = False, inversion = False, \
@@ -1767,12 +1768,12 @@ presence of consistent labels column header as was passed to automunge(.).
 Note that if a label column is included consistent with label column from
 automunge(.) call it will be automatically applied as labelscolumn.
 
-* pandasoutput: a selector for format of returned sets. Defaults to _False_
-for returned Numpy arrays. If set to _True_ returns pandas dataframes
+* pandasoutput: a selector for format of returned sets. Defaults to _True_
+for returned pandas dataframes. If set to _True_ returns pandas dataframes
 (note that index is not preserved, non-range indexes are extracted 
 to the ID sets, and automunge(.) generates an application specific range 
 integer index in ID sets corresponding to the order of rows as they were 
-passed to function).
+passed to function). If set to _False_ returns numpy arrays instead of dataframes.
 
 * printstatus: user can pass _True/False_ indicating whether the function 
 will print status of processing during operation. Defaults to True.
