@@ -27583,6 +27583,7 @@ class AutoMunge:
         FSmodel = False
         FScolumn_dict = {}
         FS_sorted = {}
+        featureimportance = {}
 
       else:
         madethecut, FSmodel, FScolumn_dict, FS_sorted = \
@@ -27592,6 +27593,10 @@ class AutoMunge:
                           processdict, featurepct, featuremetric, featuremethod, \
                           ML_cmnd, process_dict, valpercent1, valpercent2, printstatus, NArw_marker, \
                           assignparam)
+
+      #the final returned featureimportance report consolidates the sorted results with raw data
+      featureimportance = {'FS_sorted'     : FS_sorted, \
+                           'FScolumn_dict' : FScolumn_dict}
 
       #if featuremethod is report then no further processing just return the results
       if featuremethod == 'report':
@@ -27610,7 +27615,7 @@ class AutoMunge:
         [], [], [], \
         [], [], [], \
         [], [], [],  \
-        FScolumn_dict, FS_sorted
+        featureimportance, FS_sorted
 
     else:
 
@@ -27618,6 +27623,7 @@ class AutoMunge:
       FSmodel = False
       FScolumn_dict = {}
       FS_sorted = {}
+      featureimportance = {}
 
     #validate that a model was trained
     check_FSmodel_result = self.check_FSmodel(featureselection, FSmodel)
@@ -28883,7 +28889,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.52'
+    automungeversion = '5.53'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -29235,7 +29241,7 @@ class AutoMunge:
     df_validation2, df_validationID2, df_validationlabels2, \
     df_test, df_testID, df_testlabels, \
     labelsencoding_dict, finalcolumns_train, finalcolumns_test,  \
-    FScolumn_dict, postprocess_dict
+    featureimportance, postprocess_dict
 
   def postprocessfamily(self, df_test, column, category, origcategory, process_dict, \
                         transform_dict, postprocess_dict, columnkey, assign_param):
