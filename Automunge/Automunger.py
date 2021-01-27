@@ -11502,6 +11502,19 @@ class AutoMunge:
       #now populate the column with i'th entry from hashed list
       mdf_train[column + '_hash'] = mdf_train[column + '_hash'].apply(access_i, i=0)
       mdf_test[column + '_hash'] = mdf_test[column + '_hash'].apply(access_i, i=0)
+
+    #returned data type is conditional on the size of encoding space
+    for hashcolumn in hashcolumns:
+
+      if vocab_size < 254:
+        mdf_train[hashcolumn] = mdf_train[hashcolumn].astype(np.uint8)
+        mdf_test[hashcolumn] = mdf_test[hashcolumn].astype(np.uint8)
+      elif vocab_size < 65530:
+        mdf_train[hashcolumn] = mdf_train[hashcolumn].astype(np.uint16)
+        mdf_test[hashcolumn] = mdf_test[hashcolumn].astype(np.uint16)
+      else:
+        mdf_train[hashcolumn] = mdf_train[hashcolumn].astype(np.uint32)
+        mdf_test[hashcolumn] = mdf_test[hashcolumn].astype(np.uint32)
     
     column_dict_list = []
 
@@ -27365,7 +27378,7 @@ class AutoMunge:
                 dupl_rows = False, TrainLabelFreqLevel = False, powertransform = False, binstransform = False, \
                 MLinfill = False, infilliterate=1, randomseed = 42, eval_ratio = .5, \
                 LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, LSfit = False, \
-                numbercategoryheuristic = 127, pandasoutput = False, NArw_marker = False, \
+                numbercategoryheuristic = 127, pandasoutput = True, NArw_marker = False, \
                 featureselection = False, featurepct = 1.0, featuremetric = 0.0, featuremethod = 'default', \
                 Binary = False, PCAn_components = False, PCAexcl = [], excl_suffix = False, \
                 ML_cmnd = {'MLinfill_type':'default', \
@@ -28852,7 +28865,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.50'
+    automungeversion = '5.51'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -29162,18 +29175,18 @@ class AutoMunge:
     #else set output to numpy arrays
     if pandasoutput is False:
 
-      df_train = df_train.values
-      df_trainID = df_trainID.values
-      df_labels = df_labels.values
-      df_testlabels = df_testlabels.values
-      df_validation1 = df_validation1.values
-      df_validationID1 = df_validationID1.values
-      df_validationlabels1 = df_validationlabels1.values
-      df_validation2 = df_validation2.values
-      df_validationID2 = df_validationID2.values
-      df_validationlabels2 = df_validationlabels2.values
-      df_test = df_test.values
-      df_testID = df_testID.values
+      df_train = df_train.to_numpy()
+      df_trainID = df_trainID.to_numpy()
+      df_labels = df_labels.to_numpy()
+      df_testlabels = df_testlabels.to_numpy()
+      df_validation1 = df_validation1.to_numpy()
+      df_validationID1 = df_validationID1.to_numpy()
+      df_validationlabels1 = df_validationlabels1.to_numpy()
+      df_validation2 = df_validation2.to_numpy()
+      df_validationID2 = df_validationID2.to_numpy()
+      df_validationlabels2 = df_validationlabels2.to_numpy()
+      df_test = df_test.to_numpy()
+      df_testID = df_testID.to_numpy()
 
       #apply ravel to labels if appropriate - converts from eg [[1,2,3]] to [1,2,3]
       if df_labels.ndim == 2 and df_labels.shape[1] == 1:
@@ -31478,6 +31491,8 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['hash_alg']
       max_column_count = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['max_column_count']
+      hashcolumns = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['hashcolumns']
 
       if hash_alg == 'md5':
         from hashlib import md5
@@ -31616,6 +31631,16 @@ class AutoMunge:
 
         #now populate the column with i'th entry from hashed list
         mdf_test[column + '_hash'] = mdf_test[column + '_hash'].apply(access_i, i=0)
+        
+      #returned data type is conditional on the size of encoding space
+      for hashcolumn in hashcolumns:
+
+        if vocab_size < 254:
+          mdf_test[hashcolumn] = mdf_test[hashcolumn].astype(np.uint8)
+        elif vocab_size < 65530:
+          mdf_test[hashcolumn] = mdf_test[hashcolumn].astype(np.uint16)
+        else:
+          mdf_test[hashcolumn] = mdf_test[hashcolumn].astype(np.uint32)
 
     return mdf_test
 
@@ -35986,7 +36011,7 @@ class AutoMunge:
 
   def postmunge(self, postprocess_dict, df_test, \
                 testID_column = False, labelscolumn = False, \
-                pandasoutput = False, printstatus = True, \
+                pandasoutput = True, printstatus = True, \
                 dupl_rows = False, TrainLabelFreqLevel = False, featureeval = False, \
                 LabelSmoothing = False, LSfit = False, traindata = False, \
                 driftreport = False, inversion = False, \
@@ -36828,17 +36853,17 @@ class AutoMunge:
     #else:
     if pandasoutput is False:
       #global processing to test set including conversion to numpy array
-      df_test = df_test.values
+      df_test = df_test.to_numpy()
 
       if testID_column is not False \
       and returnedsets not in [False, 'test_ID', 'test_labels', 'test_ID_labels']:
-        df_testID = df_testID.values
+        df_testID = df_testID.to_numpy()
       else:
         df_testID = []
 
       if labelscolumn is not False \
       and returnedsets not in [False, 'test_ID', 'test_labels', 'test_ID_labels']:
-        df_testlabels = df_testlabels.values
+        df_testlabels = df_testlabels.to_numpy()
 
         #apply ravel to labels if appropriate - converts from eg [[1,2,3]] to [1,2,3]
         if df_testlabels.ndim == 2 and df_testlabels.shape[1] == 1:
