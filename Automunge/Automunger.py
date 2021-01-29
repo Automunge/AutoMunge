@@ -27389,6 +27389,23 @@ class AutoMunge:
     df = df.iloc[mask.to_numpy()]
     
     return df, df_consol_id, df_consol_labels
+
+  def create_inverse_assigncat(self, assigncat):
+    """
+    #This will invert entries in assigncat 
+    #to make more efficient accessing category associated with a column
+    #where assigncat has entries at this point {'category' : ['column1', 'column2']}
+    #and so inverse_assigncat translates to eg
+    #{'column1':'category', 'column2':'category'}
+    """
+    
+    inverse_assigncat = {}
+
+    for entry1 in assigncat:
+      for entry2 in assigncat[entry1]:
+        inverse_assigncat.update({entry2 : entry1})
+        
+    return inverse_assigncat
   
   def automunge(self, df_train, df_test = False, \
                 labels_column = False, trainID_column = False, testID_column = False, \
@@ -27977,6 +27994,8 @@ class AutoMunge:
     
     #mirror assigncat which will populate the returned categories from eval function
     final_assigncat = deepcopy(assigncat)
+
+    inverse_assigncat = self.create_inverse_assigncat(assigncat)
     
     #create empty dictionary to serve as store for drift metrics
     drift_dict = {}
@@ -27993,43 +28012,43 @@ class AutoMunge:
       categorycomplete = False
 
       if bool(assigncat) is True:
+    
+        if column in inverse_assigncat:
+        
+          category = inverse_assigncat[column]
+          category_test = category
+          categorycomplete = True
 
-        for key in assigncat:
-          if column in assigncat[key]:
-            category = key
-            category_test = key
-            categorycomplete = True
+          #printout display progress
+          if printstatus is True:
+            print("evaluating column: ", column)
 
-            #printout display progress
-            if printstatus is True:
-              print("evaluating column: ", column)
+          #special case, if user assigned column to 'eval' then we'll run evalcategory
+          #passing a False for powertransform parameter
+          if category in ['eval']:
+            if evalcat is False:
+              category = self.evalcategory(df_train, column, randomseed, eval_ratio, \
+                                           numbercategoryheuristic, False, False)
+            elif type(evalcat) == types.FunctionType:
+              category = evalcat(df_train, column, randomseed, eval_ratio, \
+                                 numbercategoryheuristic, False, False)
+            else:
+              print("error: evalcat must be passed as either False or as a defined function per READ ME")
 
-            #special case, if user assigned column to 'eval' then we'll run evalcategory
-            #passing a False for powertransform parameter
-            if key in ['eval']:
-              if evalcat is False:
-                category = self.evalcategory(df_train, column, randomseed, eval_ratio, \
-                                             numbercategoryheuristic, False, False)
-              elif type(evalcat) == types.FunctionType:
-                category = evalcat(df_train, column, randomseed, eval_ratio, \
-                                   numbercategoryheuristic, False, False)
-              else:
-                print("error: evalcat must be passed as either False or as a defined function per READ ME")
-              
-              category_test = category
+            category_test = category
 
-            #or for 'ptfm' passing a True for powertransform parameter
-            if key in ['ptfm']:
-              if evalcat is False:
-                category = self.evalcategory(df_train, column, randomseed, eval_ratio, \
-                                             numbercategoryheuristic, True, False)
-              elif type(evalcat) == types.FunctionType:
-                category = evalcat(df_train, column, randomseed, eval_ratio, \
-                                   numbercategoryheuristic, True, False)
-              else:
-                print("error: evalcat must be passed as either False or as a defined function per READ ME")
+          #or for 'ptfm' passing a True for powertransform parameter
+          if category in ['ptfm']:
+            if evalcat is False:
+              category = self.evalcategory(df_train, column, randomseed, eval_ratio, \
+                                           numbercategoryheuristic, True, False)
+            elif type(evalcat) == types.FunctionType:
+              category = evalcat(df_train, column, randomseed, eval_ratio, \
+                                 numbercategoryheuristic, True, False)
+            else:
+              print("error: evalcat must be passed as either False or as a defined function per READ ME")
 
-              category_test = category
+            category_test = category
 
       #
       if categorycomplete is False:
@@ -28164,44 +28183,44 @@ class AutoMunge:
       categorycomplete = False
 
       if bool(assigncat) is True:
+    
+        if labels_column in inverse_assigncat:
+        
+          labelscategory = inverse_assigncat[labels_column]
+          categorycomplete = True
 
-        for key in assigncat:
-          if labels_column in assigncat[key]:
-            labelscategory = key
-            categorycomplete = True
+          #printout display progress
+          if printstatus is True:
+            print("______")
+            print("")
+            print("evaluating label column: ", labels_column)
 
-            #printout display progress
-            if printstatus is True:
-              print("______")
-              print("")
-              print("evaluating label column: ", labels_column)
-              
-            #special case, if user assigned column to 'eval' then we'll run evalcategory
-            #passing a False for powertransform parameter
-            if key in ['eval']:
-              if evalcat is False:
-                category = self.evalcategory(df_labels, labels_column, randomseed, eval_ratio, \
-                                             numbercategoryheuristic, False, True)
-              elif type(evalcat) == types.FunctionType:
-                category = evalcat(df_labels, labels_column, randomseed, eval_ratio, \
-                                   numbercategoryheuristic, False, True)
-              else:
-                print("error: evalcat must be passed as either False or as a defined function per READ ME")
+          #special case, if user assigned column to 'eval' then we'll run evalcategory
+          #passing a False for powertransform parameter
+          if labelscategory in ['eval']:
+            if evalcat is False:
+              category = self.evalcategory(df_labels, labels_column, randomseed, eval_ratio, \
+                                           numbercategoryheuristic, False, True)
+            elif type(evalcat) == types.FunctionType:
+              category = evalcat(df_labels, labels_column, randomseed, eval_ratio, \
+                                 numbercategoryheuristic, False, True)
+            else:
+              print("error: evalcat must be passed as either False or as a defined function per READ ME")
 
-              labelscategory = category
-              
-            #or for 'ptfm' passing a True for powertransform parameter
-            if key in ['ptfm']:
-              if evalcat is False:
-                category = self.evalcategory(df_labels, labels_column, randomseed, eval_ratio, \
-                                             numbercategoryheuristic, True, True)
-              elif type(evalcat) == types.FunctionType:
-                category = evalcat(df_labels, labels_column, randomseed, eval_ratio, \
-                                   numbercategoryheuristic, True, True)
-              else:
-                print("error: evalcat must be passed as either False or as a defined function per READ ME")
+            labelscategory = category
 
-              labelscategory = category
+          #or for 'ptfm' passing a True for powertransform parameter
+          if labelscategory in ['ptfm']:
+            if evalcat is False:
+              category = self.evalcategory(df_labels, labels_column, randomseed, eval_ratio, \
+                                           numbercategoryheuristic, True, True)
+            elif type(evalcat) == types.FunctionType:
+              category = evalcat(df_labels, labels_column, randomseed, eval_ratio, \
+                                 numbercategoryheuristic, True, True)
+            else:
+              print("error: evalcat must be passed as either False or as a defined function per READ ME")
+
+            labelscategory = category
 
       if categorycomplete is False:
         
@@ -28419,6 +28438,8 @@ class AutoMunge:
     self.check_normalization_dict(postprocess_dict)
 
     miscparameters_results.update({'check_normalization_dict_result' : check_normalization_dict_result})
+
+    # inverse_final_assigncat = self.create_inverse_assigncat(final_assigncat)
 
     #now that we've pre-processed all of the columns, let's run through them again\
     #using infill to derive plug values for the previously missing cells
@@ -28889,7 +28910,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.54'
+    automungeversion = '5.55'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -28950,6 +28971,7 @@ class AutoMunge:
                              'excl_suffix' : excl_suffix, \
                              'traindata' : False, \
                              'assigncat' : assigncat, \
+                             'inverse_assigncat' : inverse_assigncat, \
                              'final_assigncat' : final_assigncat, \
                              'assigninfill' : assigninfill, \
                              'transformdict' : transformdict, \
