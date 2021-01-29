@@ -35,7 +35,7 @@ engineering transformations may be accessed from the internal library (aka a
 requirements of simple data structures. The tool includes options for automated feature 
 importance evaluation, automated "ML infill" for derivation of missing data inputation 
 using machine learning models trained on the set, automated 
-preparation for oversampling for class imbalance in labels, automated dimensionality 
+preparation for oversampling for labels class imbalance, automated dimensionality 
 reductions such as based on feature importance, principal component analysis (PCA), 
 or binary encoding, automated evaluation of data property drift between training 
 data and subsequent data, and perhaps most importantly the simplest means for 
