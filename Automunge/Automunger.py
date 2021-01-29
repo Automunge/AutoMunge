@@ -6918,7 +6918,7 @@ class AutoMunge:
     
     #then one more infill with to address scenario when data wasn't numeric
     #get arbitrary cell value, if one is nan then all will be
-    value = df[column + '_dxdt'].values[0]
+    value = df[column + '_dxdt'][0]
     if value != value:
       value = 0
 
@@ -7036,7 +7036,7 @@ class AutoMunge:
     
     #then one more infill with to address scenario when data wasn't numeric
     #get arbitrary cell value, if one is nan then all will be
-    value = df[column + '_dxd2'].values[0]
+    value = df[column + '_dxd2'][0]
     if value != value:
       value = 0
 
@@ -7147,7 +7147,7 @@ class AutoMunge:
     
     #then one more infill with to address scenario when data wasn't numeric
     #get arbitrary cell value, if one is nan then all will be
-    value = df[shft_column].values[0]
+    value = df[shft_column][0]
     if value != value:
       value = 0
 
@@ -7257,7 +7257,7 @@ class AutoMunge:
     
     #then one more infill with to address scenario when data wasn't numeric
     #get arbitrary cell value, if one is nan then all will be
-    value = df[shft_column].values[0]
+    value = df[shft_column][0]
     if value != value:
       value = 0
 
@@ -7367,7 +7367,7 @@ class AutoMunge:
     
     #then one more infill with to address scenario when data wasn't numeric
     #get arbitrary cell value, if one is nan then all will be
-    value = df[shft_column].values[0]
+    value = df[shft_column][0]
     if value != value:
       value = 0
 
@@ -11469,7 +11469,7 @@ class AutoMunge:
     #if user didn't specify vocab_size then derive based on heuristic
     if vocab_size is False:
       #now let's derive vocab_size from train set, first convert all entries to a list of lists
-      temp_list = pd.Series(mdf_train[column + '_hash'].copy()).values.tolist()
+      temp_list = pd.Series(mdf_train[column + '_hash']).tolist()
       #this flattens the list of lists
       temp_list = [item for items in temp_list for item in items]
       #consolidate redundant entries
@@ -11527,7 +11527,7 @@ class AutoMunge:
       if vocab_size < 254:
         mdf_train[hashcolumn] = mdf_train[hashcolumn].astype(np.uint8)
         mdf_test[hashcolumn] = mdf_test[hashcolumn].astype(np.uint8)
-      elif vocab_size < 65530:
+      elif vocab_size < 65534:
         mdf_train[hashcolumn] = mdf_train[hashcolumn].astype(np.uint16)
         mdf_test[hashcolumn] = mdf_test[hashcolumn].astype(np.uint16)
       else:
@@ -12366,7 +12366,7 @@ class AutoMunge:
     if len(ordl_dict1) < 254:
       mdf_train[column + '_src4'] = mdf_train[column + '_src4'].astype(np.uint8)
       mdf_test[column + '_src4'] = mdf_test[column + '_src4'].astype(np.uint8)
-    elif len(ordl_dict1) < 65530:
+    elif len(ordl_dict1) < 65534:
       mdf_train[column + '_src4'] = mdf_train[column + '_src4'].astype(np.uint16)
       mdf_test[column + '_src4'] = mdf_test[column + '_src4'].astype(np.uint16)
     else:
@@ -13259,7 +13259,7 @@ class AutoMunge:
     if len(ordinal_dict) < 254:
       mdf_train[column + '_ordl'] = mdf_train[column + '_ordl'].astype(np.uint8)
       mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype(np.uint8)
-    elif len(ordinal_dict) < 65530:
+    elif len(ordinal_dict) < 65534:
       mdf_train[column + '_ordl'] = mdf_train[column + '_ordl'].astype(np.uint16)
       mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype(np.uint16)
     else:
@@ -13516,7 +13516,7 @@ class AutoMunge:
     if len(ordinal_dict) < 254:
       mdf_train[column + '_ord3'] = mdf_train[column + '_ord3'].astype(np.uint8)
       mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype(np.uint8)
-    elif len(ordinal_dict) < 65530:
+    elif len(ordinal_dict) < 65534:
       mdf_train[column + '_ord3'] = mdf_train[column + '_ord3'].astype(np.uint16)
       mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype(np.uint16)
     else:
@@ -14591,14 +14591,14 @@ class AutoMunge:
       np.where(mdf_train[tempcolumn2], 29, 28)
       
       mdf_train[tempcolumn1] = \
-      np.where(mdf_train[tempcolumn1].isin([1,3,5,7,8,10,12]), 31, mdf_train[tempcolumn1].values)
+      np.where(mdf_train[tempcolumn1].isin([1,3,5,7,8,10,12]), 31, mdf_train[tempcolumn1])
       
       mdf_train[tempcolumn1] = \
-      np.where(mdf_train[tempcolumn1].isin([4,6,9,11]), 30, mdf_train[tempcolumn1].values)
+      np.where(mdf_train[tempcolumn1].isin([4,6,9,11]), 30, mdf_train[tempcolumn1])
       
       mdf_train[tempcolumn1] = \
       np.where(mdf_train[tempcolumn1].isin([2]), mdf_train[tempcolumn2], \
-      mdf_train[tempcolumn1].values)
+      mdf_train[tempcolumn1])
       
       #do same for test set
       mdf_test[tempcolumn1] = mdf_test[time_column].copy()
@@ -14611,14 +14611,14 @@ class AutoMunge:
       np.where(mdf_test[tempcolumn2], 29, 28)
       
       mdf_test[tempcolumn1] = \
-      np.where(mdf_test[tempcolumn1].isin([1,3,5,7,8,10,12]), 31, mdf_test[tempcolumn1].values)
+      np.where(mdf_test[tempcolumn1].isin([1,3,5,7,8,10,12]), 31, mdf_test[tempcolumn1])
       
       mdf_test[tempcolumn1] = \
-      np.where(mdf_test[tempcolumn1].isin([4,6,9,11]), 30, mdf_test[tempcolumn1].values)
+      np.where(mdf_test[tempcolumn1].isin([4,6,9,11]), 30, mdf_test[tempcolumn1])
       
       mdf_test[tempcolumn1] = \
       np.where(mdf_test[tempcolumn1].isin([2]), mdf_test[tempcolumn2], \
-      mdf_test[tempcolumn1].values)
+      mdf_test[tempcolumn1])
       
       #combine month and day, scale for trigonomic transform, periodicity by year
       mdf_train[time_column] = (mdf_train[time_column].dt.month + mdf_train[time_column].dt.day / \
@@ -15888,15 +15888,15 @@ class AutoMunge:
     
     #convert all values in negtempcolumn >= 0 to Nan
     mdf_train[negtempcolumn] = \
-    np.where(mdf_train[negtempcolumn] >= 0, np.nan, mdf_train[negtempcolumn].values)
+    np.where(mdf_train[negtempcolumn] >= 0, np.nan, mdf_train[negtempcolumn])
     mdf_test[negtempcolumn] = \
-    np.where(mdf_test[negtempcolumn] >= 0, np.nan, mdf_test[negtempcolumn].values)
+    np.where(mdf_test[negtempcolumn] >= 0, np.nan, mdf_test[negtempcolumn])
     
     #convert all values <= 0 to Nan
     mdf_train[tempcolumn] = \
-    np.where(mdf_train[tempcolumn] <= 0, np.nan, mdf_train[tempcolumn].values)
+    np.where(mdf_train[tempcolumn] <= 0, np.nan, mdf_train[tempcolumn])
     mdf_test[tempcolumn] = \
-    np.where(mdf_test[tempcolumn] <= 0, np.nan, mdf_test[tempcolumn].values)
+    np.where(mdf_test[tempcolumn] <= 0, np.nan, mdf_test[tempcolumn])
     
     #log transform column
     
@@ -15905,9 +15905,9 @@ class AutoMunge:
     mdf_test[negtempcolumn] = mdf_test[negtempcolumn].abs()
     
     mdf_train[negtempcolumn] = \
-    np.where(mdf_train[negtempcolumn] != np.nan, np.floor(np.log10(mdf_train[negtempcolumn])), mdf_train[negtempcolumn].values)
+    np.where(mdf_train[negtempcolumn] != np.nan, np.floor(np.log10(mdf_train[negtempcolumn])), mdf_train[negtempcolumn])
     mdf_test[negtempcolumn] = \
-    np.where(mdf_test[negtempcolumn] != np.nan, np.floor(np.log10(mdf_test[negtempcolumn])), mdf_test[negtempcolumn].values)
+    np.where(mdf_test[negtempcolumn] != np.nan, np.floor(np.log10(mdf_test[negtempcolumn])), mdf_test[negtempcolumn])
     
     train_neg_dict = {}
     newunique_list = []
@@ -15946,9 +15946,9 @@ class AutoMunge:
     #now log trasnform positive values in column column 
 
     mdf_train[tempcolumn] = \
-    np.where(mdf_train[tempcolumn] != np.nan, np.floor(np.log10(mdf_train[tempcolumn])), mdf_train[tempcolumn].values)
+    np.where(mdf_train[tempcolumn] != np.nan, np.floor(np.log10(mdf_train[tempcolumn])), mdf_train[tempcolumn])
     mdf_test[tempcolumn] = \
-    np.where(mdf_test[tempcolumn] != np.nan, np.floor(np.log10(mdf_test[tempcolumn])), mdf_test[tempcolumn].values)
+    np.where(mdf_test[tempcolumn] != np.nan, np.floor(np.log10(mdf_test[tempcolumn])), mdf_test[tempcolumn])
 
     train_pos_dict = {}
     newposunique_list = []
@@ -16119,9 +16119,9 @@ class AutoMunge:
     
     #convert all values >= 0 to Nan
     mdf_train[negtempcolumn] = \
-    np.where(mdf_train[negtempcolumn] >= 0, np.nan, mdf_train[negtempcolumn].values)
+    np.where(mdf_train[negtempcolumn] >= 0, np.nan, mdf_train[negtempcolumn])
     mdf_test[negtempcolumn] = \
-    np.where(mdf_test[negtempcolumn] >= 0, np.nan, mdf_test[negtempcolumn].values)
+    np.where(mdf_test[negtempcolumn] >= 0, np.nan, mdf_test[negtempcolumn])
     
     #take abs value of negtempcolumn
     mdf_train[negtempcolumn] = mdf_train[negtempcolumn].abs()
@@ -16129,20 +16129,20 @@ class AutoMunge:
     
     #convert all values <= 0 in column to Nan
     mdf_train[pworcolumn] = \
-    np.where(mdf_train[pworcolumn] <= 0, np.nan, mdf_train[pworcolumn].values)
+    np.where(mdf_train[pworcolumn] <= 0, np.nan, mdf_train[pworcolumn])
     mdf_test[pworcolumn] = \
-    np.where(mdf_test[pworcolumn] <= 0, np.nan, mdf_test[pworcolumn].values)
+    np.where(mdf_test[pworcolumn] <= 0, np.nan, mdf_test[pworcolumn])
 
     mdf_train[pworcolumn] = \
-    np.where(mdf_train[pworcolumn] != np.nan, np.floor(np.log10(mdf_train[pworcolumn])), mdf_train[pworcolumn].values)
+    np.where(mdf_train[pworcolumn] != np.nan, np.floor(np.log10(mdf_train[pworcolumn])), mdf_train[pworcolumn])
     mdf_test[pworcolumn] = \
-    np.where(mdf_test[pworcolumn] != np.nan, np.floor(np.log10(mdf_test[pworcolumn])), mdf_test[pworcolumn].values)
+    np.where(mdf_test[pworcolumn] != np.nan, np.floor(np.log10(mdf_test[pworcolumn])), mdf_test[pworcolumn])
     
     #do same for negtempcolumn
     mdf_train[negtempcolumn] = \
-    np.where(mdf_train[negtempcolumn] != np.nan, np.floor(np.log10(mdf_train[negtempcolumn])), mdf_train[negtempcolumn].values)
+    np.where(mdf_train[negtempcolumn] != np.nan, np.floor(np.log10(mdf_train[negtempcolumn])), mdf_train[negtempcolumn])
     mdf_test[negtempcolumn] = \
-    np.where(mdf_test[negtempcolumn] != np.nan, np.floor(np.log10(mdf_test[negtempcolumn])), mdf_test[negtempcolumn].values)
+    np.where(mdf_test[negtempcolumn] != np.nan, np.floor(np.log10(mdf_test[negtempcolumn])), mdf_test[negtempcolumn])
 
     train_neg_dict = {}
     newunique_list = []
@@ -16250,7 +16250,7 @@ class AutoMunge:
     if bn_count < 254:
       mdf_train[pworcolumn] = mdf_train[pworcolumn].astype(np.uint8)
       mdf_test[pworcolumn] = mdf_test[pworcolumn].astype(np.uint8)
-    elif bn_count < 65530:
+    elif bn_count < 65534:
       mdf_train[pworcolumn] = mdf_train[pworcolumn].astype(np.uint16)
       mdf_test[pworcolumn] = mdf_test[pworcolumn].astype(np.uint16)
     else:
@@ -16852,7 +16852,7 @@ class AutoMunge:
     if bn_count < 254:
       mdf_train[binscolumn] = mdf_train[binscolumn].astype(np.uint8)
       mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint8)
-    elif bn_count < 65530:
+    elif bn_count < 65534:
       mdf_train[binscolumn] = mdf_train[binscolumn].astype(np.uint16)
       mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint16)
     else:
@@ -16965,7 +16965,7 @@ class AutoMunge:
     if bn_delta > 0 and bn_min == bn_min:
 
       #grab the intervals using qcut based on equal population in train set
-      intervalset = pd.qcut(mdf_train[binscolumn].values, bincount, duplicates='drop').unique()
+      intervalset = pd.qcut(mdf_train[binscolumn], bincount, duplicates='drop').unique()
 
       #note we're sorting here, and scrubbing any nan
       intervalset = sorted([interval for interval in intervalset if interval == interval])
@@ -17164,7 +17164,7 @@ class AutoMunge:
     if bn_delta > 0 and bn_min == bn_min:
 
       #grab the intervals using qcut based on equal population in train set
-      intervalset = pd.qcut(mdf_train[binscolumn].values, bincount, duplicates='drop').unique()
+      intervalset = pd.qcut(mdf_train[binscolumn], bincount, duplicates='drop').unique()
 
       #note we're sorting here, and scrubbing any nan
       intervalset = sorted([interval for interval in intervalset if interval == interval])
@@ -17229,7 +17229,7 @@ class AutoMunge:
       if bn_count < 254:
         mdf_train[binscolumn] = mdf_train[binscolumn].astype(np.uint8)
         mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint8)
-      elif bn_count < 65530:
+      elif bn_count < 65534:
         mdf_train[binscolumn] = mdf_train[binscolumn].astype(np.uint16)
         mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint16)
       else:
@@ -17351,7 +17351,7 @@ class AutoMunge:
     if bn_delta > 0 and bn_min == bn_min:
 
       #grab the intervals using qcut based on equal population in train set
-      intervalset = pd.qcut(mdf_train[binscolumn].values, bincount, duplicates='drop').unique()
+      intervalset = pd.qcut(mdf_train[binscolumn], bincount, duplicates='drop').unique()
 
       #note we're sorting here, and scrubbing any nan
       intervalset = sorted([interval for interval in intervalset if interval == interval])
@@ -17907,7 +17907,7 @@ class AutoMunge:
     if len(bins_cuts) < 254:
       mdf_train[binscolumn] = mdf_train[binscolumn].astype(np.uint8)
       mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint8)
-    elif len(bins_cuts) < 65530:
+    elif len(bins_cuts) < 65534:
       mdf_train[binscolumn] = mdf_train[binscolumn].astype(np.uint16)
       mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint16)
     else:
@@ -18071,7 +18071,7 @@ class AutoMunge:
     if len(bins_cuts) < 254:
       mdf_train[binscolumn] = mdf_train[binscolumn].astype(np.uint8)
       mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint8)
-    elif len(bins_cuts) < 65530:
+    elif len(bins_cuts) < 65534:
       mdf_train[binscolumn] = mdf_train[binscolumn].astype(np.uint16)
       mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint16)
     else:
@@ -19221,7 +19221,7 @@ class AutoMunge:
       #So will produce an array containing data types of each cell and \
       #evaluate for most common variable using the collections library
 
-      type1_df = df[column].apply(lambda x: type(x)).values
+      type1_df = df[column].apply(lambda x: type(x)).to_numpy()
       
       #c = collections.Counter(type1_df)
       c = Counter(type1_df)
@@ -19244,7 +19244,7 @@ class AutoMunge:
       #additional array needed to check for time series
 
       #df['typecolumn2'] = df[column].apply(lambda x: type(pd.to_datetime(x, errors = 'coerce')))
-      type2_df = df[column].apply(lambda x: type(pd.to_datetime(x, errors = 'coerce', utc=True))).values
+      type2_df = df[column].apply(lambda x: type(pd.to_datetime(x, errors = 'coerce', utc=True))).to_numpy()
 
       #datec = collections.Counter(type2_df)
       datec = Counter(type2_df)
@@ -20936,7 +20936,7 @@ class AutoMunge:
         infillindex = NArows.loc[NArows[NArowcolumn]]['tempindex1']
 
         #create a dictionary for use to insert infill using df's index as the key
-        infill_dict = dict(zip(infillindex, infill.values))
+        infill_dict = dict(zip(infillindex, infill.to_numpy()))
 
         #replace 'tempindex1' column with infill in rows where NArows is True
         NArows['tempindex1'] = np.where(NArows[NArowcolumn], NArows['tempindex1'].replace(infill_dict), 0)
@@ -20956,7 +20956,7 @@ class AutoMunge:
           infillindex = NArows.loc[NArows[NArowcolumn]]['tempindex1']
 
           #create a dictionary for use to insert infill using df's index as the key
-          infill_dict = dict(zip(infillindex, infill[textcolumnname].values))
+          infill_dict = dict(zip(infillindex, infill[textcolumnname].to_numpy()))
 
           #replace 'tempindex1' column with infill in rows where NArows is True
           NArows['tempindex1'] = np.where(NArows[NArowcolumn], NArows['tempindex1'].replace(infill_dict), 0)
@@ -21165,8 +21165,8 @@ class AutoMunge:
     #and default values for Random Forest Classifer are initialized with populateMLinfilldefaults
     """
     
-    df_train_filltrain = df_train_filltrain.values
-    df_train_filllabel = df_train_filllabel.values
+    df_train_filltrain = df_train_filltrain.to_numpy()
+    df_train_filllabel = df_train_filllabel.to_numpy()
     
     #sometimes may be one column, then need ravel flattening
     if df_train_filllabel.shape[1] == 1:
@@ -21269,7 +21269,7 @@ class AutoMunge:
     #the categorylist parameter is used to handle an edge case for when predict_autogluon is called
     """
     
-    fillfeatures = fillfeatures.values
+    fillfeatures = fillfeatures.to_numpy()
     
     infill = model.predict(fillfeatures)
     
@@ -21299,8 +21299,8 @@ class AutoMunge:
     #and default values for Random Forest Regressor are initialized with populateMLinfilldefaults
     """
     
-    df_train_filltrain = df_train_filltrain.values
-    df_train_filllabel = df_train_filllabel.values
+    df_train_filltrain = df_train_filltrain.to_numpy()
+    df_train_filllabel = df_train_filllabel.to_numpy()
     
     #single label column needs to be flattened from [[#,...]] to [#,...] with ravel
     df_train_filllabel = np.ravel(df_train_filllabel)
@@ -21400,7 +21400,7 @@ class AutoMunge:
     #the categorylist parameter is used to handle an edge case for when predict_autogluon is called
     """
     
-    fillfeatures = fillfeatures.values
+    fillfeatures = fillfeatures.to_numpy()
     
     infill = model.predict(fillfeatures)
     
@@ -21428,8 +21428,8 @@ class AutoMunge:
       #I'm not sure why simply renaming columns to integers doesn't work here
       # df_train_filltrain.columns = list(range(len(list(df_train_filltrain.columns))))
       # df_train_filllabel.columns = list(range(len(list(df_train_filllabel.columns))))
-      df_train_filltrain = pd.DataFrame(df_train_filltrain.values)
-      df_train_filllabel = pd.DataFrame(df_train_filllabel.values)
+      df_train_filltrain = pd.DataFrame(df_train_filltrain.to_numpy())
+      df_train_filllabel = pd.DataFrame(df_train_filllabel.to_numpy())
 
       df_train_filltrain.columns = ['train_' + str(x) for x in list(df_train_filltrain.columns)]
       
@@ -21484,7 +21484,7 @@ class AutoMunge:
     if model is not False:
       
       # fillfeatures.columns = list(range(len(list(fillfeatures.columns))))
-      fillfeatures = pd.DataFrame(fillfeatures.values)
+      fillfeatures = pd.DataFrame(fillfeatures.to_numpy())
 
       fillfeatures.columns = ['train_' + str(x) for x in list(fillfeatures.columns)]
 
@@ -21533,7 +21533,7 @@ class AutoMunge:
       + columntypes['onehot'] + columntypes['binary']
 
       #column headers matter for convert_onehot_to_singlecolumn methods, reset as integers
-      df_train_filllabel = pd.DataFrame(df_train_filllabel.values)
+      df_train_filllabel = pd.DataFrame(df_train_filllabel.to_numpy())
 
       ag_label_column = list(df_train_filllabel.columns)
 
@@ -21882,7 +21882,7 @@ class AutoMunge:
       
     del df['labels']
 
-    df = df.values
+    df = df.to_numpy()
     
     return df
 
@@ -21988,7 +21988,7 @@ class AutoMunge:
 
     del df_array['1010']
 
-    np_1010 = df_array.values
+    np_1010 = df_array.to_numpy()
     
 #     #else if np_onehot was all zeros (edge case)
 #     else:
@@ -23905,7 +23905,7 @@ class AutoMunge:
       if len(binary_mode) > 0:
         binary_mode = binary_mode[0]
       else:
-        binary_mode = tempdf['onehot'].values[0]
+        binary_mode = tempdf['onehot'][0]
       
 #       if len(binary_mode) < 1:
 #         binary_mode = 0
@@ -23914,7 +23914,7 @@ class AutoMunge:
       tempdf = tempdf[tempdf['onehot'] == binary_mode]
       
       #mode is the current columns value associated with that mode
-      mode = tempdf[column].values[0]
+      mode = tempdf[column][:0]
       
       del tempdf
       del binary_mode
@@ -24085,7 +24085,7 @@ class AutoMunge:
 #       if len(binary_mode) > 0:
 #         binary_mode = binary_mode[0]
 #       else:
-#         binary_mode = tempdf['onehot'].values[0]
+#         binary_mode = tempdf['onehot'][0]
 
       if binary_mode != binary_mode:
         binary_mode = 0
@@ -24097,7 +24097,7 @@ class AutoMunge:
       tempdf = tempdf[tempdf['onehot'] == binary_mode]
       
       #mode is the current columns value associated with that mode
-      mode = tempdf[column].values[0]
+      mode = tempdf[column][:0]
       
       del tempdf
       del binary_mode
@@ -24648,8 +24648,8 @@ class AutoMunge:
     self.populatePCAdefaults(randomseed)
     
     #convert PCAsets to numpy arrays
-    PCAset_train = PCAset_train.values
-    PCAset_test = PCAset_test.values
+    PCAset_train = PCAset_train.to_numpy()
+    PCAset_test = PCAset_test.to_numpy()
     
     #initialize a PCA model
     #PCAmodel = PCA(n_components = PCAn_components, random_state = randomseed)
@@ -26490,7 +26490,7 @@ class AutoMunge:
     #such as for MLinfill
     """
     
-#     unique_set = set(pd.unique(df[label_categorylist].values.ravel('K')))
+#     unique_set = set(pd.unique(df[label_categorylist].to_numpy().ravel('K')))
     
 #     if (unique_set == {0,1} \
 #     or unique_set == {0} \
@@ -26510,7 +26510,7 @@ class AutoMunge:
     
     if LSfit is True:
       
-      unique_set = set(pd.unique(df[label_categorylist].values.ravel('K')))
+      unique_set = set(pd.unique(df[label_categorylist]))
       
       #plus let's check if this is one-hot encoded (vs like binary encoded or something)
       #this is a proxy for testing if category is '1010'
@@ -26576,12 +26576,12 @@ class AutoMunge:
               Smoothing_K = LS_dict[column2][column1]
 
               df[column1] = \
-              np.where(df[column2] == 1, (1 - epsilon) * Smoothing_K, df[column1].values)
+              np.where(df[column2] == 1, (1 - epsilon) * Smoothing_K, df[column1])
 
         for column1 in label_categorylist:
 
           df[column1] = \
-          np.where(df[column1]==1, df[column1] * (epsilon), df[column1].values)
+          np.where(df[column1]==1, df[column1] * (epsilon), df[column1])
 
           categorycomplete_dict[column1] = True
     
@@ -26655,7 +26655,7 @@ class AutoMunge:
     
     if LSfit is True:
       
-      unique_set = set(pd.unique(df[label_categorylist].values.ravel('K')))
+      unique_set = set(pd.unique(df[label_categorylist]))
       
       #plus let's check if this is one-hot encoded (vs like binary encoded or something)
       #this is a proxy for testing if category is '1010'
@@ -26724,12 +26724,12 @@ class AutoMunge:
               Smoothing_K = LS_dict[column2][column1]
 
               df[column1] = \
-              np.where(df[column2] == 1, (1 - epsilon) * Smoothing_K, df[column1].values)
+              np.where(df[column2] == 1, (1 - epsilon) * Smoothing_K, df[column1])
 
         for column1 in label_categorylist:
 
           df[column1] = \
-          np.where(df[column1]==1, df[column1] * (epsilon), df[column1].values)
+          np.where(df[column1]==1, df[column1] * (epsilon), df[column1])
 
           categorycomplete_dict[column1] = True
     
@@ -27067,7 +27067,7 @@ class AutoMunge:
             elif actionkey == 'inject_ratio':
               #inject_ratio is uniform randomly injected nan points to ratio of entries
               ratio = assignnan['injections'][columnkey][actionkey]
-              index = list(pd.DataFrame(df.index).sample(frac=ratio, replace=False, random_state=randomseed).values.ravel())
+              index = list(pd.DataFrame(df.index).sample(frac=ratio, replace=False, random_state=randomseed).to_numpy().ravel())
               df.loc[index, columnkey] = np.nan
               
             elif actionkey == 'range':
@@ -27092,7 +27092,7 @@ class AutoMunge:
                   df_mask['mask'] = np.where(df_mask['mask'] == 1, np.nan, 1)
                   if ratio > 0:
                     #this get's index list of mask nan entries for use with .loc
-                    index = list(pd.DataFrame(df_mask[df_mask['mask'] != df_mask['mask']].index).sample(frac=ratio, replace=False, random_state=randomseed).values.ravel())
+                    index = list(pd.DataFrame(df_mask[df_mask['mask'] != df_mask['mask']].index).sample(frac=ratio, replace=False, random_state=randomseed).to_numpy().ravel())
                     #this reverts some of the nans if ratio was passed as <1
                     df_mask.loc[index, 'mask'] = 1
                   #now inject the nan to the target column in df
@@ -27133,7 +27133,7 @@ class AutoMunge:
                   df_mask['mask'] = np.where(df_mask['mask'] == 1, np.nan, 1)
                   if ratio > 0:
                     #this get's index list of mask nan entries for use with .loc
-                    index = list(pd.DataFrame(df_mask[df_mask['mask'] != df_mask['mask']].index).sample(frac=ratio, replace=False, random_state=randomseed).values.ravel())
+                    index = list(pd.DataFrame(df_mask[df_mask['mask'] != df_mask['mask']].index).sample(frac=ratio, replace=False, random_state=randomseed).to_numpy().ravel())
                     #this reverts some of the nans if ratio was passed as <1
                     df_mask.loc[index, 'mask'] = 1
                   #now inject the nan to the target column in df
@@ -27155,7 +27155,7 @@ class AutoMunge:
                 df_mask['mask'] = np.where(df[columnkey] == targetentry, 1, 0)
                 if ratio > 0:
                   #this get's index list of mask 1 entries for use with .loc
-                  index = list(pd.DataFrame(df_mask[df_mask['mask'] == 1].index).sample(frac=ratio, replace=False, random_state=randomseed).values.ravel())
+                  index = list(pd.DataFrame(df_mask[df_mask['mask'] == 1].index).sample(frac=ratio, replace=False, random_state=randomseed).to_numpy().ravel())
                   #this reverts some of the 1's if ratio was passed as <1
                   df_mask.loc[index, 'mask'] = 0
                 df[columnkey] = np.where(df_mask['mask'] == 1, np.nan, df[columnkey])
@@ -27209,7 +27209,7 @@ class AutoMunge:
     
     df_temp = df[column].copy()
     df_temp = self.df_shuffle(df_temp, randomseed)
-    df[column] = df_temp.values
+    df[column] = df_temp.to_numpy()
     
     del df_temp
     
@@ -27381,12 +27381,12 @@ class AutoMunge:
     mask = pd.Series(np.where(mask == True, False, True))
 
     if df_consol_id.shape[0] == df.shape[0]:
-      df_consol_id = df_consol_id.iloc[mask.values]
+      df_consol_id = df_consol_id.iloc[mask.to_numpy()]
     
     if df_consol_labels.shape[0] == df.shape[0]:
-      df_consol_labels = df_consol_labels.iloc[mask.values]
+      df_consol_labels = df_consol_labels.iloc[mask.to_numpy()]
 
-    df = df.iloc[mask.values]
+    df = df.iloc[mask.to_numpy()]
     
     return df, df_consol_id, df_consol_labels
   
@@ -28889,7 +28889,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.53'
+    automungeversion = '5.54'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -31661,7 +31661,7 @@ class AutoMunge:
 
         if vocab_size < 254:
           mdf_test[hashcolumn] = mdf_test[hashcolumn].astype(np.uint8)
-        elif vocab_size < 65530:
+        elif vocab_size < 65534:
           mdf_test[hashcolumn] = mdf_test[hashcolumn].astype(np.uint16)
         else:
           mdf_test[hashcolumn] = mdf_test[hashcolumn].astype(np.uint32)
@@ -32199,7 +32199,7 @@ class AutoMunge:
       #we'll base the integer type on number of ordinal entries
       if len(ordl_dict1) < 254:
         mdf_test[column + '_src4'] = mdf_test[column + '_src4'].astype(np.uint8)
-      elif len(ordl_dict1) < 65530:
+      elif len(ordl_dict1) < 65534:
         mdf_test[column + '_src4'] = mdf_test[column + '_src4'].astype(np.uint16)
       else:
         mdf_test[column + '_src4'] = mdf_test[column + '_src4'].astype(np.uint32)
@@ -32430,7 +32430,7 @@ class AutoMunge:
     #just want to make sure these arent' being saved as floats for memory considerations
     if len(ordinal_dict) < 254:
       mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype(np.uint8)
-    elif len(ordinal_dict) < 65530:
+    elif len(ordinal_dict) < 65534:
       mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype(np.uint16)
     else:
       mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype(np.uint32)
@@ -32535,7 +32535,7 @@ class AutoMunge:
     #just want to make sure these arent' being saved as floats for memory considerations
     if len(ordinal_dict) < 254:
       mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype(np.uint8)
-    elif len(ordinal_dict) < 65530:
+    elif len(ordinal_dict) < 65534:
       mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype(np.uint16)
     else:
       mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype(np.uint32)
@@ -32825,14 +32825,14 @@ class AutoMunge:
         np.where(mdf_test[tempcolumn2], 29, 28)
 
         mdf_test[tempcolumn1] = \
-        np.where(mdf_test[tempcolumn1].isin([1,3,5,7,8,10,12]), 31, mdf_test[tempcolumn1].values)
+        np.where(mdf_test[tempcolumn1].isin([1,3,5,7,8,10,12]), 31, mdf_test[tempcolumn1])
 
         mdf_test[tempcolumn1] = \
-        np.where(mdf_test[tempcolumn1].isin([4,6,9,11]), 30, mdf_test[tempcolumn1].values)
+        np.where(mdf_test[tempcolumn1].isin([4,6,9,11]), 30, mdf_test[tempcolumn1])
 
         mdf_test[tempcolumn1] = \
         np.where(mdf_test[tempcolumn1].isin([2]), mdf_test[tempcolumn2], \
-        mdf_test[tempcolumn1].values)
+        mdf_test[tempcolumn1])
 
         #combine month and day, scale for trigonomic transform, periodicity by year
         mdf_test[time_column] = (mdf_test[time_column].dt.month + mdf_test[time_column].dt.day / \
@@ -33433,11 +33433,11 @@ class AutoMunge:
 
       #convert all values in negtempcolumn >= 0 to Nan
       mdf_test[negtempcolumn] = \
-      np.where(mdf_test[negtempcolumn] >= 0, np.nan, mdf_test[negtempcolumn].values)
+      np.where(mdf_test[negtempcolumn] >= 0, np.nan, mdf_test[negtempcolumn])
 
       #convert all values <= 0 to Nan
       mdf_test[tempcolumn] = \
-      np.where(mdf_test[tempcolumn] <= 0, np.nan, mdf_test[tempcolumn].values)
+      np.where(mdf_test[tempcolumn] <= 0, np.nan, mdf_test[tempcolumn])
 
       #log transform column
 
@@ -33445,7 +33445,7 @@ class AutoMunge:
       mdf_test[negtempcolumn] = mdf_test[negtempcolumn].abs()
 
       mdf_test[negtempcolumn] = \
-      np.where(mdf_test[negtempcolumn] != np.nan, np.floor(np.log10(mdf_test[negtempcolumn])), mdf_test[negtempcolumn].values)
+      np.where(mdf_test[negtempcolumn] != np.nan, np.floor(np.log10(mdf_test[negtempcolumn])), mdf_test[negtempcolumn])
 
       test_neg_dict = {}
       negunique = mdf_test[negtempcolumn].unique()
@@ -33467,7 +33467,7 @@ class AutoMunge:
 
       #now log trasnform positive values in column column 
       mdf_test[tempcolumn] = \
-      np.where(mdf_test[tempcolumn] != np.nan, np.floor(np.log10(mdf_test[tempcolumn])), mdf_test[tempcolumn].values)
+      np.where(mdf_test[tempcolumn] != np.nan, np.floor(np.log10(mdf_test[tempcolumn])), mdf_test[tempcolumn])
 
       test_pos_dict = {}
       posunique = mdf_test[tempcolumn].unique()
@@ -33557,21 +33557,21 @@ class AutoMunge:
     
     #convert all values >= 0 to Nan
     mdf_test[negtempcolumn] = \
-    np.where(mdf_test[negtempcolumn] >= 0, np.nan, mdf_test[negtempcolumn].values)
+    np.where(mdf_test[negtempcolumn] >= 0, np.nan, mdf_test[negtempcolumn])
     
     #take abs value of negtempcolumn
     mdf_test[negtempcolumn] = mdf_test[negtempcolumn].abs()
     
     #convert all values <= 0 in column to Nan
     mdf_test[pworcolumn] = \
-    np.where(mdf_test[pworcolumn] <= 0, np.nan, mdf_test[pworcolumn].values)
+    np.where(mdf_test[pworcolumn] <= 0, np.nan, mdf_test[pworcolumn])
 
     mdf_test[pworcolumn] = \
-    np.where(mdf_test[pworcolumn] != np.nan, np.floor(np.log10(mdf_test[pworcolumn])), mdf_test[pworcolumn].values)
+    np.where(mdf_test[pworcolumn] != np.nan, np.floor(np.log10(mdf_test[pworcolumn])), mdf_test[pworcolumn])
     
     #do same for negtempcolumn
     mdf_test[negtempcolumn] = \
-    np.where(mdf_test[negtempcolumn] != np.nan, np.floor(np.log10(mdf_test[negtempcolumn])), mdf_test[negtempcolumn].values)
+    np.where(mdf_test[negtempcolumn] != np.nan, np.floor(np.log10(mdf_test[negtempcolumn])), mdf_test[negtempcolumn])
 
     newunique_list = list(train_replace_dict)
       
@@ -33638,7 +33638,7 @@ class AutoMunge:
     bn_count = len(activations_list)
     if bn_count < 254:
       mdf_test[pworcolumn] = mdf_test[pworcolumn].astype(np.uint8)
-    elif bn_count < 65530:
+    elif bn_count < 65534:
       mdf_test[pworcolumn] = mdf_test[pworcolumn].astype(np.uint16)
     else:
       mdf_test[pworcolumn] = mdf_test[pworcolumn].astype(np.uint32)
@@ -33919,7 +33919,7 @@ class AutoMunge:
     #returned data type is conditional on the size of encoding space
     if bn_count < 254:
       mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint8)
-    elif bn_count < 65530:
+    elif bn_count < 65534:
       mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint16)
     else:
       mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint32)
@@ -34089,7 +34089,7 @@ class AutoMunge:
       #returned data type is conditional on the size of encoding space
       if bn_count < 254:
         mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint8)
-      elif bn_count < 65530:
+      elif bn_count < 65534:
         mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint16)
       else:
         mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint32)
@@ -34438,7 +34438,7 @@ class AutoMunge:
     #returned data type is conditional on the size of encoding space
     if len(bins_cuts) < 254:
       mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint8)
-    elif len(bins_cuts) < 65530:
+    elif len(bins_cuts) < 65534:
       mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint16)
     else:
       mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint32)
@@ -34502,7 +34502,7 @@ class AutoMunge:
     #returned data type is conditional on the size of encoding space
     if len(bins_cuts) < 254:
       mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint8)
-    elif len(bins_cuts) < 65530:
+    elif len(bins_cuts) < 65534:
       mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint16)
     else:
       mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint32)
@@ -35393,7 +35393,7 @@ class AutoMunge:
     PCAmodel = postprocess_dict['PCAmodel']
 
     #convert PCAsets to numpy arrays
-    PCAset_test = PCAset_test.values
+    PCAset_test = PCAset_test.to_numpy()
 
     #apply the transform
     PCAset_test = PCAmodel.transform(PCAset_test)
@@ -39492,7 +39492,7 @@ class AutoMunge:
 
       if pandasoutput is False:
 
-        df_test = df_test.values
+        df_test = df_test.to_numpy()
 
       return df_test, recovered_list, inversion_info_dict
 
@@ -39547,7 +39547,7 @@ class AutoMunge:
 
       if pandasoutput is False:
 
-        df_test = df_test.values
+        df_test = df_test.to_numpy()
 
       return df_test, recovered_list, inversion_info_dict
 
@@ -39644,7 +39644,7 @@ class AutoMunge:
 
       if pandasoutput is False:
 
-        df_test_denseinvert_final = df_test_denseinvert_final.values
+        df_test_denseinvert_final = df_test_denseinvert_final.to_numpy()
 
       return df_test_denseinvert_final, dense_recovered_list, inversion_info_dict
 
@@ -39690,6 +39690,6 @@ class AutoMunge:
 
       if pandasoutput is False:
 
-        df_test = df_test.values
+        df_test = df_test.to_numpy()
 
       return df_test, recovered_list, inversion_info_dict
