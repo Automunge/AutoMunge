@@ -52,7 +52,7 @@ train a machine learning model with any corresponding labels if available
 included in the set, and also if available consistently formatted test data 
 that can then be used to generate predictions from that trained model. When 
 fed pandas dataframes or numpy arrays for these sets the function returns a 
-series of transformed numpy arrays or pandas dataframes (per selection) which 
+series of transformed pandas dataframes (or numpy arrays per selection) which 
 are numerically encoded and suitable for the direct application of machine 
 learning algorithms. A user has an option between default feature engineering 
 based on inferred properties of the data with feature transformations such as 
@@ -220,7 +220,7 @@ am.postmunge(postprocess_dict, df_test, \
 The functions depend on pandas dataframe formatted train and test data
 or numpy arrays with consistent order of columns between train and test data. 
 (For numpy arrays any label column should be positioned as final column in set.)
-The functions return numpy arrays or pandas dataframes numerically encoded 
+The functions return pandas dataframes (or numpy arrays per selection) numerically encoded 
 and normalized such as to make them suitable for direct application to a 
 machine learning model in the framework of a user's choice, including sets for 
 the various activities of a generic machine learning project such as training, 
