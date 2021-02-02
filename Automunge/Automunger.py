@@ -21527,7 +21527,7 @@ class AutoMunge:
     try:
 
       #catboost takes specification of categoric columns
-      columntypes = am.populate_columntype_report(postprocess_dict, list(df_train_filltrain))
+      columntypes = self.populate_columntype_report(postprocess_dict, list(df_train_filltrain))
       categorical_features_indices = \
       columntypes['boolean'] + columntypes['ordinal'] \
       + columntypes['onehot'] + columntypes['binary']
@@ -21613,8 +21613,7 @@ class AutoMunge:
         else:
           #initialize model
           model = CatBoostClassifier(
-            **default_model_params,
-            random_seed = randomseed
+            **default_model_params
           )
 
           #train the model with validation set
@@ -21698,7 +21697,7 @@ class AutoMunge:
     try:
 
       #catboost takes specification of categoric columns
-      columntypes = am.populate_columntype_report(postprocess_dict, list(df_train_filltrain))
+      columntypes = self.populate_columntype_report(postprocess_dict, list(df_train_filltrain))
       categorical_features_indices = \
       columntypes['boolean'] + columntypes['ordinal'] \
       + columntypes['onehot'] + columntypes['binary']
@@ -21768,8 +21767,7 @@ class AutoMunge:
 
           #initialize model
           model = CatBoostRegressor(
-            **default_model_params,
-            random_seed = randomseed
+            **default_model_params
           )
 
           #train the model with validation set
@@ -28910,7 +28908,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.55'
+    automungeversion = '5.56'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
