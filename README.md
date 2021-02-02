@@ -1014,7 +1014,7 @@ ML_cmnd = {'autoML_type':'catboost'}
 Can pass parameters to model initialization and fit operation as:
 ```
 #example of turning on early stopping for classifier 
-#by passing a eval_ratio for validaiton set which defaults to 0.15 for regressor
+#by passing a eval_ratio for validation set which defaults to 0.15 for regressor
 #note eval_ratio is an Automunge parameter, other parameters accepted are those from CatBoost library
 ML_cmnd = {'autoML_type':'catboost', 
            'MLinfill_cmnd' : {'catboost_classifier_model' : {},
@@ -1026,7 +1026,8 @@ In general, accuracy performance of autoML options are expected as AutoGluon > C
 In general, latency performance of autoML options are expected as Random Forest > CatBoost > AutoGluon.
 In general, memory performance of autoML options are expected as Random Forest > CatBoost > AutoGluon.
 And where Random Forest and Catboost are more portable than AutoGluon since don't require a local model 
-repository saved to hard drive. (For now retaining Random Forest as the default.)
+repository saved to hard drive. (For now retaining Random Forest as the default, of course a further
+tradeoff is that Random Forest doesn't include GPU support.)
 
 A user can also assign specific methods for PCA transforms. Current PCA_types
 supported include 'PCA', 'SparsePCA', and 'KernelPCA', all via Scikit-Learn.
