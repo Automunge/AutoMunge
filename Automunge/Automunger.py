@@ -534,15 +534,6 @@ class AutoMunge:
                                      'niecesnephews' : [], \
                                      'coworkers'     : [], \
                                      'friends'       : []}})
-
-    transform_dict.update({'onh2' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['onht'], \
-                                     'cousins'       : ['NArw'], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
-                                     'friends'       : []}})
     
     transform_dict.update({'text' : {'parents'       : [], \
                                      'siblings'      : [], \
@@ -3704,14 +3695,6 @@ class AutoMunge:
                                   'MLinfilltype' : 'binary', \
                                   'labelctgy' : 'bnr2'}})
     process_dict.update({'onht' : {'dualprocess' : self.process_onht_class, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_onht_class, \
-                                  'inverseprocess' : self.inverseprocess_onht, \
-                                  'info_retention' : True, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'multirt', \
-                                  'labelctgy' : 'onht'}})
-    process_dict.update({'onh2' : {'dualprocess' : self.process_onht_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_onht_class, \
                                   'inverseprocess' : self.inverseprocess_onht, \
@@ -27065,7 +27048,7 @@ class AutoMunge:
             elif actionkey == 'inject_ratio':
               #inject_ratio is uniform randomly injected nan points to ratio of entries
               ratio = assignnan['injections'][columnkey][actionkey]
-              index = list(pd.DataFrame(df.index).sample(frac=ratio, replace=False, random_state=randomseed).to_numpy().ravel())
+              index = list(pd.DataFrame(df.index).sample(frac=ratio, replace=False).to_numpy().ravel())
               df.loc[index, columnkey] = np.nan
               
             elif actionkey == 'range':
@@ -27090,7 +27073,7 @@ class AutoMunge:
                   df_mask['mask'] = np.where(df_mask['mask'] == 1, np.nan, 1)
                   if ratio > 0:
                     #this get's index list of mask nan entries for use with .loc
-                    index = list(pd.DataFrame(df_mask[df_mask['mask'] != df_mask['mask']].index).sample(frac=ratio, replace=False, random_state=randomseed).to_numpy().ravel())
+                    index = list(pd.DataFrame(df_mask[df_mask['mask'] != df_mask['mask']].index).sample(frac=ratio, replace=False).to_numpy().ravel())
                     #this reverts some of the nans if ratio was passed as <1
                     df_mask.loc[index, 'mask'] = 1
                   #now inject the nan to the target column in df
@@ -27131,7 +27114,7 @@ class AutoMunge:
                   df_mask['mask'] = np.where(df_mask['mask'] == 1, np.nan, 1)
                   if ratio > 0:
                     #this get's index list of mask nan entries for use with .loc
-                    index = list(pd.DataFrame(df_mask[df_mask['mask'] != df_mask['mask']].index).sample(frac=ratio, replace=False, random_state=randomseed).to_numpy().ravel())
+                    index = list(pd.DataFrame(df_mask[df_mask['mask'] != df_mask['mask']].index).sample(frac=ratio, replace=False).to_numpy().ravel())
                     #this reverts some of the nans if ratio was passed as <1
                     df_mask.loc[index, 'mask'] = 1
                   #now inject the nan to the target column in df
@@ -27153,7 +27136,7 @@ class AutoMunge:
                 df_mask['mask'] = np.where(df[columnkey] == targetentry, 1, 0)
                 if ratio > 0:
                   #this get's index list of mask 1 entries for use with .loc
-                  index = list(pd.DataFrame(df_mask[df_mask['mask'] == 1].index).sample(frac=ratio, replace=False, random_state=randomseed).to_numpy().ravel())
+                  index = list(pd.DataFrame(df_mask[df_mask['mask'] == 1].index).sample(frac=ratio, replace=False).to_numpy().ravel())
                   #this reverts some of the 1's if ratio was passed as <1
                   df_mask.loc[index, 'mask'] = 0
                 df[columnkey] = np.where(df_mask['mask'] == 1, np.nan, df[columnkey])
@@ -28908,7 +28891,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.56'
+    automungeversion = '5.57'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
