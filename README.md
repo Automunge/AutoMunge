@@ -2599,7 +2599,7 @@ to set with >2 entries applies infill to those entries beyond two most common.
   - inversion available: yes with full recovery
 * onht: converts categorical sets to one-hot encoded set of boolean identifiers 
 (like text but different convention for returned column headers and distinct encodings for numbers and numerical string equivalents)
-  - default infill: all entries zero (for dedicated column signalling infill / activations in every row use onh2)
+  - default infill: all entries zero
   - default NArowtype: justNaN
   - suffix appender: '_onht\_#' where # integer corresponds to the target entry of a column
   - assignparam parameters accepted:
@@ -3533,7 +3533,6 @@ avoid unintentional duplication.
 - 'null',
 - 'om10',
 - 'onht',
-- 'onh2',
 - 'or10',
 - 'or11',
 - 'or12',
@@ -4231,15 +4230,6 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'siblings'      : [], \
                                      'auntsuncles'   : ['onht'], \
                                      'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
-                                     'friends'       : []}})
-
-    transform_dict.update({'onh2' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['onht'], \
-                                     'cousins'       : ['NArw'], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
                                      'coworkers'     : [], \
