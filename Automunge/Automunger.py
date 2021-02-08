@@ -5848,6 +5848,7 @@ class AutoMunge:
     process_dict.update({'null' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_null_class, \
                                   'postprocess' : None, \
+                                  'inplace_option' : False, \
                                   'NArowtype' : 'exclude', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : None}})
@@ -5971,6 +5972,7 @@ class AutoMunge:
     process_dict.update({'nuld' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_null_class, \
                                   'postprocess' : None, \
+                                  'inplace_option' : False, \
                                   'NArowtype' : 'exclude', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : None}})
@@ -18789,31 +18791,34 @@ class AutoMunge:
   
   def process_null_class(self, df, column, category, postprocess_dict, params = {}):
     '''
-    #here we'll delete any columns that returned a 'null' category
-    #note this is a. singleprocess transform
+    #this is placeholder for columns given a null deletion operation
+    #(such as is default for training sets containing all nan values)
+    #(deletion takes place in circle of life function)
+    #the returned empty column_dict_list is consistent with convention for other transforms
+    #for scenarios where no columns are returned
     '''
     
     suffixoverlap_results = {}
     
-    #df = df.drop([column], axis=1)
-    #deletion takes place elsewhere
+    # df = df.drop([column], axis=1)
+    #deletion takes place in circle of life function
 
     column_dict_list = []
 
-    column_dict = {column + '_null' : {'category' : 'null', \
-                                      'origcategory' : category, \
-                                      'normalization_dict' : {column + '_null':{}}, \
-                                      'origcolumn' : column, \
-                                      'inputcolumn' : column, \
-                                      'columnslist' : [], \
-                                      'categorylist' : [], \
-                                      'infillmodel' : False, \
-                                      'infillcomplete' : False, \
-                                      'suffixoverlap_results' : suffixoverlap_results, \
-                                      'deletecolumn' : False}}
+    # column_dict = {column : {'category' : 'null', \
+    #                                   'origcategory' : category, \
+    #                                   'normalization_dict' : {column + '_null':{}}, \
+    #                                   'origcolumn' : column, \
+    #                                   'inputcolumn' : column, \
+    #                                   'columnslist' : [], \
+    #                                   'categorylist' : [], \
+    #                                   'infillmodel' : False, \
+    #                                   'infillcomplete' : False, \
+    #                                   'suffixoverlap_results' : suffixoverlap_results, \
+    #                                   'deletecolumn' : False}}
     
-    #now append column_dict onto postprocess_dict
-    column_dict_list.append(column_dict.copy())
+    # #now append column_dict onto postprocess_dict
+    # column_dict_list.append(column_dict.copy())
 
     return df, column_dict_list
   
@@ -19149,7 +19154,7 @@ class AutoMunge:
     #category 3: 'bxcx', is for nmbr category with all positive values
     #category 4, 'text', is for columns with multiple categories appropriate for one-hot
     #category 5, 'date', is for columns with Timestamp data
-    #category 6, 'null', is for columns with >85% null values (arbitrary figure)
+    #category 6, 'null', is for columns with all nan values in training set
     #returns category id as a string
     '''
     
@@ -23312,197 +23317,199 @@ class AutoMunge:
           print(" ")
     
       for column in infillcolumns_list:
+
+        if column in postprocess_dict['column_dict']:
         
-        if process_dict[postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-        not in ['boolexclude', 'totalexclude']:
+          if process_dict[postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
+          not in ['boolexclude', 'totalexclude']:
 
-          if iteration == 0:
-            
-            #stndrdinfill (just prinouts, this was done in processing funcitons)
-            if column in postprocess_assigninfill_dict['stdrdinfill']:
-
-              #printout display progress
-              if printstatus is True:
-                print("infill to column: ", column)
-                print("     infill type: stdrdinfill")
-                print("")
-
-            #zeroinfill:
-            if column in postprocess_assigninfill_dict['zeroinfill']:
-
-              #printout display progress
-              if printstatus is True:
-                print("infill to column: ", column)
-                print("     infill type: zeroinfill")
-                print("")
-
-              df_test = \
-              self.zeroinfillfunction(df_test, column, postprocess_dict, \
-                                      masterNArows_test)
+            if iteration == 0:
               
-            #oneinfill:
-            if column in postprocess_assigninfill_dict['oneinfill']:
+              #stndrdinfill (just prinouts, this was done in processing funcitons)
+              if column in postprocess_assigninfill_dict['stdrdinfill']:
 
-              #printout display progress
-              if printstatus is True:
-                print("infill to column: ", column)
-                print("     infill type: oneinfill")
-                print("")
+                #printout display progress
+                if printstatus is True:
+                  print("infill to column: ", column)
+                  print("     infill type: stdrdinfill")
+                  print("")
 
-              df_test = \
-              self.oneinfillfunction(df_test, column, postprocess_dict, \
-                                     masterNArows_test)
-              
-            #naninfill
-            if column in postprocess_assigninfill_dict['naninfill']:
+              #zeroinfill:
+              if column in postprocess_assigninfill_dict['zeroinfill']:
 
-              #printout display progress
-              if printstatus is True:
-                print("infill to column: ", column)
-                print("     infill type: naninfill")
-                print("")
-
-              df_test = \
-              self.naninfillfunction(df_test, column, postprocess_dict, \
-                                     masterNArows_test)
-              
-            #adjinfill:
-            if column in postprocess_assigninfill_dict['adjinfill']:
-
-              #printout display progress
-              if printstatus is True:
-                print("infill to column: ", column)
-                print("     infill type: adjinfill")
-                print("")
-
-              df_test = \
-              self.adjinfillfunction(df_test, column, postprocess_dict, \
-                                     masterNArows_test)
-              
-            #medianinfill
-            if column in postprocess_assigninfill_dict['medianinfill']:
-
-              #printout display progress
-              if printstatus is True:
-                print("infill to column: ", column)
-                print("     infill type: medianinfill")
-                print("")
-
-              #check if column is boolean
-              boolcolumn = False
-              #exclude boolean and ordinal from this infill method
-              if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-              in ['multirt', 'singlct', 'binary', '1010', 'boolexclude', 'concurrent_act']:
-                boolcolumn = True
-
-              categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
-
-              #if (column not in excludetransformscolumns) \
-              if (categorylistlength == 1) \
-              and boolcolumn is False:
-                #noting that currently we're only going to infill 0 for single column categorylists
-                #some comparable address for multi-column categories is a future extension
-
-                infillvalue = postprocess_dict['column_dict'][column]['normalization_dict'][column]['infillvalue']
+                #printout display progress
+                if printstatus is True:
+                  print("infill to column: ", column)
+                  print("     infill type: zeroinfill")
+                  print("")
 
                 df_test = \
-                self.test_medianinfillfunction(df_test, column, postprocess_dict, \
-                                               masterNArows_test, infillvalue)
-
-            #meaninfill:
-            if column in postprocess_assigninfill_dict['meaninfill']:
-
-              #printout display progress
-              if printstatus is True:
-                print("infill to column: ", column)
-                print("     infill type: meaninfill")
-                print("")
-
-              #check if column is boolean
-              boolcolumn = False
-              #exclude boolean and ordinal from this infill method
-              if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-              in ['multirt', 'singlct', 'binary', '1010', 'boolexclude', 'concurrent_act']:
-                boolcolumn = True
-
-              categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
-
-              #if (column not in excludetransformscolumns) \
-              if (categorylistlength == 1) \
-              and boolcolumn is False:
-                #noting that currently we're only going to infill 0 for single column categorylists
-                #some comparable address for multi-column categories is a future extension
-
-                infillvalue = postprocess_dict['column_dict'][column]['normalization_dict'][column]['infillvalue']
-
-                df_test = \
-                self.test_meaninfillfunction(df_test, column, postprocess_dict, \
-                                             masterNArows_test, infillvalue)
-
-            #modeinfill:
-            if column in postprocess_assigninfill_dict['modeinfill']:
-
-              #printout display progress
-              if printstatus is True:
-                print("infill to column: ", column)
-                print("     infill type: modeinfill")
-                print("")
-
-              #check if column is excluded (variable poorly named, interpret boolcolumn here as excluded)
-              boolcolumn = False
-
-              if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-              in ['boolexclude', 'concurrent_nmbr']:
-                boolcolumn = True
-
-              if boolcolumn is False:
-
-                infillvalue = postprocess_dict['column_dict'][column]['normalization_dict'][column]['infillvalue']
-
-                df_test = \
-                self.test_modeinfillfunction(df_test, column, postprocess_dict, \
-                                               masterNArows_test, infillvalue)
+                self.zeroinfillfunction(df_test, column, postprocess_dict, \
+                                        masterNArows_test)
                 
-            #lcinfill:
-            if column in postprocess_assigninfill_dict['lcinfill']:
+              #oneinfill:
+              if column in postprocess_assigninfill_dict['oneinfill']:
+
+                #printout display progress
+                if printstatus is True:
+                  print("infill to column: ", column)
+                  print("     infill type: oneinfill")
+                  print("")
+
+                df_test = \
+                self.oneinfillfunction(df_test, column, postprocess_dict, \
+                                      masterNArows_test)
+                
+              #naninfill
+              if column in postprocess_assigninfill_dict['naninfill']:
+
+                #printout display progress
+                if printstatus is True:
+                  print("infill to column: ", column)
+                  print("     infill type: naninfill")
+                  print("")
+
+                df_test = \
+                self.naninfillfunction(df_test, column, postprocess_dict, \
+                                      masterNArows_test)
+                
+              #adjinfill:
+              if column in postprocess_assigninfill_dict['adjinfill']:
+
+                #printout display progress
+                if printstatus is True:
+                  print("infill to column: ", column)
+                  print("     infill type: adjinfill")
+                  print("")
+
+                df_test = \
+                self.adjinfillfunction(df_test, column, postprocess_dict, \
+                                      masterNArows_test)
+                
+              #medianinfill
+              if column in postprocess_assigninfill_dict['medianinfill']:
+
+                #printout display progress
+                if printstatus is True:
+                  print("infill to column: ", column)
+                  print("     infill type: medianinfill")
+                  print("")
+
+                #check if column is boolean
+                boolcolumn = False
+                #exclude boolean and ordinal from this infill method
+                if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
+                in ['multirt', 'singlct', 'binary', '1010', 'boolexclude', 'concurrent_act']:
+                  boolcolumn = True
+
+                categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
+
+                #if (column not in excludetransformscolumns) \
+                if (categorylistlength == 1) \
+                and boolcolumn is False:
+                  #noting that currently we're only going to infill 0 for single column categorylists
+                  #some comparable address for multi-column categories is a future extension
+
+                  infillvalue = postprocess_dict['column_dict'][column]['normalization_dict'][column]['infillvalue']
+
+                  df_test = \
+                  self.test_medianinfillfunction(df_test, column, postprocess_dict, \
+                                                masterNArows_test, infillvalue)
+
+              #meaninfill:
+              if column in postprocess_assigninfill_dict['meaninfill']:
+
+                #printout display progress
+                if printstatus is True:
+                  print("infill to column: ", column)
+                  print("     infill type: meaninfill")
+                  print("")
+
+                #check if column is boolean
+                boolcolumn = False
+                #exclude boolean and ordinal from this infill method
+                if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
+                in ['multirt', 'singlct', 'binary', '1010', 'boolexclude', 'concurrent_act']:
+                  boolcolumn = True
+
+                categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
+
+                #if (column not in excludetransformscolumns) \
+                if (categorylistlength == 1) \
+                and boolcolumn is False:
+                  #noting that currently we're only going to infill 0 for single column categorylists
+                  #some comparable address for multi-column categories is a future extension
+
+                  infillvalue = postprocess_dict['column_dict'][column]['normalization_dict'][column]['infillvalue']
+
+                  df_test = \
+                  self.test_meaninfillfunction(df_test, column, postprocess_dict, \
+                                              masterNArows_test, infillvalue)
+
+              #modeinfill:
+              if column in postprocess_assigninfill_dict['modeinfill']:
+
+                #printout display progress
+                if printstatus is True:
+                  print("infill to column: ", column)
+                  print("     infill type: modeinfill")
+                  print("")
+
+                #check if column is excluded (variable poorly named, interpret boolcolumn here as excluded)
+                boolcolumn = False
+
+                if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
+                in ['boolexclude', 'concurrent_nmbr']:
+                  boolcolumn = True
+
+                if boolcolumn is False:
+
+                  infillvalue = postprocess_dict['column_dict'][column]['normalization_dict'][column]['infillvalue']
+
+                  df_test = \
+                  self.test_modeinfillfunction(df_test, column, postprocess_dict, \
+                                                masterNArows_test, infillvalue)
+                  
+              #lcinfill:
+              if column in postprocess_assigninfill_dict['lcinfill']:
+
+                #printout display progress
+                if printstatus is True:
+                  print("infill to column: ", column)
+                  print("     infill type: lcinfill")
+                  print("")
+
+                #check if column is excluded (variable poorly named, interpret boolcolumn here as excluded)
+                boolcolumn = False
+
+                if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
+                in ['boolexclude', 'concurrent_nmbr']:
+                  boolcolumn = True
+
+                if boolcolumn is False:
+
+                  #noting that currently we're only going to infill 0 for single column categorylists
+                  #some comparable address for multi-column categories is a future extension
+
+                  infillvalue = postprocess_dict['column_dict'][column]['normalization_dict'][column]['infillvalue']
+
+                  #repurpose modeinfillfunction for test, only difference is the passed infillvalue
+                  df_test = \
+                  self.test_modeinfillfunction(df_test, column, postprocess_dict, \
+                                                masterNArows_test, infillvalue)
+
+            #MLinfill:
+            if column in postprocess_assigninfill_dict['MLinfill']:
 
               #printout display progress
               if printstatus is True:
                 print("infill to column: ", column)
-                print("     infill type: lcinfill")
+                print("     infill type: MLinfill")
                 print("")
 
-              #check if column is excluded (variable poorly named, interpret boolcolumn here as excluded)
-              boolcolumn = False
-
-              if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-              in ['boolexclude', 'concurrent_nmbr']:
-                boolcolumn = True
-
-              if boolcolumn is False:
-
-                #noting that currently we're only going to infill 0 for single column categorylists
-                #some comparable address for multi-column categories is a future extension
-
-                infillvalue = postprocess_dict['column_dict'][column]['normalization_dict'][column]['infillvalue']
-
-                #repurpose modeinfillfunction for test, only difference is the passed infillvalue
-                df_test = \
-                self.test_modeinfillfunction(df_test, column, postprocess_dict, \
-                                               masterNArows_test, infillvalue)
-
-          #MLinfill:
-          if column in postprocess_assigninfill_dict['MLinfill']:
-
-            #printout display progress
-            if printstatus is True:
-              print("infill to column: ", column)
-              print("     infill type: MLinfill")
-              print("")
-
-            df_test, postprocess_dict = \
-            self.postMLinfillfunction (df_test, column, postprocess_dict, \
-                                       masterNArows_test, printstatus)
+              df_test, postprocess_dict = \
+              self.postMLinfillfunction (df_test, column, postprocess_dict, \
+                                        masterNArows_test, printstatus)
 
       for columnname in df_test.columns:
         postprocess_dict['column_dict'][columnname]['infillcomplete'] = False
@@ -27036,7 +27043,8 @@ class AutoMunge:
       if type(df.index) != pd.RangeIndex:
         df = df.reset_index(drop=True)
       
-      for columnkey in assignnan['injections']:
+      columnkey = column
+      if columnkey in assignnan['injections']:
         if columnkey in df:
           for actionkey in assignnan['injections'][columnkey]:
             if actionkey not in ['inject_ratio', 'range', 'minmax_range', 'entries', 'entry_ratio']:
@@ -27349,6 +27357,12 @@ class AutoMunge:
 
         #if entry was already populated for multiple returned columns it overwrites it with same info
         column_map.update({postprocess_dict['column_dict'][finalcolumn2]['origcolumn'] : columnkeylist})
+
+    #this handles columns that did not return any sets (such as for null category)
+    for origcolumn in postprocess_dict['origcolumn']:
+      if origcolumn not in column_map:
+        if postprocess_dict['origcolumn'][origcolumn]['columnkeylist'] == []:
+          column_map.update({origcolumn : []})
       
     return column_map
 
@@ -28891,7 +28905,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.57'
+    automungeversion = '5.58'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -36445,57 +36459,50 @@ class AutoMunge:
         print("    root category: ", category)
         print("")
 
-      #here we'll delete any columns that returned a 'null' category
-      if category == 'null':
-        df_test = df_test.drop([column], axis=1)
+      #assignnan application
+      df_test = self.assignnan_convert(df_test, column, category, postprocess_dict['assignnan'], postprocess_dict)
 
-      #so if we didn't delete the column let's proceed
+      #we also have convention that infinity values are by default subjected to infill
+      df_test = self.convert_inf_to_nan(df_test, column, category, postprocess_dict)
+
+      #create NArows (column of True/False where True coresponds to missing data)
+      if driftreport in ['efficient', True]:
+        testNArows, postdrift_dict = \
+        self.getNArows(df_test, column, category, postprocess_dict, postdrift_dict, True)
+
+        if printstatus is True:
+          print("original source column drift stats:")
+          print(postprocess_dict['drift_dict'][column])
+          print("")
+          print("new source column drift stats:")
+          print(postdrift_dict[column])
+          print("")
+
       else:
+        testNArows = self.getNArows(df_test, column, category, postprocess_dict)
 
-        #assignnan application
-        df_test = self.assignnan_convert(df_test, column, category, postprocess_dict['assignnan'], postprocess_dict)
+      #now append that NArows onto a master NA rows df
+      masterNArows_test = pd.concat([masterNArows_test, testNArows], axis=1)
 
-        #we also have convention that infinity values are by default subjected to infill
-        df_test = self.convert_inf_to_nan(df_test, column, category, postprocess_dict)
+      #process family
+      df_test = \
+      self.postprocessfamily(df_test, column, category, category, process_dict, \
+                            transform_dict, postprocess_dict, columnkey, assign_param)
 
-        #create NArows (column of True/False where True coresponds to missing data)
-        if driftreport in ['efficient', True]:
-          testNArows, postdrift_dict = \
-          self.getNArows(df_test, column, category, postprocess_dict, postdrift_dict, True)
-
-          if printstatus is True:
-            print("original source column drift stats:")
-            print(postprocess_dict['drift_dict'][column])
-            print("")
-            print("new source column drift stats:")
-            print(postdrift_dict[column])
-            print("")
-
-        else:
-          testNArows = self.getNArows(df_test, column, category, postprocess_dict)
-
-        #now append that NArows onto a master NA rows df
-        masterNArows_test = pd.concat([masterNArows_test, testNArows], axis=1)
-
-        #process family
-        df_test = \
-        self.postprocessfamily(df_test, column, category, category, process_dict, \
-                              transform_dict, postprocess_dict, columnkey, assign_param)
-
-        #delete columns subject to replacement
-        df_test = \
-        self.postcircleoflife(df_test, column, category, category, process_dict, \
-                              transform_dict, postprocess_dict, columnkey)
+      #delete columns subject to replacement
+      df_test = \
+      self.postcircleoflife(df_test, column, category, category, process_dict, \
+                            transform_dict, postprocess_dict, columnkey)
 
 #         #now we'll apply the floatprecision transformation
 #         columnkeylist = postprocess_dict['origcolumn'][column]['columnkeylist']
 #         df_test = self.floatprecision_transform(df_test, columnkeylist, floatprecision)
 
-        #printout display progress
-        if printstatus is True:
-          print(" returned columns:")
-          print(postprocess_dict['origcolumn'][column]['columnkeylist'])
-          print("")
+      #printout display progress
+      if printstatus is True:
+        print(" returned columns:")
+        print(postprocess_dict['origcolumn'][column]['columnkeylist'])
+        print("")
 
     #process labels consistent to the train set if any are included in the postmunge test set
 
