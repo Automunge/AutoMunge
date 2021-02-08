@@ -1970,7 +1970,7 @@ set default to bnry.
 - dat6: for time-series data, a set of derivations are performed returning
 'year', 'mdsn', 'mdcs', 'hmss', 'hmsc', 'bshr', 'wkdy', 'hldy' (these are defined 
 in next section)
-- null: for columns without any valid values (e.g. all NaN) column is deleted
+- null: for columns without any valid values in training set (e.g. all NaN) column is deleted
 
 For label sets, we use a distinct set of root categories under automation. These are in
 some cases comparable to those listed above for training data, but differ in others and
