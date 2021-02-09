@@ -21408,7 +21408,8 @@ class AutoMunge:
     """
 
     # import autogluon.core as ag
-    from autogluon.tabular import TabularPrediction as task
+    # from autogluon.tabular import TabularPrediction as task
+    from autogluon import TabularPrediction as task
 
     try:
       
@@ -21467,7 +21468,8 @@ class AutoMunge:
     """
 
     # import autogluon.core as ag
-    from autogluon.tabular import TabularPrediction as task
+    # from autogluon.tabular import TabularPrediction as task
+    from autogluon import TabularPrediction as task
     
     if model is not False:
       
@@ -28905,7 +28907,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.58'
+    automungeversion = '5.59'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
