@@ -800,9 +800,9 @@ to automunge(.) have no points needing infill, when MLinfill is activated
 machine learning models will still be trained for potential use of predicting 
 infill to subsequent data passed through the postmunge(.) function. ML infill
 by default applies Random Forest machine learning models to predict infill, 
-which may be changed to other autoML options available via the ML_cmnd parameter.
+which may be changed to other autoML frameworks via the ML_cmnd parameter.
 Parameters and tuning may also be passed to the model training as demonstrated 
-with ML_cmnd parameter.
+with ML_cmnd parameter below.
 
 * infilliterate: an integer indicating how many applications of the ML
 infill processing are to be performed for purposes of predicting infill.
