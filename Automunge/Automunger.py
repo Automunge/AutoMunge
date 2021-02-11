@@ -27591,14 +27591,6 @@ class AutoMunge:
     #a future extension may allow user to pass custom entries
     autoMLer = self.assemble_autoMLer()
 
-    #initialize randomseed for default configuration of random random seed
-    if randomseed is False:
-      #randomrandomseed  signals cases when randomseed not user defined
-      randomrandomseed = True
-      randomseed = random.randint(0,999999999999)
-    else:
-      randomrandomseed = False
-
     #feature selection analysis performed here if elected
     if featureselection is True:
 
@@ -27660,6 +27652,15 @@ class AutoMunge:
       print("_______________")
       print("Begin Automunge processing")
       print("")
+
+    #initialize randomseed for default configuration of random random seed
+    if randomseed is False:
+      #randomrandomseed  signals cases when randomseed not user defined
+      randomrandomseed = True
+      #pandas sample accepts between 0:2**32-1
+      randomseed = random.randint(0,4294967295)
+    else:
+      randomrandomseed = False
 
     #functionality to support passed numpy arrays
     #if passed object was a numpy array, convert to pandas dataframe
@@ -28914,7 +28915,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.60'
+    automungeversion = '5.61'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
