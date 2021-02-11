@@ -816,7 +816,7 @@ postmunge will just apply the final model on each iteration).
 
 * randomseed: a positive integer used as a seed for randomness throughout 
 such as for repeatable data set shuffling, ML infill, and feature importance algorithms. 
-This defaults to False indicating a random random seed will be applied.
+This defaults to False indicating a random random seed will be applied (sampled between 0:2^32).
 
 * eval_ratio: a 0-1 float or integer for number of rows, defaults to 0.5, serves
 to reduce the overhead of the category evaluation functions under automation by only
