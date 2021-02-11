@@ -133,7 +133,7 @@ am.automunge(df_train, df_test = False, \
              labels_column = False, trainID_column = False, testID_column = False, \
              valpercent1=0.0, valpercent2 = 0.0, floatprecision = 32, shuffletrain = True, \
              dupl_rows = False, TrainLabelFreqLevel = False, powertransform = False, binstransform = False, \
-             MLinfill = False, infilliterate=1, randomseed = 42, eval_ratio = .5, \
+             MLinfill = False, infilliterate=1, randomseed = False, eval_ratio = .5, \
              LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, LSfit = False, \
              numbercategoryheuristic = 127, pandasoutput = True, NArw_marker = False, \
              featureselection = False, featurepct = 1.0, featuremetric = 0.0, featuremethod = 'default', \
@@ -363,7 +363,7 @@ am.automunge(df_train, df_test = False, \
              labels_column = False, trainID_column = False, testID_column = False, \
              valpercent1=0.0, valpercent2 = 0.0, floatprecision = 32, shuffletrain = True, \
              dupl_rows = False, TrainLabelFreqLevel = False, powertransform = False, binstransform = False, \
-             MLinfill = False, infilliterate=1, randomseed = 42, eval_ratio = .5, \
+             MLinfill = False, infilliterate=1, randomseed = False, eval_ratio = .5, \
              LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, LSfit = False, \
              numbercategoryheuristic = 127, pandasoutput = True, NArw_marker = False, \
              featureselection = False, featurepct = 1.0, featuremetric = 0.0, featuremethod = 'default', \
@@ -602,7 +602,7 @@ am.automunge(df_train, df_test = False, \
              labels_column = False, trainID_column = False, testID_column = False, \
              valpercent1=0.0, valpercent2 = 0.0, floatprecision = 32, shuffletrain = True, \
              dupl_rows = False, TrainLabelFreqLevel = False, powertransform = False, binstransform = False, \
-             MLinfill = False, infilliterate=1, randomseed = 42, eval_ratio = .5, \
+             MLinfill = False, infilliterate=1, randomseed = False, eval_ratio = .5, \
              LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, LSfit = False, \
              numbercategoryheuristic = 127, pandasoutput = True, NArw_marker = False, \
              featureselection = False, featurepct = 1.0, featuremetric = 0.0, featuremethod = 'default', \
@@ -815,8 +815,8 @@ output (as automunge(.) will train separate models on each iteration and
 postmunge will just apply the final model on each iteration).
 
 * randomseed: a positive integer used as a seed for randomness throughout 
-such as for data set shuffling, ML infill, and feature importance  algorithms. 
-This defaults to 42, a nice round number.
+such as for repeatable data set shuffling, ML infill, and feature importance algorithms. 
+This defaults to False indicating a random random seed will be applied.
 
 * eval_ratio: a 0-1 float or integer for number of rows, defaults to 0.5, serves
 to reduce the overhead of the category evaluation functions under automation by only
