@@ -24854,16 +24854,20 @@ class AutoMunge:
     
     #check randomseed
     randomseed_valresult = False
-    if not isinstance(randomseed, (int)) \
-    or isinstance(randomseed, bool):
+    if not isinstance(randomseed, (int)):
       randomseed_valresult = True
       print("Error: invalid entry passed for randomseed parameter.")
-      print("Acceptable values are integers >= 0")
+      print("Acceptable values are integers >= 0 or False")
       print()
-    elif randomseed < 0:
+    elif randomseed < 0 :
       randomseed_valresult = True
       print("Error: invalid entry passed for randomseed parameter.")
-      print("Acceptable values are integers >= 0")
+      print("Acceptable values are integers >= 0 or False")
+      print()
+    elif randomseed is True :
+      randomseed_valresult = True
+      print("Error: invalid entry passed for randomseed parameter.")
+      print("Acceptable values are integers >= 0 or False")
       print()
       
     miscparameters_results.update({'randomseed_valresult' : randomseed_valresult})
@@ -27408,7 +27412,7 @@ class AutoMunge:
                 labels_column = False, trainID_column = False, testID_column = False, \
                 valpercent1=0.0, valpercent2 = 0.0, floatprecision = 32, shuffletrain = True, \
                 dupl_rows = False, TrainLabelFreqLevel = False, powertransform = False, binstransform = False, \
-                MLinfill = False, infilliterate=1, randomseed = 42, eval_ratio = .5, \
+                MLinfill = False, infilliterate=1, randomseed = False, eval_ratio = .5, \
                 LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, LSfit = False, \
                 numbercategoryheuristic = 127, pandasoutput = True, NArw_marker = False, \
                 featureselection = False, featurepct = 1.0, featuremetric = 0.0, featuremethod = 'default', \
@@ -27586,6 +27590,14 @@ class AutoMunge:
     #initialize autoMLer which is data structure to support ML infill
     #a future extension may allow user to pass custom entries
     autoMLer = self.assemble_autoMLer()
+
+    #initialize randomseed for default configuration of random random seed
+    if randomseed is False:
+      #randomrandomseed  signals cases when randomseed not user defined
+      randomrandomseed = True
+      randomseed = random.randint(0,999999999999)
+    else:
+      randomrandomseed = False
 
     #feature selection analysis performed here if elected
     if featureselection is True:
@@ -27837,11 +27849,6 @@ class AutoMunge:
       testID_column = [indexcolumn]
 
     del df_test_tempID
-
-    #carve out the validation rows
-
-    #set randomness seed number (sorry I was trying to be cute here)
-    answer = randomseed
 
     #ok now carve out the validation rows. We'll process these later
     #(we're processing train data from validation data seperately to
@@ -28830,23 +28837,23 @@ class AutoMunge:
     if shuffletrain is True or shuffletrain == 'traintest':
       
       #shuffle training set and labels
-      df_train = self.df_shuffle(df_train, answer)
+      df_train = self.df_shuffle(df_train, randomseed)
       
       if labels_column is not False:
-        df_labels = self.df_shuffle(df_labels, answer)
+        df_labels = self.df_shuffle(df_labels, randomseed)
 
       if trainID_column is not False:
-        df_trainID = self.df_shuffle(df_trainID, answer)
+        df_trainID = self.df_shuffle(df_trainID, randomseed)
       
     if shuffletrain == 'traintest':
       
-      df_test = self.df_shuffle(df_test, answer)
+      df_test = self.df_shuffle(df_test, randomseed)
       
       if labelspresenttest is True:
-        df_testlabels = self.df_shuffle(df_testlabels, answer)
+        df_testlabels = self.df_shuffle(df_testlabels, randomseed)
 
       if testID_column is not False:
-        df_testID = self.df_shuffle(df_testID, answer)
+        df_testID = self.df_shuffle(df_testID, randomseed)
 
     #great the data is processed now let's do a few moore global training preps
 
@@ -28907,7 +28914,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.59'
+    automungeversion = '5.60'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -28981,6 +28988,7 @@ class AutoMunge:
                              'assignnan' : assignnan, \
                              'ML_cmnd' : ML_cmnd, \
                              'miscparameters_results' : miscparameters_results, \
+                             'randomrandomseed' : randomrandomseed, \
                              'printstatus' : printstatus, \
                              'automungeversion' : automungeversion, \
                              'application_number' : application_number, \
@@ -29131,21 +29139,21 @@ class AutoMunge:
           #split validation2 sets from training and labels
           
           df_validation1, df_validation2 = \
-          self.df_split(df_validation1, val2ratio, False, answer)
+          self.df_split(df_validation1, val2ratio, False, randomseed)
           
           df_validationlabels1, df_validationlabels2 = \
-          self.df_split(df_validationlabels1, val2ratio, False, answer)
+          self.df_split(df_validationlabels1, val2ratio, False, randomseed)
 
         else:
 
           df_validation1, df_validation2 = \
-          self.df_split(df_validation1, val2ratio, False, answer)
+          self.df_split(df_validation1, val2ratio, False, randomseed)
 
           df_validationlabels2 = pd.DataFrame()
 
         if trainID_column is not False:
           df_validationID1, df_validationID2 = \
-          self.df_split(df_validationID1, val2ratio, False, answer)
+          self.df_split(df_validationID1, val2ratio, False, randomseed)
           
         else:
           df_trainID = pd.DataFrame()
