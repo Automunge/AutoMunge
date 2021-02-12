@@ -25516,6 +25516,73 @@ class AutoMunge:
     
     return result
 
+  def check_transformdict00(self, transformdict):
+    """
+    #Validation of transformdict format
+    #ensures that each root category key has values of a dicitonary
+    #to ensure check_transformdict0 will run properly
+    #also ensures primitives are valid / spelled properly
+    """
+    
+    result1 = False
+    result2 = False
+    
+    primitives_set = {'parents', 'siblings', 'auntsuncles', 'cousins', 
+                      'children', 'niecesnephews', 'coworkers', 'friends'}
+    
+    for root in transformdict:
+      
+      if not isinstance(transformdict[root], type({})):
+        
+        result1 = True
+        
+        print("Error: transformdict entry for root category ", root)
+        print("was passed without value of a dictionary for primitives.")
+        
+      else:
+        
+        #this test is any of primitives aren't spelled properly or something
+        if len(primitives_set & set(transformdict[root])) < len(set(transformdict[root])):
+          
+          result2 = True
+          
+          print("Error: transformdict entry for root category ", root)
+          print("was passed with invalid primitives.")
+          
+    return result1, result2
+
+  def check_transformdict0(self, transformdict):
+    """
+    #For cases where user passes trasnformdict root category with partial family tree
+    #populates the other primitives as empty sets
+    #This will make user specfications much easier / less typing
+    """
+    
+    result = False
+    
+    primitives_set = {'parents', 'siblings', 'auntsuncles', 'cousins', 
+                      'children', 'niecesnephews', 'coworkers', 'friends'}
+    
+    for root in transformdict:
+      #this checks that at least one primitive specified
+      if len(primitives_set & set(transformdict[root])) > 0:
+        
+        #then any other primitives not yet populated are added without entries
+        for primitive in primitives_set:
+        
+          if primitive not in transformdict[root]:
+             
+             transformdict[root].update({primitive : []})
+      
+      #else if no primitives are present
+      else:
+        result = True
+        
+        print("Error, transformdict entry for root category ", root)
+        print("was passed without any primitives populated.")
+      
+    return result, transformdict
+
   def check_transformdict(self, transformdict):
     """
     #Here we'll do a quick check for any entries in the user passed
@@ -27509,6 +27576,19 @@ class AutoMunge:
     #transformdict is user passed data structure
     #vs transform_dict which is the internal library
     if bool(transformdict) is not False:
+
+      #validates format of transformdict
+      check_transformdict00_result1, check_transformdict00_result2 = \
+      self.check_transformdict00(transformdict)
+
+      miscparameters_results.update({'check_transformdict00_result1' : check_transformdict00_result1, \
+                                     'check_transformdict00_result2' : check_transformdict00_result2})
+
+      #If only partial family tree populated this populates other primitives
+      check_transformdict0_result, transformdict = \
+      self.check_transformdict0(transformdict)
+
+      miscparameters_results.update({'check_transformdict0_result' : check_transformdict0_result})
       
       #perform some validaitons on transformdict
       check_transformdict_result1, check_transformdict_result2, transformdict = \
@@ -28915,7 +28995,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.61'
+    automungeversion = '5.62'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
