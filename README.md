@@ -1318,6 +1318,12 @@ transformdict =  {'newt' : {'parents' : ['bxc4'], \
 #incorporate any offspring from the nbr2 tree we could instead assign as children
 #or niecesnephews.
 
+#Note  that optionally primitives without entries can be ommitted,
+#the following is an equivalent specification to the 'newt' entry above
+transformdict =  {'newt' : {'parents' : ['bxc4'], \
+                            'auntsuncles' : ['mnmx'], \
+                            'cousins' : ['NArw']}}
+
 ```
 Basically here 'newt' is the key and when passed to one of the family primitives
 the corresponding process function is applied, and if it is passed to a family
