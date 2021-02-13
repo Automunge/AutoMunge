@@ -1319,10 +1319,11 @@ transformdict =  {'newt' : {'parents' : ['bxc4'], \
 #or niecesnephews.
 
 #Note  that optionally primitives without entries can be ommitted,
+#and list brackets can be omitted for single entries to a primitive
 #the following is an equivalent specification to the 'newt' entry above
-transformdict =  {'newt' : {'parents' : ['bxc4'], \
-                            'auntsuncles' : ['mnmx'], \
-                            'cousins' : ['NArw']}}
+transformdict =  {'newt' : {'parents'     : 'bxc4', \
+                            'auntsuncles' : 'mnmx', \
+                            'cousins'     : 'NArw'}}
 
 ```
 Basically here 'newt' is the key and when passed to one of the family primitives
