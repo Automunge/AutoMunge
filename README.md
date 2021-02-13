@@ -691,7 +691,9 @@ cases where the training set does not include an ID column. A user can
 also pass a list of string columns titles such as to carve out multiple
 columns to be excluded from processing but consistently shuffled and 
 partitioned. An integer column index or list of integer column indexes 
-may also be passed such as if the source dataset was a numpy array.
+may also be passed such as if the source dataset was a numpy array. Note
+this can be used in general to carve out any columns to be returned in ID 
+sets consistently shuffled and partitioned.
 
 * testID_column: a string of the column title for the column from the
 df_test set intended for use as a row identifier value (such as could be
