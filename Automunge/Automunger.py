@@ -3126,10 +3126,7 @@ class AutoMunge:
     # - 'positivenumeric' for source columns with expected positive numeric entries
     # - 'nonnegativenumeric' for source columns with expected non-nbegative numeric (zero allowed)
     # - 'nonzeronumeric' for source columns with allowed postiive and negative but no zero
-    # - 'parsenumeric' marks for infill strings that don't contain any numeric character entries
-    # - 'parsenumeric_commas' marks for infill strings that don't contain any numeric character entries, recognizes commas
-    # - 'parsenumeric_EU' marks for infill strings that don't contain any numeric character entries, 
-    #            recognizes international standard of period deliminator and comma decimal
+    # - 'parsenumeric' marks for infill strings that don't contain any numeric characters
     # - 'datetime' marks for infill cells that arent' recognized as datetime objects
     
     #MLinfilltype entries are:
@@ -4272,7 +4269,7 @@ class AutoMunge:
                                   'info_retention' : True, \
                                   'defaultparams' : {'convention' : 'commas', \
                                                      'suffix' : '_nmcm'}, \
-                                  'NArowtype' : 'parsenumeric_commas', \
+                                  'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmcm'}})
     process_dict.update({'nmc2' : {'dualprocess' : None, \
@@ -4282,7 +4279,7 @@ class AutoMunge:
                                   'info_retention' : False, \
                                   'defaultparams' : {'convention' : 'commas', \
                                                      'suffix' : '_nmcm'}, \
-                                  'NArowtype' : 'parsenumeric_commas', \
+                                  'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmbr'}})
     process_dict.update({'nmc3' : {'dualprocess' : None, \
@@ -4292,7 +4289,7 @@ class AutoMunge:
                                   'info_retention' : False, \
                                   'defaultparams' : {'convention' : 'commas', \
                                                      'suffix' : '_nmcm'}, \
-                                  'NArowtype' : 'parsenumeric_commas', \
+                                  'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mnmx'}})
     process_dict.update({'nmc4' : {'dualprocess' : self.process_nmr4_class, \
@@ -4303,7 +4300,7 @@ class AutoMunge:
                                   'defaultparams' : {'convention' : 'commas', \
                                                      'suffix' : '_nmc4', \
                                                      'test_same_as_train' : True}, \
-                                  'NArowtype' : 'parsenumeric_commas', \
+                                  'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmrc'}})
     process_dict.update({'nmc5' : {'dualprocess' : self.process_nmr4_class, \
@@ -4314,7 +4311,7 @@ class AutoMunge:
                                   'defaultparams' : {'convention' : 'commas', \
                                                      'suffix' : '_nmc4', \
                                                      'test_same_as_train' : True}, \
-                                  'NArowtype' : 'parsenumeric_commas', \
+                                  'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmbr'}})
     process_dict.update({'nmc6' : {'dualprocess' : self.process_nmr4_class, \
@@ -4325,7 +4322,7 @@ class AutoMunge:
                                   'defaultparams' : {'convention' : 'commas', \
                                                      'suffix' : '_nmc4', \
                                                      'test_same_as_train' : True}, \
-                                  'NArowtype' : 'parsenumeric_commas', \
+                                  'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mnmx'}})
     process_dict.update({'nmc7' : {'dualprocess' : self.process_nmr4_class, \
@@ -4336,7 +4333,7 @@ class AutoMunge:
                                   'defaultparams' : {'convention' : 'commas', \
                                                      'suffix' : '_nmc7', \
                                                      'test_same_as_train' : False}, \
-                                  'NArowtype' : 'parsenumeric_commas', \
+                                  'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmrc'}})
     process_dict.update({'nmc8' : {'dualprocess' : self.process_nmr4_class, \
@@ -4347,7 +4344,7 @@ class AutoMunge:
                                   'defaultparams' : {'convention' : 'commas', \
                                                      'suffix' : '_nmc7', \
                                                      'test_same_as_train' : False}, \
-                                  'NArowtype' : 'parsenumeric_commas', \
+                                  'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmbr'}})
     process_dict.update({'nmc9' : {'dualprocess' : self.process_nmr4_class, \
@@ -4358,7 +4355,7 @@ class AutoMunge:
                                   'defaultparams' : {'convention' : 'commas', \
                                                      'suffix' : '_nmc7', \
                                                      'test_same_as_train' : False}, \
-                                  'NArowtype' : 'parsenumeric_commas', \
+                                  'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mnmx'}})
     process_dict.update({'nmEU' : {'dualprocess' : None, \
@@ -4368,7 +4365,7 @@ class AutoMunge:
                                   'info_retention' : True, \
                                   'defaultparams' : {'convention' : 'spaces', \
                                                      'suffix' : '_nmEU'}, \
-                                  'NArowtype' : 'parsenumeric_EU', \
+                                  'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmrc'}})
     process_dict.update({'nmE2' : {'dualprocess' : None, \
@@ -4378,7 +4375,7 @@ class AutoMunge:
                                   'info_retention' : False, \
                                   'defaultparams' : {'convention' : 'spaces', \
                                                      'suffix' : '_nmEU'}, \
-                                  'NArowtype' : 'parsenumeric_EU', \
+                                  'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmbr'}})
     process_dict.update({'nmE3' : {'dualprocess' : None, \
@@ -4388,7 +4385,7 @@ class AutoMunge:
                                   'info_retention' : False, \
                                   'defaultparams' : {'convention' : 'spaces', \
                                                      'suffix' : '_nmEU'}, \
-                                  'NArowtype' : 'parsenumeric_EU', \
+                                  'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mnmx'}})
     process_dict.update({'nmE4' : {'dualprocess' : self.process_nmr4_class, \
@@ -4399,7 +4396,7 @@ class AutoMunge:
                                   'defaultparams' : {'convention' : 'spaces', \
                                                      'suffix' : '_nmE4', \
                                                      'test_same_as_train' : True}, \
-                                  'NArowtype' : 'parsenumeric_EU', \
+                                  'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmrc'}})
     process_dict.update({'nmE5' : {'dualprocess' : self.process_nmr4_class, \
@@ -4410,7 +4407,7 @@ class AutoMunge:
                                   'defaultparams' : {'convention' : 'spaces', \
                                                      'suffix' : '_nmE4', \
                                                      'test_same_as_train' : True}, \
-                                  'NArowtype' : 'parsenumeric_EU', \
+                                  'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmbr'}})
     process_dict.update({'nmE6' : {'dualprocess' : self.process_nmr4_class, \
@@ -4421,7 +4418,7 @@ class AutoMunge:
                                   'defaultparams' : {'convention' : 'spaces', \
                                                      'suffix' : '_nmE4', \
                                                      'test_same_as_train' : True}, \
-                                  'NArowtype' : 'parsenumeric_EU', \
+                                  'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mnmx'}})
     process_dict.update({'nmE7' : {'dualprocess' : self.process_nmr4_class, \
@@ -4432,7 +4429,7 @@ class AutoMunge:
                                   'defaultparams' : {'convention' : 'spaces', \
                                                      'suffix' : '_nmE7', \
                                                      'test_same_as_train' : False}, \
-                                  'NArowtype' : 'parsenumeric_EU', \
+                                  'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmrc'}})
     process_dict.update({'nmE8' : {'dualprocess' : self.process_nmr4_class, \
@@ -4443,7 +4440,7 @@ class AutoMunge:
                                   'defaultparams' : {'convention' : 'spaces', \
                                                      'suffix' : '_nmE7', \
                                                      'test_same_as_train' : False}, \
-                                  'NArowtype' : 'parsenumeric_EU', \
+                                  'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmbr'}})
     process_dict.update({'nmE9' : {'dualprocess' : self.process_nmr4_class, \
@@ -4454,7 +4451,7 @@ class AutoMunge:
                                   'defaultparams' : {'convention' : 'spaces', \
                                                      'suffix' : '_nmE7', \
                                                      'test_same_as_train' : False}, \
-                                  'NArowtype' : 'parsenumeric_EU', \
+                                  'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mnmx'}})
     process_dict.update({'ors7' : {'dualprocess' : self.process_spl2_class, \
@@ -19783,20 +19780,6 @@ class AutoMunge:
       NArows = self.parsenumeric(df2, column)
 
       drift_dict.update({column : {'nunique' : df2[column].nunique(), \
-                                   'nanratio' : pd.isna(df2[column]).sum() / df2[column].shape[0]}})      
-      
-    if NArowtype in ['parsenumeric_commas']:
-      
-      NArows = self.parsenumeric_commas(df2, column)
-
-      drift_dict.update({column : {'nunique' : df2[column].nunique(), \
-                                   'nanratio' : pd.isna(df2[column]).sum() / df2[column].shape[0]}})
-      
-    if NArowtype in ['parsenumeric_EU']:
-      
-      NArows = self.parsenumeric_EU(df2, column)
-
-      drift_dict.update({column : {'nunique' : df2[column].nunique(), \
                                    'nanratio' : pd.isna(df2[column]).sum() / df2[column].shape[0]}})
       
     if NArowtype in ['datetime']:
@@ -19919,7 +19902,7 @@ class AutoMunge:
     
     #first we find overlaps from mdf_train
     
-    unique_list = list(df[column].unique())
+    unique_list = list(df[column].astype(str).unique())
 
     unique_list = list(map(str, unique_list))
     
@@ -19971,170 +19954,6 @@ class AutoMunge:
   #                 extract_already_in_overlap_dict = False
 
                   if self.is_number(extract):
-
-                    in_dict = True
-
-                    overlap_dict.update({unique : False})
-                  
-              if in_dict is False:
-
-                overlap_dict.update({unique : True})
-    
-    NArows = pd.DataFrame(df[column].copy())
-
-    NArows[column] = NArows[column].astype(str)
-    NArows[column] = NArows[column].replace(overlap_dict)
-#     df[column] = df[column].astype(np.int8)
-    
-    NArows.columns = [column+'_NArows']
-    
-    return NArows
-  
-  def parsenumeric_commas(self, df, column):
-    """
-    #support function for process_nmrc and NArows
-    #parses string entries and returns a column with boolean identification
-    #for entries that include numeric string portions (after stripping commas)
-    #wherein activations are 0 if a number is present and 1 if not
-    #treats numeric entries as number as well
-    """
-    
-    #first we find overlaps from mdf_train
-    
-    unique_list = list(df[column].unique())
-
-    unique_list = list(map(str, unique_list))
-    
-    maxlength = max(len(x) for x in unique_list)
-    
-    overlap_lengths = list(range(maxlength, 0, -1))
-
-    overlap_dict = {}
-    
-    for overlap_length in overlap_lengths:
-
-      for unique in unique_list:
-        
-        if unique not in overlap_dict:
-
-          len_unique = len(unique)
-
-          if len_unique >= overlap_length:
-            
-            if overlap_length > 1:
-
-              nbr_iterations = len_unique - overlap_length
-
-              for i in range(nbr_iterations + 1):
-                
-                if unique not in overlap_dict:
-
-                  extract = unique[i:(overlap_length+i)]
-
-  #                 extract_already_in_overlap_dict = False
-
-                  if self.is_number_comma(extract):
-
-                    overlap_dict.update({unique : False})
-                
-            #else if overlap_length == 1    
-            else:
-              
-              nbr_iterations = len_unique - overlap_length
-              
-              in_dict = False
-
-              for i in range(nbr_iterations + 1):
-                
-                if unique not in overlap_dict:
-
-                  extract = unique[i:(overlap_length+i)]
-
-  #                 extract_already_in_overlap_dict = False
-
-                  if self.is_number_comma(extract):
-
-                    in_dict = True
-
-                    overlap_dict.update({unique : False})
-                  
-              if in_dict is False:
-
-                overlap_dict.update({unique : True})
-    
-    NArows = pd.DataFrame(df[column].copy())
-
-    NArows[column] = NArows[column].astype(str)
-    NArows[column] = NArows[column].replace(overlap_dict)
-#     df[column] = df[column].astype(np.int8)
-    
-    NArows.columns = [column+'_NArows']
-    
-    return NArows
-  
-  def parsenumeric_EU(self, df, column):
-    """
-    #support function for process_nmEU and NArows
-    #parses string entries and returns a column with boolean identification
-    #for entries that include numeric string portions (after converting from international format)
-    #wherein activations are 0 if a number is present and 1 if not
-    #treats numeric entries as number as well
-    """
-    
-    #first we find overlaps from mdf_train
-    
-    unique_list = list(df[column].unique())
-
-    unique_list = list(map(str, unique_list))
-    
-    maxlength = max(len(x) for x in unique_list)
-    
-    overlap_lengths = list(range(maxlength, 0, -1))
-
-    overlap_dict = {}
-    
-    for overlap_length in overlap_lengths:
-
-      for unique in unique_list:
-        
-        if unique not in overlap_dict:
-
-          len_unique = len(unique)
-
-          if len_unique >= overlap_length:
-            
-            if overlap_length > 1:
-
-              nbr_iterations = len_unique - overlap_length
-
-              for i in range(nbr_iterations + 1):
-                
-                if unique not in overlap_dict:
-
-                  extract = unique[i:(overlap_length+i)]
-
-  #                 extract_already_in_overlap_dict = False
-
-                  if self.is_number_EU(extract):
-
-                    overlap_dict.update({unique : False})
-                
-            #else if overlap_length == 1    
-            else:
-              
-              nbr_iterations = len_unique - overlap_length
-              
-              in_dict = False
-
-              for i in range(nbr_iterations + 1):
-                
-                if unique not in overlap_dict:
-
-                  extract = unique[i:(overlap_length+i)]
-
-  #                 extract_already_in_overlap_dict = False
-
-                  if self.is_number_EU(extract):
 
                     in_dict = True
 
@@ -26057,7 +25876,7 @@ class AutoMunge:
       else:
         if processdict[entry]['NArowtype'] not in \
         ['numeric', 'integer', 'justNaN', 'exclude', 'positivenumeric', 'nonnegativenumeric', \
-        'nonzeronumeric', 'parsenumeric', 'parsenumeric_commas', 'parsenumeric_EU', 'datetime']:
+        'nonzeronumeric', 'parsenumeric', 'datetime']:
           check_processdict_result = True
           print("error: invalid 'NArowtype' processdict entry for category: ", entry)
           print()
@@ -27710,6 +27529,16 @@ class AutoMunge:
     #a future extension may allow user to pass custom entries
     autoMLer = self.assemble_autoMLer()
 
+    #initialize randomseed for default configuration of random random seed
+    #this is used in feature selection
+    if randomseed is False:
+      #randomrandomseed  signals cases when randomseed not user defined
+      randomrandomseed = True
+      #pandas sample accepts between 0:2**32-1
+      randomseed = random.randint(0,4294967295)
+    else:
+      randomrandomseed = False
+
     #feature selection analysis performed here if elected
     if featureselection is True:
 
@@ -27772,15 +27601,6 @@ class AutoMunge:
       print("_______________")
       print("Begin Automunge processing")
       print("")
-
-    #initialize randomseed for default configuration of random random seed
-    if randomseed is False:
-      #randomrandomseed  signals cases when randomseed not user defined
-      randomrandomseed = True
-      #pandas sample accepts between 0:2**32-1
-      randomseed = random.randint(0,4294967295)
-    else:
-      randomrandomseed = False
 
     #functionality to support passed numpy arrays
     #if passed object was a numpy array, convert to pandas dataframe
@@ -29029,7 +28849,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.64'
+    automungeversion = '5.65'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
