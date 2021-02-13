@@ -25516,7 +25516,7 @@ class AutoMunge:
     
     return result
 
-  def check_transformdict00(self, transformdict):
+  def check_transformdict000(self, transformdict):
     """
     #Validation of transformdict format
     #ensures that each root category key has values of a dicitonary
@@ -25550,6 +25550,38 @@ class AutoMunge:
           print("was passed with invalid primitives.")
           
     return result1, result2
+
+  def check_transformdict00(self, transformdict):
+    """
+    #Validation of primitive entries format
+    #checks that entries are a list of strings
+    #or if entry is a string embeds in a list
+    """
+    
+    result = False
+    
+    for root in transformdict:
+      
+      for primitive in transformdict[root]:
+        
+        if isinstance(transformdict[root][primitive], type('string')):
+          
+          transformdict[root][primitive] = [transformdict[root][primitive]]
+          
+        elif isinstance(transformdict[root][primitive], type([])):
+          
+          for entry in transformdict[root][primitive]:
+            
+            if not isinstance(entry, type('string')):
+              
+              result = True
+              
+              print("Error: user passed transformdict for root category ", root)
+              print("Contained an entry to primitive ", primitive)
+              print("that was not a valid data type.")
+              print("Data type should be a string (representing a transformation category).")
+              
+    return result, transformdict
 
   def check_transformdict0(self, transformdict):
     """
@@ -27578,11 +27610,17 @@ class AutoMunge:
     if bool(transformdict) is not False:
 
       #validates format of transformdict
-      check_transformdict00_result1, check_transformdict00_result2 = \
+      check_transformdict000_result1, check_transformdict000_result2 = \
+      self.check_transformdict000(transformdict)
+
+      miscparameters_results.update({'check_transformdict000_result1' : check_transformdict000_result1, \
+                                     'check_transformdict000_result2' : check_transformdict000_result2})
+
+      #This validates data types of primitive entries, converts string entry to embed in list brackets
+      check_transformdict00_result, transformdict = \
       self.check_transformdict00(transformdict)
 
-      miscparameters_results.update({'check_transformdict00_result1' : check_transformdict00_result1, \
-                                     'check_transformdict00_result2' : check_transformdict00_result2})
+      miscparameters_results.update({'check_transformdict00_result' : check_transformdict00_result})
 
       #If only partial family tree populated this populates other primitives
       check_transformdict0_result, transformdict = \
@@ -27590,13 +27628,14 @@ class AutoMunge:
 
       miscparameters_results.update({'check_transformdict0_result' : check_transformdict0_result})
       
-      #perform some validaitons on transformdict
+      #handling for family trees without replacement primitive entries (add an excl transform)
       check_transformdict_result1, check_transformdict_result2, transformdict = \
       self.check_transformdict(transformdict)
 
       miscparameters_results.update({'check_transformdict_result1' : check_transformdict_result1, \
                                      'check_transformdict_result2' : check_transformdict_result2})
       
+      #ensure no redundant specifications in adjacent primitives
       check_transformdict2_result1, check_transformdict2_result2 = \
       self.check_transformdict2(transformdict)
       
@@ -28995,7 +29034,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.62'
+    automungeversion = '5.63'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
