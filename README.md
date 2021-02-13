@@ -1397,8 +1397,7 @@ processdict =  {'newt' : {'dualprocess' : am.process_mnmx_class, \
 
 #NArowtype: can be entries of {'numeric', 'integer', 'justNaN', 'exclude', 
 #                              'positivenumeric', 'nonnegativenumeric', 
-#                              'nonzeronumeric', 'parsenumeric', 'parsenumeric_commas', 
-#                              'parsenumeric_EU', 'datetime'}
+#                              'nonzeronumeric', 'parsenumeric', 'datetime'}
 # - 'numeric' for source columns with expected numeric entries
 # - 'integer' for source columns with expected integer entries
 # - 'justNaN' for source columns that may have expected entries other than numeric
@@ -1406,11 +1405,7 @@ processdict =  {'newt' : {'dualprocess' : am.process_mnmx_class, \
 # - 'positivenumeric' for source columns with expected positive numeric entries
 # - 'nonnegativenumeric' for source columns with expected non-negative numeric (zero allowed)
 # - 'nonzeronumeric' for source columns with allowed positive and negative but no zero
-# - 'parsenumeric' marks for infill strings that don't contain any numeric character entries
-# - 'parsenumeric_commas' marks for infill strings that don't contain any numeric character 
-#                         entries, recognizes commas
-# - 'parsenumeric_EU' marks for infill strings that don't contain any numeric character entries,
-#                         recognizes international standard of period deliminator and comma decimal
+# - 'parsenumeric' marks for infill strings that don't contain any numeric characters
 # - 'datetime' marks for infill cells that aren't recognized as datetime objects
 # ** Note that NArowtype also is used as basis for metrics evaluated in drift assessment of source columns
 # ** Note that by default any np.inf values are converted to NaN for infill
@@ -3238,14 +3233,14 @@ for identified overlap entries. (Note for multiple activations encoding priority
   - inversion available: yes with full recovery
 * nmcm/nmc2/nmc3: similar to nmrc, but recognizes numbers with commas, returns numbers stripped of commas
   - default infill: mean
-  - default NArowtype: parsenumeric_commas
+  - default NArowtype: parsenumeric
   - suffix appender: '_nmcm'
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: overlap_dict / mean / maximum / minimum
   - inversion available: yes with full recovery
 * nmEU/nmE2/nmE3: similar to nmcm, but recognizes numbers with period or space thousands deliminator and comma decimal
   - default infill: mean
-  - default NArowtype: parsenumeric_EU
+  - default NArowtype: parsenumeric
   - suffix appender: '_nmEU'
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: overlap_dict / mean / maximum / minimum
