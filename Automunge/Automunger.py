@@ -27723,6 +27723,7 @@ class AutoMunge:
         featureimportance = {}
 
       else:
+
         madethecut, FSmodel, FScolumn_dict, FS_sorted = \
         self.featureselect(df_train, labels_column, trainID_column, \
                           powertransform, binstransform, randomseed, \
@@ -27852,14 +27853,29 @@ class AutoMunge:
 
     #copy input dataframes to internal state so as not to edit exterior objects
     #this helps with recursion in feature importance
-#     if inplace is False:
     df_train = df_train.copy()
     df_test = df_test.copy()
 
-#     elif inplace is True:
-#       pass
+    #worth a disclaimer:
+    #the trainID_column and testID_column column parameters are somewhat overloaded
+    #can be passed as string, list, boolean, integer (integers are converted to strings above)
+    #and the next 120 lines or so are kind of inelegant
+    #what is being accomplished here is ID columns can be passed as string column headers or list of column headers
+    #and carved out from the train and test sets for inclusion in ID sets
+    #along with addition of new indexcolumn added to ID sets 'Automunge_index_###'
+    #and if there are existing non-range index column(s) carry that over to ID sets
+    #this code works, has been tested
+    #there is a similar section in postmunge
+    #this is probably the ugliest portion of codebase
     
-    #we'll have convention that if testID_column=False, if trainID_column in df_test etc
+    #copy to internal state so as not to edit exterior objects
+    if isinstance(trainID_column, list):
+      trainID_column = trainID_column.copy()
+    if isinstance(testID_column, list):
+      testID_column = testID_column.copy()
+    
+    #we'll have convention that if testID_column=False, if trainID_column in df_test
+    #then apply trainID_column to test set as well
     trainID_columns_in_df_test = False
     if testID_column is False or testID_column is True:
       if trainID_column is not False:
@@ -27875,6 +27891,7 @@ class AutoMunge:
     if trainID_columns_in_df_test is True:
       testID_column = trainID_column
 
+    #this just casts trainID_column as list
     if trainID_column is False:
       trainID_column = []
     elif isinstance(trainID_column, str):
@@ -27890,6 +27907,7 @@ class AutoMunge:
       trainID_column = trainID_column + list(df_train.index.names)
       df_train = df_train.reset_index(drop=False)
 
+    #this just casts testID_column as list
     if testID_column is False:
       testID_column = []
     elif isinstance(testID_column, str):
@@ -27897,6 +27915,7 @@ class AutoMunge:
     elif not isinstance(testID_column, list):
       print("error, testID_column allowable values are False, string, or list")
 
+    #for unnamed non-range index we'll rename as 'Orig_index_###' and include that in ID sets
     if type(df_test.index) != pd.RangeIndex:
       #if df_train.index.names == [None]:
       if None in df_test.index.names:
@@ -27905,34 +27924,22 @@ class AutoMunge:
       df_test = df_test.reset_index(drop=False)
 
     #here we derive a range integer index for inclusion in the ID sets
+    #indexcolumn is a string defined above as 'Automunge_index_###'
     df_train_tempID = pd.DataFrame({indexcolumn:range(0,df_train.shape[0])})
     tempIDlist = []
     
     #extract the ID columns from train set
-    if trainID_column is not False:
-      df_trainID = pd.DataFrame(df_train[trainID_column])
-
-      # if isinstance(trainID_column, str):
-      #   trainID_column = [trainID_column]
-      # elif isinstance(trainID_column, list):
-      #   trainID_column = trainID_column
-      # else:
-      #   print("error, trainID_column value must be False, str, or list")
-      
-      df_train_tempID.index = df_trainID.index
-        
-      df_trainID = pd.concat([df_trainID, df_train_tempID], axis=1)
+    df_trainID = pd.DataFrame(df_train[trainID_column])
     
-      for IDcolumn in trainID_column:
-        del df_train[IDcolumn]
+    df_train_tempID.index = df_trainID.index
       
-      #then append the indexcolumn to trainID_column list for use in later methods
-      trainID_column.append(indexcolumn)
-      
-    else:
-      df_train_tempID.index = df_train.index
-      df_trainID = df_train_tempID.copy()
-      trainID_column = [indexcolumn]
+    df_trainID = pd.concat([df_trainID, df_train_tempID], axis=1)
+  
+    for IDcolumn in trainID_column:
+      del df_train[IDcolumn]
+    
+    #then append the indexcolumn to trainID_column list for use in later methods
+    trainID_column = trainID_column + [indexcolumn]
       
     del df_train_tempID
 
@@ -27943,30 +27950,18 @@ class AutoMunge:
     #extract the ID columns from test set
     #decided to do this stuff even if there's a dummy set for df_test 
     #to ensure downstream stuff works
-    if testID_column is not False:
-      df_testID = pd.DataFrame(df_test[testID_column])
+    df_testID = pd.DataFrame(df_test[testID_column])
+    
+    df_test_tempID.index = df_testID.index
+    
+    df_testID = pd.concat([df_testID, df_test_tempID], axis=1)
 
-      # if isinstance(testID_column, str):
-      #   testID_column = [testID_column]
-      # elif isinstance(testID_column, list):
-      #   testID_column = testID_column
-      # else:
-      #   print("error, testID_column value must be False, str, or list")
-      
-      df_test_tempID.index = df_testID.index
-      
-      df_testID = pd.concat([df_testID, df_test_tempID], axis=1)
-
-      for IDcolumn in testID_column:
-        del df_test[IDcolumn]
-      
-      #then append the indexcolumn to testID_column list for use in later methods
-      testID_column.append(indexcolumn)
-      
-    else:
-      df_test_tempID.index = df_test.index
-      df_testID = df_test_tempID.copy()
-      testID_column = [indexcolumn]
+    for IDcolumn in testID_column:
+      del df_test[IDcolumn]
+    
+    #then append the indexcolumn to testID_column list for use in later methods
+    # testID_column.append(indexcolumn)
+    testID_column = testID_column + [indexcolumn]
 
     del df_test_tempID
 
@@ -29034,7 +29029,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.63'
+    automungeversion = '5.64'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -36343,7 +36338,12 @@ class AutoMunge:
       return df_test, recovered_list, inversion_info_dict
     #_______
 
-    #we'll have convention that if testID_column=False, if trainID_column in df_test etc
+    #if is a list copy to internal state to not edit exterior object
+    if isinstance(testID_column, list):
+      testID_column = testID_column.copy()
+
+    #we'll have convention that if testID_column=False, if trainID_column in df_test
+    #then apply trainID_column to test set
     trainID_columns_in_df_test = False
     if testID_column is False or testID_column is True:
       if postprocess_dict['trainID_column_orig'] is not False:
@@ -36359,6 +36359,7 @@ class AutoMunge:
     if trainID_columns_in_df_test is True:
       testID_column = postprocess_dict['trainID_column_orig']
 
+    #cast testID_column as a list
     if testID_column is False:
       testID_column = []
     elif isinstance(testID_column, str):
@@ -36366,6 +36367,8 @@ class AutoMunge:
     elif not isinstance(testID_column, list):
       if testID_column is not True:
         print("error, testID_column allowable values are boolean, string, or list")
+
+    #testID_column as True just means apply trainID_column from automunge
     if testID_column is True:
       if isinstance(postprocess_dict['trainID_column_orig'], str):
         testID_column = [postprocess_dict['trainID_column_orig']]
@@ -36374,12 +36377,32 @@ class AutoMunge:
       elif postprocess_dict['trainID_column_orig'] is False:
         testID_column = []
 
+    #if df_test has a non-range index we'll include that in ID sets as 'Orig_index_###'
     if type(df_test.index) != pd.RangeIndex:
       #if df_train.index.names == [None]:
       if None in df_test.index.names:
         df_test = df_test.rename_axis('Orig_index_' +  str(postprocess_dict['application_number']))
       testID_column = testID_column + list(df_test.index.names)
       df_test = df_test.reset_index(drop=False)
+
+    #here we derive a range integer index for inclusion in the test ID sets
+    tempIDlist = []
+    df_test_tempID = pd.DataFrame({indexcolumn:range(0,df_test.shape[0])})
+
+    #now carve out ID sets from df_test for ID sets
+    df_testID = pd.DataFrame(df_test[testID_column])
+    
+    df_test_tempID.index = df_testID.index
+    
+    df_testID = pd.concat([df_testID, df_test_tempID], axis=1)
+
+    for IDcolumn in testID_column:
+      del df_test[IDcolumn]
+
+    #then append the indexcolumn to testID_column list for use in later methods
+    testID_column = testID_column + [indexcolumn]
+
+    del df_test_tempID
 
     # if labelscolumn is False or labelscolumn is True:
     #   if postprocess_dict['labels_column'] in list(df_test):
@@ -36405,38 +36428,6 @@ class AutoMunge:
   
     else:
       df_testlabels = pd.DataFrame()
-
-    #here we derive a range integer index for inclusion in the test ID sets
-    tempIDlist = []
-    df_test_tempID = pd.DataFrame({indexcolumn:range(0,df_test.shape[0])})
-
-    if testID_column is not False:
-
-      df_testID = pd.DataFrame(df_test[testID_column])
-
-      # if isinstance(testID_column, str):
-      #   testID_column = [testID_column]
-      # elif isinstance(testID_column, list):
-      #   testID_column = testID_column
-      # else:
-      #   print("error, testID_column value must be False, str, or list")
-      
-      df_test_tempID.index = df_testID.index
-      
-      df_testID = pd.concat([df_testID, df_test_tempID], axis=1)
-
-      for IDcolumn in testID_column:
-        del df_test[IDcolumn]
-
-      #then append the indexcolumn to testID_column list for use in later methods
-      testID_column.append(indexcolumn)
-      
-    else:
-      df_test_tempID.index = df_test.index
-      df_testID = df_test_tempID.copy()
-      testID_column = [indexcolumn]
-
-    del df_test_tempID
 
     #confirm consistency of train an test sets
 
