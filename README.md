@@ -1268,8 +1268,8 @@ assignnan =     {'injections' : {'(column)' : {'inject_ratio' : (float), \
                                                'minmax_range' : {'ratio'  : (float), \
                                                                  'ranges' : [[min1, max1], [min2, max2]]}, \
                                                'entries' : ['(entry1)', '(entry2)'], \
-                                               'entry_ratio' : {'(entry1)' : float, \
-                                                                '(entry2)' : float}
+                                               'entry_ratio' : {'(entry1)' : (float), \
+                                                                '(entry2)' : (float)}
                                               }
                                 }
                 }
