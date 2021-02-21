@@ -27325,6 +27325,29 @@ class AutoMunge:
         inverse_assigncat.update({entry2 : entry1})
         
     return inverse_assigncat
+
+  def set_indexcolumn(self, trainID_column, testID_column, application_number):
+    """
+    #this either sets indexcolumn as 'Automunge_index' 
+    #or 'Automunge_index_' + str(application_number) if 'Automunge_index' is already in ID sets
+    #(this helps with a rare potential workflow when data sets are repeatedly run through automunge)
+    """
+    
+    indexcolumn = 'Automunge_index'
+    
+    if isinstance(trainID_column, list):
+      if 'Automunge_index' in trainID_column:
+        indexcolumn = 'Automunge_index_' + str(application_number)
+    elif 'Automunge_index' == trainID_column:
+      indexcolumn = 'Automunge_index_' + str(application_number)
+        
+    if isinstance(testID_column, list):
+      if 'Automunge_index' in testID_column:
+        indexcolumn = 'Automunge_index_' + str(application_number)
+    elif 'Automunge_index' == testID_column:
+      indexcolumn = 'Automunge_index_' + str(application_number)
+    
+    return indexcolumn
   
   def automunge(self, df_train, df_test = False, \
                 labels_column = False, trainID_column = False, testID_column = False, \
@@ -27384,7 +27407,6 @@ class AutoMunge:
     
     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     application_number = random.randint(100000000000,999999999999)
-    indexcolumn = 'Automunge_index_' + str(application_number)
     trainID_column_orig = trainID_column
     testID_column_orig = testID_column
 
@@ -27682,7 +27704,7 @@ class AutoMunge:
     #and the next 120 lines or so are kind of inelegant
     #what is being accomplished here is ID columns can be passed as string column headers or list of column headers
     #and carved out from the train and test sets for inclusion in ID sets
-    #along with addition of new indexcolumn added to ID sets 'Automunge_index_###'
+    #along with addition of new indexcolumn added to ID sets 'Automunge_index'
     #and if there are existing non-range index column(s) carry that over to ID sets
     #this code works, has been tested
     #there is a similar section in postmunge
@@ -27693,6 +27715,10 @@ class AutoMunge:
       trainID_column = trainID_column.copy()
     if isinstance(testID_column, list):
       testID_column = testID_column.copy()
+
+    #this either sets indexcolumn for returned ID sets as 'Automunge_index' 
+    #or 'Automunge_index_' + str(application_number) if 'Automunge_index' is already in ID sets
+    indexcolumn = self.set_indexcolumn(trainID_column, testID_column, application_number)
     
     #we'll have convention that if testID_column=False, if trainID_column in df_test
     #then apply trainID_column to test set as well
@@ -28849,7 +28875,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.65'
+    automungeversion = '5.66'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
