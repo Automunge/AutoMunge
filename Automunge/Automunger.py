@@ -21020,8 +21020,9 @@ class AutoMunge:
       #for now we'll default to grid scoring of ‘accuracy’
       #I've heard that F1 score is a better general default, but not sure how it handles edge cases
       #need to do a little more investsigation on this point
-      #grid_scoring = 'accuracy'
-      grid_scoring = 'f1_weighted'
+      #(the problem with f1 is if folds split doesn't have fully represented activations triggers printouts)
+      grid_scoring = 'accuracy'
+      # grid_scoring = 'f1_weighted'
       
       #now we'll initialize a grid search
       if MLinfill_tuner == 'gridCV':
@@ -28875,7 +28876,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.66'
+    automungeversion = '5.67'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
