@@ -483,8 +483,7 @@ column(s) was passed to the function. This set may be useful if the shuffle
 option was applied. Note that an ID column may serve multiple purposes such
 as row identifiers or for pairing tabular data rows with a corresponding
 image file for instance. Also included in this set is a derived column
-titled 'Automunge_index_#' (where # is a 12 digit number stamp specific to 
-each function call), this column serves as an index identifier for order
+titled 'Automunge_index', this column serves as an index identifier for order
 of rows as they were received in passed data, such as may be beneficial
 when data is shuffled.
 
@@ -1623,8 +1622,7 @@ training data, that can be used to generate predictions from a model
 trained with the train set from automunge.
 
 * testID: the set of ID values corresponding to the test set. Also included 
-in this set is a derived column titled 'Automunge_index_#' (where # is a 
-12 digit number stamp specific to original automunge(.) function call), 
+in this set is a derived column titled 'Automunge_index', 
 this column serves as an index identifier for order of rows as they were 
 received in passed data, such as may be beneficial when data is shuffled.
 
@@ -3790,10 +3788,9 @@ Note that when inversion is performed those entries without recovery are returne
 - 'Binary': a reserved column header for cases where a Binary transform is applied with the automunge(.) Binary parameter. 
 - 'Binary_1010_#': The columns returned from Binary transform have headers per this convention.
 - 'PCAcol#': when PCA dimensionality reduction is performed, returned columns have headers per this convention.
-- 'Automunge_index_############': a reserved column header for index columns. When automunge(.) is run the returned ID sets are
-populated with an index matching order of rows from original returned set, such as may be useful under shuffling, with column
-header 'Automunge_index_' + a 12 digit integer associated with the application number, a random number generated for each application.
-(This integer is intended to serve as randomness to avoid overlap with this column header from multiple runs).
+- 'Automunge_index': a reserved column header for index columns returned in ID sets. When automunge(.) is run the returned ID sets are
+populated with an index matching order of rows from original returned set, note that if this string is already present in the ID sets
+it will instead populate as 'Automunge_index_' + a 12 digit random integer associated with the application number.
 
 Note that results of various validation checks such as for column header overlaps and other potential bugs are returned from 
 automunge(.) in the postprocess_dict as postprocess_dict['miscparameters_results'], and returned from postmunge(.) in the postreports_dict
