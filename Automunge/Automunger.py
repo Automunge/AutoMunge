@@ -2894,6 +2894,42 @@ class AutoMunge:
                                      'niecesnephews' : [], \
                                      'coworkers'     : ['1010'], \
                                      'friends'       : []}})
+
+    transform_dict.update({'qbt1' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['qbt1'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+  
+    transform_dict.update({'qbt2' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['qbt2'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'qbt3' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['qbt3'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'qbt4' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['qbt4'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
     
     transform_dict.update({'copy' : {'parents'       : [], \
                                      'siblings'      : [], \
@@ -5812,6 +5848,52 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : '1010'}})
+    process_dict.update({'qbt1' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_qbt1_class, \
+                                  'postprocess' : None, \
+                                  'inverseprocess' : self.inverseprocess_qbt1, \
+                                  'info_retention' : True, \
+                                  'inplace_option' : False, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'exclude', \
+                                  'labelctgy' : 'qbt1'}})
+    process_dict.update({'qbt2' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_qbt1_class, \
+                                  'postprocess' : None, \
+                                  'inverseprocess' : self.inverseprocess_qbt1, \
+                                  'info_retention' : True, \
+                                  'inplace_option' : False, \
+                                  'defaultparams' : {'suffix' : 'qbt2', \
+                                                     'integer_bits' : 15, \
+                                                     'fractional_bits' : 0}, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'exclude', \
+                                  'labelctgy' : 'qbt2'}})
+    process_dict.update({'qbt3' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_qbt1_class, \
+                                  'postprocess' : None, \
+                                  'inverseprocess' : self.inverseprocess_qbt1, \
+                                  'info_retention' : True, \
+                                  'inplace_option' : False, \
+                                  'defaultparams' : {'suffix' : 'qbt3', \
+                                                     'sign_bit' : False, \
+                                                     'fractional_bits' : 13}, \
+                                  'NArowtype' : 'nonnegativenumeric', \
+                                  'MLinfilltype' : 'exclude', \
+                                  'labelctgy' : 'qbt3'}})
+    process_dict.update({'qbt4' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_qbt1_class, \
+                                  'postprocess' : None, \
+                                  'inverseprocess' : self.inverseprocess_qbt1, \
+                                  'info_retention' : True, \
+                                  'inplace_option' : False, \
+                                  'defaultparams' : {'suffix' : 'qbt4', \
+                                                     'sign_bit' : False, \
+                                                     'integer_bits' : 16, \
+                                                     'fractional_bits' : 0}, \
+                                  'NArowtype' : 'nonnegativenumeric', \
+                                  'MLinfilltype' : 'exclude', \
+                                  'labelctgy' : 'qbt4'}})
     process_dict.update({'NArw' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_NArw_class, \
                                   'postprocess' : None, \
@@ -18785,6 +18867,177 @@ class AutoMunge:
       column_dict_list.append(column_dict.copy())
         
     return mdf_train, mdf_test, column_dict_list
+
+  def process_qbt1_class(self, df, column, category, postprocess_dict, params = {}):
+    """
+    #translates numerical entries to Q notation
+    #which is a kind of binary encoding
+    #in which there are n bits devoted to integers and m bits to fractionals
+    #where m and n are configuratble by parameter, and default to 
+    #integer_bits = 3, fractional_bits = 12, sign_bit = 1
+    #these values are arbitary, and with these defaults 
+    #entries exceeding/below +/- 8.000 are subject to overflow
+    #returns encodings in a set of 16 columns
+    #with suffix _qbt1_2^#
+    #where # is entry in range(integer_bits) or entry in -1 * range(fractional_bits)
+    #and suffix for sign bit if included is _qbt1_sign
+    #and entries are in order of sign, integers max->min, fractional min->max
+    """
+    
+    suffixoverlap_results = {}
+    
+    #initialize parameters
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'qbt1'
+    
+    if 'integer_bits' in params:
+      integer_bits = params['integer_bits']
+    else:
+      integer_bits = 3
+      
+    if 'fractional_bits' in params:
+      fractional_bits = params['fractional_bits']
+    else:
+      fractional_bits = 12
+      
+    #sign bits accepted as True or False
+    if 'sign_bit' in params:
+      sign_bit = params['sign_bit']
+    else:
+      sign_bit = True
+      
+    qbt1_column = column + '_' + suffix
+      
+    #support column based on suffix
+    #copy source column into new column
+    df, suffixoverlap_results = \
+    self.df_copy_train(df, column, column + '_' + suffix, suffixoverlap_results)
+#     df[qbt1_column] = df[column].copy()
+    
+    #convert all values to either numeric or NaN
+    df[qbt1_column] = pd.to_numeric(df[qbt1_column], errors='coerce')
+    
+    #grab a few drift stats
+    minimum = df[column + '_' + suffix].min()
+    maximum = df[column + '_' + suffix].max()
+    mean = df[column + '_' + suffix].mean()
+    stdev = df[column + '_' + suffix].std()
+    
+    #default infill is 0, kind of arbitrary, there's no perfect solution
+    #recomend supplementing with NArw if a marker needed
+    df[qbt1_column] = df[qbt1_column].fillna(0)
+    
+    #overflow is when entries have inadequate bits to represent, we'll set to 0 consistent with infill
+    overflow = 0
+    for i in range(integer_bits):
+      overflow = overflow + 2**i
+    if fractional_bits > 0:
+      overflow += 1
+    df[qbt1_column] = np.where(df[qbt1_column].abs() > overflow, 0, df[qbt1_column])
+    
+    #list of sign columns
+    if sign_bit is True:
+      sign_columns = [qbt1_column + '_sign']
+    else:
+      sign_columns = []
+      
+    #list of integer columns
+    integer_columns = []
+    for integer in range(integer_bits-1, -1, -1):
+      integer_columns.append(qbt1_column + '_2^' + str(integer))
+      
+    #list of fractional columns
+    fractional_columns = []
+    for fractional in range(fractional_bits):
+      fractional_columns.append(qbt1_column + '_2^-' + str(fractional + 1))
+      
+    allcolumns = sign_columns + integer_columns + fractional_columns
+    
+    suffixoverlap_results = \
+    self.df_check_suffixoverlap(df, allcolumns, suffixoverlap_results)
+      
+    #populate sign column, note that 0 is positive, 1 is negative
+    if sign_bit is True:
+      df[sign_columns[0]] = np.where(df[qbt1_column] < 0, 1, 0)
+      
+      #set data type
+      df[sign_columns[0]] = df[sign_columns[0]].astype(np.int8)
+
+      #now that sign bit is populated we'll take absolute of support column
+      df[qbt1_column] = df[qbt1_column].abs()
+
+    #else if no sign bit we'll set values <0 to 0 consistent with infill
+    else:
+      df[qbt1_column] = np.where(df[qbt1_column] < 0, 0, df[column + '_' + suffix])
+      
+    #populate integer columns
+    for i, integer in enumerate(range(integer_bits-1, -1, -1)):
+      
+      #set value to integer column
+      df[integer_columns[i]] = df[qbt1_column] / 2**integer
+      
+      #this rounds down to nearest integer which will be 0 or 1 unless case of overflow
+      df[integer_columns[i]] = df[integer_columns[i]].astype(np.int8)
+
+      df[qbt1_column] -= df[integer_columns[i]] * 2**integer
+      
+    #now populate the fractional columns
+    df[qbt1_column] = df[qbt1_column] % 1
+
+    for i, fractional in enumerate(range(fractional_bits)):
+
+      fractional += 1
+      fractional *= -1
+      fractional = 2**fractional
+
+#       #i is for indexing fractional_columns, j is the 2**(-j)
+#       j = i+1
+
+      df[fractional_columns[i]] = df[qbt1_column] / fractional
+
+      df[fractional_columns[i]] = df[fractional_columns[i]].astype(np.int8)
+
+      df[qbt1_column] -= df[fractional_columns[i]] * fractional
+    
+    #delete support column
+    del df[qbt1_column]
+    
+    #allcolumns = sign_columns + integer_columns + fractional_columns
+    
+    column_dict_list = []
+    
+    for ac in allcolumns:
+
+      normalization_dict = {ac : {'sign_columns' : sign_columns, \
+                                  'integer_columns' : integer_columns, \
+                                  'fractional_columns' : fractional_columns, \
+                                  'suffix' : suffix, \
+                                  'integer_bits' : integer_bits, \
+                                  'fractional_bits' : fractional_bits, \
+                                  'sign_bit' : sign_bit, \
+                                  'minimum' : minimum, \
+                                  'maximum' : maximum, \
+                                  'mean' : mean, \
+                                  'stdev' : stdev, \
+                                  'overflow' : overflow}}
+      
+      column_dict = {ac : {'category' : 'qbt1', \
+                           'origcategory' : category, \
+                           'normalization_dict' : normalization_dict, \
+                           'origcolumn' : column, \
+                           'inputcolumn' : column, \
+                           'columnslist' : allcolumns, \
+                           'categorylist' : allcolumns, \
+                           'infillmodel' : False, \
+                           'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
+                           'deletecolumn' : False}}
+
+      column_dict_list.append(column_dict.copy())
+      
+    return df, column_dict_list
   
   def process_null_class(self, df, column, category, postprocess_dict, params = {}):
     '''
@@ -27391,6 +27644,7 @@ class AutoMunge:
                              'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
                              'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], 'DPrt':[], \
                              'DPnb':[], 'DPmm':[], 'DPbn':[], 'DPod':[], 'DP10':[], 'DPoh':[], \
+                             'qbt1':[], 'qbt2':[], 'qbt3':[], 'qbt4':[], \
                              'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[], \
                              'null':[], 'copy':[], 'shfl':[], 'eval':[], 'ptfm':[]}, \
                 assignparam = {'default_assignparam' : {'(category)' : {'(parameter)' : 42}}, \
@@ -28876,7 +29130,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.67'
+    automungeversion = '5.68'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -39114,6 +39368,61 @@ class AutoMunge:
       
       df[inputcolumn] = np.where((df[normkey] == extract) & (df[inputcolumn] == 'zzzinfill'), key, df[inputcolumn])
     
+    return df, inputcolumn
+
+  def inverseprocess_qbt1(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_qbt1_class
+    #returns floats
+    #infill will be 0
+    """
+    
+    normkey = categorylist[0]
+    
+    sign_columns = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['sign_columns']
+    integer_columns = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['integer_columns']
+    fractional_columns = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['fractional_columns']
+    suffix = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+    integer_bits = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['integer_bits']
+    fractional_bits = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['fractional_bits']
+    sign_bit = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['sign_bit']
+    
+    #sign_columns / integer_columns / fractional_columns
+    #suffix / integer_bits / fractional_bits / sign_bit
+    
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    
+    #initialize inputcolumn
+    df[inputcolumn] = 0
+    
+    #populate fractionals
+    if fractional_bits > 0:
+      for i, fractional in enumerate(range(fractional_bits)):
+    
+        fractional += 1
+        fractional *= -1
+        fractional = 2**fractional
+        
+        df[inputcolumn] += df[fractional_columns[i]] * fractional
+        
+    #populate integers
+    if integer_bits > 0:
+      for i, integer in enumerate(range(integer_bits-1, -1, -1)):
+        
+        df[inputcolumn] += df[integer_columns[i]] * 2**integer
+        
+    #apply sign conversion
+    if sign_bit is True:
+      
+      df[inputcolumn] = df[inputcolumn] * ( (-1) ** df[sign_columns[0]])
+      
     return df, inputcolumn
   
   def df_inversion(self, categorylist_entry, df_test, postprocess_dict, inverse_categorytree, printstatus):
