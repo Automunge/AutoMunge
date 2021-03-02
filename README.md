@@ -2407,6 +2407,12 @@ standard deviations from mean and approx 4 sig figures in decimals. For example,
   - driftreport postmunge metrics: maximum, minimum, mean, stdev
   - inversion available: yes with full recovery
 
+Other Q Notation root categories:
+- nmqb has upstream z score to qbt1 and z score not retained
+- nmq2 has upstream z score to qbt1 and z score is retained
+- mmqb has upstream min max to qbt3 and min max not retained
+- mmq3 has upstream min max to qbt3 and min max is retained
+
 ### Numercial Set Bins and Grainings
 * pwrs: bins groupings by powers of 10 (for values >0)
   - default infill: no activation
@@ -3525,6 +3531,8 @@ avoid unintentional duplication.
 - 'mmd6',
 - 'mmdx',
 - 'mmor',
+- 'mmq2',
+- 'mmqb',
 - 'mncs',
 - 'mnm2',
 - 'mnm3',
@@ -3573,6 +3581,8 @@ avoid unintentional duplication.
 - 'nmE8',
 - 'nmE9',
 - 'nmEm',
+- 'nmq2',
+- 'nmqb',
 - 'nmr2',
 - 'nmr3',
 - 'nmr4',
@@ -6693,6 +6703,42 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'niecesnephews' : [], \
                                      'coworkers'     : [], \
                                      'friends'       : []}})
+
+    transform_dict.update({'nmqb' : {'parents'       : ['nmqb'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['qbt1'], \
+                                     'friends'       : []}})
+  
+    transform_dict.update({'nmq2' : {'parents'       : ['nmq2'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : ['qbt1']}})
+  
+    transform_dict.update({'mmqb' : {'parents'       : ['mmqb'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['qbt3'], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'mmq2' : {'parents'       : ['mmq2'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : ['qbt3']}})
     
     transform_dict.update({'copy' : {'parents'       : [], \
                                      'siblings'      : [], \
