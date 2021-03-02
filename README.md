@@ -2392,17 +2392,17 @@ standard deviations from mean and approx 4 sig figures in decimals. For example,
     - suffix: defaults to 'qbt3'
     - sign_bit: boolean defaults to False, activate to include sign register
     - integer_bits: defaults to 3 for number of bits in register
-    - fractional_bits: defaults to 12 for number of bits in register
+    - fractional_bits: defaults to 13 for number of bits in register
   - driftreport postmunge metrics: maximum, minimum, mean, stdev
   - inversion available: yes with full recovery
-* qbt4: binary encoded unsigned integers with registers for integers, default overflow at 32,767 and <0
+* qbt4: binary encoded unsigned integers with registers for integers, default overflow at 65,535 and <0
   - default infill: zero
   - default NArowtype: numeric
   - suffix appender: '_qbt4_2^#' where # integer associated with register
   - assignparam parameters accepted: 
     - suffix: defaults to 'qbt4'
     - sign_bit: boolean defaults to False, activate to include sign register
-    - integer_bits: defaults to 15 for number of bits in register
+    - integer_bits: defaults to 16 for number of bits in register
     - fractional_bits: defaults to 0 for number of bits in register
   - driftreport postmunge metrics: maximum, minimum, mean, stdev
   - inversion available: yes with full recovery
