@@ -2930,6 +2930,42 @@ class AutoMunge:
                                      'niecesnephews' : [], \
                                      'coworkers'     : [], \
                                      'friends'       : []}})
+
+    transform_dict.update({'nmqb' : {'parents'       : ['nmqb'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['qbt1'], \
+                                     'friends'       : []}})
+  
+    transform_dict.update({'nmq2' : {'parents'       : ['nmq2'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : ['qbt1']}})
+  
+    transform_dict.update({'mmqb' : {'parents'       : ['mmqb'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['qbt3'], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'mmq2' : {'parents'       : ['mmq2'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : ['qbt3']}})
     
     transform_dict.update({'copy' : {'parents'       : [], \
                                      'siblings'      : [], \
@@ -5894,6 +5930,42 @@ class AutoMunge:
                                   'NArowtype' : 'nonnegativenumeric', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'qbt4'}})
+    process_dict.update({'nmqb' : {'dualprocess' : self.process_numerical_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_numerical_class, \
+                                  'inverseprocess' : self.inverseprocess_nmbr, \
+                                  'info_retention' : True, \
+                                  'inplace_option' : True, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'qbt1'}})
+    process_dict.update({'nmq2' : {'dualprocess' : self.process_numerical_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_numerical_class, \
+                                  'inverseprocess' : self.inverseprocess_nmbr, \
+                                  'info_retention' : True, \
+                                  'inplace_option' : True, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'nmbr'}})
+    process_dict.update({'mmqb' : {'dualprocess' : self.process_mnmx_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_mnmx_class, \
+                                  'inverseprocess' : self.inverseprocess_mnmx, \
+                                  'info_retention' : True, \
+                                  'inplace_option' : True, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'qbt3'}})
+    process_dict.update({'mmq2' : {'dualprocess' : self.process_mnmx_class, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_mnmx_class, \
+                                  'inverseprocess' : self.inverseprocess_mnmx, \
+                                  'info_retention' : True, \
+                                  'inplace_option' : True, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'mnmx'}})
     process_dict.update({'NArw' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_NArw_class, \
                                   'postprocess' : None, \
@@ -27644,7 +27716,7 @@ class AutoMunge:
                              'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
                              'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], 'DPrt':[], \
                              'DPnb':[], 'DPmm':[], 'DPbn':[], 'DPod':[], 'DP10':[], 'DPoh':[], \
-                             'qbt1':[], 'qbt2':[], 'qbt3':[], 'qbt4':[], \
+                             'qbt1':[], 'qbt2':[], 'qbt3':[], 'qbt4':[], 'nmqb':[], 'mmqb':[], \
                              'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[], \
                              'null':[], 'copy':[], 'shfl':[], 'eval':[], 'ptfm':[]}, \
                 assignparam = {'default_assignparam' : {'(category)' : {'(parameter)' : 42}}, \
@@ -29130,7 +29202,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.68'
+    automungeversion = '5.69'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
