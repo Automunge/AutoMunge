@@ -170,6 +170,7 @@ am.automunge(df_train, df_test = False, \
                           'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
                           'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], 'DPrt':[], \
                           'DPnb':[], 'DPmm':[], 'DPbn':[], 'DPod':[], 'DP10':[], 'DPoh':[], \
+                          'qbt1':[], 'qbt2':[], 'qbt3':[], 'qbt4':[], \
                           'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[], \
                           'null':[], 'copy':[], 'shfl':[], 'eval':[], 'ptfm':[]}, \
              assignparam = {'default_assignparam' : {'(category)' : {'(parameter)' : 42}}, \
@@ -400,6 +401,7 @@ am.automunge(df_train, df_test = False, \
                           'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
                           'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], 'DPrt':[], \
                           'DPnb':[], 'DPmm':[], 'DPbn':[], 'DPod':[], 'DP10':[], 'DPoh':[], \
+                          'qbt1':[], 'qbt2':[], 'qbt3':[], 'qbt4':[], \
                           'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[], \
                           'null':[], 'copy':[], 'shfl':[], 'eval':[], 'ptfm':[]}, \
              assignparam = {'default_assignparam' : {'(category)' : {'(parameter)' : 42}}, \
@@ -638,6 +640,7 @@ am.automunge(df_train, df_test = False, \
                           'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
                           'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], 'DPrt':[], \
                           'DPnb':[], 'DPmm':[], 'DPbn':[], 'DPod':[], 'DP10':[], 'DPoh':[], \
+                          'qbt1':[], 'qbt2':[], 'qbt3':[], 'qbt4':[], \
                           'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[], \
                           'null':[], 'copy':[], 'shfl':[], 'eval':[], 'ptfm':[]}, \
              assignparam = {'default_assignparam' : {'(category)' : {'(parameter)' : 42}}, \
@@ -1084,6 +1087,7 @@ assigncat = {'nmbr':[], 'retn':[], 'mnmx':[], 'mean':[], 'MAD3':[], 'lgnm':[], \
              'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
              'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], 'DPrt':[], \
              'DPnb':[], 'DPmm':[], 'DPbn':[], 'DPod':[], 'DP10':[], 'DPoh':[], \
+             'qbt1':[], 'qbt2':[], 'qbt3':[], 'qbt4':[], \
              'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[], \
              'null':[], 'copy':[], 'shfl':[], 'eval':[], 'ptfm':[]}
 ```         
@@ -2353,6 +2357,56 @@ family trees below for full set of transfomration categories asscoiated with the
   - assignparam parameters accepted: (none)
   - driftreport postmunge metrics: mean
   - inversion available: yes with partial recovery
+
+Q Notation family of transforms return a multicolumn binary encoded set with registers for sign, integers, and fractionals.
+Transforms accept parameters integer_bits / fractional_bits / sign_bit for register sizes, care should be taken for 
+adequate registers to avoid overflow. Default register sizes were selected to accomodate z-score normalized data with +/-6 
+standard deviations from mean and approx 4 sig figures in decimals. For example, with default parameters an input column 'floats' will return columns: ['floats_qbt1_sign', 'floats_qbt1_2^2', 'floats_qbt1_2^1', 'floats_qbt1_2^0', 'floats_qbt1_2^-1', 'floats_qbt1_2^-2', 'floats_qbt1_2^-3', 'floats_qbt1_2^-4', 'floats_qbt1_2^-5', 'floats_qbt1_2^-6', 'floats_qbt1_2^-7', 'floats_qbt1_2^-8', 'floats_qbt1_2^-9', 'floats_qbt1_2^-10', 'floats_qbt1_2^-11', 'floats_qbt1_2^-12'].
+* qbt1: binary encoded signed floats with registers for sign, integers, and fractionals, default overflow at +/- 8.000
+  - default infill: zero
+  - default NArowtype: numeric
+  - suffix appender: '_qbt1_2^#' where # integer associated with register and also '_qbt1_sign'
+  - assignparam parameters accepted: 
+    - suffix: defaults to 'qbt1'
+    - sign_bit: boolean defaults to True to include sign register
+    - integer_bits: defaults to 3 for number of bits in register
+    - fractional_bits: defaults to 12 for number of bits in register
+  - driftreport postmunge metrics: maximum, minimum, mean, stdev
+  - inversion available: yes with full recovery
+* qbt2: binary encoded signed integers with registers for sign and integers, default overflow at +/-32,767
+  - default infill: zero
+  - default NArowtype: numeric
+  - suffix appender: '_qbt2_2^#' where # integer associated with register and also '_qbt2_sign'
+  - assignparam parameters accepted: 
+    - suffix: defaults to 'qbt2'
+    - sign_bit: boolean defaults to True to include sign register
+    - integer_bits: defaults to 15 for number of bits in register
+    - fractional_bits: defaults to 0 for number of bits in register
+  - driftreport postmunge metrics: maximum, minimum, mean, stdev
+  - inversion available: yes with full recovery
+* qbt3: binary encoded unsigned floats with registers for integers and fractionals, default overflow at 8.000 and <0
+  - default infill: zero
+  - default NArowtype: numeric
+  - suffix appender: '_qbt3_2^#' where # integer associated with register
+  - assignparam parameters accepted: 
+    - suffix: defaults to 'qbt3'
+    - sign_bit: boolean defaults to False, activate to include sign register
+    - integer_bits: defaults to 3 for number of bits in register
+    - fractional_bits: defaults to 12 for number of bits in register
+  - driftreport postmunge metrics: maximum, minimum, mean, stdev
+  - inversion available: yes with full recovery
+* qbt4: binary encoded unsigned integers with registers for integers, default overflow at 32,767 and <0
+  - default infill: zero
+  - default NArowtype: numeric
+  - suffix appender: '_qbt4_2^#' where # integer associated with register
+  - assignparam parameters accepted: 
+    - suffix: defaults to 'qbt4'
+    - sign_bit: boolean defaults to False, activate to include sign register
+    - integer_bits: defaults to 15 for number of bits in register
+    - fractional_bits: defaults to 0 for number of bits in register
+  - driftreport postmunge metrics: maximum, minimum, mean, stdev
+  - inversion available: yes with full recovery
+
 ### Numercial Set Bins and Grainings
 * pwrs: bins groupings by powers of 10 (for values >0)
   - default infill: no activation
@@ -3565,6 +3619,10 @@ avoid unintentional duplication.
 - 'pwor',
 - 'pwr2',
 - 'pwrs',
+- 'qbt1',
+- 'qbt2',
+- 'qbt3',
+- 'qbt4',
 - 'rais',
 - 'retn',
 - 'rtb2',
@@ -3738,6 +3796,10 @@ present in dataframe and return results in postprocess_dict['miscparameters_resu
 - '_ordl'
 - '_por2'
 - '_pwor'
+- '\_qbt1\_sign' and '\_qbt1\_2^2#' where # is integer
+- '\_qbt2\_sign' and '\_qbt2\_2^2#' where # is integer
+- '\_qbt3\_2^2#' where # is integer
+- '\_qbt4\_2^2#' where # is integer
 - '_rais'
 - '_retn'
 - '\_sbs2_' + string (where string is an identified overlap of characters between categorical entries)
@@ -5146,7 +5208,7 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'niecesnephews' : ['sp18'], \
                                      'coworkers'     : ['1010'], \
                                      'friends'       : []}})
-				     
+
     transform_dict.update({'or23' : {'parents'       : ['or23'], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : [], \
@@ -6594,6 +6656,42 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'children'      : [], \
                                      'niecesnephews' : [], \
                                      'coworkers'     : ['1010'], \
+                                     'friends'       : []}})
+
+    transform_dict.update({'qbt1' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['qbt1'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+  
+    transform_dict.update({'qbt2' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['qbt2'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'qbt3' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['qbt3'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'qbt4' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['qbt4'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
                                      'friends'       : []}})
     
     transform_dict.update({'copy' : {'parents'       : [], \
