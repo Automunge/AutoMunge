@@ -170,7 +170,7 @@ am.automunge(df_train, df_test = False, \
                           'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
                           'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], 'DPrt':[], \
                           'DPnb':[], 'DPmm':[], 'DPbn':[], 'DPod':[], 'DP10':[], 'DPoh':[], \
-                          'qbt1':[], 'qbt2':[], 'qbt3':[], 'qbt4':[], \
+                          'qbt1':[], 'qbt2':[], 'qbt3':[], 'qbt4':[], 'nmqb':[], 'mmqb':[], \
                           'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[], \
                           'null':[], 'copy':[], 'shfl':[], 'eval':[], 'ptfm':[]}, \
              assignparam = {'default_assignparam' : {'(category)' : {'(parameter)' : 42}}, \
@@ -401,7 +401,7 @@ am.automunge(df_train, df_test = False, \
                           'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
                           'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], 'DPrt':[], \
                           'DPnb':[], 'DPmm':[], 'DPbn':[], 'DPod':[], 'DP10':[], 'DPoh':[], \
-                          'qbt1':[], 'qbt2':[], 'qbt3':[], 'qbt4':[], \
+                          'qbt1':[], 'qbt2':[], 'qbt3':[], 'qbt4':[], 'nmqb':[], 'mmqb':[], \
                           'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[], \
                           'null':[], 'copy':[], 'shfl':[], 'eval':[], 'ptfm':[]}, \
              assignparam = {'default_assignparam' : {'(category)' : {'(parameter)' : 42}}, \
@@ -640,7 +640,7 @@ am.automunge(df_train, df_test = False, \
                           'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
                           'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], 'DPrt':[], \
                           'DPnb':[], 'DPmm':[], 'DPbn':[], 'DPod':[], 'DP10':[], 'DPoh':[], \
-                          'qbt1':[], 'qbt2':[], 'qbt3':[], 'qbt4':[], \
+                          'qbt1':[], 'qbt2':[], 'qbt3':[], 'qbt4':[], 'nmqb':[], 'mmqb':[], \
                           'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[], \
                           'null':[], 'copy':[], 'shfl':[], 'eval':[], 'ptfm':[]}, \
              assignparam = {'default_assignparam' : {'(category)' : {'(parameter)' : 42}}, \
@@ -1087,7 +1087,7 @@ assigncat = {'nmbr':[], 'retn':[], 'mnmx':[], 'mean':[], 'MAD3':[], 'lgnm':[], \
              'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
              'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], 'DPrt':[], \
              'DPnb':[], 'DPmm':[], 'DPbn':[], 'DPod':[], 'DP10':[], 'DPoh':[], \
-             'qbt1':[], 'qbt2':[], 'qbt3':[], 'qbt4':[], \
+             'qbt1':[], 'qbt2':[], 'qbt3':[], 'qbt4':[], 'nmqb':[], 'mmqb':[], \
              'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[], \
              'null':[], 'copy':[], 'shfl':[], 'eval':[], 'ptfm':[]}
 ```         
@@ -2360,8 +2360,9 @@ family trees below for full set of transfomration categories asscoiated with the
 
 Q Notation family of transforms return a multicolumn binary encoded set with registers for sign, integers, and fractionals.
 Transforms accept parameters integer_bits / fractional_bits / sign_bit for register sizes, care should be taken for 
-adequate registers to avoid overflow. Default register sizes were selected to accomodate z-score normalized data with +/-6 
-standard deviations from mean and approx 4 sig figures in decimals. For example, with default parameters an input column 'floats' will return columns: ['floats_qbt1_sign', 'floats_qbt1_2^2', 'floats_qbt1_2^1', 'floats_qbt1_2^0', 'floats_qbt1_2^-1', 'floats_qbt1_2^-2', 'floats_qbt1_2^-3', 'floats_qbt1_2^-4', 'floats_qbt1_2^-5', 'floats_qbt1_2^-6', 'floats_qbt1_2^-7', 'floats_qbt1_2^-8', 'floats_qbt1_2^-9', 'floats_qbt1_2^-10', 'floats_qbt1_2^-11', 'floats_qbt1_2^-12'].
+adequate registers to avoid overflow (overflow entries have values replaced with max or min capacity based on register sizes). 
+Default register sizes were selected to accomodate z-score normalized data with +/-6 
+standard deviations from mean and approximately 4 significant figures in decimals. For example, with default parameters an input column 'floats' will return columns: ['floats_qbt1_sign', 'floats_qbt1_2^2', 'floats_qbt1_2^1', 'floats_qbt1_2^0', 'floats_qbt1_2^-1', 'floats_qbt1_2^-2', 'floats_qbt1_2^-3', 'floats_qbt1_2^-4', 'floats_qbt1_2^-5', 'floats_qbt1_2^-6', 'floats_qbt1_2^-7', 'floats_qbt1_2^-8', 'floats_qbt1_2^-9', 'floats_qbt1_2^-10', 'floats_qbt1_2^-11', 'floats_qbt1_2^-12'].
 * qbt1: binary encoded signed floats with registers for sign, integers, and fractionals, default overflow at +/- 8.000
   - default infill: zero
   - default NArowtype: numeric
