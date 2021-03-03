@@ -5889,7 +5889,7 @@ class AutoMunge:
                                   'postprocess' : None, \
                                   'inverseprocess' : self.inverseprocess_qbt1, \
                                   'info_retention' : True, \
-                                  'inplace_option' : False, \
+                                  'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'qbt1'}})
@@ -5898,7 +5898,7 @@ class AutoMunge:
                                   'postprocess' : None, \
                                   'inverseprocess' : self.inverseprocess_qbt1, \
                                   'info_retention' : True, \
-                                  'inplace_option' : False, \
+                                  'inplace_option' : True, \
                                   'defaultparams' : {'suffix' : 'qbt2', \
                                                      'integer_bits' : 15, \
                                                      'fractional_bits' : 0}, \
@@ -5910,7 +5910,7 @@ class AutoMunge:
                                   'postprocess' : None, \
                                   'inverseprocess' : self.inverseprocess_qbt1, \
                                   'info_retention' : True, \
-                                  'inplace_option' : False, \
+                                  'inplace_option' : True, \
                                   'defaultparams' : {'suffix' : 'qbt3', \
                                                      'sign_bit' : False, \
                                                      'fractional_bits' : 13}, \
@@ -5922,7 +5922,7 @@ class AutoMunge:
                                   'postprocess' : None, \
                                   'inverseprocess' : self.inverseprocess_qbt1, \
                                   'info_retention' : True, \
-                                  'inplace_option' : False, \
+                                  'inplace_option' : True, \
                                   'defaultparams' : {'suffix' : 'qbt4', \
                                                      'sign_bit' : False, \
                                                      'integer_bits' : 16, \
@@ -18954,11 +18954,17 @@ class AutoMunge:
     #where # is entry in range(integer_bits) or entry in -1 * range(fractional_bits)
     #and suffix for sign bit if included is _qbt1_sign
     #and entries are in order of sign, integers max->min, fractional min->max
+    #for cases of overflow (inadequate registers for number size) replaced with overflow value
     """
     
     suffixoverlap_results = {}
     
     #initialize parameters
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
     if 'suffix' in params:
       suffix = params['suffix']
     else:
@@ -18974,28 +18980,35 @@ class AutoMunge:
     else:
       fractional_bits = 12
       
-    #sign bits accepted as True or False
+    #sign_bit accepted as True or False
     if 'sign_bit' in params:
       sign_bit = params['sign_bit']
     else:
       sign_bit = True
       
     qbt1_column = column + '_' + suffix
+    
+    if inplace is not True:
       
-    #support column based on suffix
-    #copy source column into new column
-    df, suffixoverlap_results = \
-    self.df_copy_train(df, column, column + '_' + suffix, suffixoverlap_results)
-#     df[qbt1_column] = df[column].copy()
+      #copy source column into new column
+      df, suffixoverlap_results = \
+      self.df_copy_train(df, column, qbt1_column, suffixoverlap_results)
+    
+    else:
+      
+      suffixoverlap_results = \
+      self.df_check_suffixoverlap(df, qbt1_column, suffixoverlap_results)
+      
+      df.rename(columns = {column : qbt1_column}, inplace = True)
     
     #convert all values to either numeric or NaN
     df[qbt1_column] = pd.to_numeric(df[qbt1_column], errors='coerce')
     
     #grab a few drift stats
-    minimum = df[column + '_' + suffix].min()
-    maximum = df[column + '_' + suffix].max()
-    mean = df[column + '_' + suffix].mean()
-    stdev = df[column + '_' + suffix].std()
+    minimum = df[qbt1_column].min()
+    maximum = df[qbt1_column].max()
+    mean = df[qbt1_column].mean()
+    stdev = df[qbt1_column].std()
     
     #default infill is 0, kind of arbitrary, there's no perfect solution
     #recomend supplementing with NArw if a marker needed
@@ -19004,11 +19017,18 @@ class AutoMunge:
     #overflow is when entries have inadequate bits to represent, we'll set to 0 consistent with infill
     overflow = 0
     for i in range(integer_bits):
-      overflow = overflow + 2**i
-    if fractional_bits > 0:
-      overflow += 1
-    df[qbt1_column] = np.where(df[qbt1_column].abs() > overflow, 0, df[qbt1_column])
+      overflow += 2**i
+    for i in range(fractional_bits):
+      overflow += 2**(-(i+1))
+      
+    #now replace overflow
+    df[qbt1_column] = np.where(df[qbt1_column] > overflow, overflow, df[qbt1_column])
     
+    if sign_bit is True:
+      df[qbt1_column] = np.where(df[qbt1_column] < -overflow, -overflow, df[qbt1_column])
+    else:
+      df[qbt1_column] = np.where(df[qbt1_column] < 0, 0, df[qbt1_column])
+      
     #list of sign columns
     if sign_bit is True:
       sign_columns = [qbt1_column + '_sign']
@@ -19039,10 +19059,6 @@ class AutoMunge:
 
       #now that sign bit is populated we'll take absolute of support column
       df[qbt1_column] = df[qbt1_column].abs()
-
-    #else if no sign bit we'll set values <0 to 0 consistent with infill
-    else:
-      df[qbt1_column] = np.where(df[qbt1_column] < 0, 0, df[column + '_' + suffix])
       
     #populate integer columns
     for i, integer in enumerate(range(integer_bits-1, -1, -1)):
@@ -29202,7 +29218,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.69'
+    automungeversion = '5.70'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
