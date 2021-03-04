@@ -2742,8 +2742,8 @@ and comparable to test set independent of test set row count
   - inversion available: yes with partial recovery
 * hash: applies "the hashing trick" to convert high cardinality categoric sets to set of columns with integer word encodings
 e.g. for an entry "Three word quote" may return three columns with integers corresponding to each of three words
-where integer is determined by hashing, and also based on passed parameter vocab_size
-also strips out special characters, Uhsh is available if upstream uppercase conversion desired. Note that there is a possibility
+where integer is determined by hashing, and also based on passed parameter vocab_size.
+Note that hash strips out special characters. Uhsh is available if upstream uppercase conversion desired. Note that there is a possibility
 of encoding overlap between entries with this transform. Also note that hash is excluded from ML infill
 vocab_size calculated based on number of unique words found in train set times a multiplier (defaulting to 2), where if that 
 is greater than cap then reverts to cap. The hashing transforms are intended as an alternative to other categoric 
@@ -2758,14 +2758,14 @@ is not supported as there is possibility of redundant encodings for different un
     - 'heuristic_cap', integer defaults to 1024
     - 'vocab_size', integer defaults to False, when assigned overrides heuristic
     - 'space', defaults to ' ', this is used to extract words by space seperator
-    - 'excluded_characters', defaults to [',', '.', '?', '!', '(', ')'], these characetrers are stripped prior to enconding
+    - 'excluded_characters', defaults to [',', '.', '?', '!', '(', ')'], these characters are stripped prior to enconding
     - 'salt', arbitrary string, defaults to empty string '', appended to entries to perturb encoding basis for privacy
     - 'hash_alg', defaults to 'hash' for use of native python hash function for speed, 'md5' uses hashlib md5 function instead
     - 'max_column_count', defaults to False, can pass as integer to cap the number of returned columns, in which case when
       words are extracted the final entrty within cap will contain all remaining word and space characters
   - driftreport postmunge metrics: col_count (number of columns), vocab_size
   - inversion available: no
-* hsh2: similar to hash but does not partition entries by space seperator, so only returns one column, does not scrub special characters
+* hsh2: similar to hash but does not partition entries by space seperator, so only returns one column. Note this also scrubs special characters.
   - default infill: none
   - default NArowtype: justNaN
   - suffix appender: '_hash'
@@ -2773,6 +2773,7 @@ is not supported as there is possibility of redundant encodings for different un
     - 'heuristic_multiplier', float defaults to 2
     - 'heuristic_cap', integer defaults to 1024
     - 'vocab_size', integer defaults to False, when assigned overrides heuristic
+    - 'excluded_characters', defaults to [',', '.', '?', '!', '(', ')'], these characters are stripped prior to enconding
     - 'salt', arbitrary string, defaults to empty string '', appended to entries to perturb encoding basis for privacy
     - 'hash_alg', defaults to 'hash' for use of native python hash function for speed, 'md5' uses hashlib md5 function instead
   - driftreport postmunge metrics: col_count (number of columns), vocab_size
