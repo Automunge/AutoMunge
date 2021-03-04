@@ -9529,7 +9529,7 @@ class AutoMunge:
       
       df.rename(columns = {column : column + '_lngt'}, inplace = True)
     
-    df[column + '_lngt'] = df[column + '_lngt'].astype(str).apply(len)
+    df[column + '_lngt'] = df[column + '_lngt'].astype(str).transform(len)
     
     #grab a fe4w driftreport metrics:
     #get maximum value of training column
@@ -11747,6 +11747,12 @@ class AutoMunge:
       salt = params['salt']
     else:
       salt = ''
+
+    #a list of strings that are scrubbed from entries e.g. punctuations
+    if 'excluded_characters' in params:
+      excluded_characters = params['excluded_characters']
+    else:
+      excluded_characters = []
       
     #accepts either 'hash' or 'md5', 
     #where hash is quicker since uses native python function instead of hashlib 
@@ -11775,6 +11781,11 @@ class AutoMunge:
     #convert column to string, note this means that missing data converted to 'nan'
     mdf_train[column + '_hs10'] = mdf_train[column + '_hs10'].astype(str)
     mdf_test[column + '_hs10'] = mdf_test[column + '_hs10'].astype(str)
+
+    #now scrub special characters
+    for scrub_punctuation in excluded_characters:
+      mdf_train[column + '_hs10'] = mdf_train[column + '_hs10'].str.replace(scrub_punctuation, '')
+      mdf_test[column + '_hs10'] = mdf_test[column + '_hs10'].str.replace(scrub_punctuation, '')
     
     if vocab_size is False:
       #calculate the vocab_size based on heuristic_multiplier and heuristic_cap
@@ -11804,8 +11815,8 @@ class AutoMunge:
     binary_column_count = int(np.ceil(np.log2(vocab_size)))
     
     #convert integer encoding to binary
-    mdf_train[column + '_hs10'] = mdf_train[column + '_hs10'].apply(bin)
-    mdf_test[column + '_hs10'] = mdf_test[column + '_hs10'].apply(bin)
+    mdf_train[column + '_hs10'] = mdf_train[column + '_hs10'].transform(bin)
+    mdf_test[column + '_hs10'] = mdf_test[column + '_hs10'].transform(bin)
     
     #convert format to string of digits
     mdf_train[column + '_hs10'] = mdf_train[column + '_hs10'].str[2:]
@@ -11844,6 +11855,7 @@ class AutoMunge:
                                       'heuristic_multiplier' : heuristic_multiplier, \
                                       'heuristic_cap' : heuristic_cap, \
                                       'salt' : salt, \
+                                      'excluded_characters' : excluded_characters, \
                                       'hash_alg' : hash_alg}}      
       
       column_dict = { hc : {'category' : 'hs10', \
@@ -19546,7 +19558,7 @@ class AutoMunge:
       #So will produce an array containing data types of each cell and \
       #evaluate for most common variable using the collections library
 
-      type1_df = df[column].apply(lambda x: type(x)).to_numpy()
+      type1_df = df[column].transform(lambda x: type(x)).to_numpy()
       
       #c = collections.Counter(type1_df)
       c = Counter(type1_df)
@@ -19568,8 +19580,7 @@ class AutoMunge:
 
       #additional array needed to check for time series
 
-      #df['typecolumn2'] = df[column].apply(lambda x: type(pd.to_datetime(x, errors = 'coerce')))
-      type2_df = df[column].apply(lambda x: type(pd.to_datetime(x, errors = 'coerce', utc=True))).to_numpy()
+      type2_df = df[column].transform(lambda x: type(pd.to_datetime(x, errors = 'coerce', utc=True))).to_numpy()
 
       #datec = collections.Counter(type2_df)
       datec = Counter(type2_df)
@@ -29217,7 +29228,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.71'
+    automungeversion = '5.72'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -32028,6 +32039,8 @@ class AutoMunge:
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['col_count']
     salt = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['salt']
+    excluded_characters = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['excluded_characters']
     hash_alg = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['hash_alg']
     
@@ -32042,6 +32055,10 @@ class AutoMunge:
       
     #convert column to string, note this means that missing data converted to 'nan'
     mdf_test[column + '_hs10'] = mdf_test[column + '_hs10'].astype(str)
+
+    #now scrub special characters
+    for scrub_punctuation in excluded_characters:
+      mdf_test[column + '_hs10'] = mdf_test[column + '_hs10'].str.replace(scrub_punctuation, '')
     
     def md5_hash(entry):
       """
@@ -32059,7 +32076,7 @@ class AutoMunge:
     mdf_test[column + '_hs10'] = mdf_test[column + '_hs10'].transform(md5_hash)
     
     #convert integer encoding to binary
-    mdf_test[column + '_hs10'] = mdf_test[column + '_hs10'].apply(bin)
+    mdf_test[column + '_hs10'] = mdf_test[column + '_hs10'].transform(bin)
     
     #convert format to string of digits
     mdf_test[column + '_hs10'] = mdf_test[column + '_hs10'].str[2:]
