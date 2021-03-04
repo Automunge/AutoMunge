@@ -2765,7 +2765,7 @@ is not supported as there is possibility of redundant encodings for different un
       words are extracted the final entrty within cap will contain all remaining word and space characters
   - driftreport postmunge metrics: col_count (number of columns), vocab_size
   - inversion available: no
-* hsh2: similar to hash but does not partition entries by space seperator, so only returns one column. Note this also scrubs special characters.
+* hsh2: similar to hash but does not partition entries by space seperator, so only returns one column. Note this version doesn't scrub special characters prior to encoding.
   - default infill: none
   - default NArowtype: justNaN
   - suffix appender: '_hash'
@@ -2773,7 +2773,7 @@ is not supported as there is possibility of redundant encodings for different un
     - 'heuristic_multiplier', float defaults to 2
     - 'heuristic_cap', integer defaults to 1024
     - 'vocab_size', integer defaults to False, when assigned overrides heuristic
-    - 'excluded_characters', defaults to [',', '.', '?', '!', '(', ')'], these characters are stripped prior to enconding
+    - 'excluded_characters', a list of strings, defaults to [] (an empty set), these characters are stripped prior to enconding
     - 'salt', arbitrary string, defaults to empty string '', appended to entries to perturb encoding basis for privacy
     - 'hash_alg', defaults to 'hash' for use of native python hash function for speed, 'md5' uses hashlib md5 function instead
   - driftreport postmunge metrics: col_count (number of columns), vocab_size
