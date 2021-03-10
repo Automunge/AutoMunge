@@ -7327,6 +7327,6 @@ See file LICENSE or go to https://github.com/Automunge/AutoMunge for full licens
 
 contact available via [automunge.com](https://automunge.com)
 
-Copyright (C) 2018, 2019, 2020 - All Rights Reserved
+Copyright (C) 2018, 2019, 2020, 2021 - All Rights Reserved
 
 Patent Pending, applications 16552857, 17021770
