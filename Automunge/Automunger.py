@@ -4,7 +4,7 @@ See file LICENSE or go to https://github.com/Automunge/AutoMunge for full licens
 
 contact available via automunge.com
 
-Copyright (C) 2018, 2019, 2020 Nicholas Teague - All Rights Reserved
+Copyright (C) 2018, 2019, 2020, 2021 Nicholas Teague - All Rights Reserved
 
 patent pending, applications 16552857, 17021770
 """
@@ -34,14 +34,14 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import RandomizedSearchCV
-from sklearn.metrics import mean_squared_error
+# from sklearn.metrics import mean_squared_error
 # from sklearn.metrics import roc_auc_score
 from sklearn.metrics import accuracy_score
 #stats may be used for cases where user elects RandomSearchCV hyperparameter tuning
 # from scipy import stats
 
 #imports for shuffleaccuracy
-from sklearn.metrics import accuracy_score
+# from sklearn.metrics import accuracy_score
 from sklearn.metrics import mean_squared_log_error
 
 #imports for PCA dimensionality reduction
@@ -21228,13 +21228,9 @@ class AutoMunge:
         for columnname in categorylist:
           postprocess_dict['column_dict'][columnname]['infillcomplete'] = True
 
-          #now we'll add our trained text model to the postprocess_dict
-          postprocess_dict['column_dict'][columnname]['infillmodel'] \
-          = model
-
-#         #now change the infillcomplete marker in the dict for each associated column
-#         for columnname in categorylist:
-#           postprocess_dict['column_dict'][columnname]['infillcomplete'] = True
+        #now we'll add our trained model to the postprocess_dict (model only saved in first categorylist column)
+        postprocess_dict['column_dict'][column]['infillmodel'] \
+        = model
 
       #reset data type to ensure returned data is consistent with what was passed
       if len(categorylist) == 1 or \
@@ -29235,7 +29231,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.73'
+    automungeversion = '5.74'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
