@@ -21097,7 +21097,10 @@ class AutoMunge:
         infill_dict = dict(zip(infillindex, infill.to_numpy()))
 
         #replace 'tempindex1' column with infill in rows where NArows is True
-        NArows['tempindex1'] = np.where(NArows[NArowcolumn], NArows['tempindex1'].replace(infill_dict), 0)
+        if df[column].shape[0] != infill.shape[0]:
+          NArows['tempindex1'] = NArows['tempindex1'].replace(infill_dict)
+        else:
+          NArows['tempindex1'] = infill
 
         #now carry that infill over to the target column for rows where NArows is True
         df[column] = np.where(NArows[NArowcolumn], NArows['tempindex1'], df[column])
@@ -21117,10 +21120,13 @@ class AutoMunge:
           infill_dict = dict(zip(infillindex, infill[textcolumnname].to_numpy()))
 
           #replace 'tempindex1' column with infill in rows where NArows is True
-          NArows['tempindex1'] = np.where(NArows[NArowcolumn], NArows['tempindex1'].replace(infill_dict), 0)
+          if df[column].shape[0] != infill.shape[0]:
+            NArows['tempindex1'] = NArows['tempindex1'].replace(infill_dict)
+          else:
+            NArows['tempindex1'] = infill[textcolumnname]
 
           #now carry that infill over to the target column for rows where NArows is True
-          df[column] = np.where(NArows[NArowcolumn], NArows['tempindex1'], df[column])
+          df[textcolumnname] = np.where(NArows[NArowcolumn], NArows['tempindex1'], df[textcolumnname])
 
     #if category == 'date':
     if MLinfilltype in ['exclude', 'boolexclude', 'totalexclude']:
@@ -24075,7 +24081,7 @@ class AutoMunge:
       tempdf = tempdf[tempdf['onehot'] == binary_mode]
       
       #mode is the current columns value associated with that mode
-      mode = tempdf[column][:0]
+      mode = binary_mode[categorylist.index(column)]
       
       del tempdf
       del binary_mode
@@ -24238,6 +24244,7 @@ class AutoMunge:
       mode_valuecounts_list = pd.DataFrame(tempdf['onehot'].value_counts())
       mode_valuecounts_list = mode_valuecounts_list.rename_axis('zzzinfill').sort_values(by = ['onehot', 'zzzinfill'], ascending = [False, True])
       mode_valuecounts_list = list(mode_valuecounts_list.index)
+
       if len(mode_valuecounts_list) > 0:
         binary_mode = mode_valuecounts_list[-1]
       else:
@@ -24258,7 +24265,7 @@ class AutoMunge:
       tempdf = tempdf[tempdf['onehot'] == binary_mode]
       
       #mode is the current columns value associated with that mode
-      mode = tempdf[column][:0]
+      mode = binary_mode[categorylist.index(column)]
       
       del tempdf
       del binary_mode
@@ -29228,7 +29235,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.72'
+    automungeversion = '5.73'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
