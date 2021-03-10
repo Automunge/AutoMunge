@@ -798,7 +798,7 @@ defaults to False.
 * MLinfill: a boolean identifier _(True/False)_ which indicates if the ML
 infill method will be applied as a default to predict infill for missing 
 or improperly formatted data using machine learning models trained on the
-rest of the set. This defaults to False. Note that ML infill may alternatively
+rest of the df\_train set. This defaults to False. Note that ML infill may alternatively
 be assigned to distinct columns in assigninfill. Note that even if sets passed
 to automunge(.) have no points needing infill, when MLinfill is activated 
 machine learning models will still be trained for potential use of predicting 
