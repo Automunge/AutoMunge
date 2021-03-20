@@ -3211,8 +3211,9 @@ class AutoMunge:
     # - 'concurrent_nmbr' for multicolumn sets with numerical entries
     # - 'exclude' for columns which will be excluded from ML infill
     # - '1010' for binary encoded columns, will be converted to onehot for ML
-    # - 'boolexclude' boolean set suitable for Binary transform but exluded from MLinfill
-    # - 'totalexclude' sets excluded from all methods that inspect MLinfill, such as for excl category
+    # - 'boolexclude' boolean set suitable for Binary transform but exluded from infill
+    # - 'ordlexclude' ordinal set exluded from infill
+    # - 'totalexclude' sets excluded from all methods that inspect MLinfilltype, such as for excl category
 
     #at least one of sets of ('dualprocess' and 'postprocess') or ('singleprocess') needs to be specified
     #'inverseprocess' is optional and supports postmunge inversion
@@ -4139,7 +4140,7 @@ class AutoMunge:
                                   'postprocess' : self.postprocess_hash_class, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'exclude', \
+                                  'MLinfilltype' : 'ordlexclude', \
                                   'labelctgy' : 'hash'}})
     process_dict.update({'hsh2' : {'dualprocess' : self.process_hash_class, \
                                   'singleprocess' : None, \
@@ -4148,14 +4149,14 @@ class AutoMunge:
                                   'defaultparams' : {'space' : '', \
                                                      'excluded_characters' : []}, \
                                   'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'exclude', \
+                                  'MLinfilltype' : 'ordlexclude', \
                                   'labelctgy' : 'hash'}})
     process_dict.update({'hs10' : {'dualprocess' : self.process_hs10_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_hs10_class, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'exclude', \
+                                  'MLinfilltype' : 'boolexclude', \
                                   'labelctgy' : 'hs10'}})
     process_dict.update({'Uhsh' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_UPCS_class, \
@@ -20147,7 +20148,7 @@ class AutoMunge:
 #       NArows = self.parsedate(df2, column)
       
     #if category in ['excl']:
-    if NArowtype in ['exclude', 'boolexclude', 'totalexclude']:
+    if NArowtype in ['exclude', 'boolexclude', 'ordlexclude', 'totalexclude']:
       
       if driftassess is True:
         drift_dict.update({column : {}})
@@ -20895,7 +20896,7 @@ class AutoMunge:
       df_testinfill = pd.DataFrame(df_testinfill, columns = categorylist)
       
     #if target category excluded from ML infill:
-    if MLinfilltype in ['exclude', 'boolexclude', 'totalexclude']:
+    if MLinfilltype in ['exclude', 'boolexclude', 'ordlexclude', 'totalexclude']:
 
       #create empty sets for now
       #an extension of this method would be to implement a comparable infill \
@@ -21128,8 +21129,7 @@ class AutoMunge:
           #now carry that infill over to the target column for rows where NArows is True
           df[textcolumnname] = np.where(NArows[NArowcolumn], NArows['tempindex1'], df[textcolumnname])
 
-    #if category == 'date':
-    if MLinfilltype in ['exclude', 'boolexclude', 'totalexclude']:
+    if MLinfilltype in ['exclude', 'boolexclude', 'ordlexclude', 'totalexclude']:
       pass
 
     return df
@@ -23218,7 +23218,7 @@ class AutoMunge:
         if column in postprocess_dict['column_dict']:
           
           if process_dict[postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-          not in ['boolexclude', 'totalexclude']:
+          not in ['boolexclude', 'ordlexclude', 'totalexclude']:
 
             if iteration == 0:
               
@@ -23496,7 +23496,7 @@ class AutoMunge:
         if column in postprocess_dict['column_dict']:
         
           if process_dict[postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-          not in ['boolexclude', 'totalexclude']:
+          not in ['boolexclude', 'ordlexclude', 'totalexclude']:
 
             if iteration == 0:
               
@@ -24738,7 +24738,7 @@ class AutoMunge:
         #   or set(df[checkcolumn].unique()) == {1} \
         #   or checkcolumn[-5:] == '_ordl':
           if postprocess_dict['process_dict'][postprocess_dict['column_dict'][checkcolumn]['category']]['MLinfilltype'] \
-          in ['singlct', 'binary', 'multirt', '1010', 'boolexclude', 'concurrent_act', 'totalexclude']:
+          in ['singlct', 'binary', 'multirt', '1010', 'boolexclude', 'ordlexclude', 'concurrent_act', 'totalexclude']:
             #or isinstance(df[checkcolumn].dtype, pd.api.types.CategoricalDtype):
             if checkcolumn not in PCAexcl:
               PCAexcl.append(checkcolumn)
@@ -26243,7 +26243,7 @@ class AutoMunge:
       else:
         if processdict[entry]['MLinfilltype'] not in \
         ['numeric', 'singlct', 'binary', 'multirt', 'concurrent_act', 'concurrent_nmbr', '1010', \
-        'exclude', 'boolexclude', 'totalexclude']:
+        'exclude', 'boolexclude', 'ordlexclude', 'totalexclude']:
           check_processdict_result = True
           print("error: invalid 'MLinfilltype' processdict entry for category: ", entry)
           print()
@@ -27558,7 +27558,7 @@ class AutoMunge:
             
             populated_columns.append(column)
           
-          elif MLinfilltype in ['singlct']:
+          elif MLinfilltype in ['singlct', 'ordlexclude']:
             
             #add to ordinal
             columntype_report['ordinal'].append(column)
@@ -29231,7 +29231,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.74'
+    automungeversion = '5.75'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -35593,7 +35593,7 @@ class AutoMunge:
         df_testinfill = pd.DataFrame(df_testinfill, columns = categorylist)         
         
       #if target is exlcuded from ML infill
-      if MLinfilltype in ['exclude', 'boolexclude', 'totalexclude']:
+      if MLinfilltype in ['exclude', 'boolexclude', 'ordlexclude', 'totalexclude']:
 
         #create empty sets
         df_testinfill = pd.DataFrame({'infill' : [0]}) 
