@@ -1415,7 +1415,7 @@ processdict =  {'newt' : {'dualprocess' : am.process_mnmx_class, \
 # ** Note that by default python None entries are treated as targets for infill
 
 #MLinfilltype: can be entries {'numeric', 'singlct', 'binary', 'multirt', 'concurrent_act', 'concurrent_nmbr', 
-#                              '1010', 'exclude', 'boolexclude', 'totalexclude'}
+#                              '1010', 'exclude', 'boolexclude', 'ordlexclude', 'totalexclude'}
 #              'numeric' refers to columns where predictive algorithms treat
 #                        as a regression for numeric sets
 #              'singlct' single column sets with ordinal entries (integers)
@@ -1429,6 +1429,7 @@ processdict =  {'newt' : {'dualprocess' : am.process_mnmx_class, \
 #                        will be converted to onehot for ML
 #              'exclude' for columns which will be excluded from ML infill
 #              'boolexclude' boolean set suitable for Binary transform but excluded from all infill (eg NArw entries)
+#              'ordlexclude' ordinal set exluded from infill
 #              'totalexclude' for complete passthroughs (eg excl) without infill and excluded 
 #                        from inf conversion and assignnan global option
 
