@@ -2652,7 +2652,7 @@ to set with >2 entries applies infill to those entries beyond two most common.
   - driftreport postmunge metrics: missing / 1 / 0 / extravalues / oneratio / zeroratio
   - inversion available: yes with full recovery
 * text/txt2: converts categorical sets to one-hot encoded set of boolean identifiers 
-(consistently encodings numbers and numerical string equivalents due to column labeling convention)
+(consistently encodings numbers and numerical string equivalents due to column labeling convention, e.g. 12 == '12')
   - default infill: all entries zero
   - default NArowtype: justNaN
   - suffix appender: '_(category)' where category is the categoric entry target of column activations
