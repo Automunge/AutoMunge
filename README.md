@@ -67,12 +67,12 @@ features of the tool (such as ML infill, feature importance, dimensionality
 reduction, and most importantly the simplest way for the consistent preparation 
 of subsequently available data using just a single function call of the 
 postmunge(.) function). Missing data points in the sets are also available to be 
-addressed by either assigning distinct methods to each column or alternatively by 
-the automated "ML infill" method which predicts infill using machine learning 
-models trained on the rest of the set in a fully generalized and automated 
-fashion. automunge(.) returns a populated python dictionary which can be used as 
-input along with a subsequent data set to the postmunge(.) function for 
-consistent preparations such as for inference.
+addressed by either the default automated "ML infill" method which predicts 
+infill using machine learning models trained on the rest of the set in a fully 
+generalized and automated fashion or alternatively by assigning methods from an 
+imputation libary. automunge(.) returns a populated python dictionary which can 
+be used as input along with a subsequent data set to the postmunge(.) function 
+for consistent preparations of additional data such as for inference.
 
 ## Install, Initialize, and Basics
 
@@ -133,9 +133,9 @@ am.automunge(df_train, df_test = False, \
              labels_column = False, trainID_column = False, testID_column = False, \
              valpercent1=0.0, valpercent2 = 0.0, floatprecision = 32, shuffletrain = True, \
              dupl_rows = False, TrainLabelFreqLevel = False, powertransform = False, binstransform = False, \
-             MLinfill = False, infilliterate=1, randomseed = False, eval_ratio = .5, \
+             MLinfill = True, infilliterate=1, randomseed = False, eval_ratio = .5, \
              LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, LSfit = False, \
-             numbercategoryheuristic = 127, pandasoutput = True, NArw_marker = False, \
+             numbercategoryheuristic = 127, pandasoutput = True, NArw_marker = True, \
              featureselection = False, featurepct = 1.0, featuremetric = 0.0, featuremethod = 'default', \
              Binary = False, PCAn_components = False, PCAexcl = [], excl_suffix = False, \
              ML_cmnd = {'autoML_type':'randomforest', \
@@ -364,9 +364,9 @@ am.automunge(df_train, df_test = False, \
              labels_column = False, trainID_column = False, testID_column = False, \
              valpercent1=0.0, valpercent2 = 0.0, floatprecision = 32, shuffletrain = True, \
              dupl_rows = False, TrainLabelFreqLevel = False, powertransform = False, binstransform = False, \
-             MLinfill = False, infilliterate=1, randomseed = False, eval_ratio = .5, \
+             MLinfill = True, infilliterate=1, randomseed = False, eval_ratio = .5, \
              LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, LSfit = False, \
-             numbercategoryheuristic = 127, pandasoutput = True, NArw_marker = False, \
+             numbercategoryheuristic = 127, pandasoutput = True, NArw_marker = True, \
              featureselection = False, featurepct = 1.0, featuremetric = 0.0, featuremethod = 'default', \
              Binary = False, PCAn_components = False, PCAexcl = [], excl_suffix = False, \
              ML_cmnd = {'autoML_type':'randomforest', \
@@ -603,9 +603,9 @@ am.automunge(df_train, df_test = False, \
              labels_column = False, trainID_column = False, testID_column = False, \
              valpercent1=0.0, valpercent2 = 0.0, floatprecision = 32, shuffletrain = True, \
              dupl_rows = False, TrainLabelFreqLevel = False, powertransform = False, binstransform = False, \
-             MLinfill = False, infilliterate=1, randomseed = False, eval_ratio = .5, \
+             MLinfill = True, infilliterate=1, randomseed = False, eval_ratio = .5, \
              LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, LSfit = False, \
-             numbercategoryheuristic = 127, pandasoutput = True, NArw_marker = False, \
+             numbercategoryheuristic = 127, pandasoutput = True, NArw_marker = True, \
              featureselection = False, featurepct = 1.0, featuremetric = 0.0, featuremethod = 'default', \
              Binary = False, PCAn_components = False, PCAexcl = [], excl_suffix = False, \
              ML_cmnd = {'autoML_type':'randomforest', \
@@ -798,7 +798,7 @@ defaults to False.
 * MLinfill: a boolean identifier _(True/False)_ which indicates if the ML
 infill method will be applied as a default to predict infill for missing 
 or improperly formatted data using machine learning models trained on the
-rest of the df\_train set. This defaults to False. Note that ML infill may alternatively
+rest of the df\_train set. This defaults to True. Note that ML infill may alternatively
 be assigned to distinct columns in assigninfill. Note that even if sets passed
 to automunge(.) have no points needing infill, when MLinfill is activated 
 machine learning models will still be trained for potential use of predicting 
@@ -867,7 +867,7 @@ returns numpy arrays instead of dataframes.
 
 * NArw_marker: a boolean identifier _(True/False)_ which indicates if the
 returned sets will include columns with markers for source column entries subject to 
-infill (columns with suffix '\_NArw'). This value defaults to False. Note 
+infill (columns with suffix '\_NArw'). This value defaults to True. Note 
 that the properties of cells qualifying as candidate for infill are based
 on the 'NArowtype' of the root category of transformations associated with 
 the column, see Library of Transformations section below for catalog, the
