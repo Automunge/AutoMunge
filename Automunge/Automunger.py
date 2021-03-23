@@ -27708,9 +27708,9 @@ class AutoMunge:
                 labels_column = False, trainID_column = False, testID_column = False, \
                 valpercent1=0.0, valpercent2 = 0.0, floatprecision = 32, shuffletrain = True, \
                 dupl_rows = False, TrainLabelFreqLevel = False, powertransform = False, binstransform = False, \
-                MLinfill = False, infilliterate=1, randomseed = False, eval_ratio = .5, \
+                MLinfill = True, infilliterate=1, randomseed = False, eval_ratio = .5, \
                 LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, LSfit = False, \
-                numbercategoryheuristic = 127, pandasoutput = True, NArw_marker = False, \
+                numbercategoryheuristic = 127, pandasoutput = True, NArw_marker = True, \
                 featureselection = False, featurepct = 1.0, featuremetric = 0.0, featuremethod = 'default', \
                 Binary = False, PCAn_components = False, PCAexcl = [], excl_suffix = False, \
                 ML_cmnd = {'MLinfill_type':'default', \
@@ -29231,7 +29231,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.75'
+    automungeversion = '5.76'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
