@@ -265,7 +265,7 @@ encoded sets where categoric entries may be distinguished by zero, one, or more
 simultaneous column activations. Alternatives for one-hot encoding, ordinal encoding, 
 and etc are also available. String parsing methods are available to extract and encode 
 grammatic structure shared between cateogric entries. For all cases the functions may 
-generate a supplemental column (NArw) with a boolean identifier for cells that were 
+generate a supplemental column (NArw) with a boolean integer identifier for cells that were 
 subject to infill due to missing or improperly formatted data when the default NArw_marker 
 parameter is left activated.
 
