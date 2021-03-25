@@ -8386,7 +8386,7 @@ class AutoMunge:
       minimum = 0
     
     #divisor
-    if divisor not in ['minmax', 'std', 'mad']:
+    if divisor not in {'minmax', 'std', 'mad'}:
       print("Error: retn transform parameter 'divisor' only accepts entries of 'minmax' 'mad' or 'std'")
     if divisor == 'minmax':
       divisor = maxminusmin
@@ -8793,7 +8793,7 @@ class AutoMunge:
               zerovalue = valuecounts2[0]
 
       #edge case that might come up in drift report
-      if binary_missing_plug not in [onevalue, zerovalue]:
+      if binary_missing_plug not in {onevalue, zerovalue}:
         binary_missing_plug = onevalue
 
       #edge case when applying this transform to set with >2 values
@@ -8824,7 +8824,7 @@ class AutoMunge:
       #if len(mdf_test[column + '_bnry'].unique()) > 2:
       uniqueintest = mdf_test[column + '_bnry'].unique()
       for unique in uniqueintest:
-        if unique not in [onevalue, zerovalue]:
+        if unique not in {onevalue, zerovalue}:
           mdf_test[column + '_bnry'] = \
           np.where(mdf_test[column + '_bnry'] == unique, binary_missing_plug, mdf_test[column + '_bnry'])
 
@@ -9041,7 +9041,7 @@ class AutoMunge:
               zerovalue = valuecounts2[0]
 
       #edge case that might come up in drift report
-      if binary_missing_plug not in [onevalue, zerovalue]:
+      if binary_missing_plug not in {onevalue, zerovalue}:
         #binary_missing_plug = onevalue
         binary_missing_plug = zerovalue
 
@@ -9073,7 +9073,7 @@ class AutoMunge:
       #if len(mdf_test[column + '_bnry'].unique()) > 2:
       uniqueintest = mdf_test[column + '_bnr2'].unique()
       for unique in uniqueintest:
-        if unique not in [onevalue, zerovalue]:
+        if unique not in {onevalue, zerovalue}:
           mdf_test[column + '_bnr2'] = \
           np.where(mdf_test[column + '_bnr2'] == unique, binary_missing_plug, mdf_test[column + '_bnr2'])
 
@@ -18660,7 +18660,7 @@ class AutoMunge:
       minimum = 0
       
     #divisor
-    if divisor not in ['minmax', 'std', 'mad']:
+    if divisor not in {'minmax', 'std', 'mad'}:
       print("Error: retn transform parameter 'divisor' only accepts entries of 'minmax' 'mad' or 'std'")
     if divisor == 'minmax':
       divisor = maxminusmin
@@ -19784,7 +19784,7 @@ class AutoMunge:
   #     if category == 'bxcx' and powertransform is False:
   #       category = 'nmbr'
 
-      if category in ['nmbr', 'bxcx', defaultnumerical] \
+      if category in {'nmbr', 'bxcx', defaultnumerical} \
       and powertransform is True:
         
         if df[pd.to_numeric(df[column], errors='coerce').notnull()][column].astype(float).nunique() >= 3:
@@ -19807,7 +19807,7 @@ class AutoMunge:
               category = 'mnmx'
             else:
               #if powertransform is True:
-              if category in ['nmbr', 'bxcx']:
+              if category in {'nmbr', 'bxcx'}:
 
                 #note we'll only allow bxcx category if all values greater than a clip value
                 #>0 (currently set at 0.1) since there is an asymptote for box-cox at 0
@@ -19880,7 +19880,7 @@ class AutoMunge:
     # df2 = pd.DataFrame(df[column].copy())
     
     #if category == 'text':
-    if NArowtype in ['justNaN']:
+    if NArowtype in {'justNaN'}:
       
       if driftassess is True:
         
@@ -19914,9 +19914,7 @@ class AutoMunge:
 #       NArows = pd.DataFrame(NArows)
 #       NArows = NArows.rename(columns = {column:column+'_NArows'})
 
-    #if category == 'nmbr' or category == 'bxcx':
-    #if category in ['nmbr', 'bxcx', 'nbr2']:
-    if NArowtype in ['numeric']:
+    if NArowtype in {'numeric'}:
 
       #convert all values to either numeric or NaN
       df2[column] = pd.to_numeric(df2[column], errors='coerce')
@@ -19957,7 +19955,7 @@ class AutoMunge:
       NArows = pd.DataFrame(NArows)
       NArows = NArows.rename(columns = {column:column+'_NArows'})
       
-    if NArowtype in ['integer']:
+    if NArowtype in {'integer'}:
 
       #convert all values to either numeric or NaN
       df2[column] = pd.to_numeric(df2[column], errors='coerce')
@@ -20001,7 +19999,7 @@ class AutoMunge:
       NArows = pd.DataFrame(NArows)
       NArows = NArows.rename(columns = {column:column+'_NArows'})
       
-    if NArowtype in ['positivenumeric']:
+    if NArowtype in {'positivenumeric'}:
       
       #convert all values to either numeric or NaN
       df2[column] = pd.to_numeric(df2[column], errors='coerce')
@@ -20043,7 +20041,7 @@ class AutoMunge:
       NArows = pd.DataFrame(NArows)
       NArows = NArows.rename(columns = {column:column+'_NArows'})
       
-    if NArowtype in ['nonnegativenumeric']:
+    if NArowtype in {'nonnegativenumeric'}:
       
       #convert all values to either numeric or NaN
       df2[column] = pd.to_numeric(df2[column], errors='coerce')
@@ -20085,7 +20083,7 @@ class AutoMunge:
       NArows = pd.DataFrame(NArows)
       NArows = NArows.rename(columns = {column:column+'_NArows'})
       
-    if NArowtype in ['nonzeronumeric']:
+    if NArowtype in {'nonzeronumeric'}:
 
       #convert all values to either numeric or NaN
       df2[column] = pd.to_numeric(df2[column], errors='coerce')
@@ -20127,14 +20125,14 @@ class AutoMunge:
       NArows = pd.DataFrame(NArows)
       NArows = NArows.rename(columns = {column:column+'_NArows'})
       
-    if NArowtype in ['parsenumeric']:
+    if NArowtype in {'parsenumeric'}:
       
       NArows = self.parsenumeric(df2, column)
 
       drift_dict.update({column : {'nunique' : df2[column].nunique(), \
                                    'nanratio' : pd.isna(df2[column]).sum() / df2[column].shape[0]}})
       
-    if NArowtype in ['datetime']:
+    if NArowtype in {'datetime'}:
       
       df2[column] = pd.to_datetime(df2[column], errors = 'coerce', utc=True)
 
@@ -20147,8 +20145,7 @@ class AutoMunge:
       
 #       NArows = self.parsedate(df2, column)
       
-    #if category in ['excl']:
-    if NArowtype in ['exclude', 'boolexclude', 'ordlexclude', 'totalexclude']:
+    if NArowtype in {'exclude', 'boolexclude', 'ordlexclude', 'totalexclude'}:
       
       if driftassess is True:
         drift_dict.update({column : {}})
@@ -20641,7 +20638,7 @@ class AutoMunge:
 
             #if passed parameter is a set
             if type(ML_cmnd['MLinfill_cmnd'][MLinfill_alg][key]) \
-            in [type([1]), type(range(1)), type(stats.expon(1))]:
+            in {type([1]), type(range(1)), type(stats.expon(1))}:
 
               tune_marker = True
     
@@ -20682,7 +20679,7 @@ class AutoMunge:
             
             #if passed parameter is a set
             if type(ML_cmnd['MLinfill_cmnd'][MLinfill_alg][key]) \
-            in [type([1]), type(range(1)), type(stats.expon(1))]:
+            in {type([1]), type(range(1)), type(stats.expon(1))}:
               
               #add set to tune_params which will be targeted for grid search
               tune_params.update({key : ML_cmnd['MLinfill_cmnd'][MLinfill_alg][key]})
@@ -20723,7 +20720,7 @@ class AutoMunge:
     MLinfilltype = postprocess_dict['process_dict'][category]['MLinfilltype']
     
     #if a numeric target set
-    if MLinfilltype in ['numeric', 'concurrent_nmbr']:
+    if MLinfilltype in {'numeric', 'concurrent_nmbr'}:
       
       #edge case if training data has zero rows (such as if column was all NaN) 
       if df_train_filltrain.shape[0] == 0:
@@ -20760,7 +20757,7 @@ class AutoMunge:
       df_testinfill = pd.DataFrame(df_testinfill, columns = ['infill'])
       
     #if target is categoric, such as ordinal or boolean integers
-    if MLinfilltype in ['singlct', 'binary', 'concurrent_act']:
+    if MLinfilltype in {'singlct', 'binary', 'concurrent_act'}:
       
       #edge case if training data has zero rows (such as if column was all NaN) 
       if df_train_filltrain.shape[0] == 0:
@@ -20800,7 +20797,7 @@ class AutoMunge:
       df_testinfill = pd.DataFrame(df_testinfill, columns = ['infill'])
       
     #if target is multi column categoric (onehot encoded) / (binary encoded handled seperately)
-    if MLinfilltype in ['multirt']:
+    if MLinfilltype in {'multirt'}:
 
       if df_train_filltrain.shape[0] == 0:
         df_traininfill = np.zeros(shape=(1,len(categorylist)))
@@ -20841,7 +20838,7 @@ class AutoMunge:
       df_testinfill = pd.DataFrame(df_testinfill, columns = categorylist)
     
     #if target is a binary encoded categoric set
-    if MLinfilltype in ['1010']:
+    if MLinfilltype in {'1010'}:
       
       if df_train_filltrain.shape[0] == 0:
 
@@ -20896,7 +20893,7 @@ class AutoMunge:
       df_testinfill = pd.DataFrame(df_testinfill, columns = categorylist)
       
     #if target category excluded from ML infill:
-    if MLinfilltype in ['exclude', 'boolexclude', 'ordlexclude', 'totalexclude']:
+    if MLinfilltype in {'exclude', 'boolexclude', 'ordlexclude', 'totalexclude'}:
 
       #create empty sets for now
       #an extension of this method would be to implement a comparable infill \
@@ -20935,17 +20932,13 @@ class AutoMunge:
     #for rows not needing infill, and the features for rows needing infill \
     #also create a test features column 
     
-    #categories are nmbr, bnry, text, date, bxcx, bins, bint, NArw, null
-    #if category in ['nmbr', 'bxcx', 'bnry', 'text', 'bins', 'bint']:
-    
-    #if category in ['nmbr', 'nbr2', 'bxcx', 'bnry', 'text', 'bins', 'bint']:
-    if MLinfilltype in ['numeric', 'singlct', 'binary', \
+    if MLinfilltype in {'numeric', 'singlct', 'binary', \
                         'multirt', '1010', \
-                        'concurrent_act', 'concurrent_nmbr']:
+                        'concurrent_act', 'concurrent_nmbr'}:
 
       #if this is a single column set or concurrent_act
       if len(categorylist) == 1 or \
-      postprocess_dict['process_dict'][category]['MLinfilltype'] in ['concurrent_act', 'concurrent_nmbr']:
+      postprocess_dict['process_dict'][category]['MLinfilltype'] in {'concurrent_act', 'concurrent_nmbr'}:
 
         #first concatinate the NArows True/False designations to df_train & df_test
         df_train = pd.concat([df_train, trainNArows], axis=1)
@@ -21046,7 +21039,7 @@ class AutoMunge:
         df_train = df_train.drop([trainNArows.columns[0]], axis=1)
         df_test = df_test.drop([testNArows.columns[0]], axis=1)
 
-    #if MLinfilltype in ['exclude']:
+    #if MLinfilltype in {'exclude'}:
     else:
 
       #create empty sets for now
@@ -21075,14 +21068,13 @@ class AutoMunge:
     #NArows column name uses original column name + _NArows as key
     NArowcolumn = NArows.columns[0]
 
-    #if category in ['nmbr', 'nbr2', 'bxcx', 'bnry', 'text']:
-    if MLinfilltype in ['numeric', 'singlct', 'binary', \
+    if MLinfilltype in {'numeric', 'singlct', 'binary', \
                         'multirt', '1010', \
-                        'concurrent_act', 'concurrent_nmbr']:
+                        'concurrent_act', 'concurrent_nmbr'}:
 
       #if this is a single column set (not categorical)
       if len(categorylist) == 1 or singlecolumncase is True \
-      or MLinfilltype in ['concurrent_act', 'concurrent_nmbr']:
+      or MLinfilltype in {'concurrent_act', 'concurrent_nmbr'}:
         
         #create new dataframe for infills wherein the infill values are placed in \
         #rows coresponding to NArows True values and rows coresponding to NArows \
@@ -21129,7 +21121,7 @@ class AutoMunge:
           #now carry that infill over to the target column for rows where NArows is True
           df[textcolumnname] = np.where(NArows[NArowcolumn], NArows['tempindex1'], df[textcolumnname])
 
-    if MLinfilltype in ['exclude', 'boolexclude', 'ordlexclude', 'totalexclude']:
+    if MLinfilltype in {'exclude', 'boolexclude', 'ordlexclude', 'totalexclude'}:
       pass
 
     return df
@@ -21161,7 +21153,7 @@ class AutoMunge:
       
       if len(categorylist) == 1 or \
       postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-      in ['concurrent_act', 'concurrent_nmbr']:
+      in {'concurrent_act', 'concurrent_nmbr'}:
         #copy the datatype to ensure returned set is consistent
         df_temp_dtype = pd.DataFrame(df_train[column][:0]).copy()
 
@@ -21215,7 +21207,7 @@ class AutoMunge:
       #now change the infillcomplete marker in the text_dict for each \
       #associated text column unless in concurrent_activations MLinfilltype
       if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-      in ['concurrent_act', 'concurrent_nmbr']:
+      in {'concurrent_act', 'concurrent_nmbr'}:
         
         postprocess_dict['column_dict'][column]['infillcomplete'] = True
 
@@ -21235,7 +21227,7 @@ class AutoMunge:
       #reset data type to ensure returned data is consistent with what was passed
       if len(categorylist) == 1 or \
       postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-      in ['concurrent_act', 'concurrent_nmbr']:
+      in {'concurrent_act', 'concurrent_nmbr'}:
         df_train[column] = \
         df_train[column].astype({column:df_temp_dtype[column].dtypes})
         
@@ -21798,7 +21790,7 @@ class AutoMunge:
         else:
 
           #remove early stop params since no validation set
-          for entry in ['od_type', 'od_wait']:
+          for entry in {'od_type', 'od_wait'}:
             if entry in default_model_params:
               del default_model_params[entry]
 
@@ -21951,7 +21943,7 @@ class AutoMunge:
         else:
 
           #remove early stop params since no validation set
-          for entry in ['od_type', 'od_wait']:
+          for entry in {'od_type', 'od_wait'}:
             if entry in default_model_params:
               del default_model_params[entry]
 
@@ -22208,7 +22200,7 @@ class AutoMunge:
       multiplierlist = []
 
       #if labelscategory == 'bnry':
-      if MLinfilltype in ['singlct', 'binary']:
+      if MLinfilltype in {'singlct', 'binary'}:
         
         singlctcolumn = False
         
@@ -22289,8 +22281,7 @@ class AutoMunge:
         for labelcolumn in labels:
           del train_df[labelcolumn]
 
-      #if labelscategory in ['nmbr', 'bxcx']:
-      if MLinfilltype in ['numeric']:
+      if MLinfilltype in {'numeric'}:
 
         columns_labels = []
         for label in labels_df.columns:
@@ -22300,8 +22291,7 @@ class AutoMunge:
           
             columns_labels.append(label)
             
-      #if labelscategory in ['text', 'nmbr', 'bxcx']:
-      if MLinfilltype in ['numeric', 'multirt']:
+      if MLinfilltype in {'numeric', 'multirt'}:
         if columns_labels != []:
           
           #note for. label smoothing activation values won't be 1
@@ -22464,17 +22454,16 @@ class AutoMunge:
     labelscategory = labelctgy
     MLinfilltype = process_dict[labelscategory]['MLinfilltype']
     
-    if MLinfilltype in ['numeric', 'concurrent_nmbr']:
+    if MLinfilltype in {'numeric', 'concurrent_nmbr'}:
       ML_application = 'regression'
-    elif MLinfilltype in ['singlct']:
+    elif MLinfilltype in {'singlct'}:
       ML_application = 'ordinalclassification'
-    elif MLinfilltype in ['binary', 'concurrent_act']:
+    elif MLinfilltype in {'binary', 'concurrent_act'}:
       ML_application = 'booleanclassification'
-    elif MLinfilltype in ['multirt', '1010']:
+    elif MLinfilltype in {'multirt', '1010'}:
       ML_application = 'onehotclassification'
     
-    #if labelscategory in ['nmbr']:
-    if MLinfilltype in ['numeric', 'concurrent_nmbr']:
+    if MLinfilltype in {'numeric', 'concurrent_nmbr'}:
       
       #generate predictions
       np_predictions = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, FSmodel, np_shuffleset, printstatus_for_predict, categorylist_for_predict)
@@ -22491,8 +22480,7 @@ class AutoMunge:
       #columnaccuracy = mean_squared_log_error(np_labels, np_predictions)
       columnaccuracy = 1 - mean_squared_log_error(np_labels, np_predictions)
       
-    #if labelscategory in ['bnry']:
-    if MLinfilltype in ['singlct', 'binary', 'concurrent_act']:
+    if MLinfilltype in {'singlct', 'binary', 'concurrent_act'}:
       
       #generate predictions
       np_predictions = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, FSmodel, np_shuffleset, printstatus_for_predict, categorylist_for_predict)
@@ -22501,8 +22489,7 @@ class AutoMunge:
       #evaluate accuracy metric
       columnaccuracy = accuracy_score(np_labels, np_predictions)
       
-    #if labelscategory in ['text']:
-    if MLinfilltype in ['multirt']:
+    if MLinfilltype in {'multirt'}:
       
       #generate predictions
       np_predictions = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, FSmodel, np_shuffleset, printstatus_for_predict, categorylist_for_predict)
@@ -22512,7 +22499,7 @@ class AutoMunge:
       #columnaccuracy = accuracy_score(np_labels, np_predictions)
       columnaccuracy = accuracy_score(np_labels, np_predictions)
 
-    if MLinfilltype in ['1010']:
+    if MLinfilltype in {'1010'}:
       
       np_labels = \
       self.convert_1010_to_onehot(np_labels)
@@ -22581,8 +22568,8 @@ class AutoMunge:
 #     #calculate the number of features we'll keep using the ratio passed from automunge
 #     numbermakingcut = int(metriccount * featurepct)
     
-    if featuremethod not in ['default', 'pct', 'metric', 'report']:
-      print("error featuremethod object must be one of ['default', 'pct', 'metric', 'report']")
+    if featuremethod not in {'default', 'pct', 'metric', 'report'}:
+      print("error featuremethod object must be one of {'default', 'pct', 'metric', 'report'}")
       
     if featuremethod == 'default':
 
@@ -22733,7 +22720,7 @@ class AutoMunge:
             #we'll follow convention that if target label category MLinfilltype is concurrent
             #we'll arbitrarily take the first column and use that as target
             if FSpostprocess_dict['process_dict'][labelctgy]['MLinfilltype'] \
-            in ['concurrent_act', 'concurrent_nmbr']:
+            in {'concurrent_act', 'concurrent_nmbr'}:
               
               am_categorylist = [am_categorylist[0]]
               
@@ -23218,7 +23205,7 @@ class AutoMunge:
         if column in postprocess_dict['column_dict']:
           
           if process_dict[postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-          not in ['boolexclude', 'ordlexclude', 'totalexclude']:
+          not in {'boolexclude', 'ordlexclude', 'totalexclude'}:
 
             if iteration == 0:
               
@@ -23318,7 +23305,7 @@ class AutoMunge:
                 boolcolumn = False
                 #exclude boolean and ordinal from this infill method
                 if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-                in ['multirt', 'singlct', 'binary', '1010', 'boolexclude', 'concurrent_act']:
+                in {'multirt', 'singlct', 'binary', '1010', 'boolexclude', 'concurrent_act'}:
                   boolcolumn = True
 
                 categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
@@ -23351,7 +23338,7 @@ class AutoMunge:
                 boolcolumn = False
                 #exclude boolean and ordinal from this infill method
                 if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-                in ['multirt', 'singlct', 'binary', '1010', 'boolexclude', 'concurrent_act']:
+                in {'multirt', 'singlct', 'binary', '1010', 'boolexclude', 'concurrent_act'}:
                   boolcolumn = True
 
                 categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
@@ -23386,7 +23373,7 @@ class AutoMunge:
                 
                 #seems reasonable to exclude concurrent_nmbr from mode
                 if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-                in ['boolexclude', 'concurrent_nmbr']:
+                in {'boolexclude', 'concurrent_nmbr'}:
                   boolcolumn = True
 
                 if boolcolumn is False:
@@ -23415,7 +23402,7 @@ class AutoMunge:
 
                 #seems reasonable to exclude concurrent_nmbr from mode
                 if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-                in ['boolexclude', 'concurrent_nmbr']:
+                in {'boolexclude', 'concurrent_nmbr'}:
                   boolcolumn = True
 
                 if boolcolumn is False:
@@ -23496,7 +23483,7 @@ class AutoMunge:
         if column in postprocess_dict['column_dict']:
         
           if process_dict[postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-          not in ['boolexclude', 'ordlexclude', 'totalexclude']:
+          not in {'boolexclude', 'ordlexclude', 'totalexclude'}:
 
             if iteration == 0:
               
@@ -23574,7 +23561,7 @@ class AutoMunge:
                 boolcolumn = False
                 #exclude boolean and ordinal from this infill method
                 if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-                in ['multirt', 'singlct', 'binary', '1010', 'boolexclude', 'concurrent_act']:
+                in {'multirt', 'singlct', 'binary', '1010', 'boolexclude', 'concurrent_act'}:
                   boolcolumn = True
 
                 categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
@@ -23604,7 +23591,7 @@ class AutoMunge:
                 boolcolumn = False
                 #exclude boolean and ordinal from this infill method
                 if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-                in ['multirt', 'singlct', 'binary', '1010', 'boolexclude', 'concurrent_act']:
+                in {'multirt', 'singlct', 'binary', '1010', 'boolexclude', 'concurrent_act'}:
                   boolcolumn = True
 
                 categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
@@ -23634,7 +23621,7 @@ class AutoMunge:
                 boolcolumn = False
 
                 if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-                in ['boolexclude', 'concurrent_nmbr']:
+                in {'boolexclude', 'concurrent_nmbr'}:
                   boolcolumn = True
 
                 if boolcolumn is False:
@@ -23658,7 +23645,7 @@ class AutoMunge:
                 boolcolumn = False
 
                 if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-                in ['boolexclude', 'concurrent_nmbr']:
+                in {'boolexclude', 'concurrent_nmbr'}:
                   boolcolumn = True
 
                 if boolcolumn is False:
@@ -24009,7 +23996,7 @@ class AutoMunge:
     #deriving a mode for one-hot encoded sets requires a different approach
     if len(postprocess_dict['column_dict'][column]['categorylist']) > 1 \
     and postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-    in ['multirt']:
+    in {'multirt'}:
       
       categorylist = postprocess_dict['column_dict'][column]['categorylist']
       
@@ -24043,7 +24030,7 @@ class AutoMunge:
     #deriving a mode for multi-column binary encoded sets requires a different approach
     elif len(postprocess_dict['column_dict'][column]['categorylist']) > 1 \
     and postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-    in ['1010']:
+    in {'1010'}:
       
       categorylist = postprocess_dict['column_dict'][column]['categorylist']
       
@@ -24179,7 +24166,7 @@ class AutoMunge:
     #deriving a mode for one-hot encoded sets requires a different approach
     if len(postprocess_dict['column_dict'][column]['categorylist']) > 1 \
     and postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-    in ['multirt']:
+    in {'multirt'}:
       
       categorylist = postprocess_dict['column_dict'][column]['categorylist']
       
@@ -24214,7 +24201,7 @@ class AutoMunge:
     #deriving a mode for multi-column binary encoded sets requires a different approach
     elif len(postprocess_dict['column_dict'][column]['categorylist']) > 1 \
     and postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-    in ['1010']:
+    in {'1010'}:
       
       categorylist = postprocess_dict['column_dict'][column]['categorylist']
       
@@ -24723,7 +24710,7 @@ class AutoMunge:
         #   or set(df[checkcolumn].unique()) == {0} \
         #   or set(df[checkcolumn].unique()) == {1}:
           if postprocess_dict['process_dict'][postprocess_dict['column_dict'][checkcolumn]['category']]['MLinfilltype'] \
-          in ['multirt', 'binary', '1010', 'boolexclude', 'concurrent_act', 'totalexclude']:
+          in {'multirt', 'binary', '1010', 'boolexclude', 'concurrent_act', 'totalexclude'}:
             if checkcolumn not in PCAexcl:
               PCAexcl.append(checkcolumn)
             bool_PCAexcl.append(checkcolumn)
@@ -24738,7 +24725,7 @@ class AutoMunge:
         #   or set(df[checkcolumn].unique()) == {1} \
         #   or checkcolumn[-5:] == '_ordl':
           if postprocess_dict['process_dict'][postprocess_dict['column_dict'][checkcolumn]['category']]['MLinfilltype'] \
-          in ['singlct', 'binary', 'multirt', '1010', 'boolexclude', 'ordlexclude', 'concurrent_act', 'totalexclude']:
+          in {'singlct', 'binary', 'multirt', '1010', 'boolexclude', 'ordlexclude', 'concurrent_act', 'totalexclude'}:
             #or isinstance(df[checkcolumn].dtype, pd.api.types.CategoricalDtype):
             if checkcolumn not in PCAexcl:
               PCAexcl.append(checkcolumn)
@@ -24920,7 +24907,7 @@ class AutoMunge:
     
     #check floatprecision
     floatprecision_valresult = False
-    if floatprecision not in [16, 32, 64]:
+    if floatprecision not in {16, 32, 64}:
       floatprecision_valresult = True
       print("Error: invalid entry passed for floatprecision parameter.")
       print("Acceptable values are one of {16, 32, 64}")
@@ -24930,12 +24917,12 @@ class AutoMunge:
     
     #check shuffletrain
     shuffletrain_valresult = False
-    if shuffletrain not in [True, False, 'traintest']:
+    if shuffletrain not in {True, False, 'traintest'}:
       shuffletrain_valresult = True
       print("Error: invalid entry passed for shuffletrain parameter.")
       print("Acceptable values are one of {True, False, 'traintest'}")
       print()
-    elif shuffletrain not in ['traintest'] \
+    elif shuffletrain not in {'traintest'} \
     and not isinstance(shuffletrain, bool):
       shuffletrain_valresult = True
       print("Error: invalid entry passed for shuffletrain parameter.")
@@ -24946,12 +24933,12 @@ class AutoMunge:
     
     #check TrainLabelFreqLevel
     TrainLabelFreqLevel_valresult = False
-    if TrainLabelFreqLevel not in [True, False, 'test', 'traintest']:
+    if TrainLabelFreqLevel not in {True, False, 'test', 'traintest'}:
       TrainLabelFreqLevel_valresult = True
       print("Error: invalid entry passed for TrainLabelFreqLevel parameter.")
       print("Acceptable values are one of {True, False, 'test', 'traintest'}")
       print()
-    elif TrainLabelFreqLevel not in ['test', 'traintest'] and not isinstance(TrainLabelFreqLevel, bool):
+    elif TrainLabelFreqLevel not in {'test', 'traintest'} and not isinstance(TrainLabelFreqLevel, bool):
       TrainLabelFreqLevel_valresult = True
       print("Error: invalid entry passed for TrainLabelFreqLevel parameter.")
       print("Acceptable values are one of {True, False, 'test', 'traintest'}")
@@ -24961,12 +24948,12 @@ class AutoMunge:
 
     #check dupl_rows
     dupl_rows_valresult = False
-    if dupl_rows not in [True, False, 'test', 'traintest']:
+    if dupl_rows not in {True, False, 'test', 'traintest'}:
       dupl_rows_valresult = True
       print("Error: invalid entry passed for dupl_rows parameter.")
       print("Acceptable values are one of {True, False, 'test', 'traintest'}")
       print()
-    elif dupl_rows not in ['test', 'traintest'] and not isinstance(dupl_rows, bool):
+    elif dupl_rows not in {'test', 'traintest'} and not isinstance(dupl_rows, bool):
       dupl_rows_valresult = True
       print("Error: invalid entry passed for dupl_rows parameter.")
       print("Acceptable values are one of {True, False, 'test', 'traintest'}")
@@ -24976,12 +24963,12 @@ class AutoMunge:
     
     #check powertransform
     powertransform_valresult = False
-    if powertransform not in [True, False, 'excl', 'exc2']:
+    if powertransform not in {True, False, 'excl', 'exc2'}:
       powertransform_valresult = True
       print("Error: invalid entry passed for powertransform parameter.")
       print("Acceptable values are one of {True, False, 'excl', 'exc2'}")
       print()
-    elif powertransform not in ['excl', 'exc2'] \
+    elif powertransform not in {'excl', 'exc2'} \
     and not isinstance(powertransform, bool):
       powertransform_valresult = True
       print("Error: invalid entry passed for powertransform parameter.")
@@ -24992,7 +24979,7 @@ class AutoMunge:
     
     #check binstransform
     binstransform_valresult = False
-    if binstransform not in [True, False] or not isinstance(binstransform, bool):
+    if binstransform not in {True, False} or not isinstance(binstransform, bool):
       binstransform_valresult = True
       print("Error: invalid entry passed for binstransform parameter.")
       print("Acceptable values are one of {True, False}")
@@ -25002,7 +24989,7 @@ class AutoMunge:
     
     #check MLinfill
     MLinfill_valresult = False
-    if MLinfill not in [True, False] or not isinstance(MLinfill, bool):
+    if MLinfill not in {True, False} or not isinstance(MLinfill, bool):
       MLinfill_valresult = True
       print("Error: invalid entry passed for MLinfill parameter.")
       print("Acceptable values are one of {True, False}")
@@ -25136,7 +25123,7 @@ class AutoMunge:
     
     #check LSfit
     LSfit_valresult = False
-    if LSfit not in [True, False] or not isinstance(LSfit, bool):
+    if LSfit not in {True, False} or not isinstance(LSfit, bool):
       LSfit_valresult = True
       print("Error: invalid entry passed for LSfit parameter.")
       print("Acceptable values are one of {True, False}")
@@ -25159,7 +25146,7 @@ class AutoMunge:
       
     #check pandasoutput
     pandasoutput_valresult = False
-    if pandasoutput not in [True, False] or not isinstance(pandasoutput, bool):
+    if pandasoutput not in {True, False} or not isinstance(pandasoutput, bool):
       pandasoutput_valresult = True
       print("Error: invalid entry passed for pandasoutput parameter.")
       print("Acceptable values are one of {True, False}")
@@ -25169,7 +25156,7 @@ class AutoMunge:
     
     #check NArw_marker
     NArw_marker_valresult = False
-    if NArw_marker not in [True, False] or not isinstance(NArw_marker, bool):
+    if NArw_marker not in {True, False} or not isinstance(NArw_marker, bool):
       NArw_marker_valresult = True
       print("Error: invalid entry passed for NArw_marker parameter.")
       print("Acceptable values are one of {True, False}")
@@ -25179,7 +25166,7 @@ class AutoMunge:
 
     #check featureselection
     featureselection_valresult = False
-    if featureselection not in [True, False] or not isinstance(featureselection, bool):
+    if featureselection not in {True, False} or not isinstance(featureselection, bool):
       featureselection_valresult = True
       print("Error: invalid entry passed for featureselection parameter.")
       print("Acceptable values are one of {True, False}")
@@ -25219,7 +25206,7 @@ class AutoMunge:
     
     #check featuremethod
     featuremethod_valresult = False
-    if featuremethod not in ['pct', 'metric', 'default', 'report']:
+    if featuremethod not in {'pct', 'metric', 'default', 'report'}:
       featuremethod_valresult = True
       print("Error: invalid entry passed for featuremethod parameter.")
       print("Acceptable values are one of {'pct', 'metric', 'default', 'report'}")
@@ -25229,12 +25216,12 @@ class AutoMunge:
   
     #check Binary
     Binary_valresult = False
-    if Binary not in [True, False, 'retain'] and not isinstance(Binary, list):
+    if Binary not in {True, False, 'retain'} and not isinstance(Binary, list):
       Binary_valresult = True
       print("Error: invalid entry passed for Binary parameter.")
       print("Acceptable values are one of {True, False, 'retain', [list]}")
       print()
-    elif Binary not in ['retain'] \
+    elif Binary not in {'retain'} \
     and not isinstance(Binary, bool) \
     and not isinstance(Binary, list):
       Binary_valresult = True
@@ -25286,7 +25273,7 @@ class AutoMunge:
     
     #check printstatus
     printstatus_valresult = False
-    if printstatus not in [True, False] or not isinstance(printstatus, bool):
+    if printstatus not in {True, False} or not isinstance(printstatus, bool):
       printstatus_valresult = True
       print("Error: invalid entry passed for printstatus parameter.")
       print("Acceptable values are one of {True, False}")
@@ -25296,7 +25283,7 @@ class AutoMunge:
     
     #check excl_suffix
     excl_suffix_valresult = False
-    if excl_suffix not in [True, False] or not isinstance(excl_suffix, bool):
+    if excl_suffix not in {True, False} or not isinstance(excl_suffix, bool):
       excl_suffix_valresult = True
       print("Error: invalid entry passed for excl_suffix parameter.")
       print("Acceptable values are one of {True, False}")
@@ -25320,7 +25307,7 @@ class AutoMunge:
     
     #check pandasoutput
     pandasoutput_valresult = False
-    if pandasoutput not in [True, False] or not isinstance(pandasoutput, bool):
+    if pandasoutput not in {True, False} or not isinstance(pandasoutput, bool):
       pandasoutput_valresult = True
       print("Error: invalid entry passed for pandasoutput parameter.")
       print("Acceptable values are one of {True, False}")
@@ -25330,7 +25317,7 @@ class AutoMunge:
     
     #check printstatus
     printstatus_valresult = False
-    if printstatus not in [True, False] or not isinstance(printstatus, bool):
+    if printstatus not in {True, False} or not isinstance(printstatus, bool):
       printstatus_valresult = True
       print("Error: invalid entry passed for printstatus parameter.")
       print("Acceptable values are one of {True, False}")
@@ -25340,12 +25327,12 @@ class AutoMunge:
     
     #check inversion
     inversion_valresult = False
-    if inversion not in [False, 'test', 'labels', 'denselabels'] and not isinstance(inversion, list):
+    if inversion not in {False, 'test', 'labels', 'denselabels'} and not isinstance(inversion, list):
       inversion_valresult = True
       print("Error: invalid entry passed for inversion parameter.")
       print("Acceptable values are one of {False, 'test', 'labels', 'denselabels', or a list of columns}")
       print()
-    elif inversion not in ['test', 'labels', 'denselabels'] and not isinstance(inversion, list) \
+    elif inversion not in {'test', 'labels', 'denselabels'} and not isinstance(inversion, list) \
     and not isinstance(inversion, bool):
       inversion_valresult = True
       print("Error: invalid entry passed for inversion parameter.")
@@ -25356,7 +25343,7 @@ class AutoMunge:
     
     #check TrainLabelFreqLevel
     TrainLabelFreqLevel_valresult = False
-    if TrainLabelFreqLevel not in [True, False] or not isinstance(TrainLabelFreqLevel, bool):
+    if TrainLabelFreqLevel not in {True, False} or not isinstance(TrainLabelFreqLevel, bool):
       TrainLabelFreqLevel_valresult = True
       print("Error: invalid entry passed for TrainLabelFreqLevel parameter.")
       print("Acceptable values are one of {True, False}")
@@ -25366,7 +25353,7 @@ class AutoMunge:
 
     #check dupl_rows
     dupl_rows_valresult = False
-    if dupl_rows not in [True, False] or not isinstance(dupl_rows, bool):
+    if dupl_rows not in {True, False} or not isinstance(dupl_rows, bool):
       dupl_rows_valresult = True
       print("Error: invalid entry passed for dupl_rows parameter.")
       print("Acceptable values are one of {True, False}")
@@ -25376,7 +25363,7 @@ class AutoMunge:
     
     #check featureeval
     featureeval_valresult = False
-    if featureeval not in [True, False] or not isinstance(featureeval, bool):
+    if featureeval not in {True, False} or not isinstance(featureeval, bool):
       featureeval_valresult = True
       print("Error: invalid entry passed for featureeval parameter.")
       print("Acceptable values are one of {True, False}")
@@ -25386,12 +25373,12 @@ class AutoMunge:
     
     #check driftreport
     driftreport_valresult = False
-    if driftreport not in [True, False, 'efficient', 'report_effic', 'report_full']:
+    if driftreport not in {True, False, 'efficient', 'report_effic', 'report_full'}:
       driftreport_valresult = True
       print("Error: invalid entry passed for driftreport parameter.")
       print("Acceptable values are one of {True, False, 'efficient', 'report_effic', 'report_full'}")
       print()
-    elif driftreport not in ['efficient', 'report_effic', 'report_full'] \
+    elif driftreport not in {'efficient', 'report_effic', 'report_full'} \
     and not isinstance(driftreport, bool):
       driftreport_valresult = True
       print("Error: invalid entry passed for driftreport parameter.")
@@ -25423,7 +25410,7 @@ class AutoMunge:
     
     #check LSfit
     LSfit_valresult = False
-    if LSfit not in [True, False] or not isinstance(LSfit, bool):
+    if LSfit not in {True, False} or not isinstance(LSfit, bool):
       LSfit_valresult = True
       print("Error: invalid entry passed for LSfit parameter.")
       print("Acceptable values are one of {True, False}")
@@ -25433,12 +25420,12 @@ class AutoMunge:
     
     #check returnedsets
     returnedsets_valresult = False
-    if returnedsets not in [True, False, 'test_ID', 'test_labels', 'test_ID_labels']:
+    if returnedsets not in {True, False, 'test_ID', 'test_labels', 'test_ID_labels'}:
       returnedsets_valresult = True
       print("Error: invalid entry passed for returnedsets parameter.")
       print("Acceptable values are one of {True, False, 'test_ID', 'test_labels', 'test_ID_labels'}")
       print()
-    elif returnedsets not in ['test_ID', 'test_labels', 'test_ID_labels'] \
+    elif returnedsets not in {'test_ID', 'test_labels', 'test_ID_labels'} \
     and not isinstance(returnedsets, bool):
       returnedsets_valresult = True
       print("Error: invalid entry passed for returnedsets parameter.")
@@ -25449,7 +25436,7 @@ class AutoMunge:
     
     #check shuffletrain
     shuffletrain_valresult = False
-    if shuffletrain not in [True, False] or not isinstance(shuffletrain, bool):
+    if shuffletrain not in {True, False} or not isinstance(shuffletrain, bool):
       shuffletrain_valresult = True
       print("Error: invalid entry passed for shuffletrain parameter.")
       print("Acceptable values are one of {True, False}")
@@ -25459,7 +25446,7 @@ class AutoMunge:
 
     #check traindata
     traindata_valresult = False
-    if traindata not in [True, False] or not isinstance(pandasoutput, bool):
+    if traindata not in {True, False} or not isinstance(pandasoutput, bool):
       traindata_valresult = True
       print("Error: invalid entry passed for traindata parameter.")
       print("Acceptable values are one of {True, False}")
@@ -25595,7 +25582,7 @@ class AutoMunge:
       #eval is a special case, it triggers the application of evalcategory
       #which may be neccesary when automated inference turned off with powertransform
       #so it doesn't need a process_dit entry
-      if assigncat_key not in transform_dict and assigncat_key not in ['eval', 'ptfm']:
+      if assigncat_key not in transform_dict and assigncat_key not in {'eval', 'ptfm'}:
         
         result = True
         
@@ -25835,7 +25822,7 @@ class AutoMunge:
       
       for primitive in transformdict[transformkey]:
         
-        if primitive in ['parents', 'siblings', 'auntsuncles', 'cousins']:  
+        if primitive in {'parents', 'siblings', 'auntsuncles', 'cousins'}:
           
           for entry in transformdict[transformkey][primitive]:
             
@@ -25851,7 +25838,7 @@ class AutoMunge:
           
               upstream_entries += [entry]
           
-        if primitive in ['children', 'niecesnephews', 'coworkers', 'friends']:  
+        if primitive in {'children', 'niecesnephews', 'coworkers', 'friends'}:
           
           for entry in transformdict[transformkey][primitive]:
             
@@ -26040,7 +26027,7 @@ class AutoMunge:
     
     for entry1 in assignnan:
       
-      if entry1 not in ['categories', 'columns', 'global', 'injections']:
+      if entry1 not in {'categories', 'columns', 'global', 'injections'}:
         
         check_assignnan_toplevelentries_result = True
         print("error: assignnan parameter valid entries for first tier are 'categories', 'columns', 'global', and 'injections'")
@@ -26114,7 +26101,7 @@ class AutoMunge:
     
     for key in assignparam:
       
-      if key not in ['global_assignparam', 'default_assignparam', '(category)'] \
+      if key not in {'global_assignparam', 'default_assignparam', '(category)'} \
       and key not in process_dict:
         
         result = True
@@ -26652,8 +26639,8 @@ class AutoMunge:
     if isinstance(columnkeylist, str):
       columnkeylist = [columnkeylist]
     
-    #if floatprecision in [16, 32, 64]:
-    if floatprecision in [16, 32]:
+    #if floatprecision in {16, 32, 64}:
+    if floatprecision in {16, 32}:
       
       for columnkey in columnkeylist:
         
@@ -27088,7 +27075,7 @@ class AutoMunge:
     
     #we won't delete the origin columns if Binary passed as 'retain'
     #(such that the binary encoding is a supplement instead of a replacement)
-    if Binary not in ['retain']:
+    if Binary not in {'retain'}:
 
       for column in bool_column_list:
 
@@ -27127,7 +27114,7 @@ class AutoMunge:
     
     #we won't delete the origin columns if Binary passed as 'retain'
     #(such that the binary encoding is a supplement instead of a replacement)
-    if Binary not in ['retain']:
+    if Binary not in {'retain'}:
       
       for column in bool_column_list:
 
@@ -27205,7 +27192,7 @@ class AutoMunge:
     """
     
     #don't apply to totalexclude MLinfilltype
-    if postprocess_dict['process_dict'][category]['MLinfilltype'] not in ['totalexclude']:
+    if postprocess_dict['process_dict'][category]['MLinfilltype'] not in {'totalexclude'}:
 
       df.loc[df[column] == np.inf, column] = np.nan
       df.loc[df[column] == -np.inf, column] = np.nan
@@ -27264,7 +27251,7 @@ class AutoMunge:
     #we'll have convention that for complete passthrough columns without infill (like: excl, exc6)
     #global assignnan assignments don't apply and must be assigned explicitly
     #either in assignnan categories or columns entries
-    if postprocess_dict['process_dict'][category]['MLinfilltype'] not in ['totalexclude']:
+    if postprocess_dict['process_dict'][category]['MLinfilltype'] not in {'totalexclude'}:
 
       if 'global' in assignnan:
 
@@ -27326,7 +27313,7 @@ class AutoMunge:
       if columnkey in assignnan['injections']:
         if columnkey in df:
           for actionkey in assignnan['injections'][columnkey]:
-            if actionkey not in ['inject_ratio', 'range', 'minmax_range', 'entries', 'entry_ratio']:
+            if actionkey not in {'inject_ratio', 'range', 'minmax_range', 'entries', 'entry_ratio'}:
               print("assignnan['injections'] has an invalid action entry")
               print("for column: ", columnkey)
               print("and action: ", actionkey)
@@ -27544,28 +27531,28 @@ class AutoMunge:
           MLinfilltype = \
           postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype']
           
-          if MLinfilltype in ['numeric', 'concurrent_nmbr']:
+          if MLinfilltype in {'numeric', 'concurrent_nmbr'}:
             
             #add to numeric
             columntype_report['continuous'].append(column)
             
             populated_columns.append(column)
             
-          elif MLinfilltype in ['binary', 'concurrent_act', 'boolexclude']:
+          elif MLinfilltype in {'binary', 'concurrent_act', 'boolexclude'}:
             
             #add to boolean
             columntype_report['boolean'].append(column)
             
             populated_columns.append(column)
           
-          elif MLinfilltype in ['singlct', 'ordlexclude']:
+          elif MLinfilltype in {'singlct', 'ordlexclude'}:
             
             #add to ordinal
             columntype_report['ordinal'].append(column)
             
             populated_columns.append(column)
             
-          elif MLinfilltype in ['multirt']:
+          elif MLinfilltype in {'multirt'}:
             
             #initialize onehot_sets
             columntype_report['onehot_sets'].append([])
@@ -27580,7 +27567,7 @@ class AutoMunge:
               
               populated_columns.append(entry)
               
-          elif MLinfilltype in ['1010']:
+          elif MLinfilltype in {'1010'}:
               
             #initialize binary_sets
             columntype_report['binary_sets'].append([])
@@ -27595,7 +27582,7 @@ class AutoMunge:
 
               populated_columns.append(entry)
               
-          elif MLinfilltype in ['exclude', 'totalexclude']:
+          elif MLinfilltype in {'exclude', 'totalexclude'}:
             
             #add to ordinal
             columntype_report['passthrough'].append(column)
@@ -28219,7 +28206,7 @@ class AutoMunge:
 
       val2ratio = valpercent2 / totalvalidationratio
       
-      if shuffletrain in [True, 'traintest']:
+      if shuffletrain in {True, 'traintest'}:
         shuffle_param=True
       else:
         shuffle_param=False
@@ -28388,7 +28375,7 @@ class AutoMunge:
 
           #special case, if user assigned column to 'eval' then we'll run evalcategory
           #passing a False for powertransform parameter
-          if category in ['eval']:
+          if category in {'eval'}:
             if evalcat is False:
               category = self.evalcategory(df_train, column, randomseed, eval_ratio, \
                                            numbercategoryheuristic, False, False)
@@ -28401,7 +28388,7 @@ class AutoMunge:
             category_test = category
 
           #or for 'ptfm' passing a True for powertransform parameter
-          if category in ['ptfm']:
+          if category in {'ptfm'}:
             if evalcat is False:
               category = self.evalcategory(df_train, column, randomseed, eval_ratio, \
                                            numbercategoryheuristic, True, False)
@@ -28444,6 +28431,7 @@ class AutoMunge:
       ##
       #to support the postprocess_dict entry below, let's first create a temp
       #list of columns
+      #using a list instead of set here to maintain order, even though set would be a little quicker
       templist1 = list(df_train)
 
       #Before calling getNArows, we'll allow user to designate either by category or column 
@@ -28560,7 +28548,7 @@ class AutoMunge:
 
           #special case, if user assigned column to 'eval' then we'll run evalcategory
           #passing a False for powertransform parameter
-          if labelscategory in ['eval']:
+          if labelscategory in {'eval'}:
             if evalcat is False:
               category = self.evalcategory(df_labels, labels_column, randomseed, eval_ratio, \
                                            numbercategoryheuristic, False, True)
@@ -28573,7 +28561,7 @@ class AutoMunge:
             labelscategory = category
 
           #or for 'ptfm' passing a True for powertransform parameter
-          if labelscategory in ['ptfm']:
+          if labelscategory in {'ptfm'}:
             if evalcat is False:
               category = self.evalcategory(df_labels, labels_column, randomseed, eval_ratio, \
                                            numbercategoryheuristic, True, True)
@@ -28838,15 +28826,17 @@ class AutoMunge:
     if featureselection is True:
 
       #get list of columns currently included
-      currentcolumns = list(df_train)
+      currentcolumns = set(df_train)
       
       #this is to address an edge case for featuremethod == 'default'
-      if featuremethod in ['default', 'report'] or FSmodel is False \
-      or (featuremethod in ['pct'] and featurepct == 1.0):
-        madethecut = currentcolumns
-
+      if featuremethod in {'default', 'report'} or FSmodel is False \
+      or (featuremethod in {'pct'} and featurepct == 1.0):
+        madethecut = set(currentcolumns)
+      
+      madethecut = set(madethecut)
+      
       #get list of columns to trim
-      trimcolumns = [b for b in currentcolumns if b not in madethecut]
+      trimcolumns = currentcolumns - madethecut
 
       if len(trimcolumns) > 0:
         #printout display progress
@@ -28999,7 +28989,7 @@ class AutoMunge:
     
     #we'll only apply to training and test data not labels
     #making an executive decvision for now that ordinal encoded columns will be excluded
-    if Binary in [True, 'retain'] or isinstance(Binary, list):
+    if Binary in {True, 'retain'} or isinstance(Binary, list):
       
       #printout display progress
       if printstatus is True:
@@ -29099,9 +29089,9 @@ class AutoMunge:
 
     #this is operation to consolidate duplicate rows based on dupl_rows parameter
     #in other words, if multiple copies of same row present only returns one
-    if dupl_rows in [True, 'traintest']:
+    if dupl_rows in {True, 'traintest'}:
       df_train, df_trainID, df_labels = self.dupl_rows_consolidate(df_train, df_trainID, df_labels)
-    if dupl_rows in ['test', 'traintest']:
+    if dupl_rows in {'test', 'traintest'}:
       df_test, df_testID, df_testlabels = self.dupl_rows_consolidate(df_test, df_testID, df_testlabels)
 
     #here is the process to levelize the frequency of label rows in train data
@@ -29109,7 +29099,7 @@ class AutoMunge:
     #a future extension will include numerical labels by adding supplemental 
     #label columns to designate inclusion in some fractional bucket of the distribution
     #e.g. such as quintiles for instance
-    if TrainLabelFreqLevel in [True, 'traintest'] \
+    if TrainLabelFreqLevel in {True, 'traintest'} \
     and labels_column is not False:
 
       #printout display progress
@@ -29149,7 +29139,7 @@ class AutoMunge:
         print(df_labels.shape[0])
         print("")
 
-    if TrainLabelFreqLevel in ['test', 'traintest'] \
+    if TrainLabelFreqLevel in {'test', 'traintest'} \
     and labelspresenttest is True:
 
       #printout display progress
@@ -29273,7 +29263,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.77'
+    automungeversion = '5.78'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -30609,7 +30599,7 @@ class AutoMunge:
     #if len(mdf_test[column + '_bnry'].unique()) > 2:
     uniqueintest = mdf_test[column + '_bnry'].unique()
     for unique in uniqueintest:
-      if unique not in [onevalue, zerovalue]:
+      if unique not in {onevalue, zerovalue}:
         mdf_test[column + '_bnry'] = \
         np.where(mdf_test[column + '_bnry'] == unique, binary_missing_plug, mdf_test[column + '_bnry'])
     
@@ -30689,7 +30679,7 @@ class AutoMunge:
     #if len(mdf_test[column + '_bnry'].unique()) > 2:
     uniqueintest = mdf_test[column + '_bnr2'].unique()
     for unique in uniqueintest:
-      if unique not in [onevalue, zerovalue]:
+      if unique not in {onevalue, zerovalue}:
         mdf_test[column + '_bnr2'] = \
         np.where(mdf_test[column + '_bnr2'] == unique, binary_missing_plug, mdf_test[column + '_bnr2'])
     
@@ -35420,14 +35410,14 @@ class AutoMunge:
     
     MLinfilltype = postprocess_dict['process_dict'][category]['MLinfilltype']
 
-    #if category in ['nmbr', 'nbr2', 'bxcx', 'bnry', 'text', 'bins', 'bint']:
-    if MLinfilltype in ['numeric', 'singlct', 'binary', \
+    #if category in {'nmbr', 'nbr2', 'bxcx', 'bnry', 'text', 'bins', 'bint'}:
+    if MLinfilltype in {'numeric', 'singlct', 'binary', \
                         'multirt', '1010', \
-                        'concurrent_act', 'concurrent_nmbr']:
+                        'concurrent_act', 'concurrent_nmbr'}:
 
       #if this is a single column set or concurrent_act
       if len(categorylist) == 1 or \
-      postprocess_dict['process_dict'][category]['MLinfilltype'] in ['concurrent_act', 'concurrent_nmbr']:
+      postprocess_dict['process_dict'][category]['MLinfilltype'] in {'concurrent_act', 'concurrent_nmbr'}:
 
         #first concatinate the NArows True/False designations to df_train & df_test
   #       df_train = pd.concat([df_train, trainNArows], axis=1)
@@ -35532,8 +35522,7 @@ class AutoMunge:
         
         df_test = df_test.drop([testNArows.columns[0]], axis=1)
 
-    #if category == 'date':
-    #if MLinfilltype in ['exclude']:
+    #if MLinfilltype in {'exclude'}:
     else:
 
       #create empty sets for now
@@ -35573,7 +35562,7 @@ class AutoMunge:
     if model is not False:
       
       #if target category is numeric:
-      if MLinfilltype in ['numeric', 'concurrent_nmbr']:
+      if MLinfilltype in {'numeric', 'concurrent_nmbr'}:
         
         ML_application = 'regression'
     
@@ -35587,7 +35576,7 @@ class AutoMunge:
         df_testinfill = pd.DataFrame(df_testinfill, columns = ['infill'])
         
       #if target category is single column categoric (eg ordinal or boolean integer)
-      if MLinfilltype in ['singlct', 'binary', 'concurrent_act']:
+      if MLinfilltype in {'singlct', 'binary', 'concurrent_act'}:
         
         if MLinfilltype == 'singlct':
           ML_application = 'ordinalclassification'
@@ -35604,7 +35593,7 @@ class AutoMunge:
         df_testinfill = pd.DataFrame(df_testinfill, columns = ['infill'])
         
       #if target category is multi-column categoric (one hot encoding) / (binary encoded sets handled sepreately)
-      if MLinfilltype in ['multirt']:
+      if MLinfilltype in {'multirt'}:
         
         ML_application = 'onehotclassification'
         
@@ -35619,7 +35608,7 @@ class AutoMunge:
         df_testinfill = pd.DataFrame(df_testinfill, columns = categorylist)
       
       #if target is binary encoded
-      if MLinfilltype in ['1010']:
+      if MLinfilltype in {'1010'}:
         
         ML_application = 'onehotclassification'
 
@@ -35641,7 +35630,7 @@ class AutoMunge:
         df_testinfill = pd.DataFrame(df_testinfill, columns = categorylist)         
         
       #if target is exlcuded from ML infill
-      if MLinfilltype in ['exclude', 'boolexclude', 'ordlexclude', 'totalexclude']:
+      if MLinfilltype in {'exclude', 'boolexclude', 'ordlexclude', 'totalexclude'}:
 
         #create empty sets
         df_testinfill = pd.DataFrame({'infill' : [0]}) 
@@ -35681,7 +35670,7 @@ class AutoMunge:
       
       if len(categorylist) == 1 or \
       postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-      in ['concurrent_act', 'concurrent_nmbr']:
+      in {'concurrent_act', 'concurrent_nmbr'}:
         #copy the datatype to ensure returned set is consistent
         df_temp_dtype = pd.DataFrame(df_test[column][:0]).copy()
 
@@ -35714,7 +35703,7 @@ class AutoMunge:
       #now change the infillcomplete marker in the text_dict for each \
       #associated text column unless in concurrent_activations MLinfilltype
       if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-      in ['concurrent_act', 'concurrent_nmbr']:
+      in {'concurrent_act', 'concurrent_nmbr'}:
         postprocess_dict['column_dict'][column]['infillcomplete'] = True
         
       else:
@@ -35724,7 +35713,7 @@ class AutoMunge:
       #reset data type to ensure returned data is consistent with what was passed
       if len(categorylist) == 1 or \
       postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-      in ['concurrent_act', 'concurrent_nmbr']:
+      in {'concurrent_act', 'concurrent_nmbr'}:
         df_test[column] = \
         df_test[column].astype({column:df_temp_dtype[column].dtypes})
 
@@ -35941,7 +35930,7 @@ class AutoMunge:
             #we'll follow convention that if target label category MLinfilltype is concurrent
             #we'll arbitrarily take the first column and use that as target
             if FSpostprocess_dict['process_dict'][labelctgy]['MLinfilltype'] \
-            in ['concurrent_act', 'concurrent_nmbr']:
+            in {'concurrent_act', 'concurrent_nmbr'}:
               
               am_categorylist = [am_categorylist[0]]
               
@@ -36742,7 +36731,7 @@ class AutoMunge:
     #__________
     #here we'll perform drift report if elected
     #if driftreport is True:
-    if driftreport in [True, 'report_full']:
+    if driftreport in {True, 'report_full'}:
 
       #returns a new partially populated postprocess_dict containing
       #column_dict entries populated with newly calculated normalization parameters
@@ -36752,7 +36741,7 @@ class AutoMunge:
 
       postreports_dict['driftreport'] = drift_report
       
-    if driftreport in ['report_full', 'report_effic']:
+    if driftreport in {'report_full', 'report_effic'}:
       
       postdrift_dict = {}
 
@@ -36840,7 +36829,7 @@ class AutoMunge:
       df_test = self.convert_inf_to_nan(df_test, column, category, postprocess_dict)
 
       #create NArows (column of True/False where True coresponds to missing data)
-      if driftreport in ['efficient', True]:
+      if driftreport in {'efficient', True}:
         testNArows, postdrift_dict = \
         self.getNArows(df_test, column, category, postprocess_dict, postdrift_dict, True)
 
@@ -37079,7 +37068,7 @@ class AutoMunge:
     #Binary dimensionality reduction goes here
     #we'll only apply to test data not labels
     #making an executive decvision for now that ordinal encoded columns will be excluded
-    if postprocess_dict['Binary'] in [True, 'retain']:
+    if postprocess_dict['Binary'] in {True, 'retain'}:
       
       #printout display progress
       if printstatus is True:
@@ -37244,7 +37233,7 @@ class AutoMunge:
     if testID_column is not False:
       #testID = df_testID
       #pass
-      if returnedsets in ['test_ID', 'test_ID_labels']:
+      if returnedsets in {'test_ID', 'test_ID_labels'}:
         df_test = pd.concat([df_test, df_testID], axis=1)
       
     else:
@@ -37253,7 +37242,7 @@ class AutoMunge:
     if labelscolumn is not False:
       #testlabels = df_testlabels
       #pass
-      if returnedsets in ['test_labels', 'test_ID_labels']:
+      if returnedsets in {'test_labels', 'test_ID_labels'}:
         df_test = pd.concat([df_test, df_testlabels], axis=1)
       
     else:
@@ -37266,13 +37255,13 @@ class AutoMunge:
       df_test = df_test.to_numpy()
 
       if testID_column is not False \
-      and returnedsets not in [False, 'test_ID', 'test_labels', 'test_ID_labels']:
+      and returnedsets not in {False, 'test_ID', 'test_labels', 'test_ID_labels'}:
         df_testID = df_testID.to_numpy()
       else:
         df_testID = []
 
       if labelscolumn is not False \
-      and returnedsets not in [False, 'test_ID', 'test_labels', 'test_ID_labels']:
+      and returnedsets not in {False, 'test_ID', 'test_labels', 'test_ID_labels'}:
         df_testlabels = df_testlabels.to_numpy()
 
         #apply ravel to labels if appropriate - converts from eg [[1,2,3]] to [1,2,3]
