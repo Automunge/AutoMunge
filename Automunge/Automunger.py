@@ -27703,6 +27703,48 @@ class AutoMunge:
       indexcolumn = 'Automunge_index_' + str(application_number)
     
     return indexcolumn
+
+  def assemble_excluded_from_postmunge_getNArows(self, postprocess_dict):
+    """
+    #Creates a list of orig columns which can be excluded
+    #from running getNArows in postmunge
+    #based on infill assignment
+    #(stdrdinfill does not need to run getNArows)
+    """
+
+    #get lists of which orig columns will need to run getNArows in postmunge
+    excluded_from_postmunge_getNArows = []
+    included_in_postmunge_getNArows = []
+
+    #postprocess_assigninfill_dict has returned column headers per infill assignments
+    for infilltype in postprocess_dict['postprocess_assigninfill_dict']:
+
+      if infilltype == 'stdrdinfill':
+
+        for entry in postprocess_dict['postprocess_assigninfill_dict'][infilltype]:
+
+          infill_origcolumn = postprocess_dict['column_dict'][entry]['origcolumn']
+
+          excluded_from_postmunge_getNArows.append(infill_origcolumn)
+
+      #unspecified is a redundant list so exluded
+      elif infilltype != 'unspecified':
+
+        for entry in postprocess_dict['postprocess_assigninfill_dict'][infilltype]:
+
+          infill_origcolumn = postprocess_dict['column_dict'][entry]['origcolumn']
+
+          included_in_postmunge_getNArows.append(infill_origcolumn)
+
+    #consolidate redundancies
+    excluded_from_postmunge_getNArows = set(excluded_from_postmunge_getNArows)
+    included_in_postmunge_getNArows = set(included_in_postmunge_getNArows)
+
+    #for cases where entry in both lists default to run get_NArows in postmunge
+    excluded_from_postmunge_getNArows = \
+    excluded_from_postmunge_getNArows - included_in_postmunge_getNArows
+
+    return excluded_from_postmunge_getNArows
   
   def automunge(self, df_train, df_test = False, \
                 labels_column = False, trainID_column = False, testID_column = False, \
@@ -29231,7 +29273,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.76'
+    automungeversion = '5.77'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -29312,6 +29354,12 @@ class AutoMunge:
                              'application_timestamp' : application_timestamp, \
                              'version_combined' : version_combined})
     
+    #support function to speed up postmunge when calling getNArows not needed
+    excluded_from_postmunge_getNArows = \
+    self.assemble_excluded_from_postmunge_getNArows(postprocess_dict)
+
+    postprocess_dict.update({'excluded_from_postmunge_getNArows' : excluded_from_postmunge_getNArows})
+
     #mirror tree assembly functions go here, these mirror the progression of transformation functions
     #where categorytree is forward pass and inverse_categorytree is backward pass
     
@@ -36805,10 +36853,12 @@ class AutoMunge:
           print("")
 
       else:
-        testNArows = self.getNArows(df_test, column, category, postprocess_dict)
+        if column not in postprocess_dict['excluded_from_postmunge_getNArows']:
+          testNArows = self.getNArows(df_test, column, category, postprocess_dict)
 
       #now append that NArows onto a master NA rows df
-      masterNArows_test = pd.concat([masterNArows_test, testNArows], axis=1)
+      if column not in postprocess_dict['excluded_from_postmunge_getNArows']:
+        masterNArows_test = pd.concat([masterNArows_test, testNArows], axis=1)
 
       #process family
       df_test = \
