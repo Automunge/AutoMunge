@@ -266,10 +266,10 @@ simultaneous column activations. Alternatives for one-hot encoding, ordinal enco
 and etc are also available. String parsing methods are available to extract and encode 
 grammatic structure shared between cateogric entries. For all cases the functions may 
 generate a supplemental column (NArw) with a boolean identifier for cells that were 
-subject to infill due to missing or improperly formatted data when the NArw_marker 
-parameter is activated.
+subject to infill due to missing or improperly formatted data when the default NArw_marker 
+parameter is left activated.
 
-The functions also include a method we call 'ML infill' which if elected
+The functions also defaults to a method we call 'ML infill' which if elected
 predicts infill for missing values in both the train and test sets using
 machine learning models trained on the rest of the set in a fully
 generalized and automated fashion. The ML infill works by initially
