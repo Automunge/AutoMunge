@@ -72,7 +72,8 @@ infill using machine learning models trained on the rest of the set in a fully
 generalized and automated fashion or alternatively by assigning methods from an 
 imputation libary. automunge(.) returns a populated python dictionary which can 
 be used as input along with a subsequent data set to the postmunge(.) function 
-for consistent preparations of additional data such as for inference.
+for consistent preparations of additional data such as for inference. Be sure to
+check out our [Tutorial Notebooks](https://github.com/Automunge/AutoMunge/tree/master/Tutorials).
 
 ## Install, Initialize, and Basics
 
