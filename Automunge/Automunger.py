@@ -22177,9 +22177,7 @@ class AutoMunge:
     #for now have convention that MLinfilltypes of 1010 or concurrent_act
     #not yet supported (future extension)
     """
-    
-    columns_labels = list(labels_df)
-    
+
     #find origcateogry of am_labels from FSpostprocess_dict
     labelcolumnkey = list(labels_df)[0]
     origcolumn = postprocess_dict['column_dict'][labelcolumnkey]['origcolumn']
@@ -22187,131 +22185,73 @@ class AutoMunge:
 
     #find labelctgy from process_dict based on this origcategory
     labelscategory = process_dict[origcategory]['labelctgy']
-    
+
     MLinfilltype = postprocess_dict['process_dict'][labelscategory]['MLinfilltype']
-    
+
+    #columns_labels may be reset for numeric labels, labels is fixed
+    columns_labels = list(labels_df)
     labels = list(labels_df)
     #labels.sort()
-    
+
+    #markers to support numeric labels supplmented by bins
+    multirt_append = False
+    singlct_append = False
+
     if labels != []:
 
       setnameslist = []
       setlengthlist = []
       multiplierlist = []
 
-      #if labelscategory == 'bnry':
-      if MLinfilltype in {'singlct', 'binary'}:
-        
-        singlctcolumn = False
-        
-        if len(labels) == 1:
-          singlctcolumn = labels[0]
-        else:
-          for labelcolumn in labels:
-            if postprocess_dict['column_dict'][labelcolumn]['category'] == labelscategory:
-              singlctcolumn = labelcolumn
-          #if the label category is custom processdict entry with improperly specced labelctgy just apply this heuristic (remote edge case)
-          if singlctcolumn is False:
-            print("label category processdict entry contained a labelctgy not found in the transformdict entry, applying heuristic")
-            print()
-            singlctcolumn = labels[0]
-        
-        uniquevalues = list(labels_df[singlctcolumn].unique())
-
-        #for label in labels:
-        #for label in [0,1]:
-        for label in uniquevalues:
-          
-          #value = 
-          
-          #derive set of labels dataframe for counting length
-          df = self.LabelSetGenerator(labels_df, singlctcolumn, label)
-
-          #append length onto list
-          setlength = df.shape[0]
-          #setlengthlist = setlengthlist.append(setlength)
-          setlengthlist.append(setlength)
-
-        #length of biggest label set
-        maxlength = max(setlengthlist)
-        #set counter to 0
-        i = 0
-        #for label in labels:
-        #for label in [0,1]:
-        for label in uniquevalues:
-          #derive multiplier to levelize label frequency
-          setlength = setlengthlist[i]
-          if setlength > 0:
-            
-            labelmultiplier = int(round(maxlength / setlength)) - 1
-          else:
-            labelmultiplier = 0
-          #append multiplier onto list
-          #multiplierlist = multiplierlist.append(labelmultiplier)
-          multiplierlist.append(labelmultiplier)
-          #increment counter
-          i+=1
-
-        #concatinate labels onto train set
-        train_df = pd.concat([train_df, labels_df], axis=1)
-
-        #reset counter
-        i=0
-        #for loop through labels
-        #for label in labels:
-        #for label in [0,1]:
-        for label in uniquevalues:
-
-          #create train subset corresponding to label
-          df = self.LabelSetGenerator(train_df, singlctcolumn, label)
-
-          #set j counter to 0
-          j = 0
-          #concatinate an additional copy of the label set multiplier times
-          while j < multiplierlist[i]:
-            train_df = pd.concat([train_df, df], axis=0)
-            #train_df = train_df.reset_index()
-            j+=1
-            
-          i+=1
-
-        #now seperate the labels df from the train df
-        labels_df = pd.DataFrame(train_df[labels].copy())
-        #now delete the labels column from train set
-        for labelcolumn in labels:
-          del train_df[labelcolumn]
-
       if MLinfilltype in {'numeric'}:
 
         columns_labels = []
         for label in labels_df.columns:
-          #here we're checking if the column is a numneric set aggregated bins
+          #here we're checking if the column is a numeric set with aggregated bins
+          #we'll only apply levelizer to one of a multirt or singlct set
+          #whichever shows up first in the list of label columns
           if postprocess_dict['process_dict'][postprocess_dict['column_dict'][label]['category']]['MLinfilltype'] \
-          in ['multirt', 'concurrent_act']:
-          
+          in {'multirt'} \
+          and singlct_append is False:
+            multirt_append = True
             columns_labels.append(label)
-            
-      if MLinfilltype in {'numeric', 'multirt'}:
+
+          if postprocess_dict['process_dict'][postprocess_dict['column_dict'][label]['category']]['MLinfilltype'] \
+          in {'singlct', 'binary'} \
+          and multirt_append is False:
+            singlct_append = True
+            columns_labels.append(label)
+
+      if MLinfilltype in {'multirt'} \
+      or MLinfilltype in {'numeric'} and multirt_append is True:
         if columns_labels != []:
           
+          #we'll only apply to first multirt set in labels
+          if multirt_append is False:
+            for label in labels:
+              if postprocess_dict['process_dict'][postprocess_dict['column_dict'][label]['category']]['MLinfilltype'] \
+              in {'multirt'}:
+                columns_labels = postprocess_dict['column_dict'][label]['categorylist']
+                break
+
           #note for. label smoothing activation values won't be 1
           level_activation = LabelSmoothing
           if level_activation <= 0.0 \
           or level_activation >= 1.0 \
           or str(level_activation) == 'False':
             level_activation = 1
-          
+
           i=0
           #for label in labels:
           for label in columns_labels:
-            
+
             column = columns_labels[i]
             #derive set of labels dataframe for counting length
             df = self.LabelSetGenerator(labels_df, column, level_activation)
-            
+
             #append length onto list
             setlength = df.shape[0]
-            
+
             #setlengthlist = setlengthlist.append(setlength)
             setlengthlist.append(setlength)
 
@@ -22343,7 +22283,7 @@ class AutoMunge:
           #reset counter
           i=0
           #for loop through labels
-          
+
           #for label in labels:
           for label in columns_labels:
 
@@ -22361,12 +22301,94 @@ class AutoMunge:
 
             i+=1
 
-          columns_labels = list(labels_df)
-
           #now seperate the labels df from the train df
-          labels_df = train_df[columns_labels]
+          labels_df = train_df[labels]
           #now delete the labels column from train set
-          train_df = train_df.drop(columns_labels, axis=1)
+          train_df = train_df.drop(labels, axis=1)
+
+      if MLinfilltype in {'singlct', 'binary'} \
+      or MLinfilltype in {'numeric'} and singlct_append is True:
+
+        singlctcolumn = False
+
+        if len(labels) == 1:
+          singlctcolumn = labels[0]
+        else:
+          for labelcolumn in labels:
+            #levelizing based on first singlct column found in labels set
+            if postprocess_dict['process_dict'][postprocess_dict['column_dict'][labelcolumn]['category']]['MLinfilltype'] \
+            in {'singlct'}:
+              singlctcolumn = labelcolumn
+          #if the label category is custom processdict entry with improperly specced labelctgy just apply this heuristic (remote edge case)
+          if singlctcolumn is False:
+            print("label category processdict entry contained a labelctgy not found in the transformdict entry, applying heuristic")
+            print()
+            singlctcolumn = labels[0]
+
+        uniquevalues = list(labels_df[singlctcolumn].unique())
+
+        #for label in labels:
+        #for label in [0,1]:
+        for label in uniquevalues:
+
+          #value = 
+
+          #derive set of labels dataframe for counting length
+          df = self.LabelSetGenerator(labels_df, singlctcolumn, label)
+
+          #append length onto list
+          setlength = df.shape[0]
+          #setlengthlist = setlengthlist.append(setlength)
+          setlengthlist.append(setlength)
+
+        #length of biggest label set
+        maxlength = max(setlengthlist)
+        #set counter to 0
+        i = 0
+        #for label in labels:
+        #for label in [0,1]:
+        for label in uniquevalues:
+          #derive multiplier to levelize label frequency
+          setlength = setlengthlist[i]
+          if setlength > 0:
+
+            labelmultiplier = int(round(maxlength / setlength)) - 1
+          else:
+            labelmultiplier = 0
+          #append multiplier onto list
+          #multiplierlist = multiplierlist.append(labelmultiplier)
+          multiplierlist.append(labelmultiplier)
+          #increment counter
+          i+=1
+
+        #concatinate labels onto train set
+        train_df = pd.concat([train_df, labels_df], axis=1)
+
+        #reset counter
+        i=0
+        #for loop through labels
+        #for label in labels:
+        #for label in [0,1]:
+        for label in uniquevalues:
+
+          #create train subset corresponding to label
+          df = self.LabelSetGenerator(train_df, singlctcolumn, label)
+
+          #set j counter to 0
+          j = 0
+          #concatinate an additional copy of the label set multiplier times
+          while j < multiplierlist[i]:
+            train_df = pd.concat([train_df, df], axis=0)
+            #train_df = train_df.reset_index()
+            j+=1
+
+          i+=1
+
+        #now seperate the labels df from the train df
+        labels_df = pd.DataFrame(train_df[labels].copy())
+        #now delete the labels column from train set
+        for labelcolumn in labels:
+          del train_df[labelcolumn]
 
     return train_df, labels_df
   
@@ -29263,7 +29285,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.78'
+    automungeversion = '5.79'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
