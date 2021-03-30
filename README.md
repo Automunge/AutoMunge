@@ -773,6 +773,9 @@ force to numeric with inclusion of standard deviation bins or to 'exc4' for
 inclusion of powers of ten bins. For cases where labels are included in the 
 test set, this may also be passed as _'traintest'_ to apply levelizing to both 
 train and test sets or be passed as _'test'_ to only apply levelizing to test set.
+(If a label set includes multiple configurations of the labels, the levelizing
+will be based on the first categoric / binned set (either one-hot or ordinal)
+based on order of columns.)
 
 * powertransform: _(False/True/'excl'/'exc2')_, defaults to False, when passed as 
 True an evaluation will be performed of distribution properties to select between
