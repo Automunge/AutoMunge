@@ -331,8 +331,8 @@ consistent naming convention as follows:
 
 ```
 #first you'll need to initialize
-from Automunge import Automunger
-am = Automunger.AutoMunge()
+from Automunge import AutoMunge
+am = AutoMunge()
 
 #then to run with default parameters
 train, trainID, labels, \
@@ -349,8 +349,8 @@ explanations provided below:
 
 ```
 #first you'll need to initialize
-from Automunge import Automunger
-am = Automunger.AutoMunge()
+from Automunge import AutoMunge
+am = AutoMunge()
 
 #then if you want you can copy paste following to view all of parameter options
 #where df_train is the target training data set to be prepared
@@ -422,8 +422,8 @@ Or for the postmunge function:
 #using the postprocess_dict object returned from original automunge(.) application
 
 #first you'll need to initialize
-from Automunge import Automunger
-am = Automunger.AutoMunge()
+from Automunge import AutoMunge
+am = AutoMunge()
 
 #then to run with default parameters
 test, testID, testlabels, \
@@ -435,8 +435,8 @@ With the full set of arguments available to be passed as:
 
 ```
 #first you'll need to initialize
-from Automunge import Automunger
-am = Automunger.AutoMunge()
+from Automunge import AutoMunge
+am = AutoMunge()
 
 #then if you want you can copy paste following to view all of parameter options
 #here postprocess_dict was returned from corresponding automunge(.) call
@@ -1594,8 +1594,8 @@ normalization parameters, and/or the training of models for ML infill.
 #using the postprocess_dict object returned from original automunge(.) application
 
 #Remember to initialize automunge
-from Automunge import Automunger
-am = Automunger.AutoMunge()
+from Automunge import AutoMunge
+am = AutoMunge()
 
 
 #Then we can run postmunge function as:
@@ -1723,8 +1723,8 @@ postreports_dict['sourcecolumn_drift']['new_driftstats'] = \
 #using the postprocess_dict object returned from original automunge(.) application
 
 #Remember to initialize automunge
-from Automunge import Automunger
-am = Automunger.AutoMunge()
+from Automunge import AutoMunge
+am = AutoMunge()
 
 
 #Then we can run postmunge function as:
