@@ -77,14 +77,13 @@ check out our [Tutorial Notebooks](https://github.com/Automunge/AutoMunge/tree/m
 
 ## Install, Initialize, and Basics
 
-Automunge is now available for pip install for open source python data-wrangling:
+Automunge is now available for pip install:
 
 ```
 pip install Automunge
 ```
-
+Or to upgrade (we currently roll out upgrades pretty frequently):
 ```
-#or to upgrade (we currently roll out upgrades pretty frequently)
 pip install Automunge --upgrade
 ```
 
