@@ -1,4 +1,4 @@
 name = "Automunge"
 
-from Automunge import Automunger
+import .Automunger
 from .Automunger import AutoMunge
