@@ -94,7 +94,7 @@ from Automunge import AutoMunge
 am = AutoMunge()
 ```
 
-Where eg for train set processing  with default parameters run:
+Where e.g. for train set processing  with default parameters run:
 
 ```
 train, trainID, labels, \
