@@ -21317,12 +21317,9 @@ class AutoMunge:
     #and default values for Random Forest Classifer are initialized with populateMLinfilldefaults
     """
     
-    df_train_filltrain = df_train_filltrain.to_numpy()
-    df_train_filllabel = df_train_filllabel.to_numpy()
-    
-    #sometimes may be one column, then need ravel flattening
+    #for single column convert to a series
     if df_train_filllabel.shape[1] == 1:
-      df_train_filllabel = np.ravel(df_train_filllabel)
+      df_train_filllabel = df_train_filllabel[df_train_filllabel.columns[0]]
     
     #initialize defaults dictionary, these are the default parameters for random forest model initialization
     MLinfilldefaults = \
@@ -21422,8 +21419,6 @@ class AutoMunge:
     #the categorylist parameter is used to handle an edge case for when predict_autogluon is called
     """
     
-    fillfeatures = fillfeatures.to_numpy()
-    
     infill = model.predict(fillfeatures)
     
     return infill
@@ -21452,11 +21447,8 @@ class AutoMunge:
     #and default values for Random Forest Regressor are initialized with populateMLinfilldefaults
     """
     
-    df_train_filltrain = df_train_filltrain.to_numpy()
-    df_train_filllabel = df_train_filllabel.to_numpy()
-    
-    #single label column needs to be flattened from [[#,...]] to [#,...] with ravel
-    df_train_filllabel = np.ravel(df_train_filllabel)
+    #for single column convert to a series
+    df_train_filllabel = df_train_filllabel[df_train_filllabel.columns[0]]
     
     #initialize defaults dictionary, these are the default parameters for random forest model initialization
     MLinfilldefaults = \
@@ -21552,8 +21544,6 @@ class AutoMunge:
 
     #the categorylist parameter is used to handle an edge case for when predict_autogluon is called
     """
-    
-    fillfeatures = fillfeatures.to_numpy()
     
     infill = model.predict(fillfeatures)
     
@@ -29285,7 +29275,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.82'
+    automungeversion = '5.83'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
