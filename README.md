@@ -2418,7 +2418,6 @@ Other Q Notation root categories:
 - mmqb has upstream min max to qbt3 and min max not retained
 - mmq3 has upstream min max to qbt3 and min max is retained
 - lgnr logarithmic number representation, registers 1 for sign, 1 for log sign, 4 log integer registers, 3 log fractional registers
-(for esoteric reasons lgnr inversion currently only has partial recovery (exludes sign retention))
 
 ### Numercial Set Bins and Grainings
 * pwrs: bins groupings by powers of 10 (for values >0)
