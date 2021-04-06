@@ -6262,7 +6262,7 @@ class AutoMunge:
                                   'inverseprocess' : self.inverseprocess_absl, \
                                   'info_retention' : False, \
                                   'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
+                                  'NArowtype' : 'nonzeronumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'qbt5'}})
     process_dict.update({'lgn2' : {'dualprocess' : self.process_logn_class, \
@@ -29407,7 +29407,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.85'
+    automungeversion = '5.86'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -38255,6 +38255,21 @@ class AutoMunge:
     inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
     
     df[inputcolumn] = np.e ** df[normkey]
+
+    #this is to recover sign convention for lgnr
+    #this breaks convention that inversion only based on columns in categorylist
+    #based on lgnr family tree as of 5.85
+    if inputcolumn in postprocess_dict['column_dict']:
+
+      input_toinputcolumn = \
+      postprocess_dict['column_dict'][inputcolumn]['inputcolumn']
+      
+      sign_column = input_toinputcolumn + '___mltp_bkt3'
+      
+      if sign_column in df.columns:
+        
+        df[inputcolumn] = \
+        np.where(df[sign_column]==1, (-1) * df[inputcolumn], df[inputcolumn])
     
     return df, inputcolumn
   
