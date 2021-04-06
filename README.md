@@ -1509,6 +1509,9 @@ processdict =  {'newt' : {'functionpointer' : 'DLmm', \
 #or an even simpler approach if no overwrites are desired could just be to copy everything
 processdict =  {'newt' : {'functionpointer' : 'DLmm'}}
 ```
+Note that when passing a processdict entry to overwrite an internally defined processdict entry, you
+can pass the functionpointer to point to itself, and then only have to populate the entries you are overwriting.
+
 Note that many of the transformation functions in the library have support for distinguishing between 
 inplace operations vs returning a column copied from the input. Inplace operations are expected to 
 reduce memory overhead. When populating a processdict entry, iff the transformation function supports 
