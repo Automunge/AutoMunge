@@ -2417,6 +2417,7 @@ Other Q Notation root categories:
 - nmq2 has upstream z score to qbt1 and z score is retained
 - mmqb has upstream min max to qbt3 and min max not retained
 - mmq3 has upstream min max to qbt3 and min max is retained
+- lgnr logarithmic number representation, registers for sign, 4 log integer registers, 3 log fractional registers
 
 ### Numercial Set Bins and Grainings
 * pwrs: bins groupings by powers of 10 (for values >0)
@@ -3513,7 +3514,9 @@ avoid unintentional duplication.
 - 'lbor',
 - 'lbos',
 - 'lbte',
+- 'lgn2',
 - 'lgnm',
+- 'lgnr',
 - 'lngt',
 - 'lnlg',
 - 'log0',
@@ -3640,6 +3643,7 @@ avoid unintentional duplication.
 - 'qbt2',
 - 'qbt3',
 - 'qbt4',
+- 'qbt5',
 - 'rais',
 - 'retn',
 - 'rtb2',
@@ -3653,6 +3657,8 @@ avoid unintentional duplication.
 - 'scn2',
 - 'scnd',
 - 'scsn',
+- 'sgn1',
+- 'sgn2',
 - 'shf2',
 - 'shf3',
 - 'shf4',
@@ -3774,6 +3780,7 @@ present in dataframe and return results in postprocess_dict['miscparameters_resu
 - '_hour'
 - '_hrcs'
 - '_hrsn'
+- '_lgnr'
 - '_lngt'
 - '_log0'
 - '_logn'
@@ -6950,6 +6957,51 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'siblings'      : [], \
                                      'auntsuncles'   : ['year', 'mdsn', 'mdcs', 'hmss', 'hmsc', 'bshr', 'wkdy', 'hldy'], \
                                      'cousins'       : [], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+
+    transform_dict.update({'lgnr' : {'parents'       : ['lgnr', 'sgn1'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : ['lgn2'], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+  
+    transform_dict.update({'lgn2' : {'parents'       : ['lgn2'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['qbt5'], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'sgn1' : {'parents'       : ['sgn1'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['sgn2'], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'qbt5' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['qbt5'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'sgn2' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['sgn2'], \
+                                     'cousins'       : [NArw], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
                                      'coworkers'     : [], \
