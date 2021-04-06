@@ -3175,7 +3175,7 @@ class AutoMunge:
                                      'coworkers'     : [], \
                                      'friends'       : []}})
 
-    transform_dict.update({'lgnr' : {'parents'       : ['lgnr', 'sgn1'], \
+    transform_dict.update({'lgnr' : {'parents'       : ['lgnr', 'sgn3'], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : [], \
                                      'cousins'       : [NArw], \
@@ -3216,6 +3216,24 @@ class AutoMunge:
                                      'auntsuncles'   : ['sgn2'], \
                                      'cousins'       : [NArw], \
                                      'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+
+    transform_dict.update({'sgn3' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['sgn3'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : ['sgn4'], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+
+    transform_dict.update({'sgn4' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['sgn4'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : ['sgn1'], \
                                      'niecesnephews' : [], \
                                      'coworkers'     : [], \
                                      'friends'       : []}})
@@ -6265,15 +6283,33 @@ class AutoMunge:
                                   'defaultparams' : {'suffix' : 'lgnr',
                                                           'integer_bits' : 4,
                                                           'fractional_bits' : 3,
-                                                          'sign_bit' : False}, \
+                                                          'sign_bit' : True}, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'qbt1'}})
+    process_dict.update({'sgn3' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_copy_class, \
+                                  'postprocess' : None, \
+                                  'inverseprocess' : self.inverseprocess_excl, \
+                                  'info_retention' : True, \
+                                  'defaultparams' : {'suffix' : '_'}, \
+                                  'NArowtype' : 'exclude', \
+                                  'MLinfilltype' : 'exclude', \
+                                  'labelctgy' : 'copy'}})
+    process_dict.update({'sgn4' : {'dualprocess' : None, \
+                                  'singleprocess' : self.process_copy_class, \
+                                  'postprocess' : None, \
+                                  'inverseprocess' : self.inverseprocess_excl, \
+                                  'info_retention' : True, \
+                                  'defaultparams' : {'suffix' : '_'}, \
+                                  'NArowtype' : 'exclude', \
+                                  'MLinfilltype' : 'exclude', \
+                                  'labelctgy' : 'copy'}})
     process_dict.update({'sgn1' : {'dualprocess' : self.process_mltp_class, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_mltp_class, \
                                   'inverseprocess' : self.inverseprocess_mltp, \
-                                  'info_retention' : True, \
+                                  'info_retention' : False, \
                                   'inplace_option' : True, \
                                   'defaultparams' : {'multiply' : -1}, \
                                   'NArowtype' : 'numeric', \
@@ -29371,7 +29407,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.84'
+    automungeversion = '5.85'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
