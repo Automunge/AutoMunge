@@ -2417,7 +2417,8 @@ Other Q Notation root categories:
 - nmq2 has upstream z score to qbt1 and z score is retained
 - mmqb has upstream min max to qbt3 and min max not retained
 - mmq3 has upstream min max to qbt3 and min max is retained
-- lgnr logarithmic number representation, registers for sign, 4 log integer registers, 3 log fractional registers
+- lgnr logarithmic number representation, registers 1 for sign, 1 for log sign, 4 log integer registers, 3 log fractional registers
+(for esoteric reasons lgnr inversion currently only has partial recovery (exludes sign retention))
 
 ### Numercial Set Bins and Grainings
 * pwrs: bins groupings by powers of 10 (for values >0)
@@ -3659,6 +3660,8 @@ avoid unintentional duplication.
 - 'scsn',
 - 'sgn1',
 - 'sgn2',
+- 'sgn3',
+- 'sgn4',
 - 'shf2',
 - 'shf3',
 - 'shf4',
@@ -6962,7 +6965,7 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'coworkers'     : [], \
                                      'friends'       : []}})
 
-    transform_dict.update({'lgnr' : {'parents'       : ['lgnr', 'sgn1'], \
+    transform_dict.update({'lgnr' : {'parents'       : ['lgnr', 'sgn3'], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : [], \
                                      'cousins'       : [NArw], \
@@ -7003,6 +7006,24 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'auntsuncles'   : ['sgn2'], \
                                      'cousins'       : [NArw], \
                                      'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+
+    transform_dict.update({'sgn3' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['sgn3'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : ['sgn4'], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+
+    transform_dict.update({'sgn4' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['sgn4'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : ['sgn1'], \
                                      'niecesnephews' : [], \
                                      'coworkers'     : [], \
                                      'friends'       : []}})
