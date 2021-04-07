@@ -1898,7 +1898,7 @@ to a process_dict entry:
 ```
   def inverseprocess_mnmx(self, df, categorylist, postprocess_dict):
     """
-    #inverse transform corresponding to process_mnmx_class
+    #inverse transform corresponding to process_mnmx
     #assumes any relevant parameters were saved in normalization_dict
     #does not perform infill, assumes clean data
     """
