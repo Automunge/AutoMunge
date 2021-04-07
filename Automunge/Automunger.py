@@ -20132,8 +20132,9 @@ class AutoMunge:
       NArows = NArows.rename(columns = {column:column+'_NArows'})
       
     if NArowtype in {'positivenumeric'}:
-
-      df2 = df2.copy()
+      
+      #this is so don't edit source column when reset values <= 0
+      df2 = pd.DataFrame(df2[column]).copy()
       
       #convert all values to either numeric or NaN
       df2[column] = pd.to_numeric(df2[column], errors='coerce')
@@ -20177,7 +20178,8 @@ class AutoMunge:
       
     if NArowtype in {'nonnegativenumeric'}:
       
-      df2 = df2.copy()
+      #this is so don't edit source column when reset values < 0
+      df2 = pd.DataFrame(df2[column]).copy()
 
       #convert all values to either numeric or NaN
       df2[column] = pd.to_numeric(df2[column], errors='coerce')
@@ -20221,7 +20223,8 @@ class AutoMunge:
       
     if NArowtype in {'nonzeronumeric'}:
 
-      df2 = df2.copy()
+      #this is so don't edit source column when reset values == 0
+      df2 = pd.DataFrame(df2[column]).copy()
 
       #convert all values to either numeric or NaN
       df2[column] = pd.to_numeric(df2[column], errors='coerce')
@@ -29413,7 +29416,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.88'
+    automungeversion = '5.89'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -29734,7 +29737,6 @@ class AutoMunge:
       df_train = df_train.to_numpy()
       df_trainID = df_trainID.to_numpy()
       df_labels = df_labels.to_numpy()
-      df_testlabels = df_testlabels.to_numpy()
       df_validation1 = df_validation1.to_numpy()
       df_validationID1 = df_validationID1.to_numpy()
       df_validationlabels1 = df_validationlabels1.to_numpy()
@@ -29743,6 +29745,7 @@ class AutoMunge:
       df_validationlabels2 = df_validationlabels2.to_numpy()
       df_test = df_test.to_numpy()
       df_testID = df_testID.to_numpy()
+      df_testlabels = df_testlabels.to_numpy()
 
       #apply ravel to labels if appropriate - converts from eg [[1,2,3]] to [1,2,3]
       if df_labels.ndim == 2 and df_labels.shape[1] == 1:
@@ -29751,6 +29754,33 @@ class AutoMunge:
         df_validationlabels1 = np.ravel(df_validationlabels1)
       if df_validationlabels2.ndim == 2 and df_validationlabels2.shape[1] == 1:
         df_validationlabels2 = np.ravel(df_validationlabels2)
+
+    #else flatten any single column dataframes to series
+    else:
+      if len(df_train.shape) > 1 and df_train.shape[1] == 1:
+        df_train = df_train[df_train.columns[0]]
+      if len(df_trainID.shape) > 1 and df_trainID.shape[1] == 1:
+        df_trainID = df_trainID[df_trainID.columns[0]]
+      if len(df_labels.shape) > 1 and df_labels.shape[1] == 1:
+        df_labels = df_labels[df_labels.columns[0]]
+      if len(df_validation1.shape) > 1 and df_validation1.shape[1] == 1:
+        df_validation1 = df_validation1[df_validation1.columns[0]]
+      if len(df_validationID1.shape) > 1 and df_validationID1.shape[1] == 1:
+        df_validationID1 = df_validationID1[df_validationID1.columns[0]]
+      if len(df_validationlabels1.shape) > 1 and df_validationlabels1.shape[1] == 1:
+        df_validationlabels1 = df_validationlabels1[df_validationlabels1.columns[0]]
+      if len(df_validation2.shape) > 1 and df_validation2.shape[1] == 1:
+        df_validation2 = df_validation2[df_validation2.columns[0]]
+      if len(df_validationID2.shape) > 1 and df_validationID2.shape[1] == 1:
+        df_validationID2 = df_validationID2[df_validationID2.columns[0]]
+      if len(df_validationlabels2.shape) > 1 and df_validationlabels2.shape[1] == 1:
+        df_validationlabels2 = df_validationlabels2[df_validationlabels2.columns[0]]
+      if len(df_test.shape) > 1 and df_test.shape[1] == 1:
+        df_test = df_test[df_test.columns[0]]
+      if len(df_testID.shape) > 1 and df_testID.shape[1] == 1:
+        df_testID = df_testID[df_testID.columns[0]]
+      if len(df_testlabels.shape) > 1 and df_testlabels.shape[1] == 1:
+        df_testlabels = df_testlabels[df_testlabels.columns[0]]
 
     #then at completion of automunge(.), aggregate the suffixoverlap results
     #and do an additional printout if any column overlap error to be sure user sees message
@@ -37420,6 +37450,15 @@ class AutoMunge:
 
       else:
         df_testlabels = []
+
+    #else flatten any single column dataframes to series
+    else:
+      if len(df_test.shape) > 1 and df_test.shape[1] == 1:
+        df_test = df_test[df_test.columns[0]]
+      if len(df_testID.shape) > 1 and df_testID.shape[1] == 1:
+        df_testID = df_testID[df_testID.columns[0]]
+      if len(df_testlabels.shape) > 1 and df_testlabels.shape[1] == 1:
+        df_testlabels = df_testlabels[df_testlabels.columns[0]]
 
     #reset traindata entry in postprocess_dict to avoid overwrite of external
     postprocess_dict['traindata'] = False
