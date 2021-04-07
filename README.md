@@ -477,6 +477,9 @@ and arguments. Further below is documentation for the library of transformations
 
 ## automunge returned sets:
 
+Automunge defaults to returning data sets as pandas dataframes, or for
+single column sets as pandas series.
+
 * train: a numerically encoded set of data intended to be used to train a
 downstream machine learning model in the framework of a user's choice
 
@@ -1626,7 +1629,8 @@ labelsencoding_dict, postreports_dict \
 ## postmunge(.) returned sets:
 Here now are descriptions for the returned sets from postmunge, which
 will be followed by descriptions of the parameters which can be passed to
-the function. 
+the function. Default is that returned sets are pandas dataframes, with
+single column sets returned as pandas series.
 
 * test: the set of features, consistently encoded and normalized as the
 training data, that can be used to generate predictions from a model
