@@ -1374,9 +1374,9 @@ to the library is a corresponding processdict entry not required. We'll describe
 #for example, to populate a custom transformation category 'newt' that uses
 #internal defined transformation functions:
 
-processdict =  {'newt' : {'dualprocess' : am.process_mnmx_class, \
+processdict =  {'newt' : {'dualprocess' : am.process_mnmx, \
                           'singleprocess' : None, \
-                          'postprocess' : am.postprocess_mnmx_class, \
+                          'postprocess' : am.postprocess_mnmx, \
                           'NArowtype' : 'numeric', \
                           'MLinfilltype' : 'numeric', \
                           'labelctgy' : 'mnmx'}}
@@ -1449,9 +1449,9 @@ Optionally, some additional values can be incorporated into the processdict to
 support inversion for a transformation category:
 ```
 #for example 
-processdict =  {'newt' : {'dualprocess' : am.process_mnmx_class, \
+processdict =  {'newt' : {'dualprocess' : am.process_mnmx, \
                           'singleprocess' : None, \
-                          'postprocess' : am.postprocess_mnmx_class, \
+                          'postprocess' : am.postprocess_mnmx, \
                           'inverseprocess' : am.inverseprocess_mnmx, \
                           'info_retention' : False, \
                           'NArowtype' : 'numeric', \
@@ -1469,9 +1469,9 @@ transfomation functions by including the 'defaultparams' key. These updates to d
 parameters will still be overwritten if user manually specifies parameters in assignparam.
 ```
 #for example
-processdict =  {'DLmm' : {'dualprocess' : am.process_DPmm_class, \
+processdict =  {'DLmm' : {'dualprocess' : am.process_DPmm, \
                           'singleprocess' : None, \
-                          'postprocess' : am.postprocess_DPmm_class, \
+                          'postprocess' : am.postprocess_DPmm, \
                           'inverseprocess' : am.inverseprocess_UPCS, \
                           'info_retention' : True, \
                           'defaultparams' : {'noisedistribution' : 'laplace'}, \
@@ -1883,9 +1883,9 @@ Here is an example of a process_dict entry with the optional inversion entries i
 as may be defined by user for custom functions and passed to automunge(.) in the processdict 
 parameter:
 ```
-process_dict.update({'mnmx' : {'dualprocess'    : self.process_mnmx_class, \
+process_dict.update({'mnmx' : {'dualprocess'    : self.process_mnmx, \
                                'singleprocess'  : None, \
-                               'postprocess'    : self.postprocess_mnmx_class, \
+                               'postprocess'    : self.postprocess_mnmx, \
                                'inverseprocess' : self.inverseprocess_mnmx, \
                                'info_retention' : True, \
                                'NArowtype'      : 'numeric', \
@@ -7075,9 +7075,9 @@ transformdict = {'mnm8' : {'parents' : [], \
 #So what's being demonstrated here is that we're passing the functions under
 #dualprocess and postprocess that we'll define below.
 
-processdict = {'mnm8' : {'dualprocess' : process_mnm8_class, \
+processdict = {'mnm8' : {'dualprocess' : process_mnm8, \
                          'singleprocess' : None, \
-                         'postprocess' : postprocess_mnm8_class, \
+                         'postprocess' : postprocess_mnm8, \
                          'NArowtype' : 'numeric', \
                          'MLinfilltype' : 'numeric', \
                          'labelctgy' : 'mnm8'}}
@@ -7090,7 +7090,7 @@ processdict = {'mnm8' : {'dualprocess' : process_mnm8_class, \
 #function intended to just process a subsequent test set.
 
 #define the function
-def process_mnm8_class(mdf_train, mdf_test, column, category, \
+def process_mnm8(mdf_train, mdf_test, column, category, \
                        postprocess_dict, params = {}):
   #where
   #mdf_train is the train data set (pandas dataframe)
@@ -7268,7 +7268,7 @@ def process_mnm8_class(mdf_train, mdf_test, column, category, \
 #and test sets, we'll need to define a corresponding "postprocess" function
 #intended for use on just the test set
 
-def postprocess_mnm3_class(mdf_test, column, postprocess_dict, columnkey, params={}):
+def postprocess_mnm3(mdf_test, column, postprocess_dict, columnkey, params={}):
   #where mdf_test is a dataframe of the test set
   #column is the string of the column header
   #postprocess_dict is how we carry packets of data between the 
@@ -7329,7 +7329,7 @@ def postprocess_mnm3_class(mdf_test, column, postprocess_dict, columnkey, params
 #function incorporating similar data structures but passing only a single dataframe.
 
 #Such as:
-def process_mnm8_class(df, column, category, postprocess_dict, params = {}):
+def process_mnm8(df, column, category, postprocess_dict, params = {}):
   
   #etc
   
