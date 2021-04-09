@@ -2167,7 +2167,8 @@ infill.
 
 ### Label Set Encodings
 Label set encodings are unique in that they don't include an aggregated NArw missing data markers
-based on NArw_marker parameter. Missing data in label sets are subject to row deletions.
+based on NArw_marker parameter. Missing data in label sets are subject to row deletions. Note that inversion of 
+label set encodings is support by the postmunge(.) inversion parameter.
 * lbnm: for numeric label sets, entries are given a pass-through transform via 'exc2' (the numeric default under automation)
 * lbnb: for numeric label sets, entries are given a z-score normalization via 'nmbr'
 * lbor: for categoric label sets, entries are given an ordinal encoding via 'ordl' (the categoric default under automation)
