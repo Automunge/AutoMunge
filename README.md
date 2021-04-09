@@ -2,7 +2,7 @@
 
 ![image](https://user-images.githubusercontent.com/44011748/76485571-4855b280-63f3-11ea-9574-c39a66e45e4e.png)
 
-# 
+#  
 
 ## Table of Contents
 * [Introduction](https://github.com/Automunge/AutoMunge#introduction)
