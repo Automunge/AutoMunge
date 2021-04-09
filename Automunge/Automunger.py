@@ -3112,9 +3112,18 @@ class AutoMunge:
                                      'coworkers'     : [], \
                                      'friends'       : []}})
 
+    transform_dict.update({'lbnb' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['nmbr'], \
+                                     'cousins'       : [], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+
     transform_dict.update({'lb10' : {'parents'       : [], \
                                      'siblings'      : [], \
-                                     'auntsuncles'   : ['text'], \
+                                     'auntsuncles'   : ['1010'], \
                                      'cousins'       : [], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
@@ -3123,17 +3132,8 @@ class AutoMunge:
     
     transform_dict.update({'lbor' : {'parents'       : [], \
                                      'siblings'      : [], \
-                                     'auntsuncles'   : ['ord3'], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
-                                     'friends'       : []}})
-
-    transform_dict.update({'lbo5' : {'parents'       : [], \
-                                     'siblings'      : [], \
                                      'auntsuncles'   : ['ordl'], \
-                                     'cousins'       : [NArw], \
+                                     'cousins'       : [], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
                                      'coworkers'     : [], \
@@ -3159,7 +3159,7 @@ class AutoMunge:
     
     transform_dict.update({'lbbn' : {'parents'       : [], \
                                      'siblings'      : [], \
-                                     'auntsuncles'   : ['text'], \
+                                     'auntsuncles'   : ['bnry'], \
                                      'cousins'       : [], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
@@ -6199,6 +6199,14 @@ class AutoMunge:
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'exc2'}})
+    process_dict.update({'lbnb' : {'dualprocess' : self.process_numerical, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_numerical, \
+                                  'inverseprocess' : self.inverseprocess_nmbr, \
+                                  'info_retention' : True, \
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'nmbr'}})
     process_dict.update({'lb10' : {'dualprocess' : self.process_text, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_text, \
@@ -6207,33 +6215,24 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'multirt', \
                                   'labelctgy' : 'text'}})
-    process_dict.update({'lbor' : {'dualprocess' : self.process_ord3, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_ord3, \
-                                  'inverseprocess' : self.inverseprocess_ord3, \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'singlct', \
-                                  'labelctgy' : 'ord3'}})
-    process_dict.update({'lbo5' : {'dualprocess' : self.process_ordl, \
+    process_dict.update({'lbor' : {'dualprocess' : self.process_ordl, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_ordl, \
                                   'inverseprocess' : self.inverseprocess_ordl, \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'exclude', \
+                                  'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'ordl'}})
-    process_dict.update({'lbos' : {'dualprocess' : self.process_ord3, \
+    process_dict.update({'lbos' : {'dualprocess' : self.process_ordl, \
                                   'singleprocess' : None, \
-                                  'postprocess' : self.postprocess_ord3, \
-                                  'inverseprocess' : self.inverseprocess_ord3, \
+                                  'postprocess' : self.postprocess_ordl, \
+                                  'inverseprocess' : self.inverseprocess_ordl, \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'singlct', \
-                                  'labelctgy' : 'ord3'}})
+                                  'labelctgy' : 'ordl'}})
     process_dict.update({'lbte' : {'dualprocess' : self.process_text, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_text, \
@@ -6249,7 +6248,7 @@ class AutoMunge:
                                   'info_retention' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'multirt', \
-                                  'labelctgy' : 'text'}})
+                                  'labelctgy' : 'bnry'}})
     process_dict.update({'lbda' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
@@ -19963,7 +19962,8 @@ class AutoMunge:
           
         #(defaultcategorical = '1010')
         if category == defaultcategorical:
-          category = 'lb10'
+          #category = 'lb10'
+          category = 'lbor'
           
         #(defaultordinal = 'ord3')
         if category == defaultordinal:
@@ -19971,13 +19971,13 @@ class AutoMunge:
 
         #(defaultordinal_allunique = 'ord5')
         if category == defaultordinal_allunique:
-          category = 'lbo5'
+          category = 'lbor'
           
         if category == 'text':
-          category = 'lbte'
+          category = 'lbor'
           
         if category == 'bnry':
-          category = 'lbbn'
+          category = 'lbor'
           
         #(defaultdatetime = 'dat6')
         if category == defaultdatetime:
@@ -22834,6 +22834,12 @@ class AutoMunge:
                                    'adjinfill':[], 'meaninfill':[], 'medianinfill':[]}, \
                     assignparam = FS_assignparam, \
                     transformdict = transformdict, processdict = processdict, printstatus=printstatus)
+
+      #in case these are single column series convert to dataframe
+      am_train = pd.DataFrame(am_train)
+      am_labels = pd.DataFrame(am_labels)
+      am_validation1 = pd.DataFrame(am_validation1)
+      am_validationlabels1 = pd.DataFrame(am_validationlabels1)
 
       #this is the returned process_dict
       #(remember "processdict" is what we pass to automunge() call, "process_dict" is what is 
@@ -29416,7 +29422,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.89'
+    automungeversion = '5.90'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -36063,6 +36069,10 @@ class AutoMunge:
                      labelscolumn = labelscolumn, pandasoutput = pandasoutput, printstatus = printstatus, \
                      TrainLabelFreqLevel = TrainLabelFreqLevel, featureeval = featureeval, \
                      LabelSmoothing = FS_LabelSmoothing, shuffletrain = True)
+
+      #in case these are single column series convert to dataframe
+      am_train = pd.DataFrame(am_train)
+      am_labels = pd.DataFrame(am_labels)
 
       #prepare validaiton sets for FS
       am_train, am_validation1 = \
