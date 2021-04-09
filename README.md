@@ -6911,9 +6911,18 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'coworkers'     : [], \
                                      'friends'       : []}})
 
+    transform_dict.update({'lbnb' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['nmbr'], \
+                                     'cousins'       : [], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+
     transform_dict.update({'lb10' : {'parents'       : [], \
                                      'siblings'      : [], \
-                                     'auntsuncles'   : ['text'], \
+                                     'auntsuncles'   : ['1010'], \
                                      'cousins'       : [], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
@@ -6922,17 +6931,8 @@ If you want to skip to the next section you can click here: [Custom Transformati
     
     transform_dict.update({'lbor' : {'parents'       : [], \
                                      'siblings'      : [], \
-                                     'auntsuncles'   : ['ord3'], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
-                                     'friends'       : []}})
-
-    transform_dict.update({'lbo5' : {'parents'       : [], \
-                                     'siblings'      : [], \
                                      'auntsuncles'   : ['ordl'], \
-                                     'cousins'       : [NArw], \
+                                     'cousins'       : [], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
                                      'coworkers'     : [], \
@@ -6958,7 +6958,7 @@ If you want to skip to the next section you can click here: [Custom Transformati
     
     transform_dict.update({'lbbn' : {'parents'       : [], \
                                      'siblings'      : [], \
-                                     'auntsuncles'   : ['text'], \
+                                     'auntsuncles'   : ['bnry'], \
                                      'cousins'       : [], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
