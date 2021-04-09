@@ -1990,26 +1990,14 @@ in next section)
 - null: for columns without any valid values in training set (e.g. all NaN) column is deleted
 
 For label sets, we use a distinct set of root categories under automation. These are in
-some cases comparable to those listed above for training data, but differ in others and
-a commonality is that the label sets will not include a returned 'NArw' (infill marker)
-even when parameter NArw_marker passed as True.
-- lbnm: for numerical data, columns are treated with an 'exc2' pass-through transform.
-- lb10: for categorical data, columns are subject to one-hot encoding via the 'text'
-transform. (lb10 and lbte have comparable family trees)
-- lbor: for categorical data, if the number of unique entries in the column exceeds 
-the parameter 'numbercategoryheuristic' (which defaults to 127), the encoding will 
-instead be by 'ordl' which is an ordinal (integer) encoding alphabetically sorted.
-lbor is excluded from ML infill.
-- lbo5: for categorical data with all unique entries, the encoding will instead be by 
-'ordl' which is an ordinal (integer) encoding alphabetically sorted. lbo5 is excluded 
-from ML infill.
-- lbte: for categorical data of 3 unique values excluding infill (eg NaN), the 
-column is encoded via one-hot encoding.
-- lbbn: for categorical data of <=2 unique values excluding infill (eg NaN), the 
-column is encoded via one-hot encoding. Note applies to numerical sets with <= 2 unique values.
-- lbda: for time-series data, a set of derivations are performed returning
-'year', 'mdsn', 'mdcs', 'hmss', 'hmsc', 'bshr', 'wkdy', 'hldy' (these are defined 
-in next section)
+some cases comparable to those listed above for training data, but differ in that the label 
+sets will not include a returned 'NArw' (infill marker) even when parameter NArw_marker 
+passed as True.
+- lbnm: for numerical data, a label set is treated with an 'exc2' pass-through transform (without normalization).
+- lbor: for categoric data of >2 unique values, a label set is treated with an 'ordl' ordinal encoding (alphabetical order of encodings).
+
+Other label categories are available for assignment in assigncat, described below in the 
+library of transforms section for label set encodings.
 
 Note that if a user wishes to avoid the automated assignment of default transformations,
 such as to leave those columns not specifically assigned to transformation categories in 
@@ -2090,6 +2078,7 @@ columns in assigncat by using corresponding alternates of (nmbd/101d/ordd/texd/b
 
 ### Library of Transformations Subheadings:
 * [Intro](https://github.com/Automunge/AutoMunge/blob/master/README.md#intro)
+* [Label Set Encodings](https://github.com/Automunge/AutoMunge/blob/master/README.md#label-set-encodings)
 * [Numerical Set Normalizations](https://github.com/Automunge/AutoMunge/blob/master/README.md#numerical-set-normalizations)
 * [Numerical Set Transformations](https://github.com/Automunge/AutoMunge/blob/master/README.md#numerical-set-transformations)
 * [Numercial Set Bins and Grainings](https://github.com/Automunge/AutoMunge/blob/master/README.md#numercial-set-bins-and-grainings)
@@ -2175,6 +2164,19 @@ to a categorical set) the transform will just return all zeros. Note the
 default infill refers to the infill applied under 'standardinfill'. Note the
 default NArowtype refers to the categories of data that won't be subject to 
 infill.
+
+### Label Set Encodings
+Label set encodings are unique in that they don't include an aggregated NArw missing data markers
+based on NArw_marker parameter. Missing data in label sets are subject to row deletions.
+* lbnm: for numeric label sets, entries are given a pass-through transform via 'exc2' (the numeric default under automation)
+* lbnb: for numeric label sets, entries are given a z-score normalization via 'nmbr'
+* lbor: for categoric label sets, entries are given an ordinal encoding via 'ordl' (the categoric default under automation)
+* lb10: for categoric label sets, entries are given a binary encoding via '1010'
+* lbos: for categoric label sets, entries are given an ordinal encoding via 'ordl' followed by a conversion to
+string by 'strg' (some ML libraries prefer string encoded labels to recognize the classification application)
+* lbte: for categoric label sets, entries are given a one-hot encoding (this has some interpretabiltiy benefits over ordinal)
+* lbbn: for categoric label sets with 2 unique values, entries are given a binarization via 'bnry'
+* lbda: for date-time label sets, entries are encoded comparable to 'dat6' described further below
 
 ### Numerical Set Normalizations
 * nmbr/nbr2/nbr3/nmdx/nmd2/nmd3: z-score normalization<br/>
