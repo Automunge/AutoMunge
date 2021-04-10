@@ -1968,7 +1968,7 @@ of bins indicating number of standard deviations from the mean.
 - 1010: for categorical data excluding special cases described following, columns are 
 subject to binarization encoding via '1010'. If the 
 number of unique entries in the column exceeds the parameter 'numbercategoryheuristic'
-(which defaults to 63), the encoding will instead be by hashing.
+(which defaults to 255), the encoding will instead be by hashing.
 - bnry: for categorical data of <=2 unique values excluding infill (eg NaN), the 
 column is encoded to 0/1. Note that numerical sets with <= 2 unique values in train
 set default to bnry.
