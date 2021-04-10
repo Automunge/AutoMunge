@@ -135,7 +135,7 @@ am.automunge(df_train, df_test = False, \
              dupl_rows = False, TrainLabelFreqLevel = False, powertransform = False, binstransform = False, \
              MLinfill = True, infilliterate=1, randomseed = False, eval_ratio = .5, \
              LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, LSfit = False, \
-             numbercategoryheuristic = 127, pandasoutput = True, NArw_marker = True, \
+             numbercategoryheuristic = 255, pandasoutput = True, NArw_marker = True, \
              featureselection = False, featurepct = 1.0, featuremetric = 0.0, featuremethod = 'default', \
              Binary = False, PCAn_components = False, PCAexcl = [], excl_suffix = False, \
              ML_cmnd = {'autoML_type':'randomforest', \
@@ -366,7 +366,7 @@ am.automunge(df_train, df_test = False, \
              dupl_rows = False, TrainLabelFreqLevel = False, powertransform = False, binstransform = False, \
              MLinfill = True, infilliterate=1, randomseed = False, eval_ratio = .5, \
              LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, LSfit = False, \
-             numbercategoryheuristic = 127, pandasoutput = True, NArw_marker = True, \
+             numbercategoryheuristic = 255, pandasoutput = True, NArw_marker = True, \
              featureselection = False, featurepct = 1.0, featuremetric = 0.0, featuremethod = 'default', \
              Binary = False, PCAn_components = False, PCAexcl = [], excl_suffix = False, \
              ML_cmnd = {'autoML_type':'randomforest', \
@@ -608,7 +608,7 @@ am.automunge(df_train, df_test = False, \
              dupl_rows = False, TrainLabelFreqLevel = False, powertransform = False, binstransform = False, \
              MLinfill = True, infilliterate=1, randomseed = False, eval_ratio = .5, \
              LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, LSfit = False, \
-             numbercategoryheuristic = 127, pandasoutput = True, NArw_marker = True, \
+             numbercategoryheuristic = 255, pandasoutput = True, NArw_marker = True, \
              featureselection = False, featurepct = 1.0, featuremetric = 0.0, featuremethod = 'default', \
              Binary = False, PCAn_components = False, PCAexcl = [], excl_suffix = False, \
              ML_cmnd = {'autoML_type':'randomforest', \
@@ -861,8 +861,8 @@ for consistent encoding to the other sets (test or validation).
 
 * numbercategoryheuristic: an integer used as a heuristic. When a 
 categorical set has more unique values than this heuristic, it defaults 
-to categorical treatment via ordinal processing via 'ordl', otherwise 
-categorical sets default to binary encoding via '1010'. This defaults to 127.
+to categorical treatment via hashing processing via 'hsh2', otherwise 
+categorical sets default to binary encoding via '1010'. This defaults to 255.
 
 * pandasoutput: a selector for format of returned sets. Defaults to _True_
 for returned pandas dataframe. If set to _True_ returns pandas dataframes
@@ -1559,7 +1559,7 @@ I recommend using the evalcategory function defined in master file as starting p
 (Minus the 'self' parameter since defining external to class.) Note that the 
 parameters eval_ratio, numbercategoryheuristic, powertransform, and labels are passed as user 
 parameters in automunge(.) call and only used in evalcategory function, so if user wants 
-to repurpose them totally can do so. (They default to .5, 63, False, False.) Note evalcat 
+to repurpose them totally can do so. (They default to .5, 255, False, False.) Note evalcat 
 defaults to False to use built-in evalcategory function. Note evalcat will only be 
 applied to columns not assigned in assigncat. (Note that columns assigned to 'eval' / 'ptfm'
 in assigncat will be passed to this function for evaluation with powertransform = False / True
@@ -1965,13 +1965,15 @@ categories of transformations are as follows:
 - nmbr: for numerical data, columns are treated with z-score normalization. If 
 binstransform parameter was activated this will be supplemented by a collection
 of bins indicating number of standard deviations from the mean.
-- 1010: for categorical data, columns are subject to binary encoding. If the 
+- 1010: for categorical data excluding special cases described following, columns are 
+subject to binarization encoding via '1010'. If the 
 number of unique entries in the column exceeds the parameter 'numbercategoryheuristic'
-(which defaults to 63), the encoding will instead be by 'ord3' which is an ordinal
-(integer) encoding sorted by most common value. Note that numerical sets with 3
-unique values in train set default to categorical encoding via 'text'.
+(which defaults to 63), the encoding will instead be by hashing.
+- bnry: for categorical data of <=2 unique values excluding infill (eg NaN), the 
+column is encoded to 0/1. Note that numerical sets with <= 2 unique values in train
+set default to bnry.
 - hsh2: for categorical data, if the number of unique entries in the column exceeds 
-the parameter 'numbercategoryheuristic' (which defaults to 127), the encoding will 
+the parameter 'numbercategoryheuristic' (which defaults to 255), the encoding will 
 instead be by 'hsh2' which is an ordinal (integer) encoding based on hashing.
 hsh2 is excluded from ML infill.
 - hash: for all unique entry categoric sets (based on sets with >75% unique entries), 
@@ -1979,11 +1981,6 @@ the encoding will be by hash which extracts distinct words within entries return
 a set of columns with an integer hashing. hash is excluded from ML infill. Note that for edge
 cases with large string entries resulting in too high dimensionality, the max_column_count
 parameter can be passed to default_assignparam in assignparam to put a cap on returned column count.
-- text: for categorical data of 3 unique values excluding infill (eg NaN), the 
-column is encoded via one-hot encoding.
-- bnry: for categorical data of <=2 unique values excluding infill (eg NaN), the 
-column is encoded to 0/1. Note that numerical sets with <= 2 unique values in train
-set default to bnry.
 - dat6: for time-series data, a set of derivations are performed returning
 'year', 'mdsn', 'mdcs', 'hmss', 'hmsc', 'bshr', 'wkdy', 'hldy' (these are defined 
 in next section)
