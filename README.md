@@ -155,7 +155,7 @@ am.automunge(df_train, df_test = False, \
                           'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
                           'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
                           'shft':[], 'shf2':[], 'shf3':[], 'shf4':[], 'shf7':[], 'shf8':[], \
-                          'bnry':[], 'onht':[], 'text':[], 'txt2':[], '1010':[], \
+                          'bnry':[], 'onht':[], 'text':[], 'txt2':[], '1010':[], 'smth':[], \
                           'ordl':[], 'ord3':[], 'hash':[], 'hsh2':[], 'hs10':[], \
                           'Unht':[], 'Utxt':[], 'Utx2':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
                           'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], 'sp19':[], 'sbst':[], \
@@ -386,7 +386,7 @@ am.automunge(df_train, df_test = False, \
                           'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
                           'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
                           'shft':[], 'shf2':[], 'shf3':[], 'shf4':[], 'shf7':[], 'shf8':[], \
-                          'bnry':[], 'onht':[], 'text':[], 'txt2':[], '1010':[], \
+                          'bnry':[], 'onht':[], 'text':[], 'txt2':[], '1010':[], 'smth':[], \
                           'ordl':[], 'ord3':[], 'hash':[], 'hsh2':[], 'hs10':[], \
                           'Unht':[], 'Utxt':[], 'Utx2':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
                           'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], 'sp19':[], 'sbst':[], \
@@ -628,7 +628,7 @@ am.automunge(df_train, df_test = False, \
                           'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
                           'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
                           'shft':[], 'shf2':[], 'shf3':[], 'shf4':[], 'shf7':[], 'shf8':[], \
-                          'bnry':[], 'onht':[], 'text':[], 'txt2':[], '1010':[], \
+                          'bnry':[], 'onht':[], 'text':[], 'txt2':[], '1010':[], 'smth':[], \
                           'ordl':[], 'ord3':[], 'hash':[], 'hsh2':[], 'hs10':[], \
                           'Unht':[], 'Utxt':[], 'Utx2':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
                           'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], 'sp19':[], 'sbst':[], \
@@ -1078,7 +1078,7 @@ assigncat = {'nmbr':[], 'retn':[], 'mnmx':[], 'mean':[], 'MAD3':[], 'lgnm':[], \
              'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
              'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
              'shft':[], 'shf2':[], 'shf3':[], 'shf4':[], 'shf7':[], 'shf8':[], \
-             'bnry':[], 'onht':[], 'text':[], 'txt2':[], '1010':[], \
+             'bnry':[], 'onht':[], 'text':[], 'txt2':[], '1010':[], 'smth':[], \
              'ordl':[], 'ord3':[], 'hash':[], 'hsh2':[], 'hs10':[], \
              'Unht':[], 'Utxt':[], 'Utx2':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
              'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], 'sp19':[], 'sbst':[], \
@@ -2752,6 +2752,18 @@ and comparable to test set independent of test set row count
     - 'aggregate' as a list or as a list of lists of aggregation sets
   - driftreport postmunge metrics: aggregate
   - inversion available: yes with partial recovery
+* smth: applies a one-hot encoding followed by a label smoothing operation to reduce activation value and increase null value.
+Note that we recomend for label sets to instead apply onht transform and apply LabelSmoothing parameters so you can distinguish
+between on/off smoothing for train / test / validation data. (This transform is intended for training data.)
+  - default infill: none
+  - default NArowtype: justNaN
+  - suffix appender: '\_smth\_#' where # is integer
+  - assignparam parameters accepted: 
+    - 'activation' defaults to 0.9, a float between 0.5-1 to designate activation value
+  - driftreport postmunge metrics: comparable to onht
+  - inversion available: yes with full recovery
+* fsmh: comparable to smth but applies a fitted label smoothing, in which null values are fit to ratio of activations corresponding to current activation
+For more info on fitted label smoothing refer to LSfit parameter.
 * hash: applies "the hashing trick" to convert high cardinality categoric sets to set of columns with integer word encodings
 e.g. for an entry "Three word quote" may return three columns with integers corresponding to each of three words
 where integer is determined by hashing, and also based on passed parameter vocab_size.
@@ -3501,6 +3513,7 @@ avoid unintentional duplication.
 - 'exc4',
 - 'exc5',
 - 'excl',
+- 'fsmh',
 - 'hash',
 - 'hldy',
 - 'hmsc',
@@ -3677,6 +3690,7 @@ avoid unintentional duplication.
 - 'shf8',
 - 'shfl',
 - 'shft',
+- 'smth',
 - 'sp10',
 - 'sp11',
 - 'sp12',
