@@ -562,6 +562,24 @@ class AutoMunge:
                                      'coworkers'     : ['text'], \
                                      'friends'       : []}})
 
+    transform_dict.update({'smth' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['smth'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+  
+    transform_dict.update({'fsmh' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['fsmh'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+
     transform_dict.update({'lngt' : {'parents'       : ['lngt'], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : [], \
@@ -3859,6 +3877,23 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'text'}})
+    process_dict.update({'smth' : {'dualprocess' : self.process_smth, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_smth, \
+                                  'inverseprocess' : self.inverseprocess_smth, \
+                                  'info_retention' : True, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'exclude', \
+                                  'labelctgy' : 'smth'}})
+    process_dict.update({'fsmh' : {'dualprocess' : self.process_smth, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_smth, \
+                                  'inverseprocess' : self.inverseprocess_smth, \
+                                  'info_retention' : True, \
+                                  'defaultparams' : {'LSfit' : True}, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'exclude', \
+                                  'labelctgy' : 'smth'}})
     process_dict.update({'lngt' : {'dualprocess' : None, \
                                   'singleprocess' : self.process_lngt, \
                                   'postprocess' : None, \
@@ -9618,6 +9653,238 @@ class AutoMunge:
                                       'adjinfill' : adjinfill}}
       
       column_dict = {tc : {'category' : 'text', \
+                           'origcategory' : category, \
+                           'normalization_dict' : textnormalization_dict, \
+                           'origcolumn' : column, \
+                           'inputcolumn' : column, \
+                           'columnslist' : textcolumns, \
+                           'categorylist' : textcolumns, \
+                           'infillmodel' : False, \
+                           'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
+                           'deletecolumn' : False}}
+
+      column_dict_list.append(column_dict.copy())
+    
+    return mdf_train, mdf_test, column_dict_list
+
+  def process_smth(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
+    '''
+    #process_smth(mdf_train, mdf_test, column, category, postprocess_dict, params = {})
+    #preprocess column with one hot encoding
+    #followed by application of label smoothing
+    #accepts parameters for activation value (float 0.5-1), 
+    #LSfit parameter to activate fitted smoothing
+    '''
+    
+    suffixoverlap_results = {}
+    
+    #adjinfill accepts True/False to change default infill from mean inputation to adjacent cell
+    if 'adjinfill' in params:
+      adjinfill = params['adjinfill']
+    else:
+      adjinfill = False
+      
+    #str_convert provides consistent encodings between numbers and string equivalent, eg 2 == '2'
+    if 'str_convert' in params:
+      str_convert = params['str_convert']
+    else:
+      str_convert = False
+      
+    if 'activation' in params:
+      activation = params['activation']
+    else:
+      activation = 0.9
+
+    if 'LSfit' in params:
+      LSfit = params['LSfit']
+    else:
+      LSfit = False
+    
+    tempcolumn = column + '_smth_'
+    
+    suffixoverlap_results = \
+    self.df_check_suffixoverlap(mdf_train, tempcolumn, suffixoverlap_results)
+    
+    #store original column for later retrieval
+    mdf_train[tempcolumn] = mdf_train[column].copy()
+    mdf_test[tempcolumn] = mdf_test[column].copy()
+
+    #convert column to category
+    mdf_train[tempcolumn] = mdf_train[tempcolumn].astype('category')
+    mdf_test[tempcolumn] = mdf_test[tempcolumn].astype('category')
+
+    #if set is categorical we'll need the plug value for missing values included
+    if 'zzzinfill' not in mdf_train[tempcolumn].cat.categories:
+      mdf_train[tempcolumn] = mdf_train[tempcolumn].cat.add_categories(['zzzinfill'])
+    if 'zzzinfill' not in mdf_test[tempcolumn].cat.categories:
+      mdf_test[tempcolumn] = mdf_test[tempcolumn].cat.add_categories(['zzzinfill'])
+      
+    if adjinfill is True:
+      mdf_train[tempcolumn] = mdf_train[tempcolumn].fillna(method='ffill')
+      mdf_test[tempcolumn] = mdf_test[tempcolumn].fillna(method='ffill')
+      mdf_train[tempcolumn] = mdf_train[tempcolumn].fillna(method='bfill')
+      mdf_test[tempcolumn] = mdf_test[tempcolumn].fillna(method='bfill')
+
+    #replace NA with a dummy variable
+    mdf_train[tempcolumn] = mdf_train[tempcolumn].fillna('zzzinfill')
+    mdf_test[tempcolumn] = mdf_test[tempcolumn].fillna('zzzinfill')
+
+    if str_convert is True:
+      #replace numerical with string equivalent
+      mdf_train[tempcolumn] = mdf_train[tempcolumn].astype(str)
+      mdf_test[tempcolumn] = mdf_test[tempcolumn].astype(str)
+    else:
+      mdf_train[tempcolumn] = mdf_train[tempcolumn].astype('object')
+      mdf_test[tempcolumn] = mdf_test[tempcolumn].astype('object')
+
+    #extract categories for column labels
+    #note that .unique() extracts the labels as a numpy array
+    labels_train = mdf_train[tempcolumn].unique()
+#     labels_train.sort(axis=0)
+    labels_train = sorted(labels_train, key=str)
+    labels_train = list(labels_train)
+    orig_labels_train = list(labels_train.copy())
+    labels_test = mdf_test[tempcolumn].unique()
+#     labels_test.sort(axis=0)
+    labels_test = sorted(labels_test, key=str)
+    labels_test = list(labels_test)
+
+    #pandas one hot encoding doesn't sort integers and strings properly so using my own
+    df_train_cat = pd.DataFrame(mdf_train[tempcolumn])
+    df_test_cat = pd.DataFrame(mdf_test[tempcolumn])
+    for entry in labels_train:
+      df_train_cat[entry] = np.where(mdf_train[tempcolumn] == entry, 1, 0)
+      df_test_cat[entry] = np.where(mdf_test[tempcolumn] == entry, 1, 0)
+    del df_train_cat[tempcolumn]
+    del df_test_cat[tempcolumn]
+    
+    labels_dict = {}
+    i = 0
+    for entry in labels_train:
+      labels_dict.update({entry : column + '_smth_' + str(i)})
+      i += 1
+    
+    #convert sparse array to pandas dataframe with column labels
+    df_train_cat.columns = labels_train
+    df_test_cat.columns = labels_train
+
+    #Get missing columns in test set that are present in training set
+    missing_cols = set( df_train_cat.columns ) - set( labels_test )
+    
+    suffixoverlap_results = \
+    self.df_check_suffixoverlap(mdf_train, list(df_train_cat), suffixoverlap_results)
+
+    #concatinate the sparse set with the rest of our training data
+    mdf_train = pd.concat([mdf_train, df_train_cat], axis=1)
+    mdf_test = pd.concat([mdf_test, df_test_cat], axis=1)
+
+    del mdf_train[tempcolumn]    
+    del mdf_test[tempcolumn]
+    
+    #delete _NArw column, this will be processed seperately in the processfamily function
+    #delete support NArw2 column
+#     columnNArw = column + '_NArw'
+    columnNAr2 = column + '_zzzinfill'
+    if columnNAr2 in mdf_train.columns:
+      del mdf_train[columnNAr2]
+    if columnNAr2 in mdf_test.columns:
+      del mdf_test[columnNAr2]
+    if 'zzzinfill' in orig_labels_train:
+      orig_labels_train.remove('zzzinfill')
+
+#     del mdf_train[column + '_NAr2']    
+#     del mdf_test[column + '_NAr2']
+    
+    #create output of a list of the created column names
+    NAcolumn = columnNAr2
+    labels_train = list(df_train_cat)
+    if NAcolumn in labels_train:
+      labels_train.remove(NAcolumn)
+    textcolumns = labels_train
+    
+    #now we'll creaate a dicitonary of the columns : categories for later reference
+    #reminder here is list of. unque values from original column
+    #labels_train
+    
+    normalizationdictvalues = labels_train
+    normalizationdictkeys = textcolumns
+    
+    normalizationdictkeys = sorted(normalizationdictkeys, key=str)
+    normalizationdictvalues = sorted(normalizationdictvalues, key=str)
+    
+    #textlabelsdict = dict(zip(normalizationdictkeys, normalizationdictvalues))
+    textlabelsdict = dict(zip(normalizationdictvalues, orig_labels_train))
+    
+#     #change data types to 8-bit (1 byte) integers for memory savings
+#     for textcolumn in textcolumns:
+#       mdf_train[textcolumn] = mdf_train[textcolumn].astype(np.int8)
+#       mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.int8)
+
+    #store some values in the text_dict{} for use later in ML infill methods
+    column_dict_list = []
+
+    categorylist = textcolumns.copy()
+#     categorylist.remove(columnNArw)
+
+    #now convert coloumn headers from text convention to onht convention
+    mdf_train = mdf_train.rename(columns=labels_dict)
+    mdf_test  = mdf_test.rename(columns=labels_dict)
+    
+    textcolumns = [labels_dict[entry] for entry in textcolumns]
+    
+    inverse_labels_dict = {value:key for key,value in labels_dict.items()}
+    
+    #now apply label smoothing
+    category = 'smth'
+    LSfitparams_dict = {}
+
+    categorycomplete_dict = dict(zip(textcolumns, [False]*len(textcolumns)))
+    categorycomplete_test_dict = dict(zip(textcolumns, [False]*len(textcolumns)))
+
+    for labelsmoothingcolumn in textcolumns:
+
+      if categorycomplete_dict[labelsmoothingcolumn] is False:
+
+        mdf_train, categorycomplete_dict, LSfitparams_dict = \
+        self.apply_LabelSmoothing(mdf_train, 
+                                  labelsmoothingcolumn, 
+                                  activation, 
+                                  textcolumns, 
+                                  category, 
+                                  categorycomplete_dict, 
+                                  LSfit, 
+                                  LSfitparams_dict)
+
+    for labelsmoothingcolumn in textcolumns:
+
+      if categorycomplete_test_dict[labelsmoothingcolumn] is False:
+
+        mdf_test, categorycomplete_dict = \
+        self.postapply_LabelSmoothing(mdf_test, 
+                                      labelsmoothingcolumn, 
+                                      categorycomplete_test_dict, 
+                                      LSfitparams_dict)
+    
+    for tc in textcolumns:
+    
+      #new parameter collected for driftreport
+      tc_ratio = tc + '_ratio'
+      tcratio = mdf_train[tc].sum() / mdf_train[tc].shape[0]
+      
+      textnormalization_dict = {tc : {'textlabelsdict_smth' : textlabelsdict, \
+                                      tc_ratio : tcratio, \
+                                      'labels_dict' : labels_dict, \
+                                      'inverse_labels_dict' : inverse_labels_dict, \
+                                      'text_categorylist' : categorylist, \
+                                      'adjinfill' : adjinfill, \
+                                      'str_convert' : str_convert, \
+                                      'LSfitparams_dict' : LSfitparams_dict, \
+                                      'activation' : activation, \
+                                      'LSfit' : LSfit, \
+                                      'categorylist' : textcolumns}}
+      
+      column_dict = {tc : {'category' : 'smth', \
                            'origcategory' : category, \
                            'normalization_dict' : textnormalization_dict, \
                            'origcolumn' : column, \
@@ -26925,7 +27192,7 @@ class AutoMunge:
     
     if LSfit is True:
       
-      unique_set = set(pd.unique(df[label_categorylist]))
+      unique_set = set(pd.unique(df[targetcolumn]))
       
       #plus let's check if this is one-hot encoded (vs like binary encoded or something)
       #this is a proxy for testing if category is '1010'
@@ -27070,7 +27337,7 @@ class AutoMunge:
     
     if LSfit is True:
       
-      unique_set = set(pd.unique(df[label_categorylist]))
+      unique_set = set(pd.unique(df[targetcolumn]))
       
       #plus let's check if this is one-hot encoded (vs like binary encoded or something)
       #this is a proxy for testing if category is '1010'
@@ -27920,7 +28187,7 @@ class AutoMunge:
                              'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
                              'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
                              'shft':[], 'shf2':[], 'shf3':[], 'shf4':[], 'shf7':[], 'shf8':[], \
-                             'bnry':[], 'onht':[], 'text':[], 'txt2':[], '1010':[], \
+                             'bnry':[], 'onht':[], 'text':[], 'txt2':[], '1010':[], 'smth':[], \
                              'ordl':[], 'ord3':[], 'hash':[], 'hsh2':[], 'hs10':[], \
                              'Unht':[], 'Utxt':[], 'Utx2':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
                              'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], 'sp19':[], 'sbst':[], \
@@ -29424,7 +29691,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.91'
+    automungeversion = '5.92'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -31125,6 +31392,142 @@ class AutoMunge:
       for textcolumn in textcolumns:
 
         mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.int8)
+    
+    return mdf_test
+
+  def postprocess_smth(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+    '''
+    #process_smth(mdf_train, mdf_test, column, category, postprocess_dict, params = {})
+    #preprocess column with one hot encoding
+    #same as 'text' transform except labels returned column with integer instead of entry appender
+    '''
+    
+    #retrieve a columnkey
+    normkey = False
+
+    if normkey is False:
+
+      if column in postprocess_dict['origcolumn']:
+
+        columnkeylist = postprocess_dict['origcolumn'][column]['columnkeylist']
+
+      else:
+
+        origcolumn = postprocess_dict['column_dict'][column]['origcolumn']
+
+        columnkeylist = postprocess_dict['origcolumn'][origcolumn]['columnkeylist']
+
+      for columnkey in columnkeylist:
+        
+        if column == postprocess_dict['column_dict'][columnkey]['inputcolumn']:
+
+          if 'textlabelsdict_smth' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
+
+            normkey = columnkey
+          
+    if normkey is not False:
+      
+      adjinfill = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['adjinfill']
+      
+      str_convert = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['str_convert']
+      
+      LSfitparams_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['LSfitparams_dict']
+
+      categorylist = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['categorylist']
+      
+      tempcolumn = column + '_smth_'
+
+      #create copy of original column for later retrieval
+      mdf_test[tempcolumn] = mdf_test[column].copy()
+
+      #convert column to category
+      mdf_test[tempcolumn] = mdf_test[tempcolumn].astype('category')
+
+      #if set is categorical we'll need the plug value for missing values included
+      if 'zzzinfill' not in mdf_test[tempcolumn].cat.categories:
+        mdf_test[tempcolumn] = mdf_test[tempcolumn].cat.add_categories(['zzzinfill'])
+        
+      if adjinfill is True:
+        mdf_test[tempcolumn] = mdf_test[tempcolumn].fillna(method='ffill')
+        mdf_test[tempcolumn] = mdf_test[tempcolumn].fillna(method='bfill')
+
+      #replace NA with a dummy variable
+      mdf_test[tempcolumn] = mdf_test[tempcolumn].fillna('zzzinfill')
+
+      if str_convert is True:
+        #replace numerical with string equivalent
+        mdf_test[tempcolumn] = mdf_test[tempcolumn].astype(str)
+      else:
+        mdf_test[tempcolumn] = mdf_test[tempcolumn].astype('object')
+
+      #textcolumns = postprocess_dict['column_dict'][columnkey]['columnslist']
+      textcolumns = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['text_categorylist']
+      
+      labels_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['labels_dict']
+
+      #extract categories for column labels
+      #note that .unique() extracts the labels as a numpy array
+
+      #we'll get the category names from the textcolumns array by stripping the \
+      #prefixes of column name + '_'
+#       prefixlength = len(column)+1
+      labels_train = textcolumns[:]
+#       for textcolumn in labels_train:
+#         textcolumn = textcolumn[prefixlength :]
+      #labels_train.sort(axis=0)
+#       labels_train.sort()
+      labels_test = mdf_test[tempcolumn].unique()
+#       labels_test.sort(axis=0)
+      labels_test = sorted(labels_test, key=str)
+      labels_test = list(labels_test)
+
+      #pandas one hot encoding doesn't sort integers and strings properly so using my own
+      df_test_cat = pd.DataFrame(mdf_test[tempcolumn])
+      for entry in labels_train:
+        df_test_cat[entry] = np.where(mdf_test[tempcolumn] == entry, 1, 0)
+      del df_test_cat[tempcolumn]
+
+      #convert sparse array to pandas dataframe with column labels
+      df_test_cat.columns = labels_train
+
+      #Get missing columns in test set that are present in training set
+      missing_cols = set( textcolumns ) - set( labels_test )
+
+      del mdf_test[tempcolumn]
+      
+      #concatinate the sparse set with the rest of our training data
+      mdf_test = pd.concat([mdf_test, df_test_cat], axis=1)
+
+      #delete support NArw2 column
+      columnNAr2 = column + '_zzzinfill'
+      if columnNAr2 in mdf_test.columns:
+        del mdf_test[columnNAr2]
+
+      # #change data types to 8-bit (1 byte) integers for memory savings
+      # for textcolumn in textcolumns:
+
+      #   mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.int8)
+        
+      #now convert coloumn headers from text convention to onht convention
+      mdf_test = mdf_test.rename(columns=labels_dict)
+
+      categorycomplete_test_dict = dict(zip(categorylist, [False]*len(categorylist)))
+
+      for labelsmoothingcolumn in categorylist:
+
+        if categorycomplete_test_dict[labelsmoothingcolumn] is False:
+
+          mdf_test, categorycomplete_dict = \
+          self.postapply_LabelSmoothing(mdf_test, 
+                                        labelsmoothingcolumn, 
+                                        categorycomplete_test_dict, 
+                                        LSfitparams_dict)
     
     return mdf_test
   
@@ -39093,6 +39496,36 @@ class AutoMunge:
       
       df[inputcolumn] = \
       np.where(df[categorylist_entry], textlabelsdict_text[categorylist_entry], df[inputcolumn])
+      
+    return df, inputcolumn
+
+  def inverseprocess_smth(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_smth
+    #assumes any relevant parameters were saved in normalization_dict
+    #does not perform infill, assumes clean data
+    #note that this will return numeric entries as str
+    """
+    
+    normkey = categorylist[0]
+    
+    inverse_labels_dict = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inverse_labels_dict']
+    activation = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['activation']
+    categorylist = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['categorylist']
+    
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    
+    df[inputcolumn] = 'zzzinfill'
+    
+    df = self.LS_invert(activation, df, categorylist, postprocess_dict)
+    
+    for categorylist_entry in categorylist:
+      
+      df[inputcolumn] = \
+      np.where(df[categorylist_entry], inverse_labels_dict[categorylist_entry], df[inputcolumn])
       
     return df, inputcolumn
   
