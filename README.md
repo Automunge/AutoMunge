@@ -134,7 +134,6 @@ am.automunge(df_train, df_test = False, \
              valpercent1=0.0, valpercent2 = 0.0, floatprecision = 32, shuffletrain = True, \
              dupl_rows = False, TrainLabelFreqLevel = False, powertransform = False, binstransform = False, \
              MLinfill = True, infilliterate=1, randomseed = False, eval_ratio = .5, \
-             LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, LSfit = False, \
              numbercategoryheuristic = 255, pandasoutput = True, NArw_marker = True, \
              featureselection = False, featurepct = 1.0, featuremetric = 0.0, featuremethod = 'default', \
              Binary = False, PCAn_components = False, PCAexcl = [], excl_suffix = False, \
@@ -213,7 +212,7 @@ am.postmunge(postprocess_dict, df_test, \
              testID_column = False, labelscolumn = False, \
              pandasoutput = True, printstatus = True, \
              dupl_rows = False, TrainLabelFreqLevel = False, featureeval = False, \
-             LabelSmoothing = False, LSfit = False, inversion = False, traindata = False, \
+             inversion = False, traindata = False, \
              driftreport = False, inversion = False, \
              returnedsets = True, shuffletrain = False)
 ```
@@ -365,7 +364,6 @@ am.automunge(df_train, df_test = False, \
              valpercent1=0.0, valpercent2 = 0.0, floatprecision = 32, shuffletrain = True, \
              dupl_rows = False, TrainLabelFreqLevel = False, powertransform = False, binstransform = False, \
              MLinfill = True, infilliterate=1, randomseed = False, eval_ratio = .5, \
-             LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, LSfit = False, \
              numbercategoryheuristic = 255, pandasoutput = True, NArw_marker = True, \
              featureselection = False, featurepct = 1.0, featuremetric = 0.0, featuremethod = 'default', \
              Binary = False, PCAn_components = False, PCAexcl = [], excl_suffix = False, \
@@ -447,7 +445,7 @@ am.postmunge(postprocess_dict, df_test, \
              testID_column = False, labelscolumn = False, \
              pandasoutput = True, printstatus = True, \
              dupl_rows = False, TrainLabelFreqLevel = False, featureeval = False, \
-             LabelSmoothing = False, LSfit = False, inversion = False, traindata = False, \
+             inversion = False, traindata = False, \
              driftreport = False, inversion = False, \
              returnedsets = True, shuffletrain = False)
 ```
@@ -607,7 +605,6 @@ am.automunge(df_train, df_test = False, \
              valpercent1=0.0, valpercent2 = 0.0, floatprecision = 32, shuffletrain = True, \
              dupl_rows = False, TrainLabelFreqLevel = False, powertransform = False, binstransform = False, \
              MLinfill = True, infilliterate=1, randomseed = False, eval_ratio = .5, \
-             LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, LSfit = False, \
              numbercategoryheuristic = 255, pandasoutput = True, NArw_marker = True, \
              featureselection = False, featurepct = 1.0, featuremetric = 0.0, featuremethod = 'default', \
              Binary = False, PCAn_components = False, PCAexcl = [], excl_suffix = False, \
@@ -833,31 +830,6 @@ to reduce the overhead of the category evaluation functions under automation by 
 evaluating this sampled ratio of rows instead from the full set. Makes automunge faster.
 To accomodate small data sets, the convention is that eval_ratio is only applied
 when training set has > 2,000 rows.
-
-* LabelSmoothing_train / LabelSmoothing_test / LabelSmoothing_val: each of these
-parameters accept float values in range _0.0-1.0_ or the default value of _False_ to 
-turn off. train is for the train set labels, test is for the test set labels, and
-val is for the validation set labels. Label Smoothing refers to the regularization
-tactic of transforming boolean encoded labels from 1/0 designations to some mix of
-reduced/increased threshold - for example passing the float 0.9 would result in the
-conversion from 1/0 to 0.9/#, where # is a function of the number of categories in 
-the label set - for example for a boolean label it would convert 1/0 to 0.9/0.1, or 
-for the one-hot encoding of a three label set it would convert 1/0 to 0.9/0.05.
-Hat tip for the concept to "Rethinking the Inception Architecture for Computer Vision"
-by Szegedy et al. Note that I believe not all predictive library classifiers 
-uniformly accept smoothed labels, but when available the method can at times be useful. 
-Note that a user can pass _True_ to either of LabelSmoothing_test / LabelSmoothing_val 
-which will consistently encode to LabelSmoothing_train. Please note that if multiple
-one-hot encoded transformations originate from the same labels source column, the
-application of Label Smoothing will be applied to each set individually.
-
-* LSfit: a _True/False_ indication for basis of label smoothing parameters. The default
-of False means the assumption will be for level distribution of labels, passing True
-means any label smoothing will evaluate distribution of label activations such as to fit
-the null activations in a returned column as a function of ratios of label activation 
-distributions associated with a particular activation. The LSfit parameters of 
-transformations will be based on properties derived from the train set labels, such as 
-for consistent encoding to the other sets (test or validation).
 
 * numbercategoryheuristic: an integer used as a heuristic. When a 
 categorical set has more unique values than this heuristic, it defaults 
@@ -1611,7 +1583,7 @@ am.postmunge(postprocess_dict, df_test, \
              testID_column = False, labelscolumn = False, \
              pandasoutput = True, printstatus = True, \
              dupl_rows = False, TrainLabelFreqLevel = False, featureeval = False, \
-             LabelSmoothing = False, LSfit = False, inversion = False, traindata = False, \
+             inversion = False, traindata = False, \
              driftreport = False, inversion = False, \
              returnedsets = True, shuffletrain = False)
 ```
@@ -1741,7 +1713,7 @@ am.postmunge(postprocess_dict, df_test, \
              testID_column = False, labelscolumn = False, \
              pandasoutput = True, printstatus = True, \
              dupl_rows = False, TrainLabelFreqLevel = False, featureeval = False, \
-             LabelSmoothing = False, LSfit = False, inversion = False, traindata = False, \
+             inversion = False, traindata = False, \
              driftreport = False, inversion = False, \
              returnedsets = True, shuffletrain = False)
 ```
@@ -1842,21 +1814,6 @@ The results will also be printed out if printstatus is activated. Defaults to _F
   - _'report_full'_ means that the full assessment is performed and returned with no 
   processing of data
 
-* LabelSmoothing: accepts float values in range 0.0-1.0 or the default value of _False_
-to turn off Label Smoothing. Note that a user can pass _True_ to LabelSmoothing which 
-will consistently encode to LabelSmoothing_train from the corresponding automunge(.) 
-call, including any application of LSfit based on parameters of transformations 
-derived from the train set labels. Note that during an inversion parameter activation 
-may be passed as True if activation consistent to automunge(.) call's LabelSmoothing_train 
-or otherwise passed as float value of current set activations.
-
-* LSfit: a _True/False_ indication for basis of label smoothing parameter K. The default
-of False means the assumption will be for level distribution of labels, passing True
-means any label smoothing will evaluate distribution of label activations such as to fit
-the smoothing factor to specific cells based on the activated column and target column.
-Note that if LabelSmoothing passed as True the LSfit will be based on the basis from
-the corresponding automunge(.) call (will override the one passed to postmunge).
-
 * inversion: defaults to False, may be passed as one of {False, ‘test’, ‘labels’, 'denselabels', or a list}, 
 where ‘test’ or ‘labels’ activate an inversion operation to recover, by a set of transformations 
 mirroring the inversion of those applied in automunge(.), the form of test data or labels 
@@ -1872,7 +1829,7 @@ of inverseprocess functions. Note that both feature importance and Binary dimens
 reduction is supported, support is not expected for PCA. Note that recovery of label 
 sets with label smoothing is supported. Note that during an inversion operation the 
 postmunge function only considers the parameters postprocess_dict, df_test, inversion, 
-LabelSmoothing, pandasoutput, and/or printstatus. Note that in an inversion operation the 
+pandasoutput, and/or printstatus. Note that in an inversion operation the 
 postmunge(.) function returns three sets: a recovered set, a list of recovered columns, and 
 a dictionary logging results of the path selection process.
 
@@ -1880,7 +1837,7 @@ Here is an example of a postmunge call with inversion.
 ```
 df_invert, recovered_list, inversion_info_dict = \
 am.postmunge(postprocess_dict, testlabels, inversion='labels', \
-             LabelSmoothing=False, pandasoutput=True, printstatus=True)
+             pandasoutput=True, printstatus=True)
 ```
 
 Here is an example of a process_dict entry with the optional inversion entries included, such 
@@ -1925,7 +1882,7 @@ to a process_dict entry:
 
 * traindata: boolean _{True, False}_, defaults to False. Only inspected when a transformation
 is called that treats train data different than test data (currently only relevant to 
-DP family of transforms for noise injection to train sets). When passed 
+DP family of transforms for noise injection to train sets or label smoothing transforms in smth family). When passed 
 as True treats df_test as a train set for purposes of these specific transforms, otherwise
 default of False treats df_test as a test set (which turns off noise injection for DP transforms).
 
@@ -2174,6 +2131,8 @@ label set encodings is support by the postmunge(.) inversion parameter.
 string by 'strg' (some ML libraries prefer string encoded labels to recognize the classification application)
 * lbte: for categoric label sets, entries are given a one-hot encoding (this has some interpretabiltiy benefits over ordinal)
 * lbbn: for categoric label sets with 2 unique values, entries are given a binarization via 'bnry'
+* lbsm: for categoric encoding with smoothed labels (i.e. "label smoothing"), further described in smth transform below
+* lbfs: for categoric encoding with fitted smoothed labels (i.e. fitted label smoothing), further described in fsmh transform below 
 * lbda: for date-time label sets, entries are encoded comparable to 'dat6' described further below
 
 ### Numerical Set Normalizations
@@ -2752,9 +2711,7 @@ and comparable to test set independent of test set row count
     - 'aggregate' as a list or as a list of lists of aggregation sets
   - driftreport postmunge metrics: aggregate
   - inversion available: yes with partial recovery
-* smth: applies a one-hot encoding followed by a label smoothing operation to reduce activation value and increase null value.
-Note that we recomend for label sets to instead apply onht transform and apply LabelSmoothing parameters so you can distinguish
-between on/off smoothing for train / test / validation data. (This transform is intended for training data.)
+* smth: applies a one-hot encoding followed by a label smoothing operation to reduce activation value and increase null value. The smoothing is applied to train data but not validation or test data. Smoothing can be applied to test data in postmunge(.) by activating the traindata parameter.
   - default infill: none
   - default NArowtype: justNaN
   - suffix appender: '\_smth\_#' where # is integer
@@ -2762,8 +2719,7 @@ between on/off smoothing for train / test / validation data. (This transform is 
     - 'activation' defaults to 0.9, a float between 0.5-1 to designate activation value
   - driftreport postmunge metrics: comparable to onht
   - inversion available: yes with full recovery
-* fsmh: comparable to smth but applies a fitted label smoothing, in which null values are fit to ratio of activations corresponding to current activation
-For more info on fitted label smoothing refer to LSfit parameter.
+* fsmh: comparable to smth but applies a fitted label smoothing, in which null values are fit to ratio of activations corresponding to current activation. The smoothing is applied to train data but not validation or test data. Smoothing can be applied to test data in postmunge(.) by activating the traindata parameter.
 * hash: applies "the hashing trick" to convert high cardinality categoric sets to set of columns with integer word encodings
 e.g. for an entry "Three word quote" may return three columns with integers corresponding to each of three words
 where integer is determined by hashing, and also based on passed parameter vocab_size.
@@ -3529,10 +3485,12 @@ avoid unintentional duplication.
 - 'lb10',
 - 'lbbn',
 - 'lbda',
+- 'lbfs',
 - 'lbnm',
 - 'lbo5',
 - 'lbor',
 - 'lbos',
+- 'lbsm',
 - 'lbte',
 - 'lgn2',
 - 'lgnm',
@@ -4370,6 +4328,24 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'children'      : [], \
                                      'niecesnephews' : [], \
                                      'coworkers'     : ['text'], \
+                                     'friends'       : []}})
+
+    transform_dict.update({'smth' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['smth'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+  
+    transform_dict.update({'fsmh' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['fsmh'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
                                      'friends'       : []}})
 
     transform_dict.update({'lngt' : {'parents'       : ['lngt'], \
@@ -6970,6 +6946,24 @@ If you want to skip to the next section you can click here: [Custom Transformati
     transform_dict.update({'lbbn' : {'parents'       : [], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : ['bnry'], \
+                                     'cousins'       : [], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+
+    transform_dict.update({'lbsm' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['smth'], \
+                                     'cousins'       : [], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+  
+    transform_dict.update({'lbfs' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['fsmh'], \
                                      'cousins'       : [], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
