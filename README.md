@@ -1963,10 +1963,8 @@ arguments may be useful if a user wants to experiment with specific transforms o
 subset of the columns without incurring processing time of an entire set.)
 
 Note that for columns designated for label sets as a special case categorical data will
-default to 'text' (one-hot encoding) instead of '1010'. Also, numerical data will default
-to 'excl2' (pass-through) instead of 'nmbr'. Also, if label smoothing is applied, label 
-columns evaluated as 'bnry' (two unique values) will default to 'text' instead of 'bnry'
-as label smoothing requires one-hot encoding.
+default to 'ordl' (ordinal encoding) instead of '1010'. Also, numerical data will default
+to 'excl2' (pass-through) instead of 'nmbr'.
 
 - powertransform: if the powertransform parameter is activated, a statistical evaluation
 will be performed on numerical sets to distinguish between columns to be subject to
