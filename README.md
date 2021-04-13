@@ -2129,8 +2129,8 @@ label set encodings is support by the postmunge(.) inversion parameter.
 string by 'strg' (some ML libraries prefer string encoded labels to recognize the classification application)
 * lbte: for categoric label sets, entries are given a one-hot encoding (this has some interpretabiltiy benefits over ordinal)
 * lbbn: for categoric label sets with 2 unique values, entries are given a binarization via 'bnry'
-* lbsm: for categoric encoding with smoothed labels (i.e. "label smoothing"), further described in smth transform below
-* lbfs: for categoric encoding with fitted smoothed labels (i.e. fitted label smoothing), further described in fsmh transform below 
+* lbsm: for categoric encoding with smoothed labels (i.e. "label smoothing"), further described in smth transform below (accepts activation parameter for activation threshold)
+* lbfs: for categoric encoding with fitted smoothed labels (i.e. fitted label smoothing), further described in fsmh transform below (accepts activation parameter for activation threshold)
 * lbda: for date-time label sets, entries are encoded comparable to 'dat6' described further below
 
 ### Numerical Set Normalizations
