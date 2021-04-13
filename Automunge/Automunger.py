@@ -3183,6 +3183,24 @@ class AutoMunge:
                                      'niecesnephews' : [], \
                                      'coworkers'     : [], \
                                      'friends'       : []}})
+
+    transform_dict.update({'lbsm' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['smth'], \
+                                     'cousins'       : [], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+  
+    transform_dict.update({'lbfs' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['fsmh'], \
+                                     'cousins'       : [], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
     
     transform_dict.update({'lbda' : {'parents'       : [], \
                                      'siblings'      : [], \
@@ -6284,6 +6302,23 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'multirt', \
                                   'labelctgy' : 'bnry'}})
+    process_dict.update({'lbsm' : {'dualprocess' : self.process_smth, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_smth, \
+                                  'inverseprocess' : self.inverseprocess_smth, \
+                                  'info_retention' : True, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'exclude', \
+                                  'labelctgy' : 'smth'}})
+    process_dict.update({'lbfs' : {'dualprocess' : self.process_smth, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_smth, \
+                                  'inverseprocess' : self.inverseprocess_smth, \
+                                  'info_retention' : True, \
+                                  'defaultparams' : {'LSfit' : True}, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'exclude', \
+                                  'labelctgy' : 'smth'}})
     process_dict.update({'lbda' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
@@ -9856,15 +9891,17 @@ class AutoMunge:
                                   LSfit, 
                                   LSfitparams_dict)
 
-    for labelsmoothingcolumn in textcolumns:
+    #smoothing not applied to test data consistent with postmunge convention
+    #(postmunge can apply based on traindata parameter)
+    # for labelsmoothingcolumn in textcolumns:
 
-      if categorycomplete_test_dict[labelsmoothingcolumn] is False:
+    #   if categorycomplete_test_dict[labelsmoothingcolumn] is False:
 
-        mdf_test, categorycomplete_dict = \
-        self.postapply_LabelSmoothing(mdf_test, 
-                                      labelsmoothingcolumn, 
-                                      categorycomplete_test_dict, 
-                                      LSfitparams_dict)
+    #     mdf_test, categorycomplete_dict = \
+    #     self.postapply_LabelSmoothing(mdf_test, 
+    #                                   labelsmoothingcolumn, 
+    #                                   categorycomplete_test_dict, 
+    #                                   LSfitparams_dict)
     
     for tc in textcolumns:
     
@@ -22565,7 +22602,7 @@ class AutoMunge:
     return df
 
   def LabelFrequencyLevelizer(self, train_df, labels_df, \
-                                postprocess_dict, process_dict, LabelSmoothing):
+                                postprocess_dict, process_dict):
     """
     #LabelFrequencyLevelizer(.)
     #takes as input dataframes for train set, labels, and label category
@@ -22634,12 +22671,8 @@ class AutoMunge:
                 columns_labels = postprocess_dict['column_dict'][label]['categorylist']
                 break
 
-          #note for. label smoothing activation values won't be 1
-          level_activation = LabelSmoothing
-          if level_activation <= 0.0 \
-          or level_activation >= 1.0 \
-          or str(level_activation) == 'False':
-            level_activation = 1
+          #note for. label smoothing activation values won't be 1, recomend supplementing transform with onehot set
+          level_activation = 1
 
           i=0
           #for label in labels:
@@ -23070,14 +23103,6 @@ class AutoMunge:
       FSML_cmnd = deepcopy(ML_cmnd)
       FSML_cmnd['PCA_type'] = 'off'
 
-      FS_LabelSmoothing = False
-
-  #     #FUTURE EXTENSION
-  #     #user has option to turn off LabelSmoothing for feature importance evaluation such as by passing False
-  #     FS_LabelSmoothing = 0.9
-  #     if 'LabelSmoothing' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
-  #       FS_LabelSmoothing = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['LabelSmoothing']
-
       FS_assignparam = deepcopy(assignparam)
 
       totalvalidation = valpercent1 + valpercent2
@@ -23095,7 +23120,7 @@ class AutoMunge:
                     testID_column = False, valpercent1 = totalvalidation, valpercent2 = 0.0, \
                     shuffletrain = True, TrainLabelFreqLevel = False, powertransform = powertransform, \
                     binstransform = binstransform, MLinfill = False, infilliterate=1, randomseed = randomseed, \
-                    LabelSmoothing_train = FS_LabelSmoothing, excl_suffix = True, \
+                    excl_suffix = True, \
                     numbercategoryheuristic = numbercategoryheuristic, pandasoutput = True, NArw_marker = NArw_marker, \
                     featureselection = False, featurepct = 1.00, featuremetric = featuremetric, \
                     featuremethod = 'pct', ML_cmnd = FSML_cmnd, assigncat = assigncat, \
@@ -25271,8 +25296,7 @@ class AutoMunge:
   
   def check_am_miscparameters(self, valpercent1, valpercent2, floatprecision, shuffletrain, \
                              TrainLabelFreqLevel, dupl_rows, powertransform, binstransform, MLinfill, \
-                             infilliterate, randomseed, eval_ratio, LabelSmoothing_train, LabelSmoothing_test, \
-                             LabelSmoothing_val, LSfit, numbercategoryheuristic, pandasoutput, \
+                             infilliterate, randomseed, eval_ratio, numbercategoryheuristic, pandasoutput, \
                              NArw_marker, featureselection, featurepct, featuremetric, \
                              featuremethod, Binary, PCAn_components, PCAexcl, printstatus, excl_suffix):
     """
@@ -25477,88 +25501,6 @@ class AutoMunge:
       
     miscparameters_results.update({'eval_ratio_valresult' : eval_ratio_valresult})
     
-    #check LabelSmoothing_train
-    LabelSmoothing_train_valresult = False
-    if not isinstance(LabelSmoothing_train, (float, bool)):
-      
-      LabelSmoothing_train_valresult = True
-      print("Error: invalid entry passed for LabelSmoothing_train parameter.")
-      print("Acceptable values are floats within range 0.0 < LabelSmoothing_train < 1.0")
-      print("Or boolean value of False")
-      print()
-      
-    elif isinstance(LabelSmoothing_train, float) \
-    and (LabelSmoothing_train <= 0.0 or LabelSmoothing_train >= 1.0):
-      
-      LabelSmoothing_train_valresult = True
-      print("Error: invalid entry passed for LabelSmoothing_train parameter.")
-      print("Acceptable values are floats within range 0.0 < LabelSmoothing_train < 1.0")
-      print("Or boolean value of False")
-      print()
-      
-    elif isinstance(LabelSmoothing_train, bool) \
-    and LabelSmoothing_train is not False:
-      
-      LabelSmoothing_train_valresult = True
-      print("Error: invalid entry passed for LabelSmoothing_train parameter.")
-      print("Acceptable values are floats within range 0.0 < LabelSmoothing_train < 1.0")
-      print("Or boolean value of False")
-      print()
-      
-    miscparameters_results.update({'LabelSmoothing_train_valresult' : LabelSmoothing_train_valresult})
-    
-    #check LabelSmoothing_test
-    LabelSmoothing_test_valresult = False
-    if not isinstance(LabelSmoothing_test, (float, bool)):
-      
-      LabelSmoothing_test_valresult = True
-      print("Error: invalid entry passed for LabelSmoothing_test parameter.")
-      print("Acceptable values are floats within range 0.0 < LabelSmoothing_test < 1.0")
-      print("Or boolean value.")
-      print()
-      
-    elif isinstance(LabelSmoothing_test, float) \
-    and (LabelSmoothing_test <= 0.0 or LabelSmoothing_test >= 1.0):
-      
-      LabelSmoothing_test_valresult = True
-      print("Error: invalid entry passed for LabelSmoothing_test parameter.")
-      print("Acceptable values are floats within range 0.0 < LabelSmoothing_test < 1.0")
-      print("Or boolean value.")
-      print()
-      
-    miscparameters_results.update({'LabelSmoothing_test_valresult' : LabelSmoothing_test_valresult})
-    
-    #check LabelSmoothing_val
-    LabelSmoothing_val_valresult = False
-    if not isinstance(LabelSmoothing_val, (float, bool)):
-      
-      LabelSmoothing_val_valresult = True
-      print("Error: invalid entry passed for LabelSmoothing_val parameter.")
-      print("Acceptable values are floats within range 0.0 < LabelSmoothing_val < 1.0")
-      print("Or boolean value.")
-      print()
-      
-    elif isinstance(LabelSmoothing_val, float) \
-    and (LabelSmoothing_val <= 0.0 or LabelSmoothing_val >= 1.0):
-      
-      LabelSmoothing_val_valresult = True
-      print("Error: invalid entry passed for LabelSmoothing_val parameter.")
-      print("Acceptable values are floats within range 0.0 < LabelSmoothing_val < 1.0")
-      print("Or boolean value.")
-      print()
-      
-    miscparameters_results.update({'LabelSmoothing_val_valresult' : LabelSmoothing_val_valresult})
-    
-    #check LSfit
-    LSfit_valresult = False
-    if LSfit not in {True, False} or not isinstance(LSfit, bool):
-      LSfit_valresult = True
-      print("Error: invalid entry passed for LSfit parameter.")
-      print("Acceptable values are one of {True, False}")
-      print()
-      
-    miscparameters_results.update({'LSfit_valresult' : LSfit_valresult})
-    
     #check numbercategoryheuristic
     numbercategoryheuristic_valresult = False
     if not isinstance(numbercategoryheuristic, int):
@@ -25722,7 +25664,7 @@ class AutoMunge:
     return miscparameters_results
     
   def check_pm_miscparameters(self, pandasoutput, printstatus, TrainLabelFreqLevel, \
-                              dupl_rows, featureeval, driftreport, LabelSmoothing, LSfit, \
+                              dupl_rows, featureeval, driftreport, \
                               returnedsets, shuffletrain, inversion, traindata):
     """
     #Performs validation to confirm valid entries of passed postmunge(.) parameters
@@ -25814,37 +25756,6 @@ class AutoMunge:
       print()
       
     pm_miscparameters_results.update({'driftreport_valresult' : driftreport_valresult})
-    
-    #check LabelSmoothing
-    LabelSmoothing_valresult = False
-    if not isinstance(LabelSmoothing, (float, bool)):
-      
-      LabelSmoothing_valresult = True
-      print("Error: invalid entry passed for LabelSmoothing parameter.")
-      print("Acceptable values are floats within range 0.0 < LabelSmoothing < 1.0")
-      print("Or boolean value.")
-      print()
-      
-    elif isinstance(LabelSmoothing, float) \
-    and (LabelSmoothing <= 0.0 or LabelSmoothing >= 1.0):
-      
-      LabelSmoothing_valresult = True
-      print("Error: invalid entry passed for LabelSmoothing parameter.")
-      print("Acceptable values are floats within range 0.0 < LabelSmoothing < 1.0")
-      print("Or boolean value.")
-      print()
-      
-    pm_miscparameters_results.update({'LabelSmoothing_valresult' : LabelSmoothing_valresult})
-    
-    #check LSfit
-    LSfit_valresult = False
-    if LSfit not in {True, False} or not isinstance(LSfit, bool):
-      LSfit_valresult = True
-      print("Error: invalid entry passed for LSfit parameter.")
-      print("Acceptable values are one of {True, False}")
-      print()
-      
-    pm_miscparameters_results.update({'LSfit_valresult' : LSfit_valresult})
     
     #check returnedsets
     returnedsets_valresult = False
@@ -28217,6 +28128,8 @@ class AutoMunge:
     #This function documented in READ ME, available online at:
     # https://github.com/Automunge/AutoMunge/blob/master/README.md
     """
+
+    #note LabelSmoothing / LSfit parameters are now depracated, replaced by smth family of transforms
     
     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     application_number = random.randint(100000000000,999999999999)
@@ -28247,8 +28160,7 @@ class AutoMunge:
     miscparameters_results = \
     self.check_am_miscparameters(valpercent1, valpercent2, floatprecision, shuffletrain, \
                                  TrainLabelFreqLevel, dupl_rows, powertransform, binstransform, MLinfill, \
-                                 infilliterate, randomseed, eval_ratio, LabelSmoothing_train, LabelSmoothing_test, \
-                                 LabelSmoothing_val, LSfit, numbercategoryheuristic, pandasoutput, \
+                                 infilliterate, randomseed, eval_ratio, numbercategoryheuristic, pandasoutput, \
                                  NArw_marker, featureselection, featurepct, featuremetric, \
                                  featuremethod, Binary, PCAn_components, PCAexcl, printstatus, excl_suffix)
 
@@ -29002,14 +28914,6 @@ class AutoMunge:
             labelscategory = category
 
       if categorycomplete is False:
-        
-        #ok this isnt; exactly elegant, but going to add a special case for LabelSmoothing
-        #first we[ll determine if labelsmoothing present
-        labelsmoothingpresent = False
-        if (LabelSmoothing_train > 0.0 and LabelSmoothing_train < 1.0 and str(LabelSmoothing_train) != 'False') \
-        or (LabelSmoothing_test > 0.0 and LabelSmoothing_test < 1.0 and str(LabelSmoothing_test) != 'False') \
-        or (LabelSmoothing_val > 0.0 and LabelSmoothing_val < 1.0 and str(LabelSmoothing_val) != 'False'):
-          labelsmoothingpresent = True
 
         #printout display progress
         if printstatus is True:
@@ -29030,11 +28934,6 @@ class AutoMunge:
                                    numbercategoryheuristic, False, True)
         else:
           print("error: evalcat must be passed as either False or as a defined function per READ ME")
-          
-        #special case for label smoothing we'll replace evaluated category bnry with text
-        #label smoothing doesn't work with bnry, needs one hot encoding
-        if labelsmoothingpresent and labelscategory == 'bnry':
-          labelscategory = 'text'
           
         #populate the result in the final_assigncat as informational resource
         if labelscategory in final_assigncat:
@@ -29119,96 +29018,11 @@ class AutoMunge:
       trainsmoothing = False
       testsmoothing = False
         
-      #apply label smoothing to train set if elected
-      if LabelSmoothing_train > 0.0 and LabelSmoothing_train < 1.0 and str(LabelSmoothing_train) != 'False':
-        
-        trainsmoothing = True
-        
-        LSfitparams_dict = {}
-        
-        #this will be our marker to indicate if labelsmoothing is already conducted
-        categorycomplete_dict = dict(zip(postprocess_dict['origcolumn'][labels_column]['columnkeylist'], [False]*len(postprocess_dict['origcolumn'][labels_column]['columnkeylist'])))
-        
-        #for column in label columns
-        for labelsmoothingcolumn in postprocess_dict['origcolumn'][labels_column]['columnkeylist']:
-          
-          if categorycomplete_dict[labelsmoothingcolumn] is False:
-
-            label_categorylist = postprocess_dict['column_dict'][labelsmoothingcolumn]['categorylist']
-            label_category = postprocess_dict['column_dict'][labelsmoothingcolumn]['category']
-            
-            df_labels, categorycomplete_dict, LSfitparams_dict = \
-            self.apply_LabelSmoothing(df_labels, labelsmoothingcolumn, LabelSmoothing_train, label_categorylist, label_category, categorycomplete_dict, LSfit, LSfitparams_dict)
-  
-      #else prepare empty LSfitparams_dict
-      else:
-        
-        LSfitparams_dict = {}
-        
-        for labelsmoothingcolumn in postprocess_dict['origcolumn'][labels_column]['columnkeylist']:
-          
-          LSfitparams_dict.update({labelsmoothingcolumn : {'LSfit' : LSfit, \
-                                                          'epsilon' : LabelSmoothing_train, \
-                                                          'label_categorylist' : postprocess_dict['column_dict'][labelsmoothingcolumn]['categorylist'], \
-                                                          'label_category' : postprocess_dict['column_dict'][labelsmoothingcolumn]['category']}})
-          
-      #marker
-      match_testLS_to_train = False
-      
-      #apply label smoothing to test set if elected
-      if str(LabelSmoothing_test) == 'True':
-        LabelSmoothing_test = LabelSmoothing_train
-        match_testLS_to_train = True
-      
-      if LabelSmoothing_test > 0.0 and LabelSmoothing_test < 1.0 and str(LabelSmoothing_test) != 'False':
-        
-        testsmoothing = True
-        
-        #this will be our marker to indicate if labelsmoothing is already conducted
-        categorycomplete_dict = dict(zip(postprocess_dict['origcolumn'][labels_column]['columnkeylist'], [False]*len(postprocess_dict['origcolumn'][labels_column]['columnkeylist'])))                                   
-        
-        #for column in label columns
-        for labelsmoothingcolumn in postprocess_dict['origcolumn'][labels_column]['columnkeylist']:
-          
-          if categorycomplete_dict[labelsmoothingcolumn] is False:
-            
-            if match_testLS_to_train is False:
-                                     
-              label_categorylist = postprocess_dict['column_dict'][labelsmoothingcolumn]['categorylist']
-              label_category = postprocess_dict['column_dict'][labelsmoothingcolumn]['category']
-
-              df_testlabels, categorycomplete_dict, _1 = \
-              self.apply_LabelSmoothing(df_testlabels, labelsmoothingcolumn, LabelSmoothing_test, label_categorylist, label_category, categorycomplete_dict, LSfit, {})
-              
-              del _1
-              
-            else:
-              
-              df_testlabels, categorycomplete_dict = \
-              self.postapply_LabelSmoothing(df_testlabels, labelsmoothingcolumn, categorycomplete_dict, LSfitparams_dict)
-
       #printout display progress
       if printstatus is True:
         print(" returned columns:")
         print(postprocess_dict['origcolumn'][labels_column]['columnkeylist'])
         print("")
-        
-        if trainsmoothing or testsmoothing:
-          
-          if trainsmoothing and testsmoothing:
-            
-            print("Label Smoothing applied to both train and test set labels")
-            print("")
-          
-          elif trainsmoothing:
-            
-            print("Label Smoothing applied to train set labels")
-            print("")
-            
-          elif testsmoothing:
-            
-            print("Label Smoothing applied to test set labels")
-            print("")
 
     #now that all transforms are applied on training set and labels
     #we'll do quick validation of normalization_dict entries
@@ -29545,7 +29359,7 @@ class AutoMunge:
       #apply LabelFrequencyLevelizer defined function
       df_train, df_labels = \
       self.LabelFrequencyLevelizer(df_train, df_labels, \
-                                   postprocess_dict, process_dict, LabelSmoothing_train)
+                                   postprocess_dict, process_dict)
 
       #extract trainID
       if trainID_column is not False:
@@ -29581,14 +29395,11 @@ class AutoMunge:
 
       if testID_column is not False:
         df_test = pd.concat([df_test, df_testID], axis=1)                        
-        
-      if LabelSmoothing_test is True:
-        LabelSmoothing_test = LabelSmoothing_train
 
       #apply LabelFrequencyLevelizer defined function
       df_test, df_testlabels = \
       self.LabelFrequencyLevelizer(df_test, df_testlabels, \
-                                   postprocess_dict, process_dict, LabelSmoothing_test)
+                                   postprocess_dict, process_dict)
         
       #extract testID
       if testID_column is not False:
@@ -29691,7 +29502,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.92'
+    automungeversion = '5.93'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -29722,11 +29533,6 @@ class AutoMunge:
                              'eval_ratio' : eval_ratio, \
                              'powertransform' : powertransform, \
                              'binstransform' : binstransform, \
-                             'LabelSmoothing_train' : LabelSmoothing_train, \
-                             'LabelSmoothing_test' : LabelSmoothing_test, \
-                             'LabelSmoothing_val' : LabelSmoothing_val, \
-                             'LSfit' : LSfit, \
-                             'LSfitparams_dict' : LSfitparams_dict, \
                              'numbercategoryheuristic' : numbercategoryheuristic, \
                              'pandasoutput' : pandasoutput, \
                              'NArw_marker' : NArw_marker, \
@@ -29909,7 +29715,6 @@ class AutoMunge:
       df_validation1, _2, df_validationlabels1, _4, _5 = \
       self.postmunge(postprocess_dict, df_validation1, testID_column = False, \
                     labelscolumn = labels_column, pandasoutput = True, printstatus = printstatus, \
-                    LabelSmoothing = LabelSmoothing_val, LSfit = LSfit, \
                     shuffletrain = False)
 
     #ok now that validation is processed, carve out second validation set if one was elected
@@ -31441,6 +31246,9 @@ class AutoMunge:
       
       tempcolumn = column + '_smth_'
 
+      #check if df_test is to be treated as train or test data
+      traindata = postprocess_dict['traindata']
+
       #create copy of original column for later retrieval
       mdf_test[tempcolumn] = mdf_test[column].copy()
 
@@ -31517,17 +31325,20 @@ class AutoMunge:
       #now convert coloumn headers from text convention to onht convention
       mdf_test = mdf_test.rename(columns=labels_dict)
 
-      categorycomplete_test_dict = dict(zip(categorylist, [False]*len(categorylist)))
+      #label smoothing only applied if traindata postmunge(.) parameter is True
+      if traindata is True:
 
-      for labelsmoothingcolumn in categorylist:
+        categorycomplete_test_dict = dict(zip(categorylist, [False]*len(categorylist)))
 
-        if categorycomplete_test_dict[labelsmoothingcolumn] is False:
+        for labelsmoothingcolumn in categorylist:
 
-          mdf_test, categorycomplete_dict = \
-          self.postapply_LabelSmoothing(mdf_test, 
-                                        labelsmoothingcolumn, 
-                                        categorycomplete_test_dict, 
-                                        LSfitparams_dict)
+          if categorycomplete_test_dict[labelsmoothingcolumn] is False:
+
+            mdf_test, categorycomplete_dict = \
+            self.postapply_LabelSmoothing(mdf_test, 
+                                          labelsmoothingcolumn, 
+                                          categorycomplete_test_dict, 
+                                          LSfitparams_dict)
     
     return mdf_test
   
@@ -36454,15 +36265,6 @@ class AutoMunge:
       process_dict = FSpostprocess_dict['process_dict']
       ML_cmnd = FSpostprocess_dict['ML_cmnd']
 
-      FS_LabelSmoothing = False
-
-  #     #FUTURE EXTENSION
-  #     FS_LabelSmoothing = FSpostprocess_dict['ML_cmnd']['MLinfill_cmnd']['RandomForestClassifier']['LabelSmoothing']
-
-  #     #but first real quick we'll just deal with PCA default functionality for FS
-  #     FSML_cmnd = deepcopy(ML_cmnd)
-  #     FSML_cmnd['PCA_type'] = 'off'
-
       #totalvalidation = valpercent1 + valpercent2
 
       #if totalvalidation == 0:
@@ -36473,7 +36275,7 @@ class AutoMunge:
       self.postmunge(FSpostprocess_dict, df_test, testID_column = testID_column, \
                      labelscolumn = labelscolumn, pandasoutput = pandasoutput, printstatus = printstatus, \
                      TrainLabelFreqLevel = TrainLabelFreqLevel, featureeval = featureeval, \
-                     LabelSmoothing = FS_LabelSmoothing, shuffletrain = True)
+                     shuffletrain = True)
 
       #in case these are single column series convert to dataframe
       am_train = pd.DataFrame(am_train)
@@ -37024,6 +36826,8 @@ class AutoMunge:
     # https://github.com/Automunge/AutoMunge/blob/master/README.md
     """
 
+    #LabelSmoothing parameters LabelSmoothing and LSfit are deprecated
+
     # #copy postprocess_dict into internal state so don't edit external object
     # #(going to leave this out for now in case has large memory overhead impact
     # #as in some scenarios postprocess_dict can be a large file)
@@ -37049,7 +36853,7 @@ class AutoMunge:
     #(generally speaking other than passed dictionaries, dataframes, or column identifiers)
     pm_miscparameters_results = \
     self.check_pm_miscparameters(pandasoutput, printstatus, TrainLabelFreqLevel, \
-                                dupl_rows, featureeval, driftreport, LabelSmoothing, LSfit, \
+                                dupl_rows, featureeval, driftreport, \
                                 returnedsets, shuffletrain, inversion, traindata)
     
     #printout display progress
@@ -37170,7 +36974,7 @@ class AutoMunge:
 
       df_test, recovered_list, inversion_info_dict = \
       self.inversion_parent(inversion, df_test, postprocess_dict, printstatus, \
-                            pandasoutput, LabelSmoothing)
+                            pandasoutput)
       
       return df_test, recovered_list, inversion_info_dict
     #_______
@@ -37517,48 +37321,6 @@ class AutoMunge:
       #marker for printouts
       pmsmoothing = False
     
-      #marker
-      match_testLS_to_train = False
-      
-      #special case for postmunge label smoothing, 
-      #if user passes True grab LabelSmoothing_train from postprocess_dict to apply consistently as automunge
-      if str(LabelSmoothing) == 'True':
-        LabelSmoothing = postprocess_dict['LabelSmoothing_train']
-#         LSfit = postprocess_dict['LSfit']
-        LSfitparams_dict = postprocess_dict['LSfitparams_dict']
-        match_testLS_to_train = True
-      
-      #apply label smoothing to test set if elected
-      if LabelSmoothing > 0.0 and LabelSmoothing < 1.0 and str(LabelSmoothing) != 'False':
-        
-        pmsmoothing = True
-        
-        testsmoothing = True
-        
-        #this will be our marker to indicate if labelsmoothing is already conducted
-        categorycomplete_dict = dict(zip(postprocess_dict['origcolumn'][labels_column]['columnkeylist'], [False]*len(postprocess_dict['origcolumn'][labels_column]['columnkeylist'])))
-
-        
-        #for column in label columns
-        for labelsmoothingcolumn in postprocess_dict['origcolumn'][labels_column]['columnkeylist']:
-          
-          if categorycomplete_dict[labelsmoothingcolumn] is False:
-            
-            if match_testLS_to_train is False:
-            
-              label_categorylist = postprocess_dict['column_dict'][labelsmoothingcolumn]['categorylist']
-              label_category = postprocess_dict['column_dict'][labelsmoothingcolumn]['category']
-
-              df_testlabels, categorycomplete_dict, _1 = \
-              self.apply_LabelSmoothing(df_testlabels, labelsmoothingcolumn, LabelSmoothing, label_categorylist, label_category, categorycomplete_dict, LSfit, {})
-              
-              del _1
-              
-            else:
-              
-              df_testlabels, categorycomplete_dict = \
-              self.postapply_LabelSmoothing(df_testlabels, labelsmoothingcolumn, categorycomplete_dict, LSfitparams_dict)
-
       #printout display progress
       if printstatus is True:
         print(" returned columns:")
@@ -37730,7 +37492,7 @@ class AutoMunge:
       #apply LabelFrequencyLevelizer defined function
       df_test, df_testlabels = \
       self.LabelFrequencyLevelizer(df_test, df_testlabels, \
-                                   postprocess_dict, process_dict, LabelSmoothing)
+                                   postprocess_dict, process_dict)
 
       #extract trainID
       if testID_column is not False:
@@ -38348,10 +38110,6 @@ class AutoMunge:
     #for a particular categorylist
     """
     
-    if LabelSmoothing is True:
-      
-      LabelSmoothing = postprocess_dict['LabelSmoothing_train']
-    
     if LabelSmoothing > 0 and LabelSmoothing < 1:
       
       for categorylist_entry in categorylist:
@@ -38360,47 +38118,6 @@ class AutoMunge:
         
         df[categorylist_entry] = df[categorylist_entry].astype(np.int8)
         
-    return df
-  
-  def meta_LS_invert(self, LabelSmoothing, df, postprocess_dict):
-    """
-    #Performs labels smoothing inversion
-    #Note that label smoothing may have been applied to multiple distinct sets
-    #originating from same source column
-    """
-    
-    if LabelSmoothing is True or (LabelSmoothing > 0 and LabelSmoothing < 1):
-
-      labels_column = postprocess_dict['labels_column']
-
-      labels_root_category = postprocess_dict['origcolumn'][labels_column]['category']
-
-      label_returnedcolumns = postprocess_dict['origcolumn'][labels_column]['columnkeylist']
-
-      inverse_categorytree = postprocess_dict['inverse_categorytree']
-
-      #we'll strike columns from this list if they are in another column's categorylist
-      returnedcolumns_copy = label_returnedcolumns.copy()
-
-      for returnedcolumn in label_returnedcolumns:
-
-        #only continue if not previiously stricken from antoher column's cateogrylist
-        if returnedcolumn in returnedcolumns_copy:
-
-          returned_categorylist = postprocess_dict['column_dict'][returnedcolumn]['categorylist']
-
-          for returned_categorylist_entry in returned_categorylist:
-
-            returnedcolumns_copy.remove(returned_categorylist_entry)
-
-          returned_category = postprocess_dict['column_dict'][returnedcolumn]['category']
-
-          #if column is from a multicolumn boolean MLinfilltype then we'll apply LSinvert
-          if postprocess_dict['process_dict'][returned_category]['MLinfilltype'] in \
-          ['multirt']:
-
-            df = self.LS_invert(LabelSmoothing, df, returned_categorylist, postprocess_dict)
-            
     return df
 
   def inversion_numpy_support(self, df, postprocess_dict, inversion):
@@ -39520,7 +39237,13 @@ class AutoMunge:
     
     df[inputcolumn] = 'zzzinfill'
     
-    df = self.LS_invert(activation, df, categorylist, postprocess_dict)
+    #only apply label smoothing inversion if this was a traindata set with smoothing applied
+    unique_set = set(pd.unique(df[categorylist[0]]))
+    if (unique_set != {0,1} \
+    and unique_set != {0} \
+    and unique_set != {1}):
+
+      df = self.LS_invert(activation, df, categorylist, postprocess_dict)
     
     for categorylist_entry in categorylist:
       
@@ -40457,7 +40180,7 @@ class AutoMunge:
     return df_test, recovered_list, inversion_info_dict
   
   def inversion_parent(self, inversion, df_test, postprocess_dict, printstatus, \
-                       pandasoutput, LabelSmoothing):
+                       pandasoutput):
     
     if inversion == 'test' and postprocess_dict['PCAmodel'] is not None:
       print("error: full test set inversion not currently supported with PCA.")
@@ -40611,11 +40334,6 @@ class AutoMunge:
         print("Performing inversion recovery of original columns for label set.")
         print()
 
-      #first revert any label smoothing to one-hot encoding, LabelSmoothing can be passed as True
-      #for basis of LabelSmoothing_train passed to automunge, or float 0-1 matching activation setting 
-      #assumes if labels encoded in multiple smoothed configurations they have consistent activations
-      df_test = self.meta_LS_invert(LabelSmoothing, df_test, postprocess_dict)
-
       df_test, recovered_list, inversion_info_dict = \
       self.df_inversion_meta(df_test, [postprocess_dict['labels_column']], postprocess_dict, printstatus)
 
@@ -40669,11 +40387,6 @@ class AutoMunge:
       if printstatus is True:
         print("Performing inversion recovery of original columns for label set.")
         print()
-
-      #first revert any label smoothing to one-hot encoding, LabelSmoothing can be passed as True
-      #for basis of LabelSmoothing_train passed to automunge, or float 0-1 matching activation setting 
-      #assumes if labels encoded in multiple smoothed configurations they have consistent activations
-      df_test = self.meta_LS_invert(LabelSmoothing, df_test, postprocess_dict)
       
       dense_recovered_list = []
       recovered_categorylist = []
