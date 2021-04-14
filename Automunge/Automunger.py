@@ -22972,11 +22972,11 @@ class AutoMunge:
     
     return columnaccuracy
   
-  def assemblemadethecut(self, FScolumn_dict, featurepct, featuremetric, featuremethod, \
+  def assemblemadethecut(self, FScolumn_dict, featurethreshold, featureselection, \
                          am_subset_columns, FSprocess_dict):
     '''
-    takes as input the FScolumn_dict and the passed automunge argument featurepct
-    and a list of the columns from automunge application in featureselect
+    takes as input the FScolumn_dict and the passed automunge argument featurethreshold
+    and a list of the columns from automunge application in featureselection
     and uses to assemble a list of columns that made it through the feature
     selection process
     
@@ -23023,25 +23023,25 @@ class AutoMunge:
 #     #calculate the number of features we'll keep using the ratio passed from automunge
 #     numbermakingcut = int(metriccount * featurepct)
     
-    if featuremethod not in {'default', 'pct', 'metric', 'report'}:
-      print("error featuremethod object must be one of {'default', 'pct', 'metric', 'report'}")
+    if featureselection not in {True, 'pct', 'metric', 'report'}:
+      print("error featureselection object must be one of {True, 'pct', 'metric', 'report'}")
       
-    if featuremethod == 'default':
+    if featureselection is True:
 
       #calculate the number of features we'll keep using the ratio passed from automunge
       numbermakingcut = len(FSsupport_df)
     
-    if featuremethod == 'pct':
+    if featureselection == 'pct':
 
       #calculate the number of features we'll keep using the ratio passed from automunge
-      numbermakingcut = int(metriccount * featurepct)
+      numbermakingcut = int(metriccount * featurethreshold)
       
-    if featuremethod == 'metric':
+    if featureselection == 'metric':
       
       #calculate the number of features we'll keep using the ratio passed from automunge
-      numbermakingcut = len(FSsupport_df[FSsupport_df['metric'] >= featuremetric])
+      numbermakingcut = len(FSsupport_df[FSsupport_df['metric'] >= featurethreshold])
       
-    if featuremethod == 'report':
+    if featureselection == 'report':
       #just a plug vlaue
       numbermakingcut = 1
       
@@ -23062,7 +23062,7 @@ class AutoMunge:
   def featureselect(self, df_train, labels_column, trainID_column, \
                     powertransform, binstransform, randomseed, \
                     numbercategoryheuristic, assigncat, transformdict, \
-                    processdict, featurepct, featuremetric, featuremethod, \
+                    processdict, featurethreshold, featureselection, \
                     ML_cmnd, process_dict, valpercent1, valpercent2, printstatus, \
                     NArw_marker, assignparam):
     """
@@ -23122,8 +23122,8 @@ class AutoMunge:
                     binstransform = binstransform, MLinfill = False, infilliterate=1, randomseed = randomseed, \
                     excl_suffix = True, \
                     numbercategoryheuristic = numbercategoryheuristic, pandasoutput = True, NArw_marker = NArw_marker, \
-                    featureselection = False, featurepct = 1.00, featuremetric = featuremetric, \
-                    featuremethod = 'pct', ML_cmnd = FSML_cmnd, assigncat = assigncat, \
+                    featureselection = False, \
+                    ML_cmnd = FSML_cmnd, assigncat = assigncat, \
                     assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                                    'adjinfill':[], 'meaninfill':[], 'medianinfill':[]}, \
                     assignparam = FS_assignparam, \
@@ -23333,8 +23333,8 @@ class AutoMunge:
             FScolumn_dict[column]['shuffleaccuracy2'] = columnaccuracy2
             FScolumn_dict[column]['metric2'] = metric2
           
-          madethecut = self.assemblemadethecut(FScolumn_dict, featurepct, featuremetric, \
-                                           featuremethod, am_train_columns, FSprocess_dict)
+          madethecut = self.assemblemadethecut(FScolumn_dict, featurethreshold, \
+                                           featureselection, am_train_columns, FSprocess_dict)
     
     #if the only column left in madethecut from origin column is a NArw, delete from the set
     #(this is going to lean on the column ID string naming conventions)
@@ -25297,8 +25297,8 @@ class AutoMunge:
   def check_am_miscparameters(self, valpercent1, valpercent2, floatprecision, shuffletrain, \
                              TrainLabelFreqLevel, dupl_rows, powertransform, binstransform, MLinfill, \
                              infilliterate, randomseed, eval_ratio, numbercategoryheuristic, pandasoutput, \
-                             NArw_marker, featureselection, featurepct, featuremetric, \
-                             featuremethod, Binary, PCAn_components, PCAexcl, printstatus, excl_suffix):
+                             NArw_marker, featurethreshold, featureselection, \
+                             Binary, PCAn_components, PCAexcl, printstatus, excl_suffix):
     """
     #Performs validation to confirm valid entries of passed automunge(.) parameters
     #Note that this function is intended specifically for non-dictionary parameters
@@ -25536,53 +25536,29 @@ class AutoMunge:
 
     #check featureselection
     featureselection_valresult = False
-    if featureselection not in {True, False} or not isinstance(featureselection, bool):
+    if featureselection not in {True, False, 'pct', 'metric', 'report'} \
+    or featureselection in {True, False} and not isinstance(featureselection, bool):
       featureselection_valresult = True
       print("Error: invalid entry passed for featureselection parameter.")
-      print("Acceptable values are one of {True, False}")
+      print("Acceptable values are one of {False, True, 'pct', 'metric', 'report'}")
       print()
       
     miscparameters_results.update({'featureselection_valresult' : featureselection_valresult})
     
-    #check featurepct
-    featurepct_valresult = False
-    if not isinstance(featurepct, float):
-      featurepct_valresult = True
-      print("Error: invalid entry passed for featurepct parameter.")
-      print("Acceptable values are floats within range 0.0 < featurepct < 1.0")
+    #check featurethreshold
+    featurethreshold_valresult = False
+    if not isinstance(featurethreshold, float):
+      featurethreshold_valresult = True
+      print("Error: invalid entry passed for featurethreshold parameter.")
+      print("Acceptable values are floats within range 0.0 < featurethreshold < 1.0")
       print()
-    elif (featurepct <= 0.0 or featurepct > 1.0):
-      featurepct_valresult = True
-      print("Error: invalid entry passed for featurepct parameter.")
-      print("Acceptable values are floats within range 0.0 < featurepct <= 1.0")
-      print()
-      
-    miscparameters_results.update({'featurepct_valresult' : featurepct_valresult})
-    
-    #check featuremetric
-    featuremetric_valresult = False
-    if not isinstance(featuremetric, float):
-      featuremetric_valresult = True
-      print("Error: invalid entry passed for featuremetric parameter.")
-      print("Acceptable values are floats within range 0.0 <= featuremetric < 100.0")
-      print()
-    elif (featuremetric < 0.0 or featuremetric >= 100.0):
-      featuremetric_valresult = True
-      print("Error: invalid entry passed for featuremetric parameter.")
-      print("Acceptable values are floats within range 0.0 <= featuremetric < 100.0")
+    elif (featurethreshold < 0.0 or featurethreshold > 1.0):
+      featurethreshold_valresult = True
+      print("Error: invalid entry passed for featurethreshold parameter.")
+      print("Acceptable values are floats within range 0.0 <= featurethreshold <= 1.0")
       print()
       
-    miscparameters_results.update({'featuremetric_valresult' : featuremetric_valresult})
-    
-    #check featuremethod
-    featuremethod_valresult = False
-    if featuremethod not in {'pct', 'metric', 'default', 'report'}:
-      featuremethod_valresult = True
-      print("Error: invalid entry passed for featuremethod parameter.")
-      print("Acceptable values are one of {'pct', 'metric', 'default', 'report'}")
-      print()
-      
-    miscparameters_results.update({'featuremethod_valresult' : featuremethod_valresult})
+    miscparameters_results.update({'featurethreshold_valresult' : featurethreshold_valresult})
   
     #check Binary
     Binary_valresult = False
@@ -25802,7 +25778,7 @@ class AutoMunge:
     
     check_FSmodel_result = False
     
-    if featureselection is True:
+    if featureselection is not False:
       if FSmodel is False:
         check_FSmodel_result = True
         
@@ -28077,9 +28053,8 @@ class AutoMunge:
                 valpercent1=0.0, valpercent2 = 0.0, floatprecision = 32, shuffletrain = True, \
                 dupl_rows = False, TrainLabelFreqLevel = False, powertransform = False, binstransform = False, \
                 MLinfill = True, infilliterate=1, randomseed = False, eval_ratio = .5, \
-                LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, LSfit = False, \
                 numbercategoryheuristic = 255, pandasoutput = True, NArw_marker = True, \
-                featureselection = False, featurepct = 1.0, featuremetric = 0.0, featuremethod = 'default', \
+                featureselection = False, featurethreshold = 0., \
                 Binary = False, PCAn_components = False, PCAexcl = [], excl_suffix = False, \
                 ML_cmnd = {'MLinfill_type':'default', \
                            'MLinfill_cmnd':{'RandomForestClassifier':{}, 'RandomForestRegressor':{}}, \
@@ -28123,13 +28098,16 @@ class AutoMunge:
                                 'modeinfill':[], 'lcinfill':[], 'naninfill':[]}, \
                 assignnan = {'categories':{}, 'columns':{}, 'global':[]}, \
                 transformdict = {}, processdict = {}, evalcat = False, \
-                privacy_encode = False, printstatus = True):
+                privacy_encode = False, printstatus = True, \
+                LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, LSfit = False, \
+                featurepct = 1.0, featuremetric = 0.0, featuremethod = 'default'):
     """
     #This function documented in READ ME, available online at:
     # https://github.com/Automunge/AutoMunge/blob/master/README.md
     """
 
-    #note LabelSmoothing / LSfit parameters are now depracated, replaced by smth family of transforms
+    #note LabelSmoothing_... / LSfit parameters are now depracated, replaced by smth family of transforms
+    #featurepct, featuremetric, featuremethod are deprecated, replaced by consolidation to featureselection and featurethreshold
     
     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     application_number = random.randint(100000000000,999999999999)
@@ -28161,8 +28139,8 @@ class AutoMunge:
     self.check_am_miscparameters(valpercent1, valpercent2, floatprecision, shuffletrain, \
                                  TrainLabelFreqLevel, dupl_rows, powertransform, binstransform, MLinfill, \
                                  infilliterate, randomseed, eval_ratio, numbercategoryheuristic, pandasoutput, \
-                                 NArw_marker, featureselection, featurepct, featuremetric, \
-                                 featuremethod, Binary, PCAn_components, PCAexcl, printstatus, excl_suffix)
+                                 NArw_marker, featurethreshold, featureselection, \
+                                 Binary, PCAn_components, PCAexcl, printstatus, excl_suffix)
 
     miscparameters_results.update({'check_assigncat_result' : check_assigncat_result, \
                                    'check_assigninfill_result' : check_assigninfill_result, \
@@ -28286,8 +28264,20 @@ class AutoMunge:
     else:
       randomrandomseed = False
 
+    #this is for backward compatibility 
+    #(featuremethod / featurepct / featuremetric deprecated so this isn't documented anymore in read me)
+    if featureselection is True and featuremethod != 'default':
+      if featuremethod in {'pct', 'metric', 'report'}:
+        featureselection = featuremethod
+    if featureselection == 'pct' and featurethreshold == 0. and featurepct != 1.:
+      if isinstance(featurepct, float) and featurepct < 1. and featurepct < 0.:
+        featurethreshold = featurepct
+    if featureselection == 'metric' and featurethreshold == 0. and featuremetric != 0.:
+      if isinstance(featuremetric, float) and featuremetric < 1. and featuremetric < 0.:
+        featurethreshold = featuremetric
+    
     #feature selection analysis performed here if elected
-    if featureselection is True:
+    if featureselection in {True, 'pct', 'metric', 'report'}:
 
       if labels_column is False:
         print("featureselection not available without labels_column in training set")
@@ -28304,7 +28294,7 @@ class AutoMunge:
         self.featureselect(df_train, labels_column, trainID_column, \
                           powertransform, binstransform, randomseed, \
                           numbercategoryheuristic, assigncat, transformdict, \
-                          processdict, featurepct, featuremetric, featuremethod, \
+                          processdict, featurethreshold, featureselection, \
                           ML_cmnd, process_dict, valpercent1, valpercent2, printstatus, NArw_marker, \
                           assignparam)
 
@@ -28312,8 +28302,8 @@ class AutoMunge:
       featureimportance = {'FS_sorted'     : FS_sorted, \
                            'FScolumn_dict' : FScolumn_dict}
 
-      #if featuremethod is report then no further processing just return the results
-      if featuremethod == 'report':
+      #if featureselection is report then no further processing just return the results
+      if featureselection == 'report':
 
         #printout display progress
         if printstatus is True:
@@ -29064,15 +29054,16 @@ class AutoMunge:
     #Here's where we'll trim the columns that were stricken as part of featureselection method
 
     #trim branches here associated with featureselect
-
-    if featureselection is True:
+    
+    if featureselection is not False:
 
       #get list of columns currently included
       currentcolumns = set(df_train)
       
-      #this is to address an edge case for featuremethod == 'default'
-      if featuremethod in {'default', 'report'} or FSmodel is False \
-      or (featuremethod in {'pct'} and featurepct == 1.0):
+      #this is to address an edge case for featureselection without diminsionality reduction
+      if featureselection in {True, 'report'} or FSmodel is False \
+      or (featureselection in {'pct'} and featurethreshold == 1.0) \
+      or (featureselection in {'metric'} and featurethreshold == 0.0):
         madethecut = set(currentcolumns)
       
       madethecut = set(madethecut)
@@ -29086,14 +29077,12 @@ class AutoMunge:
           print("_______________")
           print("Begin feature importance dimensionality reduction")
           print("")
-          print("   method: ", featuremethod)
-  #           if featuremethod == 'default':
-  #             print("no feature importance dimensionality reductions")          
-          if featuremethod == 'pct':
-            print("threshold: ", featurepct)
-          if featuremethod == 'metric':
-            print("threshold: ", featuremetric)
-          if featuremethod == 'report':
+          print("   method: ", featureselection)         
+          if featureselection == 'pct':
+            print("threshold: ", featurethreshold)
+          if featureselection == 'metric':
+            print("threshold: ", featurethreshold)
+          if featureselection == 'report':
             print("only returning results")
           print("")
           print("trimmed columns: ")
@@ -29502,7 +29491,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.93'
+    automungeversion = '5.94'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -29538,9 +29527,7 @@ class AutoMunge:
                              'NArw_marker' : NArw_marker, \
                              'labelsencoding_dict' : labelsencoding_dict, \
                              'featureselection' : featureselection, \
-                             'featurepct' : featurepct, \
-                             'featuremetric' : featuremetric, \
-                             'featuremethod' : featuremethod, \
+                             'featurethreshold' : featurethreshold, \
                              'FSmodel' : FSmodel, \
                              'FScolumn_dict' : FScolumn_dict, \
                              'FS_sorted' : FS_sorted, \
@@ -37353,7 +37340,7 @@ class AutoMunge:
                         masterNArows_test, process_dict)
 
     #trim branches associated with feature selection
-    if postprocess_dict['featureselection'] is True:
+    if postprocess_dict['featureselection'] in {'pct', 'metric'}:
 
       #get list of columns currently included
       currentcolumns = list(df_test)
@@ -37367,11 +37354,11 @@ class AutoMunge:
           print("_______________")
           print("Begin feature importance dimensionality reduction")
           print("")
-          print("   method: ", postprocess_dict['featuremethod'])
-          if postprocess_dict['featuremethod'] == 'pct':
-            print("threshold: ", postprocess_dict['featurepct'])
-          if postprocess_dict['featuremethod'] == 'metric':
-            print("threshold: ", postprocess_dict['featuremetric'])
+          print("   method: ", postprocess_dict['featureselection'])
+          if postprocess_dict['featureselection'] == 'pct':
+            print("threshold: ", postprocess_dict['featurethreshold'])
+          if postprocess_dict['featureselection'] == 'metric':
+            print("threshold: ", postprocess_dict['featurethreshold'])
           print("")
           print("trimmed columns: ")
           print(trimcolumns)
