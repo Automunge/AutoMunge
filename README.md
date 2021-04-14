@@ -135,7 +135,7 @@ am.automunge(df_train, df_test = False, \
              dupl_rows = False, TrainLabelFreqLevel = False, powertransform = False, binstransform = False, \
              MLinfill = True, infilliterate=1, randomseed = False, eval_ratio = .5, \
              numbercategoryheuristic = 255, pandasoutput = True, NArw_marker = True, \
-             featureselection = False, featurepct = 1.0, featuremetric = 0.0, featuremethod = 'default', \
+             featureselection = False, featurethreshold = 0., \
              Binary = False, PCAn_components = False, PCAexcl = [], excl_suffix = False, \
              ML_cmnd = {'autoML_type':'randomforest', \
                         'MLinfill_cmnd':{'RandomForestClassifier':{}, 'RandomForestRegressor':{}}, \
@@ -365,7 +365,7 @@ am.automunge(df_train, df_test = False, \
              dupl_rows = False, TrainLabelFreqLevel = False, powertransform = False, binstransform = False, \
              MLinfill = True, infilliterate=1, randomseed = False, eval_ratio = .5, \
              numbercategoryheuristic = 255, pandasoutput = True, NArw_marker = True, \
-             featureselection = False, featurepct = 1.0, featuremetric = 0.0, featuremethod = 'default', \
+             featureselection = False, featurethreshold = 0., \
              Binary = False, PCAn_components = False, PCAexcl = [], excl_suffix = False, \
              ML_cmnd = {'autoML_type':'randomforest', \
                         'MLinfill_cmnd':{'RandomForestClassifier':{}, 'RandomForestRegressor':{}}, \
@@ -606,7 +606,7 @@ am.automunge(df_train, df_test = False, \
              dupl_rows = False, TrainLabelFreqLevel = False, powertransform = False, binstransform = False, \
              MLinfill = True, infilliterate=1, randomseed = False, eval_ratio = .5, \
              numbercategoryheuristic = 255, pandasoutput = True, NArw_marker = True, \
-             featureselection = False, featurepct = 1.0, featuremetric = 0.0, featuremethod = 'default', \
+             featureselection = False, featurethreshold = 0., \
              Binary = False, PCAn_components = False, PCAexcl = [], excl_suffix = False, \
              ML_cmnd = {'autoML_type':'randomforest', \
                         'MLinfill_cmnd':{'RandomForestClassifier':{}, 'RandomForestRegressor':{}}, \
@@ -852,37 +852,24 @@ the column, see Library of Transformations section below for catalog, the
 various NArowtype options (such as justNaN, numeric, positivenumeric, etc)
 are also further clarified below in discussion around the processdict parameter.
 
-* featureselection: a boolean identifier _(True/False)_ telling the function 
-to perform a feature importance evaluation. If selected automunge will
-return a summary of feature importance findings in the featureimportance
-returned dictionary. This also can activate the trimming of derived sets
-that did not meet the importance threshold if [featurepct < 1.0 and 
-featuremethod = 'pct'] or if [featuremetric > 0.0 and featuremethod = 
-'metric'], which by default is turned off with featuremethod='default'. Note this 
-defaults to False because it cannot operate without a designated label 
-column in the train set. (Note that any user-specified size of validationratios 
-if passed are used in this method, otherwise defaults to 0.2.) Note that sorted 
+* featureselection: applied to activate a feature importance evaluation. 
+Defaults to False, accepts {False, True, 'pct', 'metric', 'report'}. 
+If selected automunge will return a summary of feature importance findings in the featureimportance
+returned dictionary. False turns off, True turns on, 'pct' performs the evaluation followed by
+a dimensionality reduction based on the featurethreshold parameter to retain a % of top features. 
+'metric' performs the evaluation followed by a dimensionality reduction to retain features above a metric value based on featurethreshold parameter. 'report' performs the evluation and returns a report with no
+further processing of data. Feature importance evaluation requires the inclusion of a
+designated label column in the train set. Note that sorted 
 feature importance results are returned in postprocess_dict['FS_sorted'], 
 including columns sorted by metric and metric2. Note that feature importance 
-model training inspects same ML_cmnd parameters as ML infill. 
+model training inspects same ML_cmnd parameters as ML infill. (Note that any user-specified size of validationratios 
+if passed are used in this method, otherwise defaults to 0.2.)
 
-* featurepct: the percentage of derived columns that are kept in the output
-based on the feature importance evaluation. Accepts float in the range 0-1.
-Note that NArw columns are only retained for those sets corresponding to 
-columns that "made the cut". This item only used if featuremethod passed as 
-'pct'.
-
-* featuremetric: the feature importance metric below which derived columns
-are trimmed from the output. Note that this item only used if featuremethod 
-passed as 'metric'.
-
-* featuremethod: can be passed as one of _{'default', 'pct', 'metric','report'}_ 
-where 'pct' or 'metric' to select which feature importance method is used for 
-trimming the derived sets as a form of dimensionality reduction. Or can pass as 
-'default' for ignoring the featurepct/featuremetric parameters or can pass as 
-'report' to return the featureimportance results with no further processing 
-(other returned sets are empty other than postprocess_dict with 
-FS_sorted results). Defaults to 'default'.
+* featurethreshold: defaults to 0., accepts float in range of 0-1. Inspected when
+featureselection passed as 'pct' or 'metric'. Used to designate the threshold for feature
+importance dimensionality reduction. Where e.g. for 'pct' 0.9 would retain 90% of top
+features, or e.g. for 'metric' 0.03 would retain features whose metric was >0.03. Note that
+NArw columns are only retained for those sets corresponding to columns that "made the cut".
 
 * Binary: a dimensionality reduction technique whereby the set of columns
 with boolean encodings are collectively encoded with binary encoding such
