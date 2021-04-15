@@ -28270,10 +28270,10 @@ class AutoMunge:
       if featuremethod in {'pct', 'metric', 'report'}:
         featureselection = featuremethod
     if featureselection == 'pct' and featurethreshold == 0. and featurepct != 1.:
-      if isinstance(featurepct, float) and featurepct < 1. and featurepct < 0.:
+      if isinstance(featurepct, float) and featurepct < 1. and featurepct > 0.:
         featurethreshold = featurepct
     if featureselection == 'metric' and featurethreshold == 0. and featuremetric != 0.:
-      if isinstance(featuremetric, float) and featuremetric < 1. and featuremetric < 0.:
+      if isinstance(featuremetric, float) and featuremetric < 1. and featuremetric > 0.:
         featurethreshold = featuremetric
     
     #feature selection analysis performed here if elected
@@ -29491,7 +29491,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.94'
+    automungeversion = '5.95'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
