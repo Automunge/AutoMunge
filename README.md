@@ -560,12 +560,8 @@ than binary encoded sets. One can print the values here such as with
 this code:
 
 ```
-#to inspect values returned in featureimportance object one could run
-for keys,values in featureimportance['FScolumn_dict'].items():
-    print(keys)
-    print('metric = ', values['metric'])
-    print('metric2 = ', values['metric2'])
-    print()
+#to inspect sorted values returned in featureimportance one could access
+featureimportance['FS_sorted']
 ```
 Note that the sorted feature importance results, as well as the base accuracy of
 the feature iumportance model, are available in featureimportance['FS_sorted']. 
@@ -860,7 +856,7 @@ a dimensionality reduction based on the featurethreshold parameter to retain a %
 'metric' performs the evaluation followed by a dimensionality reduction to retain features above a metric value based on featurethreshold parameter. 'report' performs the evluation and returns a report with no
 further processing of data. Feature importance evaluation requires the inclusion of a
 designated label column in the train set. Note that sorted 
-feature importance results are returned in postprocess_dict['FS_sorted'], 
+feature importance results are returned in featureimportance['FS_sorted'], 
 including columns sorted by metric and metric2. Note that feature importance 
 model training inspects same ML_cmnd parameters as ML infill. (Note that any user-specified size of validationratios 
 if passed are used in this method, otherwise defaults to 0.2.)
