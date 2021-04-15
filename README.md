@@ -2023,9 +2023,9 @@ columns in assigncat by using corresponding alternates of (nmbd/101d/ordd/texd/b
 * [Date-Time Data Bins](https://github.com/Automunge/AutoMunge/blob/master/README.md#date-time-data-bins)
 * [Differential Privacy Noise Injections](https://github.com/Automunge/AutoMunge/blob/master/README.md#differential-privacy-noise-injections)
 * [Misc. Functions](https://github.com/Automunge/AutoMunge/blob/master/README.md#misc-functions)
-* [String Parsing](https://github.com/Automunge/AutoMunge/blob/master/README.md#string-parsing)
-* [More Efficient String Parsing](https://github.com/Automunge/AutoMunge/blob/master/README.md#more-efficient-string-parsing)
-* [Multi-tier String Parsing](https://github.com/Automunge/AutoMunge/blob/master/README.md#multi-tier-string-parsing)
+* [Parsed Categoric Encodings](https://github.com/Automunge/AutoMunge/blob/master/README.md#Parsed-Categoric-Encodings)
+* [More Efficient Parsed Categoric Encodings](https://github.com/Automunge/AutoMunge/blob/master/README.md#more-efficient-Parsed-Categoric-Encodings)
+* [Multi-tier Parsed Categoric Encodings](https://github.com/Automunge/AutoMunge/blob/master/README.md#multi-tier-Parsed-Categoric-Encodings)
 * [List of Root Categories](https://github.com/Automunge/AutoMunge/blob/master/README.md#list-of-root-categories)
 * [List of Suffix Appenders](https://github.com/Automunge/AutoMunge/blob/master/README.md#list-of-suffix-appenders)
 * [Other Reserved Strings](https://github.com/Automunge/AutoMunge/blob/master/README.md#other-reserved-strings)
@@ -3099,7 +3099,7 @@ column with missing or improperly formatted values.
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: pct_NArw
   - inversion available: no
-### String Parsing
+### Parsed Categoric Encodings
 Please note I recommend caution on using splt/spl2/spl5/spl6 transforms on categorical
 sets that may include scientific units for instance, as prefixes will not be noted
 for overlaps, e.g. this wouldn't distinguish between kilometer and meter for instance.
@@ -3274,7 +3274,7 @@ for identified overlap entries. (Note for multiple activations encoding priority
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: overlap_dict
   - inversion available: pending
-### More Efficient String Parsing
+### More Efficient Parsed Categoric Encodings
 * new processing functions nmr4/nmr5/nmr6/nmc4/nmc5/nmc6/nmE4/nmE5/nmE6/spl8/spl9/sp10 (spelled sp"ten")/sp16/src2/sbs2/sp20/sbs4:
   - comparable to functions nmrc/nmr2/nmr3/nmcm/nmc2/nmc3/nmEU/nmE2/nmE3/splt/spl2/spl5/sp15/srch/sbst/sp19/sbs3
   - but make use of new assumption that set of unique values in test set is same or a subset of those values 
@@ -3296,7 +3296,7 @@ for identified overlap entries. (Note for multiple activations encoding priority
   - assignparam parameters accepted: comparable
   - driftreport postmunge metrics: overlap_dict / mean / maximum / minimum / unique_list / maxlength
   - inversion available: no
-### Multi-tier String Parsing
+### Multi-tier Parsed Categoric Encodings
 * new processing root categories or11 / or12 / or13 / or14 / or15 / or16 / or17 / or18 / or19 / or20
   - or11 / or13 intended for categorical sets that may include multiple tiers of overlaps 
   and include base binary encoding via 1010 supplemented by tiers of string parsing for 
