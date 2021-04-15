@@ -3186,7 +3186,7 @@ class AutoMunge:
 
     transform_dict.update({'lbsm' : {'parents'       : [], \
                                      'siblings'      : [], \
-                                     'auntsuncles'   : ['smth'], \
+                                     'auntsuncles'   : ['lbsm'], \
                                      'cousins'       : [], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
@@ -3195,7 +3195,7 @@ class AutoMunge:
   
     transform_dict.update({'lbfs' : {'parents'       : [], \
                                      'siblings'      : [], \
-                                     'auntsuncles'   : ['fsmh'], \
+                                     'auntsuncles'   : ['lbfs'], \
                                      'cousins'       : [], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
@@ -9710,6 +9710,7 @@ class AutoMunge:
     #followed by application of label smoothing
     #accepts parameters for activation value (float 0.5-1), 
     #LSfit parameter to activate fitted smoothing
+    #testsmooth parameter to activate consistently smooting test data
     '''
     
     suffixoverlap_results = {}
@@ -9735,6 +9736,11 @@ class AutoMunge:
       LSfit = params['LSfit']
     else:
       LSfit = False
+      
+    if 'testsmooth' in params:
+      testsmooth = params['testsmooth']
+    else:
+      testsmooth = False
     
     tempcolumn = column + '_smth_'
     
@@ -9875,7 +9881,6 @@ class AutoMunge:
     LSfitparams_dict = {}
 
     categorycomplete_dict = dict(zip(textcolumns, [False]*len(textcolumns)))
-    categorycomplete_test_dict = dict(zip(textcolumns, [False]*len(textcolumns)))
 
     for labelsmoothingcolumn in textcolumns:
 
@@ -9892,16 +9897,20 @@ class AutoMunge:
                                   LSfitparams_dict)
 
     #smoothing not applied to test data consistent with postmunge convention
-    #(postmunge can apply based on traindata parameter)
-    # for labelsmoothingcolumn in textcolumns:
+    #(postmunge can apply based on traindata parameter or by activating testsmooth)
+    if testsmooth is True:
+      
+      categorycomplete_test_dict = dict(zip(textcolumns, [False]*len(textcolumns)))
+      
+      for labelsmoothingcolumn in textcolumns:
 
-    #   if categorycomplete_test_dict[labelsmoothingcolumn] is False:
+        if categorycomplete_test_dict[labelsmoothingcolumn] is False:
 
-    #     mdf_test, categorycomplete_dict = \
-    #     self.postapply_LabelSmoothing(mdf_test, 
-    #                                   labelsmoothingcolumn, 
-    #                                   categorycomplete_test_dict, 
-    #                                   LSfitparams_dict)
+          mdf_test, categorycomplete_dict = \
+          self.postapply_LabelSmoothing(mdf_test, 
+                                        labelsmoothingcolumn, 
+                                        categorycomplete_test_dict, 
+                                        LSfitparams_dict)
     
     for tc in textcolumns:
     
@@ -9919,6 +9928,7 @@ class AutoMunge:
                                       'LSfitparams_dict' : LSfitparams_dict, \
                                       'activation' : activation, \
                                       'LSfit' : LSfit, \
+                                      'testsmooth' : testsmooth, \
                                       'categorylist' : textcolumns}}
       
       column_dict = {tc : {'category' : 'smth', \
@@ -28357,6 +28367,20 @@ class AutoMunge:
     if isinstance(checknp, type(df_test)):
       df_test = pd.DataFrame(df_test)
 
+    #if series convert to dataframe
+    checkseries_train_result = False
+    checkseries_test_result = False
+    checkseries = pd.Series({'a':[1]})
+    if isinstance(checkseries, type(df_train)):
+      checkseries_train_result = True
+      df_train = pd.DataFrame(df_train)
+    if isinstance(checkseries, type(df_test)):
+      checkseries_test_result = True
+      df_test = pd.DataFrame(df_test)
+
+    miscparameters_results.update({'checkseries_train_result' : checkseries_train_result, \
+                                   'checkseries_test_result' : checkseries_test_result})
+
     #this converts any numeric columns labels, such as from a passed numpy array, to strings
     trainlabels=[]
     for column in df_train.columns:
@@ -29491,7 +29515,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.95'
+    automungeversion = '5.96'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -31227,6 +31251,9 @@ class AutoMunge:
       
       LSfitparams_dict = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['LSfitparams_dict']
+      
+      testsmooth = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['testsmooth']
 
       categorylist = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['categorylist']
@@ -31313,7 +31340,7 @@ class AutoMunge:
       mdf_test = mdf_test.rename(columns=labels_dict)
 
       #label smoothing only applied if traindata postmunge(.) parameter is True
-      if traindata is True:
+      if traindata is True or testsmooth is True:
 
         categorycomplete_test_dict = dict(zip(categorylist, [False]*len(categorylist)))
 
@@ -36910,6 +36937,13 @@ class AutoMunge:
           origcolumns_all_excluding_label = postprocess_dict['origcolumns_all'].copy()
           origcolumns_all_excluding_label.remove(postprocess_dict['labels_column'])
           df_test.columns = origcolumns_all_excluding_label
+
+    #convert series to dataframe
+    #if series convert to dataframe
+    checkseries = pd.Series({'a':[1]})
+    if isinstance(checkseries, type(df_test)):
+      checkseries_test_result = True
+      df_test = pd.DataFrame(df_test)
 
     #this converts any numeric columns labels, such as from a passed numpy array, to strings
     testlabels=[]
