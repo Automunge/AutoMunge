@@ -2698,9 +2698,11 @@ and comparable to test set independent of test set row count
   - suffix appender: '\_smth\_#' where # is integer
   - assignparam parameters accepted: 
     - 'activation' defaults to 0.9, a float between 0.5-1 to designate activation value
+    - 'LSfit' defaults to False, when True applies fitted label smoothing (consistent with fsmh)
+    - 'testsmooth' defaults to False, when True applies smoothing to test data in both automunge and postmunge
   - driftreport postmunge metrics: comparable to onht
   - inversion available: yes with full recovery
-* fsmh: comparable to smth but applies a fitted label smoothing, in which null values are fit to ratio of activations corresponding to current activation. The smoothing is applied to train data but not validation or test data. Smoothing can be applied to test data in postmunge(.) by activating the traindata parameter.
+* fsmh: comparable to smth but applies by default a fitted label smoothing, in which null values are fit to ratio of activations corresponding to current activation. The smoothing is applied to train data but not validation or test data. Smoothing can be applied to test data in postmunge(.) by activating the traindata parameter.
 * hash: applies "the hashing trick" to convert high cardinality categoric sets to set of columns with integer word encodings
 e.g. for an entry "Three word quote" may return three columns with integers corresponding to each of three words
 where integer is determined by hashing, and also based on passed parameter vocab_size.
@@ -6935,7 +6937,7 @@ If you want to skip to the next section you can click here: [Custom Transformati
 
     transform_dict.update({'lbsm' : {'parents'       : [], \
                                      'siblings'      : [], \
-                                     'auntsuncles'   : ['smth'], \
+                                     'auntsuncles'   : ['lbsm'], \
                                      'cousins'       : [], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
@@ -6944,7 +6946,7 @@ If you want to skip to the next section you can click here: [Custom Transformati
   
     transform_dict.update({'lbfs' : {'parents'       : [], \
                                      'siblings'      : [], \
-                                     'auntsuncles'   : ['fsmh'], \
+                                     'auntsuncles'   : ['lbfs'], \
                                      'cousins'       : [], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
