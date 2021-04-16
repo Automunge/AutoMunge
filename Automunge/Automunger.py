@@ -18755,6 +18755,11 @@ class AutoMunge:
       #can pass as 'normal' or 'laplace'
       noisedistribution = 'normal'
       
+    if 'testnoise' in params:
+      testnoise = params['testnoise']
+    else:
+      testnoise = False
+      
     DPnm_column = column + '_DPnb'
     
     suffixoverlap_results = \
@@ -18773,13 +18778,31 @@ class AutoMunge:
     #now inject noise
     mdf_train[DPnm_column] = mdf_train[DPnm_column] + mdf_train[column]
     
-    #for test data is just pass-through
-    mdf_test[DPnm_column] = mdf_test[column]
+    #for test data is just pass-through unless testnoise parameter activated
+    if testnoise is False:
+      mdf_test[DPnm_column] = mdf_test[column].copy()
+    
+    elif testnoise is True:
+      #first we'll derive our sampled noise for injection
+      if noisedistribution == 'normal':
+        normal_samples = np.random.normal(loc=mu, scale=sigma, size=(mdf_test.shape[0]))
+      elif noisedistribution == 'laplace':
+        normal_samples = np.random.laplace(loc=mu, scale=sigma, size=(mdf_test.shape[0]))
+
+      binomial_samples = np.random.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0]))
+
+      mdf_test[DPnm_column] = pd.DataFrame(normal_samples) * pd.DataFrame(binomial_samples)
+      
+      #now inject noise
+      mdf_test[DPnm_column] = mdf_test[DPnm_column] + mdf_test[column]
     
     #create list of columns
     nmbrcolumns = [DPnm_column]
 
-    nmbrnormalization_dict = {DPnm_column : {'mu' : mu, 'sigma' : sigma, 'flip_prob' : flip_prob, \
+    nmbrnormalization_dict = {DPnm_column : {'mu' : mu, \
+                                             'sigma' : sigma, \
+                                             'flip_prob' : flip_prob, \
+                                             'testnoise' : testnoise, \
                                              'noisedistribution' : noisedistribution}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
@@ -18847,57 +18870,75 @@ class AutoMunge:
       #can pass as 'normal' or 'laplace'
       noisedistribution = 'normal'
       
+    if 'testnoise' in params:
+      testnoise = params['testnoise']
+    else:
+      testnoise = False
+      
     DPmm_column = column + '_DPmm'
     DPmm_column_temp1 = column + '_DPmm' + '_tmp1'
     
     suffixoverlap_results = \
     self.df_check_suffixoverlap(mdf_train, [DPmm_column, DPmm_column_temp1], suffixoverlap_results)
+    
+    def injectmmnoise(df, DPmm_column, DPmm_column_temp1):
+      #support function for noise injection
       
-    #first we'll derive our sampled noise for injection
-    if noisedistribution == 'normal':
-      normal_samples = np.random.normal(loc=mu, scale=sigma, size=(mdf_train.shape[0]))
-    elif noisedistribution == 'laplace':
-      normal_samples = np.random.laplace(loc=mu, scale=sigma, size=(mdf_train.shape[0]))
-    binomial_samples = np.random.binomial(n=1, p=flip_prob, size=(mdf_train.shape[0]))
+      #first we'll derive our sampled noise for injection
+      if noisedistribution == 'normal':
+        normal_samples = np.random.normal(loc=mu, scale=sigma, size=(df.shape[0]))
+      elif noisedistribution == 'laplace':
+        normal_samples = np.random.laplace(loc=mu, scale=sigma, size=(df.shape[0]))
+      binomial_samples = np.random.binomial(n=1, p=flip_prob, size=(df.shape[0]))
+
+      df[DPmm_column] = pd.DataFrame(normal_samples) * pd.DataFrame(binomial_samples)
+
+      #cap outliers
+      df[DPmm_column] = np.where(df[DPmm_column] < -0.5, -0.5, df[DPmm_column])
+      df[DPmm_column] = np.where(df[DPmm_column] > 0.5, 0.5, df[DPmm_column])
+
+      #adjacent cell infill (this is included as a precaution shouldn't have any effect since upstream normalization)
+      df[DPmm_column] = df[DPmm_column].fillna(method='ffill')
+      df[DPmm_column] = df[DPmm_column].fillna(method='bfill')
+
+      #support column to signal sign of noise, 0 is neg, 1 is pos
+      df[DPmm_column_temp1] = 0
+      df[DPmm_column_temp1] = np.where(df[DPmm_column] >= 0., 1, df[DPmm_column_temp1])
+
+      #now inject noise, with scaled noise to maintain range 0-1
+      #(so if mnmx value <0.5, and neg noise, we scale noise to maintain ratio as if minmax was 0.5, similarly for >0.5 mnmx)
+      df[DPmm_column] = np.where(df[column] < 0.5, \
+                                  df[column] + \
+                                  (1 - df[DPmm_column_temp1]) * (df[DPmm_column] * df[column] / 0.5) + \
+                                  (df[DPmm_column_temp1]) * (df[DPmm_column]), \
+                                  df[DPmm_column])
+
+      df[DPmm_column] = np.where(df[column] >= 0.5, \
+                                  df[column] + \
+                                  (1 - df[DPmm_column_temp1]) * (df[DPmm_column]) + \
+                                  (df[DPmm_column_temp1]) * (df[DPmm_column] * (1 - df[column]) / 0.5), \
+                                  df[DPmm_column])
+
+      #remove support column
+      del df[DPmm_column_temp1]
+      
+      return df
     
-    mdf_train[DPmm_column] = pd.DataFrame(normal_samples) * pd.DataFrame(binomial_samples)
+    mdf_train = injectmmnoise(mdf_train, DPmm_column, DPmm_column_temp1)
     
-    #cap outliers
-    mdf_train[DPmm_column] = np.where(mdf_train[DPmm_column] < -0.5, -0.5, mdf_train[DPmm_column])
-    mdf_train[DPmm_column] = np.where(mdf_train[DPmm_column] > 0.5, 0.5, mdf_train[DPmm_column])
-    
-    #adjacent cell infill (this is included as a precaution shouldn't have any effect since upstream normalization)
-    mdf_train[DPmm_column] = mdf_train[DPmm_column].fillna(method='ffill')
-    mdf_train[DPmm_column] = mdf_train[DPmm_column].fillna(method='bfill')
-    
-    #support column to signal sign of noise, 0 is neg, 1 is pos
-    mdf_train[DPmm_column_temp1] = 0
-    mdf_train[DPmm_column_temp1] = np.where(mdf_train[DPmm_column] >= 0., 1, mdf_train[DPmm_column_temp1])
-    
-    #now inject noise, with scaled noise to maintain range 0-1
-    #(so if mnmx value <0.5, and neg noise, we scale noise to maintain ratio as if minmax was 0.5, similarly for >0.5 mnmx)
-    mdf_train[DPmm_column] = np.where(mdf_train[column] < 0.5, \
-                                      mdf_train[column] + \
-                                      (1 - mdf_train[DPmm_column_temp1]) * (mdf_train[DPmm_column] * mdf_train[column] / 0.5) + \
-                                      (mdf_train[DPmm_column_temp1]) * (mdf_train[DPmm_column]), \
-                                      mdf_train[DPmm_column])
-    
-    mdf_train[DPmm_column] = np.where(mdf_train[column] >= 0.5, \
-                                      mdf_train[column] + \
-                                      (1 - mdf_train[DPmm_column_temp1]) * (mdf_train[DPmm_column]) + \
-                                      (mdf_train[DPmm_column_temp1]) * (mdf_train[DPmm_column] * (1 - mdf_train[column]) / 0.5), \
-                                      mdf_train[DPmm_column])
-    
-    #remove support column
-    del mdf_train[DPmm_column_temp1]
-    
-    #for test data is just pass-through
-    mdf_test[DPmm_column] = mdf_test[column]
+    #for test data is just pass-through unless testnoise is activated
+    if testnoise is False:
+      mdf_test[DPmm_column] = mdf_test[column].copy()
+    elif testnoise is True:
+      mdf_test = injectmmnoise(mdf_test, DPmm_column, DPmm_column_temp1)
     
     #create list of columns
     nmbrcolumns = [DPmm_column]
 
-    nmbrnormalization_dict = {DPmm_column : {'mu' : mu, 'sigma' : sigma, 'flip_prob' : flip_prob, \
+    nmbrnormalization_dict = {DPmm_column : {'mu' : mu, \
+                                             'sigma' : sigma, \
+                                             'flip_prob' : flip_prob, \
+                                             'testnoise' : testnoise, \
                                              'noisedistribution' : noisedistribution}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
@@ -19012,6 +19053,11 @@ class AutoMunge:
     else:
       #can pass as 'normal' or 'laplace'
       noisedistribution = 'normal'
+      
+    if 'testnoise' in params:
+      testnoise = params['testnoise']
+    else:
+      testnoise = False
       
     DPrt_column = column + '_DPrt'
     DPrt_column_temp1 = column + '_DPrt' + '_tmp1'
@@ -19156,61 +19202,70 @@ class AutoMunge:
       
     #now apply noise injection
     
-    #first we'll derive our sampled noise for injection
-    if noisedistribution == 'normal':
-      normal_samples = np.random.normal(loc=mu, scale=sigma, size=(mdf_train.shape[0]))
-    elif noisedistribution == 'laplace':
-      normal_samples = np.random.laplace(loc=mu, scale=sigma, size=(mdf_train.shape[0]))
-      
-    binomial_samples = np.random.binomial(n=1, p=flip_prob, size=(mdf_train.shape[0]))
+    def injectrtnoise(df, DPrt_column, DPrt_column_temp1, DPrt_column_temp2):
+      #support function for DPrt noise injection
     
-    mdf_train[DPrt_column_temp2] = pd.DataFrame(normal_samples) * pd.DataFrame(binomial_samples)
+      #first we'll derive our sampled noise for injection
+      if noisedistribution == 'normal':
+        normal_samples = np.random.normal(loc=mu, scale=sigma, size=(df.shape[0]))
+      elif noisedistribution == 'laplace':
+        normal_samples = np.random.laplace(loc=mu, scale=sigma, size=(df.shape[0]))
+
+      binomial_samples = np.random.binomial(n=1, p=flip_prob, size=(df.shape[0]))
+
+      df[DPrt_column_temp2] = pd.DataFrame(normal_samples) * pd.DataFrame(binomial_samples)
+
+      #cap outliers
+      df[DPrt_column_temp2] = np.where(df[DPrt_column_temp2] < -0.5, -0.5, df[DPrt_column_temp2])
+      df[DPrt_column_temp2] = np.where(df[DPrt_column_temp2] > 0.5, 0.5, df[DPrt_column_temp2])
+
+      #support column to signal sign of noise, 0 is neg, 1 is pos
+      df[DPrt_column_temp1] = 0
+      df[DPrt_column_temp1] = np.where(df[DPrt_column_temp2] >= 0., 1, df[DPrt_column_temp1])
+
+      #for noise injection we'll first move data into range 0-1 and then revert after injection
+      if scalingapproach == 'retn':
+        df[DPrt_column] = (df[DPrt_column] - (minimum / divisor) ) / multiplier - offset
+      elif scalingapproach == 'mnmx':
+        df[DPrt_column] = (df[DPrt_column]) / multiplier - offset
+      elif scalingapproach == 'mxmn':
+        df[DPrt_column] = (df[DPrt_column] + (maximum - minimum) / divisor) / multiplier - offset
+
+
+      #now inject noise, with scaled noise to maintain range 0-1
+      #(so if mnmx value <0.5, and neg noise, we scale noise to maintain ratio as if minmax was 0.5, similarly for >0.5 mnmx)
+      df[DPrt_column] = np.where(df[DPrt_column] < 0.5, \
+                                  df[DPrt_column] + \
+                                  (1 - df[DPrt_column_temp1]) * (df[DPrt_column_temp2] * df[DPrt_column] / 0.5) + \
+                                  (df[DPrt_column_temp1]) * (df[DPrt_column_temp2]), \
+                                  df[DPrt_column])
+
+      df[DPrt_column] = np.where(df[DPrt_column] >= 0.5, \
+                                  df[DPrt_column] + \
+                                  (1 - df[DPrt_column_temp1]) * (df[DPrt_column_temp2]) + \
+                                  (df[DPrt_column_temp1]) * (df[DPrt_column_temp2] * (1 - df[DPrt_column]) / 0.5), \
+                                  df[DPrt_column])
+
+      #remove support columns
+      del df[DPrt_column_temp1]
+      del df[DPrt_column_temp2]
+
+      #for noise injection we'll first move data into range 0-1 and then revert after injection
+      if scalingapproach == 'retn':
+        df[DPrt_column] = (df[DPrt_column] + (minimum / divisor) ) * multiplier + offset
+      elif scalingapproach == 'mnmx':
+        df[DPrt_column] = (df[DPrt_column]) * multiplier + offset
+      elif scalingapproach == 'mxmn':
+        df[DPrt_column] = (df[DPrt_column] - (maximum - minimum) / divisor) * multiplier + offset
+        
+      return df
     
-    #cap outliers
-    mdf_train[DPrt_column_temp2] = np.where(mdf_train[DPrt_column_temp2] < -0.5, -0.5, mdf_train[DPrt_column_temp2])
-    mdf_train[DPrt_column_temp2] = np.where(mdf_train[DPrt_column_temp2] > 0.5, 0.5, mdf_train[DPrt_column_temp2])
-    
-    #support column to signal sign of noise, 0 is neg, 1 is pos
-    mdf_train[DPrt_column_temp1] = 0
-    mdf_train[DPrt_column_temp1] = np.where(mdf_train[DPrt_column_temp2] >= 0., 1, mdf_train[DPrt_column_temp1])
-    
-    #for noise injection we'll first move data into range 0-1 and then revert after injection
-    if scalingapproach == 'retn':
-      mdf_train[DPrt_column] = (mdf_train[DPrt_column] - (minimum / divisor) ) / multiplier - offset
-    elif scalingapproach == 'mnmx':
-      mdf_train[DPrt_column] = (mdf_train[DPrt_column]) / multiplier - offset
-    elif scalingapproach == 'mxmn':
-      mdf_train[DPrt_column] = (mdf_train[DPrt_column] + (maximum - minimum) / divisor) / multiplier - offset
-      
-    
-    #now inject noise, with scaled noise to maintain range 0-1
-    #(so if mnmx value <0.5, and neg noise, we scale noise to maintain ratio as if minmax was 0.5, similarly for >0.5 mnmx)
-    mdf_train[DPrt_column] = np.where(mdf_train[DPrt_column] < 0.5, \
-                                      mdf_train[DPrt_column] + \
-                                      (1 - mdf_train[DPrt_column_temp1]) * (mdf_train[DPrt_column_temp2] * mdf_train[DPrt_column] / 0.5) + \
-                                      (mdf_train[DPrt_column_temp1]) * (mdf_train[DPrt_column_temp2]), \
-                                      mdf_train[DPrt_column])
-    
-    mdf_train[DPrt_column] = np.where(mdf_train[DPrt_column] >= 0.5, \
-                                      mdf_train[DPrt_column] + \
-                                      (1 - mdf_train[DPrt_column_temp1]) * (mdf_train[DPrt_column_temp2]) + \
-                                      (mdf_train[DPrt_column_temp1]) * (mdf_train[DPrt_column_temp2] * (1 - mdf_train[DPrt_column]) / 0.5), \
-                                      mdf_train[DPrt_column])
-    
-    #remove support columns
-    del mdf_train[DPrt_column_temp1]
-    del mdf_train[DPrt_column_temp2]
-    
-    #for noise injection we'll first move data into range 0-1 and then revert after injection
-    if scalingapproach == 'retn':
-      mdf_train[DPrt_column] = (mdf_train[DPrt_column] + (minimum / divisor) ) * multiplier + offset
-    elif scalingapproach == 'mnmx':
-      mdf_train[DPrt_column] = (mdf_train[DPrt_column]) * multiplier + offset
-    elif scalingapproach == 'mxmn':
-      mdf_train[DPrt_column] = (mdf_train[DPrt_column] - (maximum - minimum) / divisor) * multiplier + offset
+    mdf_train = injectrtnoise(mdf_train, DPrt_column, DPrt_column_temp1, DPrt_column_temp2)
     
     #for test data is just pass-through
     #mdf_test[DPrt_column] = mdf_test[DPrt_column]
+    if testnoise is True:
+      mdf_test = injectrtnoise(mdf_test, DPrt_column, DPrt_column_temp1, DPrt_column_temp2)
     
     #create list of columns
     nmbrcolumns = [DPrt_column]
@@ -19234,6 +19289,7 @@ class AutoMunge:
                                              'floor' : floor, \
                                              'divisor' : divisor, \
                                              'adjinfill' : adjinfill, \
+                                             'testnoise' : testnoise, \
                                             }}
     
     for nc in nmbrcolumns:
@@ -19278,6 +19334,11 @@ class AutoMunge:
     else:
       flip_prob = 0.03
       
+    if 'testnoise' in params:
+      testnoise = params['testnoise']
+    else:
+      testnoise = False
+      
     DPbn_column = column + '_DPbn'
     
     suffixoverlap_results = \
@@ -19289,13 +19350,22 @@ class AutoMunge:
     #now inject noise
     mdf_train[DPbn_column] = abs(mdf_train[column] - mdf_train[DPbn_column])
     
-    #for test data is just pass-through
-    mdf_test[DPbn_column] = mdf_test[column]
+    #for test data is just pass-through unless testnoise is activated
+    if testnoise is False:
+      mdf_test[DPbn_column] = mdf_test[column].copy()
+    elif testnoise is True:
+      #first we'll derive our sampled noise for injection
+      mdf_test[DPbn_column] = pd.DataFrame(np.random.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0])))
+
+      #now inject noise
+      mdf_test[DPbn_column] = abs(mdf_test[column] - mdf_test[DPbn_column])
+      
     
     #create list of columns
     nmbrcolumns = [DPbn_column]
 
-    nmbrnormalization_dict = {DPbn_column : {'flip_prob' : flip_prob}}
+    nmbrnormalization_dict = {DPbn_column : {'flip_prob' : flip_prob, \
+                                             'testnoise' : testnoise}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -19344,6 +19414,11 @@ class AutoMunge:
     else:
       flip_prob = 0.03
       
+    if 'testnoise' in params:
+      testnoise = params['testnoise']
+    else:
+      testnoise = False
+      
     DPod_column = column + '_DPod'
     DPod_tempcolumn1 = column + '_DPod_tmp1'
     DPod_tempcolumn2 = column + '_DPod_tmp2'
@@ -19368,13 +19443,27 @@ class AutoMunge:
     del mdf_train[DPod_tempcolumn1]
     del mdf_train[DPod_tempcolumn2]
     
-    #for test data is just pass-through
-    mdf_test[DPod_column] = mdf_test[column]
-    
+    #for test data is just pass-through unless testnoise is activated
+    if testnoise is False:
+      mdf_test[DPod_column] = mdf_test[column].copy()
+    elif testnoise is True:
+      #first we'll derive our sampled noise for injection
+      mdf_test[DPod_tempcolumn1] = pd.DataFrame(np.random.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0])))
+      mdf_test[DPod_tempcolumn2] = pd.DataFrame(np.random.choice(ord_encodings, size=(mdf_test.shape[0])))
+
+      #now inject noise
+      #this returns column value when DPod_tempcolumn1 is 0 or DPod_tempcolumn2 when DPod_tempcolumn1 is 1
+      mdf_test[DPod_column] = \
+      mdf_test[column] * (1 - mdf_test[DPod_tempcolumn1]) + mdf_test[DPod_tempcolumn1] * mdf_test[DPod_tempcolumn2]
+
+      del mdf_test[DPod_tempcolumn1]
+      del mdf_test[DPod_tempcolumn2]
+
     #create list of columns
     nmbrcolumns = [DPod_column]
 
-    nmbrnormalization_dict = {DPod_column : {'flip_prob' : flip_prob}}
+    nmbrnormalization_dict = {DPod_column : {'flip_prob' : flip_prob, \
+                                             'testnoise' : testnoise}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -29515,7 +29604,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.96'
+    automungeversion = '5.97'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -35338,13 +35427,16 @@ class AutoMunge:
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['flip_prob']
     noisedistribution = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['noisedistribution']
+    testnoise = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['testnoise']
 
+    
     DPnm_column = column + '_DPnb'
     
     #check if df_test is to be treated as train or test data
     traindata = postprocess_dict['traindata']
     
-    if traindata is True:
+    if traindata is True or testnoise is True:
       
       #first we'll derive our sampled noise for injection
       if noisedistribution == 'normal':
@@ -35359,10 +35451,10 @@ class AutoMunge:
       #now inject noise
       mdf_test[DPnm_column] = mdf_test[DPnm_column] + mdf_test[column]
       
-    elif traindata is False:
+    else:
       
       #for test data is just pass-through
-      mdf_test[DPnm_column] = mdf_test[column]
+      mdf_test[DPnm_column] = mdf_test[column].copy()
 
     return mdf_test
 
@@ -35397,6 +35489,8 @@ class AutoMunge:
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['flip_prob']
     noisedistribution = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['noisedistribution']
+    testnoise = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['testnoise']
 
     DPmm_column = column + '_DPmm'
     DPmm_column_temp1 = column + '_DPmm' + '_tmp1'
@@ -35404,7 +35498,7 @@ class AutoMunge:
     #check if df_test is to be treated as train or test data
     traindata = postprocess_dict['traindata']
     
-    if traindata is True:
+    if traindata is True or testnoise is True:
       
       if noisedistribution == 'normal':
         normal_samples = np.random.normal(loc=mu, scale=sigma, size=(mdf_test.shape[0]))
@@ -35444,10 +35538,10 @@ class AutoMunge:
       #remove support column
       del mdf_test[DPmm_column_temp1]
 
-    elif traindata is False:
+    else:
       
       #for test data is just pass-through
-      mdf_test[DPmm_column] = mdf_test[column]
+      mdf_test[DPmm_column] = mdf_test[column].copy()
 
     return mdf_test
 
@@ -35505,6 +35599,8 @@ class AutoMunge:
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['divisor']
     adjinfill = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['adjinfill']
+    testnoise = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['testnoise']
     
     mu = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mu']
@@ -35569,7 +35665,7 @@ class AutoMunge:
     traindata = postprocess_dict['traindata']
     
     #if this is train data we'll inject noise
-    if traindata is True:
+    if traindata is True or testnoise is True:
       
       #first we'll derive our sampled noise for injection
       
@@ -35647,13 +35743,15 @@ class AutoMunge:
     
     flip_prob = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['flip_prob']
+    testnoise = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['testnoise']
 
     DPbn_column = column + '_DPbn'
     
     #check if df_test is to be treated as train or test data
     traindata = postprocess_dict['traindata']
     
-    if traindata is True:
+    if traindata is True or testnoise is True:
       
       #first we'll derive our sampled noise for injection
       mdf_test[DPbn_column] = pd.DataFrame(np.random.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0])))
@@ -35661,10 +35759,10 @@ class AutoMunge:
       #now inject noise
       mdf_test[DPbn_column] = abs(mdf_test[column] - mdf_test[DPbn_column])
       
-    elif traindata is False:
+    else:
       
       #for test data is just pass-through
-      mdf_test[DPbn_column] = mdf_test[column]
+      mdf_test[DPbn_column] = mdf_test[column].copy()
 
     return mdf_test
 
@@ -35691,6 +35789,8 @@ class AutoMunge:
     
     flip_prob = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['flip_prob']
+    testnoise = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['testnoise']
 
     DPod_column = column + '_DPod'
     DPod_tempcolumn1 = column + '_DPod_tmp1'
@@ -35699,7 +35799,7 @@ class AutoMunge:
     #check if df_test is to be treated as train or test data
     traindata = postprocess_dict['traindata']
     
-    if traindata is True:
+    if traindata is True or testnoise is True:
       
       ord_encodings = False
       
@@ -35727,10 +35827,10 @@ class AutoMunge:
       del mdf_test[DPod_tempcolumn1]
       del mdf_test[DPod_tempcolumn2]
       
-    elif traindata is False:
+    else:
       
       #for test data is just pass-through
-      mdf_test[DPod_column] = mdf_test[column]
+      mdf_test[DPod_column] = mdf_test[column].copy()
 
     return mdf_test
 
