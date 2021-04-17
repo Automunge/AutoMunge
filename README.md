@@ -2668,6 +2668,17 @@ efficient than one-hot encoding)
   (for example if 1010 encoded to three columns based on number of categories <8,
   it would return three columns with suffix appenders 1010_1, 1010_2, 1010_3)
   - inversion available: yes with full recovery
+* maxb / matx / ma10: categoric encodings that allow user to cap the number activations in the set. 
+maxb (ordinal), matx (one hot), and ma10 (binary). 
+  - default infill: plug value 'zzzinfill'
+  - default NArowtype: justNaN
+  - suffix appender: '\_maxb'
+  - assignparam parameters accepted:
+    - 'maxbincount': set a maximum number of activations (integer) default False
+    - 'minentrycount': set a minimum number of entries in train set to register an activation (integer) default False
+    - 'minentryratio': set a minimum ratio of entries in train set to register an activation (float between 0-1)
+  - driftreport postmunge metrics: new_maxactivation / consolidation_count
+  - inversion available: yes with full recovery
 * ucct: converts categorical sets to a normalized float of unique class count,
 for example, a 10 row train set with two instances of 'circle' would replace 'circle' with 0.2
 and comparable to test set independent of test set row count
@@ -3490,6 +3501,9 @@ avoid unintentional duplication.
 - 'log0',
 - 'log1',
 - 'logn',
+- 'ma10',
+- 'matx',
+- 'maxb',
 - 'mdcs',
 - 'mdsn',
 - 'mea2',
@@ -3591,6 +3605,9 @@ avoid unintentional duplication.
 - 'or21',
 - 'or22',
 - 'or23',
+- 'or3b',
+- 'or3c',
+- 'or3d',
 - 'ord2',
 - 'ord3',
 - 'ord4',
@@ -3757,6 +3774,7 @@ present in dataframe and return results in postprocess_dict['miscparameters_resu
 - '_logn'
 - '_MAD3'
 - '_MADn'
+- '_maxb'
 - '_mdcs'
 - '_mdsn'
 - '_mean'
@@ -5074,6 +5092,60 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'auntsuncles'   : ['ord5'], \
                                      'cousins'       : [NArw], \
                                      'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+
+    transform_dict.update({'maxb' : {'parents'       : ['or3b'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+  
+    transform_dict.update({'or3b' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['or3b'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['maxb'], \
+                                     'friends'       : []}})
+  
+    transform_dict.update({'matx' : {'parents'       : ['or3c'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['onht'], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'or3c' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['or3c'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : ['matx'], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'ma10' : {'parents'       : ['or3d'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['1010'], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'or3d' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['or3d'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : ['ma10'], \
                                      'niecesnephews' : [], \
                                      'coworkers'     : [], \
                                      'friends'       : []}})
