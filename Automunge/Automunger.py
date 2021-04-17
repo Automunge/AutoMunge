@@ -1319,6 +1319,60 @@ class AutoMunge:
                                      'niecesnephews' : [], \
                                      'coworkers'     : [], \
                                      'friends'       : []}})
+
+    transform_dict.update({'maxb' : {'parents'       : ['or3b'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+  
+    transform_dict.update({'or3b' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['or3b'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['maxb'], \
+                                     'friends'       : []}})
+  
+    transform_dict.update({'matx' : {'parents'       : ['or3c'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['onht'], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'or3c' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['or3c'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : ['matx'], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'ma10' : {'parents'       : ['or3d'], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : [], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : ['1010'], \
+                                     'friends'       : []}})
+    
+    transform_dict.update({'or3d' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['or3d'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : ['ma10'], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
     
     transform_dict.update({'ucct' : {'parents'       : [], \
                                      'siblings'      : [], \
@@ -4712,6 +4766,60 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'ordl'}})
+    process_dict.update({'maxb' : {'dualprocess' : self.process_maxb, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_maxb, \
+                                  'inverseprocess' : self.inverseprocess_UPCS, \
+                                  'info_retention' : True, \
+                                  'inplace_option' : True, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'singlct', \
+                                  'labelctgy' : 'maxb'}})
+    process_dict.update({'or3b' : {'dualprocess' : self.process_ord3, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_ord3, \
+                                  'inverseprocess' : self.inverseprocess_ord3, \
+                                  'info_retention' : True, \
+                                  'inplace_option' : True, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'singlct', \
+                                  'labelctgy' : 'maxb'}})
+    process_dict.update({'matx' : {'dualprocess' : self.process_maxb, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_maxb, \
+                                  'inverseprocess' : self.inverseprocess_UPCS, \
+                                  'info_retention' : True, \
+                                  'inplace_option' : True, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'singlct', \
+                                  'labelctgy' : 'onht'}})
+    process_dict.update({'or3c' : {'dualprocess' : self.process_ord3, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_ord3, \
+                                  'inverseprocess' : self.inverseprocess_ord3, \
+                                  'info_retention' : True, \
+                                  'inplace_option' : True, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'singlct', \
+                                  'labelctgy' : 'onht'}})
+    process_dict.update({'ma10' : {'dualprocess' : self.process_maxb, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_maxb, \
+                                  'inverseprocess' : self.inverseprocess_UPCS, \
+                                  'info_retention' : True, \
+                                  'inplace_option' : True, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'singlct', \
+                                  'labelctgy' : '1010'}})
+    process_dict.update({'or3d' : {'dualprocess' : self.process_ord3, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self.postprocess_ord3, \
+                                  'inverseprocess' : self.inverseprocess_ord3, \
+                                  'info_retention' : True, \
+                                  'inplace_option' : True, \
+                                  'NArowtype' : 'justNaN', \
+                                  'MLinfilltype' : 'singlct', \
+                                  'labelctgy' : '1010'}})
     process_dict.update({'ucct' : {'dualprocess' : self.process_ucct, \
                                   'singleprocess' : None, \
                                   'postprocess' : self.postprocess_ucct, \
@@ -14164,6 +14272,215 @@ class AutoMunge:
 
       column_dict_list.append(column_dict.copy())
     
+    return mdf_train, mdf_test, column_dict_list
+
+  def process_maxb(self, mdf_train, mdf_test, column, category, \
+                   postprocess_dict, params = {}):
+    '''
+    #process_maxb
+    #function to translate an ord3 ordinal encoded categoric set
+    #to a reduced number of activations based on a maxbincount parameter
+    #where maxbincount can be passed as integer
+    #for setting the maximum number of activations
+    #alternately, user can set parameter minentrycount
+    #as integer of the minimum number of entries in train set to include actiations
+    #finally, minentryratio can also be passed as a float between 0-1
+    #to designate the minimum ratio of entries in an activation to register
+    #consolidated activations will be aggregated into the top activation
+    #eg if maxbincount is 4, 0-3 will be retained and reaminder aggregated into 4
+    #for missing values, uses adjacent cell infill as default
+    #we'll set default values as False signalling not applied
+    '''
+    
+    suffixoverlap_results = {}
+    
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
+    #initialize parameters
+    if 'maxbincount' in params:
+      maxbincount = params['maxbincount']
+    else:
+      maxbincount = False
+      
+    #initialize parameters
+    if 'minentrycount' in params:
+      minentrycount = params['minentrycount']
+    else:
+      minentrycount = False
+      
+    #initialize parameters
+    if 'minentryratio' in params:
+      minentryratio = params['minentryratio']
+    else:
+      minentryratio = False
+    
+    if inplace is not True:
+      
+      #copy source column into new column
+      mdf_train, suffixoverlap_results = \
+      self.df_copy_train(mdf_train, column, column + '_maxb', suffixoverlap_results)
+
+      mdf_test[column + '_maxb'] = mdf_test[column].copy()
+    
+    else:
+      
+      suffixoverlap_results = \
+      self.df_check_suffixoverlap(mdf_train, column + '_maxb', suffixoverlap_results)
+      
+      mdf_train.rename(columns = {column : column + '_maxb'}, inplace = True)
+      mdf_test.rename(columns = {column : column + '_maxb'}, inplace = True)
+    
+    #convert all values to either numeric or NaN
+    mdf_train[column + '_maxb'] = pd.to_numeric(mdf_train[column + '_maxb'], errors='coerce')
+    mdf_test[column + '_maxb'] = pd.to_numeric(mdf_test[column + '_maxb'], errors='coerce')
+    
+    #non integers are subject to infill
+    mdf_train[column + '_maxb'] = np.where(mdf_train[column + '_maxb'] == mdf_train[column + '_maxb'].round(), mdf_train[column + '_maxb'], np.nan)
+    mdf_test[column + '_maxb'] = np.where(mdf_test[column + '_maxb'] == mdf_test[column + '_maxb'].round(), mdf_test[column + '_maxb'], np.nan)
+    
+    #apply ffill to replace nan with value from adjacent cell in pre4ceding row
+    mdf_train[column + '_maxb'] = mdf_train[column + '_maxb'].fillna(method='ffill')
+    mdf_test[column + '_maxb'] = mdf_test[column + '_maxb'].fillna(method='ffill')
+    
+    #we'll follow with a bfill just in case first row had a nan
+    mdf_train[column + '_maxb'] = mdf_train[column + '_maxb'].fillna(method='bfill')
+    mdf_test[column + '_maxb'] = mdf_test[column + '_maxb'].fillna(method='bfill')
+    
+    #then one more infill with to address scenario when data wasn't numeric
+    #get arbitrary cell value, if one is nan then all will be
+    mdf_train[column + '_maxb'] = mdf_train[column + '_maxb'].fillna(0)
+    mdf_test[column + '_maxb'] = mdf_test[column + '_maxb'].fillna(0)
+    
+    #get maximum train set activation which for ord3 will be least frequent entry
+    maxactivation = int(mdf_train[column + '_maxb'].max())
+    
+    #first we'll inspect maxbincount
+    bincount_maxactivation = maxactivation
+    if maxbincount is not False:
+      
+      #current max activation
+      if maxactivation > maxbincount:
+        
+        bincount_maxactivation = maxbincount
+        
+        mdf_train[column + '_maxb'] = \
+        np.where(mdf_train[column + '_maxb'] < bincount_maxactivation, mdf_train[column + '_maxb'], bincount_maxactivation)
+        mdf_test[column + '_maxb'] = \
+        np.where(mdf_test[column + '_maxb'] < bincount_maxactivation, mdf_test[column + '_maxb'], bincount_maxactivation)
+    
+    #then inspect minentrycount
+    count_maxactivation = maxactivation
+    if minentrycount is not False:
+      
+      if minentrycount >= 1:
+
+        entry_counts = {}
+        for i in range(maxactivation + 1):
+
+          count = mdf_train[mdf_train[column + '_maxb'] == i].shape[0]
+          entry_counts.update({i : count})
+          
+        for i in entry_counts:
+          
+          if entry_counts[i] < minentrycount:
+            
+            count_maxactivation = i
+            break
+            
+        if count_maxactivation < maxactivation:
+            
+          mdf_train[column + '_maxb'] = \
+          np.where(mdf_train[column + '_maxb'] < count_maxactivation, mdf_train[column + '_maxb'], count_maxactivation)
+          mdf_test[column + '_maxb'] = \
+          np.where(mdf_test[column + '_maxb'] < count_maxactivation, mdf_test[column + '_maxb'], count_maxactivation)
+      
+    #else if minentrycount passed as a ratio
+    ratio_maxactivation = maxactivation
+    if minentryratio is not False:
+
+      if minentryratio > 0. and minentryratio < 1.:
+
+        train_row_count = mdf_train.shape[0]
+
+        entry_ratios = {}
+        for i in range(maxactivation + 1):
+
+          ratio = mdf_train[mdf_train[column + '_maxb'] == i].shape[0] / train_row_count
+          entry_ratios.update({i : ratio})
+
+        for i in entry_ratios:
+
+          if entry_ratios[i] < minentryratio:
+
+            ratio_maxactivation = i
+            break
+
+        if ratio_maxactivation < maxactivation:
+
+          mdf_train[column + '_maxb'] = \
+          np.where(mdf_train[column + '_maxb'] < ratio_maxactivation, mdf_train[column + '_maxb'], ratio_maxactivation)
+          mdf_test[column + '_maxb'] = \
+          np.where(mdf_test[column + '_maxb'] < ratio_maxactivation, mdf_test[column + '_maxb'], ratio_maxactivation)
+
+    #create list of columns
+    nmbrcolumns = [column + '_maxb']
+
+    #grab some driftreport metrics
+    new_maxactivation = maxactivation
+    if bincount_maxactivation < new_maxactivation:
+      new_maxactivation = bincount_maxactivation
+    if count_maxactivation < new_maxactivation:
+      new_maxactivation = count_maxactivation
+    if ratio_maxactivation < new_maxactivation:
+      new_maxactivation = ratio_maxactivation
+    
+    consolidation_count = 0
+    if new_maxactivation < maxactivation:
+      consolidation_count = mdf_train[mdf_train[column + '_maxb'] == new_maxactivation].shape[0]
+      
+    #set integer type based on encoding depth
+    if new_maxactivation < 254:
+      mdf_train[column + '_maxb'] = mdf_train[column + '_maxb'].astype(np.uint8)
+      mdf_test[column + '_maxb'] = mdf_test[column + '_maxb'].astype(np.uint8)
+    elif new_maxactivation < 65534:
+      mdf_train[column + '_maxb'] = mdf_train[column + '_maxb'].astype(np.uint16)
+      mdf_test[column + '_maxb'] = mdf_test[column + '_maxb'].astype(np.uint16)
+    else:
+      mdf_train[column + '_maxb'] = mdf_train[column + '_maxb'].astype(np.uint32)
+      mdf_test[column + '_maxb'] = mdf_test[column + '_maxb'].astype(np.uint32)
+
+    normalization_dict = {column + '_maxb' : {'bincount_maxactivation' : bincount_maxactivation, \
+                                              'count_maxactivation' : count_maxactivation, \
+                                              'ratio_maxactivation' : ratio_maxactivation, \
+                                              'new_maxactivation' : new_maxactivation, \
+                                              'orig_maxactivation' : maxactivation, \
+                                              'consolidation_count' : consolidation_count, \
+                                              'maxbincount' : maxbincount, \
+                                              'minentrycount' : minentrycount, \
+                                              'minentryratio' : minentryratio}}
+    
+    #store some values in the nmbr_dict{} for use later in ML infill methods
+    column_dict_list = []
+
+    for nc in nmbrcolumns:
+      
+      column_dict = { nc : {'category' : 'maxb', \
+                           'origcategory' : category, \
+                           'normalization_dict' : normalization_dict, \
+                           'origcolumn' : column, \
+                           'inputcolumn' : column, \
+                           'columnslist' : nmbrcolumns, \
+                           'categorylist' : nmbrcolumns, \
+                           'infillmodel' : False, \
+                           'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
+                           'deletecolumn' : False}}
+
+      column_dict_list.append(column_dict.copy())
+        
     return mdf_train, mdf_test, column_dict_list
   
   def process_ucct(self, mdf_train, mdf_test, column, category, \
@@ -29604,7 +29921,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.97'
+    automungeversion = '5.98'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -33433,6 +33750,65 @@ class AutoMunge:
 #     #convert column to category
 #     mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype('category')
     
+    return mdf_test
+
+  def postprocess_maxb(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+    '''
+    #postprocess_maxb(mdf_test, column, postprocess_dict, columnkey)
+    #simpler than dualprocess version
+    #just inspects new_maxactivation
+    #and consolidates larger activations
+    '''
+    
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
+    #retrieve normalizastion parameters from postprocess_dict
+    normkey = column + '_maxb'
+    
+    new_maxactivation = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['new_maxactivation']
+    
+    if inplace is not True:
+      #copy source column into new column
+      mdf_test[column + '_maxb'] = mdf_test[column].copy()
+    else:
+      mdf_test.rename(columns = {column : column + '_maxb'}, inplace = True)
+
+    #convert all values to either numeric or NaN
+    mdf_test[column + '_maxb'] = pd.to_numeric(mdf_test[column + '_maxb'], errors='coerce')
+    
+    #non integers are subject to infill
+    mdf_test[column + '_maxb'] = np.where(mdf_test[column + '_maxb'] == mdf_test[column + '_maxb'].round(), mdf_test[column + '_maxb'], np.nan)
+    
+    #apply ffill to replace nan with value from adjacent cell in pre4ceding row
+    mdf_test[column + '_maxb'] = mdf_test[column + '_maxb'].fillna(method='ffill')
+    
+    #we'll follow with a bfill just in case first row had a nan
+    mdf_test[column + '_maxb'] = mdf_test[column + '_maxb'].fillna(method='bfill')
+    
+    #then one more infill with to address scenario when data wasn't numeric
+    #get arbitrary cell value, if one is nan then all will be
+    mdf_test[column + '_maxb'] = mdf_test[column + '_maxb'].fillna(0)
+    
+    #get maximum train set activation which for ord3 will be least frequent entry
+    maxactivation = int(mdf_test[column + '_maxb'].max())
+    
+    if new_maxactivation < maxactivation:
+      
+      mdf_test[column + '_maxb'] = \
+      np.where(mdf_test[column + '_maxb'] < new_maxactivation, mdf_test[column + '_maxb'], new_maxactivation)
+      
+    #set integer type based on encoding depth
+    if new_maxactivation < 254:
+      mdf_test[column + '_maxb'] = mdf_test[column + '_maxb'].astype(np.uint8)
+    elif new_maxactivation < 65534:
+      mdf_test[column + '_maxb'] = mdf_test[column + '_maxb'].astype(np.uint16)
+    else:
+      mdf_test[column + '_maxb'] = mdf_test[column + '_maxb'].astype(np.uint32)
+
     return mdf_test
   
   def postprocess_ucct(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
