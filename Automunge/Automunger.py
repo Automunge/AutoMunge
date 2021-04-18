@@ -28470,7 +28470,7 @@ class AutoMunge:
                 dupl_rows = False, TrainLabelFreqLevel = False, powertransform = False, binstransform = False, \
                 MLinfill = True, infilliterate=1, randomseed = False, eval_ratio = .5, \
                 numbercategoryheuristic = 255, pandasoutput = True, NArw_marker = True, \
-                featureselection = False, featurethreshold = 0., \
+                featureselection = False, featurethreshold = 0., inplace = False, \
                 Binary = False, PCAn_components = False, PCAexcl = [], excl_suffix = False, \
                 ML_cmnd = {'MLinfill_type':'default', \
                            'MLinfill_cmnd':{'RandomForestClassifier':{}, 'RandomForestRegressor':{}}, \
@@ -28840,8 +28840,9 @@ class AutoMunge:
 
     #copy input dataframes to internal state so as not to edit exterior objects
     #this helps with recursion in feature importance
-    df_train = df_train.copy()
-    df_test = df_test.copy()
+    if inplace is False:
+      df_train = df_train.copy()
+      df_test = df_test.copy()
 
     #worth a disclaimer:
     #the trainID_column and testID_column column parameters are somewhat overloaded
@@ -29921,7 +29922,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.98'
+    automungeversion = '5.99'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -29961,6 +29962,7 @@ class AutoMunge:
                              'FSmodel' : FSmodel, \
                              'FScolumn_dict' : FScolumn_dict, \
                              'FS_sorted' : FS_sorted, \
+                             'inplace' : inplace, \
                              'drift_dict' : drift_dict, \
                              'train_rowcount' : train_rowcount, \
                              'Binary' : Binary, \
@@ -37306,7 +37308,7 @@ class AutoMunge:
 
   def postmunge(self, postprocess_dict, df_test, \
                 testID_column = False, labelscolumn = False, \
-                pandasoutput = True, printstatus = True, \
+                pandasoutput = True, printstatus = True, inplace = False, \
                 dupl_rows = False, TrainLabelFreqLevel = False, featureeval = False, \
                 LabelSmoothing = False, LSfit = False, traindata = False, \
                 driftreport = False, inversion = False, \
@@ -37456,8 +37458,8 @@ class AutoMunge:
     assign_param = postprocess_dict['assign_param']
 
     #copy input dataframes to internal state so as not to edit exterior objects
-#     if inplace is False:
-    df_test = df_test.copy()
+    if inplace is False:
+      df_test = df_test.copy()
 #     elif inplace is True:
 #       pass
 
