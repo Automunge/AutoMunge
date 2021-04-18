@@ -867,7 +867,7 @@ importance dimensionality reduction. Where e.g. for 'pct' 0.9 would retain 90% o
 features, or e.g. for 'metric' 0.03 would retain features whose metric was >0.03. Note that
 NArw columns are only retained for those sets corresponding to columns that "made the cut".
 
-* inplace: defaults top False, when True the df_train (and df_test) passed to automunge(.)
+* inplace: defaults to False, when True the df_train (and df_test) passed to automunge(.)
 are overwritten with the returned train and test sets. This reduces memory overhead.
 For example, to take advantage with reduced memory overhead you could call automunge(.) as:
 ```
@@ -1766,7 +1766,7 @@ passed to function). If set to _False_ returns numpy arrays instead of dataframe
 * printstatus: user can pass _True/False_ indicating whether the function 
 will print status of processing during operation. Defaults to True.
 
-* inplace: defaults top False, when True the df_test passed to postmunge(.)
+* inplace: defaults to False, when True the df_test passed to postmunge(.)
 is overwritten with the returned test set. This reduces memory overhead.
 For example, to take advantage with reduced memory overhead you could call postmunge(.) as:
 ```
