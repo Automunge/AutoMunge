@@ -135,7 +135,7 @@ am.automunge(df_train, df_test = False, \
              dupl_rows = False, TrainLabelFreqLevel = False, powertransform = False, binstransform = False, \
              MLinfill = True, infilliterate=1, randomseed = False, eval_ratio = .5, \
              numbercategoryheuristic = 255, pandasoutput = True, NArw_marker = True, \
-             featureselection = False, featurethreshold = 0., \
+             featureselection = False, featurethreshold = 0., inplace = False, \
              Binary = False, PCAn_components = False, PCAexcl = [], excl_suffix = False, \
              ML_cmnd = {'autoML_type':'randomforest', \
                         'MLinfill_cmnd':{'RandomForestClassifier':{}, 'RandomForestRegressor':{}}, \
@@ -365,7 +365,7 @@ am.automunge(df_train, df_test = False, \
              dupl_rows = False, TrainLabelFreqLevel = False, powertransform = False, binstransform = False, \
              MLinfill = True, infilliterate=1, randomseed = False, eval_ratio = .5, \
              numbercategoryheuristic = 255, pandasoutput = True, NArw_marker = True, \
-             featureselection = False, featurethreshold = 0., \
+             featureselection = False, featurethreshold = 0., inplace = False, \
              Binary = False, PCAn_components = False, PCAexcl = [], excl_suffix = False, \
              ML_cmnd = {'autoML_type':'randomforest', \
                         'MLinfill_cmnd':{'RandomForestClassifier':{}, 'RandomForestRegressor':{}}, \
@@ -443,7 +443,7 @@ test, testID, testlabels, \
 labelsencoding_dict, postreports_dict = \
 am.postmunge(postprocess_dict, df_test, \
              testID_column = False, labelscolumn = False, \
-             pandasoutput = True, printstatus = True, \
+             pandasoutput = True, printstatus = True, inplace = False, \
              dupl_rows = False, TrainLabelFreqLevel = False, featureeval = False, \
              inversion = False, traindata = False, \
              driftreport = False, inversion = False, \
@@ -602,7 +602,7 @@ am.automunge(df_train, df_test = False, \
              dupl_rows = False, TrainLabelFreqLevel = False, powertransform = False, binstransform = False, \
              MLinfill = True, infilliterate=1, randomseed = False, eval_ratio = .5, \
              numbercategoryheuristic = 255, pandasoutput = True, NArw_marker = True, \
-             featureselection = False, featurethreshold = 0., \
+             featureselection = False, featurethreshold = 0., inplace = False, \
              Binary = False, PCAn_components = False, PCAexcl = [], excl_suffix = False, \
              ML_cmnd = {'autoML_type':'randomforest', \
                         'MLinfill_cmnd':{'RandomForestClassifier':{}, 'RandomForestRegressor':{}}, \
@@ -866,6 +866,19 @@ featureselection passed as 'pct' or 'metric'. Used to designate the threshold fo
 importance dimensionality reduction. Where e.g. for 'pct' 0.9 would retain 90% of top
 features, or e.g. for 'metric' 0.03 would retain features whose metric was >0.03. Note that
 NArw columns are only retained for those sets corresponding to columns that "made the cut".
+
+* inplace: defaults top False, when True the df_train (and df_test) passed to automunge(.)
+are overwritten with the returned train and test sets. This reduces memory overhead.
+For example, to take advantage with reduced memory overhead you could call automunge(.) as:
+```
+df_train, trainID, labels, \
+validation1, validationID1, validationlabels1, \
+validation2, validationID2, validationlabels2, \
+df_test, testID, testlabels, \
+labelsencoding_dict, finalcolumns_train, finalcolumns_test, \
+featureimportance, postprocess_dict \
+= am.automunge(df_train, df_test=df_test, inplace=True)
+```
 
 * Binary: a dimensionality reduction technique whereby the set of columns
 with boolean encodings are collectively encoded with binary encoding such
@@ -1564,7 +1577,7 @@ test, testID, testlabels, \
 labelsencoding_dict, postreports_dict = \
 am.postmunge(postprocess_dict, df_test, \
              testID_column = False, labelscolumn = False, \
-             pandasoutput = True, printstatus = True, \
+             pandasoutput = True, printstatus = True, inplace = False, \
              dupl_rows = False, TrainLabelFreqLevel = False, featureeval = False, \
              inversion = False, traindata = False, \
              driftreport = False, inversion = False, \
@@ -1694,7 +1707,7 @@ test, testID, testlabels, \
 labelsencoding_dict, finalcolumns_test = \
 am.postmunge(postprocess_dict, df_test, \
              testID_column = False, labelscolumn = False, \
-             pandasoutput = True, printstatus = True, \
+             pandasoutput = True, printstatus = True, inplace = False, \
              dupl_rows = False, TrainLabelFreqLevel = False, featureeval = False, \
              inversion = False, traindata = False, \
              driftreport = False, inversion = False, \
@@ -1752,6 +1765,15 @@ passed to function). If set to _False_ returns numpy arrays instead of dataframe
 
 * printstatus: user can pass _True/False_ indicating whether the function 
 will print status of processing during operation. Defaults to True.
+
+* inplace: defaults top False, when True the df_test passed to postmunge(.)
+is overwritten with the returned test set. This reduces memory overhead.
+For example, to take advantage with reduced memory overhead you could call postmunge(.) as:
+```
+df_test, testID, testlabels, \
+labelsencoding_dict, finalcolumns_test = \
+am.postmunge(postprocess_dict, df_test, inplace = False)
+```
 
 * dupl_rows: can be passed as _(True/False\)_ which indicates
 if duplicate rows will be consolidated to single instance in returned sets. (In
