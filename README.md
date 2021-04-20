@@ -544,9 +544,7 @@ identify which feature engineering transformations were applied to each
 column.
 
 * finalcolumns_test: a list of the column headers corresponding to the
-test data. Note that the inclusion of suffix appenders is used to
-identify which feature engineering transformations were applied to each
-column. Note that this list will match the one preceding.
+test data. Note that this list will match the one preceding.
 
 * featureimportance: a dictionary containing summary of feature importance
 ranking and metrics for each of the derived sets. Note that the metric
