@@ -25713,7 +25713,7 @@ class AutoMunge:
   def check_am_miscparameters(self, valpercent1, valpercent2, floatprecision, shuffletrain, \
                              TrainLabelFreqLevel, dupl_rows, powertransform, binstransform, MLinfill, \
                              infilliterate, randomseed, eval_ratio, numbercategoryheuristic, pandasoutput, \
-                             NArw_marker, featurethreshold, featureselection, \
+                             NArw_marker, featurethreshold, featureselection, inplace, \
                              Binary, PCAn_components, PCAexcl, printstatus, excl_suffix):
     """
     #Performs validation to confirm valid entries of passed automunge(.) parameters
@@ -25975,6 +25975,16 @@ class AutoMunge:
       print()
       
     miscparameters_results.update({'featurethreshold_valresult' : featurethreshold_valresult})
+
+    #check inplace
+    inplace_valresult = False
+    if inplace not in {True, False} or not isinstance(inplace, bool):
+      inplace_valresult = True
+      print("Error: invalid entry passed for inplace parameter.")
+      print("Acceptable values are one of {False, True}")
+      print()
+      
+    miscparameters_results.update({'inplace_valresult' : inplace_valresult})
   
     #check Binary
     Binary_valresult = False
@@ -26056,7 +26066,7 @@ class AutoMunge:
     return miscparameters_results
     
   def check_pm_miscparameters(self, pandasoutput, printstatus, TrainLabelFreqLevel, \
-                              dupl_rows, featureeval, driftreport, \
+                              dupl_rows, featureeval, driftreport, inplace, \
                               returnedsets, shuffletrain, inversion, traindata):
     """
     #Performs validation to confirm valid entries of passed postmunge(.) parameters
@@ -26148,6 +26158,16 @@ class AutoMunge:
       print()
       
     pm_miscparameters_results.update({'driftreport_valresult' : driftreport_valresult})
+
+    #check inplace
+    inplace_valresult = False
+    if inplace not in {True, False} or not isinstance(inplace, bool):
+      inplace_valresult = True
+      print("Error: invalid entry passed for inplace parameter.")
+      print("Acceptable values are one of {False, True}")
+      print()
+      
+    pm_miscparameters_results.update({'inplace_valresult' : inplace_valresult})
     
     #check returnedsets
     returnedsets_valresult = False
@@ -28555,7 +28575,7 @@ class AutoMunge:
     self.check_am_miscparameters(valpercent1, valpercent2, floatprecision, shuffletrain, \
                                  TrainLabelFreqLevel, dupl_rows, powertransform, binstransform, MLinfill, \
                                  infilliterate, randomseed, eval_ratio, numbercategoryheuristic, pandasoutput, \
-                                 NArw_marker, featurethreshold, featureselection, \
+                                 NArw_marker, featurethreshold, featureselection, inplace, \
                                  Binary, PCAn_components, PCAexcl, printstatus, excl_suffix)
 
     miscparameters_results.update({'check_assigncat_result' : check_assigncat_result, \
@@ -28840,7 +28860,7 @@ class AutoMunge:
 
     #copy input dataframes to internal state so as not to edit exterior objects
     #this helps with recursion in feature importance
-    if inplace is False:
+    if inplace is not True:
       df_train = df_train.copy()
       df_test = df_test.copy()
 
@@ -29922,7 +29942,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '5.99'
+    automungeversion = '6.00'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -37345,7 +37365,7 @@ class AutoMunge:
     #(generally speaking other than passed dictionaries, dataframes, or column identifiers)
     pm_miscparameters_results = \
     self.check_pm_miscparameters(pandasoutput, printstatus, TrainLabelFreqLevel, \
-                                dupl_rows, featureeval, driftreport, \
+                                dupl_rows, featureeval, driftreport, inplace, \
                                 returnedsets, shuffletrain, inversion, traindata)
     
     #printout display progress
@@ -37458,7 +37478,7 @@ class AutoMunge:
     assign_param = postprocess_dict['assign_param']
 
     #copy input dataframes to internal state so as not to edit exterior objects
-    if inplace is False:
+    if inplace is not True:
       df_test = df_test.copy()
 #     elif inplace is True:
 #       pass
