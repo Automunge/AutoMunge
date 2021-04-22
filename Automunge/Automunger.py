@@ -22145,6 +22145,14 @@ class AutoMunge:
                                                                    'predict' : self.predict_autogluon}, \
                                        'regression'             : {'train'   : self.train_autogluon, \
                                                                    'predict' : self.predict_autogluon}}, \
+                     'flaml'        : {'booleanclassification'  : {'train'   : self.train_flaml_classifier, \
+                                                                   'predict' : self.predict_flaml_classifier}, \
+                                       'ordinalclassification'  : {'train'   : self.train_flaml_classifier, \
+                                                                   'predict' : self.predict_flaml_classifier}, \
+                                       'onehotclassification'   : {'train'   : self.train_flaml_classifier, \
+                                                                   'predict' : self.predict_flaml_classifier}, \
+                                       'regression'             : {'train'   : self.train_flaml_regressor, \
+                                                                   'predict' : self.predict_flaml_regressor}}, \
                      'catboost'     : {'booleanclassification'  : {'train'   : self.train_catboost_classifier, \
                                                                    'predict' : self.predict_catboost_classifier}, \
                                        'ordinalclassification'  : {'train'   : self.train_catboost_classifier, \
@@ -22520,6 +22528,165 @@ class AutoMunge:
       
       return infill
 
+  def train_flaml_classifier(self, ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict):
+    """
+    #Trains a model for ML infill using flaml classifier
+    #accepts parameters to fit operation as ML_cmnd['MLinfill_cmnd']['flaml_classifier_fit']
+    #converts multi column one hot sets to ordinal (no string conversion required)
+    """
+
+    from flaml import AutoML
+    
+    try:
+    # if True is True:
+
+      #column headers matter for convert_onehot_to_singlecolumn methods, reset as integers
+      df_train_filllabel = pd.DataFrame(df_train_filllabel.to_numpy())
+
+      ag_label_column = list(df_train_filllabel.columns)
+
+      #flaml accepts single column labels, these both convert to string for recognition of classification
+      if len(ag_label_column) == 1:
+        ag_label_column = ag_label_column[0]
+
+      else:
+        df_train_filllabel = self.convert_onehot_to_singlecolumn(df_train_filllabel, stringtype=False)
+        ag_label_column = list(df_train_filllabel.columns)[0]
+
+      #convert to a Series
+      df_train_filllabel = df_train_filllabel[ag_label_column]
+
+      #user can pass parameters to flaml fit operation in ML_cmnd['MLinfill_cmnd']['flaml_classifier_fit']
+      fit_params = {}
+      if 'MLinfill_cmnd' in ML_cmnd:
+        if 'flaml_classifier_fit' in ML_cmnd['MLinfill_cmnd']:
+          fit_params = ML_cmnd['MLinfill_cmnd']['flaml_classifier_fit']
+
+      #we'll have a default parameter to set task type as classificaiton
+      #user can override in ML_cmnd['MLinfill_cmnd']['flaml_classifier_fit']
+      default_fit_params = {'task' : 'classification', 'verbose' : 0}
+
+      #now incorproate user passed parameters
+      default_fit_params.update(fit_params)
+
+      train_nunique = int(df_train_filllabel.nunique())
+      train_rows = int(df_train_filllabel.shape[0])
+
+      if train_nunique < 2 or train_nunique > 0.75 * train_rows:
+        model = False
+
+      else:
+
+        #initialize model
+        model = AutoML()
+
+        #train the model without validation set
+        model.fit(
+          df_train_filltrain, df_train_filllabel, **default_fit_params
+        )
+
+      return model
+    
+    except:
+      return False
+
+  def predict_flaml_classifier(self, ML_cmnd, model, fillfeatures, printstatus, categorylist=[]):
+    """
+    #runs and inference operation
+    #on corresponding model trained in flaml_classifier
+    #returns infill predictions
+
+    #the categorylist parameter is used to handle an edge case
+    #note that in some cases the passed categorylist may be a proxy list of equivalent length
+    #such as a range of integers
+    """
+
+    from flaml import AutoML
+    
+    if model is not False:
+      
+      infill = model.predict(fillfeatures)
+
+      if len(categorylist) > 1:
+
+        infill = self.convert_singlecolumn_to_onehot(infill, categorylist)
+
+      return infill
+    
+    else:
+
+      infill = np.zeros(shape=(1,len(categorylist)))
+      
+      return infill
+
+  def train_flaml_regressor(self, ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict):
+    """
+    #Trains a model for ML infill using flaml regressor
+    #accepts parameters to fit operation as ML_cmnd['MLinfill_cmnd']['flaml_regressor_fit']
+    """
+
+    from flaml import AutoML
+    
+    try:
+    # if True is True:
+
+      #user can pass parameters to flaml fit operation in ML_cmnd['MLinfill_cmnd']['flaml_regressor_fit']
+      fit_params = {}
+      if 'MLinfill_cmnd' in ML_cmnd:
+        if 'flaml_regressor_fit' in ML_cmnd['MLinfill_cmnd']:
+          fit_params = ML_cmnd['MLinfill_cmnd']['flaml_regressor_fit']
+
+      #we'll have a default parameter to set task type as regression
+      #user can override in ML_cmnd['MLinfill_cmnd']['flaml_classifier_fit']
+      default_fit_params = {'task' : 'regression', 'verbose' : 0}
+
+      #now incorproate user passed parameters
+      default_fit_params.update(fit_params)
+
+      train_nunique = int(df_train_filllabel.nunique())
+
+      #convert to a Series
+      df_train_filllabel = df_train_filllabel[df_train_filllabel.columns[0]]
+
+      if train_nunique < 2:
+        model = False
+
+      else:
+
+        #initialize model
+        model = AutoML()
+
+        #train the model without validation set
+        model.fit(
+          df_train_filltrain, df_train_filllabel, **default_fit_params
+        )
+
+      return model
+    
+    except:
+      return False
+
+  def predict_flaml_regressor(self, ML_cmnd, model, fillfeatures, printstatus, categorylist=[]):
+    """
+    #runs and inference operation
+    #on corresponding model trained in flaml_regressor
+    #returns infill predictions
+    """
+
+    from flaml import AutoML
+    
+    if model is not False:
+      
+      infill = model.predict(fillfeatures)
+
+      return infill
+    
+    else:
+
+      infill = np.zeros(shape=(1,len(categorylist)))
+      
+      return infill
+
   def train_catboost_classifier(self, ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict):
     """
     #Trains a model for ML infill using catboost classifier
@@ -22836,7 +23003,7 @@ class AutoMunge:
       
       return infill
 
-  def convert_onehot_to_singlecolumn(self, df):
+  def convert_onehot_to_singlecolumn(self, df, stringtype = True):
     """
     #support function for autoML libraries that don't accept multicolumn labels
     #converts onehot encoded sets to single column
@@ -22855,7 +23022,8 @@ class AutoMunge:
     df2 = pd.DataFrame(df[-1].copy())
     df2 = df2.rename(columns = {-1:'labels'})
     
-    df2['labels'] = df2['labels'].astype(str)
+    if stringtype is True:
+      df2['labels'] = df2['labels'].astype(str)
         
     return df2
 
@@ -29942,7 +30110,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.00'
+    automungeversion = '6.01'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
