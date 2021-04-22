@@ -1005,6 +1005,19 @@ And where Random Forest and Catboost are more portable than AutoGluon since don'
 repository saved to hard drive. (For now retaining Random Forest as the default, of course a further
 tradeoff is that Random Forest doesn't include GPU support.)
 
+Another ML infill option is available by the FLAML library. 
+```
+#FLAML available by passing ML_cmnd as 
+ML_cmnd = {'autoML_type':'flaml'}
+```
+Can pass parameters to fit operation as:
+```
+#example of setting time budget in seconds for training
+ML_cmnd = {'autoML_type':'flaml', 
+           'MLinfill_cmnd' : {'flaml_classifier_fit'   : {'time_budget' : 15 },
+                              'flaml_regressor_fit'    : {'time_budget' : 15}}}
+```
+
 A user can also assign specific methods for PCA transforms. Current PCA_types
 supported include 'PCA', 'SparsePCA', and 'KernelPCA', all via Scikit-Learn.
 Note that the n_components are passed separately with the PCAn_components 
@@ -7440,7 +7453,7 @@ machine learning with the Automunge platform. Feedback is welcome.
 As a citation, please note that the Automunge package makes use of 
 the Pandas, Scikit-learn, SciPy stats, and NumPy libraries. In addition 
 to the default of Scikit-learn's Random Forest predictive models, 
-Automunge also has options for ML infill using the AutoGluon or CatBoost libraries.
+Automunge also has options for ML infill using the AutoGluon, CatBoost, or FLAML libraries.
 
 Wes McKinney. Data Structures for Statistical Computing in Python,
 Proceedings of the 9th Python in Science Conference, 51-56 (2010)
@@ -7478,6 +7491,8 @@ for Structured Data [arxiv:2003.06505](https://arxiv.org/abs/2003.06505)
 Anna Veronika Dorogush, Vasily Ershov, Andrey Gulin. CatBoost: gradient 
 boosting with categorical features support [arXiv:1810.11363](https://arxiv.org/abs/1810.11363)
 
+Chi Wang, Qingyun Wu, Markus Weimer, Erkang Zhu. FLAML: A Fast and Lightweight AutoML Library
+[arXiv:1911.04706](https://arxiv.org/abs/1911.04706)
 ...
 
 Have fun munging!!
