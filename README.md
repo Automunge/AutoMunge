@@ -2149,9 +2149,12 @@ string by 'strg' (some ML libraries prefer string encoded labels to recognize th
 * lbfs: for categoric encoding with fitted smoothed labels (i.e. fitted label smoothing), further described in fsmh transform below (accepts activation parameter for activation threshold)
 * lbda: for date-time label sets, entries are encoded comparable to 'dat6' described further below
 
+Changelog
+
 ### Numerical Set Normalizations
 * nmbr/nbr2/nbr3/nmdx/nmd2/nmd3: z-score normalization<br/>
 (x - mean) / (standard deviation)
+  - useful for: normalizing numeric sets of unknown distribution
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '_nmbr'
@@ -2168,6 +2171,7 @@ string by 'strg' (some ML libraries prefer string encoded labels to recognize th
 * mean/mea2/mea3: mean normalization (like z-score in the numerator and min-max in the denominator)<br/>
 (x - mean) / (max - min)
 My intuition says z-score has some benefits but really up to the user which they prefer.
+  - useful for: similar to z-score except data remains in fixed range
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '_mean'
@@ -2183,6 +2187,7 @@ My intuition says z-score has some benefits but really up to the user which they
   - inversion available: yes with full recovery
 * mnmx/mnm2/mnm5/mmdx/mmd2/mmd3: vanilla min-max scaling<br/>
 (x - min) / (max - min)
+  - useful for: normalizing numeric sets where all non-negative output is preferred
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '_mnmx'
@@ -2195,6 +2200,7 @@ My intuition says z-score has some benefits but really up to the user which they
   - driftreport postmunge metrics: minimum / maximum / maxminusmin / mean / std / cap / floor
   - inversion available: yes with full recovery
 * mnm3/mnm4: min-max scaling with outliers capped at 0.01 and 0.99 quantiles
+  - useful for: normalizing numeric sets where all non-negative output is preferred, and outliers capped
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '_mnm3'
@@ -2205,6 +2211,7 @@ My intuition says z-score has some benefits but really up to the user which they
   - inversion available: yes
 * mnm6: min-max scaling with test floor set capped at min of train set (ensures
 test set returned values >= 0, such as might be useful for kernel PCA for instance)
+  - useful for: normalizing numeric sets where all non-negative output is preferred, guarantees nonnegative in postmunge
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '_mnmx'
@@ -2215,6 +2222,7 @@ test set returned values >= 0, such as might be useful for kernel PCA for instan
 * retn: related to min/max scaling but retains +/- of values, based on conditions
 if max>=0 and min<=0, x=x/(max-min), elif max>=0 and min>=0 x=(x-min)/(max-min),
 elif max<=0 and min<=0 x=(x-max)/(max-min)
+  - useful for: normalization with sign retention for iterpretability
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '_retn'
@@ -2234,6 +2242,7 @@ elif max<=0 and min<=0 x=(x-max)/(max-min)
 * rtb2: retain normalization supplemented by one-hot encoded standard deviation bins
 * MADn/MAD2: mean absolute deviation normalization, subtract set mean <br/>
 (x - mean) / (mean absolute deviation)
+  - useful for: normalizing sets with fat-tailed distribution
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '_MADn'
@@ -2243,6 +2252,7 @@ elif max<=0 and min<=0 x=(x-max)/(max-min)
   - inversion available: yes with full recovery
 * MAD3: mean absolute deviation normalization, subtract set maximum<br/>
 (x - maximum) / (mean absolute deviation)
+  - useful for: normalizing sets with fat-tailed distribution
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '_MAD3'
@@ -2252,6 +2262,7 @@ elif max<=0 and min<=0 x=(x-max)/(max-min)
   - inversion available: yes with full recovery
 * mxab: max absolute scaling normalization (just including this one for completeness, retn is a much better option to ensure consistent scaling between sets)<br/>
 (x) / max absolute
+  - useful for: normalizing sets by dividing by max, commonly used in some circles
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '_mxab'
@@ -2261,6 +2272,7 @@ elif max<=0 and min<=0 x=(x-max)/(max-min)
   - inversion available: yes with full recovery
 * lgnm: normalization intended for lognormal distributed numerical sets,
 achieved by performing a logn transform upstream of a nmbr normalization.
+  - useful for: normalizing sets within proximity of lognormal distribution
   - default infill: mean
   - default NArowtype: positivenumeric
   - suffix appender: '_logn_nmbr'
@@ -2272,6 +2284,7 @@ achieved by performing a logn transform upstream of a nmbr normalization.
 values <= 0. Note we currently have a test for overflow in returned results and if found 
 set to 0. Please note that this method makes use of scipy.stats.boxcox. Please refer to
 family trees below for full set of transfomration categories asscoiated with these roots.
+  - useful for: translates power law distributions to closer approximate gaussian
   - default infill: mean (i.e. mean of values > 0)
   - default NArowtype: positivenumeric
   - suffix appender: '_bxcx'
@@ -2279,6 +2292,7 @@ family trees below for full set of transfomration categories asscoiated with the
   - driftreport postmunge metrics: trnsfrm_mean / bxcx_lmbda / bxcxerrorcorrect / mean
   - inversion available: no
 * log0/log1: performs logarithmic transform (base 10). Applies infill to values <= 0.
+  - useful for: sets with mixed range of large and small values
   - default infill: meanlog
   - default NArowtype: positivenumeric
   - suffix appender: '_log0'
@@ -2286,6 +2300,7 @@ family trees below for full set of transfomration categories asscoiated with the
   - driftreport postmunge metrics: meanlog
   - inversion available: yes with full recovery
 * logn: performs natural logarithmic transform (base e). Applies infill to values <= 0.
+  - useful for: sets with mixed range of large and small values
   - default infill: meanlog
   - default NArowtype: positivenumeric
   - suffix appender: '_logn'
@@ -2293,6 +2308,7 @@ family trees below for full set of transfomration categories asscoiated with the
   - driftreport postmunge metrics: meanlog
   - inversion available: yes with full recovery
 * sqrt: performs square root transform. Applies infill to values < 0.
+  - useful for: common mathematic transform
   - default infill: mean
   - default NArowtype: nonnegativenumeric
   - suffix appender: '_sqrt'
@@ -2300,6 +2316,7 @@ family trees below for full set of transfomration categories asscoiated with the
   - driftreport postmunge metrics: meansqrt
   - inversion available: yes with full recovery
 * addd: performs addition of an integer or float to a set
+  - useful for: common mathematic transform
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '_addd'
@@ -2307,6 +2324,7 @@ family trees below for full set of transfomration categories asscoiated with the
   - driftreport postmunge metrics: mean, add
   - inversion available: yes with full recovery
 * sbtr: performs subtraction of an integer or float to a set
+  - useful for: common mathematic transform
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '_sbtr'
@@ -2314,6 +2332,7 @@ family trees below for full set of transfomration categories asscoiated with the
   - driftreport postmunge metrics: mean, subtract
   - inversion available: yes with full recovery
 * mltp: performs multiplication of an integer or float to a set
+  - useful for: common mathematic transform
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '_mltp'
@@ -2321,6 +2340,7 @@ family trees below for full set of transfomration categories asscoiated with the
   - driftreport postmunge metrics: mean, multiply
   - inversion available: yes with full recovery
 * divd: performs division of an integer or float to a set
+  - useful for: common mathematic transform
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '_divd'
@@ -2328,6 +2348,7 @@ family trees below for full set of transfomration categories asscoiated with the
   - driftreport postmunge metrics: mean, divide
   - inversion available: yes with full recovery
 * rais: performs raising to a power of an integer or float to a set
+  - useful for: common mathematic transform
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '_rais'
@@ -2335,6 +2356,7 @@ family trees below for full set of transfomration categories asscoiated with the
   - driftreport postmunge metrics: mean, raiser
   - inversion available: yes with full recovery
 * absl: performs absolute value transform to a set
+  - useful for: common mathematic transform
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '_absl'
@@ -2348,6 +2370,7 @@ adequate registers to avoid overflow (overflow entries have values replaced with
 Default register sizes were selected to accomodate z-score normalized data with +/-6 
 standard deviations from mean and approximately 4 significant figures in decimals. For example, with default parameters an input column 'floats' will return columns: ['floats_qbt1_sign', 'floats_qbt1_2^2', 'floats_qbt1_2^1', 'floats_qbt1_2^0', 'floats_qbt1_2^-1', 'floats_qbt1_2^-2', 'floats_qbt1_2^-3', 'floats_qbt1_2^-4', 'floats_qbt1_2^-5', 'floats_qbt1_2^-6', 'floats_qbt1_2^-7', 'floats_qbt1_2^-8', 'floats_qbt1_2^-9', 'floats_qbt1_2^-10', 'floats_qbt1_2^-11', 'floats_qbt1_2^-12'].
 * qbt1: binary encoded signed floats with registers for sign, integers, and fractionals, default overflow at +/- 8.000
+  - useful for: feeding normalized floats to quantum circuits
   - default infill: zero
   - default NArowtype: numeric
   - suffix appender: '_qbt1_2^#' where # integer associated with register and also '_qbt1_sign'
@@ -2359,6 +2382,7 @@ standard deviations from mean and approximately 4 significant figures in decimal
   - driftreport postmunge metrics: maximum, minimum, mean, stdev
   - inversion available: yes with full recovery
 * qbt2: binary encoded signed integers with registers for sign and integers, default overflow at +/-32,767
+  - useful for: feeding floats to quantum circuits
   - default infill: zero
   - default NArowtype: numeric
   - suffix appender: '_qbt2_2^#' where # integer associated with register and also '_qbt2_sign'
@@ -2370,6 +2394,7 @@ standard deviations from mean and approximately 4 significant figures in decimal
   - driftreport postmunge metrics: maximum, minimum, mean, stdev
   - inversion available: yes with full recovery
 * qbt3: binary encoded unsigned floats with registers for integers and fractionals, default overflow at 8.000 and <0
+  - useful for: feeding unsigned normalized floats to quantum circuits
   - default infill: zero
   - default NArowtype: numeric
   - suffix appender: '_qbt3_2^#' where # integer associated with register
@@ -2381,6 +2406,7 @@ standard deviations from mean and approximately 4 significant figures in decimal
   - driftreport postmunge metrics: maximum, minimum, mean, stdev
   - inversion available: yes with full recovery
 * qbt4: binary encoded unsigned integers with registers for integers, default overflow at 65,535 and <0
+  - useful for: feeding unsigned floats to quantum circuits
   - default infill: zero
   - default NArowtype: numeric
   - suffix appender: '_qbt4_2^#' where # integer associated with register
@@ -2401,6 +2427,7 @@ Other Q Notation root categories:
 
 ### Numercial Set Bins and Grainings
 * pwrs: bins groupings by powers of 10 (for values >0)
+  - useful for: featuere engineering for linear models, also for oversampling bins with TrainFreqLevelizer parameter
   - default infill: no activation
   - default NArowtype: positivenumeric
   - suffix appender: '_10^#' where # is integer indicating target powers of 10 for column
@@ -2411,6 +2438,7 @@ Other Q Notation root categories:
 	                           <column> + '_ratio' (column specific)
   - inversion available: yes with partial recovery
 * pwr2: bins groupings by powers of 10 (comparable to pwrs with negvalues parameter activated for values >0 & <0)
+  - useful for: featuere engineering for linear models, also for oversampling bins with TrainFreqLevelizer parameter
   - default infill: no activation
   - default NArowtype: nonzeronumeric
   - suffix appender: '\_10^#' or '\_-10^#' where # is integer indicating target powers of 10 for column
@@ -2422,6 +2450,7 @@ Other Q Notation root categories:
   - inversion available: yes with partial recovery
 * pwor: for numerical sets, outputs an ordinal encoding indicating where a
 value fell with respect to powers of 10
+  - useful for: ordinal version of pwrs
   - default infill: zero
   - default NArowtype: positivenumeric
   - suffix appender: '_pwor'
@@ -2431,6 +2460,7 @@ value fell with respect to powers of 10
   - inversion available: yes with partial recovery
 * por2: for numerical sets, outputs an ordinal encoding indicating where a
 value fell with respect to powers of 10 (comparable to pwor with negvalues parameter activated)
+  - useful for: ordinal version of pwr2
   - default infill: zero (a distinct encoding)
   - default NArowtype: nonzeronumeric
   - suffix appender: '_por2'
@@ -2440,6 +2470,7 @@ value fell with respect to powers of 10 (comparable to pwor with negvalues param
   - inversion available: yes with partial recovery
 * pwbn: comparable to pwor but followed by a binary encoding, such as may be useful for data with 
 high variability
+  - useful for: ordinal version of pwrs
   - default infill: zero (a distinct encoding)
   - default NArowtype: nonzeronumeric
   - suffix appender: '_pwor_1010_#' (where # is integer for binary encoding activation number) 
@@ -2448,6 +2479,7 @@ high variability
   - inversion available: yes with partial recovery
 * por3: comparable to por2 but followed by a binary encoding, such as may be useful for data with 
 high variability
+  - useful for: ordinal version of pwr2
   - default infill: zero (a distinct encoding)
   - default NArowtype: nonzeronumeric
   - suffix appender: '_por2_1010_#' (where # is integer for binary encoding activation number) 
@@ -2457,6 +2489,8 @@ high variability
 * bins: for numerical sets, outputs a set of 6 columns indicating where a
 value fell with respect to number of standard deviations from the mean of the
 set (i.e. integer suffix represent # from mean as <-2:0, -2-1:1, -10:2, 01:3, 12:4, >2:5)
+Note this can be activated to supplment numeric sets with binstransform automunge parameter.
+  - useful for: featuere engineering for linear models, also for oversampling bins with TrainFreqLevelizer parameter
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '\_bins\_#' where # is integer identifier of bin
@@ -2467,6 +2501,7 @@ set (i.e. integer suffix represent # from mean as <-2:0, -2-1:1, -10:2, 01:3, 12
 * bsor: for numerical sets, outputs an ordinal encoding indicating where a
 value fell with respect to number of standard deviations from the mean of the
 set (i.e. integer encoding represent # from mean as <-2:0, -2-1:1, -10:2, 01:3, 12:4, >2:5)
+  - useful for: ordinal version of bins
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '_bsor'
@@ -2477,6 +2512,7 @@ set (i.e. integer encoding represent # from mean as <-2:0, -2-1:1, -10:2, 01:3, 
 * bnwd/bnwK/bnwM: for numerical set graining to fixed width bins for one-hot encoded bins 
 (columns without activations in train set excluded in train and test data). 
 bins default to width of 1/1000/1000000 eg for bnwd/bnwK/bnwM
+  - useful for: bins for sets with known recurring demarkations
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '\_bnwd\_#1\_#2' where #1 is the width and #2 is the bin identifier (# from min)
@@ -2490,6 +2526,7 @@ bins default to width of 1/1000/1000000 eg for bnwd/bnwK/bnwM
 * bnwo/bnKo/bnMo: for numerical set graining to fixed width bins for ordinal encoded bins 
 (integers without train set activations still included in test set). 
 bins default to width of 1/1000/1000000 eg for bnwd/bnwK/bnwM
+  - useful for: ordinal version of preceding
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '_bnwo' (or '_bnKo', '_bnMo')
@@ -2500,6 +2537,7 @@ bins default to width of 1/1000/1000000 eg for bnwd/bnwK/bnwM
   - inversion available: yes with partial recovery
 * bnep/bne7/bne9: for numerical set graining to equal population bins for one-hot encoded bins. 
 bin count defaults to 5/7/9 eg for bnep/bne7/bne9
+  - useful for: bins for sets with unknown demarkations
   - default infill: no activation
   - default NArowtype: numeric
   - suffix appender: '\_bnep\_#1' where #1 is the bin identifier (# from min) (or bne7/bne9 instead of bnep)
@@ -2510,6 +2548,7 @@ bin count defaults to 5/7/9 eg for bnep/bne7/bne9
   - inversion available: yes with partial recovery
 * bneo/bn7o/bn9o: for numerical set graining to equal population bins for ordinal encoded bins. 
 bin count defaults to 5/7/9 eg for bneo/bn7o/bn9o
+  - useful for: ordinal version of preceding
   - default infill: adjacent cell
   - default NArowtype: numeric
   - suffix appender: '\_bneo' (or bn7o/bn9o)
@@ -2519,6 +2558,7 @@ bin count defaults to 5/7/9 eg for bneo/bn7o/bn9o
 			           bins_cuts / bincount / ordl_activations_dict
   - inversion available: yes with partial recovery
 * bkt1: for numerical set graining to user specified encoded bins. First and last bins unconstrained.
+  - useful for: bins for sets with known irregular demarkations
   - default infill: no activation
   - default NArowtype: numeric
   - suffix appender: '\_bkt1\_#1' where #1 is the bin identifier (# from min)
@@ -2529,6 +2569,7 @@ bin count defaults to 5/7/9 eg for bneo/bn7o/bn9o
 					   <column> + '_ratio' (column specific)
   - inversion available: yes with partial recovery
 * bkt2: for numerical set graining to user specified encoded bins. First and last bins bounded.
+  - useful for: bins for sets with known irregular demarkations, similar to preceding but first and last bins bounded
   - default infill: no activation
   - default NArowtype: numeric
   - suffix appender: '\_bkt2\_#1' where #1 is the bin identifier (# from min)
@@ -2539,6 +2580,7 @@ bin count defaults to 5/7/9 eg for bneo/bn7o/bn9o
 					   <column> + '_ratio' (column specific)
   - inversion available: yes with partial recovery
 * bkt3: for numerical set graining to user specified ordinal encoded bins. First and last bins unconstrained.
+  - useful for: ordinal version of bkt1
   - default infill: unique activation
   - default NArowtype: numeric
   - suffix appender: '_bkt3'
@@ -2548,6 +2590,7 @@ bin count defaults to 5/7/9 eg for bneo/bn7o/bn9o
   - driftreport postmunge metrics: binsmean / buckets / bins_cuts / bins_id / ordl_activations_dict
   - inversion available: yes with partial recovery
 * bkt4: for numerical set graining to user specified ordinal encoded bins. First and last bins bounded.
+  - useful for: ordinal version of bkt2
   - default infill: unique activation
   - default NArowtype: numeric
   - suffix appender: '_bkt4'
@@ -2564,6 +2607,7 @@ binary  : bkb3, bkb4, bsbn, bnwb, bnKb, bnMb, bneb, bn7b, bn9b, pwbn, por3
 values within that segment's range (between 0-1) and other values subject to an infill of -1 
 (intended for use to evaluate feature importance of different segments of a numerical set's distribution
 with metric2 results from a feature importance evaluation)
+  - useful for: evaluating relative feature importance between different segments of a numeric set distribution
   - default infill: no activation (this is the recommended infill for this transform)
   - default NArowtype: numeric
   - suffix appender: '\_tlbn\_#' where # is the bin identifier,  and max# is right tail / min# is left tail
@@ -2578,6 +2622,7 @@ Please note that only stdrdinfill (adjinfill) are supported for shft transforms.
 * dxdt/d2dt/d3dt/d4dt/d5dt/d6dt: rate of change (row value minus value in preceding row), high orders 
 return lower orders (eg d2dt returns original set, dxdt, and d2dt), all returned sets include 'retn' 
 normalization which scales data with min/max while retaining +/- sign
+  - useful for: time series data, also bounding sequential sets
   - default infill: adjacent cells
   - default NArowtype: numeric
   - suffix appender: '_dxdt'
@@ -2588,6 +2633,7 @@ normalization which scales data with min/max while retaining +/- sign
 * dxd2/d2d2/d3d2/d4d2/d5d2/d6d2: denoised rate of change (average of last two or more rows minus average
 of preceding two or more rows), high orders return lower orders (eg d2d2 returns original set, dxd2, 
 and d2d2), all returned sets include 'retn' normalization
+  - useful for: time series data, also bounding sequential sets
   - default infill: adjacent cells
   - default NArowtype: numeric
   - suffix appender: '_dxd2'
@@ -2603,6 +2649,7 @@ nmrc numeric string parsing top extract numbers from string sets
   - inversion available: no
 * shft/shf2/shf3: shifted data forward by a period number of time steps defaulting to 1/2/3. Note that NArw aggregation
 not supported for shift transforms, infill only available as adjacent cell
+  - useful for: time series data, carrying prior time steps forward
   - default infill: adjacent cells
   - default NArowtype: numeric
   - suffix appender: '_shft' / '_shf2' / '_shf3'
@@ -2617,6 +2664,7 @@ not supported for shift transforms, infill only available as adjacent cell
 1 to most common value and 0 to second most common, unless 1 or 0 is already included
 in most common of the set then defaults to maintaining those designations. If applied 
 to set with >2 entries applies infill to those entries beyond two most common. 
+  - useful for: binarizing sets with two unique values (differs from 1010 in that distinct encoding isn't registered for missing data to return single column)
   - default infill: most common value
   - default NArowtype: justNaN
   - suffix appender: '_bnry'
@@ -2627,6 +2675,7 @@ to set with >2 entries applies infill to those entries beyond two most common.
   - driftreport postmunge metrics: missing / 1 / 0 / extravalues / oneratio / zeroratio
   - inversion available: yes with full recovery
 * bnr2: (Same as bnry except for default infill.)
+  - useful for: similar to bnry preceding but with different default infill
   - default infill: least common value
   - default NArowtype: justNaN
   - suffix appender: '_bnr2'
@@ -2638,6 +2687,7 @@ to set with >2 entries applies infill to those entries beyond two most common.
   - inversion available: yes with full recovery
 * text/txt2: converts categorical sets to one-hot encoded set of boolean identifiers 
 (consistently encodings numbers and numerical string equivalents due to column labeling convention, e.g. 12 == '12')
+  - useful for: one hot encoding, returns distinct column activation per unique entry
   - default infill: all entries zero
   - default NArowtype: justNaN
   - suffix appender: '_(category)' where category is the categoric entry target of column activations
@@ -2647,6 +2697,7 @@ to set with >2 entries applies infill to those entries beyond two most common.
   - inversion available: yes with full recovery
 * onht: converts categorical sets to one-hot encoded set of boolean identifiers 
 (like text but different convention for returned column headers and distinct encodings for numbers and numerical string equivalents)
+  - useful for: similar to text transform preceding but with numbered column header convention
   - default infill: all entries zero
   - default NArowtype: justNaN
   - suffix appender: '_onht\_#' where # integer corresponds to the target entry of a column
@@ -2658,6 +2709,7 @@ to set with >2 entries applies infill to those entries beyond two most common.
 			           text_categorylist is key between columns and target entries
   - inversion available: yes with full recovery
 * ordl/ord2/ord5: converts categoric sets to ordinal integer encoded set, encodings sorted alphabetically
+  - useful for: categoric sets with high cardinality where one-hot or binarization may result in high dimensionality. Also default for categoric labels.
   - default infill: plug value 'zzzinfill'
   - default NArowtype: justNaN
   - suffix appender: '_ordl'
@@ -2671,6 +2723,7 @@ to set with >2 entries applies infill to those entries beyond two most common.
   - inversion available: yes with full recovery
 * ord3: converts categoric sets to ordinal integer encoded set, sorted first by frequency of category 
 occurrence, second basis for common count entries is alphabetical
+  - useful for: similar to ordl preceding but activations are sorted by entry frequency instead of alphabetical
   - default infill: plug value 'zzzinfill'
   - default NArowtype: justNaN
   - suffix appender: '_ord3'
@@ -2689,6 +2742,7 @@ label sets passed to downstream libraries to ensure they treat labels as target 
 of regression.
 * 1010: converts categorical sets of >2 unique values to binary encoding (more memory 
 efficient than one-hot encoding)
+  - useful for: our default categoric encoding for sets with number of entries below numbercategoryheustic (defaulting to 255)
   - default infill: plug value 'zzzinfill'
   - default NArowtype: justNaN
   - suffix appender: '\_1010\_#' where # is integer indicating order of 1010 columns
@@ -2703,6 +2757,7 @@ efficient than one-hot encoding)
   - inversion available: yes with full recovery
 * maxb / matx / ma10: categoric encodings that allow user to cap the number activations in the set. 
 maxb (ordinal), matx (one hot), and ma10 (binary). 
+  - useful for: categoric sets where some outlier entries may not occur with enough frequency for training purposes
   - default infill: plug value 'zzzinfill'
   - default NArowtype: justNaN
   - suffix appender: '\_maxb'
@@ -2715,6 +2770,7 @@ maxb (ordinal), matx (one hot), and ma10 (binary).
 * ucct: converts categorical sets to a normalized float of unique class count,
 for example, a 10 row train set with two instances of 'circle' would replace 'circle' with 0.2
 and comparable to test set independent of test set row count
+  - useful for: supplmenting categoric sets with a proxy for activation frequency
   - default infill: ratio of infill in train set
   - default NArowtype: justNaN
   - suffix appender: '_ucct'
@@ -2722,6 +2778,7 @@ and comparable to test set independent of test set row count
   - driftreport postmunge metrics: ordinal_dict / ordinal_overlap_replace / ordinal_activations_dict
   - inversion available: no
 * lngt, lnlg: returns string length of categoric entries (lngt followed by min/max, lnlg by log)
+  - useful for: supplementing categoric sets with a proxy for information content (based on string length)
   - default infill: plug value of 3 (based on len(str(np.nan)) )
   - default NArowtype: justNaN
   - suffix appender: '_lngt'
@@ -2729,6 +2786,7 @@ and comparable to test set independent of test set row count
   - driftreport postmunge metrics: maximum, minimum, mean, std
   - inversion available: no
 * aggt: consolidate categoric entries based on user passed aggregate parameter
+  - useful for: performing upstream of categoric encoding when some entries are redundant
   - default infill: none
   - default NArowtype: justNaN
   - suffix appender: '_aggt'
@@ -2737,6 +2795,7 @@ and comparable to test set independent of test set row count
   - driftreport postmunge metrics: aggregate
   - inversion available: yes with partial recovery
 * smth: applies a one-hot encoding followed by a label smoothing operation to reduce activation value and increase null value. The smoothing is applied to train data but not validation or test data. Smoothing can be applied to test data in postmunge(.) by activating the traindata parameter.
+  - useful for: label smoothing, speculate there may be benefit for categoric encodings with noisy entries of some error rate
   - default infill: none
   - default NArowtype: justNaN
   - suffix appender: '\_smth\_#' where # is integer
@@ -2757,6 +2816,7 @@ is greater than cap then reverts to cap. The hashing transforms are intended as 
 encodings which doesn't require a conversion dictionary assmebly for consistent processing of subsequent data, as 
 may benefit sets with high cardinatility (i.e. high number of unique entries). The tradeoff is that inversion
 is not supported as there is possibility of redundant encodings for different unique entries.
+  - useful for: categoric sets with very high cardinality, default for categoric sets with (nearly) all unique entries
   - default infill: none
   - default NArowtype: justNaN
   - suffix appender: '\_hash\_#'
@@ -2773,6 +2833,7 @@ is not supported as there is possibility of redundant encodings for different un
   - driftreport postmunge metrics: col_count (number of columns), vocab_size
   - inversion available: no
 * hsh2: similar to hash but does not partition entries by space seperator, so only returns one column. Note this version doesn't scrub special characters prior to encoding.
+  - useful for: categoric sets with very high cardinality, default for categoric sets with number of entries exceeding numbercategoryheuristic (defaulting to 255)
   - default infill: none
   - default NArowtype: justNaN
   - suffix appender: '_hash'
@@ -2786,6 +2847,7 @@ is not supported as there is possibility of redundant encodings for different un
   - driftreport postmunge metrics: col_count (number of columns), vocab_size
   - inversion available: no
 * hs10: similar to hsh2 but returns activations in a set of columns with binary encodings, similar to 1010
+  - useful for: binary version of hsh2
   - default infill: none
   - default NArowtype: justNaN
   - suffix appender: '\_hs10\_#'
@@ -2799,6 +2861,7 @@ is not supported as there is possibility of redundant encodings for different un
   - driftreport postmunge metrics: col_count (number of columns), vocab_size
   - inversion available: no
 * UPCS: convert string entries to all uppercase characters
+  - useful for: performing upstream of categoric encodings when case configuration is irelevant
   - default infill: none
   - default NArowtype: justNaN
   - suffix appender: '_UPCS'
@@ -2821,6 +2884,7 @@ is not supported as there is possibility of redundant encodings for different un
 (such as may be continuous variables, discrete relational variables, or categoric). The ntgr family encodes
 in multiple forms appropriate for each of these different types, such as to allow the ML training to identify
 which is most useful. Reference the family trees below for composition details (can do a control-F search for ntgr etc).
+  - useful for: encoding integer sets of unknown interpretation
   - default NArowtype: 'integer'
   - ntgr set includes: ord4, retn, 1010, ordl
   - ntg2 set includes: ord4, retn, 1010, ordl, pwr2
@@ -2831,6 +2895,7 @@ various parameters associated with suffix, time scale, and sin/cos periodicity, 
 time scale returned in seperate columns. If a particular time scale is not present in training data it is omitted.
 * date/dat2: for datetime formatted data, segregates data by time scale to multiple
 columns (year/month/day/hour/minute/second) and then performs z-score normalization
+  - useful for: datetime entries of mixed time scales where periodicity is not relevant
   - default infill: mean
   - default NArowtype: datetime
   - suffix appender: includes appenders for (_year, _mnth, _days, _hour, _mint, _scnd)
@@ -2842,6 +2907,7 @@ columns (year/month/day/hour/minute/second) and then performs z-score normalizat
 			           meanhour / stdhour / meanmint / stdmint / meanscnd / stdscnd
   - inversion available: pending
 * year/mnth/days/hour/mint/scnd: segregated by time scale and z-score normalization
+  - useful for: datetime entries of single time scale where periodicity is not relevant
   - default infill: mean
   - default NArowtype: datetime
   - suffix appender: includes appenders for (_year, _mnth, _days, _hour, _mint, _scnd)
@@ -2849,6 +2915,7 @@ columns (year/month/day/hour/minute/second) and then performs z-score normalizat
   - inversion available: pending
 * mnsn/mncs/dysn/dycs/hrsn/hrcs/misn/mics/scsn/sccs: segregated by time scale and 
 dual columns with sin and cos transformations for time scale period (eg 12 months, 24 hrs, 7 days, etc)
+  - useful for: datetime entries of single time scale where periodicity is relevant
   - default infill: mean
   - default NArowtype: datetime
   - suffix appender: includes appenders for (mnsn/mncs/dysn/dycs/hrsn/hrcs/misn/mics/scsn/sccs)
@@ -2857,6 +2924,7 @@ dual columns with sin and cos transformations for time scale period (eg 12 month
   - inversion available: pending
 * mdsn/mdcs: similar sin/cos treatment, but for combined month/day, note that periodicity is based on 
 number of days in specific months, including account for leap year, with 12 month periodicity
+  - useful for: datetime entries of single time scale combining months and days where periodicity is relevant
   - default infill: mean
   - default NArowtype: datetime
   - suffix appender: includes appenders for (mdsn/mdcs)
@@ -2864,6 +2932,7 @@ number of days in specific months, including account for leap year, with 12 mont
   - driftreport postmunge metrics: timemean / timemax / timemin / timestd
   - inversion available: pending
 * dhms/dhmc: similar sin/cos treatment, but for combined day/hour/min, with 7 day periodicity
+
   - default infill: mean
   - default NArowtype: datetime
   - suffix appender: includes appenders for (dhms/dhmc)
@@ -2871,6 +2940,7 @@ number of days in specific months, including account for leap year, with 12 mont
   - driftreport postmunge metrics: timemean / timemax / timemin / timestd
   - inversion available: pending
 * hmss/hmsc: similar sin/cos treatment, but for combined hour/minute/second, with 24 hour periodicity
+  - useful for: datetime entries of single time scale combining time scales where periodicity is relevant
   - default infill: mean
   - default NArowtype: datetime
   - suffix appender: includes appenders for (hmss/hmsc)
@@ -2878,6 +2948,7 @@ number of days in specific months, including account for leap year, with 12 mont
   - driftreport postmunge metrics: timemean / timemax / timemin / timestd
   - inversion available: pending
 * mssn/mscs: similar sin/cos treatment, but for combined minute/second, with 1 hour periodicity
+  - useful for: datetime entries of single time scale combining time scales below minute threshold where periodicity is relevant
   - default infill: mean
   - default NArowtype: datetime
   - suffix appender: includes appenders for (hmss/hmsc)
@@ -2886,6 +2957,7 @@ number of days in specific months, including account for leap year, with 12 mont
   - inversion available: pending
 * dat6: default transformation set for time series data, returns:
 'year', 'mdsn', 'mdcs', 'hmss', 'hmsc', 'bshr', 'wkdy', 'hldy'
+  - useful for: datetime entries of multiple time scales where periodicity is relevant, default date-time encoding, includes bins for holidays, business hours, and weekdays
   - default infill: mean
   - default NArowtype: datetime
   - suffix appender: includes appenders for ('year', 'mdsn', 'mdcs', 'hmss', 'hmsc', 'bshr', 'wkdy', 'hldy')
@@ -2897,6 +2969,7 @@ number of days in specific months, including account for leap year, with 12 mont
   - inversion available: pending
 ### Date-Time Data Bins
 * wkdy: boolean identifier indicating whether a datetime object is a weekday
+  - useful for: supplementing datetime encodings with weekday bins
   - default infill: none
   - default NArowtype: datetime
   - suffix appender: '_wkdy'
@@ -2904,6 +2977,7 @@ number of days in specific months, including account for leap year, with 12 mont
   - driftreport postmunge metrics: activationratio
   - inversion available: pending
 * wkds/wkdo: encoded weekdays 0-6, 'wkds' for one-hot via 'text', 'wkdo' for ordinal via 'ord3'
+  - useful for: ordinal version of preceding wkdy
   - default infill: 7 (eg eight days a week)
   - default NArowtype: datetime
   - suffix appender: '_wkds'
@@ -2912,6 +2986,7 @@ number of days in specific months, including account for leap year, with 12 mont
 	  sun_ratio / infill_ratio
   - inversion available: pending
 * mnts/mnto: encoded months 1-12, 'mnts' for one-hot via 'text', 'mnto' for ordinal via 'ord3'
+  - useful for: supplementing datetime encodings with month bins
   - default infill: 0
   - default NArowtype: datetime
   - suffix appender: '_mnts'
@@ -2921,6 +2996,7 @@ number of days in specific months, including account for leap year, with 12 mont
   - inversion available: pending
 * bshr: boolean identifier indicating whether a datetime object falls within business
 hours (9-5, time zone unaware)
+  - useful for: supplementing datetime encodings with business hour bins
   - default infill: datetime
   - default NArowtype: justNaN
   - suffix appender: '_bshr'
@@ -2930,6 +3006,7 @@ hours (9-5, time zone unaware)
   - inversion available: pending
 * hldy: boolean identifier indicating whether a datetime object is a US Federal
 holiday
+  - useful for: supplementing datetime encodings with holiday bins
   - default infill: none
   - default NArowtype: datetime
   - suffix appender: '_hldy'
@@ -2947,6 +3024,7 @@ category associated with the transformation function may be different than the r
 * DPnb: applies a z-score normalization followed by a noise injection to train data sampled
 from a Gaussian which defaults to 0 mu and 0.06 sigma, but only to a subset of the data based
 on flip_prob parameter.
+  - useful for: noise injection for data augmentation, model perturbation for ensembles, differential privacy
   - default infill: the DP function does not apply a default infill assume upstream nmbr cleans data
   - default NArowtype: numeric
   - suffix appender: '_nmbr_DPnb'
@@ -2962,6 +3040,7 @@ on flip_prob parameter.
 * DPmm: applies a min-max scaling followed by a noise injection to train data sampled
 from a Gaussian which defaults to 0 mu and 0.03 sigma. Note that noise is scaled to ensure output
 remains in range 0-1 (by scaling neg noise when input <0.5 and scaling pos noise when input >0.5)
+  - useful for: noise injection for data augmentation, model perturbation for ensembles, differential privacy
   - default infill: the DP function does not apply a default infill assume upstream mnmx cleans data
   - default NArowtype: numeric
   - suffix appender: '_mnmx_DPmm'
@@ -2977,6 +3056,7 @@ remains in range 0-1 (by scaling neg noise when input <0.5 and scaling pos noise
 * DPrt: applies a retn normalization with a noise injection to train data sampled
 from a Gaussian which defaults to 0 mu and 0.03 sigma. Note that noise is scaled to ensure output
 remains in range 0-1 (by scaling neg noise when input <0.5 and scaling pos noise when input >0.5)
+  - useful for: noise injection for data augmentation, model perturbation for ensembles, differential privacy
   - default infill: comparable to retn with mean (calculated before noise injection)
   - suffix appender: '_DPrt'
   - assignparam parameters accepted: 
@@ -2996,6 +3076,7 @@ with same parameters accepted (where mu is center of noise, sigma is scale, and 
 and with same default parameter values
 * DPbn: applies a two value binary encoding (bnry) followed by a noise injection to train data which
 flips the activation per parameter flip_prob which defaults to 0.03
+  - useful for: noise injection for data augmentation, model perturbation for ensembles, differential privacy
   - default infill: the DP function does not apply a default infill assume upstream bnry cleans data
   - default NArowtype: justNaN
   - suffix appender: '_bnry_DPbn'
@@ -3009,6 +3090,7 @@ flips the activation per parameter flip_prob which defaults to 0.03
 flips the activations per parameter flip_prob which defaults to 0.03 to a random draw from the
 set of activations (including the current activation so actual flip percent is < flip_prob based
 on number of activations)
+  - useful for: noise injection for data augmentation, model perturbation for ensembles, differential privacy
   - default infill: the DP function does not apply a default infill assume upstream ord3 cleans data
   - default NArowtype: justNaN
   - suffix appender: '_ord3_DPod'
@@ -3022,6 +3104,7 @@ on number of activations)
 flips the activations per parameter flip_prob which defaults to 0.03 to a random draw from the
 set of activations (including the current activation so actual flip percent is < flip_prob based
 on number of activations), followed by a one-hot encoding
+  - useful for: noise injection for data augmentation, model perturbation for ensembles, differential privacy
   - default infill: the DP function does not apply a default infill assume upstream ord3 cleans data
   - default NArowtype: justNaN
   - suffix appender: '\_ord3\_DPod\_onht\_#' where # is integer for each categoric entry
@@ -3035,6 +3118,7 @@ on number of activations), followed by a one-hot encoding
 flips the activations per parameter flip_prob which defaults to 0.03 to a random draw from the
 set of activations (including the current activation so actual flip percent is < flip_prob based
 on number of activations), followed by a 1010 binary encoding
+  - useful for: noise injection for data augmentation, model perturbation for ensembles, differential privacy
   - default infill: the DP function does not apply a default infill assume upstream ord3 cleans data
   - default NArowtype: justNaN
   - suffix appender: '\_ord3\_DPod\_1010\_#' where # is integer for each column which collectively encode categoric entries
@@ -3056,6 +3140,7 @@ on number of activations), followed by a 1010 binary encoding
 numeric and predictive methods like ML infill and feature selection may not work for that scenario.)
 Note that for assignnan designation of infill designations, excl is excluded from 'global' assignments
 (although may still be assigned explicitly under assignnan columns or categories entries).
+  - useful for: passthrough sets
   - default infill: none
   - default NArowtype: exclude
   - suffix appender: None or '_excl' (dependant on automunge(.) excl_suffix parameter)
@@ -3065,6 +3150,7 @@ Note that for assignnan designation of infill designations, excl is excluded fro
 * exc2/exc3/exc4: passes source column unaltered other than force to numeric, mode infill applied
 (exc3 and exc4 have downstream standard deviation or power of 10 bins aggregated such as may be beneficial
 when applying TrainLabelFreqLevel to a numeric label set)
+  - useful for: passthrough sets where all numeric entries desired, exc3 and exc4 useful for oversampling with numeric labels by TrainFreqLevelizer
   - default infill: mode
   - default NArowtype: numeric
   - suffix appender: '_exc2'
@@ -3072,6 +3158,7 @@ when applying TrainLabelFreqLevel to a numeric label set)
   - driftreport postmunge metrics: none
   - inversion available: yes
 * exc5: passes source column unaltered other than force to numeric, mode infill applied for non-integers
+  - useful for: passthrough sets where all numeric entries desired
   - default infill: mode
   - default NArowtype: integer
   - suffix appender: '_exc5'
@@ -3079,6 +3166,7 @@ when applying TrainLabelFreqLevel to a numeric label set)
   - driftreport postmunge metrics: none
   - inversion available: yes
 * eval: performs data property evaluation consistent with default automation to designated column
+  - useful for: applying automated evaluation to distinct columns for cases where default automated evaluation turned off by powertransform='excl'
   - default infill: based on evaluation
   - default NArowtype: based on evaluation
   - suffix appender: based on evaluation
@@ -3087,6 +3175,7 @@ when applying TrainLabelFreqLevel to a numeric label set)
   - inversion available: contingent on result
 * ptfm: performs distribution property evaluation consistent with the automunge powertransform 
 parameter activated to designated column
+  - useful for: applying automated powertransform evaluation to distinct columns
   - default infill: based on evaluation
   - default NArowtype: based on evaluation
   - suffix appender: based on evlauation
@@ -3104,6 +3193,7 @@ than once with different parameters. Does not prepare column for ML on it's own.
 * shfl: shuffles the values of a column based on passed randomseed (Note that returned data may not 
 be numeric and predictive methods like ML infill and feature selection may not work for that scenario
 unless an additional transform is applied downstream.)
+  - useful for: shuffle useful to negate feature from influencing inference
   - default infill: exclude
   - default NArowtype: justNAN
   - suffix appender: '_shfl'
@@ -3114,6 +3204,7 @@ unless an additional transform is applied downstream.)
 column with missing or improperly formatted values. Note that when NArw
 is assigned in a family tree it bases NArowtype on the root category, 
 when NArw is passed as the root category it bases NArowtype on default.
+  - useful for: supplmenting any transform with marker for missing entries. On by default by NArw_marker parameter
   - default infill: not applicable
   - default NArowtype: justNaN
   - suffix appender: '_NArw'
@@ -3122,6 +3213,7 @@ when NArw is passed as the root category it bases NArowtype on default.
   - inversion available: no
 * NAr2: produces a column of boolean identifiers for rows in the source
 column with missing or improperly formatted values.
+  - useful for: similar to NArw but different default NArwtype for when used as a root category
   - default infill: not applicable
   - default NArowtype: numeric
   - suffix appender: '_NArw'
@@ -3130,6 +3222,7 @@ column with missing or improperly formatted values.
   - inversion available: no
 * NAr3: produces a column of boolean identifiers for rows in the source
 column with missing or improperly formatted values.
+  - useful for: similar to NArw but different default NArwtype for when used as a root category
   - default infill: not applicable
   - default NArowtype: positivenumeric
   - suffix appender: '_NArw'
@@ -3138,6 +3231,7 @@ column with missing or improperly formatted values.
   - inversion available: no
 * NAr4: produces a column of boolean identifiers for rows in the source
 column with missing or improperly formatted values.
+  - useful for: similar to NArw but different default NArwtype for when used as a root category
   - default infill: not applicable
   - default NArowtype: nonnegativenumeric
   - suffix appender: '_NArw'
@@ -3146,6 +3240,7 @@ column with missing or improperly formatted values.
   - inversion available: no
 * NAr5: produces a column of boolean identifiers for rows in the source
 column with missing or improperly formatted values.
+  - useful for: similar to NArw but different default NArwtype for when used as a root category
   - default infill: not applicable
   - default NArowtype: integer
   - suffix appender: '_NArw'
@@ -3161,6 +3256,7 @@ by passing 'minsplit' parameter through assignparam.
 * splt: searches categorical sets for overlaps between string character subsets and returns new boolean column
 for identified overlap categories. Note this treats numeric values as strings eg 1.3 = '1.3'.
 Note that priority is given to overlaps of higher length, and by default overlap go down to 5 character length.
+  - useful for: extracting grammatical strucutre shared between entries
   - default infill: none
   - default NArowtype: justNaN
   - suffix appender: '\_splt\_##*##' where ##*## is target identified string overlap 
@@ -3182,6 +3278,7 @@ Note that priority is given to overlaps of higher length, and by default overlap
   - inversion available: yes with partial recovery
 * sp15: similar to splt, but allows concurrent activations for multiple detected overlaps (spelled sp-fifteen)
 Note that this version runs risk of high dimensionality of returned data in comparison to splt.
+  - useful for: extracting grammatical strucutre shared between entries with increased information retention vs splt
   - default infill: none
   - default NArowtype: justNaN
   - suffix appender: '\_sp15\_##*##' where ##*## is target identified string overlap 
@@ -3190,6 +3287,7 @@ Note that this version runs risk of high dimensionality of returned data in comp
   - driftreport postmunge metrics: overlap_dict / splt_newcolumns_sp15 / minsplit
   - inversion available: yes with partial recovery
 * sp19: comaprable to sp15, but with returned columns aggregated by a binary encoding to reduce dimensionality
+  - useful for: extracting grammatical strucutre shared between entries with decreased dimensionality vs sp15
   - default infill: distinct encoding
   - default NArowtype: justNaN
   - suffix appender: '\_sp19\_#' where # is integer associated with the encoding
@@ -3197,6 +3295,7 @@ Note that this version runs risk of high dimensionality of returned data in comp
   - driftreport postmunge metrics: comparable to sp15 with addition of _1010_activations_dict for activation ratios
   - inversion available: yes with partial recovery
 * sbst: similar to sp15, but only detects string overlaps shared between full unique entries and subsets of longer character length entries
+  - useful for: exgtracting cases of overlap between full entries and subsets of other entries
   - default infill: none
   - default NArowtype: justNaN
   - suffix appender: '\_sbst\_##*##' where ##*## is target identified string overlap 
@@ -3211,6 +3310,7 @@ Note that this version runs risk of high dimensionality of returned data in comp
   - driftreport postmunge metrics: overlap_dict / splt_newcolumns_sbst / minsplit
   - inversion available: yes with partial recovery
 * sbs3: comaprable to sbst, but with returned columns aggregated by a binary encoding to reduce dimensionality
+  - useful for: binary version of sbst for reduced dimensionality
   - default infill: distinct encoding
   - default NArowtype: justNaN
   - suffix appender: '\_sbs3\_#' where # is integer associated with the encoding
@@ -3219,6 +3319,7 @@ Note that this version runs risk of high dimensionality of returned data in comp
   - inversion available: yes with partial recovery
 * spl2/ors2/ors6/txt3: similar to splt, but instead of creating new column identifier it replaces categorical 
 entries with the abbreviated string overlap
+  - useful for: similar to splt but returns single column, used in aggregations like or19
   - default infill: none
   - default NArowtype: justNaN
   - suffix appender: '_spl2'
@@ -3238,6 +3339,7 @@ entries with the abbreviated string overlap
   - inversion available: yes with partial recovery
 * spl5/spl6/ors5: similar to spl2, but those entries without identified string overlap are set to 0,
 (used in ors5 in conjunction with ord3)
+  - useful for: final tier of spl2 aggregations such as in or19
   - default infill: none
   - default NArowtype: justNaN
   - suffix appender: '_spl5'
@@ -3248,6 +3350,7 @@ entries with the abbreviated string overlap
   - inversion available: yes with partial recovery
 * spl6: similar to spl5, but with a splt performed downstream for identification of overlaps
 within the overlaps
+  - useful for: just a variation on parsing aggregations
   - default infill: none
   - default NArowtype: justNaN
   - suffix appender: '_spl5'
@@ -3257,6 +3360,7 @@ within the overlaps
                                    spl5_zero_dict / minsplit
   - inversion available: yes with partial recovery
 * spl7: similar to spl5, but recognizes string character overlaps down to minimum 2 instead of 5
+  - useful for: just a variation on parsing aggregations
   - default infill: none
   - default NArowtype: justNaN
   - suffix appender: '_spl5'
@@ -3266,6 +3370,7 @@ within the overlaps
   - inversion available: yes with partial recovery
 * srch: searches categorical sets for overlaps with user passed search string and returns new boolean column
 for identified overlap entries.
+  - useful for: identifying specific entry character subsets by search
   - default infill: none
   - default NArowtype: justNaN
   - suffix appender: '\_srch\_##*##' where ##*## is target identified search string
@@ -3277,6 +3382,7 @@ for identified overlap entries.
   - driftreport postmunge metrics: overlap_dict / splt_newcolumns_splt / minsplit
   - inversion available: yes with partial recovery
 * src2: comparable to srch but expected to be more efficient when target set has narrow range of entries
+  - useful for: similar to srch slight variation on implementation
   - default infill: none
   - default NArowtype: justNaN
   - suffix appender: '\_src2_##*##' where ##*## is target identified search string
@@ -3289,6 +3395,7 @@ for identified overlap entries.
 * src3: comparable to src2 with additional support for test set entries not found in train set
 * src4: searches categorical sets for overlaps with user passed search string and returns ordinal column
 for identified overlap entries. (Note for multiple activations encoding priority given to end of list entries).
+  - useful for: ordinal version of srch
   - default infill: none
   - default NArowtype: justNaN
   - suffix appender: '\_src4'
@@ -3300,6 +3407,7 @@ for identified overlap entries. (Note for multiple activations encoding priority
   - driftreport postmunge metrics: overlap_dict / splt_newcolumns_splt / minsplit
   - inversion available: yes with partial recovery
 * nmrc/nmr2/nmr3: parses strings and returns any number groupings, prioritized by longest length
+  - useful for: extracting numeric character subsets of entries
   - default infill: mean
   - default NArowtype: parsenumeric
   - suffix appender: '_nmrc'
@@ -3307,6 +3415,7 @@ for identified overlap entries. (Note for multiple activations encoding priority
   - driftreport postmunge metrics: overlap_dict / mean / maximum / minimum
   - inversion available: yes with full recovery
 * nmcm/nmc2/nmc3: similar to nmrc, but recognizes numbers with commas, returns numbers stripped of commas
+  - useful for: extracting numeric character subsets of entries, recognizes commas
   - default infill: mean
   - default NArowtype: parsenumeric
   - suffix appender: '_nmcm'
@@ -3314,6 +3423,7 @@ for identified overlap entries. (Note for multiple activations encoding priority
   - driftreport postmunge metrics: overlap_dict / mean / maximum / minimum
   - inversion available: yes with full recovery
 * nmEU/nmE2/nmE3: similar to nmcm, but recognizes numbers with period or space thousands deliminator and comma decimal
+  - useful for: extracting numeric character subsets of entries, recognizes EU format
   - default infill: mean
   - default NArowtype: parsenumeric
   - suffix appender: '_nmEU'
@@ -3321,6 +3431,7 @@ for identified overlap entries. (Note for multiple activations encoding priority
   - driftreport postmunge metrics: overlap_dict / mean / maximum / minimum
   - inversion available: yes with full recovery
 * strn: parses strings and returns any non-number groupings, prioritized by longest length
+  - useful for: extracting nonnumeric character subsets of entries
   - default infill: 'zzzinfill'
   - default NArowtype: justNaN
   - suffix appender: '_strn'
@@ -3350,6 +3461,8 @@ for identified overlap entries. (Note for multiple activations encoding priority
   - driftreport postmunge metrics: overlap_dict / mean / maximum / minimum / unique_list / maxlength
   - inversion available: no
 ### Multi-tier Parsed Categoric Encodings
+The following are a few variations of parsed categoric encoding aggregations. We recomend the or19 variant and 
+have written about in paper [Parsed Categoric Encodings with Automunge](https://medium.com/automunge/string-theory-acbd208eb8ca).
 * new processing root categories or11 / or12 / or13 / or14 / or15 / or16 / or17 / or18 / or19 / or20
   - or11 / or13 intended for categorical sets that may include multiple tiers of overlaps 
   and include base binary encoding via 1010 supplemented by tiers of string parsing for 
