@@ -90,27 +90,25 @@ pip install Automunge --upgrade
 Once installed, run this in a local session to initialize:
 
 ```
-from Automunge import AutoMunge
+from Automunge import *
 am = AutoMunge()
 ```
 
 Where e.g. for train set processing  with default parameters run:
 
 ```
-train, trainID, labels, \
-validation1, validationID1, validationlabels1, \
-validation2, validationID2, validationlabels2, \
-test, testID, testlabels, \
-labelsencoding_dict, finalcolumns_train, finalcolumns_test, \
-featureimportance, postprocess_dict \
+train, train_ID, labels, \
+val, val_ID, val_labels, \
+test, test_ID, test_labels, \
+postprocess_dict = \
 = am.automunge(df_train)
 ```
 Or for subsequent consistent processing of train or test data, using the
 dictionary returned from original application of automunge(.), run:
 
 ```
-test, testID, testlabels, \
-labelsencoding_dict, postreports_dict \
+test, test_ID, test_labels, \
+postreports_dict = \
 = am.postmunge(postprocess_dict, df_test)
 ```
 Importantly, if the df_train set passed to automunge(.) includes a column
@@ -123,15 +121,13 @@ included for reference, thus a user may simply copy and past this form.
 ```
 #for automunge(.) function on original train and test data
 
-train, trainID, labels, \
-validation1, validationID1, validationlabels1, \
-validation2, validationID2, validationlabels2, \
-test, testID, testlabels, \
-labelsencoding_dict, finalcolumns_train, finalcolumns_test, \
-featureimportance, postprocess_dict = \
+train, train_ID, labels, \
+val, val_ID, val_labels, \
+test, test_ID, test_labels, \
+postprocess_dict = \
 am.automunge(df_train, df_test = False, \
              labels_column = False, trainID_column = False, testID_column = False, \
-             valpercent1=0.0, valpercent2 = 0.0, floatprecision = 32, shuffletrain = True, \
+             valpercent=0.0, floatprecision = 32, shuffletrain = True, \
              dupl_rows = False, TrainLabelFreqLevel = False, powertransform = False, binstransform = False, \
              MLinfill = True, infilliterate=1, randomseed = False, eval_ratio = .5, \
              numbercategoryheuristic = 255, pandasoutput = True, NArw_marker = True, \
@@ -206,8 +202,8 @@ for consistent processing of additional data.
 #for postmunge(.) function on additional available train or test data
 #using the postprocess_dict object returned from original automunge(.) application
 
-test, testID, testlabels, \
-labelsencoding_dict, postreports_dict = \
+test, test_ID, test_labels, \
+postreports_dict = \
 am.postmunge(postprocess_dict, df_test, \
              testID_column = False, labelscolumn = False, \
              pandasoutput = True, printstatus = True, \
@@ -329,16 +325,14 @@ consistent naming convention as follows:
 
 ```
 #first you'll need to initialize
-from Automunge import AutoMunge
+from Automunge import *
 am = AutoMunge()
 
 #then to run with default parameters
-train, trainID, labels, \
-validation1, validationID1, validationlabels1, \
-validation2, validationID2, validationlabels2, \
-test, testID, testlabels, \
-labelsencoding_dict, finalcolumns_train, finalcolumns_test, \
-featureimportance, postprocess_dict \
+train, train_ID, labels, \
+val, val_ID, val_labels, \
+test, test_ID, test_labels, \
+postprocess_dict = \
 = am.automunge(df_train)
 ```
 
@@ -347,21 +341,19 @@ explanations provided below:
 
 ```
 #first you'll need to initialize
-from Automunge import AutoMunge
+from Automunge import *
 am = AutoMunge()
 
 #then if you want you can copy paste following to view all of parameter options
 #where df_train is the target training data set to be prepared
 
-train, trainID, labels, \
-validation1, validationID1, validationlabels1, \
-validation2, validationID2, validationlabels2, \
-test, testID, testlabels, \
-labelsencoding_dict, finalcolumns_train, finalcolumns_test, \
-featureimportance, postprocess_dict = \
+train, train_ID, labels, \
+val, val_ID, val_labels, \
+test, test_ID, test_labels, \
+postprocess_dict = \
 am.automunge(df_train, df_test = False, \
              labels_column = False, trainID_column = False, testID_column = False, \
-             valpercent1=0.0, valpercent2 = 0.0, floatprecision = 32, shuffletrain = True, \
+             valpercent=0.0, floatprecision = 32, shuffletrain = True, \
              dupl_rows = False, TrainLabelFreqLevel = False, powertransform = False, binstransform = False, \
              MLinfill = True, infilliterate=1, randomseed = False, eval_ratio = .5, \
              numbercategoryheuristic = 255, pandasoutput = True, NArw_marker = True, \
@@ -419,12 +411,12 @@ Or for the postmunge function:
 #using the postprocess_dict object returned from original automunge(.) application
 
 #first you'll need to initialize
-from Automunge import AutoMunge
+from Automunge import *
 am = AutoMunge()
 
 #then to run with default parameters
-test, testID, testlabels, \
-labelsencoding_dict, postreports_dict = \
+test, test_ID, test_labels, \
+postreports_dict = \
 am.postmunge(postprocess_dict, df_test)
 ```
 
@@ -432,15 +424,15 @@ With the full set of arguments available to be passed as:
 
 ```
 #first you'll need to initialize
-from Automunge import AutoMunge
+from Automunge import *
 am = AutoMunge()
 
 #then if you want you can copy paste following to view all of parameter options
 #here postprocess_dict was returned from corresponding automunge(.) call
 #and df_test is the target data set to be prepared
 
-test, testID, testlabels, \
-labelsencoding_dict, postreports_dict = \
+test, test_ID, test_labels, \
+postreports_dict = \
 am.postmunge(postprocess_dict, df_test, \
              testID_column = False, labelscolumn = False, \
              pandasoutput = True, printstatus = True, inplace = False, \
@@ -481,7 +473,7 @@ single column sets as pandas series.
 * train: a numerically encoded set of data intended to be used to train a
 downstream machine learning model in the framework of a user's choice
 
-* trainID: the set of ID values corresponding to the train set if a ID
+* train_ID: the set of ID values corresponding to the train set if a ID
 column(s) was passed to the function. This set may be useful if the shuffle
 option was applied. Note that an ID column may serve multiple purposes such
 as row identifiers or for pairing tabular data rows with a corresponding
@@ -496,23 +488,13 @@ assumes the label column is originally included in the train set. Note
 that if the labels set is a single column a returned numpy array is 
 flattened (e.g. [[1,2,3]] converted to [1,2,3] )
 
-* validation1: a set of training data carved out from the train set
+* val: a set of training data carved out from the train set
 that is intended for use in hyperparameter tuning of a downstream model.
 
-* validationID1: the set of ID values corresponding to the validation1
+* val_ID: the set of ID values corresponding to the validation1
 set. Comparable to columns returned in trainID.
 
-* validationlabels1: the set of labels corresponding to the validation1
-set
-
-* validation2: the set of training data carved out from the train set
-that is intended for the final validation of a downstream model (this
-set should not be applied extensively for hyperparameter tuning).
-
-* validationID2: the set of ID values corresponding to the validation2
-set. Comparable to columns returned in trainID.
-
-* validationlabels2: the set of labels corresponding to the validation2
+* val_labels: the set of labels corresponding to the validation1
 set
 
 * test: the set of features, consistently encoded and normalized as the
@@ -521,50 +503,11 @@ downstream model trained with train. Note that if no test data is
 available during initial address this processing will take place in the
 postmunge(.) function. 
 
-* testID: the set of ID values corresponding to the test set. Comparable 
+* test_ID: the set of ID values corresponding to the test set. Comparable 
 to columns returned in trainID.
 
-* testlabels: a set of numerically encoded labels corresponding to the
+* test_labels: a set of numerically encoded labels corresponding to the
 test set if a label column was passed.
-
-* labelsencoding_dict: a dictionary that can be used to reverse encode
-predictions that were generated from a downstream model (such as to
-convert a one-hot encoded set back to a single categorical set). (Note 
-that a much easier way to invert encodings is now to make use of the
-inversion parameter option in postmunge(.) function.)
-```
-#Note that the labelsencoding_dict follows format:
-labelsencoding_dict = \
-{'(label root category)' : {'(label column header)' : {(normalization parameters)}}
-```
-
-* finalcolumns_train: a list of the column headers corresponding to the
-training data. Note that the inclusion of suffix appenders is used to
-identify which feature engineering transformations were applied to each
-column.
-
-* finalcolumns_test: a list of the column headers corresponding to the
-test data. Note that this list will match the one preceding.
-
-* featureimportance: a dictionary containing summary of feature importance
-ranking and metrics for each of the derived sets. Note that the metric
-value provides an indication of the importance of the original source
-column such that larger value suggests greater importance, and the metric2 
-value provides an indication of the relative importance of columns derived
-from the original source column such that smaller metric2 value suggests 
-greater relative importance. Please note that in cases of multi-column 
-categorical encodings, metric2 has more validity for one-hot encoded sets
-than binary encoded sets. One can print the values here such as with
-this code:
-
-```
-#to inspect sorted values returned in featureimportance one could access
-featureimportance['FS_sorted']
-```
-Note that the sorted feature importance results, as well as the base accuracy of
-the feature iumportance model, are available in featureimportance['FS_sorted']. 
-Important to keep in mind that feature importance is as much a measure of the model 
-as it is of the features.
 
 * postprocess_dict: a returned python dictionary that includes
 normalization parameters and trained ML infill models used to
@@ -575,28 +518,23 @@ used to train a downstream model so that it may be passed to postmunge(.)
 to consistently process subsequently available test data, such as 
 demonstrated with the pickle library above.
 
-Note that a report classifying the returned column types such as by:
-continuous, boolean, ordinal, onehot, onehot_sets, binary, binary_sets, passthrough
-is available in postprocess_dict['columntype_report'], with a comparable
-report for columns returned for the label set as postprocess_dict['label_columntype_report'].
-Also a report mapping the input columns to their associated returned columns (excluding
-those consolidated as part of a dimensionality reduction) is available as
-postprocess_dict['column_map'].
+A few useful entries in the postprocess_dict include:
+- postprocess_dict['columntype_report']: a report classifying the returned column types
+- postprocess_dict['column_map']:  a report mapping the input columns to their associated returned columns (excluding those consolidated as part of a dimensionality reduction)
+- postprocess_dict['FS_sorted]: results of feature importance evaluation if elected
 
 ...
 
 ## automunge(.) passed parameters
 
 ```
-train, trainID, labels, \
-validation1, validationID1, validationlabels1, \
-validation2, validationID2, validationlabels2, \
-test, testID, testlabels, \
-labelsencoding_dict, finalcolumns_train, finalcolumns_test, \
-featureimportance, postprocess_dict = \
+train, train_ID, labels, \
+val, val_ID, val_labels, \
+test, test_ID, test_labels, \
+postprocess_dict = \
 am.automunge(df_train, df_test = False, \
              labels_column = False, trainID_column = False, testID_column = False, \
-             valpercent1=0.0, valpercent2 = 0.0, floatprecision = 32, shuffletrain = True, \
+             valpercent=0.0, floatprecision = 32, shuffletrain = True, \
              dupl_rows = False, TrainLabelFreqLevel = False, powertransform = False, binstransform = False, \
              MLinfill = True, infilliterate=1, randomseed = False, eval_ratio = .5, \
              numbercategoryheuristic = 255, pandasoutput = True, NArw_marker = True, \
@@ -702,8 +640,8 @@ may also be passed such as if the source dataset was a numpy array. Note
 that if ID columns are same between a train and test set, can leave this
 as False (or True) and trainID_column will be applied to test set automatically.
 
-* valpercent1: a float value between 0 and 1 which designates the percent
-of the training data which will be set aside for the first validation
+* valpercent: a float value between 0 and 1 which designates the percent
+of the training data which will be set aside for the validation
 set (generally used for hyperparameter tuning of a downstream model).
 This value defaults to 0. (Previously the default here was set at 0.20 but 
 that is fairly an arbitrary value and a user may wish to deviate for 
@@ -712,20 +650,7 @@ set is needed (such as may be the case for k-means validation). Please see
 also the notes below for the shuffletrain parameter.  Note that if 
 shuffletrain parameter is set to False then any validation sets will be 
 pulled from the bottom x% sequential rows of the df_train dataframe. (Where 
-x% is the sum of validation ratios.) Note that if shuffletrain is set to 
-False the validation2 sets will be pulled from the bottom x% sequential 
-rows of the validation1 sets, and if shuffletrain is True the validation2 
-sets will be randomly selected from the validation1 sets.
-
-* valpercent2: a float value between 0 and 1 which designates the percent
-of the training data which will be set aside for the second validation
-set (generally used for final validation of a model prior to release).
-This value defaults to 0. (Previously the default was set at 0.10 but that 
-is fairly an arbitrary value and a user may wish to deviate for different 
-size sets.) Note that if shuffletrain is set to False the validation2 sets 
-will be pulled from the bottom x% sequential rows of the validation1 sets, 
-and if shuffletrain is True the validation2 sets will be randomly selected 
-from the validation1 sets.
+x% is the sum of validation ratios.)
 
 * floatprecision: an integer with acceptable values of _16/32/64_ designating
 the memory precision for returned float values. (A tradeoff between memory
@@ -854,7 +779,7 @@ a dimensionality reduction based on the featurethreshold parameter to retain a %
 'metric' performs the evaluation followed by a dimensionality reduction to retain features above a metric value based on featurethreshold parameter. 'report' performs the evluation and returns a report with no
 further processing of data. Feature importance evaluation requires the inclusion of a
 designated label column in the train set. Note that sorted 
-feature importance results are returned in featureimportance['FS_sorted'], 
+feature importance results are returned in postprocess_dict['FS_sorted'], 
 including columns sorted by metric and metric2. Note that feature importance 
 model training inspects same ML_cmnd parameters as ML infill. (Note that any user-specified size of validationratios 
 if passed are used in this method, otherwise defaults to 0.2.)
@@ -869,13 +794,11 @@ NArw columns are only retained for those sets corresponding to columns that "mad
 are overwritten with the returned train and test sets. This reduces memory overhead.
 For example, to take advantage with reduced memory overhead you could call automunge(.) as:
 ```
-df_train, trainID, labels, \
-validation1, validationID1, validationlabels1, \
-validation2, validationID2, validationlabels2, \
-df_test, testID, testlabels, \
-labelsencoding_dict, finalcolumns_train, finalcolumns_test, \
-featureimportance, postprocess_dict \
-= am.automunge(df_train, df_test=df_test, inplace=True)
+train, train_ID, labels, \
+val, val_ID, val_labels, \
+test, test_ID, test_labels, \
+postprocess_dict = \
+am.automunge(df_train, df_test=df_test, inplace=True)
 ```
 
 * Binary: a dimensionality reduction technique whereby the set of columns
@@ -1578,14 +1501,14 @@ normalization parameters, and/or the training of models for ML infill.
 #using the postprocess_dict object returned from original automunge(.) application
 
 #Remember to initialize automunge
-from Automunge import AutoMunge
+from Automunge import *
 am = AutoMunge()
 
 
 #Then we can run postmunge function as:
 
-test, testID, testlabels, \
-labelsencoding_dict, postreports_dict = \
+test, test_ID, test_labels, \
+postreports_dict = \
 am.postmunge(postprocess_dict, df_test, \
              testID_column = False, labelscolumn = False, \
              pandasoutput = True, printstatus = True, inplace = False, \
@@ -1600,8 +1523,8 @@ object returned from the corresponding automunge(.) call and a consistently form
 additional data set.
 
 ```
-test, testID, testlabels, \
-labelsencoding_dict, postreports_dict \
+test, test_ID, test_labels, \
+postreports_dict = \
 = am.postmunge(postprocess_dict, df_test)
 ```          
 
@@ -1615,26 +1538,16 @@ single column sets returned as pandas series.
 training data, that can be used to generate predictions from a model
 trained with the train set from automunge.
 
-* testID: the set of ID values corresponding to the test set. Also included 
+* test_ID: the set of ID values corresponding to the test set. Also included 
 in this set is a derived column titled 'Automunge_index', 
 this column serves as an index identifier for order of rows as they were 
 received in passed data, such as may be beneficial when data is shuffled.
 
-* testlabels: a set of numerically encoded labels corresponding to the
+* test_labels: a set of numerically encoded labels corresponding to the
 test set if a label column was passed. Note that the function
 assumes the label column is originally included in the train set. Note
 that if the labels set is a single column a returned numpy array is 
 flattened (e.g. [[1,2,3]] converted to [1,2,3] )
-
-* labelsencoding_dict: this is the same labelsencoding_dict returned from
-automunge, it's used in case one wants to reverse encode predicted labels.
-(Note that a much easier way to invert encodings is now to make use of the
-inversion parameter option in postmunge(.) function.)
-
-* finalcolumns_test: a list of the column headers corresponding to the
-test data. Note that the inclusion of suffix appenders is used to
-identify which feature engineering transformations were applied to each
-column. Note that this list should match the one from automunge.
 
 * postreports_dict: a dictionary containing entries for following:
   - postreports_dict['featureimportance']: results of optional feature 
@@ -1708,14 +1621,14 @@ postreports_dict['sourcecolumn_drift']['new_driftstats'] = \
 #using the postprocess_dict object returned from original automunge(.) application
 
 #Remember to initialize automunge
-from Automunge import AutoMunge
+from Automunge import *
 am = AutoMunge()
 
 
 #Then we can run postmunge function as:
 
-test, testID, testlabels, \
-labelsencoding_dict, finalcolumns_test = \
+test, test_ID, test_labels, \
+postreports_dict = \
 am.postmunge(postprocess_dict, df_test, \
              testID_column = False, labelscolumn = False, \
              pandasoutput = True, printstatus = True, inplace = False, \
@@ -1781,8 +1694,8 @@ will print status of processing during operation. Defaults to True.
 is overwritten with the returned test set. This reduces memory overhead.
 For example, to take advantage with reduced memory overhead you could call postmunge(.) as:
 ```
-df_test, testID, testlabels, \
-labelsencoding_dict, finalcolumns_test = \
+test, test_ID, test_labels, \
+postreports_dict = \
 am.postmunge(postprocess_dict, df_test, inplace = False)
 ```
 
@@ -1911,8 +1824,8 @@ labels, or both. For example:
 
 ```
 #in default of returnedsets=True, postmunge(.) returns five sets, such as this call:
-test, testID, testlabels, \
-labelsencoding_dict, finalcolumns_test = \
+test, test_ID, test_labels, \
+postreports_dict = \
 am.postmunge(postprocess_dict, df_test, returnedsets = True)
 
 #for other returnedset options, postmunge(.) returns just a single set, the test set:
@@ -2025,12 +1938,10 @@ transformdict = {'nmbr' : {'parents' : [], \
                            
 #And then we can simply pass this transformdict to an automunge(.) call.
 
-train, trainID, labels, \
-validation1, validationID1, validationlabels1, \
-validation2, validationID2, validationlabels2, \
-test, testID, testlabels, \
-labelsencoding_dict, finalcolumns_train, finalcolumns_test, \
-featureimportance, postprocess_dict = \
+train, train_ID, labels, \
+val, val_ID, val_labels, \
+test, test_ID, test_labels, \
+postprocess_dict = \
 am.automunge(df_train, \
              transformdict = transformdict)
 
