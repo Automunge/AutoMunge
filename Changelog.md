@@ -2931,3 +2931,26 @@ ML_cmnd = {'autoML_type':'flaml', \
 - parameters default to verbose = 0
 - FLAML library courtesy of Microsoft team
 - Chi Wang, Qingyun Wu, Markus Weimer, Erkang Zhu, "FLAML: A Fast and Lightweight AutoML Library"
+
+6.2
+- important: backward compatibility breaking update
+- reduced the number of sets returned from automunge(.) and postmunge(.)
+- automunge returned sets reduced from 17 to 10
+- postmunge returned sets reduced from 5 to 4
+- function calls now look like:
+```
+train, train_ID, labels, \
+val, val_ID, val_labels, \
+test, test_ID, test_labels, \
+postprocess_dict = \
+am.automunge(df_train)
+
+
+test, test_ID, test_labels, \
+postreports_dict = \
+am.postmunge(postprocess_dict, df_test)
+```
+- also deprecated automunge(.) parameters valpercent1, valpercent2
+- replaced with / consolidated to valpercent
+- so functions now only return a single validation set when elected
+- (Had been so focused on retaining compatibility of tutorials published years ago lost sight of design principles. Came to my senses.)
