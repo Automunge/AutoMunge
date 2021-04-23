@@ -2149,8 +2149,6 @@ string by 'strg' (some ML libraries prefer string encoded labels to recognize th
 * lbfs: for categoric encoding with fitted smoothed labels (i.e. fitted label smoothing), further described in fsmh transform below (accepts activation parameter for activation threshold)
 * lbda: for date-time label sets, entries are encoded comparable to 'dat6' described further below
 
-Changelog
-
 ### Numerical Set Normalizations
 * nmbr/nbr2/nbr3/nmdx/nmd2/nmd3: z-score normalization<br/>
 (x - mean) / (standard deviation)
