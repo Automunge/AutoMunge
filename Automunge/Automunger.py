@@ -23695,13 +23695,11 @@ class AutoMunge:
         totalvalidation = 0.2
 
       am_train, _1, am_labels, \
-      am_validation1, _3, am_validationlabels1, \
-      _5, _6, _7, \
-      _8, _9, _10, \
-      labelsencoding_dict, finalcolumns_train, _10,  \
-      _11, FSpostprocess_dict = \
+      am_validation1, _2, am_validationlabels1, \
+      _3, _4, _5, \
+      FSpostprocess_dict = \
       self.automunge(df_train, df_test = False, labels_column = labels_column, trainID_column = trainID_column, \
-                    testID_column = False, valpercent1 = totalvalidation, valpercent2 = 0.0, \
+                    testID_column = False, valpercent = totalvalidation, \
                     shuffletrain = True, TrainLabelFreqLevel = False, powertransform = powertransform, \
                     binstransform = binstransform, MLinfill = False, infilliterate=1, randomseed = randomseed, \
                     excl_suffix = True, \
@@ -23942,9 +23940,9 @@ class AutoMunge:
     #(might want to make this a passed argument from automunge)
     
         #I think this will clear some memory
-        del am_train, _1, am_labels, am_validation1, _3, \
-        am_validationlabels1, _5, _6, _7, \
-        _8, _9, labelsencoding_dict, finalcolumns_train, _10,  \
+        del am_train, _1, am_labels, am_validation1, _2, \
+        am_validationlabels1, \
+        _3, _4, _5,  \
         FSpostprocess_dict
 
         if printstatus is True:
@@ -28654,7 +28652,7 @@ class AutoMunge:
   
   def automunge(self, df_train, df_test = False, \
                 labels_column = False, trainID_column = False, testID_column = False, \
-                valpercent1=0.0, valpercent2 = 0.0, floatprecision = 32, shuffletrain = True, \
+                valpercent=0.0, floatprecision = 32, shuffletrain = True, \
                 dupl_rows = False, TrainLabelFreqLevel = False, powertransform = False, binstransform = False, \
                 MLinfill = True, infilliterate=1, randomseed = False, eval_ratio = .5, \
                 numbercategoryheuristic = 255, pandasoutput = True, NArw_marker = True, \
@@ -28712,6 +28710,9 @@ class AutoMunge:
 
     #note LabelSmoothing_... / LSfit parameters are now depracated, replaced by smth family of transforms
     #featurepct, featuremetric, featuremethod are deprecated, replaced by consolidation to featureselection and featurethreshold
+    #valpercent1 and valpercent2 are depreciated, replaced with valpercent
+    valpercent1 = valpercent
+    valpercent2 = 0.
     
     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     application_number = random.randint(100000000000,999999999999)
@@ -28921,9 +28922,7 @@ class AutoMunge:
         return [], [], [], \
         [], [], [], \
         [], [], [], \
-        [], [], [], \
-        [], [], [],  \
-        featureimportance, FS_sorted
+        featureimportance
 
     else:
 
@@ -30110,7 +30109,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.01'
+    automungeversion = '6.02'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -30318,8 +30317,7 @@ class AutoMunge:
       #(postmunge shuffletrain not needed since data was already shuffled)
 
       #process validation set consistent to train set with postmunge here
-      #df_validation1, _2, _3, _4, _5 = \
-      df_validation1, _2, df_validationlabels1, _4, _5 = \
+      df_validation1, _2, df_validationlabels1, _4 = \
       self.postmunge(postprocess_dict, df_validation1, testID_column = False, \
                     labelscolumn = labels_column, pandasoutput = True, printstatus = printstatus, \
                     shuffletrain = False)
@@ -30487,10 +30485,8 @@ class AutoMunge:
 
     return df_train, df_trainID, df_labels, \
     df_validation1, df_validationID1, df_validationlabels1, \
-    df_validation2, df_validationID2, df_validationlabels2, \
     df_test, df_testID, df_testlabels, \
-    labelsencoding_dict, finalcolumns_train, finalcolumns_test,  \
-    featureimportance, postprocess_dict
+    postprocess_dict
 
   def postprocessfamily(self, df_test, column, category, origcategory, process_dict, \
                         transform_dict, postprocess_dict, columnkey, assign_param):
@@ -36951,7 +36947,7 @@ class AutoMunge:
       totalvalidation = 0.2
 
       #prepare sets for FS with postmunge
-      am_train, _1, am_labels, labelsencoding_dict, finalcolumns_train = \
+      am_train, _1, am_labels, _2 = \
       self.postmunge(FSpostprocess_dict, df_test, testID_column = testID_column, \
                      labelscolumn = labelscolumn, pandasoutput = pandasoutput, printstatus = printstatus, \
                      TrainLabelFreqLevel = TrainLabelFreqLevel, featureeval = featureeval, \
@@ -37196,12 +37192,8 @@ class AutoMunge:
         #(might want to make this a passed argument from automunge)
 
         #I think this will clear some memory
-    #     del am_train, _1, am_labels, am_validation1, _3, \
-    #     am_validationlabels1, _5, _6, _7, \
-    #     _8, _9, labelsencoding_dict, finalcolumns_train, _10,  \
-    #     FSpostprocess_dict
 
-          del am_train, _1, am_labels, labelsencoding_dict, finalcolumns_train, am_validation1, am_validationlabels1
+          del am_train, _1, am_labels, _2, am_validation1, am_validationlabels1
 
           if printstatus is True:
             print("_______________")
@@ -37869,7 +37861,7 @@ class AutoMunge:
         print("Source Column Drift Report Complete")
         print("")
       
-      return [], [], [], [], postreports_dict
+      return [], [], [], postreports_dict
     #end drift report section
     #__________
 
@@ -38017,8 +38009,6 @@ class AutoMunge:
         if pmsmoothing:
           print("Label Smoothing applied to labels")
           print("")
-
-    labelsencoding_dict = postprocess_dict['labelsencoding_dict']
 
     #now that we've pre-processed all of the columns, let's run through them again\
     #using infill to derive plug values for the previously missing cells
@@ -38336,7 +38326,7 @@ class AutoMunge:
     
     if returnedsets is True:
     
-      return df_test, df_testID, df_testlabels, labelsencoding_dict, postreports_dict
+      return df_test, df_testID, df_testlabels, postreports_dict
     
     else:
       
