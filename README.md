@@ -207,8 +207,8 @@ postreports_dict = \
 am.postmunge(postprocess_dict, df_test, \
              testID_column = False, labelscolumn = False, \
              pandasoutput = True, printstatus = True, \
-             dupl_rows = False, TrainLabelFreqLevel = False, featureeval = False, \
-             inversion = False, traindata = False, \
+             dupl_rows = False, TrainLabelFreqLevel = False, \
+	     featureeval = False, traindata = False, \
              driftreport = False, inversion = False, \
              returnedsets = True, shuffletrain = False)
 ```
@@ -436,8 +436,8 @@ postreports_dict = \
 am.postmunge(postprocess_dict, df_test, \
              testID_column = False, labelscolumn = False, \
              pandasoutput = True, printstatus = True, inplace = False, \
-             dupl_rows = False, TrainLabelFreqLevel = False, featureeval = False, \
-             inversion = False, traindata = False, \
+             dupl_rows = False, TrainLabelFreqLevel = False, \
+	     featureeval = False, traindata = False, \
              driftreport = False, inversion = False, \
              returnedsets = True, shuffletrain = False)
 ```
@@ -1511,8 +1511,8 @@ postreports_dict = \
 am.postmunge(postprocess_dict, df_test, \
              testID_column = False, labelscolumn = False, \
              pandasoutput = True, printstatus = True, inplace = False, \
-             dupl_rows = False, TrainLabelFreqLevel = False, featureeval = False, \
-             inversion = False, traindata = False, \
+             dupl_rows = False, TrainLabelFreqLevel = False, \
+	     featureeval = False, traindata = False, \
              driftreport = False, inversion = False, \
              returnedsets = True, shuffletrain = False)
 ```
@@ -1631,8 +1631,8 @@ postreports_dict = \
 am.postmunge(postprocess_dict, df_test, \
              testID_column = False, labelscolumn = False, \
              pandasoutput = True, printstatus = True, inplace = False, \
-             dupl_rows = False, TrainLabelFreqLevel = False, featureeval = False, \
-             inversion = False, traindata = False, \
+             dupl_rows = False, TrainLabelFreqLevel = False, \
+	     featureeval = False, traindata = False, \
              driftreport = False, inversion = False, \
              returnedsets = True, shuffletrain = False)
 ```
