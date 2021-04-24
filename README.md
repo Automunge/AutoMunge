@@ -520,9 +520,10 @@ to consistently process subsequently available test data, such as
 demonstrated with the pickle library above.
 
 A few useful entries in the postprocess_dict include:
+- postprocess_dict['finalcolumns_train']: list of returned column headers for train set including suffix appenders
 - postprocess_dict['columntype_report']: a report classifying the returned column types
 - postprocess_dict['column_map']:  a report mapping the input columns to their associated returned columns (excluding those consolidated as part of a dimensionality reduction)
-- postprocess_dict['FS_sorted]: results of feature importance evaluation if elected
+- postprocess_dict['FS_sorted]: sorted results of feature importance evaluation if elected
 
 ...
 
