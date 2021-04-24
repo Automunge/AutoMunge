@@ -100,7 +100,7 @@ Where e.g. for train set processing  with default parameters run:
 train, train_ID, labels, \
 val, val_ID, val_labels, \
 test, test_ID, test_labels, \
-postprocess_dict = \
+postprocess_dict \
 = am.automunge(df_train)
 ```
 Or for subsequent consistent processing of train or test data, using the
@@ -108,7 +108,7 @@ dictionary returned from original application of automunge(.), run:
 
 ```
 test, test_ID, test_labels, \
-postreports_dict = \
+postreports_dict \
 = am.postmunge(postprocess_dict, df_test)
 ```
 Importantly, if the df_train set passed to automunge(.) includes a column
@@ -332,7 +332,7 @@ am = AutoMunge()
 train, train_ID, labels, \
 val, val_ID, val_labels, \
 test, test_ID, test_labels, \
-postprocess_dict = \
+postprocess_dict \
 = am.automunge(df_train)
 ```
 
@@ -1523,7 +1523,7 @@ additional data set.
 
 ```
 test, test_ID, test_labels, \
-postreports_dict = \
+postreports_dict \
 = am.postmunge(postprocess_dict, df_test)
 ```          
 
