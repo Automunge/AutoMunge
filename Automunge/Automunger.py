@@ -26265,12 +26265,12 @@ class AutoMunge:
     
     #check inversion
     inversion_valresult = False
-    if inversion not in {False, 'test', 'labels', 'denselabels'} and not isinstance(inversion, list):
+    if not isinstance(inversion, list) and inversion not in {False, 'test', 'labels', 'denselabels'}:
       inversion_valresult = True
       print("Error: invalid entry passed for inversion parameter.")
       print("Acceptable values are one of {False, 'test', 'labels', 'denselabels', or a list of columns}")
       print()
-    elif inversion not in {'test', 'labels', 'denselabels'} and not isinstance(inversion, list) \
+    elif not isinstance(inversion, list) and inversion not in {'test', 'labels', 'denselabels'} \
     and not isinstance(inversion, bool):
       inversion_valresult = True
       print("Error: invalid entry passed for inversion parameter.")
@@ -30109,7 +30109,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.02'
+    automungeversion = '6.03'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
