@@ -2954,3 +2954,8 @@ am.postmunge(postprocess_dict, df_test)
 - replaced with / consolidated to valpercent
 - so functions now only return a single validation set when elected
 - (Had been so focused on retaining compatibility of tutorials published years ago lost sight of design principles. Came to my senses.)
+
+6.3
+- small bug fix for inversion applied to subset of columns
+- originating from parameter validation function
+- for when passing postmunge inversion parameter as a list of columns
