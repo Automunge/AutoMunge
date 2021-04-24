@@ -56,7 +56,8 @@ series of transformed pandas dataframes (or numpy arrays per selection) which
 are numerically encoded and suitable for the direct application of machine 
 learning algorithms. A user has an option between default feature engineering 
 based on inferred properties of the data with feature transformations such as 
-z-score normalization, binary encoding for categorical sets, time series 
+z-score normalization, binary encoding for categorical sets, hashing for
+high cardinality cateogric sets, time series 
 agregation to sin and cos transforms (with bins for business hours, weekdays, 
 and holidays), and more (full documentation below); assigning distinct column 
 feature engineering methods using a built-in library of feature engineering 
