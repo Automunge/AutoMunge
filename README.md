@@ -221,10 +221,10 @@ The functions return pandas dataframes (or numpy arrays per selection) numerical
 and normalized such as to make them suitable for direct application to a 
 machine learning model in the framework of a user's choice, including sets for 
 the various activities of a generic machine learning project such as training, 
-hyperparameter tuning validation (validation1), final  validation (validation2), 
-or data intended for use in generation of predictions from the trained model 
-(test set). The functions also return a few other sets such as labels, column 
-headers, ID sets, and etc if elected - a full list of returned arrays is below.
+hyperparameter tuning validation (val), or data intended for use in generation 
+of predictions from the trained model (test set). The functions also return a 
+few other sets such as labels, column headers, ID sets, and etc if elected - a 
+full list of returned dataframes is below.
 
 When left to automation, the function works by inferring a category of 
 data based on properties of each column to select the type of processing 
