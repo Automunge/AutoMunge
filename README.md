@@ -492,10 +492,10 @@ flattened (e.g. [[1,2,3]] converted to [1,2,3] )
 * val: a set of training data carved out from the train set
 that is intended for use in hyperparameter tuning of a downstream model.
 
-* val_ID: the set of ID values corresponding to the validation1
-set. Comparable to columns returned in trainID.
+* val_ID: the set of ID values corresponding to the val
+set. Comparable to columns returned in train_ID.
 
-* val_labels: the set of labels corresponding to the validation1
+* val_labels: the set of labels corresponding to the val
 set
 
 * test: the set of features, consistently encoded and normalized as the
@@ -505,7 +505,7 @@ available during initial address this processing will take place in the
 postmunge(.) function. 
 
 * test_ID: the set of ID values corresponding to the test set. Comparable 
-to columns returned in trainID.
+to columns returned in train_ID.
 
 * test_labels: a set of numerically encoded labels corresponding to the
 test set if a label column was passed.
