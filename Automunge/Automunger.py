@@ -23647,7 +23647,7 @@ class AutoMunge:
                     powertransform, binstransform, randomseed, \
                     numbercategoryheuristic, assigncat, transformdict, \
                     processdict, featurethreshold, featureselection, \
-                    ML_cmnd, process_dict, valpercent1, valpercent2, printstatus, \
+                    ML_cmnd, process_dict, valpercent, printstatus, \
                     NArw_marker, assignparam):
     """
     featureselect is a function called within automunge() that applies methods
@@ -23689,7 +23689,7 @@ class AutoMunge:
 
       FS_assignparam = deepcopy(assignparam)
 
-      totalvalidation = valpercent1 + valpercent2
+      totalvalidation = valpercent
 
       if totalvalidation == 0:
         totalvalidation = 0.2
@@ -25876,7 +25876,7 @@ class AutoMunge:
 
     return PCAset_train, PCAset_test, postprocess_dict, PCActgy
   
-  def check_am_miscparameters(self, valpercent1, valpercent2, floatprecision, shuffletrain, \
+  def check_am_miscparameters(self, valpercent, floatprecision, shuffletrain, \
                              TrainLabelFreqLevel, dupl_rows, powertransform, binstransform, MLinfill, \
                              infilliterate, randomseed, eval_ratio, numbercategoryheuristic, pandasoutput, \
                              NArw_marker, featurethreshold, featureselection, inplace, \
@@ -25893,51 +25893,21 @@ class AutoMunge:
     
     miscparameters_results = {'suffixoverlap_results':{}}
     
-    #check valpercent1
-    valpercent1_valresult = False
-    if isinstance(valpercent1, (int, float)) and not isinstance(valpercent1, bool):
-      if valpercent1 < 0 or valpercent1 >= 1:
-        valpercent1_valresult = True
-        print("Error: invalid entry passed for valpercent1")
-        print("Acceptable values are numbers in range 0 <= valpercent1 < 1.")
+    #check valpercent
+    valpercent_valresult = False
+    if isinstance(valpercent, (int, float)) and not isinstance(valpercent, bool):
+      if valpercent < 0 or valpercent >= 1:
+        valpercent_valresult = True
+        print("Error: invalid entry passed for valpercent")
+        print("Acceptable values are numbers in range 0 <= valpercent < 1.")
         print()
     else:
-      valpercent1_valresult = True
-      print("Error: invalid entry passed for valpercent1")
-      print("Acceptable values are numbers in range 0 <= valpercent1 < 1.")
+      valpercent_valresult = True
+      print("Error: invalid entry passed for valpercent")
+      print("Acceptable values are numbers in range 0 <= valpercent < 1.")
       print()
       
-    miscparameters_results.update({'valpercent1_valresult' : valpercent1_valresult})
-    
-    #check valpercent2
-    valpercent2_valresult = False
-    if isinstance(valpercent2, (int, float)) and not isinstance(valpercent2, bool):
-      if valpercent2 < 0 or valpercent2 >= 1:
-        valpercent2_valresult = True
-        print("Error: invalid entry passed for valpercent2")
-        print("Acceptable values are numbers in range 0 <= valpercent2 < 1")
-        print()
-    else:
-      valpercent2_valresult = True
-      print("Error: invalid entry passed for valpercent2")
-      print("Acceptable values are numbers in range 0 <= valpercent2 < 1")
-      print()
-      
-    miscparameters_results.update({'valpercent2_valresult' : valpercent2_valresult})
-    
-    #check valpercent_sum
-    valpercent_sum_valresult = False
-    if (isinstance(valpercent1, (int, float)) and not isinstance(valpercent1, bool)) \
-    and isinstance(valpercent2, (int, float)) and not isinstance(valpercent2, bool):
-      valpercent_sum = valpercent1 + valpercent2
-      if valpercent_sum >= 1.0:
-        print("Error: invalid entries passed for valpercent1 &/or valpercent2.")
-        print("Valid entries for these two paraemters are numbers subject to constraint")
-        print("valpercent1 + valpercent2 < 1.0")
-        print()
-        valpercent_sum_valresult = True
-        
-    miscparameters_results.update({'valpercent_sum_valresult' : valpercent_sum_valresult})
+    miscparameters_results.update({'valpercent_valresult' : valpercent_valresult})
     
     #check floatprecision
     floatprecision_valresult = False
@@ -28711,8 +28681,6 @@ class AutoMunge:
     #note LabelSmoothing_... / LSfit parameters are now depracated, replaced by smth family of transforms
     #featurepct, featuremetric, featuremethod are deprecated, replaced by consolidation to featureselection and featurethreshold
     #valpercent1 and valpercent2 are depreciated, replaced with valpercent
-    valpercent1 = valpercent
-    valpercent2 = 0.
     
     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     application_number = random.randint(100000000000,999999999999)
@@ -28741,7 +28709,7 @@ class AutoMunge:
     #check the range of parameters 
     #(generally speaking other than passed dictionaries, dataframes, or column identifiers)
     miscparameters_results = \
-    self.check_am_miscparameters(valpercent1, valpercent2, floatprecision, shuffletrain, \
+    self.check_am_miscparameters(valpercent, floatprecision, shuffletrain, \
                                  TrainLabelFreqLevel, dupl_rows, powertransform, binstransform, MLinfill, \
                                  infilliterate, randomseed, eval_ratio, numbercategoryheuristic, pandasoutput, \
                                  NArw_marker, featurethreshold, featureselection, inplace, \
@@ -28900,7 +28868,7 @@ class AutoMunge:
                           powertransform, binstransform, randomseed, \
                           numbercategoryheuristic, assigncat, transformdict, \
                           processdict, featurethreshold, featureselection, \
-                          ML_cmnd, process_dict, valpercent1, valpercent2, printstatus, NArw_marker, \
+                          ML_cmnd, process_dict, valpercent, printstatus, NArw_marker, \
                           assignparam)
 
       #the final returned featureimportance report consolidates the sorted results with raw data
@@ -29148,11 +29116,9 @@ class AutoMunge:
     #(we're processing train data from validation data seperately to
     #ensure no leakage)
 
-    totalvalidationratio = valpercent1 + valpercent2
+    totalvalidationratio = valpercent
 
     if totalvalidationratio > 0.0:
-
-      val2ratio = valpercent2 / totalvalidationratio
       
       if shuffletrain in {True, 'traintest'}:
         shuffle_param=True
@@ -30109,7 +30075,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.03'
+    automungeversion = '6.04'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -30130,8 +30096,7 @@ class AutoMunge:
                              'testID_column_orig' : testID_column_orig, \
                              'testID_column' : testID_column, \
                              'indexcolumn' : indexcolumn, \
-                             'valpercent1' : valpercent1, \
-                             'valpercent2' : valpercent2, \
+                             'valpercent' : valpercent, \
                              'floatprecision' : floatprecision, \
                              'shuffletrain' : shuffletrain, \
                              'TrainLabelFreqLevel' : TrainLabelFreqLevel, \
@@ -30322,49 +30287,10 @@ class AutoMunge:
                     labelscolumn = labels_column, pandasoutput = True, printstatus = printstatus, \
                     shuffletrain = False)
 
-    #ok now that validation is processed, carve out second validation set if one was elected
-
-    if totalvalidationratio > 0.0:
-
-      if val2ratio > 0.0:
-
-        if labels_column is not False:
-          #split validation2 sets from training and labels
-          
-          df_validation1, df_validation2 = \
-          self.df_split(df_validation1, val2ratio, False, randomseed)
-          
-          df_validationlabels1, df_validationlabels2 = \
-          self.df_split(df_validationlabels1, val2ratio, False, randomseed)
-
-        else:
-
-          df_validation1, df_validation2 = \
-          self.df_split(df_validation1, val2ratio, False, randomseed)
-
-          df_validationlabels2 = pd.DataFrame()
-
-        if trainID_column is not False:
-          df_validationID1, df_validationID2 = \
-          self.df_split(df_validationID1, val2ratio, False, randomseed)
-          
-        else:
-          df_trainID = pd.DataFrame()
-          df_validationID2 = pd.DataFrame()
-
-      else:
-        df_validation2 = pd.DataFrame()
-        df_validationlabels2 = pd.DataFrame()
-        df_validationID2 = pd.DataFrame()
-
-    #else if totalvalidationratio <= 0.0
-    else:
+    if totalvalidationratio <= 0.0:
       df_validation1 = pd.DataFrame()
       df_validationlabels1 = pd.DataFrame()
       df_validationID1 = pd.DataFrame()
-      df_validation2 = pd.DataFrame()
-      df_validationlabels2 = pd.DataFrame()
-      df_validationID2 = pd.DataFrame()
 
     if testID_column is not False:
       df_testID = df_testID
@@ -30425,9 +30351,6 @@ class AutoMunge:
       df_validation1 = df_validation1.to_numpy()
       df_validationID1 = df_validationID1.to_numpy()
       df_validationlabels1 = df_validationlabels1.to_numpy()
-      df_validation2 = df_validation2.to_numpy()
-      df_validationID2 = df_validationID2.to_numpy()
-      df_validationlabels2 = df_validationlabels2.to_numpy()
       df_test = df_test.to_numpy()
       df_testID = df_testID.to_numpy()
       df_testlabels = df_testlabels.to_numpy()
@@ -30454,12 +30377,6 @@ class AutoMunge:
         df_validationID1 = df_validationID1[df_validationID1.columns[0]]
       if len(df_validationlabels1.shape) > 1 and df_validationlabels1.shape[1] == 1:
         df_validationlabels1 = df_validationlabels1[df_validationlabels1.columns[0]]
-      if len(df_validation2.shape) > 1 and df_validation2.shape[1] == 1:
-        df_validation2 = df_validation2[df_validation2.columns[0]]
-      if len(df_validationID2.shape) > 1 and df_validationID2.shape[1] == 1:
-        df_validationID2 = df_validationID2[df_validationID2.columns[0]]
-      if len(df_validationlabels2.shape) > 1 and df_validationlabels2.shape[1] == 1:
-        df_validationlabels2 = df_validationlabels2[df_validationlabels2.columns[0]]
       if len(df_test.shape) > 1 and df_test.shape[1] == 1:
         df_test = df_test[df_test.columns[0]]
       if len(df_testID.shape) > 1 and df_testID.shape[1] == 1:
@@ -36941,7 +36858,7 @@ class AutoMunge:
       process_dict = FSpostprocess_dict['process_dict']
       ML_cmnd = FSpostprocess_dict['ML_cmnd']
 
-      #totalvalidation = valpercent1 + valpercent2
+      #totalvalidation = valpercent
 
       #if totalvalidation == 0:
       totalvalidation = 0.2
