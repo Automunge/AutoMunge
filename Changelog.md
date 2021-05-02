@@ -2959,3 +2959,7 @@ am.postmunge(postprocess_dict, df_test)
 - small bug fix for inversion applied to subset of columns
 - originating from parameter validation function
 - for when passing postmunge inversion parameter as a list of columns
+
+6.4
+- a few small cleanups associated with validation sets
+- removing code relics relevant to deprecated valpercent2
