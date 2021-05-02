@@ -645,13 +645,10 @@ as False (or True) and trainID_column will be applied to test set automatically.
 * valpercent: a float value between 0 and 1 which designates the percent
 of the training data which will be set aside for the validation
 set (generally used for hyperparameter tuning of a downstream model).
-This value defaults to 0. (Previously the default here was set at 0.20 but 
-that is fairly an arbitrary value and a user may wish to deviate for 
-different size sets.) Note that this value may be set to 0 if no validation 
-set is needed (such as may be the case for k-means validation). Please see 
-also the notes below for the shuffletrain parameter.  Note that if 
-shuffletrain parameter is set to False then any validation sets will be 
-pulled from the bottom x% sequential rows of the df_train dataframe.
+This value defaults to 0 for no validation set returned. Note that when
+shuffletrain parameter is activated (which is default for train sets) validation
+sets will contain random rows.  If shuffletrain parameter is set to False then any 
+validation set will be pulled from the bottom sequential rows of the df_train dataframe.
 
 * floatprecision: an integer with acceptable values of _16/32/64_ designating
 the memory precision for returned float values. (A tradeoff between memory
