@@ -1763,7 +1763,7 @@ a dictionary logging results of the path selection process.
 Here is an example of a postmunge call with inversion.
 ```
 df_invert, recovered_list, inversion_info_dict = \
-am.postmunge(postprocess_dict, testlabels, inversion='labels', \
+am.postmunge(postprocess_dict, test_labels, inversion='labels', \
              pandasoutput=True, printstatus=True)
 ```
 
