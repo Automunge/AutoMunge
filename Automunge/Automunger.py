@@ -24199,6 +24199,35 @@ class AutoMunge:
     
     #- return postprocess_assigninfill_dict
     return postprocess_assigninfill_dict
+
+  def assemble_sorted_columns_by_NaN_dict(self, masterNArows_train, list_df_train, postprocess_dict):
+    """
+    #assembles a dictionary with returned columns as key and missing data count as value
+    #used in apply_am_infill
+    """
+
+    sorted_columns_by_NaN_dict = {}
+
+    #assemble dictionary
+    for returned_column in list_df_train:
+      orig_column = postprocess_dict['column_dict'][returned_column]['origcolumn']
+      nancount = masterNArows_train[orig_column + '_NArows'].sum()
+      sorted_columns_by_NaN_dict.update({returned_column : nancount})
+
+    #now sort by values
+    #first sort by column header to ensure grouping coherence originating from same source column
+    sorted_columns_by_NaN_dict = \
+    dict(sorted(sorted_columns_by_NaN_dict.items(), key=lambda item: item[0]))
+      
+    #then sort by nan count from most to least
+    sorted_columns_by_NaN_dict = \
+    dict(sorted(sorted_columns_by_NaN_dict.items(), reverse=True, key=lambda item: item[1]))
+
+    #return a list
+    sorted_columns_by_NaN_list = \
+    list(sorted_columns_by_NaN_dict)
+
+    return sorted_columns_by_NaN_list
   
   def apply_am_infill(self, df_train, df_test, postprocess_assigninfill_dict, \
                       postprocess_dict, infilliterate, printstatus, infillcolumns_list, \
@@ -24206,6 +24235,9 @@ class AutoMunge:
     """
     #Modularizes the application of infill to train and test sets
     """
+
+    sorted_columns_by_NaN_list = \
+    self.assemble_sorted_columns_by_NaN_dict(masterNArows_train, list(df_train), postprocess_dict)
 
     #infilliterate allows ML infill sets to run multiple times
     #as may be beneficial if set had a high proportion of infill for instance
@@ -24235,7 +24267,8 @@ class AutoMunge:
           print("ML infill infilliterate iteration: ", iteration + 1)
           print(" ")
           
-      for column in infillcolumns_list:
+      #columns sorted by number of missing entries from most to least
+      for column in sorted_columns_by_NaN_list:
           
         if column in postprocess_dict['column_dict']:
           
@@ -24475,7 +24508,7 @@ class AutoMunge:
       
       iteration += 1
     
-    return df_train, df_test, postprocess_dict, infill_validations
+    return df_train, df_test, postprocess_dict, infill_validations, sorted_columns_by_NaN_list
   
   def apply_pm_infill(self, df_test, postprocess_assigninfill_dict, \
                       postprocess_dict, printstatus, infillcolumns_list, \
@@ -24483,6 +24516,8 @@ class AutoMunge:
     """
     #Modularizes the application of infill to test sets
     """
+
+    sorted_columns_by_NaN_list = postprocess_dict['sorted_columns_by_NaN_list']
     
     #infilliterate allows ML infill sets to run multiple times
     #as may be bneficial if set had a high number of infill for instance
@@ -24513,7 +24548,8 @@ class AutoMunge:
           print("ML infill infilliterate iteration: ", iteration + 1)
           print(" ")
     
-      for column in infillcolumns_list:
+      #columns sorted by nan count in train data from automunge
+      for column in sorted_columns_by_NaN_list:
 
         if column in postprocess_dict['column_dict']:
         
@@ -29625,7 +29661,7 @@ class AutoMunge:
                                           columns_train, postprocess_dict, MLinfill)
 
     #now apply infill
-    df_train, df_test, postprocess_dict, infill_validations = \
+    df_train, df_test, postprocess_dict, infill_validations, sorted_columns_by_NaN_list = \
     self.apply_am_infill(df_train, df_test, postprocess_assigninfill_dict, \
                         postprocess_dict, infilliterate, printstatus, infillcolumns_list, \
                         masterNArows_train, masterNArows_test, process_dict, randomseed, ML_cmnd)
@@ -30075,7 +30111,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.04'
+    automungeversion = '6.05'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -30086,6 +30122,7 @@ class AutoMunge:
     postprocess_dict.update({'origtraincolumns' : columns_train, \
                              'origcolumns_all' : origcolumns_all, \
                              'finalcolumns_train' : finalcolumns_train, \
+                             'sorted_columns_by_NaN_list' : sorted_columns_by_NaN_list, \
                              'pre_dimred_finalcolumns_train' : pre_dimred_finalcolumns_train, \
                              'labels_column' : labels_column, \
                              'finalcolumns_labels' : list(df_labels), \
