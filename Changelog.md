@@ -2963,3 +2963,12 @@ am.postmunge(postprocess_dict, df_test)
 6.4
 - a few small cleanups associated with validation sets
 - removing code relics relevant to deprecated valpercent2
+
+6.5
+- an update to infill application in automunge and postmunge
+- now order of infill application is based on a reverse sorting of columns
+- sorted by a count of a column's missing entries found in the train set
+- this convention should be beneficial for ML infill
+- as columns with most missing will have improved coherence for serving as basis of other columns
+- postmunge order of infill consistent with order from automunge
+- this update inspired by a similar convention applied in the MissForest R package
