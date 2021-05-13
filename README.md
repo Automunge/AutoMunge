@@ -1278,9 +1278,9 @@ to the library is a corresponding processdict entry not required. We'll describe
 #for example, to populate a custom transformation category 'newt' that uses
 #internal defined transformation functions:
 
-processdict =  {'newt' : {'dualprocess' : am.process_mnmx, \
+processdict =  {'newt' : {'dualprocess' : am._process_mnmx, \
                           'singleprocess' : None, \
-                          'postprocess' : am.postprocess_mnmx, \
+                          'postprocess' : am._postprocess_mnmx, \
                           'NArowtype' : 'numeric', \
                           'MLinfilltype' : 'numeric', \
                           'labelctgy' : 'mnmx'}}
@@ -1353,10 +1353,10 @@ Optionally, some additional values can be incorporated into the processdict to
 support inversion for a transformation category:
 ```
 #for example 
-processdict =  {'newt' : {'dualprocess' : am.process_mnmx, \
+processdict =  {'newt' : {'dualprocess' : am._process_mnmx, \
                           'singleprocess' : None, \
-                          'postprocess' : am.postprocess_mnmx, \
-                          'inverseprocess' : am.inverseprocess_mnmx, \
+                          'postprocess' : am._postprocess_mnmx, \
+                          'inverseprocess' : am._inverseprocess_mnmx, \
                           'info_retention' : False, \
                           'NArowtype' : 'numeric', \
                           'MLinfilltype' : 'numeric', \
@@ -1373,10 +1373,10 @@ transfomation functions by including the 'defaultparams' key. These updates to d
 parameters will still be overwritten if user manually specifies parameters in assignparam.
 ```
 #for example
-processdict =  {'DLmm' : {'dualprocess' : am.process_DPmm, \
+processdict =  {'DLmm' : {'dualprocess' : am._process_DPmm, \
                           'singleprocess' : None, \
-                          'postprocess' : am.postprocess_DPmm, \
-                          'inverseprocess' : am.inverseprocess_UPCS, \
+                          'postprocess' : am._postprocess_DPmm, \
+                          'inverseprocess' : am._inverseprocess_UPCS, \
                           'info_retention' : True, \
                           'defaultparams' : {'noisedistribution' : 'laplace'}, \
                           'NArowtype' : 'numeric', \
@@ -7248,11 +7248,11 @@ def process_mnm8(mdf_train, mdf_test, column, category, \
   #the first copies parallel to the validation, the second is just the validation
   
   #mdf_train, suffixoverlap_results = \
-  #am.df_copy_train(mdf_train, column, column + '_mnm8', suffixoverlap_results)
+  #am._df_copy_train(mdf_train, column, column + '_mnm8', suffixoverlap_results)
   
   #or to run validation independant of copy operation could also run
   #suffixoverlap_results = \
-  #am.df_check_suffixoverlap(mdf_train, [column + '_mnm8'], suffixoverlap_results)
+  #am._df_check_suffixoverlap(mdf_train, [column + '_mnm8'], suffixoverlap_results)
   #(using am. for externally defined functions or self. for internally defined)
   
   #or just copy source column into new column
