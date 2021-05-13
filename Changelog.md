@@ -2972,3 +2972,12 @@ am.postmunge(postprocess_dict, df_test)
 - as columns with most missing will have improved coherence for serving as basis of other columns
 - postmunge order of infill consistent with order from automunge
 - this update inspired by a similar convention applied in the MissForest R package
+
+6.6
+- sort of a housekeeping cleanup
+- read somewhere that is good python practice to use underscore in function naming
+- where leading underscore indicates functions intended for internal use
+- and no leading underscore for external use
+- so performed a global update to all support functions to include leading underscore
+- only functions without underscore for external use are automunge(.) and postmunge(.)
+- also small cleanup to remove unused variable in infill application
