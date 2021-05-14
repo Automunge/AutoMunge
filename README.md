@@ -7522,8 +7522,8 @@ Have fun munging!!
 
 You can read more about the tool through the blog posts documenting the
 development online [here](https://medium.com/automunge) or for more
-writing my collection of essays is titled "From
-the Diaries of John Henry" which is also available online at
+writing there is a related collection of essays titled "From
+the Diaries of John Henry" which is available online at
 [turingsquared.com](https://turingsquared.com).
 
 The Automunge website is helpfully located at 
