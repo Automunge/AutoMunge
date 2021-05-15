@@ -2989,7 +2989,8 @@ am.postmunge(postprocess_dict, df_test)
 - follows convention of deleting feature sets with no numeric entries in train set
 - applying 'exc2' if any floats are present or all integer numeric entries and unique ratio > 0.75
 - else applying 'exc5'
-- where exc2 is passthrough numeric with infill for nonnuymeric entries
+- where exc2 is passthrough numeric with infill for nonnumeric entries
 - and exc5 is passthrough integer with infill for non integer entries
 - also updated exc2 and exc5 family trees to include NArw when NArw_marker parameter activated
 - created backup trees exc6 and exc7 for exc2 and exc5 without NArw
+- also a few small cleanups to evalcategory support function
