@@ -2981,3 +2981,15 @@ am.postmunge(postprocess_dict, df_test)
 - so performed a global update to all support functions to include leading underscore
 - only functions without underscore for external use are automunge(.) and postmunge(.)
 - also small cleanup to remove unused variable in infill application
+
+6.7
+- new 'infill' option for powertransform parameter
+- intended for cases where data is already numerically encoded
+- and user just wants to apply infill functions
+- follows convention of deleting feature sets with no numeric entries in train set
+- applying 'exc2' if any floats are present or all integer numeric entries and unique ratio > 0.75
+- else applying 'exc5'
+- where exc2 is passthrough numeric with infill for nonnuymeric entries
+- and exc5 is passthrough integer with infill for non integer entries
+- also updated exc2 and exc5 family trees to include NArw when NArw_marker parameter activated
+- created backup trees exc6 and exc7 for exc2 and exc5 without NArw
