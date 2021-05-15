@@ -709,8 +709,14 @@ to a root category in assigncat will be forced to numeric and subject to default
 modeinfill. (These two excl arguments may be useful if a user wants to experiment 
 with specific transforms on a subset of the columns without incurring processing 
 time of an entire set.) Finally can pass as 'infill' which may be useful when data is already 
-numerically encoded and just infill is desired. 'infill' treats sets with any non-integer floats with exc2 (pass-through numeric), 
-integer sets with unique ratio >0.75 also with exc2, and otherwise integer sets with exc5 (pass-through integer). Note that 'infill'
+numerically encoded and just infill is desired. 'infill' treats sets with any non-integer 
+floats with exc2 (pass-through numeric), integer sets with unique ratio >0.75 also with exc2, 
+and otherwise integer sets with exc5 (pass-through integer). Of course the rule of treating 
+integer sets with >0.75 ratio of unique entries as floats for ML infill regression or otherwise 
+as integers for classification is an imperfect heuristic. If some particular
+feature set has integers intended for regression below this threshold, the defaults under 
+automation can be overwritten to a specific column with the assigncat parameter, such as to 
+assign the column to exc2 instead of exc5. Note that 'infill'
 includes support for NArw aggregation with NArw_marker parameter.
 
 
