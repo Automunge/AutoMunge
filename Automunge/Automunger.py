@@ -3060,7 +3060,7 @@ class AutoMunge:
     transform_dict.update({'exc2' : {'parents'       : [], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : ['exc2'], \
-                                     'cousins'       : [], \
+                                     'cousins'       : [NArw], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
                                      'coworkers'     : [], \
@@ -3087,16 +3087,24 @@ class AutoMunge:
     transform_dict.update({'exc5' : {'parents'       : [], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : ['exc5'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+
+    transform_dict.update({'exc6' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['exc2'], \
                                      'cousins'       : [], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
                                      'coworkers'     : [], \
                                      'friends'       : []}})
 
-    #exc6 was removed from library, is now same as excl, just including here so no printout for prior code demonstrations 
-    transform_dict.update({'exc6' : {'parents'       : [], \
+    transform_dict.update({'exc7' : {'parents'       : [], \
                                      'siblings'      : [], \
-                                     'auntsuncles'   : ['excl'], \
+                                     'auntsuncles'   : ['exc5'], \
                                      'cousins'       : [], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
@@ -6281,15 +6289,24 @@ class AutoMunge:
                                   'NArowtype' : 'integer', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'exc5'}})
-    process_dict.update({'exc6' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_excl, \
-                                  'postprocess' : None, \
-                                  'inverseprocess' : self._inverseprocess_excl, \
+    process_dict.update({'exc6' : {'dualprocess' : self._process_exc2, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self._postprocess_exc2, \
+                                  'inverseprocess' : self._inverseprocess_UPCS, \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
-                                  'NArowtype' : 'exclude', \
-                                  'MLinfilltype' : 'totalexclude', \
-                                  'labelctgy' : 'excl'}})
+                                  'NArowtype' : 'numeric', \
+                                  'MLinfilltype' : 'numeric', \
+                                  'labelctgy' : 'exc2'}})
+    process_dict.update({'exc7' : {'dualprocess' : self._process_exc5, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self._postprocess_exc5, \
+                                  'inverseprocess' : self._inverseprocess_UPCS, \
+                                  'info_retention' : True, \
+                                  'inplace_option' : True, \
+                                  'NArowtype' : 'integer', \
+                                  'MLinfilltype' : 'singlct', \
+                                  'labelctgy' : 'exc5'}})
     process_dict.update({'shfl' : {'dualprocess' : None, \
                                   'singleprocess' : self._process_shfl, \
                                   'postprocess' : None, \
@@ -20369,6 +20386,52 @@ class AutoMunge:
     elif powertransform == 'exc2':
       category = 'exc2'
     
+    #powertransform == 'infill' is for cases where data is already numerically encoded and just want infill
+    elif powertransform == 'infill':
+      rowcount = df_source.shape[0]
+
+      #we'll have convention that eval_ratio only applied for sets with >2,000 rows
+      if rowcount < 2000:
+        eval_ratio = 1.
+      else:
+        if eval_ratio > 0 and eval_ratio <= 1:
+          eval_ratio = eval_ratio
+        else:
+          eval_ratio = eval_ratio / rowcount
+      
+      #take a random sample of rows for evaluation based on eval_ratio heuristic
+      df = pd.DataFrame(df_source[column]).sample(frac=eval_ratio, random_state=randomseed)
+
+      floatcount = np.where(pd.to_numeric(df[column], errors='coerce') != pd.to_numeric(df[column], errors='coerce').round(), 1, 0).sum()
+      floatset = np.where(pd.to_numeric(df[column], errors='coerce') != pd.to_numeric(df[column], errors='coerce').round(), 0, 1)
+      stringset = np.where(df[column].astype(str) == df[column], 1, 0)
+      floatstringcount = ((floatset == 1) & (stringset == 1)).sum()
+      nancount = np.where(df[column] != df[column], 1, 0).sum()
+      integercount = np.where(pd.to_numeric(df[column], errors='coerce') == pd.to_numeric(df[column], errors='coerce').round(), 1, 0).sum()
+      integerset = np.where(pd.to_numeric(df[column], errors='coerce') == pd.to_numeric(df[column], errors='coerce').round(), 1, 0)
+      # stringset = np.where(df[column].astype(str) == df[column], 1, 0)
+      integerstringcount = ((integerset == 1) & (stringset == 1)).sum()
+      actualfloatcount = floatcount - floatstringcount - nancount
+      actualintegercount = integercount - integerstringcount
+      uniquecount = df[column].nunique()
+      rowcount = df[column].shape[0]
+      actualfloatratio = actualfloatcount / rowcount
+      actualintegerratio = actualintegercount / rowcount
+      uniqueratio = uniquecount / rowcount
+
+      #null if no numeric entries
+      if actualfloatratio == 0 and actualintegerratio == 0:
+        category = 'null'
+
+      #exc2 for numeric types (continaing any floats or just integers with unique ratio > 0.75)
+      elif actualfloatratio > 0 or \
+      (actualfloatratio == 0 and actualintegerratio > 0 and uniqueratio > 0.75):
+        category = 'exc2'
+
+      #exc5 for integers
+      else:
+        category = 'exc5'
+
     else:
       
       #_____
@@ -20380,15 +20443,17 @@ class AutoMunge:
       
       #defaultordinal = 'ord3'
       #defaultordinal applied when unique values exceeds numbercategoryheuristic
-      #setting this to ord5 to exclude form ML infill as models may have difficulty with high cardinality
       defaultordinal = 'hsh2'
 
       defaultordinal_allunique = 'hash'
+
+      defaultbnry = 'bnry'
       
       defaultnumerical = 'nmbr'
-      #defaultnumerical = 'mean'
       
       defaultdatetime = 'dat6'
+
+      defaultnull = 'null'
       
       #_____
 
@@ -20477,7 +20542,7 @@ class AutoMunge:
 
       if df[column].dtype.name == 'category':
         if nunique <= 2:
-          category = 'bnry'
+          category = defaultbnry
         else:
           category = defaultcategorical
 
@@ -20486,7 +20551,7 @@ class AutoMunge:
 
         if df[column].dtype.name == 'category':
           if nunique <= 2:
-            category = 'bnry'
+            category = defaultbnry
           else:
             category = defaultcategorical
 
@@ -20498,7 +20563,7 @@ class AutoMunge:
             #category = 'text'
             category = defaultcategorical
           else:
-            category = 'bnry'
+            category = defaultbnry
   #       if True is False:
   #         pass
 
@@ -20515,26 +20580,26 @@ class AutoMunge:
   #       if df[column].dtype.name == 'category':
         if df[column].dtype.name == 'category':
           if nunique <= 2:
-            category = 'bnry'
+            category = defaultbnry
           else:
             category = defaultcategorical
 
         elif nunique <= 3:
           if nunique == 3:
-            category = 'text'
+            category = defaultcategorical
           elif nunique <= 2:
-            category = 'bnry'
+            category = defaultbnry
 
         else:
           category = defaultnumerical
 
       #if most common in column is integer and <= two values, set category to binary
       if isinstance(checkint, mc[0][0]) and nunique <= 2:
-        category = 'bnry'
+        category = defaultbnry
 
       #if most common in column is string and <= two values, set category to binary
       if isinstance(checkstring, mc[0][0]) and nunique <= 2:
-        category = 'bnry'
+        category = defaultbnry
 
       #else if most common in column is NaN, re-evaluate using the second most common type
       #(I suspect the below might be impacted if there are three dtypes instead of two,
@@ -20547,7 +20612,7 @@ class AutoMunge:
 
           #if 2nd most common in column is string and two values, set category to binary
           if isinstance(checkstring, mc2[1][0]) and nunique == 2:
-            category = 'bnry'
+            category = defaultbnry
 
           #if 2nd most common in column is string and > two values, set category to text
           if isinstance(checkstring, mc2[1][0]) and nunique > 2:
@@ -20562,7 +20627,7 @@ class AutoMunge:
 
             if df[column].dtype.name == 'category':
               if nunique <= 2:
-                category = 'bnry'
+                category = defaultbnry
               else:
                 category = defaultcategorical
 
@@ -20573,7 +20638,7 @@ class AutoMunge:
               if nunique == 3:
                 category = defaultcategorical
               else:
-                category = 'bnry'
+                category = defaultbnry
 
     #         if True is False:
     #           pass
@@ -20595,7 +20660,7 @@ class AutoMunge:
 
             if df[column].dtype.name == 'category':
               if nunique <= 2:
-                category = 'bnry'
+                category = defaultbnry
               else:
                 category = defaultcategorical
 
@@ -20605,7 +20670,7 @@ class AutoMunge:
                 #category = 'text'
                 category = defaultcategorical
               else:
-                category = 'bnry'
+                category = defaultbnry
 
             else:
 
@@ -20613,14 +20678,14 @@ class AutoMunge:
 
           #if 2nd most common in column is integer and <= two values, set category to binary
           if isinstance(checkint, mc2[1][0]) and nunique <= 2:
-            category = 'bnry'
+            category = defaultbnry
 
           #if 2nd most common in column is string and <= two values, set category to binary
           if isinstance(checkstring, mc2[1][0]) and nunique <= 2:
-            category = 'bnry'
+            category = defaultbnry
 
       if df[column].isna().sum() == df.shape[0]:
-        category = 'null'
+        category = defaultnull
 
       #if category == 'text':
       if category == defaultcategorical:
@@ -26003,16 +26068,16 @@ class AutoMunge:
     
     #check powertransform
     powertransform_valresult = False
-    if powertransform not in {True, False, 'excl', 'exc2'}:
+    if powertransform not in {True, False, 'excl', 'exc2', 'infill'}:
       powertransform_valresult = True
       print("Error: invalid entry passed for powertransform parameter.")
-      print("Acceptable values are one of {True, False, 'excl', 'exc2'}")
+      print("Acceptable values are one of {True, False, 'excl', 'exc2', 'infill'}")
       print()
-    elif powertransform not in {'excl', 'exc2'} \
+    elif powertransform not in {'excl', 'exc2', 'infill'} \
     and not isinstance(powertransform, bool):
       powertransform_valresult = True
       print("Error: invalid entry passed for powertransform parameter.")
-      print("Acceptable values are one of {True, False, 'excl', 'exc2'}")
+      print("Acceptable values are one of {True, False, 'excl', 'exc2', 'infill'}")
       print()
       
     miscparameters_results.update({'powertransform_valresult' : powertransform_valresult})
@@ -30109,7 +30174,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.06'
+    automungeversion = '6.07'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
