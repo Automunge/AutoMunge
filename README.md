@@ -709,9 +709,9 @@ to a root category in assigncat will be forced to numeric and subject to default
 modeinfill. (These two excl arguments may be useful if a user wants to experiment 
 with specific transforms on a subset of the columns without incurring processing 
 time of an entire set.) Finally can pass as 'infill' which may be useful when data is already 
-numerically encoded and just infill is desired. 'infill' treats sets with floats with exc2, 
-integer sets with unique ratio >0.75 also with exc2, and otherwise integer sets ith exc5. ('infill'
-includes support for NArw aggregation with NArw_marker parameter.)
+numerically encoded and just infill is desired. 'infill' treats sets with any non-integer floats with exc2 (pass-through numeric), 
+integer sets with unique ratio >0.75 also with exc2, and otherwise integer sets with exc5 (pass-through integer). Note that 'infill'
+includes support for NArw aggregation with NArw_marker parameter.
 
 
 * binstransform: a boolean identifier _(True/False)_ which indicates if all
