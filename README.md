@@ -733,7 +733,7 @@ which may be changed to other autoML frameworks via the ML_cmnd parameter.
 Parameters and tuning may also be passed to the model training as demonstrated 
 with ML_cmnd parameter below. Order of infill model training is based on a 
 reverse sorting of columns by count of missing entries in the df_train set.
-(As a helpful hint, if data is already numericalliy encoded and just want to perform
+(As a helpful hint, if data is already numerically encoded and just want to perform
 ML infill without preprocessing transformations, can pass in conjunction parameter 
 powertransform = 'infill')
 
