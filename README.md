@@ -693,21 +693,26 @@ train and test sets or be passed as _'test'_ to only apply levelizing to test se
 will be based on the first categoric / binned set (either one-hot or ordinal)
 based on order of columns.)
 
-* powertransform: _(False/True/'excl'/'exc2')_, defaults to False, when passed as 
+* powertransform: _(False/True/'excl'/'exc2'/'infill')_, defaults to False, when passed as 
 True an evaluation will be performed of distribution properties to select between
 box-cox, z-score, min-max scaling, or mean absolute deviation scaling normalization
 of numerical data. Note that after application of box-cox transform child columns 
 are generated for a subsequent z-score normalization. Please note that
 I don't consider the current means of distribution property evaluation highly
 sophisticated and we will continue to refine this method with further research
-going forward. Additionally, powertransform may be passed as values 'excl' or 
+going forward. Note that powertransform not applied to label columns by
+default, but can still be applied by passing label column to ptfm in assigncat. 
+Additionally, powertransform may be passed as values 'excl' or 
 'exc2', where for 'excl' columns not explicitly assigned to a root category in 
 assigncat will be left untouched, or for 'exc2' columns not explicitly assigned 
 to a root category in assigncat will be forced to numeric and subject to default 
 modeinfill. (These two excl arguments may be useful if a user wants to experiment 
 with specific transforms on a subset of the columns without incurring processing 
-time of an entire set.) Note that powertransform not applied to label columns by
-default, but can still be applied by passing label column to ptfm in assigncat.
+time of an entire set.) Finally can pass as 'infill' which may be useful when data is already 
+numerically encoded and just infill is desired. 'infill' treats sets with floats with exc2, 
+integer sets with unique ratio >0.75 also with exc2, and otherwise integer sets ith exc5. ('infill'
+includes support for NArw aggregation with NArw_marker parameter.)
+
 
 * binstransform: a boolean identifier _(True/False)_ which indicates if all
 default numerical sets will receive bin processing such as to generate child
@@ -728,6 +733,9 @@ which may be changed to other autoML frameworks via the ML_cmnd parameter.
 Parameters and tuning may also be passed to the model training as demonstrated 
 with ML_cmnd parameter below. Order of infill model training is based on a 
 reverse sorting of columns by count of missing entries in the df_train set.
+(As a helpful hint, if data is already numericalliy encoded and just want to perform
+ML infill without preprocessing transformations, can pass in conjunction parameter 
+powertransform = 'infill')
 
 * infilliterate: an integer indicating how many applications of the ML
 infill processing are to be performed for purposes of predicting infill.
@@ -6890,7 +6898,7 @@ If you want to skip to the next section you can click here: [Custom Transformati
     transform_dict.update({'exc2' : {'parents'       : [], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : ['exc2'], \
-                                     'cousins'       : [], \
+                                     'cousins'       : [NArw], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
                                      'coworkers'     : [], \
@@ -6917,16 +6925,24 @@ If you want to skip to the next section you can click here: [Custom Transformati
     transform_dict.update({'exc5' : {'parents'       : [], \
                                      'siblings'      : [], \
                                      'auntsuncles'   : ['exc5'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+
+    transform_dict.update({'exc6' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['exc2'], \
                                      'cousins'       : [], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
                                      'coworkers'     : [], \
                                      'friends'       : []}})
 
-    #exc6 was removed from library, is now same as excl, just including here so no printout for prior code demonstrations 
-    transform_dict.update({'exc6' : {'parents'       : [], \
+    transform_dict.update({'exc7' : {'parents'       : [], \
                                      'siblings'      : [], \
-                                     'auntsuncles'   : ['excl'], \
+                                     'auntsuncles'   : ['exc5'], \
                                      'cousins'       : [], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
