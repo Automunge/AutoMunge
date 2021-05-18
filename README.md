@@ -710,13 +710,14 @@ modeinfill. (These two excl arguments may be useful if a user wants to experimen
 with specific transforms on a subset of the columns without incurring processing 
 time of an entire set.) Finally can pass as 'infill' which may be useful when data is already 
 numerically encoded and just infill is desired. 'infill' treats sets with any non-integer 
-floats with exc2 (pass-through numeric), integer sets with unique ratio >0.75 also with exc2, 
-and otherwise integer sets with exc5 (pass-through integer). Of course the rule of treating 
-integer sets with >0.75 ratio of unique entries as floats for ML infill regression or otherwise 
-as integers for classification is an imperfect heuristic. If some particular
+floats with exc2 (pass-through numeric), integer sets with unique ratio >0.75 with exc8 
+(for pass-through continuous integer sets subject to ml infill regression), and otherwise 
+integer sets with exc5 (pass-through integer subject to ml infill classification). Of course the rule of treating 
+integer sets with >0.75 ratio of unique entries as targets for ML infill regression or otherwise 
+for classification is an imperfect heuristic. If some particular
 feature set has integers intended for regression below this threshold, the defaults under 
 automation can be overwritten to a specific column with the assigncat parameter, such as to 
-assign the column to exc2 instead of exc5. Note that 'infill'
+assign the column to exc8 instead of exc5. Note that 'infill'
 includes support for NArw aggregation with NArw_marker parameter.
 
 
@@ -1339,7 +1340,8 @@ processdict =  {'newt' : {'dualprocess' : am._process_mnmx, \
 #                              '1010', 'exclude', 'boolexclude', 'ordlexclude', 'totalexclude'}
 #              'numeric' refers to columns where predictive algorithms treat
 #                        as a regression for numeric sets
-#              'singlct' single column sets with ordinal entries (integers)
+#              'singlct' for single column sets with ordinal entries (nonnegative integer classification)
+#              'integer' for single column sets with integer entries (signed integer regression)
 #              'binary'  single column sets with boolean entries (0/1)
 #              'multirt' refers to category returning multiple columns where 
 #                        predictive algorithms treat as a multi modal classifier
@@ -3079,7 +3081,7 @@ when applying TrainLabelFreqLevel to a numeric label set)
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: none
   - inversion available: yes
-* exc5: passes source column unaltered other than force to numeric, mode infill applied for non-integers
+* exc5/exc8: passes source column unaltered other than force to numeric, mode infill applied for non-integers
   - useful for: passthrough sets where all numeric entries desired
   - default infill: mode
   - default NArowtype: integer
@@ -3537,6 +3539,10 @@ avoid unintentional duplication.
 - 'exc3',
 - 'exc4',
 - 'exc5',
+- 'exc6',
+- 'exc7',
+- 'exc8',
+- 'exc9',
 - 'excl',
 - 'fsmh',
 - 'hash',
@@ -6950,6 +6956,24 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'siblings'      : [], \
                                      'auntsuncles'   : ['exc5'], \
                                      'cousins'       : [], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+
+    transform_dict.update({'exc8' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['exc5'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+
+    transform_dict.update({'exc9' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['exc5'], \
+                                     'cousins'       : [NArw], \
                                      'children'      : [], \
                                      'niecesnephews' : [], \
                                      'coworkers'     : [], \
