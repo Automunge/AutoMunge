@@ -3110,6 +3110,24 @@ class AutoMunge:
                                      'niecesnephews' : [], \
                                      'coworkers'     : [], \
                                      'friends'       : []}})
+
+    transform_dict.update({'exc8' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['exc5'], \
+                                     'cousins'       : [NArw], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
+
+    transform_dict.update({'exc9' : {'parents'       : [], \
+                                     'siblings'      : [], \
+                                     'auntsuncles'   : ['exc5'], \
+                                     'cousins'       : [], \
+                                     'children'      : [], \
+                                     'niecesnephews' : [], \
+                                     'coworkers'     : [], \
+                                     'friends'       : []}})
     
     transform_dict.update({'shfl' : {'parents'       : [], \
                                      'siblings'      : [], \
@@ -3364,7 +3382,8 @@ class AutoMunge:
     
     #MLinfilltype entries are:
     # - 'numeric' for single columns with numeric entries (such as could be floats)
-    # - 'singlct' for single column sets with ordinal entries (integers)
+    # - 'singlct' for single column sets with ordinal entries (nonnegative integer classification)
+    # - 'integer' for single column sets with integer entries (signed integer regression)
     # - 'binary' for single column sets with boolean entries (0/1)
     # - 'multirt' for categorical multicolumn sets with boolean entries (0/1)
     # - 'concurrent_act' for multicolumn sets with boolean entries as may have 
@@ -3978,13 +3997,13 @@ class AutoMunge:
                                   'singleprocess' : self._process_lngt, \
                                   'postprocess' : None, \
                                   'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'singlct', \
+                                  'MLinfilltype' : 'integer', \
                                   'labelctgy' : 'mnmx'}})
     process_dict.update({'lnlg' : {'dualprocess' : None, \
                                   'singleprocess' : self._process_lngt, \
                                   'postprocess' : None, \
                                   'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'singlct', \
+                                  'MLinfilltype' : 'integer', \
                                   'labelctgy' : 'log0'}})
     process_dict.update({'UPCS' : {'dualprocess' : None, \
                                   'singleprocess' : self._process_UPCS, \
@@ -6306,6 +6325,24 @@ class AutoMunge:
                                   'inplace_option' : True, \
                                   'NArowtype' : 'integer', \
                                   'MLinfilltype' : 'singlct', \
+                                  'labelctgy' : 'exc5'}})
+    process_dict.update({'exc8' : {'dualprocess' : self._process_exc5, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self._postprocess_exc5, \
+                                  'inverseprocess' : self._inverseprocess_UPCS, \
+                                  'info_retention' : True, \
+                                  'inplace_option' : True, \
+                                  'NArowtype' : 'integer', \
+                                  'MLinfilltype' : 'integer', \
+                                  'labelctgy' : 'exc5'}})
+    process_dict.update({'exc9' : {'dualprocess' : self._process_exc5, \
+                                  'singleprocess' : None, \
+                                  'postprocess' : self._postprocess_exc5, \
+                                  'inverseprocess' : self._inverseprocess_UPCS, \
+                                  'info_retention' : True, \
+                                  'inplace_option' : True, \
+                                  'NArowtype' : 'integer', \
+                                  'MLinfilltype' : 'integer', \
                                   'labelctgy' : 'exc5'}})
     process_dict.update({'shfl' : {'dualprocess' : None, \
                                   'singleprocess' : self._process_shfl, \
@@ -20423,10 +20460,13 @@ class AutoMunge:
       if actualfloatratio == 0 and actualintegerratio == 0:
         category = 'null'
 
-      #exc2 for numeric types (continaing any floats or just integers with unique ratio > 0.75)
-      elif actualfloatratio > 0 or \
-      (actualfloatratio == 0 and actualintegerratio > 0 and uniqueratio > 0.75):
+      #exc2 for numeric types
+      elif actualfloatratio > 0:
         category = 'exc2'
+
+      #exc8 for integer type with unique ratio > 0.75
+      elif (actualfloatratio == 0 and actualintegerratio > 0 and uniqueratio > 0.75):
+        category = 'exc8'
 
       #exc5 for integers
       else:
@@ -21648,7 +21688,7 @@ class AutoMunge:
     MLinfilltype = postprocess_dict['process_dict'][category]['MLinfilltype']
     
     #if a numeric target set
-    if MLinfilltype in {'numeric', 'concurrent_nmbr'}:
+    if MLinfilltype in {'numeric', 'concurrent_nmbr', 'integer'}:
       
       #edge case if training data has zero rows (such as if column was all NaN) 
       if df_train_filltrain.shape[0] == 0:
@@ -21683,6 +21723,11 @@ class AutoMunge:
       #convert infill values to dataframe
       df_traininfill = pd.DataFrame(df_traininfill, columns = ['infill'])
       df_testinfill = pd.DataFrame(df_testinfill, columns = ['infill'])
+
+      if MLinfilltype == 'integer':
+
+        df_traininfill = df_traininfill.round()
+        df_testinfill = df_testinfill.round()
       
     #if target is categoric, such as ordinal or boolean integers
     if MLinfilltype in {'singlct', 'binary', 'concurrent_act'}:
@@ -21860,7 +21905,7 @@ class AutoMunge:
     #for rows not needing infill, and the features for rows needing infill \
     #also create a test features column 
     
-    if MLinfilltype in {'numeric', 'singlct', 'binary', \
+    if MLinfilltype in {'numeric', 'singlct', 'integer', 'binary', \
                         'multirt', '1010', \
                         'concurrent_act', 'concurrent_nmbr'}:
 
@@ -21996,7 +22041,7 @@ class AutoMunge:
     #NArows column name uses original column name + _NArows as key
     NArowcolumn = NArows.columns[0]
 
-    if MLinfilltype in {'numeric', 'singlct', 'binary', \
+    if MLinfilltype in {'numeric', 'singlct', 'integer', 'binary', \
                         'multirt', '1010', \
                         'concurrent_act', 'concurrent_nmbr'}:
 
@@ -23289,7 +23334,7 @@ class AutoMunge:
       setlengthlist = []
       multiplierlist = []
 
-      if MLinfilltype in {'numeric'}:
+      if MLinfilltype in {'numeric', 'integer'}:
 
         columns_labels = []
         for label in labels_df.columns:
@@ -23389,7 +23434,7 @@ class AutoMunge:
           train_df = train_df.drop(labels, axis=1)
 
       if MLinfilltype in {'singlct', 'binary'} \
-      or MLinfilltype in {'numeric'} and singlct_append is True:
+      or MLinfilltype in {'numeric', 'integer'} and singlct_append is True:
 
         singlctcolumn = False
 
@@ -23558,7 +23603,7 @@ class AutoMunge:
     labelscategory = labelctgy
     MLinfilltype = process_dict[labelscategory]['MLinfilltype']
     
-    if MLinfilltype in {'numeric', 'concurrent_nmbr'}:
+    if MLinfilltype in {'numeric', 'concurrent_nmbr', 'integer'}:
       ML_application = 'regression'
     elif MLinfilltype in {'singlct'}:
       ML_application = 'ordinalclassification'
@@ -23567,7 +23612,7 @@ class AutoMunge:
     elif MLinfilltype in {'multirt', '1010'}:
       ML_application = 'onehotclassification'
     
-    if MLinfilltype in {'numeric', 'concurrent_nmbr'}:
+    if MLinfilltype in {'numeric', 'concurrent_nmbr', 'integer'}:
       
       #generate predictions
       np_predictions = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, FSmodel, np_shuffleset, printstatus_for_predict, categorylist_for_predict)
@@ -27217,7 +27262,7 @@ class AutoMunge:
         print()
       else:
         if processdict[entry]['MLinfilltype'] not in \
-        ['numeric', 'singlct', 'binary', 'multirt', 'concurrent_act', 'concurrent_nmbr', '1010', \
+        ['numeric', 'singlct', 'integer', 'binary', 'multirt', 'concurrent_act', 'concurrent_nmbr', '1010', \
         'exclude', 'boolexclude', 'ordlexclude', 'totalexclude']:
           check_processdict_result = True
           print("error: invalid 'MLinfilltype' processdict entry for category: ", entry)
@@ -28519,7 +28564,7 @@ class AutoMunge:
           MLinfilltype = \
           postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype']
           
-          if MLinfilltype in {'numeric', 'concurrent_nmbr'}:
+          if MLinfilltype in {'numeric', 'concurrent_nmbr', 'integer'}:
             
             #add to numeric
             columntype_report['continuous'].append(column)
@@ -30174,7 +30219,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.07'
+    automungeversion = '6.08'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -36506,7 +36551,7 @@ class AutoMunge:
     MLinfilltype = postprocess_dict['process_dict'][category]['MLinfilltype']
 
     #if category in {'nmbr', 'nbr2', 'bxcx', 'bnry', 'text', 'bins', 'bint'}:
-    if MLinfilltype in {'numeric', 'singlct', 'binary', \
+    if MLinfilltype in {'numeric', 'singlct', 'integer', 'binary', \
                         'multirt', '1010', \
                         'concurrent_act', 'concurrent_nmbr'}:
 
@@ -36657,7 +36702,7 @@ class AutoMunge:
     if model is not False:
       
       #if target category is numeric:
-      if MLinfilltype in {'numeric', 'concurrent_nmbr'}:
+      if MLinfilltype in {'numeric', 'integer', 'concurrent_nmbr'}:
         
         ML_application = 'regression'
     
@@ -36669,6 +36714,9 @@ class AutoMunge:
 
         #convert infill values to dataframe
         df_testinfill = pd.DataFrame(df_testinfill, columns = ['infill'])
+
+        if MLinfilltype == 'integer':
+          df_testinfill = df_testinfill.round()
         
       #if target category is single column categoric (eg ordinal or boolean integer)
       if MLinfilltype in {'singlct', 'binary', 'concurrent_act'}:
