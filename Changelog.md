@@ -2994,3 +2994,16 @@ am.postmunge(postprocess_dict, df_test)
 - also updated exc2 and exc5 family trees to include NArw when NArw_marker parameter activated
 - created backup trees exc6 and exc7 for exc2 and exc5 without NArw
 - also a few small cleanups to evalcategory support function
+
+6.8
+- new 'integer' mlinfilltype available for assignment in processdict entries
+- integer is for transforms that return single column integer sets
+- and differs from 'singlct' in that singlct is for ordinal encodings subject to ml infill classificaiton
+- while integer is for continuous integer sets subject to ml infill regression
+- in ml infill the imputation predictions after regression inference are subject to a rounding
+- to conform to the integer form of other entries
+- where rounding applies up or down to nearest integer based on 0.5 decimal midpoint
+- recast transformation categories lngt and lnlg as integer mlinfilltype
+- new exc8 and exc9 for passthrough integer sets with integer mlinfilltype (exc8 includes NArw option)
+- update to the powertransform 'infill' option in scenario of integer sets above heuristic of 0.75 ratio of unique entries
+- which are now applied to exc8 instead of exc2
