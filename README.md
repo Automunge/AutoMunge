@@ -3403,6 +3403,7 @@ have written about in paper [Parsed Categoric Encodings with Automunge](https://
   spl9/sp10 that set of unique values in test set is same or subset of train for efficient postmunge
   - or21 / or22 comparable to or19 / or20 but use spl2/spl5 instead of spl9/sp10, 
   which allows string parsing to handle test set entries not found in the train set
+  - or23 similar to or19 but instead of spl2/spl5 chain applies a sp19 for binary encoded string parsing with concurrent activations
   - assignparam parameters accepted: 'minsplit': indicating lowest character length for recognized overlaps 
   (note that parameter has to be assigned to specific categories such as spl2/spl5 etc), also other parameters
 associated with constituent functions
