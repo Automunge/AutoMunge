@@ -3007,3 +3007,25 @@ am.postmunge(postprocess_dict, df_test)
 - new exc8 and exc9 for passthrough integer sets with integer mlinfilltype (exc8 includes NArw option)
 - update to the powertransform 'infill' option in scenario of integer sets above heuristic of 0.75 ratio of unique entries
 - which are now applied to exc8 instead of exc2
+
+6.9
+- added new classification to columntype_report
+- as 'integer' for continuous integer sets
+- previously these were grouped into 'continuous'
+- figured worth a distinction for clarity
+- differs from ordinal which is a categoric representation
+- small cleanup had some deprecated parameters in automunge(.) definition for backward compatibility
+- associated with feature importance and label smoothing
+- went ahead and struck for cleanliness purposes
+- a very small cleanup replaced instance or two of searching within list to searching within set
+- found a small opportunity for improved clarity of code
+- by adding exclude mlinfilltype to the infill functions
+- a few cleanups to read me:
+- settled on single convention for '=' placement in function call demonstrations
+- a few corrections and clarifications to mlinfilltype descriptions
+- added a description of or23 to library of transformations writeup 
+- finally, a big cleanup of a bunch of transformation category parameters
+- for parameter adjinfill, which was to change default imputation for standard infill for a transformation category
+- this was only included on a hunch and for running a few experiments
+- which I think the ml infill validation experiments sufficiently demonsrtated adj not a good default convention
+- so yeah, also one of those zen of python things, should be one and only one way to do it
