@@ -3381,11 +3381,11 @@ class AutoMunge:
     # - 'datetime' marks for infill cells that arent' recognized as datetime objects
     
     #MLinfilltype entries are:
-    # - 'numeric' for single columns with numeric entries (such as could be floats)
+    # - 'numeric' for single columns with numeric entries (such as could be signed floats)
     # - 'singlct' for single column sets with ordinal entries (nonnegative integer classification)
     # - 'integer' for single column sets with integer entries (signed integer regression)
     # - 'binary' for single column sets with boolean entries (0/1)
-    # - 'multirt' for categorical multicolumn sets with boolean entries (0/1)
+    # - 'multirt' for categorical multicolumn sets with boolean entries (0/1), up to one activation per row
     # - 'concurrent_act' for multicolumn sets with boolean entries as may have 
     #multiple entries in the same row
     # - 'concurrent_nmbr' for multicolumn sets with numerical entries
@@ -7236,12 +7236,6 @@ class AutoMunge:
       floor = params['floor']
     else:
       floor = False
-      
-    #adjinfill accepts True/False to change default infill from mean inputation to adjacent cell
-    if 'adjinfill' in params:
-      adjinfill = params['adjinfill']
-    else:
-      adjinfill = False
 
     if inplace is not True:
       
@@ -7303,12 +7297,6 @@ class AutoMunge:
     mean = mdf_train[column + '_nmbr'].mean()
     if mean != mean:
       mean = 0
-      
-    if adjinfill is True:
-      mdf_train[column + '_nmbr'] = mdf_train[column + '_nmbr'].fillna(method='ffill')
-      mdf_test[column + '_nmbr'] = mdf_test[column + '_nmbr'].fillna(method='ffill')
-      mdf_train[column + '_nmbr'] = mdf_train[column + '_nmbr'].fillna(method='bfill')
-      mdf_test[column + '_nmbr'] = mdf_test[column + '_nmbr'].fillna(method='bfill')
 
     #replace missing data with training set mean
     mdf_train[column + '_nmbr'] = mdf_train[column + '_nmbr'].fillna(mean)
@@ -7340,8 +7328,7 @@ class AutoMunge:
     nmbrnormalization_dict = {column + '_nmbr' : {'mean' : mean, 'std' : std, \
                                                   'max' : maximum, 'min' : minimum, \
                                                   'offset' : offset, 'multiplier': multiplier, \
-                                                  'cap' : cap, 'floor' : floor, \
-                                                  'adjinfill' : adjinfill}}
+                                                  'cap' : cap, 'floor' : floor}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -7939,12 +7926,6 @@ class AutoMunge:
     else:
       inplace = False
     
-    #adjinfill accepts True/False to change default infill from mean inputation to adjacent cell
-    if 'adjinfill' in params:
-      adjinfill = params['adjinfill']
-    else:
-      adjinfill = False
-    
     if inplace is not True:
       
       #copy source column into new column
@@ -7975,12 +7956,6 @@ class AutoMunge:
     mean = mdf_train[column + '_MADn'].mean() 
     if mean != mean:
       mean = 0
-      
-    if adjinfill is True:
-      mdf_train[column + '_MADn'] = mdf_train[column + '_MADn'].fillna(method='ffill')
-      mdf_test[column + '_MADn'] = mdf_test[column + '_MADn'].fillna(method='ffill')
-      mdf_train[column + '_MADn'] = mdf_train[column + '_MADn'].fillna(method='bfill')
-      mdf_test[column + '_MADn'] = mdf_test[column + '_MADn'].fillna(method='bfill')
 
     #replace missing data with training set mean
     mdf_train[column + '_MADn'] = mdf_train[column + '_MADn'].fillna(mean)
@@ -8009,8 +7984,7 @@ class AutoMunge:
     nmbrcolumns = [column + '_MADn']
 
     nmbrnormalization_dict = {column + '_MADn' : {'mean' : mean, 'MAD' : MAD, \
-                                                  'maximum':maximum, 'minimum':minimum, \
-                                                  'adjinfill':adjinfill}}
+                                                  'maximum':maximum, 'minimum':minimum}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -8056,12 +8030,6 @@ class AutoMunge:
     else:
       inplace = False
     
-    #adjinfill accepts True/False to change default infill from mean inputation to adjacent cell
-    if 'adjinfill' in params:
-      adjinfill = params['adjinfill']
-    else:
-      adjinfill = False
-    
     if inplace is not True:
       
       #copy source column into new column
@@ -8092,12 +8060,6 @@ class AutoMunge:
     mean = mdf_train[column + '_MAD3'].mean()
     if mean != mean:
       mean = 0
-      
-    if adjinfill is True:
-      mdf_train[column + '_MAD3'] = mdf_train[column + '_MAD3'].fillna(method='ffill')
-      mdf_test[column + '_MAD3'] = mdf_test[column + '_MAD3'].fillna(method='ffill')
-      mdf_train[column + '_MAD3'] = mdf_train[column + '_MAD3'].fillna(method='bfill')
-      mdf_test[column + '_MAD3'] = mdf_test[column + '_MAD3'].fillna(method='bfill')
     
     #replace missing data with training set mean
     mdf_train[column + '_MAD3'] = mdf_train[column + '_MAD3'].fillna(mean)
@@ -8129,7 +8091,7 @@ class AutoMunge:
     nmbrcolumns = [column + '_MAD3']
 
     nmbrnormalization_dict = {column + '_MAD3' : {'mean' : mean, 'MAD' : MAD, 'datamax' : datamax, \
-                                                  'maximum':maximum, 'minimum':minimum, 'adjinfill':adjinfill}}
+                                                  'maximum':maximum, 'minimum':minimum}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -8189,12 +8151,6 @@ class AutoMunge:
       floor = params['floor']
     else:
       floor = False
-      
-    #adjinfill accepts True/False to change default infill from mean inputation to adjacent cell
-    if 'adjinfill' in params:
-      adjinfill = params['adjinfill']
-    else:
-      adjinfill = False
     
     if inplace is not True:
       
@@ -8224,12 +8180,6 @@ class AutoMunge:
     mean = mdf_train[column + '_mnmx'].mean()   
     if mean != mean:
       mean = 0
-      
-    if adjinfill is True:
-      mdf_train[column + '_mnmx'] = mdf_train[column + '_mnmx'].fillna(method='ffill')
-      mdf_test[column + '_mnmx'] = mdf_test[column + '_mnmx'].fillna(method='ffill')
-      mdf_train[column + '_mnmx'] = mdf_train[column + '_mnmx'].fillna(method='bfill')
-      mdf_test[column + '_mnmx'] = mdf_test[column + '_mnmx'].fillna(method='bfill')
 
     #replace missing data with training set mean
     mdf_train[column + '_mnmx'] = mdf_train[column + '_mnmx'].fillna(mean)
@@ -8292,8 +8242,7 @@ class AutoMunge:
                                                   'mean' : mean, \
                                                   'std' : std, \
                                                   'cap' : cap, \
-                                                  'floor' : floor, \
-                                                  'adjinfill' : adjinfill}}
+                                                  'floor' : floor}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -8349,12 +8298,6 @@ class AutoMunge:
       qmin = params['qmin']
     else:
       qmin = 0.01
-      
-    #adjinfill accepts True/False to change default infill from mean inputation to adjacent cell
-    if 'adjinfill' in params:
-      adjinfill = params['adjinfill']
-    else:
-      adjinfill = False
     
     if inplace is not True:
       
@@ -8409,12 +8352,6 @@ class AutoMunge:
     mean = mdf_train[column + '_mnm3'].mean()    
     if mean != mean:
       mean = 0
-      
-    if adjinfill is True:
-      mdf_train[column + '_mnm3'] = mdf_train[column + '_mnm3'].fillna(method='ffill')
-      mdf_test[column + '_mnm3'] = mdf_test[column + '_mnm3'].fillna(method='ffill')
-      mdf_train[column + '_mnm3'] = mdf_train[column + '_mnm3'].fillna(method='bfill')
-      mdf_test[column + '_mnm3'] = mdf_test[column + '_mnm3'].fillna(method='bfill')
     
     #replace missing data with training set mean
     mdf_train[column + '_mnm3'] = mdf_train[column + '_mnm3'].fillna(mean)
@@ -8445,8 +8382,7 @@ class AutoMunge:
                                                   'mean' : mean, \
                                                   'std' : std, \
                                                   'qmax' : qmax, \
-                                                  'qmin' : qmin, \
-                                                  'adjinfill' : adjinfill }}
+                                                  'qmin' : qmin}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -8483,12 +8419,6 @@ class AutoMunge:
       inplace = params['inplace']
     else:
       inplace = False
-      
-    #adjinfill accepts True/False to change default infill from mean inputation to adjacent cell
-    if 'adjinfill' in params:
-      adjinfill = params['adjinfill']
-    else:
-      adjinfill = False
     
     if inplace is not True:
       
@@ -8518,12 +8448,6 @@ class AutoMunge:
     mean = mdf_train[column + '_mxab'].mean()   
     if mean != mean:
       mean = 0
-      
-    if adjinfill is True:
-      mdf_train[column + '_mxab'] = mdf_train[column + '_mxab'].fillna(method='ffill')
-      mdf_test[column + '_mxab'] = mdf_test[column + '_mxab'].fillna(method='ffill')
-      mdf_train[column + '_mxab'] = mdf_train[column + '_mxab'].fillna(method='bfill')
-      mdf_test[column + '_mxab'] = mdf_test[column + '_mxab'].fillna(method='bfill')
 
     #replace missing data with training set mean
     mdf_train[column + '_mxab'] = mdf_train[column + '_mxab'].fillna(mean)
@@ -8556,8 +8480,7 @@ class AutoMunge:
                                                   'maximum' : maximum, \
                                                   'maxabs' : maxabs, \
                                                   'mean' : mean, \
-                                                  'std' : std, \
-                                                  'adjinfill' : adjinfill}}
+                                                  'std' : std}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -8647,12 +8570,6 @@ class AutoMunge:
       floor = params['floor']
     else:
       floor = False
-      
-    #adjinfill accepts True/False to change default infill from mean inputation to adjacent cell
-    if 'adjinfill' in params:
-      adjinfill = params['adjinfill']
-    else:
-      adjinfill = False
     
     if inplace is not True:
       
@@ -8731,12 +8648,6 @@ class AutoMunge:
     mean = mdf_train[column + '_retn'].mean()
     if mean != mean:
       mean = 0
-      
-    if adjinfill is True:
-      mdf_train[column + '_retn'] = mdf_train[column + '_retn'].fillna(method='ffill')
-      mdf_test[column + '_retn'] = mdf_test[column + '_retn'].fillna(method='ffill')
-      mdf_train[column + '_retn'] = mdf_train[column + '_retn'].fillna(method='bfill')
-      mdf_test[column + '_retn'] = mdf_test[column + '_retn'].fillna(method='bfill')
 
     #replace missing data with training set mean
     mdf_train[column + '_retn'] = mdf_train[column + '_retn'].fillna(mean)
@@ -8810,8 +8721,7 @@ class AutoMunge:
                                                   'multiplier': multiplier, \
                                                   'cap' : cap, \
                                                   'floor' : floor, \
-                                                  'divisor' : divisor, \
-                                                  'adjinfill' : adjinfill}}
+                                                  'divisor' : divisor}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -8876,12 +8786,6 @@ class AutoMunge:
       floor = params['floor']
     else:
       floor = False
-      
-    #adjinfill accepts True/False to change default infill from mean inputation to adjacent cell
-    if 'adjinfill' in params:
-      adjinfill = params['adjinfill']
-    else:
-      adjinfill = False
     
     if inplace is not True:
       
@@ -8947,12 +8851,6 @@ class AutoMunge:
     mean = mdf_train[column + '_mean'].mean()
     if mean != mean:
       mean = 0
-
-    if adjinfill is True:
-      mdf_train[column + '_mean'] = mdf_train[column + '_mean'].fillna(method='ffill')
-      mdf_test[column + '_mean'] = mdf_test[column + '_mean'].fillna(method='ffill')
-      mdf_train[column + '_mean'] = mdf_train[column + '_mean'].fillna(method='bfill')
-      mdf_test[column + '_mean'] = mdf_test[column + '_mean'].fillna(method='bfill')
       
     #replace missing data with training set mean
     mdf_train[column + '_mean'] = mdf_train[column + '_mean'].fillna(mean)
@@ -8985,8 +8883,7 @@ class AutoMunge:
                                                   'offset' : offset, \
                                                   'multiplier': multiplier, \
                                                   'cap' : cap, \
-                                                  'floor' : floor, \
-                                                  'adjinfill' : adjinfill}}
+                                                  'floor' : floor}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -9028,12 +8925,6 @@ class AutoMunge:
       inplace = params['inplace']
     else:
       inplace = False
-    
-    #adjinfill accepts True/False to change default infill from mean inputation to adjacent cell
-    if 'adjinfill' in params:
-      adjinfill = params['adjinfill']
-    else:
-      adjinfill = False
       
     #str_convert provides consistent encodings between numbers and string equivalent, eg 2 == '2'
     if 'str_convert' in params:
@@ -9167,12 +9058,6 @@ class AutoMunge:
           np.where(mdf_train[column + '_bnry'] == value, binary_missing_plug, mdf_train[column + '_bnry'])
           mdf_test[column + '_bnry'] = \
           np.where(mdf_test[column + '_bnry'] == value, binary_missing_plug, mdf_test[column + '_bnry'])
-          
-      if adjinfill is True:
-        mdf_train[column + '_bnry'] = mdf_train[column + '_bnry'].fillna(method='ffill')
-        mdf_test[column + '_bnry'] = mdf_test[column + '_bnry'].fillna(method='ffill')
-        mdf_train[column + '_bnry'] = mdf_train[column + '_bnry'].fillna(method='bfill')
-        mdf_test[column + '_bnry'] = mdf_test[column + '_bnry'].fillna(method='bfill')
 
       #replace missing data with specified classification
       mdf_train[column + '_bnry'] = mdf_train[column + '_bnry'].fillna(binary_missing_plug)
@@ -9232,7 +9117,6 @@ class AutoMunge:
                                                   'extravalues' : extravalues, \
                                                   'oneratio' : oneratio, \
                                                   'zeroratio' : zeroratio, \
-                                                  'adjinfill' : adjinfill, \
                                                   'str_convert' : str_convert}}
 
     #store some values in the column_dict{} for use later in ML infill methods
@@ -9274,12 +9158,6 @@ class AutoMunge:
       inplace = params['inplace']
     else:
       inplace = False
-    
-    #adjinfill accepts True/False to change default infill from mean inputation to adjacent cell
-    if 'adjinfill' in params:
-      adjinfill = params['adjinfill']
-    else:
-      adjinfill = False
       
     #str_convert provides consistent encodings between numbers and string equivalent, eg 2 == '2'
     if 'str_convert' in params:
@@ -9416,12 +9294,6 @@ class AutoMunge:
           np.where(mdf_train[column + '_bnr2'] == value, binary_missing_plug, mdf_train[column + '_bnr2'])
           mdf_test[column + '_bnr2'] = \
           np.where(mdf_test[column + '_bnr2'] == value, binary_missing_plug, mdf_test[column + '_bnr2'])
-          
-      if adjinfill is True:
-        mdf_train[column + '_bnr2'] = mdf_train[column + '_bnr2'].fillna(method='ffill')
-        mdf_test[column + '_bnr2'] = mdf_test[column + '_bnr2'].fillna(method='ffill')
-        mdf_train[column + '_bnr2'] = mdf_train[column + '_bnr2'].fillna(method='bfill')
-        mdf_test[column + '_bnr2'] = mdf_test[column + '_bnr2'].fillna(method='bfill')
 
       #replace missing data with specified classification
       mdf_train[column + '_bnr2'] = mdf_train[column + '_bnr2'].fillna(binary_missing_plug)
@@ -9481,7 +9353,6 @@ class AutoMunge:
                                                   'extravalues' : extravalues, \
                                                   'oneratio' : oneratio, \
                                                   'zeroratio' : zeroratio, \
-                                                  'adjinfill' : adjinfill, \
                                                   'str_convert' : str_convert}}
 
     #store some values in the column_dict{} for use later in ML infill methods
@@ -9514,12 +9385,6 @@ class AutoMunge:
     '''
     
     suffixoverlap_results = {}
-    
-    #adjinfill accepts True/False to change default infill from mean inputation to adjacent cell
-    if 'adjinfill' in params:
-      adjinfill = params['adjinfill']
-    else:
-      adjinfill = False
       
     #str_convert provides consistent encodings between numbers and string equivalent, eg 2 == '2'
     if 'str_convert' in params:
@@ -9545,12 +9410,6 @@ class AutoMunge:
       mdf_train[tempcolumn] = mdf_train[tempcolumn].cat.add_categories(['zzzinfill'])
     if 'zzzinfill' not in mdf_test[tempcolumn].cat.categories:
       mdf_test[tempcolumn] = mdf_test[tempcolumn].cat.add_categories(['zzzinfill'])
-      
-    if adjinfill is True:
-      mdf_train[tempcolumn] = mdf_train[tempcolumn].fillna(method='ffill')
-      mdf_test[tempcolumn] = mdf_test[tempcolumn].fillna(method='ffill')
-      mdf_train[tempcolumn] = mdf_train[tempcolumn].fillna(method='bfill')
-      mdf_test[tempcolumn] = mdf_test[tempcolumn].fillna(method='bfill')
 
     #replace NA with a dummy variable
     mdf_train[tempcolumn] = mdf_train[tempcolumn].fillna('zzzinfill')
@@ -9672,7 +9531,6 @@ class AutoMunge:
                                       'labels_dict' : labels_dict, \
                                       'inverse_labels_dict' : inverse_labels_dict, \
                                       'text_categorylist' : categorylist, \
-                                      'adjinfill' : adjinfill, \
                                       'str_convert' : str_convert}}
       
       column_dict = {tc : {'category' : 'onht', \
@@ -9714,12 +9572,6 @@ class AutoMunge:
     
     suffixoverlap_results = {}
     
-    #adjinfill accepts True/False to change default infill from mean inputation to adjacent cell
-    if 'adjinfill' in params:
-      adjinfill = params['adjinfill']
-    else:
-      adjinfill = False
-    
     tempsuffix = str(mdf_train[column].unique()[0])
     
     tempcolumn = column + '_' + tempsuffix
@@ -9740,12 +9592,6 @@ class AutoMunge:
       mdf_train[tempcolumn] = mdf_train[tempcolumn].cat.add_categories(['zzzinfill'])
     if 'zzzinfill' not in mdf_test[tempcolumn].cat.categories:
       mdf_test[tempcolumn] = mdf_test[tempcolumn].cat.add_categories(['zzzinfill'])
-    
-    if adjinfill is True:
-      mdf_train[tempcolumn] = mdf_train[tempcolumn].fillna(method='ffill')
-      mdf_test[tempcolumn] = mdf_test[tempcolumn].fillna(method='ffill')
-      mdf_train[tempcolumn] = mdf_train[tempcolumn].fillna(method='bfill')
-      mdf_test[tempcolumn] = mdf_test[tempcolumn].fillna(method='bfill')
       
     #replace NA with a dummy variable
     mdf_train[tempcolumn] = mdf_train[tempcolumn].fillna('zzzinfill')
@@ -9846,8 +9692,7 @@ class AutoMunge:
       tcratio = mdf_train[tc].sum() / mdf_train[tc].shape[0]
 
       textnormalization_dict = {tc : {'textlabelsdict_text' : textlabelsdict, \
-                                      tc_ratio : tcratio, \
-                                      'adjinfill' : adjinfill}}
+                                      tc_ratio : tcratio}}
       
       column_dict = {tc : {'category' : 'text', \
                            'origcategory' : category, \
@@ -9876,12 +9721,6 @@ class AutoMunge:
     '''
     
     suffixoverlap_results = {}
-    
-    #adjinfill accepts True/False to change default infill from mean inputation to adjacent cell
-    if 'adjinfill' in params:
-      adjinfill = params['adjinfill']
-    else:
-      adjinfill = False
       
     #str_convert provides consistent encodings between numbers and string equivalent, eg 2 == '2'
     if 'str_convert' in params:
@@ -9922,12 +9761,6 @@ class AutoMunge:
       mdf_train[tempcolumn] = mdf_train[tempcolumn].cat.add_categories(['zzzinfill'])
     if 'zzzinfill' not in mdf_test[tempcolumn].cat.categories:
       mdf_test[tempcolumn] = mdf_test[tempcolumn].cat.add_categories(['zzzinfill'])
-      
-    if adjinfill is True:
-      mdf_train[tempcolumn] = mdf_train[tempcolumn].fillna(method='ffill')
-      mdf_test[tempcolumn] = mdf_test[tempcolumn].fillna(method='ffill')
-      mdf_train[tempcolumn] = mdf_train[tempcolumn].fillna(method='bfill')
-      mdf_test[tempcolumn] = mdf_test[tempcolumn].fillna(method='bfill')
 
     #replace NA with a dummy variable
     mdf_train[tempcolumn] = mdf_train[tempcolumn].fillna('zzzinfill')
@@ -10085,7 +9918,6 @@ class AutoMunge:
                                       'labels_dict' : labels_dict, \
                                       'inverse_labels_dict' : inverse_labels_dict, \
                                       'text_categorylist' : categorylist, \
-                                      'adjinfill' : adjinfill, \
                                       'str_convert' : str_convert, \
                                       'LSfitparams_dict' : LSfitparams_dict, \
                                       'activation' : activation, \
@@ -13831,12 +13663,6 @@ class AutoMunge:
       inplace = params['inplace']
     else:
       inplace = False
-    
-    #adjinfill accepts True/False to change default infill from mean inputation to adjacent cell
-    if 'adjinfill' in params:
-      adjinfill = params['adjinfill']
-    else:
-      adjinfill = False
       
     #ordered_overide is boolean to indicate if order of integer encoding basis will 
     #defer to cases when a column is a pandas categorical ordered set
@@ -13890,12 +13716,6 @@ class AutoMunge:
       mdf_train[column + '_ordl'] = mdf_train[column + '_ordl'].cat.add_categories(['zzzinfill'])
     if 'zzzinfill' not in mdf_test[column + '_ordl'].cat.categories:
       mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].cat.add_categories(['zzzinfill'])
-      
-    if adjinfill is True:
-      mdf_train[column + '_ordl'] = mdf_train[column + '_ordl'].fillna(method='ffill')
-      mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].fillna(method='ffill')
-      mdf_train[column + '_ordl'] = mdf_train[column + '_ordl'].fillna(method='bfill')
-      mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].fillna(method='bfill')
 
     #replace NA with a dummy variable
     mdf_train[column + '_ordl'] = mdf_train[column + '_ordl'].fillna('zzzinfill')
@@ -14050,7 +13870,6 @@ class AutoMunge:
                                   'activations_list' : activations_list, \
                                   'ordinal_overlap_replace' : overlap_replace, \
                                   'ordl_activations_dict' : ordl_activations_dict, \
-                                  'adjinfill' : adjinfill, \
                                   'ordered_overide' : ordered_overide, \
                                   'ordered' : ordered, \
                                   'str_convert' : str_convert}}
@@ -14089,12 +13908,6 @@ class AutoMunge:
       inplace = params['inplace']
     else:
       inplace = False
-    
-    #adjinfill accepts True/False to change default infill from mean inputation to adjacent cell
-    if 'adjinfill' in params:
-      adjinfill = params['adjinfill']
-    else:
-      adjinfill = False
       
     #ordered_overide is boolean to indicate if order of integer encoding basis will 
     #defer to cases when a column is a pandas categorical ordered set
@@ -14148,12 +13961,6 @@ class AutoMunge:
       mdf_train[column + '_ord3'] = mdf_train[column + '_ord3'].cat.add_categories(['zzzinfill'])
     if 'zzzinfill' not in mdf_test[column + '_ord3'].cat.categories:
       mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].cat.add_categories(['zzzinfill'])
-      
-    if adjinfill is True:
-      mdf_train[column + '_ord3'] = mdf_train[column + '_ord3'].fillna(method='ffill')
-      mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].fillna(method='ffill')
-      mdf_train[column + '_ord3'] = mdf_train[column + '_ord3'].fillna(method='bfill')
-      mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].fillna(method='bfill')
 
     #replace NA with a dummy variable
     mdf_train[column + '_ord3'] = mdf_train[column + '_ord3'].fillna('zzzinfill')
@@ -14307,7 +14114,6 @@ class AutoMunge:
                                   'activations_list' : activations_list, \
                                   'ordinal_overlap_replace' : overlap_replace, \
                                   'ordl_activations_dict' : ordl_activations_dict, \
-                                  'adjinfill' : adjinfill, \
                                   'ordered_overide' : ordered_overide, \
                                   'ordered' : ordered, \
                                   'str_convert' : str_convert}}
@@ -14701,12 +14507,6 @@ class AutoMunge:
     '''
     
     suffixoverlap_results = {}
-    
-    #adjinfill accepts True/False to change default infill from mean inputation to adjacent cell
-    if 'adjinfill' in params:
-      adjinfill = params['adjinfill']
-    else:
-      adjinfill = False
       
     #str_convert provides consistent encodings between numbers and string equivalent, eg 2 == '2'
     if 'str_convert' in params:
@@ -14729,12 +14529,6 @@ class AutoMunge:
       mdf_train[column + '_1010'] = mdf_train[column + '_1010'].cat.add_categories(['zzzinfill'])
     if 'zzzinfill' not in mdf_test[column + '_1010'].cat.categories:
       mdf_test[column + '_1010'] = mdf_test[column + '_1010'].cat.add_categories(['zzzinfill'])
-      
-    if adjinfill is True:
-      mdf_train[column + '_1010'] = mdf_train[column + '_1010'].fillna(method='ffill')
-      mdf_test[column + '_1010'] = mdf_test[column + '_1010'].fillna(method='ffill')
-      mdf_train[column + '_1010'] = mdf_train[column + '_1010'].fillna(method='bfill')
-      mdf_test[column + '_1010'] = mdf_test[column + '_1010'].fillna(method='bfill')
 
     #replace NA with a dummy variable
     mdf_train[column + '_1010'] = mdf_train[column + '_1010'].fillna('zzzinfill')
@@ -14940,7 +14734,6 @@ class AutoMunge:
                                   '_1010_overlap_replace' : overlap_replace, \
                                   '_1010_binary_column_count' : binary_column_count, \
                                   '_1010_activations_dict' : _1010_activations_dict, \
-                                  'adjinfill' : adjinfill, \
                                   'str_convert' : str_convert}}
     
       column_dict = {tc : {'category' : '1010', \
@@ -19397,12 +19190,6 @@ class AutoMunge:
     else:
       floor = False
       
-    #adjinfill accepts True/False to change default infill from mean inputation to adjacent cell
-    if 'adjinfill' in params:
-      adjinfill = params['adjinfill']
-    else:
-      adjinfill = False
-      
     #here are differential privacy parameters
     if 'mu' in params:
       mu = params['mu']
@@ -19504,12 +19291,6 @@ class AutoMunge:
     mean = mdf_train[DPrt_column].mean()
     if mean != mean:
       mean = 0
-    
-    if adjinfill is True:
-      mdf_train[DPrt_column] = mdf_train[DPrt_column].fillna(method='ffill')
-      mdf_test[DPrt_column] = mdf_test[DPrt_column].fillna(method='ffill')
-      mdf_train[DPrt_column] = mdf_train[DPrt_column].fillna(method='bfill')
-      mdf_test[DPrt_column] = mdf_test[DPrt_column].fillna(method='bfill')
     
     #replace missing data with training set mean
     mdf_train[DPrt_column] = mdf_train[DPrt_column].fillna(mean)
@@ -19659,7 +19440,6 @@ class AutoMunge:
                                              'cap' : cap, \
                                              'floor' : floor, \
                                              'divisor' : divisor, \
-                                             'adjinfill' : adjinfill, \
                                              'testnoise' : testnoise, \
                                             }}
     
@@ -24383,7 +24163,7 @@ class AutoMunge:
         if column in postprocess_dict['column_dict']:
           
           if process_dict[postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-          not in {'boolexclude', 'ordlexclude', 'totalexclude'}:
+          not in {'exclude', 'boolexclude', 'ordlexclude', 'totalexclude'}:
 
             if iteration == 0:
               
@@ -24664,7 +24444,7 @@ class AutoMunge:
         if column in postprocess_dict['column_dict']:
         
           if process_dict[postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-          not in {'boolexclude', 'ordlexclude', 'totalexclude'}:
+          not in {'exclude', 'boolexclude', 'ordlexclude', 'totalexclude'}:
 
             if iteration == 0:
               
@@ -27250,8 +27030,8 @@ class AutoMunge:
         print()
       else:
         if processdict[entry]['NArowtype'] not in \
-        ['numeric', 'integer', 'justNaN', 'exclude', 'positivenumeric', 'nonnegativenumeric', \
-        'nonzeronumeric', 'parsenumeric', 'datetime']:
+        {'numeric', 'integer', 'justNaN', 'exclude', 'positivenumeric', 'nonnegativenumeric', \
+        'nonzeronumeric', 'parsenumeric', 'datetime'}:
           check_processdict_result = True
           print("error: invalid 'NArowtype' processdict entry for category: ", entry)
           print()
@@ -27262,8 +27042,8 @@ class AutoMunge:
         print()
       else:
         if processdict[entry]['MLinfilltype'] not in \
-        ['numeric', 'singlct', 'integer', 'binary', 'multirt', 'concurrent_act', 'concurrent_nmbr', '1010', \
-        'exclude', 'boolexclude', 'ordlexclude', 'totalexclude']:
+        {'numeric', 'singlct', 'integer', 'binary', 'multirt', 'concurrent_act', 'concurrent_nmbr', '1010', \
+        'exclude', 'boolexclude', 'ordlexclude', 'totalexclude'}:
           check_processdict_result = True
           print("error: invalid 'MLinfilltype' processdict entry for category: ", entry)
           print()
@@ -28510,6 +28290,7 @@ class AutoMunge:
     """
     
     columntype_report = {'continuous' : [], \
+                         'integer'    : [], \
                          'boolean' : [], \
                          'ordinal' : [], \
                          'onehot' : [], \
@@ -28564,10 +28345,17 @@ class AutoMunge:
           MLinfilltype = \
           postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype']
           
-          if MLinfilltype in {'numeric', 'concurrent_nmbr', 'integer'}:
+          if MLinfilltype in {'numeric', 'concurrent_nmbr'}:
             
             #add to numeric
             columntype_report['continuous'].append(column)
+            
+            populated_columns.append(column)
+
+          elif MLinfilltype in {'integer'}:
+            
+            #add to numeric
+            columntype_report['integer'].append(column)
             
             populated_columns.append(column)
             
@@ -28816,17 +28604,11 @@ class AutoMunge:
                                 'modeinfill':[], 'lcinfill':[], 'naninfill':[]}, \
                 assignnan = {'categories':{}, 'columns':{}, 'global':[]}, \
                 transformdict = {}, processdict = {}, evalcat = False, \
-                privacy_encode = False, printstatus = True, \
-                LabelSmoothing_train = False, LabelSmoothing_test = False, LabelSmoothing_val = False, LSfit = False, \
-                featurepct = 1.0, featuremetric = 0.0, featuremethod = 'default'):
+                privacy_encode = False, printstatus = True):
     """
     #This function documented in READ ME, available online at:
     # https://github.com/Automunge/AutoMunge/blob/master/README.md
     """
-
-    #note LabelSmoothing_... / LSfit parameters are now depracated, replaced by smth family of transforms
-    #featurepct, featuremetric, featuremethod are deprecated, replaced by consolidation to featureselection and featurethreshold
-    #valpercent1 and valpercent2 are depreciated, replaced with valpercent
     
     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     application_number = random.randint(100000000000,999999999999)
@@ -30219,7 +30001,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.08'
+    automungeversion = '6.09'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -30909,8 +30691,6 @@ class AutoMunge:
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['cap']
     floor = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['floor']
-    adjinfill = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['adjinfill']
     
     if inplace is not True:
       #copy source column into new column
@@ -30930,10 +30710,6 @@ class AutoMunge:
       #replace values in test < floor with floor
       mdf_test.loc[mdf_test[column + '_nmbr'] < floor, (column + '_nmbr')] \
       = floor
-      
-    if adjinfill is True:
-      mdf_test[column + '_nmbr'] = mdf_test[column + '_nmbr'].fillna(method='ffill')
-      mdf_test[column + '_nmbr'] = mdf_test[column + '_nmbr'].fillna(method='bfill')
 
     #replace missing data with training set mean
     mdf_test[column + '_nmbr'] = mdf_test[column + '_nmbr'].fillna(mean)
@@ -30979,8 +30755,6 @@ class AutoMunge:
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
     MAD = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['MAD']
-    adjinfill = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['adjinfill']
 
     if inplace is not True:
       mdf_test[column + '_MADn'] = mdf_test[column].copy()
@@ -30990,10 +30764,6 @@ class AutoMunge:
 
     #convert all values to either numeric or NaN
     mdf_test[column + '_MADn'] = pd.to_numeric(mdf_test[column + '_MADn'], errors='coerce')
-    
-    if adjinfill is True:
-      mdf_test[column + '_MADn'] = mdf_test[column + '_MADn'].fillna(method='ffill')
-      mdf_test[column + '_MADn'] = mdf_test[column + '_MADn'].fillna(method='bfill')
 
     #replace missing data with training set mean
     mdf_test[column + '_MADn'] = mdf_test[column + '_MADn'].fillna(mean)
@@ -31040,8 +30810,6 @@ class AutoMunge:
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['MAD']
     datamax = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['datamax']
-    adjinfill = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['adjinfill']
 
     if inplace is not True:
       mdf_test[column + '_MAD3'] = mdf_test[column].copy()
@@ -31051,10 +30819,6 @@ class AutoMunge:
 
     #convert all values to either numeric or NaN
     mdf_test[column + '_MAD3'] = pd.to_numeric(mdf_test[column + '_MAD3'], errors='coerce')
-    
-    if adjinfill is True:
-      mdf_test[column + '_MAD3'] = mdf_test[column + '_MAD3'].fillna(method='ffill')
-      mdf_test[column + '_MAD3'] = mdf_test[column + '_MAD3'].fillna(method='bfill')
 
     #replace missing data with training set mean
     mdf_test[column + '_MAD3'] = mdf_test[column + '_MAD3'].fillna(mean)
@@ -31105,8 +30869,6 @@ class AutoMunge:
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['cap']
     floor = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['floor']
-    adjinfill = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['adjinfill']
     
     if inplace is not True:
       #copy source column into new column
@@ -31116,10 +30878,6 @@ class AutoMunge:
 
     #convert all values to either numeric or NaN
     mdf_test[column + '_mnmx'] = pd.to_numeric(mdf_test[column + '_mnmx'], errors='coerce')
-    
-    if adjinfill is True:
-      mdf_test[column + '_mnmx'] = mdf_test[column + '_mnmx'].fillna(method='ffill')
-      mdf_test[column + '_mnmx'] = mdf_test[column + '_mnmx'].fillna(method='bfill')
 
     #replace missing data with training set mean
     mdf_test[column + '_mnmx'] = mdf_test[column + '_mnmx'].fillna(mean)
@@ -31177,9 +30935,6 @@ class AutoMunge:
     quantilemax = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['quantilemax']
     
-    adjinfill = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['adjinfill']
-    
     if inplace is not True:
       mdf_test[column + '_mnm3'] = mdf_test[column].copy()
     
@@ -31198,10 +30953,6 @@ class AutoMunge:
     #replace values < quantile10 with quantile10
     mdf_test.loc[mdf_test[column + '_mnm3'] < quantilemin, (column + '_mnm3')] \
     = quantilemin
-      
-    if adjinfill is True:
-      mdf_test[column + '_mnm3'] = mdf_test[column + '_mnm3'].fillna(method='ffill')
-      mdf_test[column + '_mnm3'] = mdf_test[column + '_mnm3'].fillna(method='bfill')
     
     #replace missing data with training set mean
     mdf_test[column + '_mnm3'] = mdf_test[column + '_mnm3'].fillna(mean)
@@ -31239,8 +30990,6 @@ class AutoMunge:
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['maxabs']
     mean = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
-    adjinfill = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['adjinfill']
     
     if inplace is not True:
       #copy source column into new column
@@ -31250,10 +30999,6 @@ class AutoMunge:
 
     #convert all values to either numeric or NaN
     mdf_test[column + '_mxab'] = pd.to_numeric(mdf_test[column + '_mxab'], errors='coerce')
-    
-    if adjinfill is True:
-      mdf_test[column + '_mxab'] = mdf_test[column + '_mxab'].fillna(method='ffill')
-      mdf_test[column + '_mxab'] = mdf_test[column + '_mxab'].fillna(method='bfill')
 
     #replace missing data with training set mean
     mdf_test[column + '_mxab'] = mdf_test[column + '_mxab'].fillna(mean)
@@ -31322,8 +31067,6 @@ class AutoMunge:
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['floor']
     divisor = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['divisor']
-    adjinfill = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['adjinfill']
     
     if inplace is not True:
       #copy source column into new column
@@ -31343,10 +31086,6 @@ class AutoMunge:
       #replace values in test < floor with floor
       mdf_test.loc[mdf_test[column + '_retn'] < floor, (column + '_retn')] \
       = floor
-    
-    if adjinfill is True:
-      mdf_test[column + '_retn'] = mdf_test[column + '_retn'].fillna(method='ffill')
-      mdf_test[column + '_retn'] = mdf_test[column + '_retn'].fillna(method='bfill')
 
     #replace missing data with training set mean
     mdf_test[column + '_retn'] = mdf_test[column + '_retn'].fillna(mean)
@@ -31420,9 +31159,6 @@ class AutoMunge:
     
     floor = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['floor']
-    
-    adjinfill = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['adjinfill']
 
     if inplace is not True:
       mdf_test[column + '_mean'] = mdf_test[column].copy()
@@ -31442,10 +31178,6 @@ class AutoMunge:
       #replace values in test < floor with floor
       mdf_test.loc[mdf_test[column + '_mean'] < floor, (column + '_mean')] \
       = floor
-      
-    if adjinfill is True:
-      mdf_test[column + '_mean'] = mdf_test[column + '_mean'].fillna(method='ffill')
-      mdf_test[column + '_mean'] = mdf_test[column + '_mean'].fillna(method='bfill')
 
     #replace missing data with training set mean
     mdf_test[column + '_mean'] = mdf_test[column + '_mean'].fillna(mean)
@@ -31482,8 +31214,6 @@ class AutoMunge:
     normkey = column + '_bnry'
     binary_missing_plug = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['missing']
-    adjinfill = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['adjinfill']
     str_convert = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['str_convert']
     
@@ -31507,10 +31237,6 @@ class AutoMunge:
     
     if str_convert is True:
       mdf_test[column + '_bnry'] = mdf_test[column + '_bnry'].astype(str)
-    
-    if adjinfill is True:
-      mdf_test[column + '_bnry'] = mdf_test[column + '_bnry'].fillna(method='ffill')
-      mdf_test[column + '_bnry'] = mdf_test[column + '_bnry'].fillna(method='bfill')
 
     #replace missing data with specified classification
     mdf_test[column + '_bnry'] = mdf_test[column + '_bnry'].fillna(binary_missing_plug)
@@ -31562,8 +31288,6 @@ class AutoMunge:
     normkey = column + '_bnr2'
     binary_missing_plug = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['missing']
-    adjinfill = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['adjinfill']
     str_convert = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['str_convert']
     
@@ -31587,10 +31311,6 @@ class AutoMunge:
     
     if str_convert is True:
       mdf_test[column + '_bnr2'] = mdf_test[column + '_bnr2'].astype(str)
-    
-    if adjinfill is True:
-      mdf_test[column + '_bnr2'] = mdf_test[column + '_bnr2'].fillna(method='ffill')
-      mdf_test[column + '_bnr2'] = mdf_test[column + '_bnr2'].fillna(method='bfill')
 
     #replace missing data with specified classification
     mdf_test[column + '_bnr2'] = mdf_test[column + '_bnr2'].fillna(binary_missing_plug)
@@ -31651,9 +31371,6 @@ class AutoMunge:
           
     if normkey is not False:
       
-      adjinfill = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['adjinfill']
-      
       str_convert = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['str_convert']
       
@@ -31668,10 +31385,6 @@ class AutoMunge:
       #if set is categorical we'll need the plug value for missing values included
       if 'zzzinfill' not in mdf_test[tempcolumn].cat.categories:
         mdf_test[tempcolumn] = mdf_test[tempcolumn].cat.add_categories(['zzzinfill'])
-        
-      if adjinfill is True:
-        mdf_test[tempcolumn] = mdf_test[tempcolumn].fillna(method='ffill')
-        mdf_test[tempcolumn] = mdf_test[tempcolumn].fillna(method='bfill')
 
       #replace NA with a dummy variable
       mdf_test[tempcolumn] = mdf_test[tempcolumn].fillna('zzzinfill')
@@ -31781,9 +31494,6 @@ class AutoMunge:
             normkey = columnkey
           
     if normkey is not False:
-      
-      adjinfill = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['adjinfill']
     
       tempsuffix = str(mdf_test[column].unique()[0])
 
@@ -31798,10 +31508,6 @@ class AutoMunge:
       #if set is categorical we'll need the plug value for missing values included
       if 'zzzinfill' not in mdf_test[tempcolumn].cat.categories:
         mdf_test[tempcolumn] = mdf_test[tempcolumn].cat.add_categories(['zzzinfill'])
-      
-      if adjinfill is True:
-        mdf_test[tempcolumn] = mdf_test[tempcolumn].fillna(method='ffill')
-        mdf_test[tempcolumn] = mdf_test[tempcolumn].fillna(method='bfill')
       
       #replace NA with a dummy variable
       mdf_test[tempcolumn] = mdf_test[tempcolumn].fillna('zzzinfill')
@@ -31897,9 +31603,6 @@ class AutoMunge:
           
     if normkey is not False:
       
-      adjinfill = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['adjinfill']
-      
       str_convert = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['str_convert']
       
@@ -31926,10 +31629,6 @@ class AutoMunge:
       #if set is categorical we'll need the plug value for missing values included
       if 'zzzinfill' not in mdf_test[tempcolumn].cat.categories:
         mdf_test[tempcolumn] = mdf_test[tempcolumn].cat.add_categories(['zzzinfill'])
-        
-      if adjinfill is True:
-        mdf_test[tempcolumn] = mdf_test[tempcolumn].fillna(method='ffill')
-        mdf_test[tempcolumn] = mdf_test[tempcolumn].fillna(method='bfill')
 
       #replace NA with a dummy variable
       mdf_test[tempcolumn] = mdf_test[tempcolumn].fillna('zzzinfill')
@@ -33811,9 +33510,6 @@ class AutoMunge:
     overlap_replace = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordinal_overlap_replace']
     
-    adjinfill = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['adjinfill']
-    
     str_convert = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['str_convert']
     
@@ -33829,10 +33525,6 @@ class AutoMunge:
     #if set is categorical we'll need the plug value for missing values included
     if 'zzzinfill' not in mdf_test[column + '_ordl'].cat.categories:
       mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].cat.add_categories(['zzzinfill'])
-      
-    if adjinfill is True:
-      mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].fillna(method='ffill')
-      mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].fillna(method='bfill')
 
     #replace NA with a dummy variable
     mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].fillna('zzzinfill')
@@ -33919,9 +33611,6 @@ class AutoMunge:
     overlap_replace = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordinal_overlap_replace']
     
-    adjinfill = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['adjinfill']
-    
     str_convert = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['str_convert']
     
@@ -33937,10 +33626,6 @@ class AutoMunge:
     #if set is categorical we'll need the plug value for missing values included
     if 'zzzinfill' not in mdf_test[column + '_ord3'].cat.categories:
       mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].cat.add_categories(['zzzinfill'])
-      
-    if adjinfill is True:
-      mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].fillna(method='ffill')
-      mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].fillna(method='bfill')
 
     #replace NA with a dummy variable
     mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].fillna('zzzinfill')
@@ -34152,9 +33837,6 @@ class AutoMunge:
       binary_column_count = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['_1010_binary_column_count']
       
-      adjinfill = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['adjinfill']
-      
       str_convert = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['str_convert']
 
@@ -34167,10 +33849,6 @@ class AutoMunge:
       #if set is categorical we'll need the plug value for missing values included
       if 'zzzinfill' not in mdf_test[column + '_1010'].cat.categories:
         mdf_test[column + '_1010'] = mdf_test[column + '_1010'].cat.add_categories(['zzzinfill'])
-        
-      if adjinfill is True:
-        mdf_test[column + '_1010'] = mdf_test[column + '_1010'].fillna(method='ffill')
-        mdf_test[column + '_1010'] = mdf_test[column + '_1010'].fillna(method='bfill')
 
       #replace NA with a dummy variable
       mdf_test[column + '_1010'] = mdf_test[column + '_1010'].fillna('zzzinfill')
@@ -36221,8 +35899,6 @@ class AutoMunge:
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['floor']
     divisor = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['divisor']
-    adjinfill = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['adjinfill']
     testnoise = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['testnoise']
     
@@ -36255,10 +35931,6 @@ class AutoMunge:
       #replace values in test < floor with floor
       mdf_test.loc[mdf_test[DPrt_column] < floor, (DPrt_column)] \
       = floor
-    
-    if adjinfill is True:
-      mdf_test[DPrt_column] = mdf_test[DPrt_column].fillna(method='ffill')
-      mdf_test[DPrt_column] = mdf_test[DPrt_column].fillna(method='bfill')
 
     #replace missing data with training set mean
     mdf_test[DPrt_column] = mdf_test[DPrt_column].fillna(mean)
