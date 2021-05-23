@@ -1338,22 +1338,19 @@ processdict =  {'newt' : {'dualprocess' : am._process_mnmx, \
 
 #MLinfilltype: can be entries {'numeric', 'singlct', 'binary', 'multirt', 'concurrent_act', 'concurrent_nmbr', 
 #                              '1010', 'exclude', 'boolexclude', 'ordlexclude', 'totalexclude'}
-#              'numeric' refers to columns where predictive algorithms treat
-#                        as a regression for numeric sets
+#              'numeric' single columns with numeric entries for regression (signed floats)
 #              'singlct' for single column sets with ordinal entries (nonnegative integer classification)
 #              'integer' for single column sets with integer entries (signed integer regression)
 #              'binary'  single column sets with boolean entries (0/1)
-#              'multirt' refers to category returning multiple columns where 
-#                        predictive algorithms treat as a multi modal classifier
+#              'multirt' categoric multicolumn sets with boolean entries (0/1), up to one activation per row
+#              '1010'    for multicolumn sets with binary encoding via 1010, boolean entries (0/1), encoding by set of activations
 #              'concurrent_act' for multicolumn sets with boolean entries as may have 
-#                        multiple entries in the same row
-#              'concurrent_nmbr' for multicolumn sets with numerical entries
-#              '1010'   for multicolumn sets with binary encoding via 1010
-#                        will be converted to onehot for ML
-#              'exclude' for columns which will be excluded from ML infill
+#                        multiple entries in the same row, different from 1010 in that columns are independent
+#              'concurrent_nmbr' for multicolumn sets with numeric entries (signed floats)
+#              'exclude' for columns which will be excluded from infill, returned data might not be numerically encoded
 #              'boolexclude' boolean set suitable for Binary transform but excluded from all infill (eg NArw entries)
 #              'ordlexclude' ordinal set exluded from infill
-#              'totalexclude' for complete passthroughs (eg excl) without infill and excluded 
+#              'totalexclude' for complete passthroughs (excl) without infill and excluded 
 #                        from inf conversion and assignnan global option
 
 #labelctgy: should be a string entry of a single transform category as recorded by the associated transformation
