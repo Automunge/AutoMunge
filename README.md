@@ -2086,7 +2086,6 @@ string by 'strg' (some ML libraries prefer string encoded labels to recognize th
       cap and floor based on pre-transform values
     - 'muilitplier' and 'offset' to apply multiplier and offset to posttransform values, default to 1,0,
       note that multiplier is applied prior to offset
-    - 'adjinfill', boolean, defaults to False, True makes default infill adjacent cell instead of mean imputation
   - driftreport postmunge metrics: mean / std / max / min
   - inversion available: yes with full recovery
 * mean/mea2/mea3: mean normalization (like z-score in the numerator and min-max in the denominator)<br/>
@@ -2103,7 +2102,6 @@ My intuition says z-score has some benefits but really up to the user which they
       cap and floor based on pre-transform values
     - 'muilitplier' and 'offset' to apply multiplier and offset to posttransform values, default to 1,0,
       note that multiplier is applied prior to offset
-    - 'adjinfill', boolean, defaults to False, True makes default infill adjacent cell instead of mean imputation
   - driftreport postmunge metrics: minimum / maximum / mean / std
   - inversion available: yes with full recovery
 * mnmx/mnm2/mnm5/mmdx/mmd2/mmd3: vanilla min-max scaling<br/>
@@ -2117,7 +2115,6 @@ My intuition says z-score has some benefits but really up to the user which they
       True means floor/cap based on training set min/max, otherwise passed values serve as floor/cap to scaling, 
       noting that if cap<max then max reset to cap and if floor>min then min reset to floor
       cap and floor based on pre-transform values
-    - 'adjinfill', boolean, defaults to False, True makes default infill adjacent cell instead of mean imputation
   - driftreport postmunge metrics: minimum / maximum / maxminusmin / mean / std / cap / floor
   - inversion available: yes with full recovery
 * mnm3/mnm4: min-max scaling with outliers capped at 0.01 and 0.99 quantiles
@@ -2127,7 +2124,6 @@ My intuition says z-score has some benefits but really up to the user which they
   - suffix appender: '_mnm3'
   - assignparam parameters accepted: 
     - qmax or qmin to change the quantiles from 0.99/0.01
-    - 'adjinfill', boolean, defaults to False, True makes default infill adjacent cell instead of mean imputation
   - driftreport postmunge metrics: quantilemin / quantilemax / mean / std
   - inversion available: yes
 * mnm6: min-max scaling with test floor set capped at min of train set (ensures
@@ -2137,7 +2133,6 @@ test set returned values >= 0, such as might be useful for kernel PCA for instan
   - default NArowtype: numeric
   - suffix appender: '_mnmx'
   - assignparam parameters accepted:
-    - 'adjinfill', boolean, defaults to False, True makes default infill adjacent cell instead of mean imputation
   - driftreport postmunge metrics: minimum / maximum / mean / std
   - inversion available: yes
 * retn: related to min/max scaling but retains +/- of values, based on conditions
@@ -2156,7 +2151,6 @@ elif max<=0 and min<=0 x=(x-max)/(max-min)
       note that multiplier is applied prior to offset
     - 'divisor' to select between default of 'minmax' or 'mad, 'std', where minmax means scaling by divisor of max-min
 	std based on scaling by divisor of standard deviation and mad by median absolute deviation
-    - 'adjinfill', boolean, defaults to False, True makes default infill adjacent cell instead of mean imputation
   - driftreport postmunge metrics: minimum / maximum / mean / std
   - inversion available: yes with full recovery
 * rtbn: retain normalization supplemented by ordinal encoded standard deviation bins
@@ -2168,7 +2162,6 @@ elif max<=0 and min<=0 x=(x-max)/(max-min)
   - default NArowtype: numeric
   - suffix appender: '_MADn'
   - assignparam parameters accepted:
-    - 'adjinfill', boolean, defaults to False, True makes default infill adjacent cell instead of mean imputation
   - driftreport postmunge metrics: mean / MAD / maximum / minimum
   - inversion available: yes with full recovery
 * MAD3: mean absolute deviation normalization, subtract set maximum<br/>
@@ -2178,7 +2171,6 @@ elif max<=0 and min<=0 x=(x-max)/(max-min)
   - default NArowtype: numeric
   - suffix appender: '_MAD3'
   - assignparam parameters accepted:
-    - 'adjinfill', boolean, defaults to False, True makes default infill adjacent cell instead of mean imputation
   - driftreport postmunge metrics: mean / MAD / datamax / maximum / minimum
   - inversion available: yes with full recovery
 * mxab: max absolute scaling normalization (just including this one for completeness, retn is a much better option to ensure consistent scaling between sets)<br/>
@@ -2188,7 +2180,6 @@ elif max<=0 and min<=0 x=(x-max)/(max-min)
   - default NArowtype: numeric
   - suffix appender: '_mxab'
   - assignparam parameters accepted:
-    - 'adjinfill', boolean, defaults to False, True makes default infill adjacent cell instead of mean imputation
   - driftreport postmunge metrics: minimum / maximum / maxabs / mean / std
   - inversion available: yes with full recovery
 * lgnm: normalization intended for lognormal distributed numerical sets,
@@ -2590,7 +2581,6 @@ to set with >2 entries applies infill to those entries beyond two most common.
   - default NArowtype: justNaN
   - suffix appender: '_bnry'
   - assignparam parameters accepted:
-    - 'adjinfill', boolean, defaults to False, True makes default infill adjacent cell
     - 'str_convert', boolean defaults as False for distinct encodings between numbers and string equivalents
       e.g. 2 != '2', when passed as True e.g. 2 == '2'
   - driftreport postmunge metrics: missing / 1 / 0 / extravalues / oneratio / zeroratio
@@ -2601,7 +2591,6 @@ to set with >2 entries applies infill to those entries beyond two most common.
   - default NArowtype: justNaN
   - suffix appender: '_bnr2'
   - assignparam parameters accepted:
-    - 'adjinfill', boolean, defaults to False, True makes default infill adjacent cell
     - 'str_convert', boolean defaults as False for distinct encodings between numbers and string equivalents
       e.g. 2 != '2', when passed as True e.g. 2 == '2'
   - driftreport postmunge metrics: missing / 1 / 0 / extravalues / oneratio / zeroratio
@@ -2613,7 +2602,6 @@ to set with >2 entries applies infill to those entries beyond two most common.
   - default NArowtype: justNaN
   - suffix appender: '_(category)' where category is the categoric entry target of column activations
   - assignparam parameters accepted:
-    - 'adjinfill', boolean, defaults to False, True makes default infill adjacent cell
   - driftreport postmunge metrics: textlabelsdict_text / <column> + '_ratio' (column specific)
   - inversion available: yes with full recovery
 * onht: converts categorical sets to one-hot encoded set of boolean identifiers 
@@ -2623,7 +2611,6 @@ to set with >2 entries applies infill to those entries beyond two most common.
   - default NArowtype: justNaN
   - suffix appender: '_onht\_#' where # integer corresponds to the target entry of a column
   - assignparam parameters accepted:
-    - 'adjinfill', boolean, defaults to False, True makes default infill adjacent cell
     - 'str_convert', boolean defaults as False for distinct encodings between numbers and string equivalents
       e.g. 2 != '2', when passed as True e.g. 2 == '2'
   - driftreport postmunge metrics: textlabelsdict_text / <column> + '_ratio' (column specific)
@@ -2635,7 +2622,6 @@ to set with >2 entries applies infill to those entries beyond two most common.
   - default NArowtype: justNaN
   - suffix appender: '_ordl'
   - assignparam parameters accepted:
-    - 'adjinfill', boolean, defaults to False, True makes default infill adjacent cell
     - 'ordered_overide', boolean defaults True, when True instects for Pandas ordered categorical and 
       if found integer encoding order defers to that basis
     - 'str_convert', boolean defaults as False for distinct encodings between numbers and string equivalents
@@ -2649,7 +2635,6 @@ occurrence, second basis for common count entries is alphabetical
   - default NArowtype: justNaN
   - suffix appender: '_ord3'
   - assignparam parameters accepted:
-    - 'adjinfill', boolean, defaults to False, True makes default infill adjacent cell
     - 'ordered_overide', boolean defaults True, when True instects for Pandas ordered categorical and 
       if found integer encoding order defers to that basis
     - 'str_convert', boolean defaults as False for distinct encodings between numbers and string equivalents
@@ -2668,7 +2653,6 @@ efficient than one-hot encoding)
   - default NArowtype: justNaN
   - suffix appender: '\_1010\_#' where # is integer indicating order of 1010 columns
   - assignparam parameters accepted:
-    - 'adjinfill', boolean, defaults to False, True makes default infill adjacent cell
     - 'str_convert', boolean defaults as False for distinct encodings between numbers and string equivalents
       e.g. 2 != '2', when passed as True e.g. 2 == '2'
   - driftreport postmunge metrics: _1010_binary_encoding_dict / _1010_overlap_replace / 
@@ -2983,7 +2967,6 @@ remains in range 0-1 (by scaling neg noise when input <0.5 and scaling pos noise
   - assignparam parameters accepted: 
     - parameters comparable to retn divisor / offset / multiplier / 
     - cap / floor defaulting to 'minmax'/0/1/False/False, also
-    - 'adjinfill' to change default infill from mean imputation to adjacent cell
     - 'noisedistribution' as {'normal', 'laplace'}, defaults to normal
     - 'mu' for noise mean, defaults to 0, 
     - 'sigma' for noise scale, defautls to 0.03
