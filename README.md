@@ -727,16 +727,15 @@ columns with boolean identifiers for number of standard deviations from
 the mean, with groups for values <-2, -2-1, -10, 01, 12, and >2. This value 
 defaults to False.
 
-* MLinfill: a boolean identifier _(True/False)_ which indicates if the ML
-infill method will be applied as a default to predict infill for missing 
+* MLinfill: a boolean identifier _(True/False)_ defaulting to True which indicates if the ML
+infill method will be applied (to columns not otherwise designated in assigninfill) to predict infill for missing 
 or improperly formatted data using machine learning models trained on the
-rest of the df\_train set. This defaults to True. ML infill may alternatively
+rest of the df\_train set. ML infill may alternatively
 be assigned to distinct columns in assigninfill when MLinfill passed as False. Note that even if sets passed
-to automunge(.) have no points needing infill, when MLinfill is activated 
-machine learning models will still be trained for potential use of predicting 
-infill to subsequent data passed through the postmunge(.) function. ML infill
+to automunge(.) have no points needing infill, when activated ML infill models will still be trained for potential use 
+to subsequent data passed through postmunge(.). ML infill
 by default applies scikit-learn random forest machine learning models to predict infill, 
-which may be changed to other autoML frameworks via the ML_cmnd parameter.
+which may be changed to other available auto ML frameworks via the ML_cmnd parameter.
 Parameters and tuning may also be passed to the model training as demonstrated 
 with ML_cmnd parameter below. Order of infill model training is based on a 
 reverse sorting of columns by count of missing entries in the df_train set.
