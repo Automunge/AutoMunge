@@ -22978,7 +22978,7 @@ class AutoMunge:
     #postprocess_textsupport  support function needs string headers
     #this relies on convention that received columns with suffix appenders have '_' included to ensure no overlap
     textcolumns = list(range(2**received_column_count))
-    textcolumns = ['-1' + str(format(item, f"0{received_column_count}b")) for item in textcolumns]
+    textcolumns = ['-1_' + str(format(item, f"0{received_column_count}b")) for item in textcolumns]
 
     df_onehot = \
     self._postprocess_textsupport(df_array, '-1', {}, 'tempkey', {'textcolumns':textcolumns})
@@ -30001,7 +30001,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.09'
+    automungeversion = '6.10'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
