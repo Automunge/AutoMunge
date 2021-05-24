@@ -3029,3 +3029,12 @@ am.postmunge(postprocess_dict, df_test)
 - this was only included on a hunch and for running a few experiments
 - which I think the ml infill validation experiments sufficiently demonsrtated adj not a good default convention
 - so yeah, also one of those zen of python things, should be one and only one way to do it
+
+6.10
+- important update
+- found and fixed a single character bug 
+- in support function _convert_1010_to_onehot
+- which I now know has been interfering with ML infill on binary encoded sets
+- I expect this may result in an improvement to benchmarking experiments for performance of ML infill to categoric targets
+- going to re-run the missing data infill paper benchmarks
+- updates to follow after re-training
