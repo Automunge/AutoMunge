@@ -7543,6 +7543,13 @@ Chi Wang, Qingyun Wu, Markus Weimer, Erkang Zhu. FLAML: A Fast and Lightweight A
 
 ...
 
+Please note that Automunge makes use of the Pandas, Scikit-Learn, and Scipy Stats libraries
+which are released under a 3-Clause BSD license. We include options that make use of the
+Catboost or AutoGluon libraries which are released under the Apache License 2.0, as well as
+the FLAML library which is released under a MIT License.
+
+...
+
 Have fun munging!!
 
 ...
