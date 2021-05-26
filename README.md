@@ -466,7 +466,7 @@ and arguments. Further below is documentation for the library of transformations
 
 ...
 
-## automunge returned sets:
+## automunge(.) returned sets:
 
 Automunge defaults to returning data sets as pandas dataframes, or for
 single column sets as pandas series.
