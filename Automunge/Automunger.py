@@ -5840,7 +5840,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_tlbn, \
                                   'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'concurrent_nmbr', \
+                                  'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'tlbn'}})
     process_dict.update({'pwor' : {'dualprocess' : self._process_pwor, \
                                   'singleprocess' : None, \
@@ -18052,6 +18052,10 @@ class AutoMunge:
     #processes a numerical set by creating equal population bins coresponding to 
     #parameter 'bincount' which defaults to 9
     #and returning in one-hot encoded set
+
+    #as alternate to specifying bincount for equal population bins
+    #can also pass parameter buckets as list of bucket boundaries
+    #leaving out -/+ inf in first and last bins as will be added
     
     #how this differs from bnep in that the activated bins are replaced with
     #min-max scaling for source column values found in that bin, and then other values as -1
@@ -18068,12 +18072,16 @@ class AutoMunge:
     suffixoverlap_results = {}
     
     if 'bincount' in params:
-        
       bincount = params['bincount']
-    
     else:
-      
       bincount = 9
+      
+    #if buckets is passed as list of boundaries, it overrides bincount
+    #note that should leave out -/+ inf in first and last bins (will be added)
+    if 'buckets' in params:
+      buckets = params['buckets']
+    else:
+      buckets = False
 
     binscolumn = column + '_tlbn'
 
@@ -18106,9 +18114,25 @@ class AutoMunge:
 #     bn_count = int(np.ceil(bn_delta / bn_width))
 
     if bn_delta > 0 and bn_min == bn_min:
-
-      #grab the intervals using qcut based on equal population in train set
-      intervalset = pd.qcut(mdf_train[binscolumn], bincount, duplicates='drop').unique()
+      
+      if buckets is False or not isinstance(buckets, list):      
+        #grab the intervals using qcut based on equal population in train set
+        intervalset = pd.qcut(mdf_train[binscolumn], bincount, duplicates='drop').unique()
+      else:
+        intervalset = []
+        #to be sort of consistent with what is returned from qcut
+        #with difference that we're allowing buckets outside of range found in set
+        for i in range(len(buckets)):
+          if i == 0:
+            #buckets[i]-1 will be replaced with -inf below
+            intervalset.append(pd.Interval(buckets[i]-1, buckets[i]))
+          elif i != len(buckets)-1:
+            intervalset.append(pd.Interval(buckets[i-1], buckets[i]))
+          else:
+            intervalset.append(pd.Interval(buckets[i-1], buckets[i]))
+            #buckets[i]+1 will be replaced with +inf below
+            intervalset.append(pd.Interval(buckets[i], buckets[i]+1))
+        bincount = len(intervalset)
 
       #note we're sorting here, and scrubbing any nan
       intervalset = sorted([interval for interval in intervalset if interval == interval])
@@ -18161,7 +18185,8 @@ class AutoMunge:
       foundinset = mdf_train[binscolumn].unique()
 
       textcolumns = []
-      for i in foundinset:
+      # for i in foundinset:
+      for i in range(bn_count):
         if i == i:
           textcolumns.append(binscolumn + '_' + str(i))
 
@@ -18192,7 +18217,7 @@ class AutoMunge:
           tlbn_column = binscolumn + '_' + str(i)
 
           if i == 0:
-
+            
             mdf_train[tlbn_column] = \
             np.where(mdf_train[tlbn_column] == 1, \
                     (bins_cuts[i+1] - mdf_train[binscolumn]) / (bins_cuts[i+1] - bn_min), -1)
@@ -21826,6 +21851,7 @@ class AutoMunge:
                         'concurrent_act', 'concurrent_nmbr'}:
 
       #if this is a single column set (not categorical)
+      #or a multicolumn set with distinct infill to each column
       if len(categorylist) == 1 or singlecolumncase is True \
       or MLinfilltype in {'concurrent_act', 'concurrent_nmbr'}:
         
@@ -30001,7 +30027,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.10'
+    automungeversion = '6.11'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -31715,6 +31741,8 @@ class AutoMunge:
     #normalizaation key (uses passed columnkey). This function supports some of the
     #other methods.
     #accepts parameter textcolumns as a list of columns to return 
+    #Note that textcolumns entries need to be in form of column + '_' + uniqueentry
+    #where uniqueentry is a unique entry in the categoric set associated with the activation for that column
     '''
     
     if 'textcolumns' in params:
