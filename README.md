@@ -2528,7 +2528,7 @@ with metric2 results from a feature importance evaluation)
       which will take precedence over bincount (leave out -/+inf which will be added for first and last bins internally)
   - driftreport postmunge metrics: binsmean / bn_min / bn_max / bn_delta / bn_count / bins_id / 
 			           bins_cuts / bincount_tlbn / textcolumns / <column> + '_ratio' (column specific)
-  - inversion available: no
+  - inversion available: yes
 ### Sequential Numerical Set Transformations
 Please note that sequential transforms assume the forward progression of time towards direction of bottom of dataframe.
 Please note that only stdrdinfill (adjinfill) are supported for shft transforms.
