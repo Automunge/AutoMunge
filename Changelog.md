@@ -3063,3 +3063,8 @@ am.postmunge(postprocess_dict, df_test)
 - fixed a tlbn postmunge bug introduced in 6.11
 - associated with accessing normalization_dict in postprocess function
 - also added inversion support for tlbn
+
+6.13
+- quick fix
+- found a bug in both DPmm and DPrt that was introduced in 6.6
+- all better
