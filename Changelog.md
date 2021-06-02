@@ -3053,3 +3053,13 @@ am.postmunge(postprocess_dict, df_test)
 - also changed mlinfilltype for tlbn from concurrent_nmbr to exclude
 - after realizing that ML infill was messing up -1 out of range convention
 - much cleaner this way, for tlbn missing data is just grouped with out of range bucket for entire set 
+
+6.12
+- fixed a feature importance bug introduced in 6.9
+- associated with removal of some deprecated parameters
+- reverted tlbn mlinfilltype from exclude to concurrent_nmbr
+- which is needed for use in feature selection
+- added some comments to predictinfill of potential extension for tlbn
+- fixed a tlbn postmunge bug introduced in 6.11
+- associated with accessing normalization_dict in postprocess function
+- also added inversion support for tlbn
