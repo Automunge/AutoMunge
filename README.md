@@ -1900,7 +1900,11 @@ assigncat as unchanged, the powertransform parameter may be passed as values 'ex
 will be left untouched, or for 'exc2' columns not explicitly assigned to a root category 
 in assigncat will be forced to numeric and subject to default modeinfill. (These two excl
 arguments may be useful if a user wants to experiment with specific transforms on a 
-subset of the columns without incurring processing time of an entire set.)
+subset of the columns without incurring processing time of an entire set.) This option may
+interfere with ML infill if data is not all numerically encoded.
+
+If the data is already numerically encoded with NaN entries for missing data, ML infill
+can be applied without further preprocessing transformations by passing powertransform = 'infill'.
 
 Note that for columns designated for label sets as a special case categorical data will
 default to 'ordl' (ordinal encoding) instead of '1010'. Also, numerical data will default
