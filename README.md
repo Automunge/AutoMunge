@@ -2524,6 +2524,8 @@ with metric2 results from a feature importance evaluation)
   - suffix appender: '\_tlbn\_#' where # is the bin identifier,  and max# is right tail / min# is left tail
   - assignparam parameters accepted: 
     - 'bincount' to set number of bins (defaults to 9)
+    - 'buckets', defaults to False, can pass as a list of bucket boundaries for custom distribution segments
+      which will take precedence over bincount (leave out -/+inf which will be added for first and last bins internally)
   - driftreport postmunge metrics: binsmean / bn_min / bn_max / bn_delta / bn_count / bins_id / 
 			           bins_cuts / bincount_tlbn / textcolumns / <column> + '_ratio' (column specific)
   - inversion available: no
