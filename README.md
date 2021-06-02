@@ -2945,7 +2945,7 @@ on flip_prob parameter.
   - inversion available: yes
 * DPmm: applies a min-max scaling followed by a noise injection to train data sampled
 from a Gaussian which defaults to 0 mu and 0.03 sigma. Note that noise is scaled to ensure output
-remains in range 0-1 (by scaling neg noise when input <0.5 and scaling pos noise when input >0.5)
+remains in range 0-1 (by scaling neg noise when scaled input <0.5 and scaling pos noise when scaled input >0.5)
   - useful for: noise injection for data augmentation, model perturbation for ensembles, differential privacy
   - default infill: the DP function does not apply a default infill assume upstream mnmx cleans data
   - default NArowtype: numeric
@@ -2961,7 +2961,7 @@ remains in range 0-1 (by scaling neg noise when input <0.5 and scaling pos noise
   - inversion available: yes
 * DPrt: applies a retn normalization with a noise injection to train data sampled
 from a Gaussian which defaults to 0 mu and 0.03 sigma. Note that noise is scaled to ensure output
-remains in range 0-1 (by scaling neg noise when input <0.5 and scaling pos noise when input >0.5)
+remains in range 0-1 (by scaling neg noise when scaled and centered input <0.5 and scaling pos noise when scaled and centered input >0.5)
   - useful for: noise injection for data augmentation, model perturbation for ensembles, differential privacy
   - default infill: comparable to retn with mean (calculated before noise injection)
   - suffix appender: '_DPrt'
