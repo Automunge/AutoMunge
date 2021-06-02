@@ -3038,3 +3038,18 @@ am.postmunge(postprocess_dict, df_test)
 - I expect this may result in an improvement to benchmarking experiments for performance of ML infill to categoric targets
 - going to re-run the missing data infill paper benchmarks
 - updates to follow after re-training
+
+6.11
+- added some more detail to function description of _postprocess_textsupport
+- regarding format of textcolumns entries needed for operation
+- (this convention was source of bug fixed in 6.10)
+- new parameter supported for tlbn transform
+- parameter 'buckets' can pass as list of bucket boundaries
+- otherwise defaults to False
+- leave out -/+ inf for first and last bins those will be added
+- buckets is an alternative to bincount for number of equal population bins
+- buckets, when specified, takes precendence over bincount
+- allowing user to perform influence evaluation on custom segements of feature set distribution
+- also changed mlinfilltype for tlbn from concurrent_nmbr to exclude
+- after realizing that ML infill was messing up -1 out of range convention
+- much cleaner this way, for tlbn missing data is just grouped with out of range bucket for entire set 
