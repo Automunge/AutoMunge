@@ -19123,13 +19123,13 @@ class AutoMunge:
       
       return df
     
-    mdf_train = injectmmnoise(mdf_train, DPmm_column, DPmm_column_temp1)
+    mdf_train = _injectmmnoise(mdf_train, DPmm_column, DPmm_column_temp1)
     
     #for test data is just pass-through unless testnoise is activated
     if testnoise is False:
       mdf_test[DPmm_column] = mdf_test[column].copy()
     elif testnoise is True:
-      mdf_test = injectmmnoise(mdf_test, DPmm_column, DPmm_column_temp1)
+      mdf_test = _injectmmnoise(mdf_test, DPmm_column, DPmm_column_temp1)
     
     #create list of columns
     nmbrcolumns = [DPmm_column]
@@ -19447,12 +19447,12 @@ class AutoMunge:
         
       return df
     
-    mdf_train = injectrtnoise(mdf_train, DPrt_column, DPrt_column_temp1, DPrt_column_temp2)
+    mdf_train = _injectrtnoise(mdf_train, DPrt_column, DPrt_column_temp1, DPrt_column_temp2)
     
     #for test data is just pass-through
     #mdf_test[DPrt_column] = mdf_test[DPrt_column]
     if testnoise is True:
-      mdf_test = injectrtnoise(mdf_test, DPrt_column, DPrt_column_temp1, DPrt_column_temp2)
+      mdf_test = _injectrtnoise(mdf_test, DPrt_column, DPrt_column_temp1, DPrt_column_temp2)
     
     #create list of columns
     nmbrcolumns = [DPrt_column]
@@ -30032,7 +30032,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.12'
+    automungeversion = '6.13'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
