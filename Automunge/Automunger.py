@@ -5839,8 +5839,10 @@ class AutoMunge:
     process_dict.update({'tlbn' : {'dualprocess' : self._process_tlbn, \
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_tlbn, \
+                                  'inverseprocess' : self._inverseprocess_tlbn, \
+                                  'info_retention' : True, \
                                   'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'exclude', \
+                                  'MLinfilltype' : 'concurrent_nmbr', \
                                   'labelctgy' : 'tlbn'}})
     process_dict.update({'pwor' : {'dualprocess' : self._process_pwor, \
                                   'singleprocess' : None, \
@@ -18075,6 +18077,7 @@ class AutoMunge:
       bincount = params['bincount']
     else:
       bincount = 9
+    bincount_orig = bincount
       
     #if buckets is passed as list of boundaries, it overrides bincount
     #note that should leave out -/+ inf in first and last bins (will be added)
@@ -18268,6 +18271,12 @@ class AutoMunge:
 
     #nmbrnormalization_dict = {'mean' : mean, 'std' : std}
 
+    #there's still an edge scenario for custom buckets where nan get's populated, 
+    #so this is just a hack to clean up
+    for textcolumn in textcolumns:
+      mdf_train[textcolumn] = mdf_train[textcolumn].fillna(-1)
+      mdf_test[textcolumn] = mdf_test[textcolumn].fillna(-1)
+
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
 
@@ -18284,7 +18293,8 @@ class AutoMunge:
                                       'bn_count' : bn_count, \
                                       'bins_id' : bins_id, \
                                       'bins_cuts' : bins_cuts, \
-                                      'bincount_tlbn' : bincount, \
+                                      'bincount' : bincount, \
+                                      'bincount_tlbn' : bincount_orig, \
                                       'textcolumns' : textcolumns, \
                                       tc_ratio : tcratio}}
 
@@ -21529,6 +21539,12 @@ class AutoMunge:
       df_traininfill = pd.DataFrame(df_traininfill, columns = ['infill'])
       df_testinfill = pd.DataFrame(df_testinfill, columns = ['infill'])
 
+      # #this might be useful for tlbn, leaving out or now since don't want to clutter mlinfilltypes
+      # #as concurrent_nmbr is intended as a resource for more than just tlbn
+      # if MLinfilltype == 'concurrent_nmbr':
+      #   df_traininfill['infill'] = np.where(df_traininfill['infill'] < 0, -1, df_traininfill['infill'])
+      #   df_testinfill['infill'] = np.where(df_testinfill['infill'] < 0, -1, df_testinfill['infill'])
+
       if MLinfilltype == 'integer':
 
         df_traininfill = df_traininfill.round()
@@ -23371,6 +23387,7 @@ class AutoMunge:
     similar to createFSsets except performed such as to only leave one column from
     the columnslist untouched and shuffle the rest 
     '''
+
     shuffleset2 = am_subset.copy()
     
     for clcolumn in columnslist:
@@ -28790,18 +28807,6 @@ class AutoMunge:
       randomseed = random.randint(0,4294967295)
     else:
       randomrandomseed = False
-
-    #this is for backward compatibility 
-    #(featuremethod / featurepct / featuremetric deprecated so this isn't documented anymore in read me)
-    if featureselection is True and featuremethod != 'default':
-      if featuremethod in {'pct', 'metric', 'report'}:
-        featureselection = featuremethod
-    if featureselection == 'pct' and featurethreshold == 0. and featurepct != 1.:
-      if isinstance(featurepct, float) and featurepct < 1. and featurepct > 0.:
-        featurethreshold = featurepct
-    if featureselection == 'metric' and featurethreshold == 0. and featuremetric != 0.:
-      if isinstance(featuremetric, float) and featuremetric < 1. and featuremetric > 0.:
-        featurethreshold = featuremetric
     
     #feature selection analysis performed here if elected
     if featureselection in {True, 'pct', 'metric', 'report'}:
@@ -30027,7 +30032,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.11'
+    automungeversion = '6.12'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -35374,7 +35379,7 @@ class AutoMunge:
       bn_count = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_count']
       bins_id = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_id']
       bins_cuts = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_cuts']
-      bincount = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bincount_tlbn']
+      bincount = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bincount']
       textcolumns = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['textcolumns']
       
       binscolumn = column + '_tlbn'
@@ -35437,6 +35442,11 @@ class AutoMunge:
 
         #delete the support column
         del mdf_test[binscolumn]
+
+        #there's still an edge scenario for custom buckets where nan get's populated, 
+        #so this is just a hack to clean up
+        for textcolumn in textcolumns:
+          mdf_test[textcolumn] = mdf_test[textcolumn].fillna(-1)
         
       else:
         
@@ -36414,6 +36424,11 @@ class AutoMunge:
 
         #convert infill values to dataframe
         df_testinfill = pd.DataFrame(df_testinfill, columns = ['infill'])
+
+        # #this might be useful for tlbn, leaving out or now since don't want to clutter mlinfilltypes
+        # #as concurrent_nmbr is intended as a resource for more than just tlbn
+        # if MLinfilltype == 'concurrent_nmbr':
+        #   df_testinfill['infill'] = np.where(df_testinfill['infill'] < 0, -1, df_testinfill['infill'])
 
         if MLinfilltype == 'integer':
           df_testinfill = df_testinfill.round()
@@ -39415,6 +39430,55 @@ class AutoMunge:
         value = (bins_cuts[i] + bins_cuts[i+1]) / 2
         
         df[inputcolumn] = np.where(df[normkey] == _id, value, df[inputcolumn])
+    
+    return df, inputcolumn
+
+  def _inverseprocess_tlbn(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_tlbn
+    #assumes any relevant parameters were saved in normalization_dict
+    #does not perform infill, assumes clean data
+    """
+    
+    normkey = categorylist[0]
+    
+    textcolumns = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['textcolumns']
+    bins_cuts = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_cuts']
+    bincount = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bincount']
+    bn_min = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_min']
+    bn_max = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_max']
+    
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    
+    df[inputcolumn] = 'zzzinfill'
+    
+    for i, textcolumn in enumerate(textcolumns):
+      
+      if i == 0:
+        
+        df[inputcolumn] = \
+        np.where(df[textcolumn] >= 0, \
+                 df[textcolumn] * (-1) * (bins_cuts[i+1] - bn_min) + bins_cuts[i+1], \
+                 df[inputcolumn])
+        
+      elif i == bincount - 1:
+        
+        df[inputcolumn] = \
+        np.where(df[textcolumn] >= 0, \
+                 df[textcolumn] * (bn_max - bins_cuts[i]) + bins_cuts[i], \
+                 df[inputcolumn])
+        
+      else:
+        
+        df[inputcolumn] = \
+        np.where(df[textcolumn] >= 0, \
+                 df[textcolumn] * (bins_cuts[i+1] - bins_cuts[i]) + bins_cuts[i], \
+                 df[inputcolumn])
     
     return df, inputcolumn
   
