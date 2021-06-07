@@ -22405,6 +22405,19 @@ class AutoMunge:
         if 'AutoGluon' in ML_cmnd['MLinfill_cmnd']:
           ag_params = ML_cmnd['MLinfill_cmnd']['AutoGluon']
 
+      #we'll apply default for Autogluon of applying a preset of 'optimize_for_deployment' which saves space
+      #appropriate since user doesn't need auxiliary functionality, models are just used for inference
+      #unless user opts for best_quality
+      if 'presets' in ag_params:
+        if isinstance(ag_params['presets'], list):
+          if 'optimize_for_deployment' not in ag_params['presets'] and 'best_quality' not in ag_params['presets']:
+            ag_params['presets'].append('optimize_for_deployment')
+        elif isinstance(ag_params['presets'], str):
+          if ag_params['presets'] != 'optimize_for_deployment' and ag_params['presets'] != 'best_quality':
+            ag_params['presets'] = [ag_params['presets'], 'optimize_for_deployment']
+      else:
+        ag_params.update({'presets' : 'optimize_for_deployment'})
+
       #train the model
       model = task.fit(train_data=df_train_filltrain, label=ag_label_column, **ag_params, random_seed=randomseed)
       
@@ -30032,7 +30045,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.13'
+    automungeversion = '6.14'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
