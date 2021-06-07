@@ -3068,3 +3068,9 @@ am.postmunge(postprocess_dict, df_test)
 - quick fix
 - found a bug in both DPmm and DPrt that was introduced in 6.6
 - all better
+
+6.14
+- added a new preset to AutoGluon option
+- to use 'optimize_for_deployment' which reduces required disk space
+- applied by default unless user activates best_quality
+- appropriate since user doesn't need auxiliary functionality, models are just used for inference
