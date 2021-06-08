@@ -3927,6 +3927,8 @@ Note that when inversion is performed those entries without recovery are returne
 - 'Automunge_index': a reserved column header for index columns returned in ID sets. When automunge(.) is run the returned ID sets are
 populated with an index matching order of rows from original returned set, note that if this string is already present in the ID sets
 it will instead populate as 'Automunge_index_' + a 12 digit random integer associated with the application number.
+- for custom defined transformation functions, there are a small number of reserved normalization_dict key strings 
+which are documented in code base under \_check_normalization_dict function
 
 Note that results of various validation checks such as for column header overlaps and other potential bugs are returned from 
 automunge(.) in the postprocess_dict as postprocess_dict['miscparameters_results'], and returned from postmunge(.) in the postreports_dict
@@ -7377,6 +7379,10 @@ def process_mnm8(mdf_train, mdf_test, column, category, \
                                                 'mean' : mean, \
                                                 'minimum' : min, \
                                                 'maximum' : max}}
+						
+  #as an asterisk, please note there are a small number of reserved normalization dicitonary key strings
+  #documented in code base under _check_normalization_dict function
+  #if you accidentally use one of those strings will return a printout in front of infill application
 
   #the column_dict_list is returned from the function call and supports the 
   #automunge methods. We populate it as follows:
