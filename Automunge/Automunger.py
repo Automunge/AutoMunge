@@ -18295,6 +18295,7 @@ class AutoMunge:
                                       'bins_cuts' : bins_cuts, \
                                       'bincount' : bincount, \
                                       'bincount_tlbn' : bincount_orig, \
+                                      'buckets_tlbn' : buckets, \
                                       'textcolumns' : textcolumns, \
                                       tc_ratio : tcratio}}
 
@@ -26998,6 +26999,13 @@ class AutoMunge:
 
     #in other words, for set of required unique normalizaiton_dict entry identifiers
     #ensures they are only used in correct transformation categories
+
+    #these are required unique because of their use to access normkey in postprocess functions
+    #such as may be needed when we don't know in advance column headers of returned sets
+    #or for cases where original trasnform may have returned an empty set
+    #and in few cases also used to ensure if the same transform is applied multiple times in same family tree
+    #we are accessing the correct one based on passed parameters that may differentiate
+    #(for example may apply the same bin aggregator multiple times in same family tree but with different bin widths eg)
     """
 
     result = False
@@ -27014,7 +27022,9 @@ class AutoMunge:
      'bn_width_bnwd'        : 'bnwd', \
      'bincount_bnep'        : 'bnep', \
      'origbuckets_bkt1'     : 'bkt1', \
-     'origbuckets_bkt2'     : 'bkt2'}
+     'origbuckets_bkt2'     : 'bkt2', \
+     'bincount_tlbn'        : 'tlbn', \
+     'buckets_tlbn'         : 'tlbn'}
 
     for column_dict_entry in postprocess_dict['column_dict']:
 
@@ -27023,7 +27033,12 @@ class AutoMunge:
         for normalization_dict_entry in postprocess_dict['column_dict'][column_dict_entry]['normalization_dict'][column_dict_entry]:
 
           if normalization_dict_entry in required_unique_normalization_dict_entries:
-
+            
+            #note that postprocess_dict['column_dict'][column_dict_entry]['category'] will be
+            #the category recorded from the transformation function in column_dict
+            #which might not neccesarily be the category populated in family tree
+            #which is as intended 
+            #(a single transformation function may be associated with multiple process_dict category entries)
             if required_unique_normalization_dict_entries[normalization_dict_entry] != \
             postprocess_dict['column_dict'][column_dict_entry]['category']:
 
@@ -30045,7 +30060,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.14'
+    automungeversion = '6.15'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -31413,6 +31428,7 @@ class AutoMunge:
 
             normkey = columnkey
           
+    #normkey is False when process function returns emtpy set
     if normkey is not False:
       
       str_convert = \
@@ -31537,6 +31553,7 @@ class AutoMunge:
 
             normkey = columnkey
           
+    #normkey is False when process function returns empty set
     if normkey is not False:
     
       tempsuffix = str(mdf_test[column].unique()[0])
@@ -31893,6 +31910,7 @@ class AutoMunge:
 
           normkey = columnkey
         
+    #normkey is False when process function returns empty set
     if normkey is not False:
 
       #great now we can grab normalization parameters
@@ -32175,6 +32193,7 @@ class AutoMunge:
 
           normkey = columnkey
         
+    #normkey is False when process function returns empty set
     if normkey is not False:
 
       #great now we can grab normalization parameters
@@ -32365,6 +32384,7 @@ class AutoMunge:
 
           normkey = columnkey
         
+    #normkey is False when process function returns empty set
     if normkey is not False:
 
       #great now we can grab normalization parameters
@@ -32496,6 +32516,7 @@ class AutoMunge:
 
           normkey = columnkey
         
+    #normkey is False when process function returns empty set
     if normkey is not False:
 
       #great now we can grab normalization parameters
@@ -32696,6 +32717,7 @@ class AutoMunge:
 
             normkey = columnkey
           
+    #normkey is False when process function returns empty set
     if normkey is not False:
     
       vocab_size = \
@@ -34646,6 +34668,7 @@ class AutoMunge:
 
           normkey = columnkey
         
+    #normkey is False when process function returns empty set
     if normkey is not False:
 
       #normkey = columnkey
@@ -35058,6 +35081,7 @@ class AutoMunge:
 
             normkey = columnkey
         
+    #normkey is False when process function returns empty set
     if normkey is not False:
       
       suffix = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
@@ -35212,6 +35236,7 @@ class AutoMunge:
 
             normkey = columnkey
         
+    #normkey is False when process function returns empty set
     if normkey is not False:
       
       mean = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binsmean']
@@ -35351,12 +35376,14 @@ class AutoMunge:
     '''
     
     if 'bincount' in params:
-        
       bincount = params['bincount']
-    
     else:
-      
       bincount = 9
+      
+    if 'buckets' in params:
+      buckets = params['buckets']
+    else:
+      buckets = False
     
     #to retrieve the normalization dictionary we're going to use new method since we don't yet 
     #know what the returned columns titles are yet
@@ -35376,13 +35403,17 @@ class AutoMunge:
     for columnkey in columnkeylist:
       
       if column == postprocess_dict['column_dict'][columnkey]['inputcolumn']:
+        
+        #since buckets may take precedence over bincount, we'll inspect both
+        if 'bincount_tlbn' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey] \
+        and 'buckets_tlbn' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
 
-        if 'bincount_tlbn' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
-
-          if postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]['bincount_tlbn'] == bincount:
+          if postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]['bincount_tlbn'] == bincount \
+          and postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]['buckets_tlbn'] == buckets:
 
             normkey = columnkey
         
+    #normkey is False when process function returns empty set
     if normkey is not False:
       
       mean = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binsmean']
@@ -35510,6 +35541,7 @@ class AutoMunge:
 
             normkey = columnkey
           
+    #normkey is False when process function returns empty set
     if normkey is not False:
       
       mean = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binsmean']
@@ -35591,6 +35623,7 @@ class AutoMunge:
 
             normkey = columnkey
         
+    #normkey is False when process function returns empty set
     if normkey is not False:
       
       mean = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binsmean']
