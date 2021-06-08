@@ -3074,3 +3074,17 @@ am.postmunge(postprocess_dict, df_test)
 - to use 'optimize_for_deployment' which reduces required disk space
 - applied by default unless user activates best_quality
 - appropriate since user doesn't need auxiliary functionality, models are just used for inference
+
+6.15
+- ok trying to get ahead of a new edge case for tlbn transform from 6.11
+- for cases when transform is being performed multiple times in the same family tree
+- such as might be applied redundantly with different bincounts or different distribution segments
+- previously we inspected the bincount in postprocess function to confirm the correct normkey
+- where normkey is the column header with suffix used to access normalization_dict entries
+- however now we have optional alternate buckets parameter that may take precendence over bincount
+- so went ahead and added buckets to the normkey derivation, meaning now postprocess fucntion inspects both
+- which resolves the edge case
+- also added both of these parameters to the _check_normalization_dict validation function
+- which is a support function that confirms any required unique normalization_dict entry identifiers are so
+- (we have a handful of processing functions that make use of similar methods to derive a normkey)
+- also added a few code comments here and there for clarity
