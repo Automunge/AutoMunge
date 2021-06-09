@@ -3088,3 +3088,36 @@ am.postmunge(postprocess_dict, df_test)
 - which is a support function that confirms any required unique normalization_dict entry identifiers are so
 - (we have a handful of processing functions that make use of similar methods to derive a normkey)
 - also added a few code comments here and there for clarity
+
+6.16
+- ok last rollout helped me recognize kind of a flaw
+- which was the requirement for reserved strings in normalization_dict
+- for use to derive a normkey in a few postprocess functions
+- in cases where don't know returned columns or might return an empty set
+- so revisited the columnkey parameter passed to postproces functions
+- and repurposed from use as a string header returned from upstream transforms
+- to now constituting a list of headers returned from all transforms with same recorded category applied to an input column
+- (that is same recorded category as returned in the process function column_dict)
+- this greatly simplifies the derivation of a normkey in those postprocess functions where needed
+- and as a side benefit eliminates the need for reserved strings in keys of normalization_dict
+- thus completely eliminating a channel for error in user defined transformation functions
+- to implement had to make a few tweaks to processfamily functions as well as a new required process_dict entry
+- new process_dict entry 'recorded_category' details the category recorded by a transformation function in column_dict
+- which may be different than the associated category populated in family tree 
+- since the same transformation function may be assigned to multiple process_dict category entries
+- also a new postproces_dict data structure as columnkey_dict
+- which is populated for each applied transformation as
+- {inputcolumn : {recorded_category : categorylist_aggregate}}
+- where categorylist_aggregate is assembled as a list of all headers returned from transforms with the same recorded_category to the same inputcolumn
+- (as may constitue columns returned from redundant applications like in cases where same trasnform is redundaantly applied to same input column but with different passed parameters) 
+- this categorylist_aggregate is then passed to the postprocess functions as the columnkey
+- which can be used to derive a normkey without need to validate required unique keys of normalization_dict
+- the tweaks to the processfamily functions were twofold
+- in automunge processfamily functions we now populate entries to postprocess_dict['columnkey_dict'] with each column_dict_list returned from processing function application
+- making use of the new support function _populate_columnkey_dict
+- and then in postmunge postprocessfamily functions prior to calling the postprocess functions access the categorylist_aggregate to pass as a columnkey from the columnkey_dict
+- using the inputcolumn to be passed to postprocess function and the recorded_category derived from the category populated in family tree's process_dict entry
+- updated the 13 postprocess functions in library that previously used the required unique normalization_dict entries to derive a normkey
+- to the new simplified convention available by use of the categorylist_aggregate passed to the columnkey parameter
+- also updates to support function that validates the process_dict to account for new recorded_category entry
+- and support function to apply functionpointer entries to user passed processdict to account for new recorded_category entry
