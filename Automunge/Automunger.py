@@ -3416,6 +3416,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_numerical, \
                                   'inverseprocess' : self._inverseprocess_nmbr, \
+                                  'recorded_category' : 'nmbr', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
@@ -3424,6 +3425,7 @@ class AutoMunge:
     process_dict.update({'dxdt' : {'dualprocess' : None, \
                                   'singleprocess' : self._process_dxdt, \
                                   'postprocess' : None, \
+                                  'recorded_category' : 'dxdt', \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
@@ -3431,6 +3433,7 @@ class AutoMunge:
     process_dict.update({'d2dt' : {'dualprocess' : None, \
                                   'singleprocess' : self._process_dxdt, \
                                   'postprocess' : None, \
+                                  'recorded_category' : 'dxdt', \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
@@ -3438,6 +3441,7 @@ class AutoMunge:
     process_dict.update({'d3dt' : {'dualprocess' : None, \
                                   'singleprocess' : self._process_dxdt, \
                                   'postprocess' : None, \
+                                  'recorded_category' : 'dxdt', \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
@@ -3445,6 +3449,7 @@ class AutoMunge:
     process_dict.update({'d4dt' : {'dualprocess' : None, \
                                   'singleprocess' : self._process_dxdt, \
                                   'postprocess' : None, \
+                                  'recorded_category' : 'dxdt', \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
@@ -3452,6 +3457,7 @@ class AutoMunge:
     process_dict.update({'d5dt' : {'dualprocess' : None, \
                                   'singleprocess' : self._process_dxdt, \
                                   'postprocess' : None, \
+                                  'recorded_category' : 'dxdt', \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
@@ -3459,6 +3465,7 @@ class AutoMunge:
     process_dict.update({'d6dt' : {'dualprocess' : None, \
                                   'singleprocess' : self._process_dxdt, \
                                   'postprocess' : None, \
+                                  'recorded_category' : 'dxdt', \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
@@ -3466,6 +3473,7 @@ class AutoMunge:
     process_dict.update({'dxd2' : {'dualprocess' : None, \
                                   'singleprocess' : self._process_dxd2, \
                                   'postprocess' : None, \
+                                  'recorded_category' : 'dxd2', \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
@@ -3473,6 +3481,7 @@ class AutoMunge:
     process_dict.update({'d2d2' : {'dualprocess' : None, \
                                   'singleprocess' : self._process_dxd2, \
                                   'postprocess' : None, \
+                                  'recorded_category' : 'dxd2', \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
@@ -3480,6 +3489,7 @@ class AutoMunge:
     process_dict.update({'d3d2' : {'dualprocess' : None, \
                                   'singleprocess' : self._process_dxd2, \
                                   'postprocess' : None, \
+                                  'recorded_category' : 'dxd2', \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
@@ -3487,6 +3497,7 @@ class AutoMunge:
     process_dict.update({'d4d2' : {'dualprocess' : None, \
                                   'singleprocess' : self._process_dxd2, \
                                   'postprocess' : None, \
+                                  'recorded_category' : 'dxd2', \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
@@ -3494,6 +3505,7 @@ class AutoMunge:
     process_dict.update({'d5d2' : {'dualprocess' : None, \
                                   'singleprocess' : self._process_dxd2, \
                                   'postprocess' : None, \
+                                  'recorded_category' : 'dxd2', \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
@@ -3501,6 +3513,7 @@ class AutoMunge:
     process_dict.update({'d6d2' : {'dualprocess' : None, \
                                   'singleprocess' : self._process_dxd2, \
                                   'postprocess' : None, \
+                                  'recorded_category' : 'dxd2', \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
@@ -3509,6 +3522,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_numerical, \
                                   'inverseprocess' : self._inverseprocess_nmbr, \
+                                  'recorded_category' : 'nmbr', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
@@ -3518,6 +3532,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_numerical, \
                                   'inverseprocess' : self._inverseprocess_nmbr, \
+                                  'recorded_category' : 'nmbr', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
@@ -3527,6 +3542,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_numerical, \
                                   'inverseprocess' : self._inverseprocess_nmbr, \
+                                  'recorded_category' : 'nmbr', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
@@ -3536,6 +3552,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_numerical, \
                                   'inverseprocess' : self._inverseprocess_nmbr, \
+                                  'recorded_category' : 'nmbr', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
@@ -3545,6 +3562,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_numerical, \
                                   'inverseprocess' : self._inverseprocess_nmbr, \
+                                  'recorded_category' : 'nmbr', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
@@ -3554,6 +3572,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_numerical, \
                                   'inverseprocess' : self._inverseprocess_nmbr, \
+                                  'recorded_category' : 'nmbr', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
@@ -3562,6 +3581,7 @@ class AutoMunge:
     process_dict.update({'mmdx' : {'dualprocess' : None, \
                                   'singleprocess' : self._process_dxdt, \
                                   'postprocess' : None, \
+                                  'recorded_category' : 'dxdt', \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
@@ -3569,6 +3589,7 @@ class AutoMunge:
     process_dict.update({'mmd2' : {'dualprocess' : None, \
                                   'singleprocess' : self._process_dxdt, \
                                   'postprocess' : None, \
+                                  'recorded_category' : 'dxdt', \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
@@ -3576,6 +3597,7 @@ class AutoMunge:
     process_dict.update({'mmd3' : {'dualprocess' : None, \
                                   'singleprocess' : self._process_dxdt, \
                                   'postprocess' : None, \
+                                  'recorded_category' : 'dxdt', \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
@@ -3583,6 +3605,7 @@ class AutoMunge:
     process_dict.update({'mmd4' : {'dualprocess' : None, \
                                   'singleprocess' : self._process_dxdt, \
                                   'postprocess' : None, \
+                                  'recorded_category' : 'dxdt', \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
@@ -3590,6 +3613,7 @@ class AutoMunge:
     process_dict.update({'mmd5' : {'dualprocess' : None, \
                                   'singleprocess' : self._process_dxdt, \
                                   'postprocess' : None, \
+                                  'recorded_category' : 'dxdt', \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
@@ -3597,6 +3621,7 @@ class AutoMunge:
     process_dict.update({'mmd6' : {'dualprocess' : None, \
                                   'singleprocess' : self._process_dxdt, \
                                   'postprocess' : None, \
+                                  'recorded_category' : 'dxdt', \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
@@ -3604,6 +3629,7 @@ class AutoMunge:
     process_dict.update({'dddt' : {'dualprocess' : None, \
                                   'singleprocess' : self._process_dxdt, \
                                   'postprocess' : None, \
+                                  'recorded_category' : 'dxdt', \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
@@ -3611,6 +3637,7 @@ class AutoMunge:
     process_dict.update({'ddd2' : {'dualprocess' : None, \
                                   'singleprocess' : self._process_dxdt, \
                                   'postprocess' : None, \
+                                  'recorded_category' : 'dxdt', \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
@@ -3618,6 +3645,7 @@ class AutoMunge:
     process_dict.update({'ddd3' : {'dualprocess' : None, \
                                   'singleprocess' : self._process_dxdt, \
                                   'postprocess' : None, \
+                                  'recorded_category' : 'dxdt', \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
@@ -3625,6 +3653,7 @@ class AutoMunge:
     process_dict.update({'ddd4' : {'dualprocess' : None, \
                                   'singleprocess' : self._process_dxdt, \
                                   'postprocess' : None, \
+                                  'recorded_category' : 'dxdt', \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
@@ -3632,6 +3661,7 @@ class AutoMunge:
     process_dict.update({'ddd5' : {'dualprocess' : None, \
                                   'singleprocess' : self._process_dxdt, \
                                   'postprocess' : None, \
+                                  'recorded_category' : 'dxdt', \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
@@ -3639,6 +3669,7 @@ class AutoMunge:
     process_dict.update({'ddd6' : {'dualprocess' : None, \
                                   'singleprocess' : self._process_dxdt, \
                                   'postprocess' : None, \
+                                  'recorded_category' : 'dxdt', \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
@@ -3646,6 +3677,7 @@ class AutoMunge:
     process_dict.update({'dedt' : {'dualprocess' : None, \
                                   'singleprocess' : self._process_dxd2, \
                                   'postprocess' : None, \
+                                  'recorded_category' : 'dxd2', \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
@@ -3653,6 +3685,7 @@ class AutoMunge:
     process_dict.update({'ded2' : {'dualprocess' : None, \
                                   'singleprocess' : self._process_dxd2, \
                                   'postprocess' : None, \
+                                  'recorded_category' : 'dxd2', \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
@@ -3660,6 +3693,7 @@ class AutoMunge:
     process_dict.update({'ded3' : {'dualprocess' : None, \
                                   'singleprocess' : self._process_dxd2, \
                                   'postprocess' : None, \
+                                  'recorded_category' : 'dxd2', \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
@@ -3667,6 +3701,7 @@ class AutoMunge:
     process_dict.update({'ded4' : {'dualprocess' : None, \
                                   'singleprocess' : self._process_dxd2, \
                                   'postprocess' : None, \
+                                  'recorded_category' : 'dxd2', \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
@@ -3674,6 +3709,7 @@ class AutoMunge:
     process_dict.update({'ded5' : {'dualprocess' : None, \
                                   'singleprocess' : self._process_dxd2, \
                                   'postprocess' : None, \
+                                  'recorded_category' : 'dxd2', \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
@@ -3681,6 +3717,7 @@ class AutoMunge:
     process_dict.update({'ded6' : {'dualprocess' : None, \
                                   'singleprocess' : self._process_dxd2, \
                                   'postprocess' : None, \
+                                  'recorded_category' : 'dxd2', \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
@@ -3688,6 +3725,7 @@ class AutoMunge:
     process_dict.update({'shft' : {'dualprocess' : None, \
                                   'singleprocess' : self._process_shft, \
                                   'postprocess' : None, \
+                                  'recorded_category' : 'shft', \
                                   'inverseprocess' : self._inverseprocess_shft, \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
@@ -3698,6 +3736,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_shf2, \
                                   'postprocess' : None, \
                                   'inverseprocess' : self._inverseprocess_shft, \
+                                  'recorded_category' : 'shf2', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'exclude', \
@@ -3707,6 +3746,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_shf3, \
                                   'postprocess' : None, \
                                   'inverseprocess' : self._inverseprocess_shft, \
+                                  'recorded_category' : 'shf3', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'exclude', \
@@ -3716,6 +3756,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_shft, \
                                   'postprocess' : None, \
                                   'inverseprocess' : self._inverseprocess_shft, \
+                                  'recorded_category' : 'shft', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'exclude', \
@@ -3725,6 +3766,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_shf2, \
                                   'postprocess' : None, \
                                   'inverseprocess' : self._inverseprocess_shft, \
+                                  'recorded_category' : 'shf2', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'exclude', \
@@ -3734,6 +3776,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_shf3, \
                                   'postprocess' : None, \
                                   'inverseprocess' : self._inverseprocess_shft, \
+                                  'recorded_category' : 'shf3', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'exclude', \
@@ -3743,6 +3786,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_shft, \
                                   'postprocess' : None, \
                                   'inverseprocess' : self._inverseprocess_shft, \
+                                  'recorded_category' : 'shft', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'exclude', \
@@ -3752,6 +3796,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_shft, \
                                   'postprocess' : None, \
                                   'inverseprocess' : self._inverseprocess_shft, \
+                                  'recorded_category' : 'shft', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'exclude', \
@@ -3761,6 +3806,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_numerical, \
                                   'inverseprocess' : self._inverseprocess_nmbr, \
+                                  'recorded_category' : 'nmbr', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
@@ -3770,6 +3816,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_numerical, \
                                   'inverseprocess' : self._inverseprocess_nmbr, \
+                                  'recorded_category' : 'nmbr', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
@@ -3779,6 +3826,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_MADn, \
                                   'inverseprocess' : self._inverseprocess_MADn, \
+                                  'recorded_category' : 'MADn', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
@@ -3788,6 +3836,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_MADn, \
                                   'inverseprocess' : self._inverseprocess_MADn, \
+                                  'recorded_category' : 'MADn', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
@@ -3797,6 +3846,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_MAD3, \
                                   'inverseprocess' : self._inverseprocess_MAD3, \
+                                  'recorded_category' : 'MAD3', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
@@ -3806,6 +3856,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_mnmx, \
                                   'inverseprocess' : self._inverseprocess_mnmx, \
+                                  'recorded_category' : 'mnmx', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
@@ -3815,6 +3866,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_mnmx, \
                                   'inverseprocess' : self._inverseprocess_mnmx, \
+                                  'recorded_category' : 'mnmx', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
@@ -3824,6 +3876,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_mnm3, \
                                   'inverseprocess' : self._inverseprocess_mnm3, \
+                                  'recorded_category' : 'mnm3', \
                                   'info_retention' : False, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
@@ -3833,6 +3886,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_mnm3, \
                                   'inverseprocess' : self._inverseprocess_mnm3, \
+                                  'recorded_category' : 'mnm3', \
                                   'info_retention' : False, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
@@ -3842,6 +3896,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_mnmx, \
                                   'inverseprocess' : self._inverseprocess_mnmx, \
+                                  'recorded_category' : 'mnmx', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
@@ -3851,6 +3906,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_mnmx, \
                                   'inverseprocess' : self._inverseprocess_mnmx, \
+                                  'recorded_category' : 'mnmx', \
                                   'defaultparams' : {'floor' : True}, \
                                   'info_retention' : False, \
                                   'inplace_option' : True, \
@@ -3860,6 +3916,7 @@ class AutoMunge:
     process_dict.update({'mnm7' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
+                                  'recorded_category' : False, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mnm7'}})
@@ -3867,6 +3924,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_mxab, \
                                   'inverseprocess' : self._inverseprocess_mxab, \
+                                  'recorded_category' : 'mxab', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
@@ -3876,6 +3934,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_retn, \
                                   'inverseprocess' : self._inverseprocess_retn, \
+                                  'recorded_category' : 'retn', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
@@ -3885,6 +3944,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_retn, \
                                   'inverseprocess' : self._inverseprocess_retn, \
+                                  'recorded_category' : 'retn', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
@@ -3894,6 +3954,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_retn, \
                                   'inverseprocess' : self._inverseprocess_retn, \
+                                  'recorded_category' : 'retn', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
@@ -3903,6 +3964,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_mean, \
                                   'inverseprocess' : self._inverseprocess_mean, \
+                                  'recorded_category' : 'mean', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
@@ -3912,6 +3974,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_mean, \
                                   'inverseprocess' : self._inverseprocess_mean, \
+                                  'recorded_category' : 'mean', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
@@ -3921,6 +3984,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_mean, \
                                   'inverseprocess' : self._inverseprocess_mean, \
+                                  'recorded_category' : 'mean', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
@@ -3930,6 +3994,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_binary, \
                                   'inverseprocess' : self._inverseprocess_bnry, \
+                                  'recorded_category' : 'bnry', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
@@ -3939,6 +4004,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_binary2, \
                                   'inverseprocess' : self._inverseprocess_bnry, \
+                                  'recorded_category' : 'bnr2', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
@@ -3948,6 +4014,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_onht, \
                                   'inverseprocess' : self._inverseprocess_onht, \
+                                  'recorded_category' : 'onht', \
                                   'info_retention' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'multirt', \
@@ -3956,6 +4023,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_text, \
                                   'inverseprocess' : self._inverseprocess_text, \
+                                  'recorded_category' : 'text', \
                                   'info_retention' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'multirt', \
@@ -3964,6 +4032,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_text, \
                                   'inverseprocess' : self._inverseprocess_text, \
+                                  'recorded_category' : 'text', \
                                   'info_retention' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'multirt', \
@@ -3972,6 +4041,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_spl2, \
                                   'inverseprocess' : self._inverseprocess_spl2, \
+                                  'recorded_category' : 'spl2', \
                                   'info_retention' : False, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'exclude', \
@@ -3980,6 +4050,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_smth, \
                                   'inverseprocess' : self._inverseprocess_smth, \
+                                  'recorded_category' : 'smth', \
                                   'info_retention' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'exclude', \
@@ -3988,6 +4059,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_smth, \
                                   'inverseprocess' : self._inverseprocess_smth, \
+                                  'recorded_category' : 'smth', \
                                   'info_retention' : True, \
                                   'defaultparams' : {'LSfit' : True}, \
                                   'NArowtype' : 'justNaN', \
@@ -3996,12 +4068,14 @@ class AutoMunge:
     process_dict.update({'lngt' : {'dualprocess' : None, \
                                   'singleprocess' : self._process_lngt, \
                                   'postprocess' : None, \
+                                  'recorded_category' : 'lngt', \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'integer', \
                                   'labelctgy' : 'mnmx'}})
     process_dict.update({'lnlg' : {'dualprocess' : None, \
                                   'singleprocess' : self._process_lngt, \
                                   'postprocess' : None, \
+                                  'recorded_category' : 'lngt', \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'integer', \
                                   'labelctgy' : 'log0'}})
@@ -4009,6 +4083,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_UPCS, \
                                   'postprocess' : None, \
                                   'inverseprocess' : self._inverseprocess_UPCS, \
+                                  'recorded_category' : 'UPCS', \
                                   'info_retention' : False, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
@@ -4018,6 +4093,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_UPCS, \
                                   'postprocess' : None, \
                                   'inverseprocess' : self._inverseprocess_UPCS, \
+                                  'recorded_category' : 'UPCS', \
                                   'info_retention' : False, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
@@ -4027,6 +4103,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_UPCS, \
                                   'postprocess' : None, \
                                   'inverseprocess' : self._inverseprocess_UPCS, \
+                                  'recorded_category' : 'UPCS', \
                                   'info_retention' : False, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
@@ -4036,6 +4113,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_UPCS, \
                                   'postprocess' : None, \
                                   'inverseprocess' : self._inverseprocess_UPCS, \
+                                  'recorded_category' : 'UPCS', \
                                   'info_retention' : False, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
@@ -4045,6 +4123,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_UPCS, \
                                   'postprocess' : None, \
                                   'inverseprocess' : self._inverseprocess_UPCS, \
+                                  'recorded_category' : 'UPCS', \
                                   'info_retention' : False, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
@@ -4054,6 +4133,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_UPCS, \
                                   'postprocess' : None, \
                                   'inverseprocess' : self._inverseprocess_UPCS, \
+                                  'recorded_category' : 'UPCS', \
                                   'info_retention' : False, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
@@ -4063,6 +4143,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_UPCS, \
                                   'postprocess' : None, \
                                   'inverseprocess' : self._inverseprocess_UPCS, \
+                                  'recorded_category' : 'UPCS', \
                                   'info_retention' : False, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
@@ -4072,6 +4153,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_UPCS, \
                                   'postprocess' : None, \
                                   'inverseprocess' : self._inverseprocess_UPCS, \
+                                  'recorded_category' : 'UPCS', \
                                   'info_retention' : False, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
@@ -4081,6 +4163,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_UPCS, \
                                   'postprocess' : None, \
                                   'inverseprocess' : self._inverseprocess_UPCS, \
+                                  'recorded_category' : 'UPCS', \
                                   'info_retention' : False, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
@@ -4090,6 +4173,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_UPCS, \
                                   'postprocess' : None, \
                                   'inverseprocess' : self._inverseprocess_UPCS, \
+                                  'recorded_category' : 'UPCS', \
                                   'info_retention' : False, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
@@ -4099,6 +4183,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_UPCS, \
                                   'postprocess' : None, \
                                   'inverseprocess' : self._inverseprocess_UPCS, \
+                                  'recorded_category' : 'UPCS', \
                                   'info_retention' : False, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
@@ -4108,6 +4193,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_splt, \
                                   'inverseprocess' : self._inverseprocess_splt, \
+                                  'recorded_category' : 'splt', \
                                   'info_retention' : False, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'multirt', \
@@ -4117,6 +4203,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_spl2, \
                                   'inverseprocess' : self._inverseprocess_spl2, \
+                                  'recorded_category' : 'spl2', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'suffix' : '_spl2', \
                                                      'test_same_as_train' : False, \
@@ -4128,6 +4215,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_spl2, \
                                   'inverseprocess' : self._inverseprocess_spl2, \
+                                  'recorded_category' : 'spl2', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'suffix' : '_spl5', \
                                                      'test_same_as_train' : False, \
@@ -4139,6 +4227,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_spl2, \
                                   'inverseprocess' : self._inverseprocess_spl2, \
+                                  'recorded_category' : 'spl2', \
                                   'info_retention' : False, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'exclude', \
@@ -4147,6 +4236,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_spl2, \
                                   'inverseprocess' : self._inverseprocess_spl2, \
+                                  'recorded_category' : 'spl2', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'suffix' : '_spl7', \
                                                      'test_same_as_train' : False, \
@@ -4159,6 +4249,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_splt, \
                                   'inverseprocess' : self._inverseprocess_splt, \
+                                  'recorded_category' : 'splt', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'suffix' : '_spl8', 'test_same_as_train' : True}, \
                                   'NArowtype' : 'justNaN', \
@@ -4168,6 +4259,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_spl2, \
                                   'inverseprocess' : self._inverseprocess_spl2, \
+                                  'recorded_category' : 'spl2', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'suffix' : '_spl9', \
                                                      'test_same_as_train' : True, \
@@ -4179,6 +4271,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_spl2, \
                                   'inverseprocess' : self._inverseprocess_spl2, \
+                                  'recorded_category' : 'spl2', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'suffix' : '_sp10', \
                                                      'test_same_as_train' : True, \
@@ -4190,6 +4283,7 @@ class AutoMunge:
                                    'singleprocess' : None, \
                                    'postprocess' : self._postprocess_spl2, \
                                    'inverseprocess' : self._inverseprocess_spl2, \
+                                  'recorded_category' : 'spl2', \
                                    'info_retention' : False, \
                                   'defaultparams' : {'suffix' : '_spl2', \
                                                      'test_same_as_train' : False, \
@@ -4201,6 +4295,7 @@ class AutoMunge:
                                    'singleprocess' : None, \
                                    'postprocess' : self._postprocess_spl2, \
                                    'inverseprocess' : self._inverseprocess_spl2, \
+                                  'recorded_category' : 'spl2', \
                                    'info_retention' : False, \
                                   'defaultparams' : {'suffix' : '_spl2', \
                                                      'test_same_as_train' : False, \
@@ -4212,6 +4307,7 @@ class AutoMunge:
                                    'singleprocess' : None, \
                                    'postprocess' : self._postprocess_spl2, \
                                    'inverseprocess' : self._inverseprocess_spl2, \
+                                  'recorded_category' : 'spl2', \
                                    'info_retention' : False, \
                                   'defaultparams' : {'suffix' : '_spl9', \
                                                      'test_same_as_train' : True, \
@@ -4223,6 +4319,7 @@ class AutoMunge:
                                    'singleprocess' : None, \
                                    'postprocess' : self._postprocess_spl2, \
                                    'inverseprocess' : self._inverseprocess_spl2, \
+                                  'recorded_category' : 'spl2', \
                                    'info_retention' : False, \
                                   'defaultparams' : {'suffix' : '_spl9', \
                                                      'test_same_as_train' : True, \
@@ -4234,6 +4331,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_splt, \
                                   'inverseprocess' : self._inverseprocess_splt, \
+                                  'recorded_category' : 'splt', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'suffix' : '_sp15', \
                                                      'concurrent_activations': True, \
@@ -4245,6 +4343,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_splt, \
                                   'inverseprocess' : self._inverseprocess_splt, \
+                                  'recorded_category' : 'splt', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'suffix' : '_sp16', \
                                                      'concurrent_activations': True, \
@@ -4256,6 +4355,7 @@ class AutoMunge:
                                    'singleprocess' : None, \
                                    'postprocess' : self._postprocess_spl2, \
                                    'inverseprocess' : self._inverseprocess_spl2, \
+                                  'recorded_category' : 'spl2', \
                                    'info_retention' : False, \
                                   'defaultparams' : {'suffix' : '_spl2', \
                                                      'test_same_as_train' : False, \
@@ -4267,6 +4367,7 @@ class AutoMunge:
                                    'singleprocess' : None, \
                                    'postprocess' : self._postprocess_spl2, \
                                    'inverseprocess' : self._inverseprocess_spl2, \
+                                  'recorded_category' : 'spl2', \
                                    'info_retention' : False, \
                                   'defaultparams' : {'suffix' : '_spl2', \
                                                      'test_same_as_train' : False, \
@@ -4278,6 +4379,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_sp19, \
                                   'inverseprocess' : self._inverseprocess_sp19, \
+                                  'recorded_category' : 'sp19', \
                                   'info_retention' : False, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : '1010', \
@@ -4286,6 +4388,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_sp19, \
                                   'inverseprocess' : self._inverseprocess_sp19, \
+                                  'recorded_category' : 'sp19', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'suffix' : '_sp20', \
                                                      'test_same_as_train' : True}, \
@@ -4296,6 +4399,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_sbst, \
                                   'inverseprocess' : self._inverseprocess_sbst, \
+                                  'recorded_category' : 'sbst', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'suffix' : '_sbst', \
                                                      'test_same_as_train' : False}, \
@@ -4306,6 +4410,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_sbst, \
                                   'inverseprocess' : self._inverseprocess_sbst, \
+                                  'recorded_category' : 'sbst', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'suffix' : '_sbs2', \
                                                      'test_same_as_train' : True}, \
@@ -4316,6 +4421,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_sbs3, \
                                   'inverseprocess' : self._inverseprocess_sbs3, \
+                                  'recorded_category' : 'sbs3', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'suffix' : '_sbs3', \
                                                      'test_same_as_train' : False}, \
@@ -4326,6 +4432,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_sbs3, \
                                   'inverseprocess' : self._inverseprocess_sbs3, \
+                                  'recorded_category' : 'sbs3', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'suffix' : '_sbs4', \
                                                      'test_same_as_train' : True}, \
@@ -4335,6 +4442,7 @@ class AutoMunge:
     process_dict.update({'hash' : {'dualprocess' : self._process_hash, \
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_hash, \
+                                  'recorded_category' : 'hash', \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'ordlexclude', \
@@ -4342,6 +4450,7 @@ class AutoMunge:
     process_dict.update({'hsh2' : {'dualprocess' : self._process_hash, \
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_hash, \
+                                  'recorded_category' : 'hash', \
                                   'inplace_option' : True, \
                                   'defaultparams' : {'space' : '', \
                                                      'excluded_characters' : []}, \
@@ -4351,6 +4460,7 @@ class AutoMunge:
     process_dict.update({'hs10' : {'dualprocess' : self._process_hs10, \
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_hs10, \
+                                  'recorded_category' : 'hs10', \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'boolexclude', \
@@ -4359,6 +4469,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_UPCS, \
                                   'postprocess' : None, \
                                   'inverseprocess' : self._inverseprocess_UPCS, \
+                                  'recorded_category' : 'UPCS', \
                                   'info_retention' : False, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
@@ -4368,6 +4479,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_UPCS, \
                                   'postprocess' : None, \
                                   'inverseprocess' : self._inverseprocess_UPCS, \
+                                  'recorded_category' : 'UPCS', \
                                   'info_retention' : False, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
@@ -4377,6 +4489,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_UPCS, \
                                   'postprocess' : None, \
                                   'inverseprocess' : self._inverseprocess_UPCS, \
+                                  'recorded_category' : 'UPCS', \
                                   'info_retention' : False, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
@@ -4385,32 +4498,36 @@ class AutoMunge:
     process_dict.update({'srch' : {'dualprocess' : self._process_srch, \
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_srch, \
-                                   'inverseprocess' : self._inverseprocess_srch, \
-                                   'info_retention' : False, \
+                                  'inverseprocess' : self._inverseprocess_srch, \
+                                  'recorded_category' : 'srch', \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'concurrent_act', \
                                   'labelctgy' : 'srch'}})
     process_dict.update({'src2' : {'dualprocess' : self._process_src2, \
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_src2, \
-                                   'inverseprocess' : self._inverseprocess_src2, \
-                                   'info_retention' : False, \
+                                  'inverseprocess' : self._inverseprocess_src2, \
+                                  'recorded_category' : 'src2', \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'concurrent_act', \
                                   'labelctgy' : 'src2'}})
     process_dict.update({'src3' : {'dualprocess' : self._process_src3, \
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_src3, \
-                                   'inverseprocess' : self._inverseprocess_src3, \
-                                   'info_retention' : False, \
+                                  'inverseprocess' : self._inverseprocess_src3, \
+                                  'recorded_category' : 'src3', \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'concurrent_act', \
                                   'labelctgy' : 'src3'}})
     process_dict.update({'src4' : {'dualprocess' : self._process_src4, \
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_src4, \
-                                   'inverseprocess' : self._inverseprocess_src4, \
-                                   'info_retention' : False, \
+                                  'inverseprocess' : self._inverseprocess_src4, \
+                                  'recorded_category' : 'src4', \
+                                  'info_retention' : False, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'src4'}})
@@ -4418,6 +4535,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_aggt, \
                                   'postprocess' : None, \
                                   'inverseprocess' : self._inverseprocess_UPCS, \
+                                  'recorded_category' : 'aggt', \
                                   'info_retention' : False, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'exclude', \
@@ -4425,6 +4543,7 @@ class AutoMunge:
     process_dict.update({'strn' : {'dualprocess' : None, \
                                   'singleprocess' : self._process_strn, \
                                   'postprocess' : None, \
+                                  'recorded_category' : 'strn', \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'ord3'}})
@@ -4432,6 +4551,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_strg, \
                                   'postprocess' : None, \
                                   'inverseprocess' : self._inverseprocess_strg, \
+                                  'recorded_category' : 'strg', \
                                   'info_retention' : True, \
                                   'NArowtype' : 'integer', \
                                   'MLinfilltype' : 'exclude', \
@@ -4440,6 +4560,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_nmrc, \
                                   'postprocess' : None, \
                                   'inverseprocess' : self._inverseprocess_nmrc, \
+                                  'recorded_category' : 'nmrc', \
                                   'info_retention' : True, \
                                   'defaultparams' : {'convention' : 'numbers', \
                                                      'suffix' : '_nmrc'}, \
@@ -4450,6 +4571,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_nmrc, \
                                   'postprocess' : None, \
                                   'inverseprocess' : self._inverseprocess_nmrc, \
+                                  'recorded_category' : 'nmrc', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'convention' : 'numbers', \
                                                      'suffix' : '_nmrc'}, \
@@ -4460,6 +4582,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_nmrc, \
                                   'postprocess' : None, \
                                   'inverseprocess' : self._inverseprocess_nmrc, \
+                                  'recorded_category' : 'nmrc', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'convention' : 'numbers', \
                                                      'suffix' : '_nmrc'}, \
@@ -4470,6 +4593,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_nmr4, \
                                   'inverseprocess' : self._inverseprocess_nmrc, \
+                                  'recorded_category' : 'nmr4', \
                                   'info_retention' : True, \
                                   'defaultparams' : {'convention' : 'numbers', \
                                                      'suffix' : '_nmr4', \
@@ -4481,6 +4605,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_nmr4, \
                                   'inverseprocess' : self._inverseprocess_nmrc, \
+                                  'recorded_category' : 'nmr4', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'convention' : 'numbers', \
                                                      'suffix' : '_nmr4', \
@@ -4492,6 +4617,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_nmr4, \
                                   'inverseprocess' : self._inverseprocess_nmrc, \
+                                  'recorded_category' : 'nmr4', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'convention' : 'numbers', \
                                                      'suffix' : '_nmr4', \
@@ -4503,6 +4629,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_nmr4, \
                                   'inverseprocess' : self._inverseprocess_nmrc, \
+                                  'recorded_category' : 'nmr4', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'convention' : 'numbers', \
                                                      'suffix' : '_nmr7', \
@@ -4514,6 +4641,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_nmr4, \
                                   'inverseprocess' : self._inverseprocess_nmrc, \
+                                  'recorded_category' : 'nmr4', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'convention' : 'numbers', \
                                                      'suffix' : '_nmr7', \
@@ -4525,6 +4653,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_nmr4, \
                                   'inverseprocess' : self._inverseprocess_nmrc, \
+                                  'recorded_category' : 'nmr4', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'convention' : 'numbers', \
                                                      'suffix' : '_nmr7', \
@@ -4536,6 +4665,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_nmrc, \
                                   'postprocess' : None, \
                                   'inverseprocess' : self._inverseprocess_nmrc, \
+                                  'recorded_category' : 'nmrc', \
                                   'info_retention' : True, \
                                   'defaultparams' : {'convention' : 'commas', \
                                                      'suffix' : '_nmcm'}, \
@@ -4546,6 +4676,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_nmrc, \
                                   'postprocess' : None, \
                                   'inverseprocess' : self._inverseprocess_nmrc, \
+                                  'recorded_category' : 'nmrc', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'convention' : 'commas', \
                                                      'suffix' : '_nmcm'}, \
@@ -4556,6 +4687,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_nmrc, \
                                   'postprocess' : None, \
                                   'inverseprocess' : self._inverseprocess_nmrc, \
+                                  'recorded_category' : 'nmrc', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'convention' : 'commas', \
                                                      'suffix' : '_nmcm'}, \
@@ -4566,6 +4698,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_nmr4, \
                                   'inverseprocess' : self._inverseprocess_nmrc, \
+                                  'recorded_category' : 'nmr4', \
                                   'info_retention' : True, \
                                   'defaultparams' : {'convention' : 'commas', \
                                                      'suffix' : '_nmc4', \
@@ -4577,6 +4710,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_nmr4, \
                                   'inverseprocess' : self._inverseprocess_nmrc, \
+                                  'recorded_category' : 'nmr4', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'convention' : 'commas', \
                                                      'suffix' : '_nmc4', \
@@ -4588,6 +4722,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_nmr4, \
                                   'inverseprocess' : self._inverseprocess_nmrc, \
+                                  'recorded_category' : 'nmr4', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'convention' : 'commas', \
                                                      'suffix' : '_nmc4', \
@@ -4599,6 +4734,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_nmr4, \
                                   'inverseprocess' : self._inverseprocess_nmrc, \
+                                  'recorded_category' : 'nmr4', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'convention' : 'commas', \
                                                      'suffix' : '_nmc7', \
@@ -4610,6 +4746,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_nmr4, \
                                   'inverseprocess' : self._inverseprocess_nmrc, \
+                                  'recorded_category' : 'nmr4', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'convention' : 'commas', \
                                                      'suffix' : '_nmc7', \
@@ -4621,6 +4758,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_nmr4, \
                                   'inverseprocess' : self._inverseprocess_nmrc, \
+                                  'recorded_category' : 'nmr4', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'convention' : 'commas', \
                                                      'suffix' : '_nmc7', \
@@ -4632,6 +4770,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_nmrc, \
                                   'postprocess' : None, \
                                   'inverseprocess' : self._inverseprocess_nmrc, \
+                                  'recorded_category' : 'nmrc', \
                                   'info_retention' : True, \
                                   'defaultparams' : {'convention' : 'spaces', \
                                                      'suffix' : '_nmEU'}, \
@@ -4642,6 +4781,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_nmrc, \
                                   'postprocess' : None, \
                                   'inverseprocess' : self._inverseprocess_nmrc, \
+                                  'recorded_category' : 'nmrc', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'convention' : 'spaces', \
                                                      'suffix' : '_nmEU'}, \
@@ -4652,6 +4792,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_nmrc, \
                                   'postprocess' : None, \
                                   'inverseprocess' : self._inverseprocess_nmrc, \
+                                  'recorded_category' : 'nmrc', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'convention' : 'spaces', \
                                                      'suffix' : '_nmEU'}, \
@@ -4662,6 +4803,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_nmr4, \
                                   'inverseprocess' : self._inverseprocess_nmrc, \
+                                  'recorded_category' : 'nmr4', \
                                   'info_retention' : True, \
                                   'defaultparams' : {'convention' : 'spaces', \
                                                      'suffix' : '_nmE4', \
@@ -4673,6 +4815,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_nmr4, \
                                   'inverseprocess' : self._inverseprocess_nmrc, \
+                                  'recorded_category' : 'nmr4', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'convention' : 'spaces', \
                                                      'suffix' : '_nmE4', \
@@ -4684,6 +4827,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_nmr4, \
                                   'inverseprocess' : self._inverseprocess_nmrc, \
+                                  'recorded_category' : 'nmr4', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'convention' : 'spaces', \
                                                      'suffix' : '_nmE4', \
@@ -4695,6 +4839,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_nmr4, \
                                   'inverseprocess' : self._inverseprocess_nmrc, \
+                                  'recorded_category' : 'nmr4', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'convention' : 'spaces', \
                                                      'suffix' : '_nmE7', \
@@ -4706,6 +4851,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_nmr4, \
                                   'inverseprocess' : self._inverseprocess_nmrc, \
+                                  'recorded_category' : 'nmr4', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'convention' : 'spaces', \
                                                      'suffix' : '_nmE7', \
@@ -4717,6 +4863,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_nmr4, \
                                   'inverseprocess' : self._inverseprocess_nmrc, \
+                                  'recorded_category' : 'nmr4', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'convention' : 'spaces', \
                                                      'suffix' : '_nmE7', \
@@ -4728,6 +4875,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_spl2, \
                                   'inverseprocess' : self._inverseprocess_spl2, \
+                                  'recorded_category' : 'spl2', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'suffix' : '_spl5', \
                                                      'test_same_as_train' : False, \
@@ -4739,6 +4887,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_spl2, \
                                   'inverseprocess' : self._inverseprocess_spl2, \
+                                  'recorded_category' : 'spl2', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'suffix' : '_spl5', \
                                                      'test_same_as_train' : False, \
@@ -4750,6 +4899,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_spl2, \
                                   'inverseprocess' : self._inverseprocess_spl2, \
+                                  'recorded_category' : 'spl2', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'suffix' : '_spl5', \
                                                      'test_same_as_train' : False, \
@@ -4761,6 +4911,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_ordl, \
                                   'inverseprocess' : self._inverseprocess_ordl, \
+                                  'recorded_category' : 'ordl', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
@@ -4770,6 +4921,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_ordl, \
                                   'inverseprocess' : self._inverseprocess_ordl, \
+                                  'recorded_category' : 'ordl', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
@@ -4779,6 +4931,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_ord3, \
                                   'inverseprocess' : self._inverseprocess_ord3, \
+                                  'recorded_category' : 'ord3', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
@@ -4788,6 +4941,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_ordl, \
                                   'inverseprocess' : self._inverseprocess_ordl, \
+                                  'recorded_category' : 'ordl', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
@@ -4797,6 +4951,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_maxb, \
                                   'inverseprocess' : self._inverseprocess_UPCS, \
+                                  'recorded_category' : 'maxb', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
@@ -4806,6 +4961,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_ord3, \
                                   'inverseprocess' : self._inverseprocess_ord3, \
+                                  'recorded_category' : 'ord3', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
@@ -4815,6 +4971,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_maxb, \
                                   'inverseprocess' : self._inverseprocess_UPCS, \
+                                  'recorded_category' : 'maxb', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
@@ -4824,6 +4981,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_ord3, \
                                   'inverseprocess' : self._inverseprocess_ord3, \
+                                  'recorded_category' : 'ord3', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
@@ -4833,6 +4991,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_maxb, \
                                   'inverseprocess' : self._inverseprocess_UPCS, \
+                                  'recorded_category' : 'maxb', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
@@ -4842,6 +5001,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_ord3, \
                                   'inverseprocess' : self._inverseprocess_ord3, \
+                                  'recorded_category' : 'ord3', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
@@ -4850,6 +5010,7 @@ class AutoMunge:
     process_dict.update({'ucct' : {'dualprocess' : self._process_ucct, \
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_ucct, \
+                                  'recorded_category' : 'ucct', \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'ucct'}})
@@ -4857,6 +5018,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_ord3, \
                                   'inverseprocess' : self._inverseprocess_ord3, \
+                                  'recorded_category' : 'ord3', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
@@ -4866,6 +5028,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_spl2, \
                                   'inverseprocess' : self._inverseprocess_spl2, \
+                                  'recorded_category' : 'spl2', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'suffix' : '_spl2', \
                                                      'test_same_as_train' : False, \
@@ -4876,6 +5039,7 @@ class AutoMunge:
     process_dict.update({'or10' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
+                                  'recorded_category' : False, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'mnmx'}})
@@ -4883,6 +5047,7 @@ class AutoMunge:
                                    'singleprocess' : None, \
                                    'postprocess' : self._postprocess_1010, \
                                    'inverseprocess' : self._inverseprocess_1010, \
+                                   'recorded_category' : '1010', \
                                    'info_retention' : True, \
                                    'NArowtype' : 'justNaN', \
                                    'MLinfilltype' : '1010', \
@@ -4891,6 +5056,7 @@ class AutoMunge:
                                    'singleprocess' : None, \
                                    'postprocess' : self._postprocess_1010, \
                                    'inverseprocess' : self._inverseprocess_1010, \
+                                   'recorded_category' : '1010', \
                                    'info_retention' : True, \
                                    'NArowtype' : 'justNaN', \
                                    'MLinfilltype' : '1010', \
@@ -4899,6 +5065,7 @@ class AutoMunge:
                                    'singleprocess' : None, \
                                    'postprocess' : self._postprocess_1010, \
                                    'inverseprocess' : self._inverseprocess_1010, \
+                                   'recorded_category' : '1010', \
                                    'info_retention' : True, \
                                    'NArowtype' : 'justNaN', \
                                    'MLinfilltype' : '1010', \
@@ -4907,6 +5074,7 @@ class AutoMunge:
                                    'singleprocess' : None, \
                                    'postprocess' : self._postprocess_1010, \
                                    'inverseprocess' : self._inverseprocess_1010, \
+                                   'recorded_category' : '1010', \
                                    'info_retention' : True, \
                                    'NArowtype' : 'justNaN', \
                                    'MLinfilltype' : '1010', \
@@ -4915,6 +5083,7 @@ class AutoMunge:
                                    'singleprocess' : self._process_UPCS, \
                                    'postprocess' : None, \
                                    'inverseprocess' : self._inverseprocess_UPCS, \
+                                   'recorded_category' : 'UPCS', \
                                    'info_retention' : False, \
                                    'inplace_option' : True, \
                                    'NArowtype' : 'justNaN', \
@@ -4924,6 +5093,7 @@ class AutoMunge:
                                    'singleprocess' : self._process_UPCS, \
                                    'postprocess' : None, \
                                    'inverseprocess' : self._inverseprocess_UPCS, \
+                                   'recorded_category' : 'UPCS', \
                                    'info_retention' : False, \
                                    'inplace_option' : True, \
                                    'NArowtype' : 'justNaN', \
@@ -4933,6 +5103,7 @@ class AutoMunge:
                                    'singleprocess' : self._process_UPCS, \
                                    'postprocess' : None, \
                                    'inverseprocess' : self._inverseprocess_UPCS, \
+                                   'recorded_category' : 'UPCS', \
                                    'info_retention' : False, \
                                    'inplace_option' : True, \
                                    'NArowtype' : 'justNaN', \
@@ -4942,6 +5113,7 @@ class AutoMunge:
                                    'singleprocess' : self._process_UPCS, \
                                    'postprocess' : None, \
                                    'inverseprocess' : self._inverseprocess_UPCS, \
+                                   'recorded_category' : 'UPCS', \
                                    'info_retention' : False, \
                                    'inplace_option' : True, \
                                    'NArowtype' : 'justNaN', \
@@ -4951,6 +5123,7 @@ class AutoMunge:
                                    'singleprocess' : self._process_UPCS, \
                                    'postprocess' : None, \
                                    'inverseprocess' : self._inverseprocess_UPCS, \
+                                   'recorded_category' : 'UPCS', \
                                    'info_retention' : False, \
                                    'inplace_option' : True, \
                                    'NArowtype' : 'justNaN', \
@@ -4960,6 +5133,7 @@ class AutoMunge:
                                    'singleprocess' : self._process_UPCS, \
                                    'postprocess' : None, \
                                    'inverseprocess' : self._inverseprocess_UPCS, \
+                                   'recorded_category' : 'UPCS', \
                                    'info_retention' : False, \
                                    'inplace_option' : True, \
                                    'NArowtype' : 'justNaN', \
@@ -4969,6 +5143,7 @@ class AutoMunge:
                                    'singleprocess' : self._process_UPCS, \
                                    'postprocess' : None, \
                                    'inverseprocess' : self._inverseprocess_UPCS, \
+                                   'recorded_category' : 'UPCS', \
                                    'info_retention' : False, \
                                    'inplace_option' : True, \
                                    'NArowtype' : 'justNaN', \
@@ -4978,6 +5153,7 @@ class AutoMunge:
                                    'singleprocess' : self._process_UPCS, \
                                    'postprocess' : None, \
                                    'inverseprocess' : self._inverseprocess_UPCS, \
+                                   'recorded_category' : 'UPCS', \
                                    'info_retention' : False, \
                                    'inplace_option' : True, \
                                    'NArowtype' : 'justNaN', \
@@ -4987,6 +5163,7 @@ class AutoMunge:
                                    'singleprocess' : self._process_UPCS, \
                                    'postprocess' : None, \
                                    'inverseprocess' : self._inverseprocess_UPCS, \
+                                   'recorded_category' : 'UPCS', \
                                    'info_retention' : False, \
                                    'inplace_option' : True, \
                                    'NArowtype' : 'justNaN', \
@@ -4995,12 +5172,14 @@ class AutoMunge:
     process_dict.update({'om10' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
+                                  'recorded_category' : False, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'mnmx'}})
     process_dict.update({'mmor' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
+                                  'recorded_category' : False, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mnmx'}})
@@ -5008,6 +5187,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_1010, \
                                   'inverseprocess' : self._inverseprocess_1010, \
+                                  'recorded_category' : '1010', \
                                   'info_retention' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : '1010', \
@@ -5015,24 +5195,28 @@ class AutoMunge:
     process_dict.update({'bxcx' : {'dualprocess' : self._process_bxcx, \
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_bxcx, \
+                                  'recorded_category' : 'bxcx', \
                                   'NArowtype' : 'positivenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmbr'}})
     process_dict.update({'tmsc' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
+                                  'recorded_category' : False, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'tmsc'}})
     process_dict.update({'time' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
+                                  'recorded_category' : False, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'time'}})
     process_dict.update({'tmzn' : {'dualprocess' : None, \
                                   'singleprocess' : self._process_tmzn, \
                                   'postprocess' : None, \
+                                  'recorded_category' : 'tmzn', \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'exclude', \
@@ -5040,6 +5224,7 @@ class AutoMunge:
     process_dict.update({'date' : {'dualprocess' : None, \
                                   'singleprocess' : self._process_tmzn, \
                                   'postprocess' : None, \
+                                  'recorded_category' : 'tmzn', \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'exclude', \
@@ -5047,6 +5232,7 @@ class AutoMunge:
     process_dict.update({'dat2' : {'dualprocess' : None, \
                                   'singleprocess' : self._process_tmzn, \
                                   'postprocess' : None, \
+                                  'recorded_category' : 'tmzn', \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'exclude', \
@@ -5054,6 +5240,7 @@ class AutoMunge:
     process_dict.update({'dat3' : {'dualprocess' : None, \
                                   'singleprocess' : self._process_tmzn, \
                                   'postprocess' : None, \
+                                  'recorded_category' : 'tmzn', \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'exclude', \
@@ -5061,6 +5248,7 @@ class AutoMunge:
     process_dict.update({'dat4' : {'dualprocess' : None, \
                                   'singleprocess' : self._process_tmzn, \
                                   'postprocess' : None, \
+                                  'recorded_category' : 'tmzn', \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'exclude', \
@@ -5068,6 +5256,7 @@ class AutoMunge:
     process_dict.update({'dat5' : {'dualprocess' : None, \
                                   'singleprocess' : self._process_tmzn, \
                                   'postprocess' : None, \
+                                  'recorded_category' : 'tmzn', \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'exclude', \
@@ -5075,6 +5264,7 @@ class AutoMunge:
     process_dict.update({'dat6' : {'dualprocess' : None, \
                                   'singleprocess' : self._process_tmzn, \
                                   'postprocess' : None, \
+                                  'recorded_category' : 'tmzn', \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'exclude', \
@@ -5083,6 +5273,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_time, \
                                   'inverseprocess' : self._inverseprocess_year, \
+                                  'recorded_category' : 'time', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'scale' : 'year', \
                                                      'suffix' : '_year', \
@@ -5094,12 +5285,14 @@ class AutoMunge:
     process_dict.update({'yea2' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
+                                  'recorded_category' : False, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'time'}})
     process_dict.update({'yrsn' : {'dualprocess' : self._process_tmsc, \
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_tmsc, \
+                                  'recorded_category' : 'tmsc', \
                                   'defaultparams' : {'scale' : 'year', \
                                                      'suffix' : '_yrsn', \
                                                      'function' : 'sin'}, \
@@ -5110,6 +5303,7 @@ class AutoMunge:
     process_dict.update({'yrcs' : {'dualprocess' : self._process_tmsc, \
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_tmsc, \
+                                  'recorded_category' : 'tmsc', \
                                   'defaultparams' : {'scale' : 'year', \
                                                      'suffix' : '_yrcs', \
                                                      'function' : 'cos'}, \
@@ -5120,6 +5314,7 @@ class AutoMunge:
     process_dict.update({'mnth' : {'dualprocess' : self._process_time, \
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_time, \
+                                  'recorded_category' : 'time', \
                                   'defaultparams' : {'scale' : 'month', \
                                                      'suffix' : '_mnth', \
                                                      'normalization' : 'zscore'}, \
@@ -5130,36 +5325,42 @@ class AutoMunge:
     process_dict.update({'mnt2' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
+                                  'recorded_category' : False, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'tmsc'}})
     process_dict.update({'mnt3' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
+                                  'recorded_category' : False, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'tmsc'}})
     process_dict.update({'mnt4' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
+                                  'recorded_category' : False, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'tmsc'}})
     process_dict.update({'mnt5' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
+                                  'recorded_category' : False, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'tmsc'}})
     process_dict.update({'mnt6' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
+                                  'recorded_category' : False, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'tmsc'}})
     process_dict.update({'mnsn' : {'dualprocess' : self._process_tmsc, \
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_tmsc, \
+                                  'recorded_category' : 'tmsc', \
                                   'defaultparams' : {'scale' : 'month', \
                                                      'suffix' : '_mnsn', \
                                                      'function' : 'sin'}, \
@@ -5170,6 +5371,7 @@ class AutoMunge:
     process_dict.update({'mncs' : {'dualprocess' : self._process_tmsc, \
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_tmsc, \
+                                  'recorded_category' : 'tmsc', \
                                   'defaultparams' : {'scale' : 'month', \
                                                      'suffix' : '_mncs', \
                                                      'function' : 'cos'}, \
@@ -5180,6 +5382,7 @@ class AutoMunge:
     process_dict.update({'mdsn' : {'dualprocess' : self._process_tmsc, \
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_tmsc, \
+                                  'recorded_category' : 'tmsc', \
                                   'defaultparams' : {'scale' : 'monthday', \
                                                      'suffix' : '_mdsn', \
                                                      'function' : 'sin'}, \
@@ -5190,6 +5393,7 @@ class AutoMunge:
     process_dict.update({'mdcs' : {'dualprocess' : self._process_tmsc, \
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_tmsc, \
+                                  'recorded_category' : 'tmsc', \
                                   'defaultparams' : {'scale' : 'monthday', \
                                                      'suffix' : '_mdcs', \
                                                      'function' : 'cos'}, \
@@ -5200,6 +5404,7 @@ class AutoMunge:
     process_dict.update({'days' : {'dualprocess' : self._process_time, \
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_time, \
+                                  'recorded_category' : 'time', \
                                   'defaultparams' : {'scale' : 'day', \
                                                      'suffix' : '_days', \
                                                      'normalization' : 'zscore'}, \
@@ -5210,30 +5415,35 @@ class AutoMunge:
     process_dict.update({'day2' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
+                                  'recorded_category' : False, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'tmsc'}})
     process_dict.update({'day3' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
+                                  'recorded_category' : False, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'tmsc'}})
     process_dict.update({'day4' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
+                                  'recorded_category' : False, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'tmsc'}})
     process_dict.update({'day5' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
+                                  'recorded_category' : False, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'tmsc'}})
     process_dict.update({'dysn' : {'dualprocess' : self._process_tmsc, \
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_tmsc, \
+                                  'recorded_category' : 'tmsc', \
                                   'defaultparams' : {'scale' : 'day', \
                                                      'suffix' : '_dysn', \
                                                      'function' : 'sin'}, \
@@ -5244,6 +5454,7 @@ class AutoMunge:
     process_dict.update({'dycs' : {'dualprocess' : self._process_tmsc, \
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_tmsc, \
+                                  'recorded_category' : 'tmsc', \
                                   'defaultparams' : {'scale' : 'day', \
                                                      'suffix' : '_dycs', \
                                                      'function' : 'cos'}, \
@@ -5254,6 +5465,7 @@ class AutoMunge:
     process_dict.update({'dhms' : {'dualprocess' : self._process_tmsc, \
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_tmsc, \
+                                  'recorded_category' : 'tmsc', \
                                   'defaultparams' : {'scale' : 'dayhourminute', \
                                                      'suffix' : '_dhms', \
                                                      'function' : 'sin'}, \
@@ -5264,6 +5476,7 @@ class AutoMunge:
     process_dict.update({'dhmc' : {'dualprocess' : self._process_tmsc, \
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_tmsc, \
+                                  'recorded_category' : 'tmsc', \
                                   'defaultparams' : {'scale' : 'dayhourminute', \
                                                      'suffix' : '_dhmc', \
                                                      'function' : 'cos'}, \
@@ -5274,6 +5487,7 @@ class AutoMunge:
     process_dict.update({'hour' : {'dualprocess' : self._process_time, \
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_time, \
+                                  'recorded_category' : 'time', \
                                   'defaultparams' : {'scale' : 'hour', \
                                                      'suffix' : '_hour', \
                                                      'normalization' : 'zscore'}, \
@@ -5284,24 +5498,28 @@ class AutoMunge:
     process_dict.update({'hrs2' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
+                                  'recorded_category' : False, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'tmsc'}})
     process_dict.update({'hrs3' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
+                                  'recorded_category' : False, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'tmsc'}})
     process_dict.update({'hrs4' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
+                                  'recorded_category' : False, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'tmsc'}})
     process_dict.update({'hrsn' : {'dualprocess' : self._process_tmsc, \
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_tmsc, \
+                                  'recorded_category' : 'tmsc', \
                                   'defaultparams' : {'scale' : 'hour', \
                                                      'suffix' : '_hrsn', \
                                                      'function' : 'sin'}, \
@@ -5312,6 +5530,7 @@ class AutoMunge:
     process_dict.update({'hrcs' : {'dualprocess' : self._process_tmsc, \
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_tmsc, \
+                                  'recorded_category' : 'tmsc', \
                                   'defaultparams' : {'scale' : 'hour', \
                                                      'suffix' : '_hrcs', \
                                                      'function' : 'cos'}, \
@@ -5322,6 +5541,7 @@ class AutoMunge:
     process_dict.update({'hmss' : {'dualprocess' : self._process_tmsc, \
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_tmsc, \
+                                  'recorded_category' : 'tmsc', \
                                   'defaultparams' : {'scale' : 'hourminutesecond', \
                                                      'suffix' : '_hmss', \
                                                      'function' : 'sin'}, \
@@ -5332,6 +5552,7 @@ class AutoMunge:
     process_dict.update({'hmsc' : {'dualprocess' : self._process_tmsc, \
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_tmsc, \
+                                  'recorded_category' : 'tmsc', \
                                   'defaultparams' : {'scale' : 'hourminutesecond', \
                                                      'suffix' : '_hmsc', \
                                                      'function' : 'cos'}, \
@@ -5342,6 +5563,7 @@ class AutoMunge:
     process_dict.update({'mint' : {'dualprocess' : self._process_time, \
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_time, \
+                                  'recorded_category' : 'time', \
                                   'defaultparams' : {'scale' : 'minute', \
                                                      'suffix' : '_mint', \
                                                      'normalization' : 'zscore'}, \
@@ -5352,24 +5574,28 @@ class AutoMunge:
     process_dict.update({'min2' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
+                                  'recorded_category' : False, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'tmsc'}})
     process_dict.update({'min3' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
+                                  'recorded_category' : False, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'tmsc'}})
     process_dict.update({'min4' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
+                                  'recorded_category' : False, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'misn'}})
     process_dict.update({'misn' : {'dualprocess' : self._process_tmsc, \
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_tmsc, \
+                                  'recorded_category' : 'tmsc', \
                                   'defaultparams' : {'scale' : 'minute', \
                                                      'suffix' : '_misn', \
                                                      'function' : 'sin'}, \
@@ -5380,6 +5606,7 @@ class AutoMunge:
     process_dict.update({'mics' : {'dualprocess' : self._process_tmsc, \
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_tmsc, \
+                                  'recorded_category' : 'tmsc', \
                                   'defaultparams' : {'scale' : 'minute', \
                                                      'suffix' : '_mics', \
                                                      'function' : 'cos'}, \
@@ -5390,6 +5617,7 @@ class AutoMunge:
     process_dict.update({'mssn' : {'dualprocess' : self._process_tmsc, \
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_tmsc, \
+                                  'recorded_category' : 'tmsc', \
                                   'defaultparams' : {'scale' : 'minutesecond', \
                                                      'suffix' : '_mssn', \
                                                      'function' : 'sin'}, \
@@ -5400,6 +5628,7 @@ class AutoMunge:
     process_dict.update({'mscs' : {'dualprocess' : self._process_tmsc, \
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_tmsc, \
+                                  'recorded_category' : 'tmsc', \
                                   'defaultparams' : {'scale' : 'minutesecond', \
                                                      'suffix' : '_mscs', \
                                                      'function' : 'cos'}, \
@@ -5410,6 +5639,7 @@ class AutoMunge:
     process_dict.update({'scnd' : {'dualprocess' : self._process_time, \
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_time, \
+                                  'recorded_category' : 'time', \
                                   'defaultparams' : {'scale' : 'second', \
                                                      'suffix' : '_scnd', \
                                                      'normalization' : 'zscore'}, \
@@ -5420,12 +5650,14 @@ class AutoMunge:
     process_dict.update({'scn2' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
+                                  'recorded_category' : False, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'tmsc'}})
     process_dict.update({'scsn' : {'dualprocess' : self._process_tmsc, \
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_tmsc, \
+                                  'recorded_category' : 'tmsc', \
                                   'defaultparams' : {'scale' : 'second', \
                                                      'suffix' : '_scsn', \
                                                      'function' : 'sin'}, \
@@ -5436,6 +5668,7 @@ class AutoMunge:
     process_dict.update({'sccs' : {'dualprocess' : self._process_tmsc, \
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_tmsc, \
+                                  'recorded_category' : 'tmsc', \
                                   'defaultparams' : {'scale' : 'second', \
                                                      'suffix' : '_sccs', \
                                                      'function' : 'cos'}, \
@@ -5446,24 +5679,28 @@ class AutoMunge:
     process_dict.update({'bxc2' : {'dualprocess' : self._process_bxcx, \
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_bxcx, \
+                                  'recorded_category' : 'bxcx', \
                                   'NArowtype' : 'nonzeronumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmbr'}})
     process_dict.update({'bxc3' : {'dualprocess' : self._process_bxcx, \
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_bxcx, \
+                                  'recorded_category' : 'bxcx', \
                                   'NArowtype' : 'positivenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmbr'}})
     process_dict.update({'bxc4' : {'dualprocess' : self._process_bxcx, \
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_bxcx, \
+                                  'recorded_category' : 'bxcx', \
                                   'NArowtype' : 'positivenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmbr'}})
     process_dict.update({'bxc5' : {'dualprocess' : self._process_bxcx, \
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_bxcx, \
+                                  'recorded_category' : 'bxcx', \
                                   'NArowtype' : 'positivenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmbr'}})
@@ -5471,6 +5708,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_ord3, \
                                   'inverseprocess' : self._inverseprocess_ord3, \
+                                  'recorded_category' : 'ord3', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'integer', \
@@ -5480,6 +5718,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_ord3, \
                                   'inverseprocess' : self._inverseprocess_ord3, \
+                                  'recorded_category' : 'ord3', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'integer', \
@@ -5489,6 +5728,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_ord3, \
                                   'inverseprocess' : self._inverseprocess_ord3, \
+                                  'recorded_category' : 'ord3', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'integer', \
@@ -5498,6 +5738,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_pwrs, \
                                   'inverseprocess' : self._inverseprocess_pwr2, \
+                                  'recorded_category' : 'pwrs', \
                                   'info_retention' : False, \
                                   'NArowtype' : 'positivenumeric', \
                                   'MLinfilltype' : 'multirt', \
@@ -5506,6 +5747,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_pwrs, \
                                   'inverseprocess' : self._inverseprocess_pwr2, \
+                                  'recorded_category' : 'pwrs', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'negvalues' : True}, \
                                   'NArowtype' : 'nonzeronumeric', \
@@ -5515,6 +5757,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_log0, \
                                   'inverseprocess' : self._inverseprocess_log0, \
+                                  'recorded_category' : 'log0', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'positivenumeric', \
@@ -5524,6 +5767,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_log0, \
                                   'inverseprocess' : self._inverseprocess_log0, \
+                                  'recorded_category' : 'log0', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'positivenumeric', \
@@ -5533,6 +5777,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_logn, \
                                   'inverseprocess' : self._inverseprocess_logn, \
+                                  'recorded_category' : 'logn', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'positivenumeric', \
@@ -5542,6 +5787,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_logn, \
                                   'inverseprocess' : self._inverseprocess_logn, \
+                                  'recorded_category' : 'logn', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'positivenumeric', \
@@ -5551,6 +5797,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_sqrt, \
                                   'inverseprocess' : self._inverseprocess_sqrt, \
+                                  'recorded_category' : 'sqrt', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'nonnegativenumeric', \
@@ -5560,6 +5807,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_addd, \
                                   'inverseprocess' : self._inverseprocess_addd, \
+                                  'recorded_category' : 'addd', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
@@ -5569,6 +5817,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_sbtr, \
                                   'inverseprocess' : self._inverseprocess_sbtr, \
+                                  'recorded_category' : 'sbtr', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
@@ -5578,6 +5827,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_mltp, \
                                   'inverseprocess' : self._inverseprocess_mltp, \
+                                  'recorded_category' : 'mltp', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
@@ -5587,6 +5837,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_divd, \
                                   'inverseprocess' : self._inverseprocess_divd, \
+                                  'recorded_category' : 'divd', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
@@ -5596,6 +5847,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_rais, \
                                   'inverseprocess' : self._inverseprocess_rais, \
+                                  'recorded_category' : 'rais', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
@@ -5605,6 +5857,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_absl, \
                                   'inverseprocess' : self._inverseprocess_absl, \
+                                  'recorded_category' : 'absl', \
                                   'info_retention' : False, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
@@ -5614,6 +5867,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_bkt1, \
                                   'inverseprocess' : self._inverseprocess_bkt1, \
+                                  'recorded_category' : 'bkt1', \
                                   'info_retention' : False, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'multirt', \
@@ -5622,6 +5876,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_bkt2, \
                                   'inverseprocess' : self._inverseprocess_bkt2, \
+                                  'recorded_category' : 'bkt2', \
                                   'info_retention' : False, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'multirt', \
@@ -5630,6 +5885,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_bkt3, \
                                   'inverseprocess' : self._inverseprocess_bkt3, \
+                                  'recorded_category' : 'bkt3', \
                                   'info_retention' : False, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
@@ -5639,6 +5895,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_bkt4, \
                                   'inverseprocess' : self._inverseprocess_bkt4, \
+                                  'recorded_category' : 'bkt4', \
                                   'info_retention' : False, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
@@ -5647,24 +5904,28 @@ class AutoMunge:
     process_dict.update({'wkdy' : {'dualprocess' : None, \
                                   'singleprocess' : self._process_wkdy, \
                                   'postprocess' : None, \
+                                  'recorded_category' : 'wkdy', \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'binary', \
                                   'labelctgy' : 'wkdy'}})
     process_dict.update({'bshr' : {'dualprocess' : None, \
                                   'singleprocess' : self._process_bshr, \
                                   'postprocess' : None, \
+                                  'recorded_category' : 'bshr', \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'binary', \
                                   'labelctgy' : 'bshr'}})
     process_dict.update({'hldy' : {'dualprocess' : None, \
                                   'singleprocess' : self._process_hldy, \
                                   'postprocess' : None, \
+                                  'recorded_category' : 'hldy', \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'binary', \
                                   'labelctgy' : 'hldy'}})
     process_dict.update({'wkds' : {'dualprocess' : None, \
                                   'singleprocess' : self._process_wkds, \
                                   'postprocess' : None, \
+                                  'recorded_category' : 'wkds', \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'singlct', \
@@ -5672,6 +5933,7 @@ class AutoMunge:
     process_dict.update({'wkdo' : {'dualprocess' : None, \
                                   'singleprocess' : self._process_wkds, \
                                   'postprocess' : None, \
+                                  'recorded_category' : 'wkds', \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'singlct', \
@@ -5679,6 +5941,7 @@ class AutoMunge:
     process_dict.update({'mnts' : {'dualprocess' : None, \
                                   'singleprocess' : self._process_mnts, \
                                   'postprocess' : None, \
+                                  'recorded_category' : 'mnts', \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'singlct', \
@@ -5686,6 +5949,7 @@ class AutoMunge:
     process_dict.update({'mnto' : {'dualprocess' : None, \
                                   'singleprocess' : self._process_mnts, \
                                   'postprocess' : None, \
+                                  'recorded_category' : 'mnts', \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'singlct', \
@@ -5694,6 +5958,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_bins, \
                                   'inverseprocess' : self._inverseprocess_bins, \
+                                  'recorded_category' : 'bins', \
                                   'info_retention' : False, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'multirt', \
@@ -5702,6 +5967,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_bins, \
                                   'inverseprocess' : self._inverseprocess_bins, \
+                                  'recorded_category' : 'bins', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'normalizedinput' : True}, \
                                   'NArowtype' : 'numeric', \
@@ -5711,6 +5977,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_bsor, \
                                   'inverseprocess' : self._inverseprocess_bsor, \
+                                  'recorded_category' : 'bsor', \
                                   'info_retention' : False, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
@@ -5720,6 +5987,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_bsor, \
                                   'inverseprocess' : self._inverseprocess_bsor, \
+                                  'recorded_category' : 'bsor', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'normalizedinput' : True}, \
                                   'inplace_option' : True, \
@@ -5730,6 +5998,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_bnwd, \
                                   'inverseprocess' : self._inverseprocess_bnwd, \
+                                  'recorded_category' : 'bnwd', \
                                   'info_retention' : False, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'multirt', \
@@ -5738,6 +6007,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_bnwd, \
                                   'inverseprocess' : self._inverseprocess_bnwd, \
+                                  'recorded_category' : 'bnwd', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'suffix':'_bnwK', 'width':1000}, \
                                   'NArowtype' : 'numeric', \
@@ -5747,6 +6017,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_bnwd, \
                                   'inverseprocess' : self._inverseprocess_bnwd, \
+                                  'recorded_category' : 'bnwd', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'suffix':'_bnwM', 'width':1000000}, \
                                   'NArowtype' : 'numeric', \
@@ -5756,6 +6027,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_bnwo, \
                                   'inverseprocess' : self._inverseprocess_bnwo, \
+                                  'recorded_category' : 'bnwo', \
                                   'info_retention' : False, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
@@ -5765,6 +6037,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_bnwo, \
                                   'inverseprocess' : self._inverseprocess_bnwo, \
+                                  'recorded_category' : 'bnwo', \
                                   'info_retention' : False, \
                                   'inplace_option' : True, \
                                   'defaultparams' : {'suffix':'_bnKo', 'width':1000}, \
@@ -5775,6 +6048,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_bnwo, \
                                   'inverseprocess' : self._inverseprocess_bnwo, \
+                                  'recorded_category' : 'bnwo', \
                                   'info_retention' : False, \
                                   'inplace_option' : True, \
                                   'defaultparams' : {'suffix':'_bnMo', 'width':1000000}, \
@@ -5785,6 +6059,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_bnep, \
                                   'inverseprocess' : self._inverseprocess_bnep, \
+                                  'recorded_category' : 'bnep', \
                                   'info_retention' : False, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'multirt', \
@@ -5793,6 +6068,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_bnep, \
                                   'inverseprocess' : self._inverseprocess_bnep, \
+                                  'recorded_category' : 'bnep', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'suffix':'_bne7', 'bincount':7}, \
                                   'NArowtype' : 'numeric', \
@@ -5802,6 +6078,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_bnep, \
                                   'inverseprocess' : self._inverseprocess_bnep, \
+                                  'recorded_category' : 'bnep', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'suffix':'_bne9', 'bincount':9}, \
                                   'NArowtype' : 'numeric', \
@@ -5811,6 +6088,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_bneo, \
                                   'inverseprocess' : self._inverseprocess_bneo, \
+                                  'recorded_category' : 'bneo', \
                                   'info_retention' : False, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
@@ -5820,6 +6098,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_bneo, \
                                   'inverseprocess' : self._inverseprocess_bneo, \
+                                  'recorded_category' : 'bneo', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'suffix':'_bn7o', 'bincount':7}, \
                                   'inplace_option' : True, \
@@ -5830,6 +6109,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_bneo, \
                                   'inverseprocess' : self._inverseprocess_bneo, \
+                                  'recorded_category' : 'bneo', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'suffix':'_bn9o', 'bincount':9}, \
                                   'inplace_option' : True, \
@@ -5840,6 +6120,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_tlbn, \
                                   'inverseprocess' : self._inverseprocess_tlbn, \
+                                  'recorded_category' : 'tlbn', \
                                   'info_retention' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'concurrent_nmbr', \
@@ -5848,6 +6129,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_pwor, \
                                   'inverseprocess' : self._inverseprocess_por2, \
+                                  'recorded_category' : 'pwor', \
                                   'info_retention' : False, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'positivenumeric', \
@@ -5857,6 +6139,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_pwor, \
                                   'inverseprocess' : self._inverseprocess_por2, \
+                                  'recorded_category' : 'pwor', \
                                   'info_retention' : False, \
                                   'inplace_option' : True, \
                                   'defaultparams' : {'negvalues' : True}, \
@@ -5867,6 +6150,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_pwor, \
                                   'inverseprocess' : self._inverseprocess_por2, \
+                                  'recorded_category' : 'pwor', \
                                   'info_retention' : False, \
                                   'inplace_option' : True, \
                                   'defaultparams' : {'negvalues' : True}, \
@@ -5877,6 +6161,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_bkt3, \
                                   'inverseprocess' : self._inverseprocess_bkt3, \
+                                  'recorded_category' : 'bkt3', \
                                   'info_retention' : False, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
@@ -5886,6 +6171,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_bkt4, \
                                   'inverseprocess' : self._inverseprocess_bkt4, \
+                                  'recorded_category' : 'bkt4', \
                                   'info_retention' : False, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
@@ -5895,6 +6181,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_bsor, \
                                   'inverseprocess' : self._inverseprocess_bsor, \
+                                  'recorded_category' : 'bsor', \
                                   'info_retention' : False, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
@@ -5904,6 +6191,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_bnwo, \
                                   'inverseprocess' : self._inverseprocess_bnwo, \
+                                  'recorded_category' : 'bnwo', \
                                   'info_retention' : False, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
@@ -5913,6 +6201,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_bnwo, \
                                   'inverseprocess' : self._inverseprocess_bnwo, \
+                                  'recorded_category' : 'bnwo', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'suffix':'_bnKo', 'width':1000}, \
                                   'inplace_option' : True, \
@@ -5923,6 +6212,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_bnwo, \
                                   'inverseprocess' : self._inverseprocess_bnwo, \
+                                  'recorded_category' : 'bnwo', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'suffix':'_bnMo', 'width':1000000}, \
                                   'inplace_option' : True, \
@@ -5933,6 +6223,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_bneo, \
                                   'inverseprocess' : self._inverseprocess_bneo, \
+                                  'recorded_category' : 'bneo', \
                                   'info_retention' : False, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
@@ -5942,6 +6233,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_bneo, \
                                   'inverseprocess' : self._inverseprocess_bneo, \
+                                  'recorded_category' : 'bneo', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'suffix':'_bn7o', 'bincount':7}, \
                                   'inplace_option' : True, \
@@ -5952,6 +6244,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_bneo, \
                                   'inverseprocess' : self._inverseprocess_bneo, \
+                                  'recorded_category' : 'bneo', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'suffix':'_bn9o', 'bincount':9}, \
                                   'inplace_option' : True, \
@@ -5962,6 +6255,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_pwor, \
                                   'inverseprocess' : self._inverseprocess_por2, \
+                                  'recorded_category' : 'pwor', \
                                   'info_retention' : False, \
                                   'NArowtype' : 'positivenumeric', \
                                   'MLinfilltype' : 'singlct', \
@@ -5970,6 +6264,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_numerical, \
                                   'inverseprocess' : self._inverseprocess_nmbr, \
+                                  'recorded_category' : 'nmbr', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
@@ -5979,6 +6274,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_DPnb, \
                                   'inverseprocess' : self._inverseprocess_UPCS, \
+                                  'recorded_category' : 'DPnb', \
                                   'info_retention' : True, \
                                   'inplace_option' : False, \
                                   'NArowtype' : 'numeric', \
@@ -5988,6 +6284,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_mnmx, \
                                   'inverseprocess' : self._inverseprocess_mnmx, \
+                                  'recorded_category' : 'mnmx', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
@@ -5997,6 +6294,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_DPmm, \
                                   'inverseprocess' : self._inverseprocess_UPCS, \
+                                  'recorded_category' : 'DPmm', \
                                   'info_retention' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
@@ -6005,6 +6303,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_DPrt, \
                                   'inverseprocess' : self._inverseprocess_retn, \
+                                  'recorded_category' : 'DPrt', \
                                   'info_retention' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
@@ -6013,6 +6312,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_numerical, \
                                   'inverseprocess' : self._inverseprocess_nmbr, \
+                                  'recorded_category' : 'nmbr', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
@@ -6022,6 +6322,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_DPnb, \
                                   'inverseprocess' : self._inverseprocess_UPCS, \
+                                  'recorded_category' : 'DPnb', \
                                   'info_retention' : True, \
                                   'defaultparams' : {'noisedistribution' : 'laplace'}, \
                                   'NArowtype' : 'numeric', \
@@ -6031,6 +6332,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_mnmx, \
                                   'inverseprocess' : self._inverseprocess_mnmx, \
+                                  'recorded_category' : 'mnmx', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
@@ -6040,6 +6342,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_DPmm, \
                                   'inverseprocess' : self._inverseprocess_UPCS, \
+                                  'recorded_category' : 'DPmm', \
                                   'info_retention' : True, \
                                   'defaultparams' : {'noisedistribution' : 'laplace'}, \
                                   'NArowtype' : 'numeric', \
@@ -6049,6 +6352,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_DPrt, \
                                   'inverseprocess' : self._inverseprocess_retn, \
+                                  'recorded_category' : 'DPrt', \
                                   'info_retention' : True, \
                                   'defaultparams' : {'noisedistribution' : 'laplace'}, \
                                   'NArowtype' : 'numeric', \
@@ -6058,6 +6362,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_binary, \
                                   'inverseprocess' : self._inverseprocess_bnry, \
+                                  'recorded_category' : 'bnry', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
@@ -6067,6 +6372,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_DPbn, \
                                   'inverseprocess' : self._inverseprocess_UPCS, \
+                                  'recorded_category' : 'DPbn', \
                                   'info_retention' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'binary', \
@@ -6075,6 +6381,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_ord3, \
                                   'inverseprocess' : self._inverseprocess_ord3, \
+                                  'recorded_category' : 'ord3', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
@@ -6084,6 +6391,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_DPod, \
                                   'inverseprocess' : self._inverseprocess_UPCS, \
+                                  'recorded_category' : 'DPod', \
                                   'info_retention' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'singlct', \
@@ -6092,6 +6400,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_ord3, \
                                   'inverseprocess' : self._inverseprocess_ord3, \
+                                  'recorded_category' : 'ord3', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
@@ -6101,6 +6410,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_DPod, \
                                   'inverseprocess' : self._inverseprocess_UPCS, \
+                                  'recorded_category' : 'DPod', \
                                   'info_retention' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'singlct', \
@@ -6109,6 +6419,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_DPod, \
                                   'inverseprocess' : self._inverseprocess_UPCS, \
+                                  'recorded_category' : 'DPod', \
                                   'info_retention' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'singlct', \
@@ -6117,6 +6428,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_DPod, \
                                   'inverseprocess' : self._inverseprocess_UPCS, \
+                                  'recorded_category' : 'DPod', \
                                   'info_retention' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'singlct', \
@@ -6125,6 +6437,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_ord3, \
                                   'inverseprocess' : self._inverseprocess_ord3, \
+                                  'recorded_category' : 'ord3', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
@@ -6134,6 +6447,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_DPod, \
                                   'inverseprocess' : self._inverseprocess_UPCS, \
+                                  'recorded_category' : 'DPod', \
                                   'info_retention' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'singlct', \
@@ -6142,6 +6456,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_qbt1, \
                                   'postprocess' : None, \
                                   'inverseprocess' : self._inverseprocess_qbt1, \
+                                  'recorded_category' : 'qbt1', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
@@ -6151,6 +6466,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_qbt1, \
                                   'postprocess' : None, \
                                   'inverseprocess' : self._inverseprocess_qbt1, \
+                                  'recorded_category' : 'qbt1', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'defaultparams' : {'suffix' : 'qbt2', \
@@ -6163,6 +6479,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_qbt1, \
                                   'postprocess' : None, \
                                   'inverseprocess' : self._inverseprocess_qbt1, \
+                                  'recorded_category' : 'qbt1', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'defaultparams' : {'suffix' : 'qbt3', \
@@ -6175,6 +6492,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_qbt1, \
                                   'postprocess' : None, \
                                   'inverseprocess' : self._inverseprocess_qbt1, \
+                                  'recorded_category' : 'qbt1', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'defaultparams' : {'suffix' : 'qbt4', \
@@ -6188,6 +6506,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_numerical, \
                                   'inverseprocess' : self._inverseprocess_nmbr, \
+                                  'recorded_category' : 'nmbr', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
@@ -6197,6 +6516,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_numerical, \
                                   'inverseprocess' : self._inverseprocess_nmbr, \
+                                  'recorded_category' : 'nmbr', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
@@ -6206,6 +6526,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_mnmx, \
                                   'inverseprocess' : self._inverseprocess_mnmx, \
+                                  'recorded_category' : 'mnmx', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
@@ -6215,6 +6536,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_mnmx, \
                                   'inverseprocess' : self._inverseprocess_mnmx, \
+                                  'recorded_category' : 'mnmx', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
@@ -6223,36 +6545,42 @@ class AutoMunge:
     process_dict.update({'NArw' : {'dualprocess' : None, \
                                   'singleprocess' : self._process_NArw, \
                                   'postprocess' : None, \
+                                  'recorded_category' : 'NArw', \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'boolexclude', \
                                   'labelctgy' : 'NArw'}})
     process_dict.update({'NAr2' : {'dualprocess' : None, \
                                   'singleprocess' : self._process_NArw, \
                                   'postprocess' : None, \
+                                  'recorded_category' : 'NArw', \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'boolexclude', \
                                   'labelctgy' : 'NArw'}})
     process_dict.update({'NAr3' : {'dualprocess' : None, \
                                   'singleprocess' : self._process_NArw, \
                                   'postprocess' : None, \
+                                  'recorded_category' : 'NArw', \
                                   'NArowtype' : 'positivenumeric', \
                                   'MLinfilltype' : 'boolexclude', \
                                   'labelctgy' : 'NArw'}})
     process_dict.update({'NAr4' : {'dualprocess' : None, \
                                   'singleprocess' : self._process_NArw, \
                                   'postprocess' : None, \
+                                  'recorded_category' : 'NArw', \
                                   'NArowtype' : 'nonnegativenumeric', \
                                   'MLinfilltype' : 'boolexclude', \
                                   'labelctgy' : 'NArw'}})
     process_dict.update({'NAr5' : {'dualprocess' : None, \
                                   'singleprocess' : self._process_NArw, \
                                   'postprocess' : None, \
+                                  'recorded_category' : 'NArw', \
                                   'NArowtype' : 'integer', \
                                   'MLinfilltype' : 'boolexclude', \
                                   'labelctgy' : 'NArw'}})
     process_dict.update({'null' : {'dualprocess' : None, \
                                   'singleprocess' : self._process_null, \
                                   'postprocess' : None, \
+                                  'recorded_category' : 'null', \
                                   'inplace_option' : False, \
                                   'NArowtype' : 'exclude', \
                                   'MLinfilltype' : 'exclude', \
@@ -6261,6 +6589,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_copy, \
                                   'postprocess' : None, \
                                   'inverseprocess' : self._inverseprocess_excl, \
+                                  'recorded_category' : 'copy', \
                                   'info_retention' : True, \
                                   'NArowtype' : 'exclude', \
                                   'MLinfilltype' : 'exclude', \
@@ -6269,6 +6598,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_excl, \
                                   'postprocess' : None, \
                                   'inverseprocess' : self._inverseprocess_excl, \
+                                  'recorded_category' : 'excl', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'exclude', \
@@ -6278,6 +6608,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_exc2, \
                                   'inverseprocess' : self._inverseprocess_UPCS, \
+                                  'recorded_category' : 'exc2', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
@@ -6287,6 +6618,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_exc2, \
                                   'inverseprocess' : self._inverseprocess_UPCS, \
+                                  'recorded_category' : 'exc2', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
@@ -6296,6 +6628,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_exc2, \
                                   'inverseprocess' : self._inverseprocess_UPCS, \
+                                  'recorded_category' : 'exc2', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
@@ -6305,6 +6638,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_exc5, \
                                   'inverseprocess' : self._inverseprocess_UPCS, \
+                                  'recorded_category' : 'exc5', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'integer', \
@@ -6314,6 +6648,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_exc2, \
                                   'inverseprocess' : self._inverseprocess_UPCS, \
+                                  'recorded_category' : 'exc2', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
@@ -6323,6 +6658,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_exc5, \
                                   'inverseprocess' : self._inverseprocess_UPCS, \
+                                  'recorded_category' : 'exc5', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'integer', \
@@ -6332,6 +6668,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_exc5, \
                                   'inverseprocess' : self._inverseprocess_UPCS, \
+                                  'recorded_category' : 'exc5', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'integer', \
@@ -6341,6 +6678,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_exc5, \
                                   'inverseprocess' : self._inverseprocess_UPCS, \
+                                  'recorded_category' : 'exc5', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'integer', \
@@ -6349,6 +6687,7 @@ class AutoMunge:
     process_dict.update({'shfl' : {'dualprocess' : None, \
                                   'singleprocess' : self._process_shfl, \
                                   'postprocess' : None, \
+                                  'recorded_category' : 'shfl', \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'exclude', \
                                   'MLinfilltype' : 'exclude', \
@@ -6357,6 +6696,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_numerical, \
                                   'inverseprocess' : self._inverseprocess_nmbr, \
+                                  'recorded_category' : 'nmbr', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
@@ -6366,6 +6706,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_1010, \
                                   'inverseprocess' : self._inverseprocess_1010, \
+                                  'recorded_category' : '1010', \
                                   'info_retention' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : '1010', \
@@ -6374,6 +6715,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_ord3, \
                                   'inverseprocess' : self._inverseprocess_ord3, \
+                                  'recorded_category' : 'ord3', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
@@ -6383,6 +6725,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_text, \
                                   'inverseprocess' : self._inverseprocess_text, \
+                                  'recorded_category' : 'text', \
                                   'info_retention' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'multirt', \
@@ -6391,6 +6734,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_binary, \
                                   'inverseprocess' : self._inverseprocess_bnry, \
+                                  'recorded_category' : 'bnry', \
                                   'info_retention' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'binary', \
@@ -6398,12 +6742,14 @@ class AutoMunge:
     process_dict.update({'datd' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
+                                  'recorded_category' : False, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'mdsn'}})
     process_dict.update({'nuld' : {'dualprocess' : None, \
                                   'singleprocess' : self._process_null, \
                                   'postprocess' : None, \
+                                  'recorded_category' : 'null', \
                                   'inplace_option' : False, \
                                   'NArowtype' : 'exclude', \
                                   'MLinfilltype' : 'exclude', \
@@ -6412,6 +6758,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_exc2, \
                                   'inverseprocess' : self._inverseprocess_UPCS, \
+                                  'recorded_category' : 'exc2', \
                                   'info_retention' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
@@ -6420,6 +6767,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_numerical, \
                                   'inverseprocess' : self._inverseprocess_nmbr, \
+                                  'recorded_category' : 'nmbr', \
                                   'info_retention' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'numeric', \
@@ -6428,6 +6776,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_text, \
                                   'inverseprocess' : self._inverseprocess_text, \
+                                  'recorded_category' : 'text', \
                                   'info_retention' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'multirt', \
@@ -6436,6 +6785,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_ordl, \
                                   'inverseprocess' : self._inverseprocess_ordl, \
+                                  'recorded_category' : 'ordl', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
@@ -6445,6 +6795,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_ordl, \
                                   'inverseprocess' : self._inverseprocess_ordl, \
+                                  'recorded_category' : 'ordl', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'justNaN', \
@@ -6454,6 +6805,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_text, \
                                   'inverseprocess' : self._inverseprocess_text, \
+                                  'recorded_category' : 'text', \
                                   'info_retention' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'multirt', \
@@ -6462,6 +6814,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_binary, \
                                   'inverseprocess' : self._inverseprocess_bnry, \
+                                  'recorded_category' : 'bnry', \
                                   'info_retention' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'multirt', \
@@ -6470,6 +6823,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_smth, \
                                   'inverseprocess' : self._inverseprocess_smth, \
+                                  'recorded_category' : 'smth', \
                                   'info_retention' : True, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'exclude', \
@@ -6478,6 +6832,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_smth, \
                                   'inverseprocess' : self._inverseprocess_smth, \
+                                  'recorded_category' : 'smth', \
                                   'info_retention' : True, \
                                   'defaultparams' : {'LSfit' : True}, \
                                   'NArowtype' : 'justNaN', \
@@ -6486,6 +6841,7 @@ class AutoMunge:
     process_dict.update({'lbda' : {'dualprocess' : None, \
                                   'singleprocess' : None, \
                                   'postprocess' : None, \
+                                  'recorded_category' : False, \
                                   'NArowtype' : 'datetime', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'mdsn'}})
@@ -6493,6 +6849,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_absl, \
                                   'inverseprocess' : self._inverseprocess_absl, \
+                                  'recorded_category' : 'absl', \
                                   'info_retention' : False, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'nonzeronumeric', \
@@ -6502,6 +6859,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_logn, \
                                   'inverseprocess' : self._inverseprocess_logn, \
+                                  'recorded_category' : 'logn', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'positivenumeric', \
@@ -6511,6 +6869,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_qbt1, \
                                   'postprocess' : None, \
                                   'inverseprocess' : self._inverseprocess_qbt1, \
+                                  'recorded_category' : 'qbt1', \
                                   'info_retention' : True, \
                                   'inplace_option' : True, \
                                   'defaultparams' : {'suffix' : 'lgnr',
@@ -6524,6 +6883,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_copy, \
                                   'postprocess' : None, \
                                   'inverseprocess' : self._inverseprocess_excl, \
+                                  'recorded_category' : 'copy', \
                                   'info_retention' : True, \
                                   'defaultparams' : {'suffix' : '_'}, \
                                   'NArowtype' : 'exclude', \
@@ -6533,6 +6893,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_copy, \
                                   'postprocess' : None, \
                                   'inverseprocess' : self._inverseprocess_excl, \
+                                  'recorded_category' : 'copy', \
                                   'info_retention' : True, \
                                   'defaultparams' : {'suffix' : '_'}, \
                                   'NArowtype' : 'exclude', \
@@ -6542,6 +6903,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_mltp, \
                                   'inverseprocess' : self._inverseprocess_mltp, \
+                                  'recorded_category' : 'mltp', \
                                   'info_retention' : False, \
                                   'inplace_option' : True, \
                                   'defaultparams' : {'multiply' : -1}, \
@@ -6552,6 +6914,7 @@ class AutoMunge:
                                   'singleprocess' : None, \
                                   'postprocess' : self._postprocess_bkt3, \
                                   'inverseprocess' : self._inverseprocess_bkt3, \
+                                  'recorded_category' : 'bkt3', \
                                   'info_retention' : False, \
                                   'inplace_option' : True, \
                                   'defaultparams' : {'buckets' : [0]}, \
@@ -6736,6 +7099,36 @@ class AutoMunge:
     #return column_dict, postprocess_dict
     return postprocess_dict
 
+  def _populate_columnkey_dict(self, column_dict_list, postprocess_dict):
+    """
+    #columnkey_dict is used in postprocess functions
+    #to derive a normkey when returned column isn't known or may return emtpy set
+    #
+    #populates in the form:
+    #columnkey_dict.update({inputcolumn : {recorded_category : categorylist_aggregate}})
+    #where categorylist_aggregate is a combination of all categorylists 
+    #derived from some functions with recorded category applied to a given input column
+    #  
+    #Here column_dict_list is the list of dictionaries returned from a single processing function
+    """
+
+    if len(column_dict_list) > 0:
+
+      inputcolumn = column_dict_list[0][list(column_dict_list[0])[0]]['inputcolumn']
+      if inputcolumn not in postprocess_dict['columnkey_dict']:
+        postprocess_dict['columnkey_dict'].update({inputcolumn : {}})
+
+      category = column_dict_list[0][list(column_dict_list[0])[0]]['category']
+      if category not in postprocess_dict['columnkey_dict'][inputcolumn]:
+        postprocess_dict['columnkey_dict'][inputcolumn].update({category : []})
+
+      for column_dict in column_dict_list:
+
+        categorylist_entry = list(column_dict)[0]
+        postprocess_dict['columnkey_dict'][inputcolumn][category].append(categorylist_entry)
+
+    return postprocess_dict
+  
   def _processcousin(self, df_train, df_test, column, cousin, origcategory, final_upstream, \
                      process_dict, transform_dict, postprocess_dict, assign_param):
     '''
@@ -6789,6 +7182,9 @@ class AutoMunge:
       df_train, df_test, column_dict_list = \
       process_dict[cousin]['dualprocess'](df_train, df_test, column, origcategory, \
                                           postprocess_dict, params)
+      
+      #columnkey_dict used in postprocess functions in a few cases to derive a normkey
+      postprocess_dict = self._populate_columnkey_dict(column_dict_list, postprocess_dict)
 
     #else if this is a single process function process train and test seperately
     elif 'singleprocess' in process_dict[cousin] \
@@ -6819,6 +7215,9 @@ class AutoMunge:
       df_test, _1 = \
       process_dict[cousin]['singleprocess'](df_test, column, origcategory, \
                                             postprocess_dict, params)
+      
+      #columnkey_dict used in postprocess functions in a few cases to derive a normkey
+      postprocess_dict = self._populate_columnkey_dict(column_dict_list, postprocess_dict)
 
     #update the columnslist and normalization_dict for both column_dict and postprocess_dict
     for column_dict in column_dict_list:
@@ -6883,6 +7282,9 @@ class AutoMunge:
       df_train, df_test, column_dict_list = \
       process_dict[parent]['dualprocess'](df_train, df_test, column, origcategory, \
                                           postprocess_dict, params)
+      
+      #columnkey_dict used in postprocess functions in a few cases to derive a normkey
+      postprocess_dict = self._populate_columnkey_dict(column_dict_list, postprocess_dict)
 
     #else if this is a single process function process train and test seperately
     elif 'singleprocess' in process_dict[parent] \
@@ -6913,6 +7315,9 @@ class AutoMunge:
       df_test, _1 = \
       process_dict[parent]['singleprocess'](df_test, column, origcategory, \
                                           postprocess_dict, params)
+      
+      #columnkey_dict used in postprocess functions in a few cases to derive a normkey
+      postprocess_dict = self._populate_columnkey_dict(column_dict_list, postprocess_dict)
 
     #update the columnslist and normalization_dict for both column_dict and postprocess_dict
     for column_dict in column_dict_list:
@@ -26990,71 +27395,6 @@ class AutoMunge:
     
     return result
   
-  def _check_normalization_dict(self, postprocess_dict):
-    """
-    #Double checks that any postprocess_dict['column_dict'] entries for
-    #normalization_dict don't have overlaps for those entries where
-    #postprocess functions use normalization_dict keys to 
-    #retrieve a column key
-
-    #in other words, for set of required unique normalizaiton_dict entry identifiers
-    #ensures they are only used in correct transformation categories
-
-    #these are required unique because of their use to access normkey in postprocess functions
-    #such as may be needed when we don't know in advance column headers of returned sets
-    #or for cases where original trasnform may have returned an empty set
-    #and in few cases also used to ensure if the same transform is applied multiple times in same family tree
-    #we are accessing the correct one based on passed parameters that may differentiate
-    #(for example may apply the same bin aggregator multiple times in same family tree but with different bin widths eg)
-    """
-
-    result = False
-
-    required_unique_normalization_dict_entries = \
-    {'textlabelsdict_text'  : 'text', \
-     'textlabelsdict_onht'  : 'onht', \
-     'powerlabelsdict_pwrs' : 'pwrs', \
-     'splt_newcolumns_splt' : 'splt', \
-     'splt_newcolumns_sp19' : 'sp19', \
-     'splt_newcolumns_sbst' : 'sbst', \
-     'splt_newcolumns_sbs3' : 'sbs3', \
-     'vocab_size_hash'      : 'hash', \
-     'bn_width_bnwd'        : 'bnwd', \
-     'bincount_bnep'        : 'bnep', \
-     'origbuckets_bkt1'     : 'bkt1', \
-     'origbuckets_bkt2'     : 'bkt2', \
-     'bincount_tlbn'        : 'tlbn', \
-     'buckets_tlbn'         : 'tlbn'}
-
-    for column_dict_entry in postprocess_dict['column_dict']:
-
-      if column_dict_entry in postprocess_dict['column_dict'][column_dict_entry]['normalization_dict']:
-
-        for normalization_dict_entry in postprocess_dict['column_dict'][column_dict_entry]['normalization_dict'][column_dict_entry]:
-
-          if normalization_dict_entry in required_unique_normalization_dict_entries:
-            
-            #note that postprocess_dict['column_dict'][column_dict_entry]['category'] will be
-            #the category recorded from the transformation function in column_dict
-            #which might not neccesarily be the category populated in family tree
-            #which is as intended 
-            #(a single transformation function may be associated with multiple process_dict category entries)
-            if required_unique_normalization_dict_entries[normalization_dict_entry] != \
-            postprocess_dict['column_dict'][column_dict_entry]['category']:
-
-              result = True
-
-              print("Warning of potential error for multi-generation family trees ")
-              print("from overlap in normalization_dict entry identifiers")
-              print("In a few cases for transforms with multicolumn derived sets")
-              print("The postprocess functions rely on uniquity of this item to dervie a key to access parameters")
-              print("potential overlap found for category ", postprocess_dict['column_dict'][column_dict_entry]['category'])
-              print("In regards to normalization_dict entry ", normalization_dict_entry)
-              print("Which overlaps with the category ", required_unique_normalization_dict_entries[normalization_dict_entry])
-              print("Overlap found for column ", column_dict_entry)
-
-    return result
-  
   def _check_columnheaders(self, columnheaders_list):
     """
     #Performs a validation that all of the column headers are unique
@@ -27118,6 +27458,11 @@ class AutoMunge:
           check_processdict_result = True
           print("error: invalid 'MLinfilltype' processdict entry for category: ", entry)
           print()
+          
+      if 'recorded_category' not in processdict[entry]:
+        check_processdict_result = True
+        print("error: processdict missing 'MLinfilltype' entry for category: ", entry)
+        print()
         
       if 'labelctgy' not in processdict[entry]:
         check_processdict_result = True
@@ -27183,6 +27528,10 @@ class AutoMunge:
         
         #if function poitner points to a category that itself has a functionpointer
         if 'functionpointer' in processdict[pointercategory]:
+          
+          if 'recorded_category' in processdict[pointercategory] \
+          and 'recorded_category' not in processdict[targetcategory]:
+            processdict[targetcategory]['recorded_category'] = processdict[pointercategory]['recorded_category']
           
           if 'inverseprocess' in processdict[pointercategory] \
           and 'inverseprocess' not in processdict[targetcategory]:
@@ -27250,6 +27599,10 @@ class AutoMunge:
             and 'inverseprocess' not in processdict[targetcategory]:
               processdict[targetcategory]['inverseprocess'] = processdict[pointercategory]['inverseprocess']
               
+            if 'recorded_category' in processdict[pointercategory] \
+            and 'recorded_category' not in processdict[targetcategory]:
+              processdict[targetcategory]['recorded_category'] = processdict[pointercategory]['recorded_category']
+              
             if 'info_retention' in processdict[pointercategory] \
             and 'info_retention' not in processdict[targetcategory]:
               processdict[targetcategory]['info_retention'] = processdict[pointercategory]['info_retention']
@@ -27293,6 +27646,10 @@ class AutoMunge:
         if 'inverseprocess' in process_dict[pointercategory] \
         and 'inverseprocess' not in processdict[targetcategory]:
           processdict[targetcategory]['inverseprocess'] = process_dict[pointercategory]['inverseprocess']
+          
+        if 'recorded_category' in process_dict[pointercategory] \
+        and 'recorded_category' not in processdict[targetcategory]:
+          processdict[targetcategory]['recorded_category'] = process_dict[pointercategory]['recorded_category']
         
         if 'info_retention' in process_dict[pointercategory] \
         and 'info_retention' not in processdict[targetcategory]:
@@ -29236,7 +29593,9 @@ class AutoMunge:
     #original train. The dictionary will be populated with an entry for each \
     #column post processing, and will contain a column specific and category \
     #specific (i.e. nmbr, bnry, text, date) set of variable.
-    postprocess_dict = {'column_dict' : {}, 'origcolumn' : {}, \
+    postprocess_dict = {'column_dict' : {}, \
+                        'columnkey_dict' : {}, \
+                        'origcolumn' : {}, \
                         'orig_noinplace' : [], \
                         'process_dict' : process_dict, \
                         'printstatus' : printstatus, \
@@ -29584,16 +29943,6 @@ class AutoMunge:
         print(" returned columns:")
         print(postprocess_dict['origcolumn'][labels_column]['columnkeylist'])
         print("")
-
-    #now that all transforms are applied on training set and labels
-    #we'll do quick validation of normalization_dict entries
-    
-    check_normalization_dict_result = \
-    self._check_normalization_dict(postprocess_dict)
-
-    miscparameters_results.update({'check_normalization_dict_result' : check_normalization_dict_result})
-
-    # inverse_final_assigncat = self._create_inverse_assigncat(final_assigncat)
 
     #now that we've pre-processed all of the columns, let's run through them again\
     #using infill to derive plug values for the previously missing cells
@@ -30060,7 +30409,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.15'
+    automungeversion = '6.16'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -30392,7 +30741,7 @@ class AutoMunge:
     postprocess_dict
 
   def _postprocessfamily(self, df_test, column, category, origcategory, process_dict, \
-                        transform_dict, postprocess_dict, columnkey, assign_param):
+                        transform_dict, postprocess_dict, assign_param):
     '''
     #as postmunge runs a for loop through each column, this is the  
     #first tier processing function applied which runs through the family primitives
@@ -30425,7 +30774,7 @@ class AutoMunge:
         #note we use the processparent function here
         df_test = \
         self._postprocessparent(df_test, column, sibling, origcategory, final_upstream, process_dict, \
-                              transform_dict, postprocess_dict, columnkey, assign_param)
+                              transform_dict, postprocess_dict, assign_param)
   
     #process the cousins (no downstream, supplemental)
     for cousin in transform_dict[category]['cousins']:
@@ -30436,7 +30785,7 @@ class AutoMunge:
         #note we use the processsibling function here
         df_test = \
         self._postprocesscousin(df_test, column, cousin, origcategory, final_upstream, process_dict, \
-                                transform_dict, postprocess_dict, columnkey, assign_param)
+                                transform_dict, postprocess_dict, assign_param)
   
     #process the parents (with downstream, with replacement)
     for parent in transform_dict[category]['parents']:
@@ -30446,7 +30795,7 @@ class AutoMunge:
       if parent != None:
         df_test = \
         self._postprocessparent(df_test, column, parent, origcategory, final_upstream, process_dict, \
-                              transform_dict, postprocess_dict, columnkey, assign_param)
+                              transform_dict, postprocess_dict, assign_param)
         
     #process the auntsuncles (no downstream, with replacement)
     for auntuncle in transform_dict[category]['auntsuncles']:
@@ -30456,7 +30805,7 @@ class AutoMunge:
       if auntuncle != None:
         df_test = \
         self._postprocesscousin(df_test, column, auntuncle, origcategory, final_upstream, process_dict, \
-                                transform_dict, postprocess_dict, columnkey, assign_param)
+                                transform_dict, postprocess_dict, assign_param)
 
   #     #if we had replacement transformations performed then delete the original column 
   #     #(circle of life)
@@ -30466,7 +30815,7 @@ class AutoMunge:
     return df_test
 
   def _postcircleoflife(self, df_test, column, category, origcategory, process_dict, \
-                        transform_dict, postprocess_dict, columnkey):
+                        transform_dict, postprocess_dict):
     '''
     This functino deletes source columns for family primitives that included replacement.
     '''
@@ -30499,7 +30848,7 @@ class AutoMunge:
     return df_test
 
   def _postprocesscousin(self, df_test, column, cousin, origcategory, final_upstream, process_dict, \
-                       transform_dict, postprocess_dict, columnkey, assign_param):
+                       transform_dict, postprocess_dict, assign_param):
     """
     #postprocesscousin is comparable to processcousin but applied in postmunge instead of automunge
     #a little simpler in that doesn't have to populate data structures, just applies transform functions
@@ -30539,6 +30888,11 @@ class AutoMunge:
           inplaceperformed = False
           params.update({'inplace' : False})
       
+      columnkey = []
+      if column in postprocess_dict['columnkey_dict']:
+        if process_dict[cousin]['recorded_category'] in postprocess_dict['columnkey_dict'][column]:
+          columnkey = postprocess_dict['columnkey_dict'][column][process_dict[cousin]['recorded_category']]
+      
       df_test = \
       process_dict[cousin]['postprocess'](df_test, column, postprocess_dict, \
                                             columnkey, params)
@@ -30572,7 +30926,7 @@ class AutoMunge:
     return df_test
 
   def _postprocessparent(self, df_test, column, parent, origcategory, final_upstream, process_dict, \
-                      transform_dict, postprocess_dict, columnkey, assign_param):
+                      transform_dict, postprocess_dict, assign_param):
     """
     #postprocessparent is comparable to processparent but applied in postmunge instead of automunge
     #a little simpler in that doesn't have to populate data structures, just applies transform functions
@@ -30617,6 +30971,11 @@ class AutoMunge:
         if ('inplace' in params and params['inplace'] is True):
           inplaceperformed = False
           params.update({'inplace' : False})
+
+      columnkey = []
+      if column in postprocess_dict['columnkey_dict']:
+        if process_dict[parent]['recorded_category'] in postprocess_dict['columnkey_dict'][column]:
+          columnkey = postprocess_dict['columnkey_dict'][column][process_dict[parent]['recorded_category']]
             
       df_test = \
       process_dict[parent]['postprocess'](df_test, column, postprocess_dict, \
@@ -30678,7 +31037,7 @@ class AutoMunge:
         #note the function applied is postprocessparent (using recursion)
         df_test = \
         self._postprocessparent(df_test, parentcolumn, niecenephew, origcategory, final_downstream, \
-                                process_dict, transform_dict, postprocess_dict, columnkey, assign_param)
+                                process_dict, transform_dict, postprocess_dict, assign_param)
         
     #process any friends
     for friend in transform_dict[parent]['friends']:
@@ -30689,7 +31048,7 @@ class AutoMunge:
         #note the function applied is processcousin
         df_test = \
         self._postprocesscousin(df_test, parentcolumn, friend, origcategory, final_downstream, \
-                                process_dict, transform_dict, postprocess_dict, columnkey, assign_param)
+                                process_dict, transform_dict, postprocess_dict, assign_param)
 
     #process any children
     for child in transform_dict[parent]['children']:
@@ -30701,7 +31060,7 @@ class AutoMunge:
         #parent column
         df_test = \
         self._postprocessparent(df_test, parentcolumn, child, origcategory, final_downstream, process_dict, \
-                                transform_dict, postprocess_dict, columnkey, assign_param)
+                                transform_dict, postprocess_dict, assign_param)
 
     #process any coworkers
     for coworker in transform_dict[parent]['coworkers']:
@@ -30712,7 +31071,7 @@ class AutoMunge:
         #note the function applied is processcousin
         df_test = \
         self._postprocesscousin(df_test, parentcolumn, coworker, origcategory, final_downstream, \
-                                process_dict, transform_dict, postprocess_dict, columnkey, assign_param)
+                                process_dict, transform_dict, postprocess_dict, assign_param)
 
     return df_test
   
@@ -31408,25 +31767,8 @@ class AutoMunge:
     #retrieve a columnkey
     normkey = False
 
-    if normkey is False:
-
-      if column in postprocess_dict['origcolumn']:
-
-        columnkeylist = postprocess_dict['origcolumn'][column]['columnkeylist']
-
-      else:
-
-        origcolumn = postprocess_dict['column_dict'][column]['origcolumn']
-
-        columnkeylist = postprocess_dict['origcolumn'][origcolumn]['columnkeylist']
-
-      for columnkey in columnkeylist:
-        
-        if column == postprocess_dict['column_dict'][columnkey]['inputcolumn']:
-
-          if 'textlabelsdict_onht' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
-
-            normkey = columnkey
+    if len(columnkey) > 0:      
+      normkey = columnkey[0]
           
     #normkey is False when process function returns emtpy set
     if normkey is not False:
@@ -31533,25 +31875,8 @@ class AutoMunge:
     
     #retrieve normkey
     normkey = False
-    if normkey is False:
-
-      if column in postprocess_dict['origcolumn']:
-
-        columnkeylist = postprocess_dict['origcolumn'][column]['columnkeylist']
-
-      else:
-
-        origcolumn = postprocess_dict['column_dict'][column]['origcolumn']
-
-        columnkeylist = postprocess_dict['origcolumn'][origcolumn]['columnkeylist']
-
-      for columnkey in columnkeylist:
-        
-        if column == postprocess_dict['column_dict'][columnkey]['inputcolumn']:
-
-          if 'textlabelsdict_text' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
-
-            normkey = columnkey
+    if len(columnkey) > 0:      
+      normkey = columnkey[0]
           
     #normkey is False when process function returns empty set
     if normkey is not False:
@@ -31890,25 +32215,14 @@ class AutoMunge:
     #know what the returned columns titles are yet
     
     normkey = False
-    
-    if column in postprocess_dict['origcolumn']:
-      
-      columnkeylist = postprocess_dict['origcolumn'][column]['columnkeylist']
-      
-    else:
-      
-      origcolumn = postprocess_dict['column_dict'][column]['origcolumn']
-      
-      columnkeylist = postprocess_dict['origcolumn'][origcolumn]['columnkeylist']
-    
-    for columnkey in columnkeylist:
-      
-      if column == postprocess_dict['column_dict'][columnkey]['inputcolumn']:
 
-        if 'splt_newcolumns_splt' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey] \
-        and postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]['suffix'] == suffix:
+    for columnkey_entry in columnkey:
+        
+      if suffix == postprocess_dict['column_dict'][columnkey_entry]['normalization_dict'][columnkey_entry]['suffix']:
 
-          normkey = columnkey
+        normkey = columnkey_entry
+
+        break
         
     #normkey is False when process function returns empty set
     if normkey is not False:
@@ -32173,25 +32487,14 @@ class AutoMunge:
     #know what the returned columns titles are yet
     
     normkey = False
-    
-    if column in postprocess_dict['origcolumn']:
-      
-      columnkeylist = postprocess_dict['origcolumn'][column]['columnkeylist']
-      
-    else:
-      
-      origcolumn = postprocess_dict['column_dict'][column]['origcolumn']
-      
-      columnkeylist = postprocess_dict['origcolumn'][origcolumn]['columnkeylist']
-    
-    for columnkey in columnkeylist:
-      
-      if column == postprocess_dict['column_dict'][columnkey]['inputcolumn']:
 
-        if 'splt_newcolumns_sp19' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey] \
-        and postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]['suffix'] == suffix:
+    for columnkey_entry in columnkey:
+        
+      if suffix == postprocess_dict['column_dict'][columnkey_entry]['normalization_dict'][columnkey_entry]['suffix']:
 
-          normkey = columnkey
+        normkey = columnkey_entry
+
+        break
         
     #normkey is False when process function returns empty set
     if normkey is not False:
@@ -32364,25 +32667,14 @@ class AutoMunge:
     #know what the returned columns titles are yet
     
     normkey = False
-    
-    if column in postprocess_dict['origcolumn']:
-      
-      columnkeylist = postprocess_dict['origcolumn'][column]['columnkeylist']
-      
-    else:
-      
-      origcolumn = postprocess_dict['column_dict'][column]['origcolumn']
-      
-      columnkeylist = postprocess_dict['origcolumn'][origcolumn]['columnkeylist']
-    
-    for columnkey in columnkeylist:
-      
-      if column == postprocess_dict['column_dict'][columnkey]['inputcolumn']:
 
-        if 'splt_newcolumns_sbst' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey] \
-        and postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]['suffix'] == suffix:
+    for columnkey_entry in columnkey:
+        
+      if suffix == postprocess_dict['column_dict'][columnkey_entry]['normalization_dict'][columnkey_entry]['suffix']:
 
-          normkey = columnkey
+        normkey = columnkey_entry
+
+        break
         
     #normkey is False when process function returns empty set
     if normkey is not False:
@@ -32496,25 +32788,13 @@ class AutoMunge:
     #know what the returned columns titles are yet
     
     normkey = False
-    
-    if column in postprocess_dict['origcolumn']:
-      
-      columnkeylist = postprocess_dict['origcolumn'][column]['columnkeylist']
-      
-    else:
-      
-      origcolumn = postprocess_dict['column_dict'][column]['origcolumn']
-      
-      columnkeylist = postprocess_dict['origcolumn'][origcolumn]['columnkeylist']
-    
-    for columnkey in columnkeylist:
-      
-      if column == postprocess_dict['column_dict'][columnkey]['inputcolumn']:
 
-        if 'splt_newcolumns_sbs3' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey] \
-        and postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]['suffix'] == suffix:
+    for columnkey_entry in columnkey:
+        
+      if suffix == postprocess_dict['column_dict'][columnkey_entry]['normalization_dict'][columnkey_entry]['suffix']:
 
-          normkey = columnkey
+        normkey = columnkey_entry
+        break
         
     #normkey is False when process function returns empty set
     if normkey is not False:
@@ -32697,25 +32977,9 @@ class AutoMunge:
     
     #retrieve normkey
     normkey = False
-    if normkey is False:
 
-      if column in postprocess_dict['origcolumn']:
-
-        columnkeylist = postprocess_dict['origcolumn'][column]['columnkeylist']
-
-      else:
-
-        origcolumn = postprocess_dict['column_dict'][column]['origcolumn']
-
-        columnkeylist = postprocess_dict['origcolumn'][origcolumn]['columnkeylist']
-
-      for columnkey in columnkeylist:
-        
-        if column == postprocess_dict['column_dict'][columnkey]['inputcolumn']:
-
-          if 'vocab_size_hash' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
-
-            normkey = columnkey
+    if len(columnkey) > 0:
+      normkey = columnkey[0]
           
     #normkey is False when process function returns empty set
     if normkey is not False:
@@ -34649,24 +34913,9 @@ class AutoMunge:
     
     #retrieve normalization parameters from postprocess_dict
     normkey = False
-    
-    if column in postprocess_dict['origcolumn']:
-      
-      columnkeylist = postprocess_dict['origcolumn'][column]['columnkeylist']
-      
-    else:
-      
-      origcolumn = postprocess_dict['column_dict'][column]['origcolumn']
-      
-      columnkeylist = postprocess_dict['origcolumn'][origcolumn]['columnkeylist']
-    
-    for columnkey in columnkeylist:
-      
-      if column == postprocess_dict['column_dict'][columnkey]['inputcolumn']:
 
-        if 'powerlabelsdict_pwrs' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
-
-          normkey = columnkey
+    if len(columnkey) > 0:
+      normkey = columnkey[0]
         
     #normkey is False when process function returns empty set
     if normkey is not False:
@@ -35059,27 +35308,14 @@ class AutoMunge:
     #know what the returned columns titles are yet
     
     normkey = False
-    
-    if column in postprocess_dict['origcolumn']:
-      
-      columnkeylist = postprocess_dict['origcolumn'][column]['columnkeylist']
-      
-    else:
-      
-      origcolumn = postprocess_dict['column_dict'][column]['origcolumn']
-      
-      columnkeylist = postprocess_dict['origcolumn'][origcolumn]['columnkeylist']
-    
-    for columnkey in columnkeylist:
-      
-      if column == postprocess_dict['column_dict'][columnkey]['inputcolumn']:
 
-        if 'bn_width_bnwd' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
+    for columnkey_entry in columnkey:
+        
+      if suffix == postprocess_dict['column_dict'][columnkey_entry]['normalization_dict'][columnkey_entry]['suffix'] \
+      and bn_width == postprocess_dict['column_dict'][columnkey_entry]['normalization_dict'][columnkey_entry]['bn_width_bnwd']:
 
-          if postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]['bn_width_bnwd'] == bn_width \
-          and postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]['suffix'] == suffix:
-
-            normkey = columnkey
+        normkey = columnkey_entry
+        break
         
     #normkey is False when process function returns empty set
     if normkey is not False:
@@ -35214,27 +35450,14 @@ class AutoMunge:
     #know what the returned columns titles are yet
     
     normkey = False
-    
-    if column in postprocess_dict['origcolumn']:
-      
-      columnkeylist = postprocess_dict['origcolumn'][column]['columnkeylist']
-      
-    else:
-      
-      origcolumn = postprocess_dict['column_dict'][column]['origcolumn']
-      
-      columnkeylist = postprocess_dict['origcolumn'][origcolumn]['columnkeylist']
-    
-    for columnkey in columnkeylist:
-      
-      if column == postprocess_dict['column_dict'][columnkey]['inputcolumn']:
 
-        if 'bincount_bnep' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
+    for columnkey_entry in columnkey:
+        
+      if suffix == postprocess_dict['column_dict'][columnkey_entry]['normalization_dict'][columnkey_entry]['suffix'] \
+      and bincount == postprocess_dict['column_dict'][columnkey_entry]['normalization_dict'][columnkey_entry]['bincount_bnep']:
 
-          if postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]['bincount_bnep'] == bincount \
-          and postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]['suffix'] == suffix:
-
-            normkey = columnkey
+        normkey = columnkey_entry
+        break
         
     #normkey is False when process function returns empty set
     if normkey is not False:
@@ -35389,29 +35612,14 @@ class AutoMunge:
     #know what the returned columns titles are yet
     
     normkey = False
-    
-    if column in postprocess_dict['origcolumn']:
-      
-      columnkeylist = postprocess_dict['origcolumn'][column]['columnkeylist']
-      
-    else:
-      
-      origcolumn = postprocess_dict['column_dict'][column]['origcolumn']
-      
-      columnkeylist = postprocess_dict['origcolumn'][origcolumn]['columnkeylist']
-    
-    for columnkey in columnkeylist:
-      
-      if column == postprocess_dict['column_dict'][columnkey]['inputcolumn']:
+
+    for columnkey_entry in columnkey:
         
-        #since buckets may take precedence over bincount, we'll inspect both
-        if 'bincount_tlbn' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey] \
-        and 'buckets_tlbn' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
+      if bincount == postprocess_dict['column_dict'][columnkey_entry]['normalization_dict'][columnkey_entry]['bincount_tlbn'] \
+      and buckets == postprocess_dict['column_dict'][columnkey_entry]['normalization_dict'][columnkey_entry]['buckets_tlbn']:
 
-          if postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]['bincount_tlbn'] == bincount \
-          and postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]['buckets_tlbn'] == buckets:
-
-            normkey = columnkey
+        normkey = columnkey_entry
+        break
         
     #normkey is False when process function returns empty set
     if normkey is not False:
@@ -35520,26 +35728,13 @@ class AutoMunge:
     #know what the returned columns titles are yet
     
     normkey = False
-    
-    if column in postprocess_dict['origcolumn']:
-      
-      columnkeylist = postprocess_dict['origcolumn'][column]['columnkeylist']
-      
-    else:
-      
-      origcolumn = postprocess_dict['column_dict'][column]['origcolumn']
-      
-      columnkeylist = postprocess_dict['origcolumn'][origcolumn]['columnkeylist']
-      
-    for columnkey in columnkeylist:
-      
-      if column == postprocess_dict['column_dict'][columnkey]['inputcolumn']:
 
-        if 'origbuckets_bkt1' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
+    for columnkey_entry in columnkey:
+        
+      if buckets == postprocess_dict['column_dict'][columnkey_entry]['normalization_dict'][columnkey_entry]['origbuckets_bkt1']:
 
-          if postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]['origbuckets_bkt1'] == buckets:
-
-            normkey = columnkey
+        normkey = columnkey_entry
+        break
           
     #normkey is False when process function returns empty set
     if normkey is not False:
@@ -35602,26 +35797,13 @@ class AutoMunge:
     #know what the returned columns titles are yet
     
     normkey = False
-    
-    if column in postprocess_dict['origcolumn']:
-      
-      columnkeylist = postprocess_dict['origcolumn'][column]['columnkeylist']
-      
-    else:
-      
-      origcolumn = postprocess_dict['column_dict'][column]['origcolumn']
-      
-      columnkeylist = postprocess_dict['origcolumn'][origcolumn]['columnkeylist']
-    
-    for columnkey in columnkeylist:
-      
-      if column == postprocess_dict['column_dict'][columnkey]['inputcolumn']:
 
-        if 'origbuckets_bkt2' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
+    for columnkey_entry in columnkey:
+        
+      if buckets == postprocess_dict['column_dict'][columnkey_entry]['normalization_dict'][columnkey_entry]['origbuckets_bkt2']:
 
-          if postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]['origbuckets_bkt2'] == buckets:
-
-            normkey = columnkey
+        normkey = columnkey_entry
+        break
         
     #normkey is False when process function returns empty set
     if normkey is not False:
@@ -37705,7 +37887,6 @@ class AutoMunge:
     #processing function will be based on evaluation of train set
     for column in columns_train:
 
-      columnkey = postprocess_dict['origcolumn'][column]['columnkey']        
       #traincategory = postprocess_dict['column_dict'][columnkey]['origcategory']
       traincategory = postprocess_dict['origcolumn'][column]['category']
 
@@ -37756,12 +37937,12 @@ class AutoMunge:
       #process family
       df_test = \
       self._postprocessfamily(df_test, column, category, category, process_dict, \
-                            transform_dict, postprocess_dict, columnkey, assign_param)
+                            transform_dict, postprocess_dict, assign_param)
 
       #delete columns subject to replacement
       df_test = \
       self._postcircleoflife(df_test, column, category, category, process_dict, \
-                            transform_dict, postprocess_dict, columnkey)
+                            transform_dict, postprocess_dict)
 
 #         #now we'll apply the floatprecision transformation
 #         columnkeylist = postprocess_dict['origcolumn'][column]['columnkeylist']
@@ -37812,12 +37993,12 @@ class AutoMunge:
       #process family
       df_testlabels = \
       self._postprocessfamily(df_testlabels, labels_column, labelscategory, labelscategory, process_dict, \
-                             transform_dict, postprocess_dict, columnkey, assign_param)
+                             transform_dict, postprocess_dict, assign_param)
 
       #delete columns subject to replacement
       df_testlabels = \
       self._postcircleoflife(df_testlabels, labels_column, labelscategory, labelscategory, process_dict, \
-                            transform_dict, postprocess_dict, columnkey)
+                            transform_dict, postprocess_dict)
       
       #now we'll apply the floatprecision transformation
 #       columnkeylist = postprocess_dict['origcolumn'][labels_column]['columnkeylist']
