@@ -1296,6 +1296,7 @@ to the library is a corresponding processdict entry not required. We'll describe
 processdict =  {'newt' : {'dualprocess' : am._process_mnmx, \
                           'singleprocess' : None, \
                           'postprocess' : am._postprocess_mnmx, \
+			  'recorded_category' : 'mnmx', \
                           'NArowtype' : 'numeric', \
                           'MLinfilltype' : 'numeric', \
                           'labelctgy' : 'mnmx'}}
@@ -1319,6 +1320,11 @@ processdict =  {'newt' : {'dualprocess' : am._process_mnmx, \
 #postprocess: for passing a processing function in which normalization 
 #             parameters originally derived from the train set are applied
 #             to seperately process a test set
+
+#recorded_category: the transformation category recorded by the transformation function
+#                   and returned in the column_dict data structure. Note this may be different
+#                   than the transfomration category applied in family tree since a single
+#                   transformation function may be associated with multiple transfomration categories
 
 #NArowtype: can be entries of {'numeric', 'integer', 'justNaN', 'exclude', 
 #                              'positivenumeric', 'nonnegativenumeric', 
@@ -1370,6 +1376,7 @@ processdict =  {'newt' : {'dualprocess' : am._process_mnmx, \
                           'singleprocess' : None, \
                           'postprocess' : am._postprocess_mnmx, \
                           'inverseprocess' : am._inverseprocess_mnmx, \
+			  'recorded_category' : 'mnmx', \
                           'info_retention' : False, \
                           'NArowtype' : 'numeric', \
                           'MLinfilltype' : 'numeric', \
@@ -1390,6 +1397,7 @@ processdict =  {'DLmm' : {'dualprocess' : am._process_DPmm, \
                           'singleprocess' : None, \
                           'postprocess' : am._postprocess_DPmm, \
                           'inverseprocess' : am._inverseprocess_UPCS, \
+			  'recorded_category' : 'DPmm', \
                           'info_retention' : True, \
                           'defaultparams' : {'noisedistribution' : 'laplace'}, \
                           'NArowtype' : 'numeric', \
@@ -3927,8 +3935,6 @@ Note that when inversion is performed those entries without recovery are returne
 - 'Automunge_index': a reserved column header for index columns returned in ID sets. When automunge(.) is run the returned ID sets are
 populated with an index matching order of rows from original returned set, note that if this string is already present in the ID sets
 it will instead populate as 'Automunge_index_' + a 12 digit random integer associated with the application number.
-- for custom defined transformation functions, there are a small number of reserved normalization_dict key strings 
-which are documented in code base under \_check_normalization_dict function
 
 Note that results of various validation checks such as for column header overlaps and other potential bugs are returned from 
 automunge(.) in the postprocess_dict as postprocess_dict['miscparameters_results'], and returned from postmunge(.) in the postreports_dict
@@ -7440,9 +7446,9 @@ def postprocess_mnm3(mdf_test, column, postprocess_dict, columnkey, params={}):
   #column is the string of the column header
   #postprocess_dict is how we carry packets of data between the 
   #functions in automunge and postmunge
-  #columnkey is a key used to access stuff in postprocess_dict if needed
-  #(columnkey is only valid for upstream primitive entries, if you also want to use function
-  #as a downstream category we have to recreate a columnkey such as follows for normkey)
+  #columnkey is a list of columns returned from all instances of this transformation function applied to same inputcolumn
+  #(columnkey may be help to derive a normkey if headers aren't known in advance or function may return an empty set,
+  #for an example of this use in codebase refer to function _postprocess_bnwd)
   #and params are any column specific parameters to be passed by user in assignparam
 
   #retrieve normalization parameters from postprocess_dict
