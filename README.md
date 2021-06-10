@@ -720,7 +720,6 @@ automation can be overwritten to a specific column with the assigncat parameter,
 assign the column to exc8 instead of exc5. Note that 'infill'
 includes support for NArw aggregation with NArw_marker parameter.
 
-
 * binstransform: a boolean identifier _(True/False)_ which indicates if all
 default numerical sets will receive bin processing such as to generate child
 columns with boolean identifiers for number of standard deviations from
@@ -807,11 +806,17 @@ NArw columns are only retained for those sets corresponding to columns that "mad
 are overwritten with the returned train and test sets. This reduces memory overhead.
 For example, to take advantage with reduced memory overhead you could call automunge(.) as:
 ```
-train, train_ID, labels, \
+df_train, train_ID, labels, \
 val, val_ID, val_labels, \
-test, test_ID, test_labels, \
+df_test, test_ID, test_labels, \
 postprocess_dict = \
 am.automunge(df_train, df_test=df_test, inplace=True)
+```
+Note that this "inplace" option is not to be confused with the default inplace conduction of transforms
+that may impact grouping coherence of columns dervied from same feature.
+That other inplace option can be deactivated in assignparam, as may be desired for grouping coherence.
+```
+assignparam = {'global_assignparam' : {'inplace' : False}}
 ```
 
 * Binary: a dimensionality reduction technique whereby the set of columns
@@ -1714,9 +1719,9 @@ will print status of processing during operation. Defaults to True.
 is overwritten with the returned test set. This reduces memory overhead.
 For example, to take advantage with reduced memory overhead you could call postmunge(.) as:
 ```
-test, test_ID, test_labels, \
+df_test, test_ID, test_labels, \
 postreports_dict = \
-am.postmunge(postprocess_dict, df_test, inplace = False)
+am.postmunge(postprocess_dict, df_test, inplace = True)
 ```
 
 * dupl_rows: can be passed as _(True/False\)_ which indicates
