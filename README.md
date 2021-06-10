@@ -1263,8 +1263,8 @@ the corresponding process function is applied, and if it is passed to a family
 primitive with downstream offspring then those offspring keys are pulled from
 that key's family tree. For example, here mnmx is passed as an auntsuncles which
 means the mnmx processing function is applied with no downstream offspring. The
-bxcx key is passed as a parent which means the bxcx transform is applied coupled
-with any downstream transforms from the bxcx key family tree, which we also show.
+bxc4 key is passed as a parent which means the transform associated with the bxc4 category is applied followed
+by any downstream transforms from the bxc4 key family tree, which we also show.
 Note the family primitives tree of transformations can be summarized as:
 ```
 'parents' :           upstream / first generation / replaces column / with offspring
