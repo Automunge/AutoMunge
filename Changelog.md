@@ -3121,3 +3121,19 @@ am.postmunge(postprocess_dict, df_test)
 - to the new simplified convention available by use of the categorylist_aggregate passed to the columnkey parameter
 - also updates to support function that validates the process_dict to account for new recorded_category entry
 - and support function to apply functionpointer entries to user passed processdict to account for new recorded_category entry
+
+6.17
+- ok last rollout was a great step in right direction
+- but still fell a little short of fully standardized method to extract a normkey in postprocess functions
+- realized that by revising the columnkey_dict population from basing on recorded category
+- to basing on transformation category (as populated in family tree)
+- then had ability to eliminate need to inspect any transformation parameters in postprocess transforms
+- which were previously compared to ensure in cases of redundant transformations to same inputcolumn we were accessing version with right parameters
+- now since cases of redundant transfomations to same input column won't be populated in the same categorylist_aggregate entry to a column_key_dict entry associated with a transformation category
+- we've eliminated the scenario requiring inspection of parameters
+- note that we already had the convention that a transformation category can only be entered once in a set of upstream or downstream parameters (although may be entered in both if desired)
+- which is validated in the _check_transformdict2 support function
+- this update is a great step in standardizing on form of postprocessing functions
+- we intend in future updates to take advantage of this to fully standardize on postprocessing transform normkey retrieval accross the entire library
+- and also to eliminate inspection of transformation parameters in postmunge which will clear up a little overhead to speed things up
+- also small cleanup struck a postmunge columnkey variable initialization no longer needed after 6.16
