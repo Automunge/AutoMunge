@@ -7567,14 +7567,18 @@ As a quick clarification on the various permutations of the term “Automunge”
 Automunge - The name of the library which prepares data for machine learning. Note that Automunge Inc. is doing business as Automunge. Note that imports are conducted by “pip install Automunge”. Note that Automunge is also the name of a folder in the GitHub repository. "Automunge" is a registered trademark.
 
 AutoMunge - name of a defined class in the Automunge library. Note that jupyter notebook initializations are recommended as
+```
 from Automunge import *
 am = AutoMunge()
+```
 
 Note that AutoMunge is also used as the title of a GitHub repository published by the Automunge account where we have been sharing code.
 
-automunge(.) - name of a function defined in the AutoMunge class in the Automunge library which is the central interface for initial preparations of training data. 
-
 Automunger - name of a file published in GitHub repository (as Automunger.py) which is saved in the folder titled Automunge
+
+automunge(.) - name of a function defined in the AutoMunge class in the Automunge library which is the central interface for initial preparations of data. 
+
+postmunge(.) - name of a function defined in the AutoMunge class in the Automunge library which is the central interface for subsequent preparations of additional data on the same basis. 
 
 ...
 
