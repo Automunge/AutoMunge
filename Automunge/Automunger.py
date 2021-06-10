@@ -7099,7 +7099,7 @@ class AutoMunge:
     #return column_dict, postprocess_dict
     return postprocess_dict
 
-  def _populate_columnkey_dict(self, column_dict_list, postprocess_dict):
+  def _populate_columnkey_dict(self, column_dict_list, postprocess_dict, transformationcategory):
     """
     #columnkey_dict is used in postprocess functions
     #to derive a normkey when returned column isn't known or may return emtpy set
@@ -7118,14 +7118,13 @@ class AutoMunge:
       if inputcolumn not in postprocess_dict['columnkey_dict']:
         postprocess_dict['columnkey_dict'].update({inputcolumn : {}})
 
-      category = column_dict_list[0][list(column_dict_list[0])[0]]['category']
-      if category not in postprocess_dict['columnkey_dict'][inputcolumn]:
-        postprocess_dict['columnkey_dict'][inputcolumn].update({category : []})
+      if transformationcategory not in postprocess_dict['columnkey_dict'][inputcolumn]:
+        postprocess_dict['columnkey_dict'][inputcolumn].update({transformationcategory : []})
 
       for column_dict in column_dict_list:
 
         categorylist_entry = list(column_dict)[0]
-        postprocess_dict['columnkey_dict'][inputcolumn][category].append(categorylist_entry)
+        postprocess_dict['columnkey_dict'][inputcolumn][transformationcategory].append(categorylist_entry)
 
     return postprocess_dict
   
@@ -7184,7 +7183,7 @@ class AutoMunge:
                                           postprocess_dict, params)
       
       #columnkey_dict used in postprocess functions in a few cases to derive a normkey
-      postprocess_dict = self._populate_columnkey_dict(column_dict_list, postprocess_dict)
+      postprocess_dict = self._populate_columnkey_dict(column_dict_list, postprocess_dict, cousin)
 
     #else if this is a single process function process train and test seperately
     elif 'singleprocess' in process_dict[cousin] \
@@ -7217,7 +7216,7 @@ class AutoMunge:
                                             postprocess_dict, params)
       
       #columnkey_dict used in postprocess functions in a few cases to derive a normkey
-      postprocess_dict = self._populate_columnkey_dict(column_dict_list, postprocess_dict)
+      postprocess_dict = self._populate_columnkey_dict(column_dict_list, postprocess_dict, cousin)
 
     #update the columnslist and normalization_dict for both column_dict and postprocess_dict
     for column_dict in column_dict_list:
@@ -7284,7 +7283,7 @@ class AutoMunge:
                                           postprocess_dict, params)
       
       #columnkey_dict used in postprocess functions in a few cases to derive a normkey
-      postprocess_dict = self._populate_columnkey_dict(column_dict_list, postprocess_dict)
+      postprocess_dict = self._populate_columnkey_dict(column_dict_list, postprocess_dict, parent)
 
     #else if this is a single process function process train and test seperately
     elif 'singleprocess' in process_dict[parent] \
@@ -7317,7 +7316,7 @@ class AutoMunge:
                                           postprocess_dict, params)
       
       #columnkey_dict used in postprocess functions in a few cases to derive a normkey
-      postprocess_dict = self._populate_columnkey_dict(column_dict_list, postprocess_dict)
+      postprocess_dict = self._populate_columnkey_dict(column_dict_list, postprocess_dict, parent)
 
     #update the columnslist and normalization_dict for both column_dict and postprocess_dict
     for column_dict in column_dict_list:
@@ -30409,7 +30408,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.16'
+    automungeversion = '6.17'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -30888,14 +30887,14 @@ class AutoMunge:
           inplaceperformed = False
           params.update({'inplace' : False})
       
-      columnkey = []
+      columnkey_list = []
       if column in postprocess_dict['columnkey_dict']:
-        if process_dict[cousin]['recorded_category'] in postprocess_dict['columnkey_dict'][column]:
-          columnkey = postprocess_dict['columnkey_dict'][column][process_dict[cousin]['recorded_category']]
+        if cousin in postprocess_dict['columnkey_dict'][column]:
+          columnkey_list = postprocess_dict['columnkey_dict'][column][cousin]
       
       df_test = \
       process_dict[cousin]['postprocess'](df_test, column, postprocess_dict, \
-                                            columnkey, params)
+                                            columnkey_list, params)
 
     #else if this is a single process function
     elif 'singleprocess' in process_dict[cousin] \
@@ -30972,14 +30971,14 @@ class AutoMunge:
           inplaceperformed = False
           params.update({'inplace' : False})
 
-      columnkey = []
+      columnkey_list = []
       if column in postprocess_dict['columnkey_dict']:
-        if process_dict[parent]['recorded_category'] in postprocess_dict['columnkey_dict'][column]:
-          columnkey = postprocess_dict['columnkey_dict'][column][process_dict[parent]['recorded_category']]
+        if parent in postprocess_dict['columnkey_dict'][column]:
+          columnkey_list = postprocess_dict['columnkey_dict'][column][parent]
             
       df_test = \
       process_dict[parent]['postprocess'](df_test, column, postprocess_dict, \
-                                            columnkey, params)
+                                            columnkey_list, params)
 
     #else if this is a single process function process train and test seperately
     elif 'singleprocess' in process_dict[parent] \
@@ -31764,9 +31763,8 @@ class AutoMunge:
     #same as 'text' transform except labels returned column with integer instead of entry appender
     '''
     
-    #retrieve a columnkey
+    #normkey used to retrieve the normalization dictionary 
     normkey = False
-
     if len(columnkey) > 0:      
       normkey = columnkey[0]
           
@@ -31873,7 +31871,7 @@ class AutoMunge:
     #and a list of the new column names (textcolumns)
     '''
     
-    #retrieve normkey
+    #normkey used to retrieve the normalization dictionary 
     normkey = False
     if len(columnkey) > 0:      
       normkey = columnkey[0]
@@ -31964,29 +31962,12 @@ class AutoMunge:
     #same as 'text' transform except labels returned column with integer instead of entry appender
     '''
     
-    #retrieve a columnkey
+    #normkey used to retrieve the normalization dictionary 
     normkey = False
-
-    if normkey is False:
-
-      if column in postprocess_dict['origcolumn']:
-
-        columnkeylist = postprocess_dict['origcolumn'][column]['columnkeylist']
-
-      else:
-
-        origcolumn = postprocess_dict['column_dict'][column]['origcolumn']
-
-        columnkeylist = postprocess_dict['origcolumn'][origcolumn]['columnkeylist']
-
-      for columnkey in columnkeylist:
-        
-        if column == postprocess_dict['column_dict'][columnkey]['inputcolumn']:
-
-          if 'textlabelsdict_smth' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
-
-            normkey = columnkey
-          
+    if len(columnkey) > 0:
+      normkey = columnkey[0]
+    
+    #normkey is False when process function returns empty set
     if normkey is not False:
       
       str_convert = \
@@ -32211,18 +32192,10 @@ class AutoMunge:
     else:
       suffix = '_splt'
     
-    #to retrieve the normalization dictionary we're going to use new method since we don't yet 
-    #know what the returned columns titles are yet
-    
+    #normkey used to retrieve the normalization dictionary 
     normkey = False
-
-    for columnkey_entry in columnkey:
-        
-      if suffix == postprocess_dict['column_dict'][columnkey_entry]['normalization_dict'][columnkey_entry]['suffix']:
-
-        normkey = columnkey_entry
-
-        break
+    if len(columnkey) > 0:
+      normkey = columnkey[0]
         
     #normkey is False when process function returns empty set
     if normkey is not False:
@@ -32329,29 +32302,12 @@ class AutoMunge:
     else:
       suffix = '_spl2'
     
-    #to retrieve the normalization dictionary we're going to use new method since we don't yet 
-    #know what the returned columns titles are yet
-    
+    #normkey used to retrieve the normalization dictionary 
     normkey = False
+    if len(columnkey) > 0:
+      normkey = columnkey[0]
     
-#     if column in postprocess_dict['origcolumn']:
-      
-#       columnkeylist = postprocess_dict['origcolumn'][column]['columnkeylist']
-      
-#     else:
-      
-#       origcolumn = postprocess_dict['column_dict'][column]['origcolumn']
-      
-#       columnkeylist = postprocess_dict['origcolumn'][origcolumn]['columnkeylist']
-    
-#     for columnkey in columnkeylist:
-    
-#       if 'splt_newcolumns' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
-        
-#         normkey = columnkey
-
-    normkey = column + suffix
-        
+    #normkey is False when process function returns empty set
     if normkey is not False:
 
       #great now we can grab normalization parameters
@@ -32483,18 +32439,10 @@ class AutoMunge:
     else:
       suffix = '_sp19'
     
-    #to retrieve the normalization dictionary we're going to use new method since we don't yet 
-    #know what the returned columns titles are yet
-    
+    #normkey used to retrieve the normalization dictionary 
     normkey = False
-
-    for columnkey_entry in columnkey:
-        
-      if suffix == postprocess_dict['column_dict'][columnkey_entry]['normalization_dict'][columnkey_entry]['suffix']:
-
-        normkey = columnkey_entry
-
-        break
+    if len(columnkey) > 0:
+      normkey = columnkey[0]
         
     #normkey is False when process function returns empty set
     if normkey is not False:
@@ -32663,18 +32611,10 @@ class AutoMunge:
     else:
       suffix = '_sbst'
     
-    #to retrieve the normalization dictionary we're going to use new method since we don't yet 
-    #know what the returned columns titles are yet
-    
+    #normkey used to retrieve the normalization dictionary 
     normkey = False
-
-    for columnkey_entry in columnkey:
-        
-      if suffix == postprocess_dict['column_dict'][columnkey_entry]['normalization_dict'][columnkey_entry]['suffix']:
-
-        normkey = columnkey_entry
-
-        break
+    if len(columnkey) > 0:
+      normkey = columnkey[0]
         
     #normkey is False when process function returns empty set
     if normkey is not False:
@@ -32784,17 +32724,10 @@ class AutoMunge:
     else:
       suffix = '_sbs3'
     
-    #to retrieve the normalization dictionary we're going to use new method since we don't yet 
-    #know what the returned columns titles are yet
-    
+    #normkey used to retrieve the normalization dictionary 
     normkey = False
-
-    for columnkey_entry in columnkey:
-        
-      if suffix == postprocess_dict['column_dict'][columnkey_entry]['normalization_dict'][columnkey_entry]['suffix']:
-
-        normkey = columnkey_entry
-        break
+    if len(columnkey) > 0:
+      normkey = columnkey[0]
         
     #normkey is False when process function returns empty set
     if normkey is not False:
@@ -32975,9 +32908,8 @@ class AutoMunge:
     else:
       inplace = False
     
-    #retrieve normkey
+    #normkey used to retrieve the normalization dictionary 
     normkey = False
-
     if len(columnkey) > 0:
       normkey = columnkey[0]
           
@@ -33268,29 +33200,12 @@ class AutoMunge:
     #missing values are ignored by default
     """
     
-    #to retrieve the normalization dictionary we're going to use new method since we don't yet 
-    #know what the returned columns titles are yet
-    
+    #normkey used to retrieve the normalization dictionary 
     normkey = False
+    if len(columnkey) > 0:
+      normkey = columnkey[0]
     
-    if column in postprocess_dict['origcolumn']:
-      
-      columnkeylist = postprocess_dict['origcolumn'][column]['columnkeylist']
-      
-    else:
-      
-      origcolumn = postprocess_dict['column_dict'][column]['origcolumn']
-      
-      columnkeylist = postprocess_dict['origcolumn'][origcolumn]['columnkeylist']
-    
-    for columnkey in columnkeylist:
-      
-      if column == postprocess_dict['column_dict'][columnkey]['inputcolumn']:
-
-        if 'srch_newcolumns_srch' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
-
-          normkey = columnkey
-        
+    #normkey is False when process function returns empty set
     if normkey is not False:
 
       #great now we can grab normalization parameters
@@ -33355,29 +33270,12 @@ class AutoMunge:
     #for more efficient application in postmunge
     """
     
-    #to retrieve the normalization dictionary we're going to use new method since we don't yet 
-    #know what the returned columns titles are yet
-    
+    #normkey used to retrieve the normalization dictionary 
     normkey = False
+    if len(columnkey) > 0:
+      normkey = columnkey[0]
     
-    if column in postprocess_dict['origcolumn']:
-      
-      columnkeylist = postprocess_dict['origcolumn'][column]['columnkeylist']
-      
-    else:
-      
-      origcolumn = postprocess_dict['column_dict'][column]['origcolumn']
-      
-      columnkeylist = postprocess_dict['origcolumn'][origcolumn]['columnkeylist']
-    
-    for columnkey in columnkeylist:
-      
-      if column == postprocess_dict['column_dict'][columnkey]['inputcolumn']:
-
-        if 'src2_newcolumns_src2' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
-
-          normkey = columnkey
-        
+    #normkey is False when process function returns empty set
     if normkey is not False:
 
       #great now we can grab normalization parameters
@@ -33495,29 +33393,12 @@ class AutoMunge:
     #test set not found in train set
     """
     
-    #to retrieve the normalization dictionary we're going to use new method since we don't yet 
-    #know what the returned columns titles are yet
-    
+    #normkey used to retrieve the normalization dictionary 
     normkey = False
+    if len(columnkey) > 0:
+      normkey = columnkey[0]
     
-    if column in postprocess_dict['origcolumn']:
-      
-      columnkeylist = postprocess_dict['origcolumn'][column]['columnkeylist']
-      
-    else:
-      
-      origcolumn = postprocess_dict['column_dict'][column]['origcolumn']
-      
-      columnkeylist = postprocess_dict['origcolumn'][origcolumn]['columnkeylist']
-    
-    for columnkey in columnkeylist:
-      
-      if column == postprocess_dict['column_dict'][columnkey]['inputcolumn']:
-
-        if 'srch_newcolumns_src3' in postprocess_dict['column_dict'][columnkey]['normalization_dict'][columnkey]:
-
-          normkey = columnkey
-        
+    #normkey is False when process function returns empty set
     if normkey is not False:
 
       #great now we can grab normalization parameters
@@ -34155,6 +34036,7 @@ class AutoMunge:
     #for categories presetn in test set not present in train set use this 'zzz' category
     '''
     
+    #note _postprocess_1010 used for Binary transform with _postBinary_convert which does not currently pass a columnkey
     normkey = column + '_1010_0'
     
     if normkey in postprocess_dict['column_dict']:
@@ -34911,9 +34793,8 @@ class AutoMunge:
     #accepts boolean 'negvalues' parameter, defaults False, True activates encoding for values <0
     '''
     
-    #retrieve normalization parameters from postprocess_dict
+    #normkey used to retrieve the normalization dictionary 
     normkey = False
-
     if len(columnkey) > 0:
       normkey = columnkey[0]
         
@@ -35304,18 +35185,10 @@ class AutoMunge:
     else:
       suffix = '_bnwd'
     
-    #to retrieve the normalization dictionary we're going to use new method since we don't yet 
-    #know what the returned columns titles are yet
-    
+    #normkey used to retrieve the normalization dictionary 
     normkey = False
-
-    for columnkey_entry in columnkey:
-        
-      if suffix == postprocess_dict['column_dict'][columnkey_entry]['normalization_dict'][columnkey_entry]['suffix'] \
-      and bn_width == postprocess_dict['column_dict'][columnkey_entry]['normalization_dict'][columnkey_entry]['bn_width_bnwd']:
-
-        normkey = columnkey_entry
-        break
+    if len(columnkey) > 0:
+      normkey = columnkey[0]
         
     #normkey is False when process function returns empty set
     if normkey is not False:
@@ -35446,18 +35319,10 @@ class AutoMunge:
     else:
       suffix = '_bnep'
     
-    #to retrieve the normalization dictionary we're going to use new method since we don't yet 
-    #know what the returned columns titles are yet
-    
+    #normkey used to retrieve the normalization dictionary 
     normkey = False
-
-    for columnkey_entry in columnkey:
-        
-      if suffix == postprocess_dict['column_dict'][columnkey_entry]['normalization_dict'][columnkey_entry]['suffix'] \
-      and bincount == postprocess_dict['column_dict'][columnkey_entry]['normalization_dict'][columnkey_entry]['bincount_bnep']:
-
-        normkey = columnkey_entry
-        break
+    if len(columnkey) > 0:
+      normkey = columnkey[0]
         
     #normkey is False when process function returns empty set
     if normkey is not False:
@@ -35608,18 +35473,10 @@ class AutoMunge:
     else:
       buckets = False
     
-    #to retrieve the normalization dictionary we're going to use new method since we don't yet 
-    #know what the returned columns titles are yet
-    
+    #normkey used to retrieve the normalization dictionary 
     normkey = False
-
-    for columnkey_entry in columnkey:
-        
-      if bincount == postprocess_dict['column_dict'][columnkey_entry]['normalization_dict'][columnkey_entry]['bincount_tlbn'] \
-      and buckets == postprocess_dict['column_dict'][columnkey_entry]['normalization_dict'][columnkey_entry]['buckets_tlbn']:
-
-        normkey = columnkey_entry
-        break
+    if len(columnkey) > 0:
+      normkey = columnkey[0]
         
     #normkey is False when process function returns empty set
     if normkey is not False:
@@ -35724,17 +35581,10 @@ class AutoMunge:
       
       buckets = [0,1,2]
     
-    #to retrieve the normalization dictionary we're going to use new method since we don't yet 
-    #know what the returned columns titles are yet
-    
+    #normkey used to retrieve the normalization dictionary 
     normkey = False
-
-    for columnkey_entry in columnkey:
-        
-      if buckets == postprocess_dict['column_dict'][columnkey_entry]['normalization_dict'][columnkey_entry]['origbuckets_bkt1']:
-
-        normkey = columnkey_entry
-        break
+    if len(columnkey) > 0:
+      normkey = columnkey[0]
           
     #normkey is False when process function returns empty set
     if normkey is not False:
@@ -35793,17 +35643,10 @@ class AutoMunge:
       
       buckets = [0,1,2]
     
-    #to retrieve the normalization dictionary we're going to use new method since we don't yet 
-    #know what the returned columns titles are yet
-    
+    #normkey used to retrieve the normalization dictionary 
     normkey = False
-
-    for columnkey_entry in columnkey:
-        
-      if buckets == postprocess_dict['column_dict'][columnkey_entry]['normalization_dict'][columnkey_entry]['origbuckets_bkt2']:
-
-        normkey = columnkey_entry
-        break
+    if len(columnkey) > 0:
+      normkey = columnkey[0]
         
     #normkey is False when process function returns empty set
     if normkey is not False:
@@ -37971,9 +37814,7 @@ class AutoMunge:
       #a future extension may allow custom address for labels
       labelstransform_dict = transform_dict
       labelsprocess_dict = process_dict
-
-      columnkey = postprocess_dict['origcolumn'][labels_column]['columnkey']        
-      #traincategory = postprocess_dict['column_dict'][columnkey]['origcategory']
+     
       labelscategory = postprocess_dict['origcolumn'][labels_column]['category']
 
       #apply assignnan_convert
