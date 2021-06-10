@@ -3134,6 +3134,7 @@ am.postmunge(postprocess_dict, df_test)
 - note that we already had the convention that a transformation category can only be entered once in a set of upstream or downstream parameters (although may be entered in both if desired)
 - which is validated in the _check_transformdict2 support function
 - this update is a great step in standardizing on form of postprocessing functions
+- updated to new convention of accessing normkey in postprocess transformations for onht/text/splt/sp19/sbst/sbs3/hash/pwrs/bnwd/bnep/tlbn/bkt1/bkt2/smth/spl2/srch/src2/src3
 - we intend in future updates to take advantage of this to fully standardize on postprocessing transform normkey retrieval accross the entire library
 - and also to eliminate inspection of transformation parameters in postmunge which will clear up a little overhead to speed things up
 - also small cleanup struck a postmunge columnkey variable initialization no longer needed after 6.16
