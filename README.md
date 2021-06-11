@@ -7432,7 +7432,9 @@ def process_mnm8(mdf_train, mdf_test, column, category, \
 
     column_dict_list.append(column_dict.copy())
 
-
+  #note that if your transform has inplace support and you want to have potential to return an empty set with no new columns
+  #this would be an appropriate spot to inspect the inplace parameter and if True to delete the inputcolumn
+  #and you would just return column_dict_list as empty list
 
   return mdf_train, mdf_test, column_dict_list
   
