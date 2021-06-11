@@ -4205,7 +4205,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_spl2, \
                                   'recorded_category' : 'spl2', \
                                   'info_retention' : False, \
-                                  'defaultparams' : {'suffix' : '_spl2', \
+                                  'defaultparams' : {'suffix' : 'spl2', \
                                                      'test_same_as_train' : False, \
                                                      'consolidate_nonoverlaps' : False}, \
                                   'NArowtype' : 'justNaN', \
@@ -4217,7 +4217,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_spl2, \
                                   'recorded_category' : 'spl2', \
                                   'info_retention' : False, \
-                                  'defaultparams' : {'suffix' : '_spl5', \
+                                  'defaultparams' : {'suffix' : 'spl5', \
                                                      'test_same_as_train' : False, \
                                                      'consolidate_nonoverlaps' : True}, \
                                   'NArowtype' : 'justNaN', \
@@ -4238,7 +4238,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_spl2, \
                                   'recorded_category' : 'spl2', \
                                   'info_retention' : False, \
-                                  'defaultparams' : {'suffix' : '_spl7', \
+                                  'defaultparams' : {'suffix' : 'spl7', \
                                                      'test_same_as_train' : False, \
                                                      'consolidate_nonoverlaps' : True, \
                                                      'minsplit' : 1}, \
@@ -4251,7 +4251,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_splt, \
                                   'recorded_category' : 'splt', \
                                   'info_retention' : False, \
-                                  'defaultparams' : {'suffix' : '_spl8', 'test_same_as_train' : True}, \
+                                  'defaultparams' : {'suffix' : 'spl8', 'test_same_as_train' : True}, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'multirt', \
                                   'labelctgy' : 'splt'}})
@@ -4261,7 +4261,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_spl2, \
                                   'recorded_category' : 'spl2', \
                                   'info_retention' : False, \
-                                  'defaultparams' : {'suffix' : '_spl9', \
+                                  'defaultparams' : {'suffix' : 'spl9', \
                                                      'test_same_as_train' : True, \
                                                      'consolidate_nonoverlaps' : False}, \
                                   'NArowtype' : 'justNaN', \
@@ -4273,7 +4273,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_spl2, \
                                   'recorded_category' : 'spl2', \
                                   'info_retention' : False, \
-                                  'defaultparams' : {'suffix' : '_sp10', \
+                                  'defaultparams' : {'suffix' : 'sp10', \
                                                      'test_same_as_train' : True, \
                                                      'consolidate_nonoverlaps' : True}, \
                                   'NArowtype' : 'justNaN', \
@@ -4285,7 +4285,7 @@ class AutoMunge:
                                    'inverseprocess' : self._inverseprocess_spl2, \
                                   'recorded_category' : 'spl2', \
                                    'info_retention' : False, \
-                                  'defaultparams' : {'suffix' : '_spl2', \
+                                  'defaultparams' : {'suffix' : 'spl2', \
                                                      'test_same_as_train' : False, \
                                                      'consolidate_nonoverlaps' : False}, \
                                    'NArowtype' : 'justNaN', \
@@ -4297,7 +4297,7 @@ class AutoMunge:
                                    'inverseprocess' : self._inverseprocess_spl2, \
                                   'recorded_category' : 'spl2', \
                                    'info_retention' : False, \
-                                  'defaultparams' : {'suffix' : '_spl2', \
+                                  'defaultparams' : {'suffix' : 'spl2', \
                                                      'test_same_as_train' : False, \
                                                      'consolidate_nonoverlaps' : False}, \
                                    'NArowtype' : 'justNaN', \
@@ -4309,7 +4309,7 @@ class AutoMunge:
                                    'inverseprocess' : self._inverseprocess_spl2, \
                                   'recorded_category' : 'spl2', \
                                    'info_retention' : False, \
-                                  'defaultparams' : {'suffix' : '_spl9', \
+                                  'defaultparams' : {'suffix' : 'spl9', \
                                                      'test_same_as_train' : True, \
                                                      'consolidate_nonoverlaps' : False}, \
                                    'NArowtype' : 'justNaN', \
@@ -4321,7 +4321,7 @@ class AutoMunge:
                                    'inverseprocess' : self._inverseprocess_spl2, \
                                   'recorded_category' : 'spl2', \
                                    'info_retention' : False, \
-                                  'defaultparams' : {'suffix' : '_spl9', \
+                                  'defaultparams' : {'suffix' : 'spl9', \
                                                      'test_same_as_train' : True, \
                                                      'consolidate_nonoverlaps' : False}, \
                                    'NArowtype' : 'justNaN', \
@@ -4333,7 +4333,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_splt, \
                                   'recorded_category' : 'splt', \
                                   'info_retention' : False, \
-                                  'defaultparams' : {'suffix' : '_sp15', \
+                                  'defaultparams' : {'suffix' : 'sp15', \
                                                      'concurrent_activations': True, \
                                                      'test_same_as_train' : False}, \
                                   'NArowtype' : 'justNaN', \
@@ -4345,7 +4345,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_splt, \
                                   'recorded_category' : 'splt', \
                                   'info_retention' : False, \
-                                  'defaultparams' : {'suffix' : '_sp16', \
+                                  'defaultparams' : {'suffix' : 'sp16', \
                                                      'concurrent_activations': True, \
                                                      'test_same_as_train' : True}, \
                                   'NArowtype' : 'justNaN', \
@@ -4357,7 +4357,7 @@ class AutoMunge:
                                    'inverseprocess' : self._inverseprocess_spl2, \
                                   'recorded_category' : 'spl2', \
                                    'info_retention' : False, \
-                                  'defaultparams' : {'suffix' : '_spl2', \
+                                  'defaultparams' : {'suffix' : 'spl2', \
                                                      'test_same_as_train' : False, \
                                                      'consolidate_nonoverlaps' : False}, \
                                    'NArowtype' : 'justNaN', \
@@ -4369,7 +4369,7 @@ class AutoMunge:
                                    'inverseprocess' : self._inverseprocess_spl2, \
                                   'recorded_category' : 'spl2', \
                                    'info_retention' : False, \
-                                  'defaultparams' : {'suffix' : '_spl2', \
+                                  'defaultparams' : {'suffix' : 'spl2', \
                                                      'test_same_as_train' : False, \
                                                      'consolidate_nonoverlaps' : False}, \
                                    'NArowtype' : 'justNaN', \
@@ -4390,7 +4390,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_sp19, \
                                   'recorded_category' : 'sp19', \
                                   'info_retention' : False, \
-                                  'defaultparams' : {'suffix' : '_sp20', \
+                                  'defaultparams' : {'suffix' : 'sp20', \
                                                      'test_same_as_train' : True}, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : '1010', \
@@ -4401,7 +4401,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_sbst, \
                                   'recorded_category' : 'sbst', \
                                   'info_retention' : False, \
-                                  'defaultparams' : {'suffix' : '_sbst', \
+                                  'defaultparams' : {'suffix' : 'sbst', \
                                                      'test_same_as_train' : False}, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'concurrent_act', \
@@ -4412,7 +4412,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_sbst, \
                                   'recorded_category' : 'sbst', \
                                   'info_retention' : False, \
-                                  'defaultparams' : {'suffix' : '_sbs2', \
+                                  'defaultparams' : {'suffix' : 'sbs2', \
                                                      'test_same_as_train' : True}, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : 'concurrent_act', \
@@ -4423,7 +4423,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_sbs3, \
                                   'recorded_category' : 'sbs3', \
                                   'info_retention' : False, \
-                                  'defaultparams' : {'suffix' : '_sbs3', \
+                                  'defaultparams' : {'suffix' : 'sbs3', \
                                                      'test_same_as_train' : False}, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : '1010', \
@@ -4434,7 +4434,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_sbs3, \
                                   'recorded_category' : 'sbs3', \
                                   'info_retention' : False, \
-                                  'defaultparams' : {'suffix' : '_sbs4', \
+                                  'defaultparams' : {'suffix' : 'sbs4', \
                                                      'test_same_as_train' : True}, \
                                   'NArowtype' : 'justNaN', \
                                   'MLinfilltype' : '1010', \
@@ -4563,7 +4563,7 @@ class AutoMunge:
                                   'recorded_category' : 'nmrc', \
                                   'info_retention' : True, \
                                   'defaultparams' : {'convention' : 'numbers', \
-                                                     'suffix' : '_nmrc'}, \
+                                                     'suffix' : 'nmrc'}, \
                                   'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmrc'}})
@@ -4574,7 +4574,7 @@ class AutoMunge:
                                   'recorded_category' : 'nmrc', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'convention' : 'numbers', \
-                                                     'suffix' : '_nmrc'}, \
+                                                     'suffix' : 'nmrc'}, \
                                   'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmbr'}})
@@ -4585,7 +4585,7 @@ class AutoMunge:
                                   'recorded_category' : 'nmrc', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'convention' : 'numbers', \
-                                                     'suffix' : '_nmrc'}, \
+                                                     'suffix' : 'nmrc'}, \
                                   'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mnmx'}})
@@ -4596,7 +4596,7 @@ class AutoMunge:
                                   'recorded_category' : 'nmr4', \
                                   'info_retention' : True, \
                                   'defaultparams' : {'convention' : 'numbers', \
-                                                     'suffix' : '_nmr4', \
+                                                     'suffix' : 'nmr4', \
                                                      'test_same_as_train' : True}, \
                                   'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
@@ -4608,7 +4608,7 @@ class AutoMunge:
                                   'recorded_category' : 'nmr4', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'convention' : 'numbers', \
-                                                     'suffix' : '_nmr4', \
+                                                     'suffix' : 'nmr4', \
                                                      'test_same_as_train' : True}, \
                                   'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
@@ -4620,7 +4620,7 @@ class AutoMunge:
                                   'recorded_category' : 'nmr4', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'convention' : 'numbers', \
-                                                     'suffix' : '_nmr4', \
+                                                     'suffix' : 'nmr4', \
                                                      'test_same_as_train' : True}, \
                                   'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
@@ -4632,7 +4632,7 @@ class AutoMunge:
                                   'recorded_category' : 'nmr4', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'convention' : 'numbers', \
-                                                     'suffix' : '_nmr7', \
+                                                     'suffix' : 'nmr7', \
                                                      'test_same_as_train' : False}, \
                                   'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
@@ -4644,7 +4644,7 @@ class AutoMunge:
                                   'recorded_category' : 'nmr4', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'convention' : 'numbers', \
-                                                     'suffix' : '_nmr7', \
+                                                     'suffix' : 'nmr7', \
                                                      'test_same_as_train' : False}, \
                                   'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
@@ -4656,7 +4656,7 @@ class AutoMunge:
                                   'recorded_category' : 'nmr4', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'convention' : 'numbers', \
-                                                     'suffix' : '_nmr7', \
+                                                     'suffix' : 'nmr7', \
                                                      'test_same_as_train' : False}, \
                                   'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
@@ -4668,7 +4668,7 @@ class AutoMunge:
                                   'recorded_category' : 'nmrc', \
                                   'info_retention' : True, \
                                   'defaultparams' : {'convention' : 'commas', \
-                                                     'suffix' : '_nmcm'}, \
+                                                     'suffix' : 'nmcm'}, \
                                   'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmcm'}})
@@ -4679,7 +4679,7 @@ class AutoMunge:
                                   'recorded_category' : 'nmrc', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'convention' : 'commas', \
-                                                     'suffix' : '_nmcm'}, \
+                                                     'suffix' : 'nmcm'}, \
                                   'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmbr'}})
@@ -4690,7 +4690,7 @@ class AutoMunge:
                                   'recorded_category' : 'nmrc', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'convention' : 'commas', \
-                                                     'suffix' : '_nmcm'}, \
+                                                     'suffix' : 'nmcm'}, \
                                   'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mnmx'}})
@@ -4701,7 +4701,7 @@ class AutoMunge:
                                   'recorded_category' : 'nmr4', \
                                   'info_retention' : True, \
                                   'defaultparams' : {'convention' : 'commas', \
-                                                     'suffix' : '_nmc4', \
+                                                     'suffix' : 'nmc4', \
                                                      'test_same_as_train' : True}, \
                                   'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
@@ -4713,7 +4713,7 @@ class AutoMunge:
                                   'recorded_category' : 'nmr4', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'convention' : 'commas', \
-                                                     'suffix' : '_nmc4', \
+                                                     'suffix' : 'nmc4', \
                                                      'test_same_as_train' : True}, \
                                   'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
@@ -4725,7 +4725,7 @@ class AutoMunge:
                                   'recorded_category' : 'nmr4', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'convention' : 'commas', \
-                                                     'suffix' : '_nmc4', \
+                                                     'suffix' : 'nmc4', \
                                                      'test_same_as_train' : True}, \
                                   'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
@@ -4737,7 +4737,7 @@ class AutoMunge:
                                   'recorded_category' : 'nmr4', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'convention' : 'commas', \
-                                                     'suffix' : '_nmc7', \
+                                                     'suffix' : 'nmc7', \
                                                      'test_same_as_train' : False}, \
                                   'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
@@ -4749,7 +4749,7 @@ class AutoMunge:
                                   'recorded_category' : 'nmr4', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'convention' : 'commas', \
-                                                     'suffix' : '_nmc7', \
+                                                     'suffix' : 'nmc7', \
                                                      'test_same_as_train' : False}, \
                                   'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
@@ -4761,7 +4761,7 @@ class AutoMunge:
                                   'recorded_category' : 'nmr4', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'convention' : 'commas', \
-                                                     'suffix' : '_nmc7', \
+                                                     'suffix' : 'nmc7', \
                                                      'test_same_as_train' : False}, \
                                   'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
@@ -4773,7 +4773,7 @@ class AutoMunge:
                                   'recorded_category' : 'nmrc', \
                                   'info_retention' : True, \
                                   'defaultparams' : {'convention' : 'spaces', \
-                                                     'suffix' : '_nmEU'}, \
+                                                     'suffix' : 'nmEU'}, \
                                   'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmrc'}})
@@ -4784,7 +4784,7 @@ class AutoMunge:
                                   'recorded_category' : 'nmrc', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'convention' : 'spaces', \
-                                                     'suffix' : '_nmEU'}, \
+                                                     'suffix' : 'nmEU'}, \
                                   'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'nmbr'}})
@@ -4795,7 +4795,7 @@ class AutoMunge:
                                   'recorded_category' : 'nmrc', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'convention' : 'spaces', \
-                                                     'suffix' : '_nmEU'}, \
+                                                     'suffix' : 'nmEU'}, \
                                   'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
                                   'labelctgy' : 'mnmx'}})
@@ -4806,7 +4806,7 @@ class AutoMunge:
                                   'recorded_category' : 'nmr4', \
                                   'info_retention' : True, \
                                   'defaultparams' : {'convention' : 'spaces', \
-                                                     'suffix' : '_nmE4', \
+                                                     'suffix' : 'nmE4', \
                                                      'test_same_as_train' : True}, \
                                   'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
@@ -4818,7 +4818,7 @@ class AutoMunge:
                                   'recorded_category' : 'nmr4', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'convention' : 'spaces', \
-                                                     'suffix' : '_nmE4', \
+                                                     'suffix' : 'nmE4', \
                                                      'test_same_as_train' : True}, \
                                   'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
@@ -4830,7 +4830,7 @@ class AutoMunge:
                                   'recorded_category' : 'nmr4', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'convention' : 'spaces', \
-                                                     'suffix' : '_nmE4', \
+                                                     'suffix' : 'nmE4', \
                                                      'test_same_as_train' : True}, \
                                   'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
@@ -4842,7 +4842,7 @@ class AutoMunge:
                                   'recorded_category' : 'nmr4', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'convention' : 'spaces', \
-                                                     'suffix' : '_nmE7', \
+                                                     'suffix' : 'nmE7', \
                                                      'test_same_as_train' : False}, \
                                   'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
@@ -4854,7 +4854,7 @@ class AutoMunge:
                                   'recorded_category' : 'nmr4', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'convention' : 'spaces', \
-                                                     'suffix' : '_nmE7', \
+                                                     'suffix' : 'nmE7', \
                                                      'test_same_as_train' : False}, \
                                   'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
@@ -4866,7 +4866,7 @@ class AutoMunge:
                                   'recorded_category' : 'nmr4', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'convention' : 'spaces', \
-                                                     'suffix' : '_nmE7', \
+                                                     'suffix' : 'nmE7', \
                                                      'test_same_as_train' : False}, \
                                   'NArowtype' : 'parsenumeric', \
                                   'MLinfilltype' : 'numeric', \
@@ -4877,7 +4877,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_spl2, \
                                   'recorded_category' : 'spl2', \
                                   'info_retention' : False, \
-                                  'defaultparams' : {'suffix' : '_spl5', \
+                                  'defaultparams' : {'suffix' : 'spl5', \
                                                      'test_same_as_train' : False, \
                                                      'consolidate_nonoverlaps' : True}, \
                                   'NArowtype' : 'justNaN', \
@@ -4889,7 +4889,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_spl2, \
                                   'recorded_category' : 'spl2', \
                                   'info_retention' : False, \
-                                  'defaultparams' : {'suffix' : '_spl5', \
+                                  'defaultparams' : {'suffix' : 'spl5', \
                                                      'test_same_as_train' : False, \
                                                      'consolidate_nonoverlaps' : True}, \
                                   'NArowtype' : 'justNaN', \
@@ -4901,7 +4901,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_spl2, \
                                   'recorded_category' : 'spl2', \
                                   'info_retention' : False, \
-                                  'defaultparams' : {'suffix' : '_spl5', \
+                                  'defaultparams' : {'suffix' : 'spl5', \
                                                      'test_same_as_train' : False, \
                                                      'consolidate_nonoverlaps' : True}, \
                                   'NArowtype' : 'justNaN', \
@@ -5030,7 +5030,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_spl2, \
                                   'recorded_category' : 'spl2', \
                                   'info_retention' : False, \
-                                  'defaultparams' : {'suffix' : '_spl2', \
+                                  'defaultparams' : {'suffix' : 'spl2', \
                                                      'test_same_as_train' : False, \
                                                      'consolidate_nonoverlaps' : False}, \
                                   'NArowtype' : 'justNaN', \
@@ -5276,7 +5276,7 @@ class AutoMunge:
                                   'recorded_category' : 'time', \
                                   'info_retention' : False, \
                                   'defaultparams' : {'scale' : 'year', \
-                                                     'suffix' : '_year', \
+                                                     'suffix' : 'year', \
                                                      'normalization' : 'zscore'}, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
@@ -5294,7 +5294,7 @@ class AutoMunge:
                                   'postprocess' : self._postprocess_tmsc, \
                                   'recorded_category' : 'tmsc', \
                                   'defaultparams' : {'scale' : 'year', \
-                                                     'suffix' : '_yrsn', \
+                                                     'suffix' : 'yrsn', \
                                                      'function' : 'sin'}, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
@@ -5305,7 +5305,7 @@ class AutoMunge:
                                   'postprocess' : self._postprocess_tmsc, \
                                   'recorded_category' : 'tmsc', \
                                   'defaultparams' : {'scale' : 'year', \
-                                                     'suffix' : '_yrcs', \
+                                                     'suffix' : 'yrcs', \
                                                      'function' : 'cos'}, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
@@ -5316,7 +5316,7 @@ class AutoMunge:
                                   'postprocess' : self._postprocess_time, \
                                   'recorded_category' : 'time', \
                                   'defaultparams' : {'scale' : 'month', \
-                                                     'suffix' : '_mnth', \
+                                                     'suffix' : 'mnth', \
                                                      'normalization' : 'zscore'}, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
@@ -5373,7 +5373,7 @@ class AutoMunge:
                                   'postprocess' : self._postprocess_tmsc, \
                                   'recorded_category' : 'tmsc', \
                                   'defaultparams' : {'scale' : 'month', \
-                                                     'suffix' : '_mncs', \
+                                                     'suffix' : 'mncs', \
                                                      'function' : 'cos'}, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
@@ -5384,7 +5384,7 @@ class AutoMunge:
                                   'postprocess' : self._postprocess_tmsc, \
                                   'recorded_category' : 'tmsc', \
                                   'defaultparams' : {'scale' : 'monthday', \
-                                                     'suffix' : '_mdsn', \
+                                                     'suffix' : 'mdsn', \
                                                      'function' : 'sin'}, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
@@ -5395,7 +5395,7 @@ class AutoMunge:
                                   'postprocess' : self._postprocess_tmsc, \
                                   'recorded_category' : 'tmsc', \
                                   'defaultparams' : {'scale' : 'monthday', \
-                                                     'suffix' : '_mdcs', \
+                                                     'suffix' : 'mdcs', \
                                                      'function' : 'cos'}, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
@@ -5406,7 +5406,7 @@ class AutoMunge:
                                   'postprocess' : self._postprocess_time, \
                                   'recorded_category' : 'time', \
                                   'defaultparams' : {'scale' : 'day', \
-                                                     'suffix' : '_days', \
+                                                     'suffix' : 'days', \
                                                      'normalization' : 'zscore'}, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
@@ -5445,7 +5445,7 @@ class AutoMunge:
                                   'postprocess' : self._postprocess_tmsc, \
                                   'recorded_category' : 'tmsc', \
                                   'defaultparams' : {'scale' : 'day', \
-                                                     'suffix' : '_dysn', \
+                                                     'suffix' : 'dysn', \
                                                      'function' : 'sin'}, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
@@ -5456,7 +5456,7 @@ class AutoMunge:
                                   'postprocess' : self._postprocess_tmsc, \
                                   'recorded_category' : 'tmsc', \
                                   'defaultparams' : {'scale' : 'day', \
-                                                     'suffix' : '_dycs', \
+                                                     'suffix' : 'dycs', \
                                                      'function' : 'cos'}, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
@@ -5467,7 +5467,7 @@ class AutoMunge:
                                   'postprocess' : self._postprocess_tmsc, \
                                   'recorded_category' : 'tmsc', \
                                   'defaultparams' : {'scale' : 'dayhourminute', \
-                                                     'suffix' : '_dhms', \
+                                                     'suffix' : 'dhms', \
                                                      'function' : 'sin'}, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
@@ -5478,7 +5478,7 @@ class AutoMunge:
                                   'postprocess' : self._postprocess_tmsc, \
                                   'recorded_category' : 'tmsc', \
                                   'defaultparams' : {'scale' : 'dayhourminute', \
-                                                     'suffix' : '_dhmc', \
+                                                     'suffix' : 'dhmc', \
                                                      'function' : 'cos'}, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
@@ -5489,7 +5489,7 @@ class AutoMunge:
                                   'postprocess' : self._postprocess_time, \
                                   'recorded_category' : 'time', \
                                   'defaultparams' : {'scale' : 'hour', \
-                                                     'suffix' : '_hour', \
+                                                     'suffix' : 'hour', \
                                                      'normalization' : 'zscore'}, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
@@ -5521,7 +5521,7 @@ class AutoMunge:
                                   'postprocess' : self._postprocess_tmsc, \
                                   'recorded_category' : 'tmsc', \
                                   'defaultparams' : {'scale' : 'hour', \
-                                                     'suffix' : '_hrsn', \
+                                                     'suffix' : 'hrsn', \
                                                      'function' : 'sin'}, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
@@ -5532,7 +5532,7 @@ class AutoMunge:
                                   'postprocess' : self._postprocess_tmsc, \
                                   'recorded_category' : 'tmsc', \
                                   'defaultparams' : {'scale' : 'hour', \
-                                                     'suffix' : '_hrcs', \
+                                                     'suffix' : 'hrcs', \
                                                      'function' : 'cos'}, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
@@ -5543,7 +5543,7 @@ class AutoMunge:
                                   'postprocess' : self._postprocess_tmsc, \
                                   'recorded_category' : 'tmsc', \
                                   'defaultparams' : {'scale' : 'hourminutesecond', \
-                                                     'suffix' : '_hmss', \
+                                                     'suffix' : 'hmss', \
                                                      'function' : 'sin'}, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
@@ -5554,7 +5554,7 @@ class AutoMunge:
                                   'postprocess' : self._postprocess_tmsc, \
                                   'recorded_category' : 'tmsc', \
                                   'defaultparams' : {'scale' : 'hourminutesecond', \
-                                                     'suffix' : '_hmsc', \
+                                                     'suffix' : 'hmsc', \
                                                      'function' : 'cos'}, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
@@ -5565,7 +5565,7 @@ class AutoMunge:
                                   'postprocess' : self._postprocess_time, \
                                   'recorded_category' : 'time', \
                                   'defaultparams' : {'scale' : 'minute', \
-                                                     'suffix' : '_mint', \
+                                                     'suffix' : 'mint', \
                                                      'normalization' : 'zscore'}, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
@@ -5597,7 +5597,7 @@ class AutoMunge:
                                   'postprocess' : self._postprocess_tmsc, \
                                   'recorded_category' : 'tmsc', \
                                   'defaultparams' : {'scale' : 'minute', \
-                                                     'suffix' : '_misn', \
+                                                     'suffix' : 'misn', \
                                                      'function' : 'sin'}, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
@@ -5608,7 +5608,7 @@ class AutoMunge:
                                   'postprocess' : self._postprocess_tmsc, \
                                   'recorded_category' : 'tmsc', \
                                   'defaultparams' : {'scale' : 'minute', \
-                                                     'suffix' : '_mics', \
+                                                     'suffix' : 'mics', \
                                                      'function' : 'cos'}, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
@@ -5619,7 +5619,7 @@ class AutoMunge:
                                   'postprocess' : self._postprocess_tmsc, \
                                   'recorded_category' : 'tmsc', \
                                   'defaultparams' : {'scale' : 'minutesecond', \
-                                                     'suffix' : '_mssn', \
+                                                     'suffix' : 'mssn', \
                                                      'function' : 'sin'}, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
@@ -5630,7 +5630,7 @@ class AutoMunge:
                                   'postprocess' : self._postprocess_tmsc, \
                                   'recorded_category' : 'tmsc', \
                                   'defaultparams' : {'scale' : 'minutesecond', \
-                                                     'suffix' : '_mscs', \
+                                                     'suffix' : 'mscs', \
                                                      'function' : 'cos'}, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
@@ -5641,7 +5641,7 @@ class AutoMunge:
                                   'postprocess' : self._postprocess_time, \
                                   'recorded_category' : 'time', \
                                   'defaultparams' : {'scale' : 'second', \
-                                                     'suffix' : '_scnd', \
+                                                     'suffix' : 'scnd', \
                                                      'normalization' : 'zscore'}, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
@@ -5659,7 +5659,7 @@ class AutoMunge:
                                   'postprocess' : self._postprocess_tmsc, \
                                   'recorded_category' : 'tmsc', \
                                   'defaultparams' : {'scale' : 'second', \
-                                                     'suffix' : '_scsn', \
+                                                     'suffix' : 'scsn', \
                                                      'function' : 'sin'}, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
@@ -5670,7 +5670,7 @@ class AutoMunge:
                                   'postprocess' : self._postprocess_tmsc, \
                                   'recorded_category' : 'tmsc', \
                                   'defaultparams' : {'scale' : 'second', \
-                                                     'suffix' : '_sccs', \
+                                                     'suffix' : 'sccs', \
                                                      'function' : 'cos'}, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'datetime', \
@@ -6009,7 +6009,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_bnwd, \
                                   'recorded_category' : 'bnwd', \
                                   'info_retention' : False, \
-                                  'defaultparams' : {'suffix':'_bnwK', 'width':1000}, \
+                                  'defaultparams' : {'suffix':'bnwK', 'width':1000}, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'multirt', \
                                   'labelctgy' : 'bnwd'}})
@@ -6019,7 +6019,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_bnwd, \
                                   'recorded_category' : 'bnwd', \
                                   'info_retention' : False, \
-                                  'defaultparams' : {'suffix':'_bnwM', 'width':1000000}, \
+                                  'defaultparams' : {'suffix':'bnwM', 'width':1000000}, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'multirt', \
                                   'labelctgy' : 'bnwd'}})
@@ -6040,7 +6040,7 @@ class AutoMunge:
                                   'recorded_category' : 'bnwo', \
                                   'info_retention' : False, \
                                   'inplace_option' : True, \
-                                  'defaultparams' : {'suffix':'_bnKo', 'width':1000}, \
+                                  'defaultparams' : {'suffix':'bnKo', 'width':1000}, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'bnwo'}})
@@ -6051,7 +6051,7 @@ class AutoMunge:
                                   'recorded_category' : 'bnwo', \
                                   'info_retention' : False, \
                                   'inplace_option' : True, \
-                                  'defaultparams' : {'suffix':'_bnMo', 'width':1000000}, \
+                                  'defaultparams' : {'suffix':'bnMo', 'width':1000000}, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'singlct', \
                                   'labelctgy' : 'bnwo'}})
@@ -6070,7 +6070,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_bnep, \
                                   'recorded_category' : 'bnep', \
                                   'info_retention' : False, \
-                                  'defaultparams' : {'suffix':'_bne7', 'bincount':7}, \
+                                  'defaultparams' : {'suffix':'bne7', 'bincount':7}, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'multirt', \
                                   'labelctgy' : 'bnep'}})
@@ -6080,7 +6080,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_bnep, \
                                   'recorded_category' : 'bnep', \
                                   'info_retention' : False, \
-                                  'defaultparams' : {'suffix':'_bne9', 'bincount':9}, \
+                                  'defaultparams' : {'suffix':'bne9', 'bincount':9}, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'multirt', \
                                   'labelctgy' : 'bnep'}})
@@ -6100,7 +6100,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_bneo, \
                                   'recorded_category' : 'bneo', \
                                   'info_retention' : False, \
-                                  'defaultparams' : {'suffix':'_bn7o', 'bincount':7}, \
+                                  'defaultparams' : {'suffix':'bn7o', 'bincount':7}, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'singlct', \
@@ -6111,7 +6111,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_bneo, \
                                   'recorded_category' : 'bneo', \
                                   'info_retention' : False, \
-                                  'defaultparams' : {'suffix':'_bn9o', 'bincount':9}, \
+                                  'defaultparams' : {'suffix':'bn9o', 'bincount':9}, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'singlct', \
@@ -6203,7 +6203,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_bnwo, \
                                   'recorded_category' : 'bnwo', \
                                   'info_retention' : False, \
-                                  'defaultparams' : {'suffix':'_bnKo', 'width':1000}, \
+                                  'defaultparams' : {'suffix':'bnKo', 'width':1000}, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'singlct', \
@@ -6214,7 +6214,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_bnwo, \
                                   'recorded_category' : 'bnwo', \
                                   'info_retention' : False, \
-                                  'defaultparams' : {'suffix':'_bnMo', 'width':1000000}, \
+                                  'defaultparams' : {'suffix':'bnMo', 'width':1000000}, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'singlct', \
@@ -6235,7 +6235,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_bneo, \
                                   'recorded_category' : 'bneo', \
                                   'info_retention' : False, \
-                                  'defaultparams' : {'suffix':'_bn7o', 'bincount':7}, \
+                                  'defaultparams' : {'suffix':'bn7o', 'bincount':7}, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'singlct', \
@@ -6246,7 +6246,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_bneo, \
                                   'recorded_category' : 'bneo', \
                                   'info_retention' : False, \
-                                  'defaultparams' : {'suffix':'_bn9o', 'bincount':9}, \
+                                  'defaultparams' : {'suffix':'bn9o', 'bincount':9}, \
                                   'inplace_option' : True, \
                                   'NArowtype' : 'numeric', \
                                   'MLinfilltype' : 'singlct', \
@@ -6885,7 +6885,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_excl, \
                                   'recorded_category' : 'copy', \
                                   'info_retention' : True, \
-                                  'defaultparams' : {'suffix' : '_'}, \
+                                  'defaultparams' : {'suffix' : ''}, \
                                   'NArowtype' : 'exclude', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'copy'}})
@@ -6895,7 +6895,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_excl, \
                                   'recorded_category' : 'copy', \
                                   'info_retention' : True, \
-                                  'defaultparams' : {'suffix' : '_'}, \
+                                  'defaultparams' : {'suffix' : ''}, \
                                   'NArowtype' : 'exclude', \
                                   'MLinfilltype' : 'exclude', \
                                   'labelctgy' : 'copy'}})
@@ -7734,7 +7734,8 @@ class AutoMunge:
     nmbrnormalization_dict = {column + '_nmbr' : {'mean' : mean, 'std' : std, \
                                                   'max' : maximum, 'min' : minimum, \
                                                   'offset' : offset, 'multiplier': multiplier, \
-                                                  'cap' : cap, 'floor' : floor}}
+                                                  'cap' : cap, 'floor' : floor, \
+                                                  'inplace' : inplace}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -7838,7 +7839,8 @@ class AutoMunge:
                                                   'maximum' : maximum, \
                                                   'mean' : mean, \
                                                   'std' : std, \
-                                                  'periods' : periods}}
+                                                  'periods' : periods, \
+                                                  'inplace' : inplace}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -7958,7 +7960,8 @@ class AutoMunge:
                                                   'maximum' : maximum, \
                                                   'mean' : mean, \
                                                   'std' : std, \
-                                                  'periods' : periods}}
+                                                  'periods' : periods, \
+                                                  'inplace' : inplace}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -8068,7 +8071,8 @@ class AutoMunge:
                                                   'mean' : mean, \
                                                   'std' : std, \
                                                   'periods' : periods, \
-                                                  'suffix' : suffix}}
+                                                  'suffix' : suffix, \
+                                                  'inplace' : inplace}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -8178,7 +8182,8 @@ class AutoMunge:
                                                   'mean' : mean, \
                                                   'std' : std, \
                                                   'periods' : periods, \
-                                                  'suffix' : suffix}}
+                                                  'suffix' : suffix, \
+                                                  'inplace' : inplace}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -8288,7 +8293,8 @@ class AutoMunge:
                                                   'mean' : mean, \
                                                   'std' : std, \
                                                   'periods' : periods, \
-                                                  'suffix' : suffix}}
+                                                  'suffix' : suffix, \
+                                                  'inplace' : inplace}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -8390,7 +8396,8 @@ class AutoMunge:
     nmbrcolumns = [column + '_MADn']
 
     nmbrnormalization_dict = {column + '_MADn' : {'mean' : mean, 'MAD' : MAD, \
-                                                  'maximum':maximum, 'minimum':minimum}}
+                                                  'maximum':maximum, 'minimum':minimum, \
+                                                  'inplace' : inplace}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -8497,7 +8504,8 @@ class AutoMunge:
     nmbrcolumns = [column + '_MAD3']
 
     nmbrnormalization_dict = {column + '_MAD3' : {'mean' : mean, 'MAD' : MAD, 'datamax' : datamax, \
-                                                  'maximum':maximum, 'minimum':minimum}}
+                                                  'maximum':maximum, 'minimum':minimum, \
+                                                  'inplace' : inplace}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -8648,7 +8656,8 @@ class AutoMunge:
                                                   'mean' : mean, \
                                                   'std' : std, \
                                                   'cap' : cap, \
-                                                  'floor' : floor}}
+                                                  'floor' : floor, \
+                                                  'inplace' : inplace}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -8788,7 +8797,8 @@ class AutoMunge:
                                                   'mean' : mean, \
                                                   'std' : std, \
                                                   'qmax' : qmax, \
-                                                  'qmin' : qmin}}
+                                                  'qmin' : qmin, \
+                                                  'inplace' : inplace}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -8886,7 +8896,8 @@ class AutoMunge:
                                                   'maximum' : maximum, \
                                                   'maxabs' : maxabs, \
                                                   'mean' : mean, \
-                                                  'std' : std}}
+                                                  'std' : std, \
+                                                  'inplace' : inplace}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -9127,7 +9138,8 @@ class AutoMunge:
                                                   'multiplier': multiplier, \
                                                   'cap' : cap, \
                                                   'floor' : floor, \
-                                                  'divisor' : divisor}}
+                                                  'divisor' : divisor, \
+                                                  'inplace' : inplace}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -9289,7 +9301,8 @@ class AutoMunge:
                                                   'offset' : offset, \
                                                   'multiplier': multiplier, \
                                                   'cap' : cap, \
-                                                  'floor' : floor}}
+                                                  'floor' : floor, \
+                                                  'inplace' : inplace}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -9523,7 +9536,8 @@ class AutoMunge:
                                                   'extravalues' : extravalues, \
                                                   'oneratio' : oneratio, \
                                                   'zeroratio' : zeroratio, \
-                                                  'str_convert' : str_convert}}
+                                                  'str_convert' : str_convert, \
+                                                  'inplace' : inplace}}
 
     #store some values in the column_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -9759,7 +9773,8 @@ class AutoMunge:
                                                   'extravalues' : extravalues, \
                                                   'oneratio' : oneratio, \
                                                   'zeroratio' : zeroratio, \
-                                                  'str_convert' : str_convert}}
+                                                  'str_convert' : str_convert, \
+                                                  'inplace' : inplace}}
 
     #store some values in the column_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -10397,7 +10412,8 @@ class AutoMunge:
     normalization_dict = {column + '_lngt' : {'maximum' : maximum, \
                                               'minimum' : minimum, \
                                               'mean' : mean, \
-                                              'std' : std }}
+                                              'std' : std, \
+                                              'inplace' : inplace }}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -10485,7 +10501,8 @@ class AutoMunge:
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
                            'suffixoverlap_results' : suffixoverlap_results, \
-                           'deletecolumn' : False}}
+                           'deletecolumn' : False, \
+                           'inplace' : inplace}}
 
       column_dict_list.append(column_dict.copy())
 
@@ -10539,7 +10556,7 @@ class AutoMunge:
     if 'suffix' in params:
       suffix = params['suffix']
     else:
-      suffix = '_splt'
+      suffix = 'splt'
       
     if 'test_same_as_train' in params:
       test_same_as_train = params['test_same_as_train']
@@ -10742,7 +10759,7 @@ class AutoMunge:
 
     for dict_key in overlap_dict:
 
-      newcolumn = column + suffix + '_' + dict_key
+      newcolumn = column + '_' + suffix + '_' + dict_key
       
       mdf_train, suffixoverlap_results = \
       self._df_copy_train(mdf_train, column, newcolumn, suffixoverlap_results)
@@ -10867,7 +10884,7 @@ class AutoMunge:
     if 'suffix' in params:
       suffix = params['suffix']
     else:
-      suffix = '_spl2'
+      suffix = 'spl2'
       
     if 'test_same_as_train' in params:
       test_same_as_train = params['test_same_as_train']
@@ -11111,7 +11128,7 @@ class AutoMunge:
 
 #     for dict_key in overlap_dict:
 
-    newcolumn = column + suffix
+    newcolumn = column + '_' + suffix
     
     mdf_train, suffixoverlap_results = \
     self._df_copy_train(mdf_train, column, newcolumn, suffixoverlap_results)
@@ -11225,7 +11242,7 @@ class AutoMunge:
     if 'suffix' in params:
       suffix = params['suffix']
     else:
-      suffix = '_sp19'
+      suffix = 'sp19'
       
     if 'test_same_as_train' in params:
       test_same_as_train = params['test_same_as_train']
@@ -11477,7 +11494,7 @@ class AutoMunge:
     
     if len(newcolumns) > 0:
       
-      sp19_column = column + suffix
+      sp19_column = column + '_' + suffix
     
       #aggregate collection of activations as string set
       #the suffix 'activations_' is to avoid potential of overlap with binary encoding and aggregated activations
@@ -11562,7 +11579,7 @@ class AutoMunge:
 
       for i in range(binary_column_count):
 
-        _1010_columnlist.append(column + suffix + '_' + str(i))
+        _1010_columnlist.append(column + '_' + suffix + '_' + str(i))
 
       suffixoverlap_results = \
       self._df_check_suffixoverlap(mdf_train, _1010_columnlist, suffixoverlap_results)
@@ -11665,7 +11682,7 @@ class AutoMunge:
     if 'suffix' in params:
       suffix = params['suffix']
     else:
-      suffix = '_sbst'
+      suffix = 'sbst'
       
     if 'test_same_as_train' in params:
       test_same_as_train = params['test_same_as_train']
@@ -11794,7 +11811,7 @@ class AutoMunge:
 
     for dict_key in overlap_dict:
 
-      newcolumn = column + suffix + '_' + dict_key
+      newcolumn = column + '_' + suffix + '_' + dict_key
       
       mdf_train, suffixoverlap_results = \
       self._df_copy_train(mdf_train, column, newcolumn, suffixoverlap_results)
@@ -11915,7 +11932,7 @@ class AutoMunge:
     if 'suffix' in params:
       suffix = params['suffix']
     else:
-      suffix = '_sbs3'
+      suffix = 'sbs3'
       
     if 'test_same_as_train' in params:
       test_same_as_train = params['test_same_as_train']
@@ -12182,7 +12199,7 @@ class AutoMunge:
 
       for i in range(binary_column_count):
 
-        _1010_columnlist.append(column + suffix + '_' + str(i))
+        _1010_columnlist.append(column + '_' + suffix + '_' + str(i))
 
       suffixoverlap_results = \
       self._df_check_suffixoverlap(mdf_train, _1010_columnlist, suffixoverlap_results)
@@ -12529,7 +12546,8 @@ class AutoMunge:
                                       'space' : space, \
                                       'salt' : salt, \
                                       'max_column_count' : max_column_count, \
-                                      'hash_alg' : hash_alg}}
+                                      'hash_alg' : hash_alg, \
+                                      'inplace' : inplace}}
       
       column_dict = { hc : {'category' : 'hash', \
                            'origcategory' : category, \
@@ -12702,7 +12720,8 @@ class AutoMunge:
                                       'heuristic_cap' : heuristic_cap, \
                                       'salt' : salt, \
                                       'excluded_characters' : excluded_characters, \
-                                      'hash_alg' : hash_alg}}      
+                                      'hash_alg' : hash_alg, \
+                                      'inplace' : inplace}}      
       
       column_dict = { hc : {'category' : 'hs10', \
                            'origcategory' : category, \
@@ -13662,9 +13681,9 @@ class AutoMunge:
       #accepts string for suffix appender
       suffix = params['suffix']
     else:
-      suffix = '_nmrc'
+      suffix = 'nmrc'
       
-    nmrc_column = column + suffix
+    nmrc_column = column + '_' + suffix
     
     df, suffixoverlap_results = \
     self._df_copy_train(df, column, nmrc_column, suffixoverlap_results)
@@ -13817,7 +13836,7 @@ class AutoMunge:
       #accepts string for suffix appender
       suffix = params['suffix']
     else:
-      suffix = '_nmr4'
+      suffix = 'nmr4'
       
     if 'test_same_as_train' in params:
       #accepts boolean
@@ -13825,7 +13844,7 @@ class AutoMunge:
     else:
       test_same_as_train = True
       
-    nmrc_column = column + suffix
+    nmrc_column = column + '_' + suffix
     
     mdf_train, suffixoverlap_results = \
     self._df_copy_train(mdf_train, column, nmrc_column, suffixoverlap_results)
@@ -14278,7 +14297,8 @@ class AutoMunge:
                                   'ordl_activations_dict' : ordl_activations_dict, \
                                   'ordered_overide' : ordered_overide, \
                                   'ordered' : ordered, \
-                                  'str_convert' : str_convert}}
+                                  'str_convert' : str_convert, \
+                                  'inplace' : inplace}}
     
       column_dict = {tc : {'category' : 'ordl', \
                            'origcategory' : category, \
@@ -14522,7 +14542,8 @@ class AutoMunge:
                                   'ordl_activations_dict' : ordl_activations_dict, \
                                   'ordered_overide' : ordered_overide, \
                                   'ordered' : ordered, \
-                                  'str_convert' : str_convert}}
+                                  'str_convert' : str_convert, \
+                                  'inplace' : inplace}}
     
       column_dict = {tc : {'category' : 'ord3', \
                            'origcategory' : category, \
@@ -14726,7 +14747,8 @@ class AutoMunge:
                                               'consolidation_count' : consolidation_count, \
                                               'maxbincount' : maxbincount, \
                                               'minentrycount' : minentrycount, \
-                                              'minentryratio' : minentryratio}}
+                                              'minentryratio' : minentryratio, \
+                                              'inplace' : inplace}}
     
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -15434,7 +15456,8 @@ class AutoMunge:
                                             'fri_ratio' : fri_ratio, \
                                             'sat_ratio' : sat_ratio, \
                                             'sun_ratio' : sun_ratio, \
-                                            'infill_ratio' : infill_ratio}}
+                                            'infill_ratio' : infill_ratio, \
+                                            'inplace' : inplace}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -15536,7 +15559,8 @@ class AutoMunge:
                                             'sep_ratio' : sep_ratio, \
                                             'oct_ratio' : oct_ratio, \
                                             'nov_ratio' : nov_ratio, \
-                                            'dec_ratio' : dec_ratio}}
+                                            'dec_ratio' : dec_ratio, \
+                                            'inplace' : inplace}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -15606,7 +15630,8 @@ class AutoMunge:
     
     datecolumns = [column+'_tmzn']
     
-    normalization_dict = {column+'_tmzn' : {'timezone' : timezone}}
+    normalization_dict = {column+'_tmzn' : {'timezone' : timezone, \
+                                            'inplace' : inplace}}
 
     for dc in datecolumns:
 
@@ -15656,7 +15681,7 @@ class AutoMunge:
       #accepts column header suffix appender
       suffix = params['suffix']
     else:
-      suffix = '_mdsn'
+      suffix = 'mdsn'
       
     if 'function' in params:
       #accepts sin/cos
@@ -15664,7 +15689,7 @@ class AutoMunge:
     else:
       function = 'sin'
     
-    time_column = column + suffix
+    time_column = column + '_' + suffix
     
     if inplace is not True:
       
@@ -15856,7 +15881,8 @@ class AutoMunge:
                            'timemean'      : timemean, \
                            'timemax'       : timemax, \
                            'timemin'       : timemin, \
-                           'timestd'       : timestd}}
+                           'timestd'       : timestd, \
+                           'inplace'       : inplace}}
 
         column_dict = {tc : {'category' : 'tmsc', \
                              'origcategory' : category, \
@@ -15905,7 +15931,7 @@ class AutoMunge:
       #accepts column header suffix appender
       suffix = params['suffix']
     else:
-      suffix = '_year'
+      suffix = 'year'
       
     if 'normalization' in params:
       #accepts zscore/minmax/unscaled
@@ -15913,7 +15939,7 @@ class AutoMunge:
     else:
       normalization = 'zscore'
       
-    time_column = column + suffix
+    time_column = column + '_' + suffix
     
     if inplace is not True:
       
@@ -16015,7 +16041,8 @@ class AutoMunge:
                            'timemax'       : timemax, \
                            'timemin'       : timemin, \
                            'timestd'       : timestd, \
-                           'maxminusmin'   : maxminusmin}}
+                           'maxminusmin'   : maxminusmin, \
+                           'inplace'       : inplace}}
 
         column_dict = {tc : {'category' : 'time', \
                              'origcategory' : category, \
@@ -16263,7 +16290,7 @@ class AutoMunge:
     #create list of columns
     nmbrcolumns = [column + '_log0']
 
-    nmbrnormalization_dict = {column + '_log0' : {'meanlog' : meanlog}}
+    nmbrnormalization_dict = {column + '_log0' : {'meanlog' : meanlog, 'inplace' : inplace}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -16360,7 +16387,7 @@ class AutoMunge:
     #create list of columns
     nmbrcolumns = [column + '_logn']
 
-    nmbrnormalization_dict = {column + '_logn' : {'meanlog' : meanlog}}
+    nmbrnormalization_dict = {column + '_logn' : {'meanlog' : meanlog, 'inplace' : inplace}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -16457,7 +16484,7 @@ class AutoMunge:
     #create list of columns
     nmbrcolumns = [column + '_sqrt']
 
-    nmbrnormalization_dict = {column + '_sqrt' : {'meansqrt' : meansqrt}}
+    nmbrnormalization_dict = {column + '_sqrt' : {'meansqrt' : meansqrt, 'inplace' : inplace}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -16547,7 +16574,8 @@ class AutoMunge:
     nmbrcolumns = [column + '_addd']
 
     nmbrnormalization_dict = {column + '_addd' : {'mean' : mean, \
-                                                  'add' : add}}
+                                                  'add' : add, \
+                                                  'inplace' : inplace}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -16636,7 +16664,8 @@ class AutoMunge:
     nmbrcolumns = [column + '_sbtr']
 
     nmbrnormalization_dict = {column + '_sbtr' : {'mean' : mean, \
-                                                  'subtract' : subtract}}
+                                                  'subtract' : subtract, \
+                                                  'inplace' : inplace}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -16726,7 +16755,8 @@ class AutoMunge:
 
 
     nmbrnormalization_dict = {column + '_mltp' : {'mean' : mean, \
-                                                  'multiply' : multiply}}
+                                                  'multiply' : multiply, \
+                                                  'inplace' : inplace}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -16820,7 +16850,8 @@ class AutoMunge:
 
 
     nmbrnormalization_dict = {column + '_divd' : {'mean' : mean, \
-                                                  'divide' : divide}}
+                                                  'divide' : divide, \
+                                                  'inplace' : inplace}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -16907,7 +16938,8 @@ class AutoMunge:
     nmbrcolumns = [column + '_rais']
 
     nmbrnormalization_dict = {column + '_rais' : {'mean' : mean, \
-                                                  'raiser' : raiser}}
+                                                  'raiser' : raiser, \
+                                                  'inplace' : inplace}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -16985,7 +17017,7 @@ class AutoMunge:
     #create list of columns
     nmbrcolumns = [column + '_absl']
 
-    nmbrnormalization_dict = {column + '_absl' : {'mean' : mean}}
+    nmbrnormalization_dict = {column + '_absl' : {'mean' : mean, 'inplace' : inplace}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -17442,7 +17474,8 @@ class AutoMunge:
                                        'activations_list' : activations_list, \
                                        'test_replace_dict' : test_replace_dict, \
                                        'ordl_activations_dict' : ordl_activations_dict, \
-                                       'negvalues' : negvalues}}
+                                       'negvalues' : negvalues, \
+                                       'inplace' : inplace}}
     
       column_dict = {pc : {'category' : 'pwor', \
                            'origcategory' : category, \
@@ -17766,7 +17799,8 @@ class AutoMunge:
                                         'normalizedinput' : normalizedinput, \
                                         'bincount' : bincount, \
                                         'bincuts' : bincuts, \
-                                        'binlabels' : binlabels}}
+                                        'binlabels' : binlabels, \
+                                        'inplace' : inplace}}
 
         column_dict = { nc : {'category' : 'bsor', \
                               'origcategory' : category, \
@@ -17810,9 +17844,9 @@ class AutoMunge:
     if 'suffix' in params:
       suffix = params['suffix']
     else:
-      suffix = '_bnwd'
+      suffix = 'bnwd'
       
-    binscolumn = column + suffix
+    binscolumn = column + '_' + suffix
 
     #store original column for later reversion
     mdf_train, suffixoverlap_results = \
@@ -17952,9 +17986,9 @@ class AutoMunge:
     if 'suffix' in params:
       suffix = params['suffix']
     else:
-      suffix = '_bnwo'
+      suffix = 'bnwo'
       
-    binscolumn = column + suffix
+    binscolumn = column + '_' + suffix
 
     if inplace is not True:
 
@@ -18051,7 +18085,8 @@ class AutoMunge:
                                       'bins_cuts' : bins_cuts, \
                                       'bn_width' : bn_width, \
                                       'activations_list' : activations_list, \
-                                      'ordl_activations_dict' : ordl_activations_dict}}
+                                      'ordl_activations_dict' : ordl_activations_dict, \
+                                      'inplace' : inplace}}
 
       column_dict = { nc : {'category' : 'bnwo', \
                             'origcategory' : category, \
@@ -18091,9 +18126,9 @@ class AutoMunge:
     if 'suffix' in params:
       suffix = params['suffix']
     else:
-      suffix = '_bnep'
+      suffix = 'bnep'
       
-    binscolumn = column + suffix
+    binscolumn = column + '_' + suffix
 
     #copy original column
     mdf_train, suffixoverlap_results = \
@@ -18282,9 +18317,9 @@ class AutoMunge:
     if 'suffix' in params:
       suffix = params['suffix']
     else:
-      suffix = '_bneo'
+      suffix = 'bneo'
       
-    binscolumn = column + suffix
+    binscolumn = column + '_' + suffix
 
     if inplace is not True:
 
@@ -18435,7 +18470,8 @@ class AutoMunge:
                                       'activations_list' : bins_id, \
                                       'bins_cuts' : bins_cuts, \
                                       'bincount' : bincount, \
-                                      'ordl_activations_dict' : ordl_activations_dict}}
+                                      'ordl_activations_dict' : ordl_activations_dict, \
+                                      'inplace' : inplace}}
 
       column_dict = { nc : {'category' : 'bneo', \
                             'origcategory' : category, \
@@ -19136,7 +19172,8 @@ class AutoMunge:
                                       'infill_activation' : infill_activation, \
                                       'ordl_activations_dict' : ordl_activations_dict, \
                                       'trainmax' : trainmax, \
-                                      'trainmin' : trainmin}}
+                                      'trainmin' : trainmin, \
+                                      'inplace' : inplace}}
 
       column_dict = { nc : {'category' : 'bkt3', \
                             'origcategory' : category, \
@@ -19300,7 +19337,8 @@ class AutoMunge:
                                       'infill_activation' : infill_activation, \
                                       'ordl_activations_dict' : ordl_activations_dict, \
                                       'trainmax' : trainmax, \
-                                      'trainmin' : trainmin}}
+                                      'trainmin' : trainmin, \
+                                      'inplace' : inplace}}
 
       column_dict = { nc : {'category' : 'bkt4', \
                             'origcategory' : category, \
@@ -20246,7 +20284,8 @@ class AutoMunge:
                                   'maximum' : maximum, \
                                   'mean' : mean, \
                                   'stdev' : stdev, \
-                                  'overflow' : overflow}}
+                                  'overflow' : overflow, \
+                                  'inplace' : inplace}}
       
       column_dict = {ac : {'category' : 'qbt1', \
                            'origcategory' : category, \
@@ -20308,11 +20347,11 @@ class AutoMunge:
     
     if 'suffix' in params:
         
-      copy_column = column + params['suffix']
+      copy_column = column + '_' + params['suffix']
     
     else:
       
-      copy_column = column + '_copy'
+      copy_column = column + '_' + 'copy'
     
     df, suffixoverlap_results = \
     self._df_copy_train(df, column, copy_column, suffixoverlap_results)
@@ -20386,7 +20425,7 @@ class AutoMunge:
 
     column_dict = {exclcolumn : {'category' : 'excl', \
                                  'origcategory' : category, \
-                                 'normalization_dict' : {exclcolumn:{}}, \
+                                 'normalization_dict' : {exclcolumn:{'inplace' : inplace}}, \
                                  'origcolumn' : column, \
                                  'inputcolumn' : column, \
                                  'columnslist' : [exclcolumn], \
@@ -20452,7 +20491,7 @@ class AutoMunge:
     mdf_train[exclcolumn] = mdf_train[exclcolumn].fillna(fillvalue)
     mdf_test[exclcolumn] = mdf_test[exclcolumn].fillna(fillvalue)
     
-    exc2_normalization_dict = {exclcolumn : {'fillvalue' : fillvalue}}
+    exc2_normalization_dict = {exclcolumn : {'fillvalue' : fillvalue, 'inplace' : inplace}}
     
     column_dict_list = []
 
@@ -20528,7 +20567,7 @@ class AutoMunge:
     mdf_train[exclcolumn] = mdf_train[exclcolumn].fillna(fillvalue)
     mdf_test[exclcolumn] = mdf_test[exclcolumn].fillna(fillvalue)
     
-    exc2_normalization_dict = {exclcolumn : {'fillvalue' : fillvalue}}
+    exc2_normalization_dict = {exclcolumn : {'fillvalue' : fillvalue, 'inplace' : inplace}}
     
     column_dict_list = []
 
@@ -20595,7 +20634,7 @@ class AutoMunge:
     nmbrcolumns = [column + '_shfl']
 
 
-    nmbrnormalization_dict = {column + '_shfl' : {}}
+    nmbrnormalization_dict = {column + '_shfl' : {'inplace' : inplace}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -28336,7 +28375,12 @@ class AutoMunge:
     #on train set (but yes on test set)
     """
     
-    bool_column_list = Binary_dict['bool_column_list']    
+    bool_column_list = Binary_dict['bool_column_list']
+
+    if len(bool_column_list) > 0:
+      Binary_columnkey = ['Binary_1010_0']
+    else:
+      Binary_columnkey = []
     
     df_test['Binary'] = ''
     
@@ -28348,7 +28392,7 @@ class AutoMunge:
 #     df_test['Binary'] = 'B_' + df_test['Binary']
     
     #now we'll apply postprocess_1010 
-    df_test = self._postprocess_1010(df_test, 'Binary', Binary_dict, 'columnkey', {})
+    df_test = self._postprocess_1010(df_test, 'Binary', Binary_dict, Binary_columnkey, {})
     
     del df_test['Binary']
     
@@ -30200,10 +30244,16 @@ class AutoMunge:
         print(bool_column_list)
         print()
           
-      df_train, df_test, Binary_dict = self._Binary_convert(df_train, df_test, bool_column_list, Binary)
+      if len(bool_column_list) > 0:
+        df_train, df_test, Binary_dict = self._Binary_convert(df_train, df_test, bool_column_list, Binary)
 
-      returned_Binary_columns = list(Binary_dict['column_dict'])
-      returned_Binary_columns.remove('Binary')
+        returned_Binary_columns = list(Binary_dict['column_dict'])
+        returned_Binary_columns.remove('Binary')
+
+      else:
+        Binary_dict = {'bool_column_list' : [], 'column_dict' : {}}
+        miscparameters_results.update({'Binary_suffixoverlap_results' : {}})
+        returned_Binary_columns = []
 
       #aggregate suffix overlap validations
       Binary_suffixoverlap_results = {}
@@ -30408,7 +30458,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.17'
+    automungeversion = '6.18'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -31088,61 +31138,73 @@ class AutoMunge:
     #if only have training but not test data handy, use same training data for both dataframe inputs
     '''
     
-    if 'inplace' in params:
-      inplace = params['inplace']
+    #normkey used to retrieve the normalization dictionary 
+    normkey = False
+    if len(columnkey) > 0:      
+      normkey = columnkey[0]
+          
+    #normkey is False when process function returns empty set
+    if normkey is not False:
+      
+      mean = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
+      std = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['std']
+      offset = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['offset']
+      multiplier = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['multiplier']
+      cap = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['cap']
+      floor = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['floor']
+      inplace = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
+      
+      if inplace is not True:
+        #copy source column into new column
+        mdf_test[column + '_nmbr'] = mdf_test[column].copy()
+      else:
+        mdf_test.rename(columns = {column : column + '_nmbr'}, inplace = True)
+
+      #convert all values to either numeric or NaN
+      mdf_test[column + '_nmbr'] = pd.to_numeric(mdf_test[column + '_nmbr'], errors='coerce')
+      
+      if cap is not False:
+        #replace values in test > cap with cap
+        mdf_test.loc[mdf_test[column + '_nmbr'] > cap, (column + '_nmbr')] \
+        = cap
+      
+      if floor is not False:
+        #replace values in test < floor with floor
+        mdf_test.loc[mdf_test[column + '_nmbr'] < floor, (column + '_nmbr')] \
+        = floor
+
+      #replace missing data with training set mean
+      mdf_test[column + '_nmbr'] = mdf_test[column + '_nmbr'].fillna(mean)
+
+      #subtract mean from column
+      mdf_test[column + '_nmbr'] = mdf_test[column + '_nmbr'] - mean
+
+      #get standard deviation of training data
+      std = std
+
+      #divide column values by std
+      #offset, multiplier are parameters that defaults to zero, one
+      mdf_test[column + '_nmbr'] = mdf_test[column + '_nmbr'] / std * multiplier + offset
+
+  #     #change data type for memory savings
+  #     mdf_test[column + '_nmbr'] = mdf_test[column + '_nmbr'].astype(np.float32)
+
     else:
-      inplace = False
-    
-    #retrieve normalizastion parameters from postprocess_dict
-    normkey = column + '_nmbr'
-    
-    mean = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
-    std = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['std']
-    offset = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['offset']
-    multiplier = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['multiplier']
-    cap = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['cap']
-    floor = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['floor']
-    
-    if inplace is not True:
-      #copy source column into new column
-      mdf_test[column + '_nmbr'] = mdf_test[column].copy()
-    else:
-      mdf_test.rename(columns = {column : column + '_nmbr'}, inplace = True)
 
-    #convert all values to either numeric or NaN
-    mdf_test[column + '_nmbr'] = pd.to_numeric(mdf_test[column + '_nmbr'], errors='coerce')
-    
-    if cap is not False:
-      #replace values in test > cap with cap
-      mdf_test.loc[mdf_test[column + '_nmbr'] > cap, (column + '_nmbr')] \
-      = cap
-    
-    if floor is not False:
-      #replace values in test < floor with floor
-      mdf_test.loc[mdf_test[column + '_nmbr'] < floor, (column + '_nmbr')] \
-      = floor
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
 
-    #replace missing data with training set mean
-    mdf_test[column + '_nmbr'] = mdf_test[column + '_nmbr'].fillna(mean)
-
-    #subtract mean from column
-    mdf_test[column + '_nmbr'] = mdf_test[column + '_nmbr'] - mean
-
-    #get standard deviation of training data
-    std = std
-
-    #divide column values by std
-    #offset, multiplier are parameters that defaults to zero, one
-    mdf_test[column + '_nmbr'] = mdf_test[column + '_nmbr'] / std * multiplier + offset
-
-#     #change data type for memory savings
-#     mdf_test[column + '_nmbr'] = mdf_test[column + '_nmbr'].astype(np.float32)
+      if inplace is True:
+        del mdf_test[column]
 
     return mdf_test
     
@@ -31160,42 +31222,54 @@ class AutoMunge:
     #if only have training but not test data handy, use same training data for both dataframe inputs
     '''
     
-    if 'inplace' in params:
-      inplace = params['inplace']
+    #normkey used to retrieve the normalization dictionary 
+    normkey = False
+    if len(columnkey) > 0:      
+      normkey = columnkey[0]
+          
+    #normkey is False when process function returns empty set
+    if normkey is not False:
+      
+      mean = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
+      MAD = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['MAD']
+      inplace = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
+
+      if inplace is not True:
+        mdf_test[column + '_MADn'] = mdf_test[column].copy()
+      
+      else:
+        mdf_test.rename(columns = {column : column + '_MADn'}, inplace = True)
+
+      #convert all values to either numeric or NaN
+      mdf_test[column + '_MADn'] = pd.to_numeric(mdf_test[column + '_MADn'], errors='coerce')
+
+      #replace missing data with training set mean
+      mdf_test[column + '_MADn'] = mdf_test[column + '_MADn'].fillna(mean)
+
+      #subtract mean from column
+      mdf_test[column + '_MADn'] = mdf_test[column + '_MADn'] - mean
+
+      #get mean absolute deviation of training data
+      MAD = MAD
+
+      #divide column values by std
+      mdf_test[column + '_MADn'] = mdf_test[column + '_MADn'] / MAD
+
+  #     #change data type for memory savings
+  #     mdf_test[column + '_MADn'] = mdf_test[column + '_MADn'].astype(np.float32)
+
     else:
-      inplace = False
-    
-    #retrieve normalizastion parameters from postprocess_dict
-    normkey = column + '_MADn'
-    
-    mean = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
-    MAD = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['MAD']
 
-    if inplace is not True:
-      mdf_test[column + '_MADn'] = mdf_test[column].copy()
-    
-    else:
-      mdf_test.rename(columns = {column : column + '_MADn'}, inplace = True)
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
 
-    #convert all values to either numeric or NaN
-    mdf_test[column + '_MADn'] = pd.to_numeric(mdf_test[column + '_MADn'], errors='coerce')
-
-    #replace missing data with training set mean
-    mdf_test[column + '_MADn'] = mdf_test[column + '_MADn'].fillna(mean)
-
-    #subtract mean from column
-    mdf_test[column + '_MADn'] = mdf_test[column + '_MADn'] - mean
-
-    #get mean absolute deviation of training data
-    MAD = MAD
-
-    #divide column values by std
-    mdf_test[column + '_MADn'] = mdf_test[column + '_MADn'] / MAD
-
-#     #change data type for memory savings
-#     mdf_test[column + '_MADn'] = mdf_test[column + '_MADn'].astype(np.float32)
+      if inplace is True:
+        del mdf_test[column]
 
     return mdf_test
     
@@ -31213,44 +31287,56 @@ class AutoMunge:
     #if only have training but not test data handy, use same training data for both dataframe inputs
     '''
     
-    if 'inplace' in params:
-      inplace = params['inplace']
+    #normkey used to retrieve the normalization dictionary 
+    normkey = False
+    if len(columnkey) > 0:      
+      normkey = columnkey[0]
+          
+    #normkey is False when process function returns empty set
+    if normkey is not False:
+      
+      mean = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
+      MAD = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['MAD']
+      datamax = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['datamax']
+      inplace = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
+
+      if inplace is not True:
+        mdf_test[column + '_MAD3'] = mdf_test[column].copy()
+      
+      else:
+        mdf_test.rename(columns = {column : column + '_MAD3'}, inplace = True)
+
+      #convert all values to either numeric or NaN
+      mdf_test[column + '_MAD3'] = pd.to_numeric(mdf_test[column + '_MAD3'], errors='coerce')
+
+      #replace missing data with training set mean
+      mdf_test[column + '_MAD3'] = mdf_test[column + '_MAD3'].fillna(mean)
+
+      #subtract datamax from column
+      mdf_test[column + '_MAD3'] = mdf_test[column + '_MAD3'] - datamax
+
+      #get mean absolute deviation of training data
+      MAD = MAD
+
+      #divide column values by std
+      mdf_test[column + '_MAD3'] = mdf_test[column + '_MAD3'] / MAD
+
+  #     #change data type for memory savings
+  #     mdf_test[column + '_MAD3'] = mdf_test[column + '_MAD3'].astype(np.float32)
+
     else:
-      inplace = False
-    
-    #retrieve normalizastion parameters from postprocess_dict
-    normkey = column + '_MAD3'
-    
-    mean = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
-    MAD = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['MAD']
-    datamax = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['datamax']
 
-    if inplace is not True:
-      mdf_test[column + '_MAD3'] = mdf_test[column].copy()
-    
-    else:
-      mdf_test.rename(columns = {column : column + '_MAD3'}, inplace = True)
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
 
-    #convert all values to either numeric or NaN
-    mdf_test[column + '_MAD3'] = pd.to_numeric(mdf_test[column + '_MAD3'], errors='coerce')
-
-    #replace missing data with training set mean
-    mdf_test[column + '_MAD3'] = mdf_test[column + '_MAD3'].fillna(mean)
-
-    #subtract datamax from column
-    mdf_test[column + '_MAD3'] = mdf_test[column + '_MAD3'] - datamax
-
-    #get mean absolute deviation of training data
-    MAD = MAD
-
-    #divide column values by std
-    mdf_test[column + '_MAD3'] = mdf_test[column + '_MAD3'] / MAD
-
-#     #change data type for memory savings
-#     mdf_test[column + '_MAD3'] = mdf_test[column + '_MAD3'].astype(np.float32)
+      if inplace is True:
+        del mdf_test[column]
 
     return mdf_test
     
@@ -31268,55 +31354,67 @@ class AutoMunge:
     #if only have training but not test data handy, use same training data for both dataframe inputs
     '''
     
-    if 'inplace' in params:
-      inplace = params['inplace']
+    #normkey used to retrieve the normalization dictionary 
+    normkey = False
+    if len(columnkey) > 0:      
+      normkey = columnkey[0]
+          
+    #normkey is False when process function returns empty set
+    if normkey is not False:
+      
+      mean = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
+      minimum = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['minimum']
+      maximum = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['maximum']
+      cap = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['cap']
+      floor = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['floor']
+      inplace = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
+      
+      if inplace is not True:
+        #copy source column into new column
+        mdf_test[column + '_mnmx'] = mdf_test[column].copy()
+      else:
+        mdf_test.rename(columns = {column : column + '_mnmx'}, inplace = True)
+
+      #convert all values to either numeric or NaN
+      mdf_test[column + '_mnmx'] = pd.to_numeric(mdf_test[column + '_mnmx'], errors='coerce')
+
+      #replace missing data with training set mean
+      mdf_test[column + '_mnmx'] = mdf_test[column + '_mnmx'].fillna(mean)
+      
+      #avoid outlier div by zero when max = min
+      maxminusmin = maximum - minimum
+      if maxminusmin == 0:
+        maxminusmin = 1
+
+      #perform min-max scaling to test set using values from train
+      mdf_test[column + '_mnmx'] = (mdf_test[column + '_mnmx'] - minimum) / \
+                                  (maxminusmin)
+
+      if cap is not False:
+        #replace values in test > cap with cap
+        mdf_test.loc[mdf_test[column + '_mnmx'] > (cap - minimum)/maxminusmin, (column + '_mnmx')] \
+        = (cap - minimum)/maxminusmin
+      
+      if floor is not False:
+        #replace values in test < floor with floor
+        mdf_test.loc[mdf_test[column + '_mnmx'] < (floor - minimum)/maxminusmin, (column + '_mnmx')] \
+        = (floor - minimum)/maxminusmin
+
     else:
-      inplace = False
-    
-    #retrieve normalizastion parameters from postprocess_dict
-    normkey = column + '_mnmx'
-    
-    mean = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
-    minimum = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['minimum']
-    maximum = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['maximum']
-    cap = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['cap']
-    floor = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['floor']
-    
-    if inplace is not True:
-      #copy source column into new column
-      mdf_test[column + '_mnmx'] = mdf_test[column].copy()
-    else:
-      mdf_test.rename(columns = {column : column + '_mnmx'}, inplace = True)
 
-    #convert all values to either numeric or NaN
-    mdf_test[column + '_mnmx'] = pd.to_numeric(mdf_test[column + '_mnmx'], errors='coerce')
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
 
-    #replace missing data with training set mean
-    mdf_test[column + '_mnmx'] = mdf_test[column + '_mnmx'].fillna(mean)
-    
-    #avoid outlier div by zero when max = min
-    maxminusmin = maximum - minimum
-    if maxminusmin == 0:
-      maxminusmin = 1
-
-    #perform min-max scaling to test set using values from train
-    mdf_test[column + '_mnmx'] = (mdf_test[column + '_mnmx'] - minimum) / \
-                                 (maxminusmin)
-
-    if cap is not False:
-      #replace values in test > cap with cap
-      mdf_test.loc[mdf_test[column + '_mnmx'] > (cap - minimum)/maxminusmin, (column + '_mnmx')] \
-      = (cap - minimum)/maxminusmin
-    
-    if floor is not False:
-      #replace values in test < floor with floor
-      mdf_test.loc[mdf_test[column + '_mnmx'] < (floor - minimum)/maxminusmin, (column + '_mnmx')] \
-      = (floor - minimum)/maxminusmin
+      if inplace is True:
+        del mdf_test[column]
 
     return mdf_test
 
@@ -31334,57 +31432,67 @@ class AutoMunge:
     #expect this approach works better when the numerical distribution is thin tailed
     #if only have training but not test data handy, use same training data for both dataframe inputs
     '''
-    
-    if 'inplace' in params:
-      inplace = params['inplace']
+
+    #normkey used to retrieve the normalization dictionary 
+    normkey = False
+    if len(columnkey) > 0:      
+      normkey = columnkey[0]
+          
+    #normkey is False when process function returns empty set
+    if normkey is not False:
+
+      mean = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
+      quantilemin = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['quantilemin']
+      quantilemax = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['quantilemax']
+      inplace = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
+      
+      if inplace is not True:
+        mdf_test[column + '_mnm3'] = mdf_test[column].copy()
+      
+      else:
+        mdf_test.rename(columns = {column : column + '_mnm3'}, inplace = True)
+
+      #convert all values to either numeric or NaN
+      mdf_test[column + '_mnm3'] = pd.to_numeric(mdf_test[column + '_mnm3'], errors='coerce')
+
+  #     #get mean of training data
+  #     mean = mean    
+      
+      #replace values > quantilemax with quantilemax
+      mdf_test.loc[mdf_test[column + '_mnm3'] > quantilemax, (column + '_mnm3')] \
+      = quantilemax
+      #replace values < quantile10 with quantile10
+      mdf_test.loc[mdf_test[column + '_mnm3'] < quantilemin, (column + '_mnm3')] \
+      = quantilemin
+      
+      #replace missing data with training set mean
+      mdf_test[column + '_mnm3'] = mdf_test[column + '_mnm3'].fillna(mean)
+      
+      #avoid outlier div by zero when max = min
+      maxminusmin = quantilemax - quantilemin
+      if maxminusmin == 0:
+        maxminusmin = 1
+
+      #perform min-max scaling to test set using values from train
+      mdf_test[column + '_mnm3'] = (mdf_test[column + '_mnm3'] - quantilemin) / \
+                                  (maxminusmin)
+
+  #     #change data type for memory savings
+  #     mdf_test[column + '_mnm3'] = mdf_test[column + '_mnm3'].astype(np.float32)
+
     else:
-      inplace = False
 
-    #retrieve normalizastion parameters from postprocess_dict
-    normkey = column + '_mnm3'
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
 
-    mean = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
-
-    quantilemin = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['quantilemin']
-
-    quantilemax = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['quantilemax']
-    
-    if inplace is not True:
-      mdf_test[column + '_mnm3'] = mdf_test[column].copy()
-    
-    else:
-      mdf_test.rename(columns = {column : column + '_mnm3'}, inplace = True)
-
-    #convert all values to either numeric or NaN
-    mdf_test[column + '_mnm3'] = pd.to_numeric(mdf_test[column + '_mnm3'], errors='coerce')
-
-#     #get mean of training data
-#     mean = mean    
-    
-    #replace values > quantilemax with quantilemax
-    mdf_test.loc[mdf_test[column + '_mnm3'] > quantilemax, (column + '_mnm3')] \
-    = quantilemax
-    #replace values < quantile10 with quantile10
-    mdf_test.loc[mdf_test[column + '_mnm3'] < quantilemin, (column + '_mnm3')] \
-    = quantilemin
-    
-    #replace missing data with training set mean
-    mdf_test[column + '_mnm3'] = mdf_test[column + '_mnm3'].fillna(mean)
-    
-    #avoid outlier div by zero when max = min
-    maxminusmin = quantilemax - quantilemin
-    if maxminusmin == 0:
-      maxminusmin = 1
-
-    #perform min-max scaling to test set using values from train
-    mdf_test[column + '_mnm3'] = (mdf_test[column + '_mnm3'] - quantilemin) / \
-                                 (maxminusmin)
-
-#     #change data type for memory savings
-#     mdf_test[column + '_mnm3'] = mdf_test[column + '_mnm3'].astype(np.float32)
+      if inplace is True:
+        del mdf_test[column]
 
     return mdf_test
 
@@ -31395,38 +31503,50 @@ class AutoMunge:
     #based on division by max absolute values from training set.
     '''
     
-    if 'inplace' in params:
-      inplace = params['inplace']
+    #normkey used to retrieve the normalization dictionary 
+    normkey = False
+    if len(columnkey) > 0:      
+      normkey = columnkey[0]
+          
+    #normkey is False when process function returns empty set
+    if normkey is not False:
+      
+      maxabs = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['maxabs']
+      mean = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
+      inplace = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
+      
+      if inplace is not True:
+        #copy source column into new column
+        mdf_test[column + '_mxab'] = mdf_test[column].copy()
+      else:
+        mdf_test.rename(columns = {column : column + '_mxab'}, inplace = True)
+
+      #convert all values to either numeric or NaN
+      mdf_test[column + '_mxab'] = pd.to_numeric(mdf_test[column + '_mxab'], errors='coerce')
+
+      #replace missing data with training set mean
+      mdf_test[column + '_mxab'] = mdf_test[column + '_mxab'].fillna(mean)
+      
+      #avoid outlier div by zero 
+      if maxabs == 0:
+        maxabs = 1
+
+      #perform max abs scaling to test set using values from train
+      mdf_test[column + '_mxab'] = mdf_test[column + '_mxab'] / \
+                                  (maxabs)
+
     else:
-      inplace = False
-    
-    #retrieve normalizastion parameters from postprocess_dict
-    normkey = column + '_mxab'
-    
-    maxabs = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['maxabs']
-    mean = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
-    
-    if inplace is not True:
-      #copy source column into new column
-      mdf_test[column + '_mxab'] = mdf_test[column].copy()
-    else:
-      mdf_test.rename(columns = {column : column + '_mxab'}, inplace = True)
 
-    #convert all values to either numeric or NaN
-    mdf_test[column + '_mxab'] = pd.to_numeric(mdf_test[column + '_mxab'], errors='coerce')
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
 
-    #replace missing data with training set mean
-    mdf_test[column + '_mxab'] = mdf_test[column + '_mxab'].fillna(mean)
-    
-    #avoid outlier div by zero 
-    if maxabs == 0:
-      maxabs = 1
-
-    #perform max abs scaling to test set using values from train
-    mdf_test[column + '_mxab'] = mdf_test[column + '_mxab'] / \
-                                 (maxabs)
+      if inplace is True:
+        del mdf_test[column]
 
     return mdf_test
 
@@ -31458,76 +31578,88 @@ class AutoMunge:
     #multiplier/offset based on posttransform values, muoltiplier applied betfore offset
     """
     
-    if 'inplace' in params:
-      inplace = params['inplace']
-    else:
-      inplace = False
-    
-    #retrieve normalizastion parameters from postprocess_dict
-    normkey = column + '_retn'
-    
-    mean = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
-    minimum = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['minimum']
-    maximum = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['maximum']
-    scalingapproach = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['scalingapproach']
-    offset = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['offset']
-    multiplier = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['multiplier']
-    cap = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['cap']
-    floor = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['floor']
-    divisor = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['divisor']
-    
-    if inplace is not True:
-      #copy source column into new column
-      mdf_test[column + '_retn'] = mdf_test[column].copy()
-    else:
-      mdf_test.rename(columns = {column : column + '_retn'}, inplace = True)
-
-    #convert all values to either numeric or NaN
-    mdf_test[column + '_retn'] = pd.to_numeric(mdf_test[column + '_retn'], errors='coerce')
-    
-    if cap is not False:
-      #replace values in test > cap with cap
-      mdf_test.loc[mdf_test[column + '_retn'] > cap, (column + '_retn')] \
-      = cap
-    
-    if floor is not False:
-      #replace values in test < floor with floor
-      mdf_test.loc[mdf_test[column + '_retn'] < floor, (column + '_retn')] \
-      = floor
-
-    #replace missing data with training set mean
-    mdf_test[column + '_retn'] = mdf_test[column + '_retn'].fillna(mean)
-    
-    #avoid outlier div by zero when max = min
-    maxminusmin = maximum - minimum
-    if maxminusmin == 0:
-      maxminusmin = 1
-    
-    if scalingapproach == 'retn':
+    #normkey used to retrieve the normalization dictionary 
+    normkey = False
+    if len(columnkey) > 0:      
+      normkey = columnkey[0]
+          
+    #normkey is False when process function returns empty set
+    if normkey is not False:
       
-      mdf_test[column + '_retn'] = (mdf_test[column + '_retn']) / \
+      mean = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
+      minimum = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['minimum']
+      maximum = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['maximum']
+      scalingapproach = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['scalingapproach']
+      offset = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['offset']
+      multiplier = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['multiplier']
+      cap = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['cap']
+      floor = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['floor']
+      divisor = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['divisor']
+      inplace = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
+      
+      if inplace is not True:
+        #copy source column into new column
+        mdf_test[column + '_retn'] = mdf_test[column].copy()
+      else:
+        mdf_test.rename(columns = {column : column + '_retn'}, inplace = True)
+
+      #convert all values to either numeric or NaN
+      mdf_test[column + '_retn'] = pd.to_numeric(mdf_test[column + '_retn'], errors='coerce')
+      
+      if cap is not False:
+        #replace values in test > cap with cap
+        mdf_test.loc[mdf_test[column + '_retn'] > cap, (column + '_retn')] \
+        = cap
+      
+      if floor is not False:
+        #replace values in test < floor with floor
+        mdf_test.loc[mdf_test[column + '_retn'] < floor, (column + '_retn')] \
+        = floor
+
+      #replace missing data with training set mean
+      mdf_test[column + '_retn'] = mdf_test[column + '_retn'].fillna(mean)
+      
+      #avoid outlier div by zero when max = min
+      maxminusmin = maximum - minimum
+      if maxminusmin == 0:
+        maxminusmin = 1
+      
+      if scalingapproach == 'retn':
+        
+        mdf_test[column + '_retn'] = (mdf_test[column + '_retn']) / \
+                                      (divisor) * multiplier + offset
+        
+      elif scalingapproach == 'mnmx':
+      
+        #perform min-max scaling to test set using values from train
+        mdf_test[column + '_retn'] = (mdf_test[column + '_retn'] - minimum) / \
                                     (divisor) * multiplier + offset
+        
+      elif scalingapproach == 'mxmn':
       
-    elif scalingapproach == 'mnmx':
-    
-      #perform min-max scaling to test set using values from train
-      mdf_test[column + '_retn'] = (mdf_test[column + '_retn'] - minimum) / \
-                                   (divisor) * multiplier + offset
-      
-    elif scalingapproach == 'mxmn':
-    
-      #perform min-max scaling to test set using values from train
-      mdf_test[column + '_retn'] = (mdf_test[column + '_retn'] - maximum) / \
-                                   (divisor) * multiplier + offset
+        #perform min-max scaling to test set using values from train
+        mdf_test[column + '_retn'] = (mdf_test[column + '_retn'] - maximum) / \
+                                    (divisor) * multiplier + offset
+
+    else:
+
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
+
+      if inplace is True:
+        del mdf_test[column]
 
     return mdf_test
 
@@ -31545,66 +31677,71 @@ class AutoMunge:
     #if only have training but not test data handy, use same training data for both dataframe inputs
     '''
     
-    if 'inplace' in params:
-      inplace = params['inplace']
+    #normkey used to retrieve the normalization dictionary 
+    normkey = False
+    if len(columnkey) > 0:      
+      normkey = columnkey[0]
+          
+    #normkey is False when process function returns empty set
+    if normkey is not False:
+      
+      mean = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
+      minimum = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['minimum']
+      maximum = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['maximum']
+      maxminusmin = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['maxminusmin']
+      offset = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['offset']
+      multiplier = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['multiplier']
+      cap = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['cap']
+      floor = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['floor']
+      inplace = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
+
+      if inplace is not True:
+        mdf_test[column + '_mean'] = mdf_test[column].copy()
+      
+      else:
+        mdf_test.rename(columns = {column : column + '_mean'}, inplace = True)
+
+      #convert all values to either numeric or NaN
+      mdf_test[column + '_mean'] = pd.to_numeric(mdf_test[column + '_mean'], errors='coerce')
+      
+      if cap is not False:
+        #replace values in test > cap with cap
+        mdf_test.loc[mdf_test[column + '_mean'] > cap, (column + '_mean')] \
+        = cap
+      
+      if floor is not False:
+        #replace values in test < floor with floor
+        mdf_test.loc[mdf_test[column + '_mean'] < floor, (column + '_mean')] \
+        = floor
+
+      #replace missing data with training set mean
+      mdf_test[column + '_mean'] = mdf_test[column + '_mean'].fillna(mean)
+
+      #perform min-max scaling to test set using values from train
+      mdf_test[column + '_mean'] = (mdf_test[column + '_mean'] - mean) / \
+                                  (maxminusmin) * multiplier + offset
+
+  #     #change data type for memory savings
+  #     mdf_test[column + '_mnmx'] = mdf_test[column + '_mnmx'].astype(np.float32)
+
     else:
-      inplace = False
-    
-    #retrieve normalizastion parameters from postprocess_dict
-    normkey = column + '_mean'
-    
-    mean = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
-    
-    minimum = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['minimum']
-    
-    maximum = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['maximum']
-    
-    maxminusmin = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['maxminusmin']
-    
-    offset = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['offset']
-    
-    multiplier = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['multiplier']
-    
-    cap = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['cap']
-    
-    floor = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['floor']
 
-    if inplace is not True:
-      mdf_test[column + '_mean'] = mdf_test[column].copy()
-    
-    else:
-      mdf_test.rename(columns = {column : column + '_mean'}, inplace = True)
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
 
-    #convert all values to either numeric or NaN
-    mdf_test[column + '_mean'] = pd.to_numeric(mdf_test[column + '_mean'], errors='coerce')
-    
-    if cap is not False:
-      #replace values in test > cap with cap
-      mdf_test.loc[mdf_test[column + '_mean'] > cap, (column + '_mean')] \
-      = cap
-    
-    if floor is not False:
-      #replace values in test < floor with floor
-      mdf_test.loc[mdf_test[column + '_mean'] < floor, (column + '_mean')] \
-      = floor
-
-    #replace missing data with training set mean
-    mdf_test[column + '_mean'] = mdf_test[column + '_mean'].fillna(mean)
-
-    #perform min-max scaling to test set using values from train
-    mdf_test[column + '_mean'] = (mdf_test[column + '_mean'] - mean) / \
-                                 (maxminusmin) * multiplier + offset
-
-#     #change data type for memory savings
-#     mdf_test[column + '_mnmx'] = mdf_test[column + '_mnmx'].astype(np.float32)
+      if inplace is True:
+        del mdf_test[column]
 
     return mdf_test
 
@@ -31622,63 +31759,68 @@ class AutoMunge:
     #returns error message if more than two categories remain
     '''
     
-    if 'inplace' in params:
-      inplace = params['inplace']
+    #normkey used to retrieve the normalization dictionary 
+    normkey = False
+    if len(columnkey) > 0:      
+      normkey = columnkey[0]
+          
+    #normkey is False when process function returns empty set
+    if normkey is not False:
+
+      binary_missing_plug = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['missing']
+      str_convert = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['str_convert']
+      onevalue = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey][1]
+      zerovalue = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey][0]
+      inplace = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
+
+      if inplace is not True:
+        mdf_test[column + '_bnry'] = mdf_test[column].copy()
+      
+      else:
+        mdf_test.rename(columns = {column : column + '_bnry'}, inplace = True)
+      
+      if str_convert is True:
+        mdf_test[column + '_bnry'] = mdf_test[column + '_bnry'].astype(str)
+
+      #replace missing data with specified classification
+      mdf_test[column + '_bnry'] = mdf_test[column + '_bnry'].fillna(binary_missing_plug)
+
+      #this addressess issue where nunique for mdftest > than that for mdf_train
+      #note is currently an oportunity for improvement that NArows won't identify these poinsts as candiadates
+      #for user specified infill, and as currently addressed will default to infill with most common value
+      #in the mean time a workaround could be for user to manually replace extra values with nan prior to
+      #postmunge application such as if they want to apply ML infill
+      #this will only be an issue when nunique for df_train == 2, and nunique for df_test > 2
+      #if len(mdf_test[column + '_bnry'].unique()) > 2:
+      uniqueintest = mdf_test[column + '_bnry'].unique()
+      for unique in uniqueintest:
+        if unique not in {onevalue, zerovalue}:
+          mdf_test[column + '_bnry'] = \
+          np.where(mdf_test[column + '_bnry'] == unique, binary_missing_plug, mdf_test[column + '_bnry'])
+      
+      #convert column to binary 0/1 classification (replaces scikit LabelBinarizer)
+      mdf_test[column + '_bnry'] = np.where(mdf_test[column + '_bnry'] == onevalue, 1, 0)
+
+      #create list of columns
+      bnrycolumns = [column + '_bnry']
+
+      #change data types to 8-bit (1 byte) integers for memory savings
+      mdf_test[column + '_bnry'] = mdf_test[column + '_bnry'].astype(np.int8)
+
     else:
-      inplace = False
-    
-    #retrieve normalization parameters
-    normkey = column + '_bnry'
-    binary_missing_plug = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['missing']
-    str_convert = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['str_convert']
-    
-#     onevalue = \
-#     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['onevalue']
-    
-#     zerovalue = \
-#     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['zerovalue']
 
-    onevalue = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey][1]
-    
-    zerovalue = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey][0]
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
 
-    if inplace is not True:
-      mdf_test[column + '_bnry'] = mdf_test[column].copy()
-    
-    else:
-      mdf_test.rename(columns = {column : column + '_bnry'}, inplace = True)
-    
-    if str_convert is True:
-      mdf_test[column + '_bnry'] = mdf_test[column + '_bnry'].astype(str)
-
-    #replace missing data with specified classification
-    mdf_test[column + '_bnry'] = mdf_test[column + '_bnry'].fillna(binary_missing_plug)
-
-    #this addressess issue where nunique for mdftest > than that for mdf_train
-    #note is currently an oportunity for improvement that NArows won't identify these poinsts as candiadates
-    #for user specified infill, and as currently addressed will default to infill with most common value
-    #in the mean time a workaround could be for user to manually replace extra values with nan prior to
-    #postmunge application such as if they want to apply ML infill
-    #this will only be an issue when nunique for df_train == 2, and nunique for df_test > 2
-    #if len(mdf_test[column + '_bnry'].unique()) > 2:
-    uniqueintest = mdf_test[column + '_bnry'].unique()
-    for unique in uniqueintest:
-      if unique not in {onevalue, zerovalue}:
-        mdf_test[column + '_bnry'] = \
-        np.where(mdf_test[column + '_bnry'] == unique, binary_missing_plug, mdf_test[column + '_bnry'])
-    
-    #convert column to binary 0/1 classification (replaces scikit LabelBinarizer)
-    mdf_test[column + '_bnry'] = np.where(mdf_test[column + '_bnry'] == onevalue, 1, 0)
-
-    #create list of columns
-    bnrycolumns = [column + '_bnry']
-
-    #change data types to 8-bit (1 byte) integers for memory savings
-    mdf_test[column + '_bnry'] = mdf_test[column + '_bnry'].astype(np.int8)
+      if inplace is True:
+        del mdf_test[column]
 
     return mdf_test
   
@@ -31696,63 +31838,68 @@ class AutoMunge:
     #returns error message if more than two categories remain
     '''
     
-    if 'inplace' in params:
-      inplace = params['inplace']
+    #normkey used to retrieve the normalization dictionary 
+    normkey = False
+    if len(columnkey) > 0:      
+      normkey = columnkey[0]
+          
+    #normkey is False when process function returns empty set
+    if normkey is not False:
+
+      binary_missing_plug = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['missing']
+      str_convert = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['str_convert']
+      onevalue = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey][1]
+      zerovalue = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey][0]
+      inplace = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
+
+      if inplace is not True:
+        mdf_test[column + '_bnr2'] = mdf_test[column].copy()
+      
+      else:
+        mdf_test.rename(columns = {column : column + '_bnr2'}, inplace = True)
+      
+      if str_convert is True:
+        mdf_test[column + '_bnr2'] = mdf_test[column + '_bnr2'].astype(str)
+
+      #replace missing data with specified classification
+      mdf_test[column + '_bnr2'] = mdf_test[column + '_bnr2'].fillna(binary_missing_plug)
+
+      #this addressess issue where nunique for mdftest > than that for mdf_train
+      #note is currently an oportunity for improvement that NArows won't identify these poinsts as candiadates
+      #for user specified infill, and as currently addressed will default to infill with most common value
+      #in the mean time a workaround could be for user to manually replace extra values with nan prior to
+      #postmunge application such as if they want to apply ML infill
+      #this will only be an issue when nunique for df_train == 2, and nunique for df_test > 2
+      #if len(mdf_test[column + '_bnry'].unique()) > 2:
+      uniqueintest = mdf_test[column + '_bnr2'].unique()
+      for unique in uniqueintest:
+        if unique not in {onevalue, zerovalue}:
+          mdf_test[column + '_bnr2'] = \
+          np.where(mdf_test[column + '_bnr2'] == unique, binary_missing_plug, mdf_test[column + '_bnr2'])
+      
+      #convert column to binary 0/1 classification (replaces scikit LabelBinarizer)
+      mdf_test[column + '_bnr2'] = np.where(mdf_test[column + '_bnr2'] == onevalue, 1, 0)
+
+      #create list of columns
+      bnrycolumns = [column + '_bnr2']
+
+      #change data types to 8-bit (1 byte) integers for memory savings
+      mdf_test[column + '_bnr2'] = mdf_test[column + '_bnr2'].astype(np.int8)
+
     else:
-      inplace = False
-    
-    #retrieve normalization parameters
-    normkey = column + '_bnr2'
-    binary_missing_plug = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['missing']
-    str_convert = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['str_convert']
-    
-#     onevalue = \
-#     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['onevalue']
-    
-#     zerovalue = \
-#     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['zerovalue']
 
-    onevalue = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey][1]
-    
-    zerovalue = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey][0]
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
 
-    if inplace is not True:
-      mdf_test[column + '_bnr2'] = mdf_test[column].copy()
-    
-    else:
-      mdf_test.rename(columns = {column : column + '_bnr2'}, inplace = True)
-    
-    if str_convert is True:
-      mdf_test[column + '_bnr2'] = mdf_test[column + '_bnr2'].astype(str)
-
-    #replace missing data with specified classification
-    mdf_test[column + '_bnr2'] = mdf_test[column + '_bnr2'].fillna(binary_missing_plug)
-
-    #this addressess issue where nunique for mdftest > than that for mdf_train
-    #note is currently an oportunity for improvement that NArows won't identify these poinsts as candiadates
-    #for user specified infill, and as currently addressed will default to infill with most common value
-    #in the mean time a workaround could be for user to manually replace extra values with nan prior to
-    #postmunge application such as if they want to apply ML infill
-    #this will only be an issue when nunique for df_train == 2, and nunique for df_test > 2
-    #if len(mdf_test[column + '_bnry'].unique()) > 2:
-    uniqueintest = mdf_test[column + '_bnr2'].unique()
-    for unique in uniqueintest:
-      if unique not in {onevalue, zerovalue}:
-        mdf_test[column + '_bnr2'] = \
-        np.where(mdf_test[column + '_bnr2'] == unique, binary_missing_plug, mdf_test[column + '_bnr2'])
-    
-    #convert column to binary 0/1 classification (replaces scikit LabelBinarizer)
-    mdf_test[column + '_bnr2'] = np.where(mdf_test[column + '_bnr2'] == onevalue, 1, 0)
-
-    #create list of columns
-    bnrycolumns = [column + '_bnr2']
-
-    #change data types to 8-bit (1 byte) integers for memory savings
-    mdf_test[column + '_bnr2'] = mdf_test[column + '_bnr2'].astype(np.int8)
+      if inplace is True:
+        del mdf_test[column]
 
     return mdf_test
   
@@ -31848,6 +31995,16 @@ class AutoMunge:
       #now convert coloumn headers from text convention to onht convention
       mdf_test  = mdf_test.rename(columns=labels_dict)
     
+    else:
+
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
+
+      if inplace is True:
+        del mdf_test[column]
+
     return mdf_test
   
   def _postprocess_text(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
@@ -31952,6 +32109,16 @@ class AutoMunge:
       for textcolumn in textcolumns:
 
         mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.int8)
+
+    else:
+
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
+
+      if inplace is True:
+        del mdf_test[column]
     
     return mdf_test
 
@@ -32073,14 +32240,24 @@ class AutoMunge:
                                           labelsmoothingcolumn, 
                                           categorycomplete_test_dict, 
                                           LSfitparams_dict)
+
+    else:
+
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
+
+      if inplace is True:
+        del mdf_test[column]
     
     return mdf_test
   
   def _postprocess_textsupport(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
-    #just like the postprocess_text  function but uses different approach for
-    #normalizaation key (uses passed columnkey). This function supports some of the
-    #other methods.
+    #just like the postprocess_text  function but doesn't use columnkey or inspect a normalization_dict. 
+    #This function supports some of the other methods.
+    #For use a temporary params dictionary should be assembled with entry for 'textcolumns'
     #accepts parameter textcolumns as a list of columns to return 
     #Note that textcolumns entries need to be in form of column + '_' + uniqueentry
     #where uniqueentry is a unique entry in the categoric set associated with the activation for that column
@@ -32095,79 +32272,83 @@ class AutoMunge:
       tempcolumn = textcolumns[0]
     else:
       tempcolumn = column + '_onht'
-    
-    #create copy of original column for later retrieval
-    mdf_test[tempcolumn] = mdf_test[column].copy()
 
-    #convert column to category
-    mdf_test[tempcolumn] = mdf_test[tempcolumn].astype('category')
+    #note that suffix overlap will have already been checked externally based on textcolumns in automunge
 
-#     #if set is categorical we'll need the plug value for missing values included
-#     mdf_test[column] = mdf_test[column].cat.add_categories(['NArw'])
-
-#     #replace NA with a dummy variable
-#     mdf_test[column] = mdf_test[column].fillna('NArw')
-    
-    #if set is categorical we'll need the plug value for missing values included
-    if 'zzzinfill' not in mdf_test[tempcolumn].cat.categories:
-      mdf_test[tempcolumn] = mdf_test[tempcolumn].cat.add_categories(['zzzinfill'])
-
-    #replace NA with a dummy variable
-    mdf_test[tempcolumn] = mdf_test[tempcolumn].fillna('zzzinfill')
-
-    #replace numerical with string equivalent
-    #mdf_train[column] = mdf_train[column].astype(str)
-    mdf_test[tempcolumn] = mdf_test[tempcolumn].astype(str)
-
-    #extract categories for column labels
-    #note that .unique() extracts the labels as a numpy array
-
-    #we'll get the category names from the textcolumns array by stripping the \
-    #prefixes of column name + '_'
-    prefixlength = len(column)+1
-    labels_train = textcolumns[:]
-    for textcolumn in labels_train:
-      textcolumn = textcolumn[prefixlength :]
-    #labels_train.sort(axis=0)
-    labels_train.sort()
-    labels_test = mdf_test[tempcolumn].unique()
-    labels_test.sort(axis=0)
-    labels_test = list(labels_test)
-
-    #apply onehotencoding
-    df_test_cat = pd.get_dummies(mdf_test[tempcolumn])
-    
-    #append column header name to each category listing
-    labels_test = [column + '_' + entry for entry in labels_test]
-    
-    #convert sparse array to pandas dataframe with column labels
-    df_test_cat.columns = labels_test
-
-    #Get missing columns in test set that are present in training set
-    missing_cols = set( textcolumns ) - set( df_test_cat.columns )
-
-    #Add a missing column in test set with default value equal to 0
-    for c in missing_cols:
-        df_test_cat[c] = 0
-
-    #Ensure the order of column in the test set is in the same order than in train set
-    #Note this also removes categories in test set that aren't present in training set
-    df_test_cat = df_test_cat[textcolumns]
-    
-    del mdf_test[tempcolumn]
-
-    #concatinate the sparse set with the rest of our training data
-    mdf_test = pd.concat([mdf_test, df_test_cat], axis=1)
-    
-    #delete support NArw2 column
-    columnNAr2 = column + '_zzzinfill'
-    if columnNAr2 in mdf_test.columns:
-      del mdf_test[columnNAr2]
-    
-    #change data types to 8-bit (1 byte) integers for memory savings
-    for textcolumn in textcolumns:
+    if len(textcolumns) > 0:
       
-      mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.int8)
+      #create copy of original column for later retrieval
+      mdf_test[tempcolumn] = mdf_test[column].copy()
+
+      #convert column to category
+      mdf_test[tempcolumn] = mdf_test[tempcolumn].astype('category')
+
+  #     #if set is categorical we'll need the plug value for missing values included
+  #     mdf_test[column] = mdf_test[column].cat.add_categories(['NArw'])
+
+  #     #replace NA with a dummy variable
+  #     mdf_test[column] = mdf_test[column].fillna('NArw')
+      
+      #if set is categorical we'll need the plug value for missing values included
+      if 'zzzinfill' not in mdf_test[tempcolumn].cat.categories:
+        mdf_test[tempcolumn] = mdf_test[tempcolumn].cat.add_categories(['zzzinfill'])
+
+      #replace NA with a dummy variable
+      mdf_test[tempcolumn] = mdf_test[tempcolumn].fillna('zzzinfill')
+
+      #replace numerical with string equivalent
+      #mdf_train[column] = mdf_train[column].astype(str)
+      mdf_test[tempcolumn] = mdf_test[tempcolumn].astype(str)
+
+      #extract categories for column labels
+      #note that .unique() extracts the labels as a numpy array
+
+      #we'll get the category names from the textcolumns array by stripping the \
+      #prefixes of column name + '_'
+      prefixlength = len(column)+1
+      labels_train = textcolumns[:]
+      for textcolumn in labels_train:
+        textcolumn = textcolumn[prefixlength :]
+      #labels_train.sort(axis=0)
+      labels_train.sort()
+      labels_test = mdf_test[tempcolumn].unique()
+      labels_test.sort(axis=0)
+      labels_test = list(labels_test)
+
+      #apply onehotencoding
+      df_test_cat = pd.get_dummies(mdf_test[tempcolumn])
+      
+      #append column header name to each category listing
+      labels_test = [column + '_' + entry for entry in labels_test]
+      
+      #convert sparse array to pandas dataframe with column labels
+      df_test_cat.columns = labels_test
+
+      #Get missing columns in test set that are present in training set
+      missing_cols = set( textcolumns ) - set( df_test_cat.columns )
+
+      #Add a missing column in test set with default value equal to 0
+      for c in missing_cols:
+          df_test_cat[c] = 0
+
+      #Ensure the order of column in the test set is in the same order than in train set
+      #Note this also removes categories in test set that aren't present in training set
+      df_test_cat = df_test_cat[textcolumns]
+      
+      del mdf_test[tempcolumn]
+
+      #concatinate the sparse set with the rest of our training data
+      mdf_test = pd.concat([mdf_test, df_test_cat], axis=1)
+      
+      #delete support NArw2 column
+      columnNAr2 = column + '_zzzinfill'
+      if columnNAr2 in mdf_test.columns:
+        del mdf_test[columnNAr2]
+      
+      #change data types to 8-bit (1 byte) integers for memory savings
+      for textcolumn in textcolumns:
+        
+        mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.int8)
 
     return mdf_test
 
@@ -32186,11 +32367,6 @@ class AutoMunge:
     #here in postprocess we only create columns foir those overlaps that were identified 
     #fromthe train set
     '''
-    
-    if 'suffix' in params:
-      suffix = params['suffix']
-    else:
-      suffix = '_splt'
     
     #normkey used to retrieve the normalization dictionary 
     normkey = False
@@ -32263,7 +32439,7 @@ class AutoMunge:
 
       for dict_key in overlap_dict:
 
-        newcolumn = column + suffix + '_' + dict_key
+        newcolumn = column + '_' + suffix + '_' + dict_key
         
 #         mdf_train[newcolumn] = mdf_train[column].copy()
         mdf_test[newcolumn] = mdf_test[column].copy()
@@ -32279,6 +32455,16 @@ class AutoMunge:
       #now convert coloumn headers from string to int convention
       if int_headers is True:
         mdf_test  = mdf_test.rename(columns=int_labels_dict)
+
+    else:
+
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
+
+      if inplace is True:
+        del mdf_test[column]
     
     return mdf_test
 
@@ -32297,11 +32483,6 @@ class AutoMunge:
     #this alternative to splt may be benficial for instance if one wanted to follow with an ordl encoding
     '''
     
-    if 'suffix' in params:
-      suffix = params['suffix']
-    else:
-      suffix = '_spl2'
-    
     #normkey used to retrieve the normalization dictionary 
     normkey = False
     if len(columnkey) > 0:
@@ -32317,6 +32498,8 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['test_same_as_train']
       consolidate_nonoverlaps = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['consolidate_nonoverlaps']
+      suffix = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
 
 #       newcolumns = \
 #       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['spl2_newcolumns']
@@ -32395,7 +32578,7 @@ class AutoMunge:
 
 #       for dict_key in overlap_dict:
 
-      newcolumn = column + suffix
+      newcolumn = column + '_' + suffix
 
 #         mdf_test[newcolumn] = mdf_test[column].isin(test_overlap_dict[dict_key])
 #         mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
@@ -32410,6 +32593,16 @@ class AutoMunge:
       mdf_test[newcolumn] = mdf_test[newcolumn].replace(spl5_test_zero_dict)
 
 #       newcolumns.append(newcolumn)
+
+    else:
+
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
+
+      if inplace is True:
+        del mdf_test[column]
     
     return mdf_test
 
@@ -32433,11 +32626,6 @@ class AutoMunge:
     
     #sp19 is comparable to sp15 but with a returned binary encoding aggregation
     '''
-    
-    if 'suffix' in params:
-      suffix = params['suffix']
-    else:
-      suffix = '_sp19'
     
     #normkey used to retrieve the normalization dictionary 
     normkey = False
@@ -32468,6 +32656,8 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['categorylist']
       test_same_as_train = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['test_same_as_train']
+      suffix = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
 
       #now for mdf_test we'll only consider those overlaps already identified from train set
       
@@ -32573,7 +32763,7 @@ class AutoMunge:
       
       for i in range(_1010_binary_column_count):
 
-        _1010_columnlist.append(column + suffix + '_' + str(i))
+        _1010_columnlist.append(column + '_' + suffix + '_' + str(i))
 
       #now let's store the encoding
       i=0
@@ -32587,6 +32777,16 @@ class AutoMunge:
       del mdf_test[sp19_column]
       for entry in newcolumns:
         del mdf_test[entry]
+
+    else:
+
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
+
+      if inplace is True:
+        del mdf_test[column]
     
     return mdf_test
 
@@ -32605,11 +32805,6 @@ class AutoMunge:
     #this differs from other string parsing functions in that
     #only complete entries are checked for presence as subsets in other entries
     '''
-    
-    if 'suffix' in params:
-      suffix = params['suffix']
-    else:
-      suffix = '_sbst'
     
     #normkey used to retrieve the normalization dictionary 
     normkey = False
@@ -32632,6 +32827,8 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['concurrent_activations']
       test_same_as_train = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['test_same_as_train']
+      suffix = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
 
       #now for mdf_test we'll only consider those overlaps already identified from train set
       
@@ -32682,7 +32879,7 @@ class AutoMunge:
 
       for dict_key in overlap_dict:
 
-        newcolumn = column + suffix + '_' + dict_key
+        newcolumn = column + '_' + suffix + '_' + dict_key
         
 #         mdf_train[newcolumn] = mdf_train[column].copy()
         mdf_test[newcolumn] = mdf_test[column].copy()
@@ -32698,6 +32895,16 @@ class AutoMunge:
       #now convert coloumn headers from string to int convention
       if int_headers is True:
         mdf_test  = mdf_test.rename(columns=int_labels_dict)
+
+    else:
+
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
+
+      if inplace is True:
+        del mdf_test[column]
     
     return mdf_test
 
@@ -32718,11 +32925,6 @@ class AutoMunge:
     
     #sbs3 is comparable to sbst but with a returned binary encoding aggregation
     '''
-    
-    if 'suffix' in params:
-      suffix = params['suffix']
-    else:
-      suffix = '_sbs3'
     
     #normkey used to retrieve the normalization dictionary 
     normkey = False
@@ -32753,6 +32955,8 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['categorylist']
       test_same_as_train = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['test_same_as_train']
+      suffix = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
       
       #now for mdf_test we'll only consider those overlaps already identified from train set
       
@@ -32861,7 +33065,7 @@ class AutoMunge:
       
       for i in range(_1010_binary_column_count):
 
-        _1010_columnlist.append(column + suffix + '_' + str(i))
+        _1010_columnlist.append(column + '_' + suffix + '_' + str(i))
 
       #now let's store the encoding
       i=0
@@ -32875,6 +33079,16 @@ class AutoMunge:
       del mdf_test[sbs3_column]
       for entry in newcolumns:
         del mdf_test[entry]
+
+    else:
+
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
+
+      if inplace is True:
+        del mdf_test[column]
     
     return mdf_test
 
@@ -32903,11 +33117,6 @@ class AutoMunge:
     #user can manually specify a vocab_size with vocab-size parameter
     """
     
-    if 'inplace' in params:
-      inplace = params['inplace']
-    else:
-      inplace = False
-    
     #normkey used to retrieve the normalization dictionary 
     normkey = False
     if len(columnkey) > 0:
@@ -32932,6 +33141,8 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['max_column_count']
       hashcolumns = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['hashcolumns']
+      inplace = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
 
       if hash_alg == 'md5':
         from hashlib import md5
@@ -33078,6 +33289,16 @@ class AutoMunge:
         else:
           mdf_test[hashcolumn] = mdf_test[hashcolumn].astype(np.uint32)
 
+    else:
+
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
+
+      if inplace is True:
+        del mdf_test[column]
+
     return mdf_test
 
   def _postprocess_hs10(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
@@ -33099,77 +33320,89 @@ class AutoMunge:
     #or user can manually specify a vocab_size instead of relying on heuristic
     '''
     
-    if 'inplace' in params:
-      inplace = params['inplace']
-    else:
-      inplace = False
-    
-    #retrieve normalizastion parameters from postprocess_dict
-    normkey = column + '_hs10_0'
-    
-    vocab_size = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['vocab_size']
-    binary_column_count = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['col_count']
-    salt = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['salt']
-    excluded_characters = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['excluded_characters']
-    hash_alg = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['hash_alg']
-    
-    if hash_alg == 'md5':
-      from hashlib import md5
-    
-    if inplace is not True:
-      #copy source column into new column
-      mdf_test[column + '_hs10'] = mdf_test[column].copy()
-    else:
-      mdf_test.rename(columns = {column : column + '_hs10'}, inplace = True)
+    #normkey used to retrieve the normalization dictionary 
+    normkey = False
+    if len(columnkey) > 0:      
+      normkey = columnkey[0]
+          
+    #normkey is False when process function returns empty set
+    if normkey is not False:
       
-    #convert column to string, note this means that missing data converted to 'nan'
-    mdf_test[column + '_hs10'] = mdf_test[column + '_hs10'].astype(str)
-
-    #now scrub special characters
-    for scrub_punctuation in excluded_characters:
-      mdf_test[column + '_hs10'] = mdf_test[column + '_hs10'].str.replace(scrub_punctuation, '')
-    
-    def _md5_hash(entry):
-      """
-      applies hashing to the list of words
-      this conversion to ingtegers is known as "the hashing trick"
-      requires importing from hashlib import md5 if hash_alg = "md5"
-      here n is the range of integers for vocabulary
-      """
+      vocab_size = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['vocab_size']
+      binary_column_count = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['col_count']
+      salt = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['salt']
+      excluded_characters = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['excluded_characters']
+      hash_alg = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['hash_alg']
+      inplace = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
+      
       if hash_alg == 'md5':
-        return int(md5((salt + entry).encode()).hexdigest(), 16) % (vocab_size)
+        from hashlib import md5
+      
+      if inplace is not True:
+        #copy source column into new column
+        mdf_test[column + '_hs10'] = mdf_test[column].copy()
       else:
-        return hash(salt + entry) % (vocab_size)
+        mdf_test.rename(columns = {column : column + '_hs10'}, inplace = True)
+        
+      #convert column to string, note this means that missing data converted to 'nan'
+      mdf_test[column + '_hs10'] = mdf_test[column + '_hs10'].astype(str)
 
-    #now apply hashing to convert to integers based on vocab_size
-    mdf_test[column + '_hs10'] = mdf_test[column + '_hs10'].transform(_md5_hash)
-    
-    #convert integer encoding to binary
-    mdf_test[column + '_hs10'] = mdf_test[column + '_hs10'].transform(bin)
-    
-    #convert format to string of digits
-    mdf_test[column + '_hs10'] = mdf_test[column + '_hs10'].str[2:]
-    
-    #pad out zeros
-    mdf_test[column + '_hs10'] = mdf_test[column + '_hs10'].str.zfill(binary_column_count)
-    
-    hashcolumns = []
-    for i in range(binary_column_count):
+      #now scrub special characters
+      for scrub_punctuation in excluded_characters:
+        mdf_test[column + '_hs10'] = mdf_test[column + '_hs10'].str.replace(scrub_punctuation, '')
+      
+      def _md5_hash(entry):
+        """
+        applies hashing to the list of words
+        this conversion to ingtegers is known as "the hashing trick"
+        requires importing from hashlib import md5 if hash_alg = "md5"
+        here n is the range of integers for vocabulary
+        """
+        if hash_alg == 'md5':
+          return int(md5((salt + entry).encode()).hexdigest(), 16) % (vocab_size)
+        else:
+          return hash(salt + entry) % (vocab_size)
 
-      hash_column = column + '_hs10_' + str(i)
+      #now apply hashing to convert to integers based on vocab_size
+      mdf_test[column + '_hs10'] = mdf_test[column + '_hs10'].transform(_md5_hash)
       
-      hashcolumns += [hash_column]
+      #convert integer encoding to binary
+      mdf_test[column + '_hs10'] = mdf_test[column + '_hs10'].transform(bin)
       
-      #now populate the column with i'th entry from hashed list
-      mdf_test[hash_column] = mdf_test[column + '_hs10'].str[i].astype(np.int8)
-    
-    #remove support column
-    del mdf_test[column + '_hs10']
+      #convert format to string of digits
+      mdf_test[column + '_hs10'] = mdf_test[column + '_hs10'].str[2:]
+      
+      #pad out zeros
+      mdf_test[column + '_hs10'] = mdf_test[column + '_hs10'].str.zfill(binary_column_count)
+      
+      hashcolumns = []
+      for i in range(binary_column_count):
+
+        hash_column = column + '_hs10_' + str(i)
+        
+        hashcolumns += [hash_column]
+        
+        #now populate the column with i'th entry from hashed list
+        mdf_test[hash_column] = mdf_test[column + '_hs10'].str[i].astype(np.int8)
+      
+      #remove support column
+      del mdf_test[column + '_hs10']
+
+    else:
+
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
+
+      if inplace is True:
+        del mdf_test[column]
     
     return mdf_test
   
@@ -33247,6 +33480,16 @@ class AutoMunge:
       for newcolumn in newcolumns:
 
         mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
+
+    else:
+
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
+
+      if inplace is True:
+        del mdf_test[column]
     
     return mdf_test
 
@@ -33365,6 +33608,16 @@ class AutoMunge:
       for newcolumn in newcolumns:
 
         mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
+
+    else:
+
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
+
+      if inplace is True:
+        del mdf_test[column]
     
     return mdf_test
 
@@ -33463,6 +33716,16 @@ class AutoMunge:
           mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
 
           newcolumns.append(newcolumn)
+
+    else:
+
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
+
+      if inplace is True:
+        del mdf_test[column]
     
     return mdf_test
 
@@ -33499,77 +33762,90 @@ class AutoMunge:
     #(e.g. entries at end of list are prioritized over beginning)
     """
     
-    #to retrieve the normalization dictionary we're going to use new method since we don't yet 
-    #know what the returned columns titles are yet
-    
-    normkey = column + '_src4'
+    #normkey used to retrieve the normalization dictionary 
+    normkey = False
+    if len(columnkey) > 0:      
+      normkey = columnkey[0]
+          
+    #normkey is False when process function returns empty set
+    if normkey is not False:
 
-    #great now we can grab normalization parameters
-    search_dict = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['search_dict']
+      #great now we can grab normalization parameters
+      search_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['search_dict']
 
-    newcolumns = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['srch_newcolumns_src4']
+      newcolumns = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['srch_newcolumns_src4']
 
-    search = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['search']
+      search = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['search']
 
-    case = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['case']
+      case = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['case']
 
-    ordl_dict1 = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordl_dict1']
+      ordl_dict1 = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordl_dict1']
 
-    ordl_dict2 = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordl_dict2']
+      ordl_dict2 = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordl_dict2']
 
-    aggregated_dict = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['aggregated_dict']
-    
-    inverse_search_dict = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inverse_search_dict']
-    
-    if len(search_dict) == 0:
-      mdf_test[column + '_src4'] = 0
+      aggregated_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['aggregated_dict']
       
+      inverse_search_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inverse_search_dict']
+      
+      if len(search_dict) == 0:
+        mdf_test[column + '_src4'] = 0
+        
+      else:
+
+        for newcolumn in search_dict:
+
+          mdf_test[newcolumn] = \
+          np.where(mdf_test[column].astype(str).str.contains(search_dict[newcolumn], case=case, regex=False), 1, 0)
+
+    #     for newcolumn in newcolumns:
+
+    #       mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
+
+        mdf_test[column + '_src4'] = 0
+
+        for newcolumn in newcolumns:
+          mdf_test[column + '_src4'] = \
+          np.where(mdf_test[newcolumn] == 1, ordl_dict2[newcolumn], mdf_test[column + '_src4'])
+          del mdf_test[newcolumn]
+          
+        #now we consolidate activations
+        #note that this only runs when aggregated_dict was populated with an embedded list of search terms
+        for aggregated_dict_key in aggregated_dict:
+          aggregated_dict_key_column = inverse_search_dict[aggregated_dict_key]
+          aggregated_dict_key_encoding = ordl_dict2[aggregated_dict_key_column]
+
+          for target_for_aggregation in aggregated_dict[aggregated_dict_key]:
+            target_for_aggregation_column = inverse_search_dict[target_for_aggregation]
+            target_for_aggregation_encoding = ordl_dict2[target_for_aggregation_column]
+
+            mdf_test[column + '_src4'] = \
+            np.where(mdf_test[column + '_src4'] == target_for_aggregation_encoding, aggregated_dict_key_encoding, mdf_test[column + '_src4'])
+
+        #we'll base the integer type on number of ordinal entries
+        if len(ordl_dict1) < 254:
+          mdf_test[column + '_src4'] = mdf_test[column + '_src4'].astype(np.uint8)
+        elif len(ordl_dict1) < 65534:
+          mdf_test[column + '_src4'] = mdf_test[column + '_src4'].astype(np.uint16)
+        else:
+          mdf_test[column + '_src4'] = mdf_test[column + '_src4'].astype(np.uint32)
+
     else:
 
-      for newcolumn in search_dict:
-
-        mdf_test[newcolumn] = \
-        np.where(mdf_test[column].astype(str).str.contains(search_dict[newcolumn], case=case, regex=False), 1, 0)
-
-  #     for newcolumn in newcolumns:
-
-  #       mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
-
-      mdf_test[column + '_src4'] = 0
-
-      for newcolumn in newcolumns:
-        mdf_test[column + '_src4'] = \
-        np.where(mdf_test[newcolumn] == 1, ordl_dict2[newcolumn], mdf_test[column + '_src4'])
-        del mdf_test[newcolumn]
-        
-      #now we consolidate activations
-      #note that this only runs when aggregated_dict was populated with an embedded list of search terms
-      for aggregated_dict_key in aggregated_dict:
-        aggregated_dict_key_column = inverse_search_dict[aggregated_dict_key]
-        aggregated_dict_key_encoding = ordl_dict2[aggregated_dict_key_column]
-
-        for target_for_aggregation in aggregated_dict[aggregated_dict_key]:
-          target_for_aggregation_column = inverse_search_dict[target_for_aggregation]
-          target_for_aggregation_encoding = ordl_dict2[target_for_aggregation_column]
-
-          mdf_test[column + '_src4'] = \
-          np.where(mdf_test[column + '_src4'] == target_for_aggregation_encoding, aggregated_dict_key_encoding, mdf_test[column + '_src4'])
-
-      #we'll base the integer type on number of ordinal entries
-      if len(ordl_dict1) < 254:
-        mdf_test[column + '_src4'] = mdf_test[column + '_src4'].astype(np.uint8)
-      elif len(ordl_dict1) < 65534:
-        mdf_test[column + '_src4'] = mdf_test[column + '_src4'].astype(np.uint16)
+      if 'inplace' in params:
+        inplace = params['inplace']
       else:
-        mdf_test[column + '_src4'] = mdf_test[column + '_src4'].astype(np.uint32)
+        inplace = False
+
+      if inplace is True:
+        del mdf_test[column]
     
     return mdf_test
 
@@ -33582,120 +33858,134 @@ class AutoMunge:
     #test_same_as_train as True/False
     #where True copiues overlap_dict from train for test, False parses test entries not found in train
     """
-    
-    if 'suffix' in params:
-      #accepts string for suffix appender
-      suffix = params['suffix']
-    else:
-      suffix = '_nmr4'
+
+    #normkey used to retrieve the normalization dictionary 
+    normkey = False
+    if len(columnkey) > 0:
+      normkey = columnkey[0]
+
+    #normkey is False when process function returns empty set
+    if normkey is not False:
       
-    nmrc_column = column + suffix
-    
-    mean = \
-    postprocess_dict['column_dict'][nmrc_column]['normalization_dict'][nmrc_column]['mean']
-    unique_list = \
-    postprocess_dict['column_dict'][nmrc_column]['normalization_dict'][nmrc_column]['unique_list']
-    overlap_dict = \
-    postprocess_dict['column_dict'][nmrc_column]['normalization_dict'][nmrc_column]['overlap_dict']
-    convention = \
-    postprocess_dict['column_dict'][nmrc_column]['normalization_dict'][nmrc_column]['convention']
-    test_same_as_train = \
-    postprocess_dict['column_dict'][nmrc_column]['normalization_dict'][nmrc_column]['test_same_as_train']
-    
-    mdf_test[nmrc_column] = mdf_test[column].copy()
-    
-    test_unique_list = list(mdf_test[nmrc_column].unique())
-    test_unique_list = list(map(str, test_unique_list))
-    extra_test_unique = list(set(test_unique_list) - set(unique_list))
-
-    test_overlap_dict = deepcopy(overlap_dict)
-    
-    if test_same_as_train is True:
+      nmrc_column = normkey
       
-      for test_unique in extra_test_unique:
-        test_overlap_dict.update({str(test_unique) : np.nan})
+      mean = \
+      postprocess_dict['column_dict'][nmrc_column]['normalization_dict'][nmrc_column]['mean']
+      unique_list = \
+      postprocess_dict['column_dict'][nmrc_column]['normalization_dict'][nmrc_column]['unique_list']
+      overlap_dict = \
+      postprocess_dict['column_dict'][nmrc_column]['normalization_dict'][nmrc_column]['overlap_dict']
+      convention = \
+      postprocess_dict['column_dict'][nmrc_column]['normalization_dict'][nmrc_column]['convention']
+      test_same_as_train = \
+      postprocess_dict['column_dict'][nmrc_column]['normalization_dict'][nmrc_column]['test_same_as_train']
+      suffix = \
+      postprocess_dict['column_dict'][nmrc_column]['normalization_dict'][nmrc_column]['suffix']
       
-    elif test_same_as_train is False:
+      mdf_test[nmrc_column] = mdf_test[column].copy()
       
-      testmaxlength = max(len(x) for x in unique_list)
+      test_unique_list = list(mdf_test[nmrc_column].unique())
+      test_unique_list = list(map(str, test_unique_list))
+      extra_test_unique = list(set(test_unique_list) - set(unique_list))
 
-      overlap_lengths = list(range(testmaxlength, 0, -1))
+      test_overlap_dict = deepcopy(overlap_dict)
+      
+      if test_same_as_train is True:
+        
+        for test_unique in extra_test_unique:
+          test_overlap_dict.update({str(test_unique) : np.nan})
+        
+      elif test_same_as_train is False:
+        
+        testmaxlength = max(len(x) for x in unique_list)
 
-  #     overlap_dict = {}
+        overlap_lengths = list(range(testmaxlength, 0, -1))
 
-      for overlap_length in overlap_lengths:
+    #     overlap_dict = {}
 
-        for unique in extra_test_unique:
+        for overlap_length in overlap_lengths:
 
-          if unique not in test_overlap_dict:
+          for unique in extra_test_unique:
 
-            len_unique = len(unique)
+            if unique not in test_overlap_dict:
 
-            if len_unique >= overlap_length:
+              len_unique = len(unique)
 
-              if overlap_length > 1:
+              if len_unique >= overlap_length:
 
-                nbr_iterations = len_unique - overlap_length
+                if overlap_length > 1:
 
-                for i in range(nbr_iterations + 1):
+                  nbr_iterations = len_unique - overlap_length
 
-                  if unique not in test_overlap_dict:
+                  for i in range(nbr_iterations + 1):
 
-                    extract = unique[i:(overlap_length+i)]
+                    if unique not in test_overlap_dict:
 
-    #                 extract_already_in_overlap_dict = False
+                      extract = unique[i:(overlap_length+i)]
+
+      #                 extract_already_in_overlap_dict = False
+                      
+                      if convention == 'numbers':
+                      
+                        if self._is_number(extract):
+
+                          test_overlap_dict.update({unique : float(extract)})
                     
-                    if convention == 'numbers':
-                    
+                      elif convention == 'commas':
+                      
+                        if self._is_number_comma(extract):
+
+                          test_overlap_dict.update({unique : float(extract.replace(',',''))})
+                          
+                      elif convention == 'spaces':
+                      
+                        if self._is_number_EU(extract):
+
+                          test_overlap_dict.update({unique : float(extract[0] + extract[1:-1].replace(' ','').replace('.','').replace(',','.') + extract[-1])})
+
+                #else if overlap_length == 1    
+                else:
+
+                  nbr_iterations = len_unique - overlap_length
+
+                  in_dict = False
+
+                  for i in range(nbr_iterations + 1):
+
+                    if unique not in test_overlap_dict:
+
+                      extract = unique[i:(overlap_length+i)]
+
+      #                 extract_already_in_overlap_dict = False
+                      
                       if self._is_number(extract):
 
+                        in_dict = True
+
                         test_overlap_dict.update({unique : float(extract)})
-                  
-                    elif convention == 'commas':
-                    
-                      if self._is_number_comma(extract):
 
-                        test_overlap_dict.update({unique : float(extract.replace(',',''))})
-                        
-                    elif convention == 'spaces':
-                    
-                      if self._is_number_EU(extract):
+                  if in_dict is False:
 
-                        test_overlap_dict.update({unique : float(extract[0] + extract[1:-1].replace(' ','').replace('.','').replace(',','.') + extract[-1])})
+                    test_overlap_dict.update({unique : np.nan})
+      
+      #great now that test_overlap_dict is populated
+      mdf_test[nmrc_column] = mdf_test[nmrc_column].astype(str)
+      mdf_test[nmrc_column] = mdf_test[nmrc_column].replace(test_overlap_dict)
 
-              #else if overlap_length == 1    
-              else:
+      mdf_test[nmrc_column] = pd.to_numeric(mdf_test[nmrc_column], errors='coerce')
+      
+      #replace missing data with training set mean as default infill
+      mdf_test[nmrc_column] = mdf_test[nmrc_column].fillna(mean)
 
-                nbr_iterations = len_unique - overlap_length
+    else:
 
-                in_dict = False
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
 
-                for i in range(nbr_iterations + 1):
-
-                  if unique not in test_overlap_dict:
-
-                    extract = unique[i:(overlap_length+i)]
-
-    #                 extract_already_in_overlap_dict = False
-                    
-                    if self._is_number(extract):
-
-                      in_dict = True
-
-                      test_overlap_dict.update({unique : float(extract)})
-
-                if in_dict is False:
-
-                  test_overlap_dict.update({unique : np.nan})
-    
-    #great now that test_overlap_dict is populated
-    mdf_test[nmrc_column] = mdf_test[nmrc_column].astype(str)
-    mdf_test[nmrc_column] = mdf_test[nmrc_column].replace(test_overlap_dict)
-
-    mdf_test[nmrc_column] = pd.to_numeric(mdf_test[nmrc_column], errors='coerce')
-    
-    #replace missing data with training set mean as default infill
-    mdf_test[nmrc_column] = mdf_test[nmrc_column].fillna(mean)
+      if inplace is True:
+        del mdf_test[column]
     
     return mdf_test
   
@@ -33709,94 +33999,105 @@ class AutoMunge:
     #for categories presetn in test set not present in train set use this 'zzz' category
     '''
     
-    if 'inplace' in params:
-      inplace = params['inplace']
-    else:
-      inplace = False
-    
-    normkey = column + '_ordl'
-    
-    #grab normalization parameters from postprocess_dict
-    ordinal_dict = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordinal_dict']
-    
-    overlap_replace = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordinal_overlap_replace']
-    
-    str_convert = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['str_convert']
-    
-    if inplace is not True:
-      #copy source column into new column
-      mdf_test[column + '_ordl'] = mdf_test[column].copy()
-    else:
-      mdf_test.rename(columns = {column : column + '_ordl'}, inplace = True)
-    
-    #convert column to category
-    mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype('category')
-    
-    #if set is categorical we'll need the plug value for missing values included
-    if 'zzzinfill' not in mdf_test[column + '_ordl'].cat.categories:
-      mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].cat.add_categories(['zzzinfill'])
+    #normkey used to retrieve the normalization dictionary 
+    normkey = False
+    if len(columnkey) > 0:      
+      normkey = columnkey[0]
+          
+    #normkey is False when process function returns empty set
+    if normkey is not False:
+      
+      #grab normalization parameters from postprocess_dict
+      ordinal_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordinal_dict']
+      overlap_replace = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordinal_overlap_replace']
+      str_convert = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['str_convert']
+      inplace = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
+      
+      if inplace is not True:
+        #copy source column into new column
+        mdf_test[column + '_ordl'] = mdf_test[column].copy()
+      else:
+        mdf_test.rename(columns = {column : column + '_ordl'}, inplace = True)
+      
+      #convert column to category
+      mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype('category')
+      
+      #if set is categorical we'll need the plug value for missing values included
+      if 'zzzinfill' not in mdf_test[column + '_ordl'].cat.categories:
+        mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].cat.add_categories(['zzzinfill'])
 
-    #replace NA with a dummy variable
-    mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].fillna('zzzinfill')
-    
-    if str_convert is True:
-      #replace numerical with string equivalent
-      mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype(str)
-    else:
-      mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype('object')
-    
-    #extract categories for column labels
-    #note that .unique() extracts the labels as a numpy array
-    #train categories are in the ordinal_dict we p[ulled from normalization_dict
-    labels_train = list(ordinal_dict.keys())
-    labels_train = sorted(labels_train, key=str)
-    labels_test = list(mdf_test[column + '_ordl'].unique())
-    labels_test = sorted(labels_test, key=str)
-    
-    #if infill not present in train set, insert
-    if 'zzzinfill' not in labels_train:
-      labels_train = labels_train + ['zzzinfill']
+      #replace NA with a dummy variable
+      mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].fillna('zzzinfill')
+      
+      if str_convert is True:
+        #replace numerical with string equivalent
+        mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype(str)
+      else:
+        mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype('object')
+      
+      #extract categories for column labels
+      #note that .unique() extracts the labels as a numpy array
+      #train categories are in the ordinal_dict we p[ulled from normalization_dict
+      labels_train = list(ordinal_dict.keys())
       labels_train = sorted(labels_train, key=str)
-    if 'zzzinfill' not in labels_test:
-      labels_test = labels_test + ['zzzinfill']
+      labels_test = list(mdf_test[column + '_ordl'].unique())
       labels_test = sorted(labels_test, key=str)
       
-    #here we replace the overlaps with version with jibberish suffix
-    if len(overlap_replace) > 0:
-      mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].replace(overlap_replace)
-    
-    #in test set, we'll need to strike any categories that weren't present in train
-    #first let'/s identify what applies
-    testspecificcategories = list(set(labels_test)-set(labels_train))
-    
-    #edge case, replace operation do0esn't work when column dtype is int
-    if mdf_test[column + '_ordl'].dtype.name != 'object':
-      mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype('object')
+      #if infill not present in train set, insert
+      if 'zzzinfill' not in labels_train:
+        labels_train = labels_train + ['zzzinfill']
+        labels_train = sorted(labels_train, key=str)
+      if 'zzzinfill' not in labels_test:
+        labels_test = labels_test + ['zzzinfill']
+        labels_test = sorted(labels_test, key=str)
+        
+      #here we replace the overlaps with version with jibberish suffix
+      if len(overlap_replace) > 0:
+        mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].replace(overlap_replace)
+      
+      #in test set, we'll need to strike any categories that weren't present in train
+      #first let'/s identify what applies
+      testspecificcategories = list(set(labels_test)-set(labels_train))
+      
+      #edge case, replace operation do0esn't work when column dtype is int
+      if mdf_test[column + '_ordl'].dtype.name != 'object':
+        mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype('object')
 
-    #so we'll just replace those items with our plug value
-    testplug_dict = dict(zip(testspecificcategories, ['zzzinfill'] * len(testspecificcategories)))
-    mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].replace(testplug_dict)
+      #so we'll just replace those items with our plug value
+      testplug_dict = dict(zip(testspecificcategories, ['zzzinfill'] * len(testspecificcategories)))
+      mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].replace(testplug_dict)
 
-    #edge case, replace operation do0esn't work when column dtype is int
-    if mdf_test[column + '_ordl'].dtype.name != 'object':
-      mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype('object')
+      #edge case, replace operation do0esn't work when column dtype is int
+      if mdf_test[column + '_ordl'].dtype.name != 'object':
+        mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype('object')
 
-    #now we'll apply the ordinal transformation to the test set
-    mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].replace(ordinal_dict)
-    
-    #just want to make sure these arent' being saved as floats for memory considerations
-    if len(ordinal_dict) < 254:
-      mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype(np.uint8)
-    elif len(ordinal_dict) < 65534:
-      mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype(np.uint16)
+      #now we'll apply the ordinal transformation to the test set
+      mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].replace(ordinal_dict)
+      
+      #just want to make sure these arent' being saved as floats for memory considerations
+      if len(ordinal_dict) < 254:
+        mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype(np.uint8)
+      elif len(ordinal_dict) < 65534:
+        mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype(np.uint16)
+      else:
+        mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype(np.uint32)
+      
+  #     #convert column to category
+  #     mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype('category')
+
     else:
-      mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype(np.uint32)
-    
-#     #convert column to category
-#     mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype('category')
+
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
+
+      if inplace is True:
+        del mdf_test[column]
     
     return mdf_test
   
@@ -33810,91 +34111,102 @@ class AutoMunge:
     #for categories presetn in test set not present in train set use this 'zzz' category
     '''
     
-    if 'inplace' in params:
-      inplace = params['inplace']
-    else:
-      inplace = False
-    
-    normkey = column + '_ord3'
-    
-    #grab normalization parameters from postprocess_dict
-    ordinal_dict = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordinal_dict']
-    
-    overlap_replace = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordinal_overlap_replace']
-    
-    str_convert = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['str_convert']
-    
-    if inplace is not True:
-      #copy source column into new column
-      mdf_test[column + '_ord3'] = mdf_test[column].copy()
-    else:
-      mdf_test.rename(columns = {column : column + '_ord3'}, inplace = True)
-    
-    #convert column to category
-    mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype('category')
-    
-    #if set is categorical we'll need the plug value for missing values included
-    if 'zzzinfill' not in mdf_test[column + '_ord3'].cat.categories:
-      mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].cat.add_categories(['zzzinfill'])
+    #normkey used to retrieve the normalization dictionary 
+    normkey = False
+    if len(columnkey) > 0:      
+      normkey = columnkey[0]
+          
+    #normkey is False when process function returns empty set
+    if normkey is not False:
+      
+      #grab normalization parameters from postprocess_dict
+      ordinal_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordinal_dict']
+      overlap_replace = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordinal_overlap_replace']
+      str_convert = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['str_convert']
+      inplace = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
+      
+      if inplace is not True:
+        #copy source column into new column
+        mdf_test[column + '_ord3'] = mdf_test[column].copy()
+      else:
+        mdf_test.rename(columns = {column : column + '_ord3'}, inplace = True)
+      
+      #convert column to category
+      mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype('category')
+      
+      #if set is categorical we'll need the plug value for missing values included
+      if 'zzzinfill' not in mdf_test[column + '_ord3'].cat.categories:
+        mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].cat.add_categories(['zzzinfill'])
 
-    #replace NA with a dummy variable
-    mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].fillna('zzzinfill')
-    
-    if str_convert is True:
-      #replace numerical with string equivalent
-      mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype(str)  
-    else:
-      mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype('object')
-    
-    #extract categories for column labels
-    #note that .unique() extracts the labels as a numpy array
-    #train categories are in the ordinal_dict we p[ulled from normalization_dict
-    labels_train = list(ordinal_dict.keys())
-#     labels_train.sort()
-    labels_test = list(mdf_test[column + '_ord3'].unique())
-    labels_test = sorted(labels_test, key=str)
-    
-    #if infill not present in train set, insert
-    if 'zzzinfill' not in labels_train:
-      labels_train = labels_train + ['zzzinfill']
-#       labels_train.sort()
-    if 'zzzinfill' not in labels_test:
-      labels_test = labels_test + ['zzzinfill']
+      #replace NA with a dummy variable
+      mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].fillna('zzzinfill')
+      
+      if str_convert is True:
+        #replace numerical with string equivalent
+        mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype(str)  
+      else:
+        mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype('object')
+      
+      #extract categories for column labels
+      #note that .unique() extracts the labels as a numpy array
+      #train categories are in the ordinal_dict we p[ulled from normalization_dict
+      labels_train = list(ordinal_dict.keys())
+  #     labels_train.sort()
+      labels_test = list(mdf_test[column + '_ord3'].unique())
       labels_test = sorted(labels_test, key=str)
       
-    #here we replace the overlaps with version with jibberish suffix
-    if len(overlap_replace) > 0:
-      mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].replace(overlap_replace)
-    
-    #in test set, we'll need to strike any categories that weren't present in train
-    #first let'/s identify what applies
-    testspecificcategories = list(set(labels_test)-set(labels_train))
-    
-    #so we'll just replace those items with our plug value
-    testplug_dict = dict(zip(testspecificcategories, ['zzzinfill'] * len(testspecificcategories)))
-    #edge case for replace operation if dtype drifted such as to numeric
-    if mdf_test[column + '_ord3'].dtype.name != 'object':
-      mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype('object')
-    mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].replace(testplug_dict)
-    
-    #now we'll apply the ordinal transformation to the test set
-    if mdf_test[column + '_ord3'].dtype.name != 'object':
-      mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype('object')
-    mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].replace(ordinal_dict)
-    
-    #just want to make sure these arent' being saved as floats for memory considerations
-    if len(ordinal_dict) < 254:
-      mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype(np.uint8)
-    elif len(ordinal_dict) < 65534:
-      mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype(np.uint16)
-    else:
-      mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype(np.uint32)
+      #if infill not present in train set, insert
+      if 'zzzinfill' not in labels_train:
+        labels_train = labels_train + ['zzzinfill']
+  #       labels_train.sort()
+      if 'zzzinfill' not in labels_test:
+        labels_test = labels_test + ['zzzinfill']
+        labels_test = sorted(labels_test, key=str)
         
-#     #convert column to category
-#     mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype('category')
+      #here we replace the overlaps with version with jibberish suffix
+      if len(overlap_replace) > 0:
+        mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].replace(overlap_replace)
+      
+      #in test set, we'll need to strike any categories that weren't present in train
+      #first let'/s identify what applies
+      testspecificcategories = list(set(labels_test)-set(labels_train))
+      
+      #so we'll just replace those items with our plug value
+      testplug_dict = dict(zip(testspecificcategories, ['zzzinfill'] * len(testspecificcategories)))
+      #edge case for replace operation if dtype drifted such as to numeric
+      if mdf_test[column + '_ord3'].dtype.name != 'object':
+        mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype('object')
+      mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].replace(testplug_dict)
+      
+      #now we'll apply the ordinal transformation to the test set
+      if mdf_test[column + '_ord3'].dtype.name != 'object':
+        mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype('object')
+      mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].replace(ordinal_dict)
+      
+      #just want to make sure these arent' being saved as floats for memory considerations
+      if len(ordinal_dict) < 254:
+        mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype(np.uint8)
+      elif len(ordinal_dict) < 65534:
+        mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype(np.uint16)
+      else:
+        mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype(np.uint32)
+          
+  #     #convert column to category
+  #     mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype('category')
+
+    else:
+
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
+
+      if inplace is True:
+        del mdf_test[column]
     
     return mdf_test
 
@@ -33906,54 +34218,66 @@ class AutoMunge:
     #and consolidates larger activations
     '''
     
-    if 'inplace' in params:
-      inplace = params['inplace']
-    else:
-      inplace = False
-    
-    #retrieve normalizastion parameters from postprocess_dict
-    normkey = column + '_maxb'
-    
-    new_maxactivation = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['new_maxactivation']
-    
-    if inplace is not True:
-      #copy source column into new column
-      mdf_test[column + '_maxb'] = mdf_test[column].copy()
-    else:
-      mdf_test.rename(columns = {column : column + '_maxb'}, inplace = True)
+    #normkey used to retrieve the normalization dictionary 
+    normkey = False
+    if len(columnkey) > 0:      
+      normkey = columnkey[0]
+          
+    #normkey is False when process function returns empty set
+    if normkey is not False:
+      
+      new_maxactivation = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['new_maxactivation']
+      inplace = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
+      
+      if inplace is not True:
+        #copy source column into new column
+        mdf_test[column + '_maxb'] = mdf_test[column].copy()
+      else:
+        mdf_test.rename(columns = {column : column + '_maxb'}, inplace = True)
 
-    #convert all values to either numeric or NaN
-    mdf_test[column + '_maxb'] = pd.to_numeric(mdf_test[column + '_maxb'], errors='coerce')
-    
-    #non integers are subject to infill
-    mdf_test[column + '_maxb'] = np.where(mdf_test[column + '_maxb'] == mdf_test[column + '_maxb'].round(), mdf_test[column + '_maxb'], np.nan)
-    
-    #apply ffill to replace nan with value from adjacent cell in pre4ceding row
-    mdf_test[column + '_maxb'] = mdf_test[column + '_maxb'].fillna(method='ffill')
-    
-    #we'll follow with a bfill just in case first row had a nan
-    mdf_test[column + '_maxb'] = mdf_test[column + '_maxb'].fillna(method='bfill')
-    
-    #then one more infill with to address scenario when data wasn't numeric
-    #get arbitrary cell value, if one is nan then all will be
-    mdf_test[column + '_maxb'] = mdf_test[column + '_maxb'].fillna(0)
-    
-    #get maximum train set activation which for ord3 will be least frequent entry
-    maxactivation = int(mdf_test[column + '_maxb'].max())
-    
-    if new_maxactivation < maxactivation:
+      #convert all values to either numeric or NaN
+      mdf_test[column + '_maxb'] = pd.to_numeric(mdf_test[column + '_maxb'], errors='coerce')
       
-      mdf_test[column + '_maxb'] = \
-      np.where(mdf_test[column + '_maxb'] < new_maxactivation, mdf_test[column + '_maxb'], new_maxactivation)
+      #non integers are subject to infill
+      mdf_test[column + '_maxb'] = np.where(mdf_test[column + '_maxb'] == mdf_test[column + '_maxb'].round(), mdf_test[column + '_maxb'], np.nan)
       
-    #set integer type based on encoding depth
-    if new_maxactivation < 254:
-      mdf_test[column + '_maxb'] = mdf_test[column + '_maxb'].astype(np.uint8)
-    elif new_maxactivation < 65534:
-      mdf_test[column + '_maxb'] = mdf_test[column + '_maxb'].astype(np.uint16)
+      #apply ffill to replace nan with value from adjacent cell in pre4ceding row
+      mdf_test[column + '_maxb'] = mdf_test[column + '_maxb'].fillna(method='ffill')
+      
+      #we'll follow with a bfill just in case first row had a nan
+      mdf_test[column + '_maxb'] = mdf_test[column + '_maxb'].fillna(method='bfill')
+      
+      #then one more infill with to address scenario when data wasn't numeric
+      #get arbitrary cell value, if one is nan then all will be
+      mdf_test[column + '_maxb'] = mdf_test[column + '_maxb'].fillna(0)
+      
+      #get maximum train set activation which for ord3 will be least frequent entry
+      maxactivation = int(mdf_test[column + '_maxb'].max())
+      
+      if new_maxactivation < maxactivation:
+        
+        mdf_test[column + '_maxb'] = \
+        np.where(mdf_test[column + '_maxb'] < new_maxactivation, mdf_test[column + '_maxb'], new_maxactivation)
+        
+      #set integer type based on encoding depth
+      if new_maxactivation < 254:
+        mdf_test[column + '_maxb'] = mdf_test[column + '_maxb'].astype(np.uint8)
+      elif new_maxactivation < 65534:
+        mdf_test[column + '_maxb'] = mdf_test[column + '_maxb'].astype(np.uint16)
+      else:
+        mdf_test[column + '_maxb'] = mdf_test[column + '_maxb'].astype(np.uint32)
+
     else:
-      mdf_test[column + '_maxb'] = mdf_test[column + '_maxb'].astype(np.uint32)
+
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
+
+      if inplace is True:
+        del mdf_test[column]
 
     return mdf_test
   
@@ -33968,61 +34292,76 @@ class AutoMunge:
     #test sets recive comparable encoding
     '''
     
-    normkey = column + '_ucct'
-    
-    #grab normalization parameters from postprocess_dict
-    ordinal_dict = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordinal_dict']
-    
-    overlap_replace = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordinal_overlap_replace']
-    
-    #create new column for trasnformation
-    mdf_test[column + '_ucct'] = mdf_test[column].copy()
-    
-    #convert column to category
-    mdf_test[column + '_ucct'] = mdf_test[column + '_ucct'].astype('category')
-    
-    #if set is categorical we'll need the plug value for missing values included
-    if 'zzzinfill' not in mdf_test[column + '_ucct'].cat.categories:
-      mdf_test[column + '_ucct'] = mdf_test[column + '_ucct'].cat.add_categories(['zzzinfill'])
+    #normkey used to retrieve the normalization dictionary 
+    normkey = False
+    if len(columnkey) > 0:      
+      normkey = columnkey[0]
+          
+    #normkey is False when process function returns empty set
+    if normkey is not False:
+      
+      #grab normalization parameters from postprocess_dict
+      ordinal_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordinal_dict']
+      overlap_replace = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordinal_overlap_replace']
+      
+      #create new column for trasnformation
+      mdf_test[column + '_ucct'] = mdf_test[column].copy()
+      
+      #convert column to category
+      mdf_test[column + '_ucct'] = mdf_test[column + '_ucct'].astype('category')
+      
+      #if set is categorical we'll need the plug value for missing values included
+      if 'zzzinfill' not in mdf_test[column + '_ucct'].cat.categories:
+        mdf_test[column + '_ucct'] = mdf_test[column + '_ucct'].cat.add_categories(['zzzinfill'])
 
-    #replace NA with a dummy variable
-    mdf_test[column + '_ucct'] = mdf_test[column + '_ucct'].fillna('zzzinfill')
-    
-    #replace numerical with string equivalent
-    mdf_test[column + '_ucct'] = mdf_test[column + '_ucct'].astype(str)    
-    
-    #extract categories for column labels
-    #note that .unique() extracts the labels as a numpy array
-    #train categories are in the ordinal_dict we p[ulled from normalization_dict
-    labels_train = list(ordinal_dict.keys())
-#     labels_train.sort()
-    labels_test = list(mdf_test[column + '_ucct'].unique())
-    labels_test.sort()
-    
-    #if infill not present in train set, insert
-    if 'zzzinfill' not in labels_train:
-      labels_train = labels_train + ['zzzinfill']
-#       labels_train.sort()
-    if 'zzzinfill' not in labels_test:
-      labels_test = labels_test + ['zzzinfill']
+      #replace NA with a dummy variable
+      mdf_test[column + '_ucct'] = mdf_test[column + '_ucct'].fillna('zzzinfill')
+      
+      #replace numerical with string equivalent
+      mdf_test[column + '_ucct'] = mdf_test[column + '_ucct'].astype(str)    
+      
+      #extract categories for column labels
+      #note that .unique() extracts the labels as a numpy array
+      #train categories are in the ordinal_dict we p[ulled from normalization_dict
+      labels_train = list(ordinal_dict.keys())
+  #     labels_train.sort()
+      labels_test = list(mdf_test[column + '_ucct'].unique())
       labels_test.sort()
       
-    #here we replace the overlaps with version with jibberish suffix
-    if len(overlap_replace) > 0:
-      mdf_test[column + '_ucct'] = mdf_test[column + '_ucct'].replace(overlap_replace)
-    
-    #in test set, we'll need to strike any categories that weren't present in train
-    #first let'/s identify what applies
-    testspecificcategories = list(set(labels_test)-set(labels_train))
-    
-    #so we'll just replace those items with our plug value
-    testplug_dict = dict(zip(testspecificcategories, ['zzzinfill'] * len(testspecificcategories)))
-    mdf_test[column + '_ucct'] = mdf_test[column + '_ucct'].replace(testplug_dict)
-    
-    #now we'll apply the ordinal transformation to the test set
-    mdf_test[column + '_ucct'] = mdf_test[column + '_ucct'].replace(ordinal_dict)
+      #if infill not present in train set, insert
+      if 'zzzinfill' not in labels_train:
+        labels_train = labels_train + ['zzzinfill']
+  #       labels_train.sort()
+      if 'zzzinfill' not in labels_test:
+        labels_test = labels_test + ['zzzinfill']
+        labels_test.sort()
+        
+      #here we replace the overlaps with version with jibberish suffix
+      if len(overlap_replace) > 0:
+        mdf_test[column + '_ucct'] = mdf_test[column + '_ucct'].replace(overlap_replace)
+      
+      #in test set, we'll need to strike any categories that weren't present in train
+      #first let'/s identify what applies
+      testspecificcategories = list(set(labels_test)-set(labels_train))
+      
+      #so we'll just replace those items with our plug value
+      testplug_dict = dict(zip(testspecificcategories, ['zzzinfill'] * len(testspecificcategories)))
+      mdf_test[column + '_ucct'] = mdf_test[column + '_ucct'].replace(testplug_dict)
+      
+      #now we'll apply the ordinal transformation to the test set
+      mdf_test[column + '_ucct'] = mdf_test[column + '_ucct'].replace(ordinal_dict)
+
+    else:
+
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
+
+      if inplace is True:
+        del mdf_test[column]
     
     return mdf_test
   
@@ -34036,99 +34375,111 @@ class AutoMunge:
     #for categories presetn in test set not present in train set use this 'zzz' category
     '''
     
-    #note _postprocess_1010 used for Binary transform with _postBinary_convert which does not currently pass a columnkey
-    normkey = column + '_1010_0'
-    
-    if normkey in postprocess_dict['column_dict']:
-    
-      #grab normalization parameters from postprocess_dict
-      binary_encoding_dict = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['_1010_binary_encoding_dict']
-
-      overlap_replace = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['_1010_overlap_replace']
-
-      binary_column_count = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['_1010_binary_column_count']
+    #normkey used to retrieve the normalization dictionary 
+    normkey = False
+    if len(columnkey) > 0:      
+      normkey = columnkey[0]
+          
+    #normkey is False when process function returns empty set
+    if normkey is not False:
       
-      str_convert = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['str_convert']
+      if normkey in postprocess_dict['column_dict']:
+      
+        #grab normalization parameters from postprocess_dict
+        binary_encoding_dict = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['_1010_binary_encoding_dict']
+        overlap_replace = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['_1010_overlap_replace']
+        binary_column_count = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['_1010_binary_column_count']
+        str_convert = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['str_convert']
 
-      #create new column for trasnformation
-      mdf_test[column + '_1010'] = mdf_test[column].copy()    
+        #create new column for trasnformation
+        mdf_test[column + '_1010'] = mdf_test[column].copy()    
 
-      #convert column to category
-      mdf_test[column + '_1010'] = mdf_test[column + '_1010'].astype('category')
+        #convert column to category
+        mdf_test[column + '_1010'] = mdf_test[column + '_1010'].astype('category')
 
-      #if set is categorical we'll need the plug value for missing values included
-      if 'zzzinfill' not in mdf_test[column + '_1010'].cat.categories:
-        mdf_test[column + '_1010'] = mdf_test[column + '_1010'].cat.add_categories(['zzzinfill'])
+        #if set is categorical we'll need the plug value for missing values included
+        if 'zzzinfill' not in mdf_test[column + '_1010'].cat.categories:
+          mdf_test[column + '_1010'] = mdf_test[column + '_1010'].cat.add_categories(['zzzinfill'])
 
-      #replace NA with a dummy variable
-      mdf_test[column + '_1010'] = mdf_test[column + '_1010'].fillna('zzzinfill')
+        #replace NA with a dummy variable
+        mdf_test[column + '_1010'] = mdf_test[column + '_1010'].fillna('zzzinfill')
 
-      if str_convert is True:
-        #replace numerical with string equivalent
-        mdf_test[column + '_1010'] = mdf_test[column + '_1010'].astype(str)
-      else:
-        mdf_test[column + '_1010'] = mdf_test[column + '_1010'].astype('object')
+        if str_convert is True:
+          #replace numerical with string equivalent
+          mdf_test[column + '_1010'] = mdf_test[column + '_1010'].astype(str)
+        else:
+          mdf_test[column + '_1010'] = mdf_test[column + '_1010'].astype('object')
 
-      #extract categories for column labels
-      #note that .unique() extracts the labels as a numpy array
-      #train categories are in the ordinal_dict we p[ulled from normalization_dict
-      labels_train = list(binary_encoding_dict.keys())
-#       labels_train.sort()
-      labels_test = list(mdf_test[column + '_1010'].unique())
-#       labels_test.sort()
-      labels_test = sorted(labels_test, key=str)
-
-      #if infill not present in train set, insert
-      if 'zzzinfill' not in labels_train:
-        labels_train = labels_train + ['zzzinfill']
-#         labels_train.sort()
-        labels_train = sorted(labels_train, key=str)
-      if 'zzzinfill' not in labels_test:
-        labels_test = labels_test + ['zzzinfill']
-#         labels_test.sort()
+        #extract categories for column labels
+        #note that .unique() extracts the labels as a numpy array
+        #train categories are in the ordinal_dict we p[ulled from normalization_dict
+        labels_train = list(binary_encoding_dict.keys())
+  #       labels_train.sort()
+        labels_test = list(mdf_test[column + '_1010'].unique())
+  #       labels_test.sort()
         labels_test = sorted(labels_test, key=str)
 
-      #here we replace the overlaps with version with jibberish suffix
-      if len(overlap_replace) > 0:
+        #if infill not present in train set, insert
+        if 'zzzinfill' not in labels_train:
+          labels_train = labels_train + ['zzzinfill']
+  #         labels_train.sort()
+          labels_train = sorted(labels_train, key=str)
+        if 'zzzinfill' not in labels_test:
+          labels_test = labels_test + ['zzzinfill']
+  #         labels_test.sort()
+          labels_test = sorted(labels_test, key=str)
 
-        mdf_test[column + '_1010'] = mdf_test[column + '_1010'].replace(overlap_replace)
+        #here we replace the overlaps with version with jibberish suffix
+        if len(overlap_replace) > 0:
 
-      #in test set, we'll need to strike any categories that weren't present in train
-      #first let'/s identify what applies
-      testspecificcategories = list(set(labels_test)-set(labels_train))
+          mdf_test[column + '_1010'] = mdf_test[column + '_1010'].replace(overlap_replace)
 
-      #so we'll just replace those items with our plug value
-      testplug_dict = dict(zip(testspecificcategories, ['zzzinfill'] * len(testspecificcategories)))
-      if mdf_test[column + '_1010'].dtype.name != 'object':
-        mdf_test[column + '_1010'] = mdf_test[column + '_1010'].astype('object')
-      mdf_test[column + '_1010'] = mdf_test[column + '_1010'].replace(testplug_dict)    
+        #in test set, we'll need to strike any categories that weren't present in train
+        #first let'/s identify what applies
+        testspecificcategories = list(set(labels_test)-set(labels_train))
 
-      #now we'll apply the 1010 transformation to the test set
-      if mdf_test[column + '_1010'].dtype.name != 'object':
-        mdf_test[column + '_1010'] = mdf_test[column + '_1010'].astype('object')
-      mdf_test[column + '_1010'] = mdf_test[column + '_1010'].replace(binary_encoding_dict)   
+        #so we'll just replace those items with our plug value
+        testplug_dict = dict(zip(testspecificcategories, ['zzzinfill'] * len(testspecificcategories)))
+        if mdf_test[column + '_1010'].dtype.name != 'object':
+          mdf_test[column + '_1010'] = mdf_test[column + '_1010'].astype('object')
+        mdf_test[column + '_1010'] = mdf_test[column + '_1010'].replace(testplug_dict)    
 
-      #ok let's create a list of columns to store each entry of the binary encoding
-      _1010_columnlist = []
+        #now we'll apply the 1010 transformation to the test set
+        if mdf_test[column + '_1010'].dtype.name != 'object':
+          mdf_test[column + '_1010'] = mdf_test[column + '_1010'].astype('object')
+        mdf_test[column + '_1010'] = mdf_test[column + '_1010'].replace(binary_encoding_dict)   
 
-      for i in range(binary_column_count):
+        #ok let's create a list of columns to store each entry of the binary encoding
+        _1010_columnlist = []
 
-        _1010_columnlist.append(column + '_1010_' + str(i))
+        for i in range(binary_column_count):
 
-      #now let's store the encoding
-      i=0
-      for _1010_column in _1010_columnlist:
+          _1010_columnlist.append(column + '_1010_' + str(i))
 
-        mdf_test[_1010_column] = mdf_test[column + '_1010'].str.slice(i,i+1).astype(np.int8)
+        #now let's store the encoding
+        i=0
+        for _1010_column in _1010_columnlist:
 
-        i+=1
+          mdf_test[_1010_column] = mdf_test[column + '_1010'].str.slice(i,i+1).astype(np.int8)
 
-      #now delete the support column
-      del mdf_test[column + '_1010']
+          i+=1
+
+        #now delete the support column
+        del mdf_test[column + '_1010']
+
+    else:
+
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
+
+      if inplace is True:
+        del mdf_test[column]
     
     return mdf_test
 
@@ -34143,137 +34494,149 @@ class AutoMunge:
     #accepts parameter 'suffix' for returned column header suffix
     #accets parameter 'function' to distinguish between sin/cos
     """
-    
-    if 'inplace' in params:
-      inplace = params['inplace']
-    else:
-      inplace = False
-    
-    if 'suffix' in params:
-      #accepts column header suffix appender
-      suffix = params['suffix']
-    else:
-      suffix = '_mdsn'
+
+    #normkey used to retrieve the normalization dictionary 
+    normkey = False
+    if len(columnkey) > 0:      
+      normkey = columnkey[0]
+          
+    #normkey is False when process function returns empty set
+    if normkey is not False:
+
+      inplace = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
+      suffix = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
       
-    time_column = column + suffix
+      time_column = column + '_' + suffix
 
-    if inplace is not True:
-      #copy source column into new column
-      mdf_test[time_column] = mdf_test[column].copy()
+      if inplace is not True:
+        #copy source column into new column
+        mdf_test[time_column] = mdf_test[column].copy()
+      else:
+        mdf_test.rename(columns = {column : time_column}, inplace = True)
+
+      if time_column not in postprocess_dict['column_dict']:
+
+        del mdf_test[time_column]
+
+      else:
+
+        scale = \
+        postprocess_dict['column_dict'][time_column]['normalization_dict'][time_column]['scale']
+        function = \
+        postprocess_dict['column_dict'][time_column]['normalization_dict'][time_column]['function']
+
+        #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
+        mdf_test[time_column] = pd.to_datetime(mdf_test[time_column], errors = 'coerce')
+
+        #access time scale from one of year/month/day/hour/minute/second
+        #monthday/dayhourminute/hourminutesecond/minutesecond
+        if scale == 'year':
+          mdf_test[time_column] = mdf_test[time_column].dt.year
+
+          #we'll scale periodicity by decade
+          mdf_test[time_column] = (mdf_test[time_column]) * 2 * np.pi / 10
+
+        elif scale == 'month':
+          mdf_test[time_column] = mdf_test[time_column].dt.month
+
+          #we'll scale periodicity by year
+          mdf_test[time_column] = (mdf_test[time_column]) * 2 * np.pi / 12
+
+        elif scale == 'day':
+          mdf_test[time_column] = mdf_test[time_column].dt.day
+
+          #we'll scale periodicity by week
+          mdf_test[time_column] = (mdf_test[time_column]) * 2 * np.pi / 7
+
+        elif scale == 'hour':
+          mdf_test[time_column] = mdf_test[time_column].dt.hour
+
+          #we'll scale periodicity by day
+          mdf_test[time_column] = (mdf_test[time_column]) * 2 * np.pi / 24
+
+        elif scale == 'minute':
+          mdf_test[time_column] = mdf_test[time_column].dt.minute
+
+          #we'll scale periodicity by hour
+          mdf_test[time_column] = (mdf_test[time_column]) * 2 * np.pi / 60
+
+        elif scale == 'second':
+          mdf_test[time_column] = mdf_test[time_column].dt.second
+
+          #we'll scale periodicity by minute
+          mdf_test[time_column] = (mdf_test[time_column]) * 2 * np.pi / 60
+
+        elif scale == 'monthday':
+          tempcolumn1 = time_column + '_tmp1'
+          tempcolumn2 = time_column + '_tmp2'
+
+          #temp1 is for number of days in month, temp2 is to handle leap year support
+
+          mdf_test[tempcolumn1] = mdf_test[time_column].copy()
+          mdf_test[tempcolumn2] = mdf_test[time_column].copy()
+
+          mdf_test[tempcolumn1] = mdf_test[tempcolumn1].dt.month
+          mdf_test[tempcolumn2] = mdf_test[tempcolumn2].dt.is_leap_year
+
+          mdf_test[tempcolumn2] = \
+          np.where(mdf_test[tempcolumn2], 29, 28)
+
+          mdf_test[tempcolumn1] = \
+          np.where(mdf_test[tempcolumn1].isin([1,3,5,7,8,10,12]), 31, mdf_test[tempcolumn1])
+
+          mdf_test[tempcolumn1] = \
+          np.where(mdf_test[tempcolumn1].isin([4,6,9,11]), 30, mdf_test[tempcolumn1])
+
+          mdf_test[tempcolumn1] = \
+          np.where(mdf_test[tempcolumn1].isin([2]), mdf_test[tempcolumn2], \
+          mdf_test[tempcolumn1])
+
+          #combine month and day, scale for trigonomic transform, periodicity by year
+          mdf_test[time_column] = (mdf_test[time_column].dt.month + mdf_test[time_column].dt.day / \
+          mdf_test[tempcolumn1]) * 2 * np.pi / 12
+
+          #delete the support columns
+          del mdf_test[tempcolumn1]
+          del mdf_test[tempcolumn2]
+
+        elif scale == 'dayhourminute':
+          #we'll scale periodicity by week
+          mdf_test[time_column] = (mdf_test[time_column].dt.day + mdf_test[time_column].dt.hour / 24 + mdf_test[time_column].dt.minute / 24 / 60) * 2 * np.pi / 7
+
+        elif scale == 'hourminutesecond':
+          #we'll scale periodicity by day
+          mdf_test[time_column] = (mdf_test[time_column].dt.hour + mdf_test[time_column].dt.minute / 60 + mdf_test[time_column].dt.second / 60 / 60) * 2 * np.pi / 24
+
+        elif scale == 'minutesecond':
+          #we'll scale periodicity by hour
+          mdf_test[time_column] = (mdf_test[time_column].dt.minute + mdf_test[time_column].dt.second / 60) * 2 * np.pi / 60
+
+        #default infill is adjacent cell
+        mdf_test[time_column] = mdf_test[time_column].fillna(method='ffill')
+        mdf_test[time_column] = mdf_test[time_column].fillna(method='bfill')
+
+        #backup default infill for cases without valid entries
+        mdf_test[time_column] = mdf_test[time_column].fillna(0)
+
+        #apply trigometric transform
+
+        if function == 'sin':
+          mdf_test[time_column] = np.sin(mdf_test[time_column])
+
+        if function == 'cos':
+          mdf_test[time_column] = np.cos(mdf_test[time_column])
+
     else:
-      mdf_test.rename(columns = {column : time_column}, inplace = True)
 
-    if time_column not in postprocess_dict['column_dict']:
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
 
-      del mdf_test[time_column]
-
-    else:
-
-      scale = \
-      postprocess_dict['column_dict'][time_column]['normalization_dict'][time_column]['scale']
-      function = \
-      postprocess_dict['column_dict'][time_column]['normalization_dict'][time_column]['function']
-
-      #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
-      mdf_test[time_column] = pd.to_datetime(mdf_test[time_column], errors = 'coerce')
-
-      #access time scale from one of year/month/day/hour/minute/second
-      #monthday/dayhourminute/hourminutesecond/minutesecond
-      if scale == 'year':
-        mdf_test[time_column] = mdf_test[time_column].dt.year
-
-        #we'll scale periodicity by decade
-        mdf_test[time_column] = (mdf_test[time_column]) * 2 * np.pi / 10
-
-      elif scale == 'month':
-        mdf_test[time_column] = mdf_test[time_column].dt.month
-
-        #we'll scale periodicity by year
-        mdf_test[time_column] = (mdf_test[time_column]) * 2 * np.pi / 12
-
-      elif scale == 'day':
-        mdf_test[time_column] = mdf_test[time_column].dt.day
-
-        #we'll scale periodicity by week
-        mdf_test[time_column] = (mdf_test[time_column]) * 2 * np.pi / 7
-
-      elif scale == 'hour':
-        mdf_test[time_column] = mdf_test[time_column].dt.hour
-
-        #we'll scale periodicity by day
-        mdf_test[time_column] = (mdf_test[time_column]) * 2 * np.pi / 24
-
-      elif scale == 'minute':
-        mdf_test[time_column] = mdf_test[time_column].dt.minute
-
-        #we'll scale periodicity by hour
-        mdf_test[time_column] = (mdf_test[time_column]) * 2 * np.pi / 60
-
-      elif scale == 'second':
-        mdf_test[time_column] = mdf_test[time_column].dt.second
-
-        #we'll scale periodicity by minute
-        mdf_test[time_column] = (mdf_test[time_column]) * 2 * np.pi / 60
-
-      elif scale == 'monthday':
-        tempcolumn1 = time_column + '_tmp1'
-        tempcolumn2 = time_column + '_tmp2'
-
-        #temp1 is for number of days in month, temp2 is to handle leap year support
-
-        mdf_test[tempcolumn1] = mdf_test[time_column].copy()
-        mdf_test[tempcolumn2] = mdf_test[time_column].copy()
-
-        mdf_test[tempcolumn1] = mdf_test[tempcolumn1].dt.month
-        mdf_test[tempcolumn2] = mdf_test[tempcolumn2].dt.is_leap_year
-
-        mdf_test[tempcolumn2] = \
-        np.where(mdf_test[tempcolumn2], 29, 28)
-
-        mdf_test[tempcolumn1] = \
-        np.where(mdf_test[tempcolumn1].isin([1,3,5,7,8,10,12]), 31, mdf_test[tempcolumn1])
-
-        mdf_test[tempcolumn1] = \
-        np.where(mdf_test[tempcolumn1].isin([4,6,9,11]), 30, mdf_test[tempcolumn1])
-
-        mdf_test[tempcolumn1] = \
-        np.where(mdf_test[tempcolumn1].isin([2]), mdf_test[tempcolumn2], \
-        mdf_test[tempcolumn1])
-
-        #combine month and day, scale for trigonomic transform, periodicity by year
-        mdf_test[time_column] = (mdf_test[time_column].dt.month + mdf_test[time_column].dt.day / \
-        mdf_test[tempcolumn1]) * 2 * np.pi / 12
-
-        #delete the support columns
-        del mdf_test[tempcolumn1]
-        del mdf_test[tempcolumn2]
-
-      elif scale == 'dayhourminute':
-        #we'll scale periodicity by week
-        mdf_test[time_column] = (mdf_test[time_column].dt.day + mdf_test[time_column].dt.hour / 24 + mdf_test[time_column].dt.minute / 24 / 60) * 2 * np.pi / 7
-
-      elif scale == 'hourminutesecond':
-        #we'll scale periodicity by day
-        mdf_test[time_column] = (mdf_test[time_column].dt.hour + mdf_test[time_column].dt.minute / 60 + mdf_test[time_column].dt.second / 60 / 60) * 2 * np.pi / 24
-
-      elif scale == 'minutesecond':
-        #we'll scale periodicity by hour
-        mdf_test[time_column] = (mdf_test[time_column].dt.minute + mdf_test[time_column].dt.second / 60) * 2 * np.pi / 60
-
-      #default infill is adjacent cell
-      mdf_test[time_column] = mdf_test[time_column].fillna(method='ffill')
-      mdf_test[time_column] = mdf_test[time_column].fillna(method='bfill')
-
-      #backup default infill for cases without valid entries
-      mdf_test[time_column] = mdf_test[time_column].fillna(0)
-
-      #apply trigometric transform
-
-      if function == 'sin':
-        mdf_test[time_column] = np.sin(mdf_test[time_column])
-
-      if function == 'cos':
-        mdf_test[time_column] = np.cos(mdf_test[time_column])
+      if inplace is True:
+        del mdf_test[column]
       
     return mdf_test
 
@@ -34284,40 +34647,35 @@ class AutoMunge:
     #accepts parameter 'suffix' for returned column header suffix
     #accepts parameter 'normalization' to distinguish between zscore/minmax/unscaled
     """
-    
-    if 'inplace' in params:
-      inplace = params['inplace']
-    else:
-      inplace = False
-    
-    if 'suffix' in params:
-      #accepts column header suffix appender
-      suffix = params['suffix']
-    else:
-      suffix = '_year'
-    
-    time_column = column + suffix
 
-    if inplace is not True:
-      #copy source column into new column
-      mdf_test[time_column] = mdf_test[column].copy()
-    else:
-      mdf_test.rename(columns = {column : time_column}, inplace = True)
+    #normkey used to retrieve the normalization dictionary 
+    normkey = False
+    if len(columnkey) > 0:      
+      normkey = columnkey[0]
+          
+    #normkey is False when process function returns empty set
+    if normkey is not False:
 
-    if time_column not in postprocess_dict['column_dict']:
-
-      del mdf_test[time_column]
-    
-    else:
-
+      inplace = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
+      suffix = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
       scale = \
-      postprocess_dict['column_dict'][time_column]['normalization_dict'][time_column]['scale']
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['scale']
       normalization = \
-      postprocess_dict['column_dict'][time_column]['normalization_dict'][time_column]['normalization']
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['normalization']
       scaler = \
-      postprocess_dict['column_dict'][time_column]['normalization_dict'][time_column]['scaler']
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['scaler']
       divisor = \
-      postprocess_dict['column_dict'][time_column]['normalization_dict'][time_column]['divisor']
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['divisor']
+    
+      time_column = column + '_' + suffix
+
+      if inplace is not True:
+        #copy source column into new column
+        mdf_test[time_column] = mdf_test[column].copy()
+      else:
+        mdf_test.rename(columns = {column : time_column}, inplace = True)
 
       #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
       mdf_test[time_column] = pd.to_datetime(mdf_test[time_column], errors = 'coerce')
@@ -34346,6 +34704,16 @@ class AutoMunge:
       #apply normalization
       if normalization != 'unscaled':
         mdf_test[time_column] = (mdf_test[time_column] - scaler) / divisor
+
+    else:
+
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
+
+      if inplace is True:
+        del mdf_test[column]
       
     return mdf_test
   
@@ -34366,19 +34734,35 @@ class AutoMunge:
 
     #bxcxkey = columnkey[:-5] + '_bxcx'
 
-    #grab the normalization_dict associated with the bxcx category
-    normkey = column+'_bxcx'
-    bxcxnormalization_dict = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]
-    #postprocess_dict['column_dict'][bxcxkey]['normalization_dict'][bxcxkey]
-    
-    temporigcategoryplug = 'bxcx'
+    #normkey used to retrieve the normalization dictionary 
+    normkey = False
+    if len(columnkey) > 0:      
+      normkey = columnkey[0]
+          
+    #normkey is False when process function returns empty set
+    if normkey is not False:
 
-    #df_test, nmbrcolumns, _1, _2 = \
-    mdf_test, _1 = \
-    self._process_bxcx_support(mdf_test, column, temporigcategoryplug, 1, bxcx_lmbda = \
-                             bxcxnormalization_dict['bxcx_lmbda'], \
-                             trnsfrm_mean = bxcxnormalization_dict['trnsfrm_mean'])
+      bxcxnormalization_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]
+      #postprocess_dict['column_dict'][bxcxkey]['normalization_dict'][bxcxkey]
+      
+      temporigcategoryplug = 'bxcx'
+
+      #df_test, nmbrcolumns, _1, _2 = \
+      mdf_test, _1 = \
+      self._process_bxcx_support(mdf_test, column, temporigcategoryplug, 1, bxcx_lmbda = \
+                              bxcxnormalization_dict['bxcx_lmbda'], \
+                              trnsfrm_mean = bxcxnormalization_dict['trnsfrm_mean'])
+
+    else:
+
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
+
+      if inplace is True:
+        del mdf_test[column]
 
     return mdf_test
 
@@ -34393,43 +34777,55 @@ class AutoMunge:
     #returns same dataframes with new column of name column + '_log0'
     '''
     
-    if 'inplace' in params:
-      inplace = params['inplace']
+    #normkey used to retrieve the normalization dictionary 
+    normkey = False
+    if len(columnkey) > 0:      
+      normkey = columnkey[0]
+          
+    #normkey is False when process function returns empty set
+    if normkey is not False:
+      
+      meanlog = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['meanlog']
+      inplace = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
+
+      if inplace is not True:
+        mdf_test[column + '_log0'] = mdf_test[column].copy()
+      else:
+        mdf_test.rename(columns = {column : column + '_log0'}, inplace = True)
+
+      #convert all values to either numeric or NaN
+      mdf_test[column + '_log0'] = pd.to_numeric(mdf_test[column + '_log0'], errors='coerce')
+      
+      #replace all non-positive with nan for the log operation
+      mdf_test.loc[mdf_test[column + '_log0'] <= 0, (column + '_log0')] = np.nan
+      
+      #log transform column
+      #note that this replaces negative values with nan which we will infill with meanlog
+      mdf_test[column + '_log0'] = np.log10(mdf_test[column + '_log0'])
+
+      #get mean of training data
+      meanlog = meanlog  
+
+      #replace missing data with training set mean
+      mdf_test[column + '_log0'] = mdf_test[column + '_log0'].fillna(meanlog)
+
+  #     #replace missing data with 0
+  #     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].fillna(0)
+
+  #     #change data type for memory savings
+  #     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].astype(np.float32)
+
     else:
-      inplace = False
-    
-    #retrieve normalizastion parameters from postprocess_dict
-    normkey = column + '_log0'
-    
-    meanlog = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['meanlog']
 
-    if inplace is not True:
-      mdf_test[column + '_log0'] = mdf_test[column].copy()
-    else:
-      mdf_test.rename(columns = {column : column + '_log0'}, inplace = True)
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
 
-    #convert all values to either numeric or NaN
-    mdf_test[column + '_log0'] = pd.to_numeric(mdf_test[column + '_log0'], errors='coerce')
-    
-    #replace all non-positive with nan for the log operation
-    mdf_test.loc[mdf_test[column + '_log0'] <= 0, (column + '_log0')] = np.nan
-    
-    #log transform column
-    #note that this replaces negative values with nan which we will infill with meanlog
-    mdf_test[column + '_log0'] = np.log10(mdf_test[column + '_log0'])
-
-    #get mean of training data
-    meanlog = meanlog  
-
-    #replace missing data with training set mean
-    mdf_test[column + '_log0'] = mdf_test[column + '_log0'].fillna(meanlog)
-
-#     #replace missing data with 0
-#     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].fillna(0)
-
-#     #change data type for memory savings
-#     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].astype(np.float32)
+      if inplace is True:
+        del mdf_test[column]
 
     return mdf_test
 
@@ -34444,43 +34840,55 @@ class AutoMunge:
     #returns same dataframes with new column of name column + '_logn'
     '''
     
-    if 'inplace' in params:
-      inplace = params['inplace']
+    #normkey used to retrieve the normalization dictionary 
+    normkey = False
+    if len(columnkey) > 0:      
+      normkey = columnkey[0]
+          
+    #normkey is False when process function returns empty set
+    if normkey is not False:
+      
+      meanlog = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['meanlog']
+      inplace = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
+
+      if inplace is not True:
+        mdf_test[column + '_logn'] = mdf_test[column].copy()
+      else:
+        mdf_test.rename(columns = {column : column + '_logn'}, inplace = True)
+
+      #convert all values to either numeric or NaN
+      mdf_test[column + '_logn'] = pd.to_numeric(mdf_test[column + '_logn'], errors='coerce')
+      
+      #replace all non-positive with nan for the log operation
+      mdf_test.loc[mdf_test[column + '_logn'] <= 0, (column + '_logn')] = np.nan
+      
+      #log transform column
+      #note that this replaces negative values with nan which we will infill with meanlog
+      mdf_test[column + '_logn'] = np.log(mdf_test[column + '_logn'])
+
+      #get mean of training data
+      meanlog = meanlog  
+
+      #replace missing data with training set mean
+      mdf_test[column + '_logn'] = mdf_test[column + '_logn'].fillna(meanlog)
+
+  #     #replace missing data with 0
+  #     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].fillna(0)
+
+  #     #change data type for memory savings
+  #     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].astype(np.float32)
+
     else:
-      inplace = False
-    
-    #retrieve normalizastion parameters from postprocess_dict
-    normkey = column + '_logn'
-    
-    meanlog = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['meanlog']
 
-    if inplace is not True:
-      mdf_test[column + '_logn'] = mdf_test[column].copy()
-    else:
-      mdf_test.rename(columns = {column : column + '_logn'}, inplace = True)
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
 
-    #convert all values to either numeric or NaN
-    mdf_test[column + '_logn'] = pd.to_numeric(mdf_test[column + '_logn'], errors='coerce')
-    
-    #replace all non-positive with nan for the log operation
-    mdf_test.loc[mdf_test[column + '_logn'] <= 0, (column + '_logn')] = np.nan
-    
-    #log transform column
-    #note that this replaces negative values with nan which we will infill with meanlog
-    mdf_test[column + '_logn'] = np.log(mdf_test[column + '_logn'])
-
-    #get mean of training data
-    meanlog = meanlog  
-
-    #replace missing data with training set mean
-    mdf_test[column + '_logn'] = mdf_test[column + '_logn'].fillna(meanlog)
-
-#     #replace missing data with 0
-#     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].fillna(0)
-
-#     #change data type for memory savings
-#     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].astype(np.float32)
+      if inplace is True:
+        del mdf_test[column]
 
     return mdf_test
 
@@ -34495,43 +34903,55 @@ class AutoMunge:
     #returns same dataframes with new column of name column + '_log0'
     '''
     
-    if 'inplace' in params:
-      inplace = params['inplace']
+    #normkey used to retrieve the normalization dictionary 
+    normkey = False
+    if len(columnkey) > 0:      
+      normkey = columnkey[0]
+          
+    #normkey is False when process function returns empty set
+    if normkey is not False:
+      
+      meansqrt = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['meansqrt']
+      inplace = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
+
+      if inplace is not True:
+        mdf_test[column + '_sqrt'] = mdf_test[column].copy()
+      else:
+        mdf_test.rename(columns = {column : column + '_sqrt'}, inplace = True)
+
+      #convert all values to either numeric or NaN
+      mdf_test[column + '_sqrt'] = pd.to_numeric(mdf_test[column + '_sqrt'], errors='coerce')
+      
+      #replace all non-positive with nan for the log operation
+      mdf_test.loc[mdf_test[column + '_sqrt'] < 0, (column + '_sqrt')] = np.nan
+      
+      #log transform column
+      #note that this replaces negative values with nan which we will infill with meanlog
+      mdf_test[column + '_sqrt'] = np.sqrt(mdf_test[column + '_sqrt'])
+
+      #get mean of training data
+      meansqrt = meansqrt  
+
+      #replace missing data with training set mean
+      mdf_test[column + '_sqrt'] = mdf_test[column + '_sqrt'].fillna(meansqrt)
+
+  #     #replace missing data with 0
+  #     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].fillna(0)
+
+  #     #change data type for memory savings
+  #     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].astype(np.float32)
+
     else:
-      inplace = False
-    
-    #retrieve normalizastion parameters from postprocess_dict
-    normkey = column + '_sqrt'
-    
-    meansqrt = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['meansqrt']
 
-    if inplace is not True:
-      mdf_test[column + '_sqrt'] = mdf_test[column].copy()
-    else:
-      mdf_test.rename(columns = {column : column + '_sqrt'}, inplace = True)
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
 
-    #convert all values to either numeric or NaN
-    mdf_test[column + '_sqrt'] = pd.to_numeric(mdf_test[column + '_sqrt'], errors='coerce')
-    
-    #replace all non-positive with nan for the log operation
-    mdf_test.loc[mdf_test[column + '_sqrt'] < 0, (column + '_sqrt')] = np.nan
-    
-    #log transform column
-    #note that this replaces negative values with nan which we will infill with meanlog
-    mdf_test[column + '_sqrt'] = np.sqrt(mdf_test[column + '_sqrt'])
-
-    #get mean of training data
-    meansqrt = meansqrt  
-
-    #replace missing data with training set mean
-    mdf_test[column + '_sqrt'] = mdf_test[column + '_sqrt'].fillna(meansqrt)
-
-#     #replace missing data with 0
-#     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].fillna(0)
-
-#     #change data type for memory savings
-#     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].astype(np.float32)
+      if inplace is True:
+        del mdf_test[column]
 
     return mdf_test
 
@@ -34547,33 +34967,44 @@ class AutoMunge:
     #returns same dataframes with new column of name column + '_addd'
     '''
     
-    if 'inplace' in params:
-      inplace = params['inplace']
-    else:
-      inplace = False
-    
-    #retrieve normalizastion parameters from postprocess_dict
-    normkey = column + '_addd'
-    
-    mean = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
-    
-    add = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['add']
+    #normkey used to retrieve the normalization dictionary 
+    normkey = False
+    if len(columnkey) > 0:      
+      normkey = columnkey[0]
+          
+    #normkey is False when process function returns empty set
+    if normkey is not False:
+      
+      mean = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
+      add = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['add']
+      inplace = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
 
-    if inplace is not True:
-      mdf_test[column + '_addd'] = mdf_test[column].copy()
-    else:
-      mdf_test.rename(columns = {column : column + '_addd'}, inplace = True)
+      if inplace is not True:
+        mdf_test[column + '_addd'] = mdf_test[column].copy()
+      else:
+        mdf_test.rename(columns = {column : column + '_addd'}, inplace = True)
 
-    #convert all values to either numeric or NaN
-    mdf_test[column + '_addd'] = pd.to_numeric(mdf_test[column + '_addd'], errors='coerce')
-    
-    #lperform addition
-    mdf_test[column + '_addd'] = mdf_test[column + '_addd'] + add
-    
-    #replace missing data with training set mean
-    mdf_test[column + '_addd'] = mdf_test[column + '_addd'].fillna(mean)
+      #convert all values to either numeric or NaN
+      mdf_test[column + '_addd'] = pd.to_numeric(mdf_test[column + '_addd'], errors='coerce')
+      
+      #lperform addition
+      mdf_test[column + '_addd'] = mdf_test[column + '_addd'] + add
+      
+      #replace missing data with training set mean
+      mdf_test[column + '_addd'] = mdf_test[column + '_addd'].fillna(mean)
+
+    else:
+
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
+
+      if inplace is True:
+        del mdf_test[column]
 
     return mdf_test
   
@@ -34588,34 +35019,45 @@ class AutoMunge:
     #replaces non-numeric entries with set mean after subtraction
     #returns same dataframes with new column of name column + '_sbtr'
     '''
-    
-    if 'inplace' in params:
-      inplace = params['inplace']
-    else:
-      inplace = False
         
-    #retrieve normalizastion parameters from postprocess_dict
-    normkey = column + '_sbtr'
-    
-    mean = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
-    
-    subtract = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['subtract']
+    #normkey used to retrieve the normalization dictionary 
+    normkey = False
+    if len(columnkey) > 0:      
+      normkey = columnkey[0]
+          
+    #normkey is False when process function returns empty set
+    if normkey is not False:
+      
+      mean = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
+      subtract = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['subtract']
+      inplace = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
 
-    if inplace is not True:
-      mdf_test[column + '_sbtr'] = mdf_test[column].copy()
+      if inplace is not True:
+        mdf_test[column + '_sbtr'] = mdf_test[column].copy()
+      else:
+        mdf_test.rename(columns = {column : column + '_sbtr'}, inplace = True)
+
+      #convert all values to either numeric or NaN
+      mdf_test[column + '_sbtr'] = pd.to_numeric(mdf_test[column + '_sbtr'], errors='coerce')
+      
+      #lperform subtraction
+      mdf_test[column + '_sbtr'] = mdf_test[column + '_sbtr'] - subtract
+      
+      #replace missing data with training set mean
+      mdf_test[column + '_sbtr'] = mdf_test[column + '_sbtr'].fillna(mean)
+
     else:
-      mdf_test.rename(columns = {column : column + '_sbtr'}, inplace = True)
 
-    #convert all values to either numeric or NaN
-    mdf_test[column + '_sbtr'] = pd.to_numeric(mdf_test[column + '_sbtr'], errors='coerce')
-    
-    #lperform subtraction
-    mdf_test[column + '_sbtr'] = mdf_test[column + '_sbtr'] - subtract
-    
-    #replace missing data with training set mean
-    mdf_test[column + '_sbtr'] = mdf_test[column + '_sbtr'].fillna(mean)
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
+
+      if inplace is True:
+        del mdf_test[column]
 
     return mdf_test
   
@@ -34631,33 +35073,44 @@ class AutoMunge:
     #returns same dataframes with new column of name column + '_mltp'
     '''
     
-    if 'inplace' in params:
-      inplace = params['inplace']
-    else:
-      inplace = False
-    
-    #retrieve normalizastion parameters from postprocess_dict
-    normkey = column + '_mltp'
-    
-    mean = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
-    
-    multiply = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['multiply']
+    #normkey used to retrieve the normalization dictionary 
+    normkey = False
+    if len(columnkey) > 0:      
+      normkey = columnkey[0]
+          
+    #normkey is False when process function returns empty set
+    if normkey is not False:
+      
+      mean = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
+      multiply = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['multiply']
+      inplace = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
 
-    if inplace is not True:
-      mdf_test[column + '_mltp'] = mdf_test[column].copy()
-    else:
-      mdf_test.rename(columns = {column : column + '_mltp'}, inplace = True)
+      if inplace is not True:
+        mdf_test[column + '_mltp'] = mdf_test[column].copy()
+      else:
+        mdf_test.rename(columns = {column : column + '_mltp'}, inplace = True)
 
-    #convert all values to either numeric or NaN
-    mdf_test[column + '_mltp'] = pd.to_numeric(mdf_test[column + '_mltp'], errors='coerce')
-    
-    #lperform addition
-    mdf_test[column + '_mltp'] = mdf_test[column + '_mltp'] * multiply
-    
-    #replace missing data with training set mean
-    mdf_test[column + '_mltp'] = mdf_test[column + '_mltp'].fillna(mean)
+      #convert all values to either numeric or NaN
+      mdf_test[column + '_mltp'] = pd.to_numeric(mdf_test[column + '_mltp'], errors='coerce')
+      
+      #lperform addition
+      mdf_test[column + '_mltp'] = mdf_test[column + '_mltp'] * multiply
+      
+      #replace missing data with training set mean
+      mdf_test[column + '_mltp'] = mdf_test[column + '_mltp'].fillna(mean)
+
+    else:
+
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
+
+      if inplace is True:
+        del mdf_test[column]
 
     return mdf_test
     
@@ -34671,33 +35124,44 @@ class AutoMunge:
     #returns same dataframes with new column of name column + '_divd'
     '''
     
-    if 'inplace' in params:
-      inplace = params['inplace']
-    else:
-      inplace = False
-    
-    #retrieve normalizastion parameters from postprocess_dict
-    normkey = column + '_divd'
-    
-    mean = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
-    
-    divide = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['divide']
+    #normkey used to retrieve the normalization dictionary 
+    normkey = False
+    if len(columnkey) > 0:      
+      normkey = columnkey[0]
+          
+    #normkey is False when process function returns empty set
+    if normkey is not False:
+      
+      mean = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
+      divide = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['divide']
+      inplace = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
 
-    if inplace is not True:
-      mdf_test[column + '_divd'] = mdf_test[column].copy()
-    else:
-      mdf_test.rename(columns = {column : column + '_divd'}, inplace = True)
+      if inplace is not True:
+        mdf_test[column + '_divd'] = mdf_test[column].copy()
+      else:
+        mdf_test.rename(columns = {column : column + '_divd'}, inplace = True)
 
-    #convert all values to either numeric or NaN
-    mdf_test[column + '_divd'] = pd.to_numeric(mdf_test[column + '_divd'], errors='coerce')
-    
-    #lperform addition
-    mdf_test[column + '_divd'] = mdf_test[column + '_divd'] / divide
-    
-    #replace missing data with training set mean
-    mdf_test[column + '_divd'] = mdf_test[column + '_divd'].fillna(mean)
+      #convert all values to either numeric or NaN
+      mdf_test[column + '_divd'] = pd.to_numeric(mdf_test[column + '_divd'], errors='coerce')
+      
+      #lperform addition
+      mdf_test[column + '_divd'] = mdf_test[column + '_divd'] / divide
+      
+      #replace missing data with training set mean
+      mdf_test[column + '_divd'] = mdf_test[column + '_divd'].fillna(mean)
+
+    else:
+
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
+
+      if inplace is True:
+        del mdf_test[column]
 
     return mdf_test
   
@@ -34710,34 +35174,45 @@ class AutoMunge:
     #replaces non-numeric entries with set mean after raise
     #returns same dataframes with new column of name column + '_rais'
     '''
-    
-    if 'inplace' in params:
-      inplace = params['inplace']
-    else:
-      inplace = False
         
-    #retrieve normalizastion parameters from postprocess_dict
-    normkey = column + '_rais'
-    
-    mean = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
-    
-    raiser = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['raiser']
+    #normkey used to retrieve the normalization dictionary 
+    normkey = False
+    if len(columnkey) > 0:      
+      normkey = columnkey[0]
+          
+    #normkey is False when process function returns empty set
+    if normkey is not False:
+      
+      mean = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
+      raiser = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['raiser']
+      inplace = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
 
-    if inplace is not True:
-      mdf_test[column + '_rais'] = mdf_test[column].copy()
+      if inplace is not True:
+        mdf_test[column + '_rais'] = mdf_test[column].copy()
+      else:
+        mdf_test.rename(columns = {column : column + '_rais'}, inplace = True)
+
+      #convert all values to either numeric or NaN
+      mdf_test[column + '_rais'] = pd.to_numeric(mdf_test[column + '_rais'], errors='coerce')
+      
+      #lperform addition
+      mdf_test[column + '_rais'] = mdf_test[column + '_rais'] ** raiser
+      
+      #replace missing data with training set mean
+      mdf_test[column + '_rais'] = mdf_test[column + '_rais'].fillna(mean)
+
     else:
-      mdf_test.rename(columns = {column : column + '_rais'}, inplace = True)
 
-    #convert all values to either numeric or NaN
-    mdf_test[column + '_rais'] = pd.to_numeric(mdf_test[column + '_rais'], errors='coerce')
-    
-    #lperform addition
-    mdf_test[column + '_rais'] = mdf_test[column + '_rais'] ** raiser
-    
-    #replace missing data with training set mean
-    mdf_test[column + '_rais'] = mdf_test[column + '_rais'].fillna(mean)
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
+
+      if inplace is True:
+        del mdf_test[column]
 
     return mdf_test
     
@@ -34751,30 +35226,42 @@ class AutoMunge:
     #returns same dataframes with new column of name column + '_absl'
     '''
     
-    if 'inplace' in params:
-      inplace = params['inplace']
-    else:
-      inplace = False
-    
-    #retrieve normalizastion parameters from postprocess_dict
-    normkey = column + '_absl'
-    
-    mean = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
+    #normkey used to retrieve the normalization dictionary 
+    normkey = False
+    if len(columnkey) > 0:      
+      normkey = columnkey[0]
+          
+    #normkey is False when process function returns empty set
+    if normkey is not False:
+      
+      mean = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
+      inplace = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
 
-    if inplace is not True:
-      mdf_test[column + '_absl'] = mdf_test[column].copy()
-    else:
-      mdf_test.rename(columns = {column : column + '_absl'}, inplace = True)
+      if inplace is not True:
+        mdf_test[column + '_absl'] = mdf_test[column].copy()
+      else:
+        mdf_test.rename(columns = {column : column + '_absl'}, inplace = True)
 
-    #convert all values to either numeric or NaN
-    mdf_test[column + '_absl'] = pd.to_numeric(mdf_test[column + '_absl'], errors='coerce')
-    
-    #lperform addition
-    mdf_test[column + '_absl'] = mdf_test[column + '_absl'].abs()
-    
-    #replace missing data with training set mean
-    mdf_test[column + '_absl'] = mdf_test[column + '_absl'].fillna(mean)
+      #convert all values to either numeric or NaN
+      mdf_test[column + '_absl'] = pd.to_numeric(mdf_test[column + '_absl'], errors='coerce')
+      
+      #lperform addition
+      mdf_test[column + '_absl'] = mdf_test[column + '_absl'].abs()
+      
+      #replace missing data with training set mean
+      mdf_test[column + '_absl'] = mdf_test[column + '_absl'].fillna(mean)
+
+    else:
+
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
+
+      if inplace is True:
+        del mdf_test[column]
 
     return mdf_test
 
@@ -34904,6 +35391,16 @@ class AutoMunge:
 
         mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.int8)
 
+    else:
+
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
+
+      if inplace is True:
+        del mdf_test[column]
+
     return mdf_test
   
   def _postprocess_pwor(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
@@ -34918,121 +35415,136 @@ class AutoMunge:
     #negative values allows, comparable to pwr2
     '''
     
-    if 'inplace' in params:
-      inplace = params['inplace']
-    else:
-      inplace = False
-    
-    #get normkey
-    normkey = column + '_pwor'
-    
-    #retrieve stuff from normalization dictionary
-    train_replace_dict = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['train_replace_dict']
-    negvalues = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['negvalues']
-    activations_list = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['activations_list']
-    
-    pworcolumn = column + '_pwor'
-
-    if inplace is not True:
-      mdf_test[pworcolumn] = mdf_test[column].copy()
-    else:
-      mdf_test.rename(columns = {column : pworcolumn}, inplace = True)
-
-    #convert all values to either numeric or NaN
-    mdf_test[pworcolumn] = pd.to_numeric(mdf_test[pworcolumn], errors='coerce')
-    
-    #copy set for negative values
-    negtempcolumn = column + '_negtempcolumn'
-    
-    mdf_test[negtempcolumn] = mdf_test[pworcolumn].copy()
-    
-    #convert all values >= 0 to Nan
-    mdf_test[negtempcolumn] = \
-    np.where(mdf_test[negtempcolumn] >= 0, np.nan, mdf_test[negtempcolumn])
-    
-    #take abs value of negtempcolumn
-    mdf_test[negtempcolumn] = mdf_test[negtempcolumn].abs()
-    
-    #convert all values <= 0 in column to Nan
-    mdf_test[pworcolumn] = \
-    np.where(mdf_test[pworcolumn] <= 0, np.nan, mdf_test[pworcolumn])
-
-    mdf_test[pworcolumn] = \
-    np.where(mdf_test[pworcolumn] != np.nan, np.floor(np.log10(mdf_test[pworcolumn])), mdf_test[pworcolumn])
-    
-    #do same for negtempcolumn
-    mdf_test[negtempcolumn] = \
-    np.where(mdf_test[negtempcolumn] != np.nan, np.floor(np.log10(mdf_test[negtempcolumn])), mdf_test[negtempcolumn])
-
-    newunique_list = list(train_replace_dict)
+    #normkey used to retrieve the normalization dictionary 
+    normkey = False
+    if len(columnkey) > 0:      
+      normkey = columnkey[0]
+          
+    #normkey is False when process function returns empty set
+    if normkey is not False:
       
-    test_neg_dict = {}
-    negunique = mdf_test[negtempcolumn].unique()
-    for unique in negunique:
-      if unique != unique:
-        newunique = np.nan
+      #retrieve stuff from normalization dictionary
+      train_replace_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['train_replace_dict']
+      negvalues = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['negvalues']
+      activations_list = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['activations_list']
+      inplace = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
+      
+      pworcolumn = column + '_pwor'
+
+      if inplace is not True:
+        mdf_test[pworcolumn] = mdf_test[column].copy()
       else:
-        #this is update for difference between pwr2 and pwrs
-        if negvalues:
-          newunique = column + '_-10^' + str(int(unique))
-        else:
-          newunique = np.nan
-      if newunique in newunique_list and newunique == newunique:
-        test_neg_dict.update({unique : newunique})
-      else:
-        test_neg_dict.update({unique : np.nan})
+        mdf_test.rename(columns = {column : pworcolumn}, inplace = True)
+
+      #convert all values to either numeric or NaN
+      mdf_test[pworcolumn] = pd.to_numeric(mdf_test[pworcolumn], errors='coerce')
+      
+      #copy set for negative values
+      negtempcolumn = column + '_negtempcolumn'
+      
+      mdf_test[negtempcolumn] = mdf_test[pworcolumn].copy()
+      
+      #convert all values >= 0 to Nan
+      mdf_test[negtempcolumn] = \
+      np.where(mdf_test[negtempcolumn] >= 0, np.nan, mdf_test[negtempcolumn])
+      
+      #take abs value of negtempcolumn
+      mdf_test[negtempcolumn] = mdf_test[negtempcolumn].abs()
+      
+      #convert all values <= 0 in column to Nan
+      mdf_test[pworcolumn] = \
+      np.where(mdf_test[pworcolumn] <= 0, np.nan, mdf_test[pworcolumn])
+
+      mdf_test[pworcolumn] = \
+      np.where(mdf_test[pworcolumn] != np.nan, np.floor(np.log10(mdf_test[pworcolumn])), mdf_test[pworcolumn])
+      
+      #do same for negtempcolumn
+      mdf_test[negtempcolumn] = \
+      np.where(mdf_test[negtempcolumn] != np.nan, np.floor(np.log10(mdf_test[negtempcolumn])), mdf_test[negtempcolumn])
+
+      newunique_list = list(train_replace_dict)
         
-    mdf_test[negtempcolumn] = mdf_test[negtempcolumn].replace(test_neg_dict)
-    
-    #now do same for column
- 
-    test_pos_dict = {}
-    posunique = mdf_test[pworcolumn].unique()
-    for unique in posunique:
-      if unique != unique:
-        newunique = np.nan
-      else:
-        newunique = column + '_10^' + str(int(unique))
-      if newunique in newunique_list and newunique == newunique:
-        test_pos_dict.update({unique : newunique})
-      else:
-        test_pos_dict.update({unique : np.nan})
-    
-    mdf_test[pworcolumn] = mdf_test[pworcolumn].replace(test_pos_dict)
-    
-    #combine the two columns
-    mdf_test[pworcolumn] = mdf_test[negtempcolumn].where(mdf_test[negtempcolumn] == mdf_test[negtempcolumn], mdf_test[pworcolumn])
-    
-    test_unique = mdf_test[pworcolumn].unique()
-  
-    #Get missing entries in test set that are present in training set
-    missing_cols = set( list(newunique_list) ) - set( list(test_unique) )
-    
-    extra_cols = set( list(test_unique) ) - set( list(newunique_list) )
+      test_neg_dict = {}
+      negunique = mdf_test[negtempcolumn].unique()
+      for unique in negunique:
+        if unique != unique:
+          newunique = np.nan
+        else:
+          #this is update for difference between pwr2 and pwrs
+          if negvalues:
+            newunique = column + '_-10^' + str(int(unique))
+          else:
+            newunique = np.nan
+        if newunique in newunique_list and newunique == newunique:
+          test_neg_dict.update({unique : newunique})
+        else:
+          test_neg_dict.update({unique : np.nan})
+          
+      mdf_test[negtempcolumn] = mdf_test[negtempcolumn].replace(test_neg_dict)
       
-    test_replace_dict = {}
-    for testunique in test_unique:
-      if testunique in newunique_list:
-        test_replace_dict.update({testunique : train_replace_dict[testunique]})
-      else:
-        test_replace_dict.update({testunique : 0})
+      #now do same for column
+  
+      test_pos_dict = {}
+      posunique = mdf_test[pworcolumn].unique()
+      for unique in posunique:
+        if unique != unique:
+          newunique = np.nan
+        else:
+          newunique = column + '_10^' + str(int(unique))
+        if newunique in newunique_list and newunique == newunique:
+          test_pos_dict.update({unique : newunique})
+        else:
+          test_pos_dict.update({unique : np.nan})
+      
+      mdf_test[pworcolumn] = mdf_test[pworcolumn].replace(test_pos_dict)
+      
+      #combine the two columns
+      mdf_test[pworcolumn] = mdf_test[negtempcolumn].where(mdf_test[negtempcolumn] == mdf_test[negtempcolumn], mdf_test[pworcolumn])
+      
+      test_unique = mdf_test[pworcolumn].unique()
     
-#     pworcolumn = column + '_por2'
-#     mdf_test[pworcolumn] = mdf_test[column].copy()
-    
-    mdf_test[pworcolumn] = mdf_test[pworcolumn].replace(test_replace_dict)
+      #Get missing entries in test set that are present in training set
+      missing_cols = set( list(newunique_list) ) - set( list(test_unique) )
+      
+      extra_cols = set( list(test_unique) ) - set( list(newunique_list) )
+        
+      test_replace_dict = {}
+      for testunique in test_unique:
+        if testunique in newunique_list:
+          test_replace_dict.update({testunique : train_replace_dict[testunique]})
+        else:
+          test_replace_dict.update({testunique : 0})
+      
+  #     pworcolumn = column + '_por2'
+  #     mdf_test[pworcolumn] = mdf_test[column].copy()
+      
+      mdf_test[pworcolumn] = mdf_test[pworcolumn].replace(test_replace_dict)
 
-    #replace original column from training data
-    del mdf_test[negtempcolumn]
-    
-    #returned data type is conditional on the size of encoding space
-    bn_count = len(activations_list)
-    if bn_count < 254:
-      mdf_test[pworcolumn] = mdf_test[pworcolumn].astype(np.uint8)
-    elif bn_count < 65534:
-      mdf_test[pworcolumn] = mdf_test[pworcolumn].astype(np.uint16)
+      #replace original column from training data
+      del mdf_test[negtempcolumn]
+      
+      #returned data type is conditional on the size of encoding space
+      bn_count = len(activations_list)
+      if bn_count < 254:
+        mdf_test[pworcolumn] = mdf_test[pworcolumn].astype(np.uint8)
+      elif bn_count < 65534:
+        mdf_test[pworcolumn] = mdf_test[pworcolumn].astype(np.uint16)
+      else:
+        mdf_test[pworcolumn] = mdf_test[pworcolumn].astype(np.uint32)
+
     else:
-      mdf_test[pworcolumn] = mdf_test[pworcolumn].astype(np.uint32)
+
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
+
+      if inplace is True:
+        del mdf_test[column]
     
     return mdf_test
 
@@ -35052,10 +35564,13 @@ class AutoMunge:
     #suffix appender is '_bins_#'' where # is integer for bin id
     '''
     
-    #retrieve normalization parameters from postprocess_dict
-    normkey = column +'_bins_0'
-    
-    if normkey in postprocess_dict['column_dict']:
+    #normkey used to retrieve the normalization dictionary 
+    normkey = False
+    if len(columnkey) > 0:      
+      normkey = columnkey[0]
+          
+    #normkey is False when process function returns empty set
+    if normkey is not False:
 
       mean = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binsmean']
       std = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binsstd']
@@ -35096,6 +35611,16 @@ class AutoMunge:
       #delete the support column
       del mdf_test[binscolumn]
 
+    else:
+
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
+
+      if inplace is True:
+        del mdf_test[column]
+
     return mdf_test
 
   def _postprocess_bsor(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
@@ -35112,29 +35637,33 @@ class AutoMunge:
     
     #bsor is comparable to bins but returns ordinal encoded column
     '''
-    
-    if 'inplace' in params:
-      inplace = params['inplace']
-    else:
-      inplace = False
-    
-    if 'bincount' in params:
-      bincount = params['bincount']
-    else:
-      bincount = 6
-      
-    if bincount > 0:
+
+    #normkey used to retrieve the normalization dictionary 
+    normkey = False
+    if len(columnkey) > 0:      
+      normkey = columnkey[0]
+          
+    #normkey is False when process function returns empty set
+    if normkey is not False:
 
       #retrieve normalization parameters from postprocess_dict
-      normkey = column +'_bsor'
-      #normkey = columnkey
 
-      mean = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binsmean']
-      std = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binsstd']
-      ordinal_dict = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordinal_dict']
-      bincuts = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bincuts']
-      binlabels = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binlabels']
-      normalizedinput = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['normalizedinput']
+      mean = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binsmean']
+      std = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binsstd']
+      ordinal_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordinal_dict']
+      bincuts = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bincuts']
+      binlabels = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binlabels']
+      normalizedinput = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['normalizedinput']
+      inplace = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
+      bincount = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bincount']
       
       binscolumn = column + '_bsor'
 
@@ -35161,6 +35690,16 @@ class AutoMunge:
 
       mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.int8)
 
+    else:
+
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
+
+      if inplace is True:
+        del mdf_test[column]
+
     return mdf_test
   
   def _postprocess_bnwd(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
@@ -35174,16 +35713,6 @@ class AutoMunge:
     #can be applied top either a raw set not yet normalized or after normalization
     #such as after z-score normalization)
     '''
-    
-    if 'width' in params:
-      bn_width = params['width']
-    else:
-      bn_width = 1
-    
-    if 'suffix' in params:
-      suffix = params['suffix']
-    else:
-      suffix = '_bnwd'
     
     #normkey used to retrieve the normalization dictionary 
     normkey = False
@@ -35204,7 +35733,7 @@ class AutoMunge:
       bn_width = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_width_bnwd']
       textcolumns = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['textcolumns']
       
-      binscolumn = column + suffix
+      binscolumn = column + '_' + suffix
       
       #store original column for later reversion
       mdf_test[binscolumn] = mdf_test[column].copy()
@@ -35232,6 +35761,16 @@ class AutoMunge:
       #delete the support column
       del mdf_test[binscolumn]
 
+    else:
+
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
+
+      if inplace is True:
+        del mdf_test[column]
+
     return mdf_test
 
   def _postprocess_bnwo(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
@@ -35246,54 +35785,63 @@ class AutoMunge:
     #such as after z-score normalization)
     '''
     
-    if 'inplace' in params:
-      inplace = params['inplace']
+    #normkey used to retrieve the normalization dictionary 
+    normkey = False
+    if len(columnkey) > 0:      
+      normkey = columnkey[0]
+          
+    #normkey is False when process function returns empty set
+    if normkey is not False:
+      
+      mean = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binsmean']
+      bn_min = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_min']
+      bn_max = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_max']
+      bn_delta = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_delta']
+      bn_count = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_count']
+      bins_id = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_id']
+      bins_cuts = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_cuts']
+      bn_width = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_width']
+      inplace = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
+      suffix = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+
+      binscolumn = column + '_' + suffix
+      
+      if inplace is not True:
+        mdf_test[binscolumn] = mdf_test[column].copy()
+      else:
+        mdf_test.rename(columns = {column : binscolumn}, inplace = True)
+
+      #convert all values to either numeric or NaN
+      mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
+
+      #replace missing data with training set mean
+      mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
+
+      #create bins based on standard deviation increments
+  #     binscolumn = column + '_bnwo'
+      mdf_test[binscolumn] = \
+      pd.cut(mdf_test[binscolumn], bins = bins_cuts,  \
+            labels = bins_id, precision=len(str(bn_count)))
+
+      #returned data type is conditional on the size of encoding space
+      if bn_count < 254:
+        mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint8)
+      elif bn_count < 65534:
+        mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint16)
+      else:
+        mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint32)
+
     else:
-      inplace = False
-    
-    if 'suffix' in params:
-      suffix = params['suffix']
-    else:
-      suffix = '_bnwo'
-    
-    #retrieve normalization parameters from postprocess_dict
-    normkey = column + suffix
-    
-    mean = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binsmean']
-    bn_min = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_min']
-    bn_max = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_max']
-    bn_delta = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_delta']
-    bn_count = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_count']
-    bins_id = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_id']
-    bins_cuts = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_cuts']
-    bn_width = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_width']
 
-    binscolumn = column + suffix
-    
-    if inplace is not True:
-      mdf_test[binscolumn] = mdf_test[column].copy()
-    else:
-      mdf_test.rename(columns = {column : binscolumn}, inplace = True)
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
 
-    #convert all values to either numeric or NaN
-    mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
-
-    #replace missing data with training set mean
-    mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
-
-    #create bins based on standard deviation increments
-#     binscolumn = column + '_bnwo'
-    mdf_test[binscolumn] = \
-    pd.cut(mdf_test[binscolumn], bins = bins_cuts,  \
-           labels = bins_id, precision=len(str(bn_count)))
-
-    #returned data type is conditional on the size of encoding space
-    if bn_count < 254:
-      mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint8)
-    elif bn_count < 65534:
-      mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint16)
-    else:
-      mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint32)
+      if inplace is True:
+        del mdf_test[column]
     
     return mdf_test
 
@@ -35308,16 +35856,6 @@ class AutoMunge:
     #can be applied top either a raw set not yet normalized or after normalization
     #such as after z-score normalization)
     '''
-    
-    if 'bincount' in params:
-      bincount = params['bincount']
-    else:
-      bincount = 5
-      
-    if 'suffix' in params:
-      suffix = params['suffix']
-    else:
-      suffix = '_bnep'
     
     #normkey used to retrieve the normalization dictionary 
     normkey = False
@@ -35336,8 +35874,9 @@ class AutoMunge:
       bins_cuts = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_cuts']
       bincount = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bincount_bnep']
       textcolumns = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['textcolumns']
+      suffix = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
       
-      binscolumn = column + suffix
+      binscolumn = column + '_' + suffix
       
       #copy original column
       mdf_test[binscolumn] = mdf_test[column].copy()
@@ -35370,6 +35909,16 @@ class AutoMunge:
       else:
         
         mdf_test[binscolumn] = 0
+
+    else:
+
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
+
+      if inplace is True:
+        del mdf_test[column]
     
     return mdf_test
 
@@ -35385,69 +35934,76 @@ class AutoMunge:
     #such as after z-score normalization)
     '''
     
-    if 'inplace' in params:
-      inplace = params['inplace']
-    else:
-      inplace = False
-    
-    if 'suffix' in params:
-      suffix = params['suffix']
-    else:
-      suffix = '_bneo'
-    
-    #retrieve normalization parameters from postprocess_dict
-    normkey = column + suffix
-    
-    mean = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binsmean']
-    bn_min = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_min']
-    bn_max = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_max']
-    bn_delta = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_delta']
-    bn_count = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_count']
-    bins_id = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_id']
-    bins_cuts = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_cuts']
-    bincount = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bincount']
-
-    binscolumn = column + suffix
-    
-    if inplace is not True:
-      mdf_test[binscolumn] = mdf_test[column].copy()
-    else:
-      mdf_test.rename(columns = {column : binscolumn}, inplace = True)
-
-    #convert all values to either numeric or NaN
-    mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
-
-#     #replace missing data with training set mean
-#     mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
-
-    if bn_delta > 0 and bn_min == bn_min:
-
-      #create bins based on prepared increments
-  #     binscolumn = column + '_bnwo'
-      mdf_test[binscolumn] = \
-      pd.cut(mdf_test[binscolumn], bins = bins_cuts,  \
-             labels = bins_id, precision=len(str(bn_count)), duplicates='drop')
-
-      #apply ffill to replace NArows with value from adjacent cell in pre4ceding row
-      mdf_test[binscolumn] = mdf_test[binscolumn].fillna(method='ffill')
-
-      #we'll follow with a bfill just in case first row had a nan
-      mdf_test[binscolumn] = mdf_test[binscolumn].fillna(method='bfill')
-
-      #and if the entire set was nan we'll infill with a 0 plug
-      mdf_test[binscolumn] = mdf_test[binscolumn].fillna(0)
+    #normkey used to retrieve the normalization dictionary 
+    normkey = False
+    if len(columnkey) > 0:      
+      normkey = columnkey[0]
+          
+    #normkey is False when process function returns empty set
+    if normkey is not False:
       
-      #returned data type is conditional on the size of encoding space
-      if bn_count < 254:
-        mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint8)
-      elif bn_count < 65534:
-        mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint16)
+      mean = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binsmean']
+      bn_min = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_min']
+      bn_max = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_max']
+      bn_delta = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_delta']
+      bn_count = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_count']
+      bins_id = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_id']
+      bins_cuts = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_cuts']
+      bincount = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bincount']
+      inplace = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
+      suffix = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+
+      binscolumn = column + '_' + suffix
+      
+      if inplace is not True:
+        mdf_test[binscolumn] = mdf_test[column].copy()
       else:
-        mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint32)
-      
+        mdf_test.rename(columns = {column : binscolumn}, inplace = True)
+
+      #convert all values to either numeric or NaN
+      mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
+
+  #     #replace missing data with training set mean
+  #     mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
+
+      if bn_delta > 0 and bn_min == bn_min:
+
+        #create bins based on prepared increments
+    #     binscolumn = column + '_bnwo'
+        mdf_test[binscolumn] = \
+        pd.cut(mdf_test[binscolumn], bins = bins_cuts,  \
+              labels = bins_id, precision=len(str(bn_count)), duplicates='drop')
+
+        #apply ffill to replace NArows with value from adjacent cell in pre4ceding row
+        mdf_test[binscolumn] = mdf_test[binscolumn].fillna(method='ffill')
+
+        #we'll follow with a bfill just in case first row had a nan
+        mdf_test[binscolumn] = mdf_test[binscolumn].fillna(method='bfill')
+
+        #and if the entire set was nan we'll infill with a 0 plug
+        mdf_test[binscolumn] = mdf_test[binscolumn].fillna(0)
+        
+        #returned data type is conditional on the size of encoding space
+        if bn_count < 254:
+          mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint8)
+        elif bn_count < 65534:
+          mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint16)
+        else:
+          mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint32)
+        
+      else:
+        
+        mdf_test[binscolumn] = 0
+
     else:
-      
-      mdf_test[binscolumn] = 0
+
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
+
+      if inplace is True:
+        del mdf_test[column]
     
     return mdf_test
   
@@ -35462,16 +36018,6 @@ class AutoMunge:
     #can be applied top either a raw set not yet normalized or after normalization
     #such as after z-score normalization)
     '''
-    
-    if 'bincount' in params:
-      bincount = params['bincount']
-    else:
-      bincount = 9
-      
-    if 'buckets' in params:
-      buckets = params['buckets']
-    else:
-      buckets = False
     
     #normkey used to retrieve the normalization dictionary 
     normkey = False
@@ -35490,6 +36036,7 @@ class AutoMunge:
       bins_cuts = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_cuts']
       bincount = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bincount']
       textcolumns = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['textcolumns']
+      buckets = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['buckets_tlbn']
       
       binscolumn = column + '_tlbn'
       
@@ -35561,6 +36108,16 @@ class AutoMunge:
         
         mdf_test[binscolumn] = 0
 
+    else:
+
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
+
+      if inplace is True:
+        del mdf_test[column]
+
     return mdf_test
   
   def _postprocess_bkt1(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
@@ -35572,14 +36129,6 @@ class AutoMunge:
     
     #removes buckets without activations in train set
     '''
-    
-    if 'buckets' in params:
-        
-      buckets = params['buckets']
-    
-    else:
-      
-      buckets = [0,1,2]
     
     #normkey used to retrieve the normalization dictionary 
     normkey = False
@@ -35623,6 +36172,16 @@ class AutoMunge:
       #delete the support column
       del mdf_test[binscolumn]
 
+    else:
+
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
+
+      if inplace is True:
+        del mdf_test[column]
+
     return mdf_test
   
   def _postprocess_bkt2(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
@@ -35634,14 +36193,6 @@ class AutoMunge:
     
     #removes buckets without activations in train set
     '''
-    
-    if 'buckets' in params:
-        
-      buckets = params['buckets']
-    
-    else:
-      
-      buckets = [0,1,2]
     
     #normkey used to retrieve the normalization dictionary 
     normkey = False
@@ -35684,6 +36235,16 @@ class AutoMunge:
 
       #delete the support column
       del mdf_test[binscolumn]
+
+    else:
+
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
+
+      if inplace is True:
+        del mdf_test[column]
     
     return mdf_test
   
@@ -35697,52 +36258,63 @@ class AutoMunge:
     #segments without activations are included
     '''
     
-    if 'inplace' in params:
-      inplace = params['inplace']
+    #normkey used to retrieve the normalization dictionary 
+    normkey = False
+    if len(columnkey) > 0:      
+      normkey = columnkey[0]
+          
+    #normkey is False when process function returns empty set
+    if normkey is not False:
+      
+      mean = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binsmean']
+      buckets = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['buckets']
+      bins_cuts = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_cuts']
+      bins_id = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_id']
+      ordl_activations_dict = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordl_activations_dict']
+      infill_activation = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['infill_activation']
+      inplace = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
+
+      binscolumn = column + '_bkt3'
+      
+      if inplace is not True:
+        mdf_test[binscolumn] = mdf_test[column].copy()
+      else:
+        mdf_test.rename(columns = {column : binscolumn}, inplace = True)
+
+      #convert all values to either numeric or NaN
+      mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
+
+      # #replace missing data with training set mean
+      # mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
+
+      #create bins based on standard deviation increments
+  #     binscolumn = column + '_bnwo'
+      mdf_test[binscolumn] = \
+      pd.cut(mdf_test[binscolumn], bins = bins_cuts,  \
+            labels = bins_id, precision=len(str(len(bins_id))))
+
+      mdf_test[binscolumn] = mdf_test[binscolumn].astype(float)
+      
+      #replace missing data with infill_activation
+      mdf_test[binscolumn] = mdf_test[binscolumn].fillna(infill_activation)
+      
+      #returned data type is conditional on the size of encoding space
+      if len(bins_cuts) < 254:
+        mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint8)
+      elif len(bins_cuts) < 65534:
+        mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint16)
+      else:
+        mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint32)
+
     else:
-      inplace = False
-    
-    #retrieve normalization parameters from postprocess_dict
-    normkey = column +'_bkt3'
-    
-    mean = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binsmean']
-    buckets = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['buckets']
-    bins_cuts = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_cuts']
-    bins_id = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_id']
-    ordl_activations_dict = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordl_activations_dict']
-    infill_activation = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['infill_activation']
 
-    binscolumn = column + '_bkt3'
-    
-    if inplace is not True:
-      mdf_test[binscolumn] = mdf_test[column].copy()
-    else:
-      mdf_test.rename(columns = {column : binscolumn}, inplace = True)
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
 
-    #convert all values to either numeric or NaN
-    mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
-
-    # #replace missing data with training set mean
-    # mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
-
-    #create bins based on standard deviation increments
-#     binscolumn = column + '_bnwo'
-    mdf_test[binscolumn] = \
-    pd.cut(mdf_test[binscolumn], bins = bins_cuts,  \
-           labels = bins_id, precision=len(str(len(bins_id))))
-
-    mdf_test[binscolumn] = mdf_test[binscolumn].astype(float)
-    
-    #replace missing data with infill_activation
-    mdf_test[binscolumn] = mdf_test[binscolumn].fillna(infill_activation)
-    
-    #returned data type is conditional on the size of encoding space
-    if len(bins_cuts) < 254:
-      mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint8)
-    elif len(bins_cuts) < 65534:
-      mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint16)
-    else:
-      mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint32)
+      if inplace is True:
+        del mdf_test[column]
     
     return mdf_test
   
@@ -35756,57 +36328,68 @@ class AutoMunge:
     #segments without activations are included
     '''
     
-    if 'inplace' in params:
-      inplace = params['inplace']
+    #normkey used to retrieve the normalization dictionary 
+    normkey = False
+    if len(columnkey) > 0:      
+      normkey = columnkey[0]
+          
+    #normkey is False when process function returns empty set
+    if normkey is not False:
+      
+      mean = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binsmean']
+      buckets = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['buckets']
+      bins_cuts = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_cuts']
+      bins_id = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_id']
+      ordl_activations_dict = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordl_activations_dict']
+      infill_activation = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['infill_activation']
+      inplace = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
+
+      binscolumn = column + '_bkt4'
+      
+      if inplace is not True:
+        mdf_test[binscolumn] = mdf_test[column].copy()
+      else:
+        mdf_test.rename(columns = {column : binscolumn}, inplace = True)
+
+      #convert all values to either numeric or NaN
+      mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
+      
+      #set all values that fall outside of bounded buckets to nan for replacement with mean
+      mdf_test.loc[mdf_test[binscolumn] <= buckets[0], (binscolumn)] = np.nan
+      
+      mdf_test.loc[mdf_test[binscolumn] > buckets[-1], (binscolumn)] = np.nan
+
+      # #replace missing data with training set mean
+      # mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
+
+      #create bins based on standard deviation increments
+  #     binscolumn = column + '_bnwo'
+      mdf_test[binscolumn] = \
+      pd.cut(mdf_test[binscolumn], bins = bins_cuts,  \
+            labels = bins_id, precision=len(str(len(bins_id))))
+    
+      mdf_test[binscolumn] = mdf_test[binscolumn].astype(float)
+      
+      #replace missing data with infill_activation
+      mdf_test[binscolumn] = mdf_test[binscolumn].fillna(infill_activation)
+
+      #returned data type is conditional on the size of encoding space
+      if len(bins_cuts) < 254:
+        mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint8)
+      elif len(bins_cuts) < 65534:
+        mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint16)
+      else:
+        mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint32)
+
     else:
-      inplace = False
-    
-    #retrieve normalization parameters from postprocess_dict
-    normkey = column +'_bkt4'
-    
-    mean = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binsmean']
-    buckets = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['buckets']
-    bins_cuts = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_cuts']
-    bins_id = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_id']
-    ordl_activations_dict = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordl_activations_dict']
-    infill_activation = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['infill_activation']
 
-    binscolumn = column + '_bkt4'
-    
-    if inplace is not True:
-      mdf_test[binscolumn] = mdf_test[column].copy()
-    else:
-      mdf_test.rename(columns = {column : binscolumn}, inplace = True)
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
 
-    #convert all values to either numeric or NaN
-    mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
-    
-    #set all values that fall outside of bounded buckets to nan for replacement with mean
-    mdf_test.loc[mdf_test[binscolumn] <= buckets[0], (binscolumn)] = np.nan
-    
-    mdf_test.loc[mdf_test[binscolumn] > buckets[-1], (binscolumn)] = np.nan
-
-    # #replace missing data with training set mean
-    # mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
-
-    #create bins based on standard deviation increments
-#     binscolumn = column + '_bnwo'
-    mdf_test[binscolumn] = \
-    pd.cut(mdf_test[binscolumn], bins = bins_cuts,  \
-           labels = bins_id, precision=len(str(len(bins_id))))
-  
-    mdf_test[binscolumn] = mdf_test[binscolumn].astype(float)
-    
-    #replace missing data with infill_activation
-    mdf_test[binscolumn] = mdf_test[binscolumn].fillna(infill_activation)
-
-    #returned data type is conditional on the size of encoding space
-    if len(bins_cuts) < 254:
-      mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint8)
-    elif len(bins_cuts) < 65534:
-      mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint16)
-    else:
-      mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint32)
+      if inplace is True:
+        del mdf_test[column]
     
     return mdf_test
 
@@ -35827,45 +36410,60 @@ class AutoMunge:
     #in automunge df_test is treated as test data by default
     '''
     
-    #retrieve normalizastion parameters from postprocess_dict
-    normkey = column + '_DPnb'
-    
-    mu = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mu']
-    sigma = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['sigma']
-    flip_prob = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['flip_prob']
-    noisedistribution = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['noisedistribution']
-    testnoise = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['testnoise']
+    #normkey used to retrieve the normalization dictionary 
+    normkey = False
+    if len(columnkey) > 0:      
+      normkey = columnkey[0]
+          
+    #normkey is False when process function returns empty set
+    if normkey is not False:
+      
+      mu = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mu']
+      sigma = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['sigma']
+      flip_prob = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['flip_prob']
+      noisedistribution = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['noisedistribution']
+      testnoise = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['testnoise']
 
-    
-    DPnm_column = column + '_DPnb'
-    
-    #check if df_test is to be treated as train or test data
-    traindata = postprocess_dict['traindata']
-    
-    if traindata is True or testnoise is True:
       
-      #first we'll derive our sampled noise for injection
-      if noisedistribution == 'normal':
-        normal_samples = np.random.normal(loc=mu, scale=sigma, size=(mdf_test.shape[0]))
-      elif noisedistribution == 'laplace':
-        normal_samples = np.random.laplace(loc=mu, scale=sigma, size=(mdf_test.shape[0]))
+      DPnm_column = column + '_DPnb'
+      
+      #check if df_test is to be treated as train or test data
+      traindata = postprocess_dict['traindata']
+      
+      if traindata is True or testnoise is True:
         
-      binomial_samples = np.random.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0]))
+        #first we'll derive our sampled noise for injection
+        if noisedistribution == 'normal':
+          normal_samples = np.random.normal(loc=mu, scale=sigma, size=(mdf_test.shape[0]))
+        elif noisedistribution == 'laplace':
+          normal_samples = np.random.laplace(loc=mu, scale=sigma, size=(mdf_test.shape[0]))
+          
+        binomial_samples = np.random.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0]))
+        
+        mdf_test[DPnm_column] = pd.DataFrame(normal_samples) * pd.DataFrame(binomial_samples)
       
-      mdf_test[DPnm_column] = pd.DataFrame(normal_samples) * pd.DataFrame(binomial_samples)
-    
-      #now inject noise
-      mdf_test[DPnm_column] = mdf_test[DPnm_column] + mdf_test[column]
-      
+        #now inject noise
+        mdf_test[DPnm_column] = mdf_test[DPnm_column] + mdf_test[column]
+        
+      else:
+        
+        #for test data is just pass-through
+        mdf_test[DPnm_column] = mdf_test[column].copy()
+
     else:
-      
-      #for test data is just pass-through
-      mdf_test[DPnm_column] = mdf_test[column].copy()
+
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
+
+      if inplace is True:
+        del mdf_test[column]
 
     return mdf_test
 
@@ -35889,70 +36487,85 @@ class AutoMunge:
     #in automunge df_test is treated as test data by default
     '''
     
-    #retrieve normalizastion parameters from postprocess_dict
-    normkey = column + '_DPmm'
-    
-    mu = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mu']
-    sigma = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['sigma']
-    flip_prob = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['flip_prob']
-    noisedistribution = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['noisedistribution']
-    testnoise = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['testnoise']
-
-    DPmm_column = column + '_DPmm'
-    DPmm_column_temp1 = column + '_DPmm' + '_tmp1'
-    
-    #check if df_test is to be treated as train or test data
-    traindata = postprocess_dict['traindata']
-    
-    if traindata is True or testnoise is True:
+    #normkey used to retrieve the normalization dictionary 
+    normkey = False
+    if len(columnkey) > 0:      
+      normkey = columnkey[0]
+          
+    #normkey is False when process function returns empty set
+    if normkey is not False:
       
-      if noisedistribution == 'normal':
-        normal_samples = np.random.normal(loc=mu, scale=sigma, size=(mdf_test.shape[0]))
-      elif noisedistribution == 'laplace':
-        normal_samples = np.random.laplace(loc=mu, scale=sigma, size=(mdf_test.shape[0]))
+      mu = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mu']
+      sigma = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['sigma']
+      flip_prob = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['flip_prob']
+      noisedistribution = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['noisedistribution']
+      testnoise = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['testnoise']
+
+      DPmm_column = column + '_DPmm'
+      DPmm_column_temp1 = column + '_DPmm' + '_tmp1'
       
-      binomial_samples = np.random.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0]))
-
-      mdf_test[DPmm_column] = pd.DataFrame(normal_samples) * pd.DataFrame(binomial_samples)
-
-      #cap outliers
-      mdf_test[DPmm_column] = np.where(mdf_test[DPmm_column] < -0.5, -0.5, mdf_test[DPmm_column])
-      mdf_test[DPmm_column] = np.where(mdf_test[DPmm_column] > 0.5, 0.5, mdf_test[DPmm_column])
-
-      #adjacent cell infill (this is included as a precaution shouldn't have any effect since upstream normalization)
-      mdf_test[DPmm_column] = mdf_test[DPmm_column].fillna(method='ffill')
-      mdf_test[DPmm_column] = mdf_test[DPmm_column].fillna(method='bfill')
-
-      #support column to signal sign of noise, 0 is neg, 1 is pos
-      mdf_test[DPmm_column_temp1] = 0
-      mdf_test[DPmm_column_temp1] = np.where(mdf_test[DPmm_column] >= 0., 1, mdf_test[DPmm_column_temp1])
+      #check if df_test is to be treated as train or test data
+      traindata = postprocess_dict['traindata']
       
-      #now inject noise, with scaled noise to maintain range 0-1
-      #(so if mnmx value <0.5, and neg noise, we scale noise to maintain ratio as if minmax was 0.5, similarly for >0.5 mnmx)
-      mdf_test[DPmm_column] = np.where(mdf_test[column] < 0.5, \
-                                        mdf_test[column] + \
-                                        (1 - mdf_test[DPmm_column_temp1]) * (mdf_test[DPmm_column] * mdf_test[column] / 0.5) + \
-                                        (mdf_test[DPmm_column_temp1]) * (mdf_test[DPmm_column]), \
-                                        mdf_test[DPmm_column])
+      if traindata is True or testnoise is True:
+        
+        if noisedistribution == 'normal':
+          normal_samples = np.random.normal(loc=mu, scale=sigma, size=(mdf_test.shape[0]))
+        elif noisedistribution == 'laplace':
+          normal_samples = np.random.laplace(loc=mu, scale=sigma, size=(mdf_test.shape[0]))
+        
+        binomial_samples = np.random.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0]))
 
-      mdf_test[DPmm_column] = np.where(mdf_test[column] >= 0.5, \
-                                        mdf_test[column] + \
-                                        (1 - mdf_test[DPmm_column_temp1]) * (mdf_test[DPmm_column]) + \
-                                        (mdf_test[DPmm_column_temp1]) * (mdf_test[DPmm_column] * (1 - mdf_test[column]) / 0.5), \
-                                        mdf_test[DPmm_column])
+        mdf_test[DPmm_column] = pd.DataFrame(normal_samples) * pd.DataFrame(binomial_samples)
 
-      #remove support column
-      del mdf_test[DPmm_column_temp1]
+        #cap outliers
+        mdf_test[DPmm_column] = np.where(mdf_test[DPmm_column] < -0.5, -0.5, mdf_test[DPmm_column])
+        mdf_test[DPmm_column] = np.where(mdf_test[DPmm_column] > 0.5, 0.5, mdf_test[DPmm_column])
+
+        #adjacent cell infill (this is included as a precaution shouldn't have any effect since upstream normalization)
+        mdf_test[DPmm_column] = mdf_test[DPmm_column].fillna(method='ffill')
+        mdf_test[DPmm_column] = mdf_test[DPmm_column].fillna(method='bfill')
+
+        #support column to signal sign of noise, 0 is neg, 1 is pos
+        mdf_test[DPmm_column_temp1] = 0
+        mdf_test[DPmm_column_temp1] = np.where(mdf_test[DPmm_column] >= 0., 1, mdf_test[DPmm_column_temp1])
+        
+        #now inject noise, with scaled noise to maintain range 0-1
+        #(so if mnmx value <0.5, and neg noise, we scale noise to maintain ratio as if minmax was 0.5, similarly for >0.5 mnmx)
+        mdf_test[DPmm_column] = np.where(mdf_test[column] < 0.5, \
+                                          mdf_test[column] + \
+                                          (1 - mdf_test[DPmm_column_temp1]) * (mdf_test[DPmm_column] * mdf_test[column] / 0.5) + \
+                                          (mdf_test[DPmm_column_temp1]) * (mdf_test[DPmm_column]), \
+                                          mdf_test[DPmm_column])
+
+        mdf_test[DPmm_column] = np.where(mdf_test[column] >= 0.5, \
+                                          mdf_test[column] + \
+                                          (1 - mdf_test[DPmm_column_temp1]) * (mdf_test[DPmm_column]) + \
+                                          (mdf_test[DPmm_column_temp1]) * (mdf_test[DPmm_column] * (1 - mdf_test[column]) / 0.5), \
+                                          mdf_test[DPmm_column])
+
+        #remove support column
+        del mdf_test[DPmm_column_temp1]
+
+      else:
+        
+        #for test data is just pass-through
+        mdf_test[DPmm_column] = mdf_test[column].copy()
 
     else:
-      
-      #for test data is just pass-through
-      mdf_test[DPmm_column] = mdf_test[column].copy()
+
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
+
+      if inplace is True:
+        del mdf_test[column]
 
     return mdf_test
 
@@ -35987,143 +36600,158 @@ class AutoMunge:
     #multiplier/offset based on posttransform values, muoltiplier applied betfore offset
     """
     
-    #retrieve normalizastion parameters from postprocess_dict
-    normkey = column + '_DPrt'
-    
-    mean = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
-    minimum = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['minimum']
-    maximum = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['maximum']
-    scalingapproach = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['scalingapproach']
-    offset = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['offset']
-    multiplier = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['multiplier']
-    cap = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['cap']
-    floor = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['floor']
-    divisor = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['divisor']
-    testnoise = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['testnoise']
-    
-    mu = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mu']
-    sigma = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['sigma']
-    flip_prob = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['flip_prob']
-    noisedistribution = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['noisedistribution']
-    
-    #initialize returned column and support columns
-    DPrt_column = column + '_DPrt'
-    DPrt_column_temp1 = column + '_DPrt' + '_tmp1'
-    DPrt_column_temp2 = column + '_DPrt' + '_tmp2'
-    
-    #copy original column for implementation
-    mdf_test[DPrt_column] = mdf_test[column].copy()
-
-    #convert all values to either numeric or NaN
-    mdf_test[DPrt_column] = pd.to_numeric(mdf_test[DPrt_column], errors='coerce')
-    
-    if cap is not False:
-      #replace values in test > cap with cap
-      mdf_test.loc[mdf_test[DPrt_column] > cap, (DPrt_column)] \
-      = cap
-    
-    if floor is not False:
-      #replace values in test < floor with floor
-      mdf_test.loc[mdf_test[DPrt_column] < floor, (DPrt_column)] \
-      = floor
-
-    #replace missing data with training set mean
-    mdf_test[DPrt_column] = mdf_test[DPrt_column].fillna(mean)
-    
-    #avoid outlier div by zero when max = min
-    maxminusmin = maximum - minimum
-    if maxminusmin == 0:
-      maxminusmin = 1
-    
-    if scalingapproach == 'retn':
+    #normkey used to retrieve the normalization dictionary 
+    normkey = False
+    if len(columnkey) > 0:      
+      normkey = columnkey[0]
+          
+    #normkey is False when process function returns empty set
+    if normkey is not False:
       
-      mdf_test[DPrt_column] = (mdf_test[DPrt_column]) / \
+      mean = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
+      minimum = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['minimum']
+      maximum = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['maximum']
+      scalingapproach = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['scalingapproach']
+      offset = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['offset']
+      multiplier = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['multiplier']
+      cap = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['cap']
+      floor = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['floor']
+      divisor = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['divisor']
+      testnoise = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['testnoise']
+      
+      mu = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mu']
+      sigma = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['sigma']
+      flip_prob = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['flip_prob']
+      noisedistribution = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['noisedistribution']
+      
+      #initialize returned column and support columns
+      DPrt_column = column + '_DPrt'
+      DPrt_column_temp1 = column + '_DPrt' + '_tmp1'
+      DPrt_column_temp2 = column + '_DPrt' + '_tmp2'
+      
+      #copy original column for implementation
+      mdf_test[DPrt_column] = mdf_test[column].copy()
+
+      #convert all values to either numeric or NaN
+      mdf_test[DPrt_column] = pd.to_numeric(mdf_test[DPrt_column], errors='coerce')
+      
+      if cap is not False:
+        #replace values in test > cap with cap
+        mdf_test.loc[mdf_test[DPrt_column] > cap, (DPrt_column)] \
+        = cap
+      
+      if floor is not False:
+        #replace values in test < floor with floor
+        mdf_test.loc[mdf_test[DPrt_column] < floor, (DPrt_column)] \
+        = floor
+
+      #replace missing data with training set mean
+      mdf_test[DPrt_column] = mdf_test[DPrt_column].fillna(mean)
+      
+      #avoid outlier div by zero when max = min
+      maxminusmin = maximum - minimum
+      if maxminusmin == 0:
+        maxminusmin = 1
+      
+      if scalingapproach == 'retn':
+        
+        mdf_test[DPrt_column] = (mdf_test[DPrt_column]) / \
+                                      (divisor) * multiplier + offset
+        
+      elif scalingapproach == 'mnmx':
+      
+        #perform min-max scaling to test set using values from train
+        mdf_test[DPrt_column] = (mdf_test[DPrt_column] - minimum) / \
                                     (divisor) * multiplier + offset
-      
-    elif scalingapproach == 'mnmx':
-    
-      #perform min-max scaling to test set using values from train
-      mdf_test[DPrt_column] = (mdf_test[DPrt_column] - minimum) / \
-                                   (divisor) * multiplier + offset
-      
-    elif scalingapproach == 'mxmn':
-    
-      #perform min-max scaling to test set using values from train
-      mdf_test[DPrt_column] = (mdf_test[DPrt_column] - maximum) / \
-                                   (divisor) * multiplier + offset
-      
-    #check if df_test is to be treated as train or test data
-    traindata = postprocess_dict['traindata']
-    
-    #if this is train data we'll inject noise
-    if traindata is True or testnoise is True:
-      
-      #first we'll derive our sampled noise for injection
-      
-      if noisedistribution == 'normal':
-        normal_samples = np.random.normal(loc=mu, scale=sigma, size=(mdf_test.shape[0]))
-      elif noisedistribution == 'laplace':
-        normal_samples = np.random.laplace(loc=mu, scale=sigma, size=(mdf_test.shape[0]))
-      
-      binomial_samples = np.random.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0]))
-
-      mdf_test[DPrt_column_temp2] = pd.DataFrame(normal_samples) * pd.DataFrame(binomial_samples)
-      
-      #cap outliers
-      mdf_test[DPrt_column_temp2] = np.where(mdf_test[DPrt_column] < -0.5, -0.5, mdf_test[DPrt_column_temp2])
-      mdf_test[DPrt_column_temp2] = np.where(mdf_test[DPrt_column] > 0.5, 0.5, mdf_test[DPrt_column_temp2])
-      
-      #support column to signal sign of noise, 0 is neg, 1 is pos
-      mdf_test[DPrt_column_temp1] = 0
-      mdf_test[DPrt_column_temp1] = np.where(mdf_test[DPrt_column_temp2] >= 0., 1, mdf_test[DPrt_column_temp1])
-      
-      #for noise injection we'll first move data into range 0-1 and then revert after injection
-      if scalingapproach == 'retn':
-        mdf_test[DPrt_column] = (mdf_test[DPrt_column] - (minimum / divisor) ) / multiplier - offset
-      elif scalingapproach == 'mnmx':
-        mdf_test[DPrt_column] = (mdf_test[DPrt_column]) / multiplier - offset
+        
       elif scalingapproach == 'mxmn':
-        mdf_test[DPrt_column] = (mdf_test[DPrt_column] + (maximum - minimum) / divisor) / multiplier - offset
       
-      #now inject noise, with scaled noise to maintain range 0-1
-      #(so if mnmx value <0.5, and neg noise, we scale noise to maintain ratio as if minmax was 0.5, similarly for >0.5 mnmx)
-      mdf_test[DPrt_column] = np.where(mdf_test[DPrt_column] < 0.5, \
-                                        mdf_test[DPrt_column] + \
-                                        (1 - mdf_test[DPrt_column_temp1]) * (mdf_test[DPrt_column_temp2] * mdf_test[DPrt_column] / 0.5) + \
-                                        (mdf_test[DPrt_column_temp1]) * (mdf_test[DPrt_column_temp2]), \
-                                        mdf_test[DPrt_column])
+        #perform min-max scaling to test set using values from train
+        mdf_test[DPrt_column] = (mdf_test[DPrt_column] - maximum) / \
+                                    (divisor) * multiplier + offset
+        
+      #check if df_test is to be treated as train or test data
+      traindata = postprocess_dict['traindata']
+      
+      #if this is train data we'll inject noise
+      if traindata is True or testnoise is True:
+        
+        #first we'll derive our sampled noise for injection
+        
+        if noisedistribution == 'normal':
+          normal_samples = np.random.normal(loc=mu, scale=sigma, size=(mdf_test.shape[0]))
+        elif noisedistribution == 'laplace':
+          normal_samples = np.random.laplace(loc=mu, scale=sigma, size=(mdf_test.shape[0]))
+        
+        binomial_samples = np.random.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0]))
 
-      mdf_test[DPrt_column] = np.where(mdf_test[DPrt_column] >= 0.5, \
-                                        mdf_test[DPrt_column] + \
-                                        (1 - mdf_test[DPrt_column_temp1]) * (mdf_test[DPrt_column_temp2]) + \
-                                        (mdf_test[DPrt_column_temp1]) * (mdf_test[DPrt_column_temp2] * (1 - mdf_test[DPrt_column]) / 0.5), \
-                                        mdf_test[DPrt_column])
-      
-      #remove support columns
-      del mdf_test[DPrt_column_temp1]
-      del mdf_test[DPrt_column_temp2]
-      
-      #for noise injection we'll first move data into range 0-1 and then revert after injection
-      if scalingapproach == 'retn':
-        mdf_test[DPrt_column] = (mdf_test[DPrt_column] + (minimum / divisor) ) * multiplier + offset
-      elif scalingapproach == 'mnmx':
-        mdf_test[DPrt_column] = (mdf_test[DPrt_column]) * multiplier + offset
-      elif scalingapproach == 'mxmn':
-        mdf_test[DPrt_column] = (mdf_test[DPrt_column] - (maximum - minimum) / divisor) * multiplier + offset
+        mdf_test[DPrt_column_temp2] = pd.DataFrame(normal_samples) * pd.DataFrame(binomial_samples)
+        
+        #cap outliers
+        mdf_test[DPrt_column_temp2] = np.where(mdf_test[DPrt_column] < -0.5, -0.5, mdf_test[DPrt_column_temp2])
+        mdf_test[DPrt_column_temp2] = np.where(mdf_test[DPrt_column] > 0.5, 0.5, mdf_test[DPrt_column_temp2])
+        
+        #support column to signal sign of noise, 0 is neg, 1 is pos
+        mdf_test[DPrt_column_temp1] = 0
+        mdf_test[DPrt_column_temp1] = np.where(mdf_test[DPrt_column_temp2] >= 0., 1, mdf_test[DPrt_column_temp1])
+        
+        #for noise injection we'll first move data into range 0-1 and then revert after injection
+        if scalingapproach == 'retn':
+          mdf_test[DPrt_column] = (mdf_test[DPrt_column] - (minimum / divisor) ) / multiplier - offset
+        elif scalingapproach == 'mnmx':
+          mdf_test[DPrt_column] = (mdf_test[DPrt_column]) / multiplier - offset
+        elif scalingapproach == 'mxmn':
+          mdf_test[DPrt_column] = (mdf_test[DPrt_column] + (maximum - minimum) / divisor) / multiplier - offset
+        
+        #now inject noise, with scaled noise to maintain range 0-1
+        #(so if mnmx value <0.5, and neg noise, we scale noise to maintain ratio as if minmax was 0.5, similarly for >0.5 mnmx)
+        mdf_test[DPrt_column] = np.where(mdf_test[DPrt_column] < 0.5, \
+                                          mdf_test[DPrt_column] + \
+                                          (1 - mdf_test[DPrt_column_temp1]) * (mdf_test[DPrt_column_temp2] * mdf_test[DPrt_column] / 0.5) + \
+                                          (mdf_test[DPrt_column_temp1]) * (mdf_test[DPrt_column_temp2]), \
+                                          mdf_test[DPrt_column])
+
+        mdf_test[DPrt_column] = np.where(mdf_test[DPrt_column] >= 0.5, \
+                                          mdf_test[DPrt_column] + \
+                                          (1 - mdf_test[DPrt_column_temp1]) * (mdf_test[DPrt_column_temp2]) + \
+                                          (mdf_test[DPrt_column_temp1]) * (mdf_test[DPrt_column_temp2] * (1 - mdf_test[DPrt_column]) / 0.5), \
+                                          mdf_test[DPrt_column])
+        
+        #remove support columns
+        del mdf_test[DPrt_column_temp1]
+        del mdf_test[DPrt_column_temp2]
+        
+        #for noise injection we'll first move data into range 0-1 and then revert after injection
+        if scalingapproach == 'retn':
+          mdf_test[DPrt_column] = (mdf_test[DPrt_column] + (minimum / divisor) ) * multiplier + offset
+        elif scalingapproach == 'mnmx':
+          mdf_test[DPrt_column] = (mdf_test[DPrt_column]) * multiplier + offset
+        elif scalingapproach == 'mxmn':
+          mdf_test[DPrt_column] = (mdf_test[DPrt_column] - (maximum - minimum) / divisor) * multiplier + offset
+
+    else:
+
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
+
+      if inplace is True:
+        del mdf_test[column]
 
     return mdf_test
 
@@ -36143,31 +36771,46 @@ class AutoMunge:
     #in automunge df_test is treated as test data by default
     '''
     
-    #retrieve normalizastion parameters from postprocess_dict
-    normkey = column + '_DPbn'
-    
-    flip_prob = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['flip_prob']
-    testnoise = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['testnoise']
+    #normkey used to retrieve the normalization dictionary 
+    normkey = False
+    if len(columnkey) > 0:      
+      normkey = columnkey[0]
+          
+    #normkey is False when process function returns empty set
+    if normkey is not False:
+      
+      flip_prob = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['flip_prob']
+      testnoise = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['testnoise']
 
-    DPbn_column = column + '_DPbn'
-    
-    #check if df_test is to be treated as train or test data
-    traindata = postprocess_dict['traindata']
-    
-    if traindata is True or testnoise is True:
+      DPbn_column = column + '_DPbn'
       
-      #first we'll derive our sampled noise for injection
-      mdf_test[DPbn_column] = pd.DataFrame(np.random.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0])))
-    
-      #now inject noise
-      mdf_test[DPbn_column] = abs(mdf_test[column] - mdf_test[DPbn_column])
+      #check if df_test is to be treated as train or test data
+      traindata = postprocess_dict['traindata']
       
+      if traindata is True or testnoise is True:
+        
+        #first we'll derive our sampled noise for injection
+        mdf_test[DPbn_column] = pd.DataFrame(np.random.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0])))
+      
+        #now inject noise
+        mdf_test[DPbn_column] = abs(mdf_test[column] - mdf_test[DPbn_column])
+        
+      else:
+        
+        #for test data is just pass-through
+        mdf_test[DPbn_column] = mdf_test[column].copy()
+
     else:
-      
-      #for test data is just pass-through
-      mdf_test[DPbn_column] = mdf_test[column].copy()
+
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
+
+      if inplace is True:
+        del mdf_test[column]
 
     return mdf_test
 
@@ -36189,53 +36832,68 @@ class AutoMunge:
     #in automunge df_test is treated as test data by default
     '''
     
-    #retrieve normalizastion parameters from postprocess_dict
-    normkey = column + '_DPod'
-    
-    flip_prob = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['flip_prob']
-    testnoise = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['testnoise']
+    #normkey used to retrieve the normalization dictionary 
+    normkey = False
+    if len(columnkey) > 0:      
+      normkey = columnkey[0]
+          
+    #normkey is False when process function returns empty set
+    if normkey is not False:
+      
+      flip_prob = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['flip_prob']
+      testnoise = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['testnoise']
 
-    DPod_column = column + '_DPod'
-    DPod_tempcolumn1 = column + '_DPod_tmp1'
-    DPod_tempcolumn2 = column + '_DPod_tmp2'
-    
-    #check if df_test is to be treated as train or test data
-    traindata = postprocess_dict['traindata']
-    
-    if traindata is True or testnoise is True:
+      DPod_column = column + '_DPod'
+      DPod_tempcolumn1 = column + '_DPod_tmp1'
+      DPod_tempcolumn2 = column + '_DPod_tmp2'
       
-      ord_encodings = False
+      #check if df_test is to be treated as train or test data
+      traindata = postprocess_dict['traindata']
       
-      #we'll suplement a dif approach to grab ordinal encodings in postmunge
-      #since all activations may not be present in test set
-      #so we'll rely on convention that ordinal sets have a list of activations in norm_dict
-      #saved as 'activations_list'
-      if column in postprocess_dict['column_dict']:
-        if 'activations_list' in postprocess_dict['column_dict'][column]['normalization_dict'][column]:
-          ord_encodings = np.array(postprocess_dict['column_dict'][column]['normalization_dict'][column]['activations_list'])
+      if traindata is True or testnoise is True:
+        
+        ord_encodings = False
+        
+        #we'll suplement a dif approach to grab ordinal encodings in postmunge
+        #since all activations may not be present in test set
+        #so we'll rely on convention that ordinal sets have a list of activations in norm_dict
+        #saved as 'activations_list'
+        if column in postprocess_dict['column_dict']:
+          if 'activations_list' in postprocess_dict['column_dict'][column]['normalization_dict'][column]:
+            ord_encodings = np.array(postprocess_dict['column_dict'][column]['normalization_dict'][column]['activations_list'])
+        
+        #else just grab set of unique entries
+        if ord_encodings is False:
+          ord_encodings = mdf_test[column].unique()
+        
+        #now we'll derive our sampled noise for injection
+        mdf_test[DPod_tempcolumn1] = pd.DataFrame(np.random.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0])))
+        mdf_test[DPod_tempcolumn2] = pd.DataFrame(np.random.choice(ord_encodings, size=(mdf_test.shape[0])))
       
-      #else just grab set of unique entries
-      if ord_encodings is False:
-        ord_encodings = mdf_test[column].unique()
-      
-      #now we'll derive our sampled noise for injection
-      mdf_test[DPod_tempcolumn1] = pd.DataFrame(np.random.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0])))
-      mdf_test[DPod_tempcolumn2] = pd.DataFrame(np.random.choice(ord_encodings, size=(mdf_test.shape[0])))
-    
-      #now inject noise
-      #this returns column value when DPod_tempcolumn1 is 0 or DPod_tempcolumn2 when DPod_tempcolumn1 is 1
-      mdf_test[DPod_column] = \
-      mdf_test[column] * (1 - mdf_test[DPod_tempcolumn1]) + mdf_test[DPod_tempcolumn1] * mdf_test[DPod_tempcolumn2]
-      
-      del mdf_test[DPod_tempcolumn1]
-      del mdf_test[DPod_tempcolumn2]
-      
+        #now inject noise
+        #this returns column value when DPod_tempcolumn1 is 0 or DPod_tempcolumn2 when DPod_tempcolumn1 is 1
+        mdf_test[DPod_column] = \
+        mdf_test[column] * (1 - mdf_test[DPod_tempcolumn1]) + mdf_test[DPod_tempcolumn1] * mdf_test[DPod_tempcolumn2]
+        
+        del mdf_test[DPod_tempcolumn1]
+        del mdf_test[DPod_tempcolumn2]
+        
+      else:
+        
+        #for test data is just pass-through
+        mdf_test[DPod_column] = mdf_test[column].copy()
+
     else:
-      
-      #for test data is just pass-through
-      mdf_test[DPod_column] = mdf_test[column].copy()
+
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
+
+      if inplace is True:
+        del mdf_test[column]
 
     return mdf_test
 
@@ -36246,32 +36904,44 @@ class AutoMunge:
     #we'll simply maintain the same column but with a suffix to the header
     '''
     
-    if 'inplace' in params:
-      inplace = params['inplace']
+    #normkey used to retrieve the normalization dictionary 
+    normkey = False
+    if len(columnkey) > 0:      
+      normkey = columnkey[0]
+          
+    #normkey is False when process function returns empty set
+    if normkey is not False:
+      
+      fillvalue = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['fillvalue']
+      inplace = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
+      
+      exclcolumn = column + '_exc2'
+      
+      if inplace is not True:
+        mdf_test[exclcolumn] = mdf_test[column].copy()
+      else:
+        mdf_test.rename(columns = {column : exclcolumn}, inplace = True)
+      
+      #del df[column]
+      
+      mdf_test[exclcolumn] = pd.to_numeric(mdf_test[exclcolumn], errors='coerce')
+      
+      #fillvalue = mdf_train[exclcolumn].mode()[0]
+      
+      #replace missing data with fill value
+      mdf_test[exclcolumn] = mdf_test[exclcolumn].fillna(fillvalue)
+
     else:
-      inplace = False
-    
-    #retrieve normalizastion parameters from postprocess_dict
-    normkey = column + '_exc2'
-    
-    fillvalue = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['fillvalue']
-    
-    exclcolumn = column + '_exc2'
-    
-    if inplace is not True:
-      mdf_test[exclcolumn] = mdf_test[column].copy()
-    else:
-      mdf_test.rename(columns = {column : exclcolumn}, inplace = True)
-    
-    #del df[column]
-    
-    mdf_test[exclcolumn] = pd.to_numeric(mdf_test[exclcolumn], errors='coerce')
-    
-    #fillvalue = mdf_train[exclcolumn].mode()[0]
-    
-    #replace missing data with fill value
-    mdf_test[exclcolumn] = mdf_test[exclcolumn].fillna(fillvalue)
+
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
+
+      if inplace is True:
+        del mdf_test[column]
 
     return mdf_test
   
@@ -36282,35 +36952,47 @@ class AutoMunge:
     #we'll simply maintain the same column but with a suffix to the header
     '''
     
-    if 'inplace' in params:
-      inplace = params['inplace']
+    #normkey used to retrieve the normalization dictionary 
+    normkey = False
+    if len(columnkey) > 0:      
+      normkey = columnkey[0]
+          
+    #normkey is False when process function returns empty set
+    if normkey is not False:
+      
+      fillvalue = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['fillvalue']
+      inplace = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
+      
+      exclcolumn = column + '_exc5'
+      
+      if inplace is not True:
+        mdf_test[exclcolumn] = mdf_test[column].copy()
+      else:
+        mdf_test.rename(columns = {column : exclcolumn}, inplace = True)
+      
+      #del df[column]
+      
+      mdf_test[exclcolumn] = pd.to_numeric(mdf_test[exclcolumn], errors='coerce')
+      
+      #non integers are subject to infill
+      mdf_test[exclcolumn] = np.where(mdf_test[exclcolumn] == mdf_test[exclcolumn].round(), mdf_test[exclcolumn], np.nan)
+      
+      #fillvalue = mdf_train[exclcolumn].mode()[0]
+      
+      #replace missing data with fill value
+      mdf_test[exclcolumn] = mdf_test[exclcolumn].fillna(fillvalue)
+
     else:
-      inplace = False
-    
-    #retrieve normalizastion parameters from postprocess_dict
-    normkey = column + '_exc5'
-    
-    fillvalue = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['fillvalue']
-    
-    exclcolumn = column + '_exc5'
-    
-    if inplace is not True:
-      mdf_test[exclcolumn] = mdf_test[column].copy()
-    else:
-      mdf_test.rename(columns = {column : exclcolumn}, inplace = True)
-    
-    #del df[column]
-    
-    mdf_test[exclcolumn] = pd.to_numeric(mdf_test[exclcolumn], errors='coerce')
-    
-    #non integers are subject to infill
-    mdf_test[exclcolumn] = np.where(mdf_test[exclcolumn] == mdf_test[exclcolumn].round(), mdf_test[exclcolumn], np.nan)
-    
-    #fillvalue = mdf_train[exclcolumn].mode()[0]
-    
-    #replace missing data with fill value
-    mdf_test[exclcolumn] = mdf_test[exclcolumn].fillna(fillvalue)
+
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
+
+      if inplace is True:
+        del mdf_test[column]
 
     return mdf_test
 
