@@ -3193,7 +3193,7 @@ Note that priority is given to overlaps of higher length, and by default overlap
       `[' ', ',', '.', '?', '!', '(', ')']`
     - 'concurrent_activations': defaults as False, True makes comaprable to sp15, 
       although recomend using sp15 instead for correct MLinfilltype
-    - 'suffix': returned column suffix appender, defaults to '_splt'
+    - 'suffix': returned column suffix appender, defaults to 'splt'
     - 'int_headers': True/False, defaults as False, when True returned column headers 
       are encoded with integers, such as for privacy preserving of data contents
     - 'test_same_as_train': defaults False, True makes this comparable to spl8
@@ -3229,7 +3229,7 @@ Note that this version runs risk of high dimensionality of returned data in comp
     - 'concurrent_activations':  True/False, defaults to True, when True
       entries may have activations for multiple simultaneous overlaps
     - 'test_same_as_train': defaults False, True makes this comaprable to sbs2
-    - 'suffix': returned column suffix appender, defaults to '_sbst'
+    - 'suffix': returned column suffix appender, defaults to 'sbst'
   - driftreport postmunge metrics: overlap_dict / splt_newcolumns_sbst / minsplit
   - inversion available: yes with partial recovery
 * sbs3: comaprable to sbst, but with returned columns aggregated by a binary encoding to reduce dimensionality
@@ -3255,7 +3255,7 @@ entries with the abbreviated string overlap
       identification when space_and_punctuation set as False, defaults to
       `[' ', ',', '.', '?', '!', '(', ')']`
     - 'test_same_as_train': defaults False, True makes this comaprable to spl9
-    - 'suffix': returned column suffix appender, defaults to '_spl2'
+    - 'suffix': returned column suffix appender, defaults to 'spl2'
     - 'consolidate_nonoverlaps': defaults to False, True makes this comparble to spl5
   - driftreport postmunge metrics: overlap_dict / spl2_newcolumns / spl2_overlap_dict / spl2_test_overlap_dict / 
                                    minsplit
