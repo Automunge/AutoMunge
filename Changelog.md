@@ -3152,3 +3152,5 @@ am.postmunge(postprocess_dict, df_test)
 - which means we will need to retain param inspections in postmunge after all
 - no big deal is not a significant amount of overhead
 - also found and fixed a small edge case for Binary dimensionality reduction when applied to an all numeric set (which is a pass through)
+- a few small cleanups and code comments for support function _postprocess_textsupport
+- update to the demonstration of custom postprocess function definition in read me
