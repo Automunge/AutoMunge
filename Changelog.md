@@ -3138,3 +3138,17 @@ am.postmunge(postprocess_dict, df_test)
 - we intend in future updates to take advantage of this to fully standardize on postprocessing transform normkey retrieval accross the entire library
 - and also to eliminate inspection of transformation parameters in postmunge which will clear up a little overhead to speed things up
 - also small cleanup struck a postmunge columnkey variable initialization no longer needed after 6.16
+
+6.18
+- added inplace parameter to processing function normalization dictionaries
+- which ommission was kind of a shortcut in the first place, better to have it accessible
+- standardized on single convention for suffix parameter regarding inclusion of underscore
+- such that transforms that accept a suffix parameter should pass just the (traditionally 4 character) string and a leading underscore will be added internally
+- standardized on single form of postprocess functions with respect to accessing normkey
+- in the process found a channel for error previously missed
+- for cases when a transform returns an empty set and was selected for inplace
+- as without a returned set the inplace operation doesn't replace the input column
+- resolved by standardizing on inspection of inplace param in empty set scenario
+- which means we will need to retain param inspections in postmunge after all
+- no big deal is not a significant amount of overhead
+- also found and fixed a small edge case for Binary dimensionality reduction when applied to an all numeric set (which is a pass through)
