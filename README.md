@@ -7452,49 +7452,62 @@ def postprocess_mnm3(mdf_test, column, postprocess_dict, columnkey, params={}):
   #postprocess_dict is how we carry packets of data between the 
   #functions in automunge and postmunge
   #columnkey is a list of columns returned from all instances of this transformation function applied to same inputcolumn
-  #(columnkey may be help to derive a normkey if headers aren't known in advance or function may return an empty set,
-  #for an example of this use in codebase refer to function _postprocess_bnwd)
   #and params are any column specific parameters to be passed by user in assignparam
 
   #retrieve normalization parameters from postprocess_dict
-  #normkey is the column returned from original transformation, a key used to access parameters
-  normkey = column + '_mnm8'
-
-  mean = \
-  postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
-
-  quantilemin = \
-  postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['quantilemin']
-
-  quantilemax = \
-  postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['quantilemax']
   
-  #(note that for cases where you might not know the suffix that was appended in advance,
-  #there are methods to retrieve a normkey using properties of data structures, contact
-  #the author and I can point you to them.)
+  #normkey used to retrieve the normalization dictionary 
+  normkey = False
+  if len(columnkey) > 0:      
+    normkey = columnkey[0]
+          
+  #normkey is False when process function returns empty set
+  if normkey is not False:
 
-  #copy original column for implementation
-  mdf_test[column + '_mnm8'] = mdf_test[column].copy()
+    mean = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
 
+    quantilemin = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['quantilemin']
 
-  #convert all values to either numeric or NaN
-  mdf_test[column + '_mnm8'] = pd.to_numeric(mdf_test[column + '_mnm8'], errors='coerce')
-
-  #get mean of training data
-  mean = mean  
-
-  #replace missing data with training set mean
-  mdf_test[column + '_mnm8'] = mdf_test[column + '_mnm8'].fillna(mean)
+    quantilemax = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['quantilemax']
   
-  #this is to avoid outlier div by zero when max = min
-  maxminusmin = quantilemax - quantilemin
-  if maxminusmin == 0:
-    maxminusmin = 1
+    #(note that for cases where you might not know the suffix that was appended in advance,
+    #there are methods to retrieve a normkey using properties of data structures, contact
+    #the author and I can point you to them.)
 
-  #perform min-max scaling to test set using values from train
-  mdf_test[column + '_mnm8'] = (mdf_test[column + '_mnm8'] - quantilemin) / \
-                               (maxminusmin)
+    #copy original column for implementation
+    mdf_test[column + '_mnm8'] = mdf_test[column].copy()
 
+    #convert all values to either numeric or NaN
+    mdf_test[column + '_mnm8'] = pd.to_numeric(mdf_test[column + '_mnm8'], errors='coerce')
+
+    #get mean of training data
+    mean = mean  
+
+    #replace missing data with training set mean
+    mdf_test[column + '_mnm8'] = mdf_test[column + '_mnm8'].fillna(mean)
+  
+    #this is to avoid outlier div by zero when max = min
+    maxminusmin = quantilemax - quantilemin
+    if maxminusmin == 0:
+      maxminusmin = 1
+
+    #perform min-max scaling to test set using values from train
+    mdf_test[column + '_mnm8'] = (mdf_test[column + '_mnm8'] - quantilemin) / \
+                                 (maxminusmin)
+
+  #if returns an empty set we'll need to account for scenario where this transform selected as inplace operation
+  else:
+
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+
+    if inplace is True:
+      del mdf_test[column]
 
   return mdf_test
 
@@ -7504,7 +7517,9 @@ def postprocess_mnm3(mdf_test, column, postprocess_dict, columnkey, params={}):
 #between the train and test set, we could have just processed one at a time,
 #and in that case we wouldn't need to define separate functions for 
 #dualprocess and postprocess, we could just define what we call a singleprocess 
-#function incorporating similar data structures but passing only a single dataframe.
+#function incorporating similar data structures as the process function but passing only a single dataframe.
+#since we won't be passing parameters between train and test sets won't need to populate a normalization_dict
+#and won't need to inspect a columnkey to derive a normkey
 
 #Such as:
 def process_mnm8(df, column, category, postprocess_dict, params = {}):
