@@ -7557,23 +7557,30 @@ class AutoMunge:
     '''
     
     suffixoverlap_results = {}
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'NArw'
+      
+    suffixcolumn = column + '_' + suffix
     
     suffixoverlap_results = \
-    self._df_check_suffixoverlap(df, column + '_NArw', suffixoverlap_results)
+    self._df_check_suffixoverlap(df, suffixcolumn, suffixoverlap_results)
 
-    df[column + '_NArw'] = self._getNArows(df, column, category, postprocess_dict)
+    df[suffixcolumn] = self._getNArows(df, column, category, postprocess_dict)
 
     #change NArows data type to 8-bit (1 byte) integers for memory savings
-    df[column + '_NArw'] = df[column + '_NArw'].astype(np.int8)
+    df[suffixcolumn] = df[suffixcolumn].astype(np.int8)
 
     #create list of columns
-    nmbrcolumns = [column + '_NArw']
+    nmbrcolumns = [suffixcolumn]
     
     #for drift report
-    pct_NArw = df[column + '_NArw'].sum() / df[column + '_NArw'].shape[0]
+    pct_NArw = df[suffixcolumn].sum() / df[suffixcolumn].shape[0]
 
     #create normalization dictionary
-    NArwnormalization_dict = {column + '_NArw' : {'pct_NArw':pct_NArw}}
+    NArwnormalization_dict = {suffixcolumn : {'pct_NArw':pct_NArw, 'suffix' : suffix}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -7617,6 +7624,11 @@ class AutoMunge:
       inplace = params['inplace']
     else:
       inplace = False
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'nmbr'
     
     #initialize parameters
     #offset is just an added constant applied after multiplier
@@ -7643,31 +7655,33 @@ class AutoMunge:
     else:
       floor = False
 
+    suffixcolumn = column + '_' + suffix
+
     if inplace is not True:
       
       #copy source column into new column
       mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, column + '_nmbr', suffixoverlap_results)
+      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results)
 
-      mdf_test[column + '_nmbr'] = mdf_test[column].copy()
+      mdf_test[suffixcolumn] = mdf_test[column].copy()
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, column + '_nmbr', suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results)
       
-      mdf_train.rename(columns = {column : column + '_nmbr'}, inplace = True)
-      mdf_test.rename(columns = {column : column + '_nmbr'}, inplace = True)
+      mdf_train.rename(columns = {column : suffixcolumn}, inplace = True)
+      mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
 
     #convert all values to either numeric or NaN
-    mdf_train[column + '_nmbr'] = pd.to_numeric(mdf_train[column + '_nmbr'], errors='coerce')
-    mdf_test[column + '_nmbr'] = pd.to_numeric(mdf_test[column + '_nmbr'], errors='coerce')
+    mdf_train[suffixcolumn] = pd.to_numeric(mdf_train[suffixcolumn], errors='coerce')
+    mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
     
     #a few more metrics collected for driftreport
     #get maximum value of training column
-    maximum = mdf_train[column + '_nmbr'].max()
+    maximum = mdf_train[suffixcolumn].max()
     #get minimum value of training column
-    minimum = mdf_train[column + '_nmbr'].min()
+    minimum = mdf_train[suffixcolumn].min()
     
     #if cap < maximum, maximum = cap
     if cap is not False and cap is not True:
@@ -7685,35 +7699,35 @@ class AutoMunge:
       
     if cap is not False:
       #replace values in test > cap with cap
-      mdf_train.loc[mdf_train[column + '_nmbr'] > cap, (column + '_nmbr')] \
+      mdf_train.loc[mdf_train[suffixcolumn] > cap, (suffixcolumn)] \
       = cap
       
-      mdf_test.loc[mdf_test[column + '_nmbr'] > cap, (column + '_nmbr')] \
+      mdf_test.loc[mdf_test[suffixcolumn] > cap, (suffixcolumn)] \
       = cap
     
     if floor is not False:
       #replace values in test < floor with floor
-      mdf_train.loc[mdf_train[column + '_nmbr'] < floor, (column + '_nmbr')] \
+      mdf_train.loc[mdf_train[suffixcolumn] < floor, (suffixcolumn)] \
       = floor
       
-      mdf_test.loc[mdf_test[column + '_nmbr'] < floor, (column + '_nmbr')] \
+      mdf_test.loc[mdf_test[suffixcolumn] < floor, (suffixcolumn)] \
       = floor
 
     #get mean of training data
-    mean = mdf_train[column + '_nmbr'].mean()
+    mean = mdf_train[suffixcolumn].mean()
     if mean != mean:
       mean = 0
 
     #replace missing data with training set mean
-    mdf_train[column + '_nmbr'] = mdf_train[column + '_nmbr'].fillna(mean)
-    mdf_test[column + '_nmbr'] = mdf_test[column + '_nmbr'].fillna(mean)
+    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(mean)
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
 
     #subtract mean from column for both train and test
-    mdf_train[column + '_nmbr'] = mdf_train[column + '_nmbr'] - mean
-    mdf_test[column + '_nmbr'] = mdf_test[column + '_nmbr'] - mean
+    mdf_train[suffixcolumn] = mdf_train[suffixcolumn] - mean
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn] - mean
 
     #get standard deviation of training data
-    std = mdf_train[column + '_nmbr'].std()
+    std = mdf_train[suffixcolumn].std()
     
     #special case, if standard deviation is 0 we'll set it to 1 to avoid division by 0
     if std == 0:
@@ -7721,21 +7735,21 @@ class AutoMunge:
 
     #divide column values by std for both training and test data
     #offset, multiplier are parameters that defaults to zero, one
-    mdf_train[column + '_nmbr'] = mdf_train[column + '_nmbr'] / std * multiplier + offset
-    mdf_test[column + '_nmbr'] = mdf_test[column + '_nmbr'] / std * multiplier + offset
+    mdf_train[suffixcolumn] = mdf_train[suffixcolumn] / std * multiplier + offset
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn] / std * multiplier + offset
     
 #     #change data type for memory savings
-#     mdf_train[column + '_nmbr'] = mdf_train[column + '_nmbr'].astype(np.float32)
-#     mdf_test[column + '_nmbr'] = mdf_test[column + '_nmbr'].astype(np.float32)
+#     mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype(np.float32)
+#     mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.float32)
 
     #create list of columns
-    nmbrcolumns = [column + '_nmbr']
+    nmbrcolumns = [suffixcolumn]
 
-    nmbrnormalization_dict = {column + '_nmbr' : {'mean' : mean, 'std' : std, \
-                                                  'max' : maximum, 'min' : minimum, \
-                                                  'offset' : offset, 'multiplier': multiplier, \
-                                                  'cap' : cap, 'floor' : floor, \
-                                                  'inplace' : inplace}}
+    nmbrnormalization_dict = {suffixcolumn : {'mean' : mean, 'std' : std, \
+                                              'max' : maximum, 'min' : minimum, \
+                                              'offset' : offset, 'multiplier': multiplier, \
+                                              'cap' : cap, 'floor' : floor, \
+                                              'inplace' : inplace, 'suffix' : suffix}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -7781,66 +7795,73 @@ class AutoMunge:
       periods = params['periods']
     else:
       periods = 1
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'dxdt'
+
+    suffixcolumn = column + '_' + suffix
     
     if inplace is not True:
       
       #copy source column into new column
       df, suffixoverlap_results = \
-      self._df_copy_train(df, column, column + '_dxdt', suffixoverlap_results)
+      self._df_copy_train(df, column, suffixcolumn, suffixoverlap_results)
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(df, column + '_dxdt', suffixoverlap_results)
+      self._df_check_suffixoverlap(df, suffixcolumn, suffixoverlap_results)
       
-      df.rename(columns = {column : column + '_dxdt'}, inplace = True)
+      df.rename(columns = {column : suffixcolumn}, inplace = True)
     
     #convert all values to either numeric or NaN
-    df[column + '_dxdt'] = pd.to_numeric(df[column + '_dxdt'], errors='coerce')
+    df[suffixcolumn] = pd.to_numeric(df[suffixcolumn], errors='coerce')
     
     #apply ffill to replace NArows with value from adjacent cell in pre4ceding row
-    df[column + '_dxdt'] = df[column + '_dxdt'].fillna(method='ffill')
+    df[suffixcolumn] = df[suffixcolumn].fillna(method='ffill')
     
     #we'll follow with a bfill just in case first row had a nan
-    df[column + '_dxdt'] = df[column + '_dxdt'].fillna(method='bfill') 
+    df[suffixcolumn] = df[suffixcolumn].fillna(method='bfill') 
     
     #subtract preceding row
-    df[column + '_dxdt'] = df[column + '_dxdt'] - df[column + '_dxdt'].shift(periods = periods)
+    df[suffixcolumn] = df[suffixcolumn] - df[suffixcolumn].shift(periods = periods)
     
     #first row will have a nan so just one more backfill
-    df[column + '_dxdt'] = df[column + '_dxdt'].fillna(method='bfill')
+    df[suffixcolumn] = df[suffixcolumn].fillna(method='bfill')
     
     #then one more infill with to address scenario when data wasn't numeric
     #get arbitrary cell value, if one is nan then all will be
-    value = df[column + '_dxdt'][0]
+    value = df[suffixcolumn][0]
     if value != value:
       value = 0
 
-      df[column + '_dxdt'] = df[column + '_dxdt'].fillna(value)
+      df[suffixcolumn] = df[suffixcolumn].fillna(value)
     
     #create list of columns
-    nmbrcolumns = [column + '_dxdt']
+    nmbrcolumns = [suffixcolumn]
 
     #grab some driftreport metrics
     #note that if this function implemented for data streams at scale it may be appropriate
     #to consider creating an alternate to dxdt without the driftreport metrics for postmunge efficiency
-    positiveratio = df[df[column + '_dxdt'] >= 0].shape[0] / df[column + '_dxdt'].shape[0]
-    negativeratio = df[df[column + '_dxdt'] < 0].shape[0] / df[column + '_dxdt'].shape[0]
-    zeroratio = df[df[column + '_dxdt'] == 0].shape[0] / df[column + '_dxdt'].shape[0]
-    minimum = df[column + '_dxdt'].min()
-    maximum = df[column + '_dxdt'].max()
-    mean = df[column + '_dxdt'].mean()
-    std = df[column + '_dxdt'].std()
+    positiveratio = df[df[suffixcolumn] >= 0].shape[0] / df[suffixcolumn].shape[0]
+    negativeratio = df[df[suffixcolumn] < 0].shape[0] / df[suffixcolumn].shape[0]
+    zeroratio = df[df[suffixcolumn] == 0].shape[0] / df[suffixcolumn].shape[0]
+    minimum = df[suffixcolumn].min()
+    maximum = df[suffixcolumn].max()
+    mean = df[suffixcolumn].mean()
+    std = df[suffixcolumn].std()
 
-    nmbrnormalization_dict = {column + '_dxdt' : {'positiveratio' : positiveratio, \
-                                                  'negativeratio' : negativeratio, \
-                                                  'zeroratio' : zeroratio, \
-                                                  'minimum' : minimum, \
-                                                  'maximum' : maximum, \
-                                                  'mean' : mean, \
-                                                  'std' : std, \
-                                                  'periods' : periods, \
-                                                  'inplace' : inplace}}
+    nmbrnormalization_dict = {suffixcolumn : {'positiveratio' : positiveratio, \
+                                              'negativeratio' : negativeratio, \
+                                              'zeroratio' : zeroratio, \
+                                              'minimum' : minimum, \
+                                              'maximum' : maximum, \
+                                              'mean' : mean, \
+                                              'std' : std, \
+                                              'periods' : periods, \
+                                              'inplace' : inplace}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -7888,28 +7909,35 @@ class AutoMunge:
       periods = params['periods']
     else:
       periods = 2
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'dxd2'
+
+    suffixcolumn = column + '_' + suffix
     
     if inplace is not True:
       
       #copy source column into new column
       df, suffixoverlap_results = \
-      self._df_copy_train(df, column, column + '_dxd2', suffixoverlap_results)
+      self._df_copy_train(df, column, suffixcolumn, suffixoverlap_results)
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(df, column + '_dxd2', suffixoverlap_results)
+      self._df_check_suffixoverlap(df, suffixcolumn, suffixoverlap_results)
       
-      df.rename(columns = {column : column + '_dxd2'}, inplace = True)
+      df.rename(columns = {column : suffixcolumn}, inplace = True)
     
     #convert all values to either numeric or NaN
-    df[column + '_dxd2'] = pd.to_numeric(df[column + '_dxd2'], errors='coerce')
+    df[suffixcolumn] = pd.to_numeric(df[suffixcolumn], errors='coerce')
     
     #apply ffill to replace NArows with value from adjacent cell in pre4ceding row
-    df[column + '_dxd2'] = df[column + '_dxd2'].fillna(method='ffill')
+    df[suffixcolumn] = df[suffixcolumn].fillna(method='ffill')
     
     #we'll follow with a bfill just in case first row had a nan
-    df[column + '_dxd2'] = df[column + '_dxd2'].fillna(method='bfill')  
+    df[suffixcolumn] = df[suffixcolumn].fillna(method='bfill')  
     
 #     #we're going to take difference of average of last two rows with two rows preceding
 #     df[column + '_dxd2'] = (df[column + '_dxd2'] + df[column + '_dxd2'].shift()) / 2 \
@@ -7918,50 +7946,51 @@ class AutoMunge:
     suffixoverlap_results = \
     self._df_check_suffixoverlap(df, [column + '_temp1'], suffixoverlap_results)
 
-    df[column + '_temp1'] = df[column + '_dxd2'].copy()
+    df[column + '_temp1'] = df[suffixcolumn].copy()
     # df_train['number7_temp3'] = df_train['number7'].copy()
 
     for i in range(periods-1):
-      df[column + '_temp1'] = df[column + '_temp1'] + df[column + '_dxd2'].shift(periods = i+1)
+      df[column + '_temp1'] = df[column + '_temp1'] + df[suffixcolumn].shift(periods = i+1)
 
-    df[column + '_dxd2'] = (df[column + '_temp1'] - df[column + '_temp1'].shift(periods = periods)) / periods
+    df[suffixcolumn] = (df[column + '_temp1'] - df[column + '_temp1'].shift(periods = periods)) / periods
     
     #first row will have a nan so just one more backfill
-    df[column + '_dxd2'] = df[column + '_dxd2'].fillna(method='bfill')
+    df[suffixcolumn] = df[suffixcolumn].fillna(method='bfill')
     
     #then one more infill with to address scenario when data wasn't numeric
     #get arbitrary cell value, if one is nan then all will be
-    value = df[column + '_dxd2'][0]
+    value = df[suffixcolumn][0]
     if value != value:
       value = 0
 
-      df[column + '_dxd2'] = df[column + '_dxd2'].fillna(value)
+      df[suffixcolumn] = df[suffixcolumn].fillna(value)
     
     del df[column + '_temp1']
     
     #create list of columns
-    nmbrcolumns = [column + '_dxd2']
+    nmbrcolumns = [suffixcolumn]
 
     #grab some driftreport metrics
     #note that if this function implemented for data streams at scale it may be appropriate
     #to consider creating an alternate to dxd2 without the driftreport metrics for postmunge efficiency
-    positiveratio = df[df[column + '_dxd2'] >= 0].shape[0] / df[column + '_dxd2'].shape[0]
-    negativeratio = df[df[column + '_dxd2'] < 0].shape[0] / df[column + '_dxd2'].shape[0]
-    zeroratio = df[df[column + '_dxd2'] == 0].shape[0] / df[column + '_dxd2'].shape[0]
-    minimum = df[column + '_dxd2'].min()
-    maximum = df[column + '_dxd2'].max()
-    mean = df[column + '_dxd2'].mean()
-    std = df[column + '_dxd2'].std()
+    positiveratio = df[df[suffixcolumn] >= 0].shape[0] / df[suffixcolumn].shape[0]
+    negativeratio = df[df[suffixcolumn] < 0].shape[0] / df[suffixcolumn].shape[0]
+    zeroratio = df[df[suffixcolumn] == 0].shape[0] / df[suffixcolumn].shape[0]
+    minimum = df[suffixcolumn].min()
+    maximum = df[suffixcolumn].max()
+    mean = df[suffixcolumn].mean()
+    std = df[suffixcolumn].std()
   
-    nmbrnormalization_dict = {column + '_dxd2' : {'positiveratio' : positiveratio, \
-                                                  'negativeratio' : negativeratio, \
-                                                  'zeroratio' : zeroratio, \
-                                                  'minimum' : minimum, \
-                                                  'maximum' : maximum, \
-                                                  'mean' : mean, \
-                                                  'std' : std, \
-                                                  'periods' : periods, \
-                                                  'inplace' : inplace}}
+    nmbrnormalization_dict = {suffixcolumn : {'positiveratio' : positiveratio, \
+                                              'negativeratio' : negativeratio, \
+                                              'zeroratio' : zeroratio, \
+                                              'minimum' : minimum, \
+                                              'maximum' : maximum, \
+                                              'mean' : mean, \
+                                              'std' : std, \
+                                              'periods' : periods, \
+                                              'inplace' : inplace,
+                                              'suffix' : suffix}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -8337,67 +8366,74 @@ class AutoMunge:
       inplace = params['inplace']
     else:
       inplace = False
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'MADn'
+      
+    suffixcolumn = column + '_' + suffix
     
     if inplace is not True:
       
       #copy source column into new column
       mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, column + '_MADn', suffixoverlap_results)
+      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results)
 
-      mdf_test[column + '_MADn'] = mdf_test[column].copy()
+      mdf_test[suffixcolumn] = mdf_test[column].copy()
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, column + '_MADn', suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results)
       
-      mdf_train.rename(columns = {column : column + '_MADn'}, inplace = True)
-      mdf_test.rename(columns = {column : column + '_MADn'}, inplace = True)
+      mdf_train.rename(columns = {column : suffixcolumn}, inplace = True)
+      mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
 
     #convert all values to either numeric or NaN
-    mdf_train[column + '_MADn'] = pd.to_numeric(mdf_train[column + '_MADn'], errors='coerce')
-    mdf_test[column + '_MADn'] = pd.to_numeric(mdf_test[column + '_MADn'], errors='coerce')
+    mdf_train[suffixcolumn] = pd.to_numeric(mdf_train[suffixcolumn], errors='coerce')
+    mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
     
     #a few more metrics collected for driftreport
     #get maximum value of training column
-    maximum = mdf_train[column + '_MADn'].max()
+    maximum = mdf_train[suffixcolumn].max()
     #get minimum value of training column
-    minimum = mdf_train[column + '_MADn'].min()
+    minimum = mdf_train[suffixcolumn].min()
 
     #get mean of training data
-    mean = mdf_train[column + '_MADn'].mean() 
+    mean = mdf_train[suffixcolumn].mean() 
     if mean != mean:
       mean = 0
 
     #replace missing data with training set mean
-    mdf_train[column + '_MADn'] = mdf_train[column + '_MADn'].fillna(mean)
-    mdf_test[column + '_MADn'] = mdf_test[column + '_MADn'].fillna(mean)
+    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(mean)
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
 
     #subtract mean from column for both train and test
-    mdf_train[column + '_MADn'] = mdf_train[column + '_MADn'] - mean
-    mdf_test[column + '_MADn'] = mdf_test[column + '_MADn'] - mean
+    mdf_train[suffixcolumn] = mdf_train[suffixcolumn] - mean
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn] - mean
 
     #get mean absolute deviation of training data
-    MAD = mdf_train[column + '_MADn'].mad()
+    MAD = mdf_train[suffixcolumn].mad()
     
     #special case to avoid div by 0
     if MAD == 0:
       MAD = 1
 
     #divide column values by mad for both training and test data
-    mdf_train[column + '_MADn'] = mdf_train[column + '_MADn'] / MAD
-    mdf_test[column + '_MADn'] = mdf_test[column + '_MADn'] / MAD
+    mdf_train[suffixcolumn] = mdf_train[suffixcolumn] / MAD
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn] / MAD
 
 #     #change data type for memory savings
-#     mdf_train[column + '_MADn'] = mdf_train[column + '_MADn'].astype(np.float32)
-#     mdf_test[column + '_MADn'] = mdf_test[column + '_MADn'].astype(np.float32)
+#     mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype(np.float32)
+#     mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.float32)
 
     #create list of columns
-    nmbrcolumns = [column + '_MADn']
+    nmbrcolumns = [suffixcolumn]
 
-    nmbrnormalization_dict = {column + '_MADn' : {'mean' : mean, 'MAD' : MAD, \
-                                                  'maximum':maximum, 'minimum':minimum, \
-                                                  'inplace' : inplace}}
+    nmbrnormalization_dict = {suffixcolumn : {'mean' : mean, 'MAD' : MAD, \
+                                              'maximum':maximum, 'minimum':minimum, \
+                                              'inplace' : inplace, 'suffix' : suffix}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -8442,70 +8478,77 @@ class AutoMunge:
       inplace = params['inplace']
     else:
       inplace = False
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'MAD3'
+      
+    suffixcolumn = column + '_' + suffix
     
     if inplace is not True:
       
       #copy source column into new column
       mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, column + '_MAD3', suffixoverlap_results)
+      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results)
 
-      mdf_test[column + '_MAD3'] = mdf_test[column].copy()
+      mdf_test[suffixcolumn] = mdf_test[column].copy()
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, column + '_MAD3', suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results)
       
-      mdf_train.rename(columns = {column : column + '_MAD3'}, inplace = True)
-      mdf_test.rename(columns = {column : column + '_MAD3'}, inplace = True)
+      mdf_train.rename(columns = {column : suffixcolumn}, inplace = True)
+      mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
 
     #convert all values to either numeric or NaN
-    mdf_train[column + '_MAD3'] = pd.to_numeric(mdf_train[column + '_MAD3'], errors='coerce')
-    mdf_test[column + '_MAD3'] = pd.to_numeric(mdf_test[column + '_MAD3'], errors='coerce')
+    mdf_train[suffixcolumn] = pd.to_numeric(mdf_train[suffixcolumn], errors='coerce')
+    mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
     
     #a few more metrics collected for driftreport
     #get maximum value of training column
-    maximum = mdf_train[column + '_MAD3'].max()
+    maximum = mdf_train[suffixcolumn].max()
     #get minimum value of training column
-    minimum = mdf_train[column + '_MAD3'].min()
+    minimum = mdf_train[suffixcolumn].min()
 
     #get mean of training data
-    mean = mdf_train[column + '_MAD3'].mean()
+    mean = mdf_train[suffixcolumn].mean()
     if mean != mean:
       mean = 0
     
     #replace missing data with training set mean
-    mdf_train[column + '_MAD3'] = mdf_train[column + '_MAD3'].fillna(mean)
-    mdf_test[column + '_MAD3'] = mdf_test[column + '_MAD3'].fillna(mean)
+    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(mean)
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
 
     #get max of training data
-    datamax = mdf_train[column + '_MAD3'].max()
+    datamax = mdf_train[suffixcolumn].max()
     
     #get mean absolute deviation of training data
-    MAD = mdf_train[column + '_MAD3'].mad()
+    MAD = mdf_train[suffixcolumn].mad()
     
     #special case to avoid div by 0
     if MAD == 0:
       MAD = 1
     
     #subtract max from column for both train and test
-    mdf_train[column + '_MAD3'] = mdf_train[column + '_MAD3'] - datamax
-    mdf_test[column + '_MAD3'] = mdf_test[column + '_MAD3'] - datamax
+    mdf_train[suffixcolumn] = mdf_train[suffixcolumn] - datamax
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn] - datamax
 
     #divide column values by mad for both training and test data
-    mdf_train[column + '_MAD3'] = mdf_train[column + '_MAD3'] / MAD
-    mdf_test[column + '_MAD3'] = mdf_test[column + '_MAD3'] / MAD
+    mdf_train[suffixcolumn] = mdf_train[suffixcolumn] / MAD
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn] / MAD
 
 #     #change data type for memory savings
 #     mdf_train[column + '_MAD3'] = mdf_train[column + '_MAD3'].astype(np.float32)
 #     mdf_test[column + '_MAD3'] = mdf_test[column + '_MAD3'].astype(np.float32)
 
     #create list of columns
-    nmbrcolumns = [column + '_MAD3']
+    nmbrcolumns = [suffixcolumn]
 
-    nmbrnormalization_dict = {column + '_MAD3' : {'mean' : mean, 'MAD' : MAD, 'datamax' : datamax, \
-                                                  'maximum':maximum, 'minimum':minimum, \
-                                                  'inplace' : inplace}}
+    nmbrnormalization_dict = {suffixcolumn : {'mean' : mean, 'MAD' : MAD, 'datamax' : datamax, \
+                                              'maximum':maximum, 'minimum':minimum, \
+                                              'inplace' : inplace, 'suffix' : suffix}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -8537,7 +8580,7 @@ class AutoMunge:
     #takes as arguement pandas dataframe of training and test data (mdf_train), (mdf_test)\
     #and the name of the column string ('column') and parent category (category)
     #replaces missing or improperly formatted data with mean of remaining values
-    #returns same dataframes with new column of name column + '_mnmx'
+    #returns same dataframes with new column of name suffixcolumn
     #note this is a "dualprocess" function since is applied to both dataframes
     #expect this approach works better when the numerical distribution is thin tailed
     #if only have training but not test data handy, use same training data for both
@@ -8565,45 +8608,52 @@ class AutoMunge:
       floor = params['floor']
     else:
       floor = False
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'mnmx'
+      
+    suffixcolumn = column + '_' + suffix
     
     if inplace is not True:
       
       #copy source column into new column
       mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, column + '_mnmx', suffixoverlap_results)
+      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results)
 
-      mdf_test[column + '_mnmx'] = mdf_test[column].copy()
+      mdf_test[suffixcolumn] = mdf_test[column].copy()
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, column + '_mnmx', suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results)
       
-      mdf_train.rename(columns = {column : column + '_mnmx'}, inplace = True)
-      mdf_test.rename(columns = {column : column + '_mnmx'}, inplace = True)
+      mdf_train.rename(columns = {column : suffixcolumn}, inplace = True)
+      mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
 
     #convert all values to either numeric or NaN
-    mdf_train[column + '_mnmx'] = pd.to_numeric(mdf_train[column + '_mnmx'], errors='coerce')
-    mdf_test[column + '_mnmx'] = pd.to_numeric(mdf_test[column + '_mnmx'], errors='coerce')
+    mdf_train[suffixcolumn] = pd.to_numeric(mdf_train[suffixcolumn], errors='coerce')
+    mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
     
     #a few more metrics collected for driftreport
     #get standard deviation of training data
-    std = mdf_train[column + '_mnmx'].std()
+    std = mdf_train[suffixcolumn].std()
 
     #get mean of training data
-    mean = mdf_train[column + '_mnmx'].mean()   
+    mean = mdf_train[suffixcolumn].mean()   
     if mean != mean:
       mean = 0
 
     #replace missing data with training set mean
-    mdf_train[column + '_mnmx'] = mdf_train[column + '_mnmx'].fillna(mean)
-    mdf_test[column + '_mnmx'] = mdf_test[column + '_mnmx'].fillna(mean)
+    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(mean)
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
     
     #get maximum value of training column
-    maximum = mdf_train[column + '_mnmx'].max()
+    maximum = mdf_train[suffixcolumn].max()
     
     #get minimum value of training column
-    minimum = mdf_train[column + '_mnmx'].min()
+    minimum = mdf_train[suffixcolumn].min()
     
     #if cap < maximum, maximum = cap
     if cap is not False and cap is not True:
@@ -8619,10 +8669,10 @@ class AutoMunge:
       maxminusmin = 1
     
     #perform min-max scaling to train and test sets using values from train
-    mdf_train[column + '_mnmx'] = (mdf_train[column + '_mnmx'] - minimum) / \
+    mdf_train[suffixcolumn] = (mdf_train[suffixcolumn] - minimum) / \
                                   (maxminusmin)
     
-    mdf_test[column + '_mnmx'] = (mdf_test[column + '_mnmx'] - minimum) / \
+    mdf_test[suffixcolumn] = (mdf_test[suffixcolumn] - minimum) / \
                                  (maxminusmin)
 
     #cap and floor application
@@ -8633,31 +8683,32 @@ class AutoMunge:
     
     if cap is not False:
       #replace values in test > cap with cap
-      mdf_train.loc[mdf_train[column + '_mnmx'] > (cap - minimum)/maxminusmin, (column + '_mnmx')] \
+      mdf_train.loc[mdf_train[suffixcolumn] > (cap - minimum)/maxminusmin, (suffixcolumn)] \
       = (cap - minimum)/maxminusmin
       
-      mdf_test.loc[mdf_test[column + '_mnmx'] > (cap - minimum)/maxminusmin, (column + '_mnmx')] \
+      mdf_test.loc[mdf_test[suffixcolumn] > (cap - minimum)/maxminusmin, (suffixcolumn)] \
       = (cap - minimum)/maxminusmin
     
     if floor is not False:
       #replace values in test < floor with floor
-      mdf_train.loc[mdf_train[column + '_mnmx'] < (floor - minimum)/maxminusmin, (column + '_mnmx')] \
+      mdf_train.loc[mdf_train[suffixcolumn] < (floor - minimum)/maxminusmin, (suffixcolumn)] \
       = (floor - minimum)/maxminusmin
       
-      mdf_test.loc[mdf_test[column + '_mnmx'] < (floor - minimum)/maxminusmin, (column + '_mnmx')] \
+      mdf_test.loc[mdf_test[suffixcolumn] < (floor - minimum)/maxminusmin, (suffixcolumn)] \
       = (floor - minimum)/maxminusmin
     
     #create list of columns
-    nmbrcolumns = [column + '_mnmx']
+    nmbrcolumns = [suffixcolumn]
 
-    nmbrnormalization_dict = {column + '_mnmx' : {'minimum' : minimum, \
-                                                  'maximum' : maximum, \
-                                                  'maxminusmin' : maxminusmin, \
-                                                  'mean' : mean, \
-                                                  'std' : std, \
-                                                  'cap' : cap, \
-                                                  'floor' : floor, \
-                                                  'inplace' : inplace}}
+    nmbrnormalization_dict = {suffixcolumn : {'minimum' : minimum, \
+                                              'maximum' : maximum, \
+                                              'maxminusmin' : maxminusmin, \
+                                              'mean' : mean, \
+                                              'std' : std, \
+                                              'cap' : cap, \
+                                              'floor' : floor, \
+                                              'suffix' : suffix, \
+                                              'inplace' : inplace}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -8692,7 +8743,7 @@ class AutoMunge:
     #takes as arguement pandas dataframe of training and test data (mdf_train), (mdf_test)\
     #and the name of the column string ('column') and parent category (category)
     #replaces missing or improperly formatted data with mean of remaining values
-    #returns same dataframes with new column of name column + '_mnmx'
+    #returns same dataframes with new column of name suffixcolumn
     #note this is a "dualprocess" function since is applied to both dataframes
     '''
     
@@ -8713,64 +8764,71 @@ class AutoMunge:
       qmin = params['qmin']
     else:
       qmin = 0.01
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'mnm3'
+      
+    suffixcolumn = column + '_' + suffix
     
     if inplace is not True:
       
       #copy source column into new column
       mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, column + '_mnm3', suffixoverlap_results)
+      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results)
 
-      mdf_test[column + '_mnm3'] = mdf_test[column].copy()
+      mdf_test[suffixcolumn] = mdf_test[column].copy()
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, column + '_mnm3', suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results)
       
-      mdf_train.rename(columns = {column : column + '_mnm3'}, inplace = True)
-      mdf_test.rename(columns = {column : column + '_mnm3'}, inplace = True)
+      mdf_train.rename(columns = {column : suffixcolumn}, inplace = True)
+      mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
 
     #convert all values to either numeric or NaN
-    mdf_train[column + '_mnm3'] = pd.to_numeric(mdf_train[column + '_mnm3'], errors='coerce')
-    mdf_test[column + '_mnm3'] = pd.to_numeric(mdf_test[column + '_mnm3'], errors='coerce')
+    mdf_train[suffixcolumn] = pd.to_numeric(mdf_train[suffixcolumn], errors='coerce')
+    mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
     
     #a few more metrics collected for driftreport
     #get standard deviation of training data
-    std = mdf_train[column + '_mnm3'].std()
+    std = mdf_train[suffixcolumn].std()
 
     #get maximum value of training column
-    quantilemax = mdf_train[column + '_mnm3'].quantile(qmax)
+    quantilemax = mdf_train[suffixcolumn].quantile(qmax)
     
     if quantilemax != quantilemax:
       quantilemax = 0
 
     #get minimum value of training column
-    quantilemin = mdf_train[column + '_mnm3'].quantile(qmin)
+    quantilemin = mdf_train[suffixcolumn].quantile(qmin)
     
     if quantilemin != quantilemin:
       quantilemin = 0
 
     #replace values > quantilemax with quantilemax
-    mdf_train.loc[mdf_train[column + '_mnm3'] > quantilemax, (column + '_mnm3')] \
+    mdf_train.loc[mdf_train[suffixcolumn] > quantilemax, (suffixcolumn)] \
     = quantilemax
-    mdf_test.loc[mdf_test[column + '_mnm3'] > quantilemax, (column + '_mnm3')] \
+    mdf_test.loc[mdf_test[suffixcolumn] > quantilemax, (suffixcolumn)] \
     = quantilemax
     #replace values < quantile10 with quantile10
-    mdf_train.loc[mdf_train[column + '_mnm3'] < quantilemin, (column + '_mnm3')] \
+    mdf_train.loc[mdf_train[suffixcolumn] < quantilemin, (suffixcolumn)] \
     = quantilemin
-    mdf_test.loc[mdf_test[column + '_mnm3'] < quantilemin, (column + '_mnm3')] \
+    mdf_test.loc[mdf_test[suffixcolumn] < quantilemin, (suffixcolumn)] \
     = quantilemin
 
     #note this step is now performed after the quantile evaluation / replacement
 
     #get mean of training data
-    mean = mdf_train[column + '_mnm3'].mean()    
+    mean = mdf_train[suffixcolumn].mean()    
     if mean != mean:
       mean = 0
     
     #replace missing data with training set mean
-    mdf_train[column + '_mnm3'] = mdf_train[column + '_mnm3'].fillna(mean)
-    mdf_test[column + '_mnm3'] = mdf_test[column + '_mnm3'].fillna(mean)
+    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(mean)
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
     
     #avoid outlier div by zero when max = min
     maxminusmin = quantilemax - quantilemin
@@ -8778,27 +8836,28 @@ class AutoMunge:
       maxminusmin = 1
 
     #perform min-max scaling to train and test sets using values from train
-    mdf_train[column + '_mnm3'] = (mdf_train[column + '_mnm3'] - quantilemin) / \
+    mdf_train[suffixcolumn] = (mdf_train[suffixcolumn] - quantilemin) / \
                                   (maxminusmin)
 
-    mdf_test[column + '_mnm3'] = (mdf_test[column + '_mnm3'] - quantilemin) / \
+    mdf_test[suffixcolumn] = (mdf_test[suffixcolumn] - quantilemin) / \
                                  (maxminusmin)
 
 #     #change data type for memory savings
-#     mdf_train[column + '_mnm3'] = mdf_train[column + '_mnm3'].astype(np.float32)
-#     mdf_test[column + '_mnm3'] = mdf_test[column + '_mnm3'].astype(np.float32)
+#     mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype(np.float32)
+#     mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.float32)
     
     #create list of columns
-    nmbrcolumns = [column + '_mnm3']
+    nmbrcolumns = [suffixcolumn]
 
-    nmbrnormalization_dict = {column + '_mnm3' : {'quantilemin' : quantilemin, \
-                                                  'quantilemax' : quantilemax, \
-                                                  'maxminusmin' : maxminusmin, \
-                                                  'mean' : mean, \
-                                                  'std' : std, \
-                                                  'qmax' : qmax, \
-                                                  'qmin' : qmin, \
-                                                  'inplace' : inplace}}
+    nmbrnormalization_dict = {suffixcolumn : {'quantilemin' : quantilemin, \
+                                              'quantilemax' : quantilemax, \
+                                              'maxminusmin' : maxminusmin, \
+                                              'mean' : mean, \
+                                              'std' : std, \
+                                              'qmax' : qmax, \
+                                              'qmin' : qmin, \
+                                              'suffix' : suffix, \
+                                              'inplace' : inplace}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -8835,45 +8894,52 @@ class AutoMunge:
       inplace = params['inplace']
     else:
       inplace = False
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'mxab'
+      
+    suffixcolumn = column + '_' + suffix
     
     if inplace is not True:
       
       #copy source column into new column
       mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, column + '_mxab', suffixoverlap_results)
+      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results)
 
-      mdf_test[column + '_mxab'] = mdf_test[column].copy()
+      mdf_test[suffixcolumn] = mdf_test[column].copy()
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, column + '_mxab', suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results)
       
-      mdf_train.rename(columns = {column : column + '_mxab'}, inplace = True)
-      mdf_test.rename(columns = {column : column + '_mxab'}, inplace = True)
+      mdf_train.rename(columns = {column : suffixcolumn}, inplace = True)
+      mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
 
     #convert all values to either numeric or NaN
-    mdf_train[column + '_mxab'] = pd.to_numeric(mdf_train[column + '_mxab'], errors='coerce')
-    mdf_test[column + '_mxab'] = pd.to_numeric(mdf_test[column + '_mxab'], errors='coerce')
+    mdf_train[suffixcolumn] = pd.to_numeric(mdf_train[suffixcolumn], errors='coerce')
+    mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
     
     #a few more metrics collected for driftreport
     #get standard deviation of training data
-    std = mdf_train[column + '_mxab'].std()
+    std = mdf_train[suffixcolumn].std()
 
     #get mean of training data
-    mean = mdf_train[column + '_mxab'].mean()   
+    mean = mdf_train[suffixcolumn].mean()   
     if mean != mean:
       mean = 0
 
     #replace missing data with training set mean
-    mdf_train[column + '_mxab'] = mdf_train[column + '_mxab'].fillna(mean)
-    mdf_test[column + '_mxab'] = mdf_test[column + '_mxab'].fillna(mean)
+    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(mean)
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
     
     #get maximum value of training column
-    maximum = mdf_train[column + '_mxab'].max()
+    maximum = mdf_train[suffixcolumn].max()
     
     #get minimum value of training column
-    minimum = mdf_train[column + '_mxab'].min()
+    minimum = mdf_train[suffixcolumn].min()
     
     #get max absolute
     maxabs = max(abs(maximum), abs(minimum))
@@ -8883,21 +8949,22 @@ class AutoMunge:
       maxabs = 1
     
     #perform maxabs scaling to train and test sets using values from train
-    mdf_train[column + '_mxab'] = mdf_train[column + '_mxab'] / \
+    mdf_train[suffixcolumn] = mdf_train[suffixcolumn] / \
                                   (maxabs)
     
-    mdf_test[column + '_mxab'] = mdf_test[column + '_mxab'] / \
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn] / \
                                  (maxabs)
     
     #create list of columns
-    nmbrcolumns = [column + '_mxab']
+    nmbrcolumns = [suffixcolumn]
 
-    nmbrnormalization_dict = {column + '_mxab' : {'minimum' : minimum, \
-                                                  'maximum' : maximum, \
-                                                  'maxabs' : maxabs, \
-                                                  'mean' : mean, \
-                                                  'std' : std, \
-                                                  'inplace' : inplace}}
+    nmbrnormalization_dict = {suffixcolumn : {'minimum' : minimum, \
+                                              'maximum' : maximum, \
+                                              'maxabs' : maxabs, \
+                                              'mean' : mean, \
+                                              'std' : std, \
+                                              'suffix' : suffix, \
+                                              'inplace' : inplace}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -8939,7 +9006,7 @@ class AutoMunge:
     
     #replaces missing or improperly formatted data with mean of remaining values
     
-    #returns same dataframes with new column of name column + '_retn'
+    #returns same dataframes with new column of name suffixcolumn
     #note this is a "dualprocess" function since is applied to both dataframes
     
     #note with parameters divisor can also be set as standard deviation
@@ -8987,38 +9054,45 @@ class AutoMunge:
       floor = params['floor']
     else:
       floor = False
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'retn'
+      
+    suffixcolumn = column + '_' + suffix
     
     if inplace is not True:
       
       #copy source column into new column
       mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, column + '_retn', suffixoverlap_results)
+      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results)
 
-      mdf_test[column + '_retn'] = mdf_test[column].copy()
+      mdf_test[suffixcolumn] = mdf_test[column].copy()
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, column + '_retn', suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results)
       
-      mdf_train.rename(columns = {column : column + '_retn'}, inplace = True)
-      mdf_test.rename(columns = {column : column + '_retn'}, inplace = True)
+      mdf_train.rename(columns = {column : suffixcolumn}, inplace = True)
+      mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
 
     #convert all values to either numeric or NaN
-    mdf_train[column + '_retn'] = pd.to_numeric(mdf_train[column + '_retn'], errors='coerce')
-    mdf_test[column + '_retn'] = pd.to_numeric(mdf_test[column + '_retn'], errors='coerce')
+    mdf_train[suffixcolumn] = pd.to_numeric(mdf_train[suffixcolumn], errors='coerce')
+    mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
     
     #a few more metrics collected for driftreport
     #get standard deviation of training data
-    std = mdf_train[column + '_retn'].std()
+    std = mdf_train[suffixcolumn].std()
     
-    mad = mdf_train[column + '_retn'].mad()
+    mad = mdf_train[suffixcolumn].mad()
     
     #get maximum value of training column
-    maximum = mdf_train[column + '_retn'].max()
+    maximum = mdf_train[suffixcolumn].max()
     
     #get minimum value of training column
-    minimum = mdf_train[column + '_retn'].min()
+    minimum = mdf_train[suffixcolumn].min()
     
     #avoid outlier div by zero when max = min
     maxminusmin = maximum - minimum
@@ -9047,28 +9121,28 @@ class AutoMunge:
       
     if cap is not False:
       #replace values in test > cap with cap
-      mdf_train.loc[mdf_train[column + '_retn'] > cap, (column + '_retn')] \
+      mdf_train.loc[mdf_train[suffixcolumn] > cap, (suffixcolumn)] \
       = cap
       
-      mdf_test.loc[mdf_test[column + '_retn'] > cap, (column + '_retn')] \
+      mdf_test.loc[mdf_test[suffixcolumn] > cap, (suffixcolumn)] \
       = cap
     
     if floor is not False:
       #replace values in test < floor with floor
-      mdf_train.loc[mdf_train[column + '_retn'] < floor, (column + '_retn')] \
+      mdf_train.loc[mdf_train[suffixcolumn] < floor, (suffixcolumn)] \
       = floor
       
-      mdf_test.loc[mdf_test[column + '_retn'] < floor, (column + '_retn')] \
+      mdf_test.loc[mdf_test[suffixcolumn] < floor, (suffixcolumn)] \
       = floor
       
     #get mean of training data
-    mean = mdf_train[column + '_retn'].mean()
+    mean = mdf_train[suffixcolumn].mean()
     if mean != mean:
       mean = 0
 
     #replace missing data with training set mean
-    mdf_train[column + '_retn'] = mdf_train[column + '_retn'].fillna(mean)
-    mdf_test[column + '_retn'] = mdf_test[column + '_retn'].fillna(mean)
+    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(mean)
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
     
     #edge case (only neccesary so scalingapproach is assigned)
     if maximum != maximum:
@@ -9095,10 +9169,10 @@ class AutoMunge:
     
     if maximum >= 0 and minimum <= 0:
       
-      mdf_train[column + '_retn'] = (mdf_train[column + '_retn']) / \
+      mdf_train[suffixcolumn] = (mdf_train[suffixcolumn]) / \
                                     (divisor) * multiplier + offset
       
-      mdf_test[column + '_retn'] = (mdf_test[column + '_retn']) / \
+      mdf_test[suffixcolumn] = (mdf_test[suffixcolumn]) / \
                                     (divisor) * multiplier + offset
       
       scalingapproach = 'retn'
@@ -9106,10 +9180,10 @@ class AutoMunge:
     elif maximum >= 0 and minimum >= 0:
     
       #perform min-max scaling to train and test sets using values from train
-      mdf_train[column + '_retn'] = (mdf_train[column + '_retn'] - minimum) / \
+      mdf_train[suffixcolumn] = (mdf_train[suffixcolumn] - minimum) / \
                                     (divisor) * multiplier + offset
 
-      mdf_test[column + '_retn'] = (mdf_test[column + '_retn'] - minimum) / \
+      mdf_test[suffixcolumn] = (mdf_test[suffixcolumn] - minimum) / \
                                    (divisor) * multiplier + offset
       
       scalingapproach = 'mnmx'
@@ -9117,29 +9191,30 @@ class AutoMunge:
     elif maximum <= 0 and minimum <= 0:
     
       #perform min-max scaling to train and test sets using values from train
-      mdf_train[column + '_retn'] = (mdf_train[column + '_retn'] - maximum) / \
+      mdf_train[suffixcolumn] = (mdf_train[suffixcolumn] - maximum) / \
                                     (divisor) * multiplier + offset
 
-      mdf_test[column + '_retn'] = (mdf_test[column + '_retn'] - maximum) / \
+      mdf_test[suffixcolumn] = (mdf_test[suffixcolumn] - maximum) / \
                                    (divisor) * multiplier + offset
       
       scalingapproach = 'mxmn'
     
     #create list of columns
-    nmbrcolumns = [column + '_retn']
+    nmbrcolumns = [suffixcolumn]
 
-    nmbrnormalization_dict = {column + '_retn' : {'minimum' : minimum, \
-                                                  'maximum' : maximum, \
-                                                  'mean' : mean, \
-                                                  'std' : std, \
-                                                  'mad' : mad, \
-                                                  'scalingapproach' : scalingapproach, \
-                                                  'offset' : offset, \
-                                                  'multiplier': multiplier, \
-                                                  'cap' : cap, \
-                                                  'floor' : floor, \
-                                                  'divisor' : divisor, \
-                                                  'inplace' : inplace}}
+    nmbrnormalization_dict = {suffixcolumn : {'minimum' : minimum, \
+                                              'maximum' : maximum, \
+                                              'mean' : mean, \
+                                              'std' : std, \
+                                              'mad' : mad, \
+                                              'scalingapproach' : scalingapproach, \
+                                              'offset' : offset, \
+                                              'multiplier': multiplier, \
+                                              'cap' : cap, \
+                                              'floor' : floor, \
+                                              'divisor' : divisor, \
+                                              'suffix' : suffix, \
+                                              'inplace' : inplace}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -9170,7 +9245,7 @@ class AutoMunge:
     #takes as arguement pandas dataframe of training and test data (mdf_train), (mdf_test)\
     #and the name of the column string ('column') and parent category (category)
     #replaces missing or improperly formatted data with mean of remaining values
-    #returns same dataframes with new column of name column + '_mnmx'
+    #returns same dataframes with new column of name suffixcolumn
     #note this is a "dualprocess" function since is applied to both dataframes
     #expect this approach works better when the numerical distribution is thin tailed
     #if only have training but not test data handy, use same training data for both
@@ -9204,32 +9279,39 @@ class AutoMunge:
       floor = params['floor']
     else:
       floor = False
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'mean'
+      
+    suffixcolumn = column + '_' + suffix
     
     if inplace is not True:
       
       #copy source column into new column
       mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, column + '_mean', suffixoverlap_results)
+      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results)
 
-      mdf_test[column + '_mean'] = mdf_test[column].copy()
+      mdf_test[suffixcolumn] = mdf_test[column].copy()
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, column + '_mean', suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results)
       
-      mdf_train.rename(columns = {column : column + '_mean'}, inplace = True)
-      mdf_test.rename(columns = {column : column + '_mean'}, inplace = True)
+      mdf_train.rename(columns = {column : suffixcolumn}, inplace = True)
+      mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
 
     #convert all values to either numeric or NaN
-    mdf_train[column + '_mean'] = pd.to_numeric(mdf_train[column + '_mean'], errors='coerce')
-    mdf_test[column + '_mean'] = pd.to_numeric(mdf_test[column + '_mean'], errors='coerce')
+    mdf_train[suffixcolumn] = pd.to_numeric(mdf_train[suffixcolumn], errors='coerce')
+    mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
     
     #get maximum value of training column
-    maximum = mdf_train[column + '_mean'].max()
+    maximum = mdf_train[suffixcolumn].max()
     
     #get minimum value of training column
-    minimum = mdf_train[column + '_mean'].min()
+    minimum = mdf_train[suffixcolumn].min()
     
     #if cap < maximum, maximum = cap
     if cap is not False and cap is not True:
@@ -9247,32 +9329,32 @@ class AutoMunge:
       
     if cap is not False:
       #replace values in test > cap with cap
-      mdf_train.loc[mdf_train[column + '_mean'] > cap, (column + '_mean')] \
+      mdf_train.loc[mdf_train[suffixcolumn] > cap, (suffixcolumn)] \
       = cap
       
-      mdf_test.loc[mdf_test[column + '_mean'] > cap, (column + '_mean')] \
+      mdf_test.loc[mdf_test[suffixcolumn] > cap, (suffixcolumn)] \
       = cap
     
     if floor is not False:
       #replace values in test < floor with floor
-      mdf_train.loc[mdf_train[column + '_mean'] < floor, (column + '_mean')] \
+      mdf_train.loc[mdf_train[suffixcolumn] < floor, (suffixcolumn)] \
       = floor
       
-      mdf_test.loc[mdf_test[column + '_mean'] < floor, (column + '_mean')] \
+      mdf_test.loc[mdf_test[suffixcolumn] < floor, (suffixcolumn)] \
       = floor
     
     #a few more metrics collected for driftreport
     #get standard deviation of training data
-    std = mdf_train[column + '_mean'].std()
+    std = mdf_train[suffixcolumn].std()
 
     #get mean of training data
-    mean = mdf_train[column + '_mean'].mean()
+    mean = mdf_train[suffixcolumn].mean()
     if mean != mean:
       mean = 0
       
     #replace missing data with training set mean
-    mdf_train[column + '_mean'] = mdf_train[column + '_mean'].fillna(mean)
-    mdf_test[column + '_mean'] = mdf_test[column + '_mean'].fillna(mean)
+    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(mean)
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
     
     #avoid outlier div by zero when max = min
     maxminusmin = maximum - minimum
@@ -9280,29 +9362,30 @@ class AutoMunge:
       maxminusmin = 1
     
     #perform min-max scaling to train and test sets using values from train
-    mdf_train[column + '_mean'] = (mdf_train[column + '_mean'] - mean) / \
+    mdf_train[suffixcolumn] = (mdf_train[suffixcolumn] - mean) / \
                                   (maxminusmin) * multiplier + offset
     
-    mdf_test[column + '_mean'] = (mdf_test[column + '_mean'] - mean) / \
+    mdf_test[suffixcolumn] = (mdf_test[suffixcolumn] - mean) / \
                                  (maxminusmin) * multiplier + offset
 
 #     #change data type for memory savings
-#     mdf_train[column + '_mnmx'] = mdf_train[column + '_mnmx'].astype(np.float32)
-#     mdf_test[column + '_mnmx'] = mdf_test[column + '_mnmx'].astype(np.float32)
+#     mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype(np.float32)
+#     mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.float32)
     
     #create list of columns
-    nmbrcolumns = [column + '_mean']
+    nmbrcolumns = [suffixcolumn]
 
-    nmbrnormalization_dict = {column + '_mean' : {'minimum' : minimum, \
-                                                  'maximum' : maximum, \
-                                                  'maxminusmin' : maxminusmin, \
-                                                  'mean' : mean, \
-                                                  'std' : std, \
-                                                  'offset' : offset, \
-                                                  'multiplier': multiplier, \
-                                                  'cap' : cap, \
-                                                  'floor' : floor, \
-                                                  'inplace' : inplace}}
+    nmbrnormalization_dict = {suffixcolumn : {'minimum' : minimum, \
+                                              'maximum' : maximum, \
+                                              'maxminusmin' : maxminusmin, \
+                                              'mean' : mean, \
+                                              'std' : std, \
+                                              'offset' : offset, \
+                                              'multiplier': multiplier, \
+                                              'cap' : cap, \
+                                              'floor' : floor, \
+                                              'suffix' : suffix, \
+                                              'inplace' : inplace}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -9334,7 +9417,7 @@ class AutoMunge:
     #the name of the column string ('column') \
     #and the category from parent columkn (category)
     #fills missing valules with most common value
-    #returns same dataframes with new column of name column + '_bnry'
+    #returns same dataframes with new column of name suffixcolumn
     #note this is a "dualprocess" function since is applied to both dataframes
     '''
     
@@ -9350,30 +9433,37 @@ class AutoMunge:
       str_convert = params['str_convert']
     else:
       str_convert = False
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'bnry'
+      
+    suffixcolumn = column + '_' + suffix
     
     if inplace is not True:
       
       #copy source column into new column
       mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, column + '_bnry', suffixoverlap_results)
+      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results)
 
-      mdf_test[column + '_bnry'] = mdf_test[column].copy()
+      mdf_test[suffixcolumn] = mdf_test[column].copy()
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, column + '_bnry', suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results)
       
-      mdf_train.rename(columns = {column : column + '_bnry'}, inplace = True)
-      mdf_test.rename(columns = {column : column + '_bnry'}, inplace = True)
+      mdf_train.rename(columns = {column : suffixcolumn}, inplace = True)
+      mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
     
     if str_convert is True:
-      mdf_train[column + '_bnry'] = mdf_train[column + '_bnry'].astype(str)
-      mdf_test[column + '_bnry'] = mdf_test[column + '_bnry'].astype(str)
+      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype(str)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(str)
 
     #create plug value for missing cells as most common value
-    valuecounts = pd.DataFrame(mdf_train[column + '_bnry'].value_counts())
-    valuecounts = valuecounts.rename_axis('zzzinfill').sort_values(by = [column + '_bnry', 'zzzinfill'], ascending = [False, True])
+    valuecounts = pd.DataFrame(mdf_train[suffixcolumn].value_counts())
+    valuecounts = valuecounts.rename_axis('zzzinfill').sort_values(by = [suffixcolumn, 'zzzinfill'], ascending = [False, True])
     valuecounts = list(valuecounts.index)
     
     if len(valuecounts) > 0:
@@ -9473,14 +9563,14 @@ class AutoMunge:
       #this only comes up when caluclating driftreport in postmunge
       if len(valuecounts) > 2:
         for value in extravalues:
-          mdf_train[column + '_bnry'] = \
-          np.where(mdf_train[column + '_bnry'] == value, binary_missing_plug, mdf_train[column + '_bnry'])
-          mdf_test[column + '_bnry'] = \
-          np.where(mdf_test[column + '_bnry'] == value, binary_missing_plug, mdf_test[column + '_bnry'])
+          mdf_train[suffixcolumn] = \
+          np.where(mdf_train[suffixcolumn] == value, binary_missing_plug, mdf_train[suffixcolumn])
+          mdf_test[suffixcolumn] = \
+          np.where(mdf_test[suffixcolumn] == value, binary_missing_plug, mdf_test[suffixcolumn])
 
       #replace missing data with specified classification
-      mdf_train[column + '_bnry'] = mdf_train[column + '_bnry'].fillna(binary_missing_plug)
-      mdf_test[column + '_bnry'] = mdf_test[column + '_bnry'].fillna(binary_missing_plug)
+      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(binary_missing_plug)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(binary_missing_plug)
 
       #this addressess issue where nunique for mdftest > than that for mdf_train
       #note is currently an oportunity for improvement that NArows won't identify these poinsts as candiadates
@@ -9488,35 +9578,35 @@ class AutoMunge:
       #in the mean time a workaround could be for user to manually replace extra values with nan prior to
       #postmunge application such as if they want to apply ML infill
       #this will only be an issue when nunique for df_train == 2, and nunique for df_test > 2
-      #if len(mdf_test[column + '_bnry'].unique()) > 2:
-      uniqueintest = mdf_test[column + '_bnry'].unique()
+      #if len(mdf_test[suffixcolumn].unique()) > 2:
+      uniqueintest = mdf_test[suffixcolumn].unique()
       for unique in uniqueintest:
         if unique not in {onevalue, zerovalue}:
-          mdf_test[column + '_bnry'] = \
-          np.where(mdf_test[column + '_bnry'] == unique, binary_missing_plug, mdf_test[column + '_bnry'])
+          mdf_test[suffixcolumn] = \
+          np.where(mdf_test[suffixcolumn] == unique, binary_missing_plug, mdf_test[suffixcolumn])
 
       #convert column to binary 0/1 classification (replaces scikit LabelBinarizer)
-      mdf_train[column + '_bnry'] = np.where(mdf_train[column + '_bnry'] == onevalue, 1, 0)
-      mdf_test[column + '_bnry'] = np.where(mdf_test[column + '_bnry'] == onevalue, 1, 0)
+      mdf_train[suffixcolumn] = np.where(mdf_train[suffixcolumn] == onevalue, 1, 0)
+      mdf_test[suffixcolumn] = np.where(mdf_test[suffixcolumn] == onevalue, 1, 0)
 
       #create list of columns
-      bnrycolumns = [column + '_bnry']
+      bnrycolumns = [suffixcolumn]
 
       #change data types to 8-bit (1 byte) integers for memory savings
-      mdf_train[column + '_bnry'] = mdf_train[column + '_bnry'].astype(np.int8)
-      mdf_test[column + '_bnry'] = mdf_test[column + '_bnry'].astype(np.int8)
+      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype(np.int8)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.int8)
 
       #a few more metrics collected for driftreport
-      oneratio = mdf_train[column + '_bnry'].sum() / mdf_train[column + '_bnry'].shape[0]
-      zeroratio = (mdf_train[column + '_bnry'].shape[0] - mdf_train[column + '_bnry'].sum() )\
-                  / mdf_train[column + '_bnry'].shape[0]
+      oneratio = mdf_train[suffixcolumn].sum() / mdf_train[suffixcolumn].shape[0]
+      zeroratio = (mdf_train[suffixcolumn].shape[0] - mdf_train[suffixcolumn].sum() )\
+                  / mdf_train[suffixcolumn].shape[0]
 
       #create list of columns associated with categorical transform (blank for now)
       categorylist = []
     
     else:
-      mdf_train[column + '_bnry'] = 0
-      mdf_test[column + '_bnry'] = 0
+      mdf_train[suffixcolumn] = 0
+      mdf_test[suffixcolumn] = 0
       
       binary_missing_plug = 0
       onevalue = 1
@@ -9524,19 +9614,20 @@ class AutoMunge:
       extravalues = 0
       oneratio = 0
       zeroratio = 0
-      bnrycolumns = [column + '_bnry']
+      bnrycolumns = [suffixcolumn]
 
-  #     bnrynormalization_dict = {column + '_bnry' : {'missing' : binary_missing_plug, \
+  #     bnrynormalization_dict = {suffixcolumn : {'missing' : binary_missing_plug, \
   #                                                   'onevalue' : onevalue, \
   #                                                   'zerovalue' : zerovalue}}
     
-    bnrynormalization_dict = {column + '_bnry' : {'missing' : binary_missing_plug, \
+    bnrynormalization_dict = {suffixcolumn : {'missing' : binary_missing_plug, \
                                                   1 : onevalue, \
                                                   0 : zerovalue, \
                                                   'extravalues' : extravalues, \
                                                   'oneratio' : oneratio, \
                                                   'zeroratio' : zeroratio, \
                                                   'str_convert' : str_convert, \
+                                                  'suffix' : suffix, \
                                                   'inplace' : inplace}}
 
     #store some values in the column_dict{} for use later in ML infill methods
@@ -9568,7 +9659,7 @@ class AutoMunge:
     #the name of the column string ('column') \
     #and the category from parent columkn (category)
     #fills missing valules with least common value (different than bnry)
-    #returns same dataframes with new column of name column + '_bnry'
+    #returns same dataframes with new column of name suffixcolumn
     #note this is a "dualprocess" function since is applied to both dataframes
     '''
     
@@ -9584,30 +9675,37 @@ class AutoMunge:
       str_convert = params['str_convert']
     else:
       str_convert = False
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'bnr2'
+      
+    suffixcolumn = column + '_' + suffix
     
     if inplace is not True:
       
       #copy source column into new column
       mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, column + '_bnr2', suffixoverlap_results)
+      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results)
 
-      mdf_test[column + '_bnr2'] = mdf_test[column].copy()
+      mdf_test[suffixcolumn] = mdf_test[column].copy()
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, column + '_bnr2', suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results)
       
-      mdf_train.rename(columns = {column : column + '_bnr2'}, inplace = True)
-      mdf_test.rename(columns = {column : column + '_bnr2'}, inplace = True)
+      mdf_train.rename(columns = {column : suffixcolumn}, inplace = True)
+      mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
     
     if str_convert is True:
-      mdf_train[column + '_bnr2'] = mdf_train[column + '_bnr2'].astype(str)
-      mdf_test[column + '_bnr2'] = mdf_test[column + '_bnr2'].astype(str)
+      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype(str)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(str)
 
     #create plug value for missing cells as most common value
-    valuecounts = pd.DataFrame(mdf_train[column + '_bnr2'].value_counts())
-    valuecounts = valuecounts.rename_axis('zzzinfill').sort_values(by = [column + '_bnr2', 'zzzinfill'], ascending = [False, True])
+    valuecounts = pd.DataFrame(mdf_train[suffixcolumn].value_counts())
+    valuecounts = valuecounts.rename_axis('zzzinfill').sort_values(by = [suffixcolumn, 'zzzinfill'], ascending = [False, True])
     valuecounts = list(valuecounts.index)
     
     if len(valuecounts) > 0:
@@ -9710,14 +9808,14 @@ class AutoMunge:
       #this only comes up when caluclating driftreport in postmunge
       if len(valuecounts) > 2:
         for value in extravalues:
-          mdf_train[column + '_bnr2'] = \
-          np.where(mdf_train[column + '_bnr2'] == value, binary_missing_plug, mdf_train[column + '_bnr2'])
-          mdf_test[column + '_bnr2'] = \
-          np.where(mdf_test[column + '_bnr2'] == value, binary_missing_plug, mdf_test[column + '_bnr2'])
+          mdf_train[suffixcolumn] = \
+          np.where(mdf_train[suffixcolumn] == value, binary_missing_plug, mdf_train[suffixcolumn])
+          mdf_test[suffixcolumn] = \
+          np.where(mdf_test[suffixcolumn] == value, binary_missing_plug, mdf_test[suffixcolumn])
 
       #replace missing data with specified classification
-      mdf_train[column + '_bnr2'] = mdf_train[column + '_bnr2'].fillna(binary_missing_plug)
-      mdf_test[column + '_bnr2'] = mdf_test[column + '_bnr2'].fillna(binary_missing_plug)
+      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(binary_missing_plug)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(binary_missing_plug)
 
       #this addressess issue where nunique for mdftest > than that for mdf_train
       #note is currently an oportunity for improvement that NArows won't identify these poinsts as candiadates
@@ -9725,35 +9823,35 @@ class AutoMunge:
       #in the mean time a workaround could be for user to manually replace extra values with nan prior to
       #postmunge application such as if they want to apply ML infill
       #this will only be an issue when nunique for df_train == 2, and nunique for df_test > 2
-      #if len(mdf_test[column + '_bnry'].unique()) > 2:
-      uniqueintest = mdf_test[column + '_bnr2'].unique()
+      #if len(mdf_test[suffixcolumn].unique()) > 2:
+      uniqueintest = mdf_test[suffixcolumn].unique()
       for unique in uniqueintest:
         if unique not in {onevalue, zerovalue}:
-          mdf_test[column + '_bnr2'] = \
-          np.where(mdf_test[column + '_bnr2'] == unique, binary_missing_plug, mdf_test[column + '_bnr2'])
+          mdf_test[suffixcolumn] = \
+          np.where(mdf_test[suffixcolumn] == unique, binary_missing_plug, mdf_test[suffixcolumn])
 
       #convert column to binary 0/1 classification (replaces scikit LabelBinarizer)
-      mdf_train[column + '_bnr2'] = np.where(mdf_train[column + '_bnr2'] == onevalue, 1, 0)
-      mdf_test[column + '_bnr2'] = np.where(mdf_test[column + '_bnr2'] == onevalue, 1, 0)
+      mdf_train[suffixcolumn] = np.where(mdf_train[suffixcolumn] == onevalue, 1, 0)
+      mdf_test[suffixcolumn] = np.where(mdf_test[suffixcolumn] == onevalue, 1, 0)
 
       #create list of columns
-      bnrycolumns = [column + '_bnr2']
+      bnrycolumns = [suffixcolumn]
 
       #change data types to 8-bit (1 byte) integers for memory savings
-      mdf_train[column + '_bnr2'] = mdf_train[column + '_bnr2'].astype(np.int8)
-      mdf_test[column + '_bnr2'] = mdf_test[column + '_bnr2'].astype(np.int8)
+      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype(np.int8)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.int8)
 
       #a few more metrics collected for driftreport
-      oneratio = mdf_train[column + '_bnr2'].sum() / mdf_train[column + '_bnr2'].shape[0]
-      zeroratio = (mdf_train[column + '_bnr2'].shape[0] - mdf_train[column + '_bnr2'].sum() )\
-                  / mdf_train[column + '_bnr2'].shape[0]
+      oneratio = mdf_train[suffixcolumn].sum() / mdf_train[suffixcolumn].shape[0]
+      zeroratio = (mdf_train[suffixcolumn].shape[0] - mdf_train[suffixcolumn].sum() )\
+                  / mdf_train[suffixcolumn].shape[0]
 
       #create list of columns associated with categorical transform (blank for now)
       categorylist = []
     
     else:
-      mdf_train[column + '_bnr2'] = 0
-      mdf_test[column + '_bnr2'] = 0
+      mdf_train[suffixcolumn] = 0
+      mdf_test[suffixcolumn] = 0
       
       binary_missing_plug = 0
       onevalue = 1
@@ -9761,20 +9859,21 @@ class AutoMunge:
       extravalues = 0
       oneratio = 0
       zeroratio = 0
-      bnrycolumns = [column + '_bnr2']
+      bnrycolumns = [suffixcolumn]
 
-  #     bnrynormalization_dict = {column + '_bnry' : {'missing' : binary_missing_plug, \
+  #     bnrynormalization_dict = {suffixcolumn : {'missing' : binary_missing_plug, \
   #                                                   'onevalue' : onevalue, \
   #                                                   'zerovalue' : zerovalue}}
     
-    bnrynormalization_dict = {column + '_bnr2' : {'missing' : binary_missing_plug, \
-                                                  1 : onevalue, \
-                                                  0 : zerovalue, \
-                                                  'extravalues' : extravalues, \
-                                                  'oneratio' : oneratio, \
-                                                  'zeroratio' : zeroratio, \
-                                                  'str_convert' : str_convert, \
-                                                  'inplace' : inplace}}
+    bnrynormalization_dict = {suffixcolumn : {'missing' : binary_missing_plug, \
+                                              1 : onevalue, \
+                                              0 : zerovalue, \
+                                              'extravalues' : extravalues, \
+                                              'oneratio' : oneratio, \
+                                              'zeroratio' : zeroratio, \
+                                              'str_convert' : str_convert, \
+                                              'suffix' : suffix, \
+                                              'inplace' : inplace}}
 
     #store some values in the column_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -9812,8 +9911,13 @@ class AutoMunge:
       str_convert = params['str_convert']
     else:
       str_convert = False
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'onht'
     
-    tempcolumn = column + '_onht_'
+    tempcolumn = column + '_' + suffix + '_'
     
     suffixoverlap_results = \
     self._df_check_suffixoverlap(mdf_train, tempcolumn, suffixoverlap_results)
@@ -9868,7 +9972,7 @@ class AutoMunge:
     labels_dict = {}
     i = 0
     for entry in labels_train:
-      labels_dict.update({entry : column + '_onht_' + str(i)})
+      labels_dict.update({entry : column + '_' + suffix + '_' + str(i)})
       i += 1
     
     #convert sparse array to pandas dataframe with column labels
@@ -9952,6 +10056,7 @@ class AutoMunge:
                                       'labels_dict' : labels_dict, \
                                       'inverse_labels_dict' : inverse_labels_dict, \
                                       'text_categorylist' : categorylist, \
+                                      'suffix' : suffix, \
                                       'str_convert' : str_convert}}
       
       column_dict = {tc : {'category' : 'onht', \
@@ -10163,8 +10268,13 @@ class AutoMunge:
       testsmooth = params['testsmooth']
     else:
       testsmooth = False
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'smth'
     
-    tempcolumn = column + '_smth_'
+    tempcolumn = column + '_' + suffix + '_'
     
     suffixoverlap_results = \
     self._df_check_suffixoverlap(mdf_train, tempcolumn, suffixoverlap_results)
@@ -10219,7 +10329,7 @@ class AutoMunge:
     labels_dict = {}
     i = 0
     for entry in labels_train:
-      labels_dict.update({entry : column + '_smth_' + str(i)})
+      labels_dict.update({entry : column + '_' + suffix + '_' + str(i)})
       i += 1
     
     #convert sparse array to pandas dataframe with column labels
@@ -10344,6 +10454,7 @@ class AutoMunge:
                                       'activation' : activation, \
                                       'LSfit' : LSfit, \
                                       'testsmooth' : testsmooth, \
+                                      'suffix' : suffix, \
                                       'categorylist' : textcolumns}}
       
       column_dict = {tc : {'category' : 'smth', \
@@ -10376,44 +10487,52 @@ class AutoMunge:
       inplace = params['inplace']
     else:
       inplace = False
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'lngt'
+      
+    suffixcolumn = column + '_' + suffix
     
     if inplace is not True:
       
       #copy source column into new column
       df, suffixoverlap_results = \
-      self._df_copy_train(df, column, column + '_lngt', suffixoverlap_results)
+      self._df_copy_train(df, column, suffixcolumn, suffixoverlap_results)
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(df, column + '_lngt', suffixoverlap_results)
+      self._df_check_suffixoverlap(df, suffixcolumn, suffixoverlap_results)
       
-      df.rename(columns = {column : column + '_lngt'}, inplace = True)
+      df.rename(columns = {column : suffixcolumn}, inplace = True)
     
-    df[column + '_lngt'] = df[column + '_lngt'].astype(str).transform(len)
+    df[suffixcolumn] = df[suffixcolumn].astype(str).transform(len)
     
     #grab a fe4w driftreport metrics:
     #get maximum value of training column
-    maximum = df[column + '_lngt'].max()
+    maximum = df[suffixcolumn].max()
     
     #get minimum value of training column
-    minimum = df[column + '_lngt'].min()
+    minimum = df[suffixcolumn].min()
     
     #get minimum value of training column
-    mean = df[column + '_lngt'].mean()
+    mean = df[suffixcolumn].mean()
     
     #get standard deviation of training column
-    std = df[column + '_lngt'].std()
+    std = df[suffixcolumn].std()
 
     #create list of columns
-    columns = [column + '_lngt']
+    columns = [suffixcolumn]
 
     #create normalization dictionary
-    normalization_dict = {column + '_lngt' : {'maximum' : maximum, \
-                                              'minimum' : minimum, \
-                                              'mean' : mean, \
-                                              'std' : std, \
-                                              'inplace' : inplace }}
+    normalization_dict = {suffixcolumn : {'maximum' : maximum, \
+                                          'minimum' : minimum, \
+                                          'mean' : mean, \
+                                          'std' : std, \
+                                          'suffix' : suffix, \
+                                          'inplace' : inplace }}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -10442,7 +10561,7 @@ class AutoMunge:
     #such as to allow consistnet encoding if data has upper/lower case discrepencies
     #default infill is a distinct entry as string NAN
     #note that with assigninfill this can be converted to other infill methods
-    #returns same dataframe with new column of name column + '_UPCS'
+    #returns same dataframe with new column of name suffixcolumn
     #note this is a "singleprocess" function since is applied to single dataframe
     '''
     
@@ -10457,34 +10576,41 @@ class AutoMunge:
       activate = params['activate']
     else:
       activate = True
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'UPCS'
+      
+    suffixcolumn = column + '_' + suffix
     
     if inplace is not True:
       
       #copy source column into new column
       df, suffixoverlap_results = \
-      self._df_copy_train(df, column, column + '_UPCS', suffixoverlap_results)
+      self._df_copy_train(df, column, suffixcolumn, suffixoverlap_results)
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(df, column + '_UPCS', suffixoverlap_results)
+      self._df_check_suffixoverlap(df, suffixcolumn, suffixoverlap_results)
       
-      df.rename(columns = {column : column + '_UPCS'}, inplace = True)
+      df.rename(columns = {column : suffixcolumn}, inplace = True)
     
     #convert to uppercase string based on activate parameter
     if activate is True:
       #convert column to string except for nan infill points
-      df[column + '_UPCS'] = \
-      np.where(df[column + '_UPCS'] == df[column + '_UPCS'], df[column + '_UPCS'].astype(str), df[column + '_UPCS'])
+      df[suffixcolumn] = \
+      np.where(df[suffixcolumn] == df[suffixcolumn], df[suffixcolumn].astype(str), df[suffixcolumn])
       #convert to uppercase
-      df[column + '_UPCS'] = \
-      np.where(df[column + '_UPCS'] == df[column + '_UPCS'], df[column + '_UPCS'].str.upper(), df[column + '_UPCS'])
+      df[suffixcolumn] = \
+      np.where(df[suffixcolumn] == df[suffixcolumn], df[suffixcolumn].str.upper(), df[suffixcolumn])
 
     #create list of columns
-    UPCScolumns = [column + '_UPCS']
+    UPCScolumns = [suffixcolumn]
 
     #create normalization dictionary
-    normalization_dict = {column + '_UPCS' : {'activate' : activate}}
+    normalization_dict = {suffixcolumn : {'activate' : activate, 'suffix' : suffix}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -10784,7 +10910,7 @@ class AutoMunge:
       int_labels_dict = {}
       i = 0
       for entry in newcolumns:
-        int_labels_dict.update({entry : column + suffix + '_' + str(i)})
+        int_labels_dict.update({entry : column + '_' + suffix + '_' + str(i)})
         i += 1
         
       newcolumns = [int_labels_dict[entry] for entry in newcolumns]
@@ -11838,7 +11964,7 @@ class AutoMunge:
       int_labels_dict = {}
       i = 0
       for entry in newcolumns:
-        int_labels_dict.update({entry : column + suffix + '_' + str(i)})
+        int_labels_dict.update({entry : column + '_' + suffix + '_' + str(i)})
         i += 1
         
       newcolumns = [int_labels_dict[entry] for entry in newcolumns]
@@ -12340,30 +12466,37 @@ class AutoMunge:
     else:
       hash_alg = 'hash'
 
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'hash'
+      
+    suffixcolumn = column + '_' + suffix
+
     if inplace is not True:
       
       #copy source column into new column
       mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, column + '_hash', suffixoverlap_results)
+      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results)
       
-      mdf_test[column + '_hash'] = mdf_test[column].copy()
+      mdf_test[suffixcolumn] = mdf_test[column].copy()
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, column + '_hash', suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results)
       
-      mdf_train.rename(columns = {column : column + '_hash'}, inplace = True)
-      mdf_test.rename(columns = {column : column + '_hash'}, inplace = True)
+      mdf_train.rename(columns = {column : suffixcolumn}, inplace = True)
+      mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
       
     #convert column to string, note this means that missing data converted to 'nan'
-    mdf_train[column + '_hash'] = mdf_train[column + '_hash'].astype(str)
-    mdf_test[column + '_hash'] = mdf_test[column + '_hash'].astype(str)
+    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype(str)
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(str)
     
     #now scrub special characters
     for scrub_punctuation in excluded_characters:
-      mdf_train[column + '_hash'] = mdf_train[column + '_hash'].str.replace(scrub_punctuation, '')
-      mdf_test[column + '_hash'] = mdf_test[column + '_hash'].str.replace(scrub_punctuation, '')
+      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].str.replace(scrub_punctuation, '')
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].str.replace(scrub_punctuation, '')
       
     if hash_alg == 'md5':
       from hashlib import md5
@@ -12426,16 +12559,16 @@ class AutoMunge:
     #e.g. this converts "Two words" to ['Two', 'words']
     #if you don't want to split words can pass space = ''
     if space != '':
-      mdf_train[column + '_hash'] = mdf_train[column + '_hash'].transform(_assemble_wordlist)
-      mdf_test[column + '_hash'] = mdf_test[column + '_hash'].transform(_assemble_wordlist)
+      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].transform(_assemble_wordlist)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].transform(_assemble_wordlist)
     else:
-      mdf_train[column + '_hash'] = mdf_train[column + '_hash'].transform(lambda x: [x])
-      mdf_test[column + '_hash'] = mdf_test[column + '_hash'].transform(lambda x: [x])
+      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].transform(lambda x: [x])
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].transform(lambda x: [x])
       
     #if user didn't specify vocab_size then derive based on heuristic
     if vocab_size is False:
       #now let's derive vocab_size from train set, first convert all entries to a list of lists
-      temp_list = pd.Series(mdf_train[column + '_hash']).tolist()
+      temp_list = pd.Series(mdf_train[suffixcolumn]).tolist()
       #this flattens the list of lists
       temp_list = [item for items in temp_list for item in items]
       #consolidate redundant entries
@@ -12463,11 +12596,11 @@ class AutoMunge:
         return [hash(salt + word) % (vocab_size-1) + 1 for word in wordlist]
         
     #now apply hashing to convert to integers based on vocab_size
-    mdf_train[column + '_hash'] = mdf_train[column + '_hash'].transform(_md5_hash)
-    mdf_test[column + '_hash'] = mdf_test[column + '_hash'].transform(_md5_hash)
+    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].transform(_md5_hash)
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].transform(_md5_hash)
     
     #get max length, i.e. for entry with most words
-    max_length = mdf_train[column + '_hash'].transform(len).max()
+    max_length = mdf_train[suffixcolumn].transform(len).max()
     
     def _pad_hash(hash_list):
       """
@@ -12486,17 +12619,17 @@ class AutoMunge:
       return hash_list
         
     #the other entries are padded out with 0 to reach same length, if a train entry has longer length it is trimmed
-    mdf_train[column + '_hash'] = \
-    mdf_train[column + '_hash'].transform(_pad_hash)
-    mdf_test[column + '_hash'] = \
-    mdf_test[column + '_hash'].transform(_pad_hash)
+    mdf_train[suffixcolumn] = \
+    mdf_train[suffixcolumn].transform(_pad_hash)
+    mdf_test[suffixcolumn] = \
+    mdf_test[suffixcolumn].transform(_pad_hash)
     
     if max_length > 1:
 
       hashcolumns = []
       for i in range(max_length):
 
-        hash_column = column + '_hash_' + str(i)
+        hash_column = column + '_' + suffix + '_' + str(i)
 
         hashcolumns += [hash_column]
 
@@ -12505,19 +12638,19 @@ class AutoMunge:
         self._df_check_suffixoverlap(mdf_train, hash_column, suffixoverlap_results)
 
         #now populate the column with i'th entry from hashed list
-        mdf_train[hash_column] = mdf_train[column + '_hash'].transform(lambda x: x[i])
-        mdf_test[hash_column] = mdf_test[column + '_hash'].transform(lambda x: x[i])
+        mdf_train[hash_column] = mdf_train[suffixcolumn].transform(lambda x: x[i])
+        mdf_test[hash_column] = mdf_test[suffixcolumn].transform(lambda x: x[i])
 
       #remove support column
-      del mdf_train[column + '_hash']
-      del mdf_test[column + '_hash']
+      del mdf_train[suffixcolumn]
+      del mdf_test[suffixcolumn]
       
     else:
-      hashcolumns = [column + '_hash']
+      hashcolumns = [suffixcolumn]
       
       #now populate the column with i'th entry from hashed list
-      mdf_train[column + '_hash'] = mdf_train[column + '_hash'].transform(lambda x: x[0])
-      mdf_test[column + '_hash'] = mdf_test[column + '_hash'].transform(lambda x: x[0])
+      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].transform(lambda x: x[0])
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].transform(lambda x: x[0])
 
     #returned data type is conditional on the size of encoding space
     for hashcolumn in hashcolumns:
@@ -12547,6 +12680,7 @@ class AutoMunge:
                                       'salt' : salt, \
                                       'max_column_count' : max_column_count, \
                                       'hash_alg' : hash_alg, \
+                                      'suffix' : suffix, \
                                       'inplace' : inplace}}
       
       column_dict = { hc : {'category' : 'hash', \
@@ -12626,34 +12760,41 @@ class AutoMunge:
     else:
       hash_alg = 'hash'
 
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'hs10'
+      
+    suffixcolumn = column + '_' + suffix
+
     if inplace is not True:
       
       #copy source column into new column
       mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, column + '_hs10', suffixoverlap_results)
+      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results)
       
-      mdf_test[column + '_hs10'] = mdf_test[column].copy()
+      mdf_test[suffixcolumn] = mdf_test[column].copy()
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, column + '_hs10', suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results)
       
-      mdf_train.rename(columns = {column : column + '_hs10'}, inplace = True)
-      mdf_test.rename(columns = {column : column + '_hs10'}, inplace = True)
+      mdf_train.rename(columns = {column : suffixcolumn}, inplace = True)
+      mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
       
     #convert column to string, note this means that missing data converted to 'nan'
-    mdf_train[column + '_hs10'] = mdf_train[column + '_hs10'].astype(str)
-    mdf_test[column + '_hs10'] = mdf_test[column + '_hs10'].astype(str)
+    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype(str)
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(str)
 
     #now scrub special characters
     for scrub_punctuation in excluded_characters:
-      mdf_train[column + '_hs10'] = mdf_train[column + '_hs10'].str.replace(scrub_punctuation, '')
-      mdf_test[column + '_hs10'] = mdf_test[column + '_hs10'].str.replace(scrub_punctuation, '')
+      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].str.replace(scrub_punctuation, '')
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].str.replace(scrub_punctuation, '')
     
     if vocab_size is False:
       #calculate the vocab_size based on heuristic_multiplier and heuristic_cap
-      vocab_size = int(mdf_train[column + '_hs10'].nunique() * heuristic_multiplier)
+      vocab_size = int(mdf_train[suffixcolumn].nunique() * heuristic_multiplier)
       if vocab_size > heuristic_cap:
         vocab_size = int(heuristic_cap)
       
@@ -12673,27 +12814,27 @@ class AutoMunge:
         return hash(salt + entry) % (vocab_size)
 
     #now apply hashing to convert to integers based on vocab_size
-    mdf_train[column + '_hs10'] = mdf_train[column + '_hs10'].transform(_md5_hash)
-    mdf_test[column + '_hs10'] = mdf_test[column + '_hs10'].transform(_md5_hash)
+    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].transform(_md5_hash)
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].transform(_md5_hash)
 
     binary_column_count = int(np.ceil(np.log2(vocab_size)))
     
     #convert integer encoding to binary
-    mdf_train[column + '_hs10'] = mdf_train[column + '_hs10'].transform(bin)
-    mdf_test[column + '_hs10'] = mdf_test[column + '_hs10'].transform(bin)
+    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].transform(bin)
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].transform(bin)
     
     #convert format to string of digits
-    mdf_train[column + '_hs10'] = mdf_train[column + '_hs10'].str[2:]
-    mdf_test[column + '_hs10'] = mdf_test[column + '_hs10'].str[2:]
+    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].str[2:]
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].str[2:]
     
     #pad out zeros
-    mdf_train[column + '_hs10'] = mdf_train[column + '_hs10'].str.zfill(binary_column_count)
-    mdf_test[column + '_hs10'] = mdf_test[column + '_hs10'].str.zfill(binary_column_count)
+    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].str.zfill(binary_column_count)
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].str.zfill(binary_column_count)
     
     hashcolumns = []
     for i in range(binary_column_count):
 
-      hash_column = column + '_hs10_' + str(i)
+      hash_column = column + '_' + suffix + '_' + str(i)
       
       hashcolumns += [hash_column]
       
@@ -12702,12 +12843,12 @@ class AutoMunge:
       self._df_check_suffixoverlap(mdf_train, hash_column, suffixoverlap_results)
       
       #now populate the column with i'th entry from hashed list
-      mdf_train[hash_column] = mdf_train[column + '_hs10'].str[i].astype(np.int8)
-      mdf_test[hash_column] = mdf_test[column + '_hs10'].str[i].astype(np.int8)
+      mdf_train[hash_column] = mdf_train[suffixcolumn].str[i].astype(np.int8)
+      mdf_test[hash_column] = mdf_test[suffixcolumn].str[i].astype(np.int8)
     
     #remove support column
-    del mdf_train[column + '_hs10']
-    del mdf_test[column + '_hs10']
+    del mdf_train[suffixcolumn]
+    del mdf_test[suffixcolumn]
     
     column_dict_list = []
 
@@ -12721,6 +12862,7 @@ class AutoMunge:
                                       'salt' : salt, \
                                       'excluded_characters' : excluded_characters, \
                                       'hash_alg' : hash_alg, \
+                                      'suffix' : suffix, \
                                       'inplace' : inplace}}      
       
       column_dict = { hc : {'category' : 'hs10', \
@@ -12782,6 +12924,11 @@ class AutoMunge:
       case = params['case']
     else:
       case = True
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'srch'
       
     #we'll create mirror to account for any embdded lists of search terms for aggregation
     search_preflattening = search.copy()
@@ -12803,7 +12950,7 @@ class AutoMunge:
     newcolumns = []
     search_dict = {}
     for searchitem in search:
-      search_dict.update({column + '_srch_' + str(searchitem) : str(searchitem)})
+      search_dict.update({column + '_' + suffix + '_' + str(searchitem) : str(searchitem)})
       
     for newcolumn in search_dict:
       suffixoverlap_results = \
@@ -12859,6 +13006,7 @@ class AutoMunge:
                                       'search' : search, \
                                       'search_preflattening' : search_preflattening, \
                                       'aggregated_dict' : aggregated_dict, \
+                                      'suffix' : suffix, \
                                       'case' : case}}
       
       column_dict = {tc : {'category' : 'srch', \
@@ -12908,6 +13056,11 @@ class AutoMunge:
       search = params['search']
     else:
       search = []
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'src2'
     
     #first we find overlaps from mdf_train
     
@@ -13006,7 +13159,7 @@ class AutoMunge:
       
       if len(overlap_dict[dict_key]) > 0:
 
-        newcolumn = column + '_src2_' + dict_key
+        newcolumn = column + '_' + suffix + '_' + dict_key
 
         mdf_train, suffixoverlap_results = \
         self._df_copy_train(mdf_train, column, newcolumn, suffixoverlap_results)
@@ -13060,6 +13213,7 @@ class AutoMunge:
                                       'search' : search, \
                                       'inverse_search_dict' : inverse_search_dict, \
                                       'aggregated_dict' : aggregated_dict, \
+                                      'suffix' : suffix, \
                                       'search_preflattening' : search_preflattening}}
       
       column_dict = {tc : {'category' : 'src2', \
@@ -13114,6 +13268,11 @@ class AutoMunge:
       search = params['search']
     else:
       search = []
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'src3'
     
     #first we find overlaps from mdf_train
     
@@ -13194,7 +13353,7 @@ class AutoMunge:
       
       if len(overlap_dict[dict_key]) > 0:
 
-        newcolumn = column + '_src3_' + dict_key
+        newcolumn = column + '_' + suffix + '_' + dict_key
 
         mdf_train, suffixoverlap_results = \
         self._df_copy_train(mdf_train, column, newcolumn, suffixoverlap_results)
@@ -13218,6 +13377,7 @@ class AutoMunge:
 
       textnormalization_dict = {tc : {'overlap_dict' : overlap_dict, \
                                       'srch_newcolumns_src3'   : newcolumns, \
+                                      'suffix' : suffix, \
                                       'search' : search}}
       
       column_dict = {tc : {'category' : 'src3', \
@@ -13285,6 +13445,13 @@ class AutoMunge:
       case = params['case']
     else:
       case = True
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'src4'
+
+    suffixcolumn = column + '_' + suffix
       
     #we'll create mirror to account for any embdded lists of search terms for aggregation
     search_preflattening = search.copy()
@@ -13306,7 +13473,7 @@ class AutoMunge:
     newcolumns = []
     search_dict = {}
     for searchitem in search:
-      search_dict.update({column + '_src4_' + str(searchitem) : str(searchitem)})
+      search_dict.update({column + '_' + suffix + '_' + str(searchitem) : str(searchitem)})
       
     for newcolumn in search_dict:
       suffixoverlap_results = \
@@ -13337,17 +13504,17 @@ class AutoMunge:
       i += 1
       
     suffixoverlap_results = \
-    self._df_check_suffixoverlap(mdf_train, column + '_src4', suffixoverlap_results)
+    self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results)
       
-    mdf_train[column + '_src4'] = 0
-    mdf_test[column + '_src4'] = 0
+    mdf_train[suffixcolumn] = 0
+    mdf_test[suffixcolumn] = 0
     
     for newcolumn in newcolumns:
       
-      mdf_train[column + '_src4'] = \
-      np.where(mdf_train[newcolumn] == 1, ordl_dict2[newcolumn], mdf_train[column + '_src4'])
-      mdf_test[column + '_src4'] = \
-      np.where(mdf_test[newcolumn] == 1, ordl_dict2[newcolumn], mdf_test[column + '_src4'])
+      mdf_train[suffixcolumn] = \
+      np.where(mdf_train[newcolumn] == 1, ordl_dict2[newcolumn], mdf_train[suffixcolumn])
+      mdf_test[suffixcolumn] = \
+      np.where(mdf_test[newcolumn] == 1, ordl_dict2[newcolumn], mdf_test[suffixcolumn])
       del mdf_train[newcolumn]
       del mdf_test[newcolumn]
       
@@ -13369,27 +13536,27 @@ class AutoMunge:
         target_for_aggregation_column = inverse_search_dict[target_for_aggregation]
         target_for_aggregation_encoding = ordl_dict2[target_for_aggregation_column]
         
-        mdf_train[column + '_src4'] = \
-        np.where(mdf_train[column + '_src4'] == target_for_aggregation_encoding, aggregated_dict_key_encoding, mdf_train[column + '_src4'])
-        mdf_test[column + '_src4'] = \
-        np.where(mdf_test[column + '_src4'] == target_for_aggregation_encoding, aggregated_dict_key_encoding, mdf_test[column + '_src4'])
+        mdf_train[suffixcolumn] = \
+        np.where(mdf_train[suffixcolumn] == target_for_aggregation_encoding, aggregated_dict_key_encoding, mdf_train[suffixcolumn])
+        mdf_test[suffixcolumn] = \
+        np.where(mdf_test[suffixcolumn] == target_for_aggregation_encoding, aggregated_dict_key_encoding, mdf_test[suffixcolumn])
 
     #we'll base the integer type on number of ordinal entries
     if len(ordl_dict1) < 254:
-      mdf_train[column + '_src4'] = mdf_train[column + '_src4'].astype(np.uint8)
-      mdf_test[column + '_src4'] = mdf_test[column + '_src4'].astype(np.uint8)
+      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype(np.uint8)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.uint8)
     elif len(ordl_dict1) < 65534:
-      mdf_train[column + '_src4'] = mdf_train[column + '_src4'].astype(np.uint16)
-      mdf_test[column + '_src4'] = mdf_test[column + '_src4'].astype(np.uint16)
+      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype(np.uint16)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.uint16)
     else:
-      mdf_train[column + '_src4'] = mdf_train[column + '_src4'].astype(np.uint32)
-      mdf_test[column + '_src4'] = mdf_test[column + '_src4'].astype(np.uint32)
+      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype(np.uint32)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.uint32)
     
     column_dict_list = []
     
     #newcolumns are based on the original srch transform
     #src4_newcolumns are after consolidating to ordinal encoding (single entry)
-    src4_newcolumns = [column + '_src4']
+    src4_newcolumns = [suffixcolumn]
 
     for tc in src4_newcolumns:
 
@@ -13403,6 +13570,7 @@ class AutoMunge:
                                       'case' : case, \
                                       'ordl_dict1' : ordl_dict1, \
                                       'activations_list' : list(ordl_dict1), \
+                                      'suffix' : suffix, \
                                       'ordl_dict2' : ordl_dict2}}
       
       column_dict = {tc : {'category' : 'src4', \
@@ -13438,9 +13606,16 @@ class AutoMunge:
       aggregate = params['aggregate']
     else:
       aggregate = [[]]
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'aggt'
+      
+    suffixcolumn = column + '_' + suffix
       
     df, suffixoverlap_results = \
-    self._df_copy_train(df, column, column + '_aggt', suffixoverlap_results)
+    self._df_copy_train(df, column, suffixcolumn, suffixoverlap_results)
 
     for sublist in aggregate:
       
@@ -13452,7 +13627,7 @@ class AutoMunge:
 
         for i in range(length_sublist-1):
 
-          df[column + '_aggt'] = np.where(df[column + '_aggt'] == sublist[i], sublist[-1], df[column + '_aggt'])
+          df[suffixcolumn] = np.where(df[suffixcolumn] == sublist[i], sublist[-1], df[suffixcolumn])
           
         break
       
@@ -13462,11 +13637,11 @@ class AutoMunge:
 
         for i in range(length_sublist-1):
 
-          df[column + '_aggt'] = np.where(df[column + '_aggt'] == sublist[i], sublist[-1], df[column + '_aggt'])
+          df[suffixcolumn] = np.where(df[suffixcolumn] == sublist[i], sublist[-1], df[suffixcolumn])
 
-    normalization_dict = {column + '_aggt' : {'aggregate' : aggregate}}
+    normalization_dict = {suffixcolumn : {'aggregate' : aggregate, 'suffix' : suffix}}
     
-    nmbrcolumns = [column + '_aggt']
+    nmbrcolumns = [suffixcolumn]
     
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -13498,6 +13673,13 @@ class AutoMunge:
     """
     
     suffixoverlap_results = {}
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'strn'
+      
+    suffixcolumn = column + '_' + suffix
     
     unique_list = list(df[column].unique())
 
@@ -13579,13 +13761,13 @@ class AutoMunge:
                 overlap_dict.update({unique : np.nan})
     
     suffixoverlap_results = \
-    self._df_check_suffixoverlap(df, column + '_strn', suffixoverlap_results)
+    self._df_check_suffixoverlap(df, suffixcolumn, suffixoverlap_results)
     
-    df[column + '_strn'] = df[column].astype(str)
-    df[column + '_strn'] = df[column + '_strn'].replace(overlap_dict)
+    df[suffixcolumn] = df[column].astype(str)
+    df[suffixcolumn] = df[suffixcolumn].replace(overlap_dict)
 
     #replace missing data with training set mean as default infill
-    df[column + '_strn'] = df[column + '_strn'].fillna('zzzinfill')
+    df[suffixcolumn] = df[suffixcolumn].fillna('zzzinfill')
     
 #     #a few more metrics collected for driftreport
 #     #get maximum value of training column
@@ -13594,9 +13776,10 @@ class AutoMunge:
 #     minimum = df[column + '_nmrc'].min()
     
     #create list of columns
-    nmbrcolumns = [column + '_strn']
+    nmbrcolumns = [suffixcolumn]
 
-    nmbrnormalization_dict = {column + '_strn' : {'overlap_dict' : overlap_dict}}
+    nmbrnormalization_dict = {suffixcolumn : {'overlap_dict' : overlap_dict, \
+                                              'suffix' : suffix}}
 #                                                   'mean' : mean, \
 #                                                   'maximum' : maximum, \
 #                                                   'minimum' : minimum }}
@@ -13632,8 +13815,13 @@ class AutoMunge:
     '''
     
     suffixoverlap_results = {}
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'strg'
       
-    strg_column = column + '_strg'
+    strg_column = column + '_' + suffix
     
     df, suffixoverlap_results = \
     self._df_copy_train(df, column, strg_column, suffixoverlap_results)
@@ -13644,7 +13832,7 @@ class AutoMunge:
 
     column_dict = {strg_column : {'category' : 'strg', \
                                  'origcategory' : category, \
-                                 'normalization_dict' : {strg_column:{}}, \
+                                 'normalization_dict' : {strg_column:{'suffix' : suffix}}, \
                                  'origcolumn' : column, \
                                  'inputcolumn' : column, \
                                  'columnslist' : [strg_column], \
@@ -14101,69 +14289,76 @@ class AutoMunge:
       str_convert = params['str_convert']
     else:
       str_convert = False
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'ordl'
+      
+    suffixcolumn = column + '_' + suffix
     
     if inplace is not True:
       
       #copy source column into new column
       mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, column + '_ordl', suffixoverlap_results)
+      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results)
 
-      mdf_test[column + '_ordl'] = mdf_test[column].copy()
+      mdf_test[suffixcolumn] = mdf_test[column].copy()
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, column + '_ordl', suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results)
       
-      mdf_train.rename(columns = {column : column + '_ordl'}, inplace = True)
-      mdf_test.rename(columns = {column : column + '_ordl'}, inplace = True)
+      mdf_train.rename(columns = {column : suffixcolumn}, inplace = True)
+      mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
       
     ordered = False
     if ordered_overide:
-      if mdf_train[column + '_ordl'].dtype.name == 'category':
-        if mdf_train[column + '_ordl'].cat.ordered:
+      if mdf_train[suffixcolumn].dtype.name == 'category':
+        if mdf_train[suffixcolumn].cat.ordered:
           ordered = True
-          labels_train = list(mdf_train[column + '_ordl'].cat.categories)
-          if mdf_test[column + '_ordl'].dtype.name == 'category':
-            if mdf_test[column + '_ordl'].cat.ordered:
-              labels_test = list(mdf_test[column + '_ordl'].cat.categories)
+          labels_train = list(mdf_train[suffixcolumn].cat.categories)
+          if mdf_test[suffixcolumn].dtype.name == 'category':
+            if mdf_test[suffixcolumn].cat.ordered:
+              labels_test = list(mdf_test[suffixcolumn].cat.categories)
             else:
               ordered = False
           else:
             ordered = False
     
     #convert column to category if it isn't already
-    mdf_train[column + '_ordl'] = mdf_train[column + '_ordl'].astype('category')
-    mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype('category')
+    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype('category')
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('category')
 
     #if set is categorical we'll need the plug value for missing values included
-    if 'zzzinfill' not in mdf_train[column + '_ordl'].cat.categories:
-      mdf_train[column + '_ordl'] = mdf_train[column + '_ordl'].cat.add_categories(['zzzinfill'])
-    if 'zzzinfill' not in mdf_test[column + '_ordl'].cat.categories:
-      mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].cat.add_categories(['zzzinfill'])
+    if 'zzzinfill' not in mdf_train[suffixcolumn].cat.categories:
+      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].cat.add_categories(['zzzinfill'])
+    if 'zzzinfill' not in mdf_test[suffixcolumn].cat.categories:
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].cat.add_categories(['zzzinfill'])
 
     #replace NA with a dummy variable
-    mdf_train[column + '_ordl'] = mdf_train[column + '_ordl'].fillna('zzzinfill')
-    mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].fillna('zzzinfill')
+    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna('zzzinfill')
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna('zzzinfill')
 
     #replace numerical with string equivalent
     if str_convert is True:
-      mdf_train[column + '_ordl'] = mdf_train[column + '_ordl'].astype(str)
-      mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype(str)
+      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype(str)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(str)
       if ordered is True:
         labels_train = [str(x) for x in labels_train]
         labels_test = [str(x) for x in labels_test]
     else:
-      mdf_train[column + '_ordl'] = mdf_train[column + '_ordl'].astype('object')
-      mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype('object')
+      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype('object')
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('object')
             
     if ordered is False:
       
       #extract categories for column labels
       #note that .unique() extracts the labels as a numpy array
-      labels_train = list(mdf_train[column + '_ordl'].unique())
+      labels_train = list(mdf_train[suffixcolumn].unique())
       labels_train = sorted(labels_train, key=str)
-      labels_test = list(mdf_test[column + '_ordl'].unique())
+      labels_test = list(mdf_test[suffixcolumn].unique())
       labels_test = sorted(labels_test, key=str)
 
     #if infill not present in train set, insert
@@ -14202,19 +14397,19 @@ class AutoMunge:
           
         #then replace encoding overlap entries in the returned column
 
-        mdf_train[column + '_ordl'] = mdf_train[column + '_ordl'].replace(overlap_replace)
-        mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].replace(overlap_replace)
+        mdf_train[suffixcolumn] = mdf_train[suffixcolumn].replace(overlap_replace)
+        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(overlap_replace)
 
       if ordered is False:
 
-        mdf_train[column + '_ordl'] = mdf_train[column + '_ordl'].replace(overlap_replace)
-        mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].replace(overlap_replace)
+        mdf_train[suffixcolumn] = mdf_train[suffixcolumn].replace(overlap_replace)
+        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(overlap_replace)
 
         #extract categories for column labels
         #note that .unique() extracts the labels as a numpy array
-        labels_train = list(mdf_train[column + '_ordl'].unique())
+        labels_train = list(mdf_train[suffixcolumn].unique())
         labels_train = sorted(labels_train, key=str)
-        labels_test = list(mdf_test[column + '_ordl'].unique())
+        labels_test = list(mdf_test[suffixcolumn].unique())
         labels_test = sorted(labels_test, key=str)
 
       #if infill not present in train set, insert
@@ -14234,11 +14429,11 @@ class AutoMunge:
     ordinal_dict = dict(zip(labels_train, range(listlength)))
     
     #dtype operation is to address edge case if object type drifted to numeric which impacts replace
-    if mdf_train[column + '_ordl'].dtype.name != 'object':
-      mdf_train[column + '_ordl'] = mdf_train[column + '_ordl'].astype('object')
+    if mdf_train[suffixcolumn].dtype.name != 'object':
+      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype('object')
     
     #replace the cateogries in train set via ordinal trasnformation
-    mdf_train[column + '_ordl'] = mdf_train[column + '_ordl'].replace(ordinal_dict)
+    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].replace(ordinal_dict)
     
     #in test set, we'll need to strike any categories that weren't present in train
     #first let'/s identify what applies
@@ -14246,45 +14441,45 @@ class AutoMunge:
     
     #so we'll just replace those items with our plug value
     testplug_dict = dict(zip(testspecificcategories, ['zzzinfill'] * len(testspecificcategories)))
-    if mdf_test[column + '_ordl'].dtype.name != 'object':
-      mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype('object')
-    mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].replace(testplug_dict)
+    if mdf_test[suffixcolumn].dtype.name != 'object':
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('object')
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(testplug_dict)
     
     #now we'll apply the ordinal transformation to the test set
-    if mdf_test[column + '_ordl'].dtype.name != 'object':
-      mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype('object')
-    mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].replace(ordinal_dict)
+    if mdf_test[suffixcolumn].dtype.name != 'object':
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('object')
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(ordinal_dict)
     
     #just want to make sure these arent' being saved as floats for memory considerations
     if len(ordinal_dict) < 254:
-      mdf_train[column + '_ordl'] = mdf_train[column + '_ordl'].astype(np.uint8)
-      mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype(np.uint8)
+      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype(np.uint8)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.uint8)
     elif len(ordinal_dict) < 65534:
-      mdf_train[column + '_ordl'] = mdf_train[column + '_ordl'].astype(np.uint16)
-      mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype(np.uint16)
+      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype(np.uint16)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.uint16)
     else:
-      mdf_train[column + '_ordl'] = mdf_train[column + '_ordl'].astype(np.uint32)
-      mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype(np.uint32)
+      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype(np.uint32)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.uint32)
     
 #     #convert column to category
-#     mdf_train[column + '_ordl'] = mdf_train[column + '_ordl'].astype('category')
-#     mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype('category')
+#     mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype('category')
+#     mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('category')
 
 #     #change data type for memory savings
-#     mdf_train[column + '_ordl'] = mdf_train[column + '_ordl'].astype(np.int32)
-#     mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype(np.int32)
+#     mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype(np.int32)
+#     mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.int32)
 
     #new driftreport metric ordl_activations_dict
     ordl_activations_dict = {}
     for key in ordinal_dict:
-      sumcalc = (mdf_train[column+'_ordl'] == ordinal_dict[key]).sum() 
-      ratio = sumcalc / mdf_train[column+'_ordl'].shape[0]
+      sumcalc = (mdf_train[suffixcolumn] == ordinal_dict[key]).sum() 
+      ratio = sumcalc / mdf_train[suffixcolumn].shape[0]
       ordl_activations_dict.update({key:ratio})
 
     inverse_ordinal_dict = {value:key for key,value in ordinal_dict.items()}
     activations_list = list(inverse_ordinal_dict)
     
-    categorylist = [column + '_ordl']  
+    categorylist = [suffixcolumn]  
         
     column_dict_list = []
     
@@ -14298,6 +14493,7 @@ class AutoMunge:
                                   'ordered_overide' : ordered_overide, \
                                   'ordered' : ordered, \
                                   'str_convert' : str_convert, \
+                                  'suffix' : suffix, \
                                   'inplace' : inplace}}
     
       column_dict = {tc : {'category' : 'ordl', \
@@ -14347,71 +14543,78 @@ class AutoMunge:
       str_convert = params['str_convert']
     else:
       str_convert = False
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'ord3'
+      
+    suffixcolumn = column + '_' + suffix
     
     if inplace is not True:
       
       #copy source column into new column
       mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, column + '_ord3', suffixoverlap_results)
+      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results)
 
-      mdf_test[column + '_ord3'] = mdf_test[column].copy()
+      mdf_test[suffixcolumn] = mdf_test[column].copy()
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, column + '_ord3', suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results)
       
-      mdf_train.rename(columns = {column : column + '_ord3'}, inplace = True)
-      mdf_test.rename(columns = {column : column + '_ord3'}, inplace = True)
+      mdf_train.rename(columns = {column : suffixcolumn}, inplace = True)
+      mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
     
     ordered = False
     if ordered_overide:
-      if mdf_train[column + '_ord3'].dtype.name == 'category':
-        if mdf_train[column + '_ord3'].cat.ordered:
+      if mdf_train[suffixcolumn].dtype.name == 'category':
+        if mdf_train[suffixcolumn].cat.ordered:
           ordered = True
-          labels_train = list(mdf_train[column + '_ord3'].cat.categories)
-          if mdf_test[column + '_ord3'].dtype.name == 'category':
-            if mdf_test[column + '_ord3'].cat.ordered:
-              labels_test = list(mdf_test[column + '_ord3'].cat.categories)
+          labels_train = list(mdf_train[suffixcolumn].cat.categories)
+          if mdf_test[suffixcolumn].dtype.name == 'category':
+            if mdf_test[suffixcolumn].cat.ordered:
+              labels_test = list(mdf_test[suffixcolumn].cat.categories)
             else:
               ordered = False
           else:
             ordered = False
     
     #convert column to category if it isn't already
-    mdf_train[column + '_ord3'] = mdf_train[column + '_ord3'].astype('category')
-    mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype('category')
+    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype('category')
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('category')
 
     #if set is categorical we'll need the plug value for missing values included
-    if 'zzzinfill' not in mdf_train[column + '_ord3'].cat.categories:
-      mdf_train[column + '_ord3'] = mdf_train[column + '_ord3'].cat.add_categories(['zzzinfill'])
-    if 'zzzinfill' not in mdf_test[column + '_ord3'].cat.categories:
-      mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].cat.add_categories(['zzzinfill'])
+    if 'zzzinfill' not in mdf_train[suffixcolumn].cat.categories:
+      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].cat.add_categories(['zzzinfill'])
+    if 'zzzinfill' not in mdf_test[suffixcolumn].cat.categories:
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].cat.add_categories(['zzzinfill'])
 
     #replace NA with a dummy variable
-    mdf_train[column + '_ord3'] = mdf_train[column + '_ord3'].fillna('zzzinfill')
-    mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].fillna('zzzinfill')
+    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna('zzzinfill')
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna('zzzinfill')
     
     if str_convert is True:
       #replace numerical with string equivalent (this operation changes dtype from category to object)
-      mdf_train[column + '_ord3'] = mdf_train[column + '_ord3'].astype(str)
-      mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype(str)
+      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype(str)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(str)
       if ordered is True:
         labels_train = [str(x) for x in labels_train]
         labels_test = [str(x) for x in labels_test]
     else:
-      mdf_train[column + '_ord3'] = mdf_train[column + '_ord3'].astype('object')
-      mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype('object')
+      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype('object')
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('object')
             
     if ordered is False:
       
       #extract categories for column labels
       #with values sorted by frequency of occurance from most to least
-      labels_train = pd.DataFrame(mdf_train[column + '_ord3'].value_counts())
-      labels_train = labels_train.rename_axis('zzzinfill').sort_values(by = [column + '_ord3', 'zzzinfill'], ascending = [False, True])
+      labels_train = pd.DataFrame(mdf_train[suffixcolumn].value_counts())
+      labels_train = labels_train.rename_axis('zzzinfill').sort_values(by = [suffixcolumn, 'zzzinfill'], ascending = [False, True])
       labels_train = list(labels_train.index)
       
-      labels_test = list(mdf_test[column + '_ord3'].unique())
+      labels_test = list(mdf_test[suffixcolumn].unique())
 
     #if infill not present in train set, insert
     if 'zzzinfill' not in labels_train:
@@ -14444,23 +14647,23 @@ class AutoMunge:
           labels_test = [overlap_replace[foundoverlap] if x == foundoverlap else x for x in labels_test]
           
         #then replace encoding overlap entries in the returned column
-        mdf_train[column + '_ord3'] = mdf_train[column + '_ord3'].replace(overlap_replace)
-        mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].replace(overlap_replace)
+        mdf_train[suffixcolumn] = mdf_train[suffixcolumn].replace(overlap_replace)
+        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(overlap_replace)
 
       if ordered is False:
             
-        mdf_train[column + '_ord3'] = mdf_train[column + '_ord3'].replace(overlap_replace)
-        mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].replace(overlap_replace)
+        mdf_train[suffixcolumn] = mdf_train[suffixcolumn].replace(overlap_replace)
+        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(overlap_replace)
 
         #then we'll redo the encodings
 
         #extract categories for column labels
         #note that .unique() extracts the labels as a numpy array
-        labels_train = pd.DataFrame(mdf_train[column + '_ord3'].value_counts())
-        labels_train = labels_train.rename_axis('zzzinfill').sort_values(by = [column + '_ord3', 'zzzinfill'], ascending = [False, True])
+        labels_train = pd.DataFrame(mdf_train[suffixcolumn].value_counts())
+        labels_train = labels_train.rename_axis('zzzinfill').sort_values(by = [suffixcolumn, 'zzzinfill'], ascending = [False, True])
         labels_train = list(labels_train.index)
 
-        labels_test = list(mdf_test[column + '_ord3'].unique())
+        labels_test = list(mdf_test[suffixcolumn].unique())
         
       #if infill not present in train set, insert
       if 'zzzinfill' not in labels_train:
@@ -14479,11 +14682,11 @@ class AutoMunge:
     ordinal_dict = dict(zip(labels_train, range(listlength)))
     
     #there is an edge case for replace operation is dtyp drifted from object such as to numeric
-    if mdf_train[column + '_ord3'].dtype.name != 'object':
-      mdf_train[column + '_ord3'] = mdf_train[column + '_ord3'].astype('object')
+    if mdf_train[suffixcolumn].dtype.name != 'object':
+      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype('object')
     
     #replace the cateogries in train set via ordinal trasnformation
-    mdf_train[column + '_ord3'] = mdf_train[column + '_ord3'].replace(ordinal_dict)
+    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].replace(ordinal_dict)
     
     #in test set, we'll need to strike any categories that weren't present in train
     #first let'/s identify what applies
@@ -14491,45 +14694,45 @@ class AutoMunge:
     
     #so we'll just replace those items with our plug value
     testplug_dict = dict(zip(testspecificcategories, ['zzzinfill'] * len(testspecificcategories)))
-    if mdf_test[column + '_ord3'].dtype.name != 'object':
-      mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype('object')
-    mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].replace(testplug_dict)
+    if mdf_test[suffixcolumn].dtype.name != 'object':
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('object')
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(testplug_dict)
     
     #now we'll apply the ordinal transformation to the test set
-    if mdf_test[column + '_ord3'].dtype.name != 'object':
-      mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype('object')
-    mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].replace(ordinal_dict)
+    if mdf_test[suffixcolumn].dtype.name != 'object':
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('object')
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(ordinal_dict)
     
     #just want to make sure these arent' being saved as floats for memory considerations
     if len(ordinal_dict) < 254:
-      mdf_train[column + '_ord3'] = mdf_train[column + '_ord3'].astype(np.uint8)
-      mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype(np.uint8)
+      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype(np.uint8)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.uint8)
     elif len(ordinal_dict) < 65534:
-      mdf_train[column + '_ord3'] = mdf_train[column + '_ord3'].astype(np.uint16)
-      mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype(np.uint16)
+      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype(np.uint16)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.uint16)
     else:
-      mdf_train[column + '_ord3'] = mdf_train[column + '_ord3'].astype(np.uint32)
-      mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype(np.uint32)
+      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype(np.uint32)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.uint32)
     
 #     #convert column to category
-#     mdf_train[column + '_ordl'] = mdf_train[column + '_ordl'].astype('category')
-#     mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype('category')
+#     mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype('category')
+#     mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('category')
 
 #     #change data type for memory savings
-#     mdf_train[column + '_ordl'] = mdf_train[column + '_ordl'].astype(np.int32)
-#     mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype(np.int32)
+#     mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype(np.int32)
+#     mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.int32)
 
     #new driftreport metric ordl_activations_dict
     ordl_activations_dict = {}
     for key in ordinal_dict:
-      sumcalc = (mdf_train[column+'_ord3'] == ordinal_dict[key]).sum() 
-      ratio = sumcalc / mdf_train[column+'_ord3'].shape[0]
+      sumcalc = (mdf_train[suffixcolumn] == ordinal_dict[key]).sum() 
+      ratio = sumcalc / mdf_train[suffixcolumn].shape[0]
       ordl_activations_dict.update({key:ratio})
 
     inverse_ordinal_dict = {value:key for key,value in ordinal_dict.items()}
     activations_list = list(inverse_ordinal_dict)
     
-    categorylist = [column + '_ord3']  
+    categorylist = [suffixcolumn]  
         
     column_dict_list = []
     
@@ -14543,6 +14746,7 @@ class AutoMunge:
                                   'ordered_overide' : ordered_overide, \
                                   'ordered' : ordered, \
                                   'str_convert' : str_convert, \
+                                  'suffix' : suffix, \
                                   'inplace' : inplace}}
     
       column_dict = {tc : {'category' : 'ord3', \
@@ -14603,46 +14807,53 @@ class AutoMunge:
       minentryratio = params['minentryratio']
     else:
       minentryratio = False
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'maxb'
+      
+    suffixcolumn = column + '_' + suffix
     
     if inplace is not True:
       
       #copy source column into new column
       mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, column + '_maxb', suffixoverlap_results)
+      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results)
 
-      mdf_test[column + '_maxb'] = mdf_test[column].copy()
+      mdf_test[suffixcolumn] = mdf_test[column].copy()
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, column + '_maxb', suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results)
       
-      mdf_train.rename(columns = {column : column + '_maxb'}, inplace = True)
-      mdf_test.rename(columns = {column : column + '_maxb'}, inplace = True)
+      mdf_train.rename(columns = {column : suffixcolumn}, inplace = True)
+      mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
     
     #convert all values to either numeric or NaN
-    mdf_train[column + '_maxb'] = pd.to_numeric(mdf_train[column + '_maxb'], errors='coerce')
-    mdf_test[column + '_maxb'] = pd.to_numeric(mdf_test[column + '_maxb'], errors='coerce')
+    mdf_train[suffixcolumn] = pd.to_numeric(mdf_train[suffixcolumn], errors='coerce')
+    mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
     
     #non integers are subject to infill
-    mdf_train[column + '_maxb'] = np.where(mdf_train[column + '_maxb'] == mdf_train[column + '_maxb'].round(), mdf_train[column + '_maxb'], np.nan)
-    mdf_test[column + '_maxb'] = np.where(mdf_test[column + '_maxb'] == mdf_test[column + '_maxb'].round(), mdf_test[column + '_maxb'], np.nan)
+    mdf_train[suffixcolumn] = np.where(mdf_train[suffixcolumn] == mdf_train[suffixcolumn].round(), mdf_train[suffixcolumn], np.nan)
+    mdf_test[suffixcolumn] = np.where(mdf_test[suffixcolumn] == mdf_test[suffixcolumn].round(), mdf_test[suffixcolumn], np.nan)
     
     #apply ffill to replace nan with value from adjacent cell in pre4ceding row
-    mdf_train[column + '_maxb'] = mdf_train[column + '_maxb'].fillna(method='ffill')
-    mdf_test[column + '_maxb'] = mdf_test[column + '_maxb'].fillna(method='ffill')
+    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(method='ffill')
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(method='ffill')
     
     #we'll follow with a bfill just in case first row had a nan
-    mdf_train[column + '_maxb'] = mdf_train[column + '_maxb'].fillna(method='bfill')
-    mdf_test[column + '_maxb'] = mdf_test[column + '_maxb'].fillna(method='bfill')
+    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(method='bfill')
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(method='bfill')
     
     #then one more infill with to address scenario when data wasn't numeric
     #get arbitrary cell value, if one is nan then all will be
-    mdf_train[column + '_maxb'] = mdf_train[column + '_maxb'].fillna(0)
-    mdf_test[column + '_maxb'] = mdf_test[column + '_maxb'].fillna(0)
+    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(0)
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(0)
     
     #get maximum train set activation which for ord3 will be least frequent entry
-    maxactivation = int(mdf_train[column + '_maxb'].max())
+    maxactivation = int(mdf_train[suffixcolumn].max())
     
     #first we'll inspect maxbincount
     bincount_maxactivation = maxactivation
@@ -14653,10 +14864,10 @@ class AutoMunge:
         
         bincount_maxactivation = maxbincount
         
-        mdf_train[column + '_maxb'] = \
-        np.where(mdf_train[column + '_maxb'] < bincount_maxactivation, mdf_train[column + '_maxb'], bincount_maxactivation)
-        mdf_test[column + '_maxb'] = \
-        np.where(mdf_test[column + '_maxb'] < bincount_maxactivation, mdf_test[column + '_maxb'], bincount_maxactivation)
+        mdf_train[suffixcolumn] = \
+        np.where(mdf_train[suffixcolumn] < bincount_maxactivation, mdf_train[suffixcolumn], bincount_maxactivation)
+        mdf_test[suffixcolumn] = \
+        np.where(mdf_test[suffixcolumn] < bincount_maxactivation, mdf_test[suffixcolumn], bincount_maxactivation)
     
     #then inspect minentrycount
     count_maxactivation = maxactivation
@@ -14667,7 +14878,7 @@ class AutoMunge:
         entry_counts = {}
         for i in range(maxactivation + 1):
 
-          count = mdf_train[mdf_train[column + '_maxb'] == i].shape[0]
+          count = mdf_train[mdf_train[suffixcolumn] == i].shape[0]
           entry_counts.update({i : count})
           
         for i in entry_counts:
@@ -14679,10 +14890,10 @@ class AutoMunge:
             
         if count_maxactivation < maxactivation:
             
-          mdf_train[column + '_maxb'] = \
-          np.where(mdf_train[column + '_maxb'] < count_maxactivation, mdf_train[column + '_maxb'], count_maxactivation)
-          mdf_test[column + '_maxb'] = \
-          np.where(mdf_test[column + '_maxb'] < count_maxactivation, mdf_test[column + '_maxb'], count_maxactivation)
+          mdf_train[suffixcolumn] = \
+          np.where(mdf_train[suffixcolumn] < count_maxactivation, mdf_train[suffixcolumn], count_maxactivation)
+          mdf_test[suffixcolumn] = \
+          np.where(mdf_test[suffixcolumn] < count_maxactivation, mdf_test[suffixcolumn], count_maxactivation)
       
     #else if minentrycount passed as a ratio
     ratio_maxactivation = maxactivation
@@ -14695,7 +14906,7 @@ class AutoMunge:
         entry_ratios = {}
         for i in range(maxactivation + 1):
 
-          ratio = mdf_train[mdf_train[column + '_maxb'] == i].shape[0] / train_row_count
+          ratio = mdf_train[mdf_train[suffixcolumn] == i].shape[0] / train_row_count
           entry_ratios.update({i : ratio})
 
         for i in entry_ratios:
@@ -14707,13 +14918,13 @@ class AutoMunge:
 
         if ratio_maxactivation < maxactivation:
 
-          mdf_train[column + '_maxb'] = \
-          np.where(mdf_train[column + '_maxb'] < ratio_maxactivation, mdf_train[column + '_maxb'], ratio_maxactivation)
-          mdf_test[column + '_maxb'] = \
-          np.where(mdf_test[column + '_maxb'] < ratio_maxactivation, mdf_test[column + '_maxb'], ratio_maxactivation)
+          mdf_train[suffixcolumn] = \
+          np.where(mdf_train[suffixcolumn] < ratio_maxactivation, mdf_train[suffixcolumn], ratio_maxactivation)
+          mdf_test[suffixcolumn] = \
+          np.where(mdf_test[suffixcolumn] < ratio_maxactivation, mdf_test[suffixcolumn], ratio_maxactivation)
 
     #create list of columns
-    nmbrcolumns = [column + '_maxb']
+    nmbrcolumns = [suffixcolumn]
 
     #grab some driftreport metrics
     new_maxactivation = maxactivation
@@ -14726,29 +14937,30 @@ class AutoMunge:
     
     consolidation_count = 0
     if new_maxactivation < maxactivation:
-      consolidation_count = mdf_train[mdf_train[column + '_maxb'] == new_maxactivation].shape[0]
+      consolidation_count = mdf_train[mdf_train[suffixcolumn] == new_maxactivation].shape[0]
       
     #set integer type based on encoding depth
     if new_maxactivation < 254:
-      mdf_train[column + '_maxb'] = mdf_train[column + '_maxb'].astype(np.uint8)
-      mdf_test[column + '_maxb'] = mdf_test[column + '_maxb'].astype(np.uint8)
+      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype(np.uint8)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.uint8)
     elif new_maxactivation < 65534:
-      mdf_train[column + '_maxb'] = mdf_train[column + '_maxb'].astype(np.uint16)
-      mdf_test[column + '_maxb'] = mdf_test[column + '_maxb'].astype(np.uint16)
+      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype(np.uint16)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.uint16)
     else:
-      mdf_train[column + '_maxb'] = mdf_train[column + '_maxb'].astype(np.uint32)
-      mdf_test[column + '_maxb'] = mdf_test[column + '_maxb'].astype(np.uint32)
+      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype(np.uint32)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.uint32)
 
-    normalization_dict = {column + '_maxb' : {'bincount_maxactivation' : bincount_maxactivation, \
-                                              'count_maxactivation' : count_maxactivation, \
-                                              'ratio_maxactivation' : ratio_maxactivation, \
-                                              'new_maxactivation' : new_maxactivation, \
-                                              'orig_maxactivation' : maxactivation, \
-                                              'consolidation_count' : consolidation_count, \
-                                              'maxbincount' : maxbincount, \
-                                              'minentrycount' : minentrycount, \
-                                              'minentryratio' : minentryratio, \
-                                              'inplace' : inplace}}
+    normalization_dict = {suffixcolumn : {'bincount_maxactivation' : bincount_maxactivation, \
+                                          'count_maxactivation' : count_maxactivation, \
+                                          'ratio_maxactivation' : ratio_maxactivation, \
+                                          'new_maxactivation' : new_maxactivation, \
+                                          'orig_maxactivation' : maxactivation, \
+                                          'consolidation_count' : consolidation_count, \
+                                          'maxbincount' : maxbincount, \
+                                          'minentrycount' : minentrycount, \
+                                          'minentryratio' : minentryratio, \
+                                          'suffix' : suffix, \
+                                          'inplace' : inplace}}
     
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -14784,40 +14996,47 @@ class AutoMunge:
     '''
     
     suffixoverlap_results = {}
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'ucct'
+      
+    suffixcolumn = column + '_' + suffix
     
     #create new column for trasnformation
     mdf_train, suffixoverlap_results = \
-    self._df_copy_train(mdf_train, column, column + '_ucct', suffixoverlap_results)
+    self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results)
     
-    mdf_test[column + '_ucct'] = mdf_test[column].copy()
+    mdf_test[suffixcolumn] = mdf_test[column].copy()
     
     #convert column to category
-    mdf_train[column + '_ucct'] = mdf_train[column + '_ucct'].astype('category')
-    mdf_test[column + '_ucct'] = mdf_test[column + '_ucct'].astype('category')
+    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype('category')
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('category')
 
     #if set is categorical we'll need the plug value for missing values included
-    if 'zzzinfill' not in mdf_train[column + '_ucct'].cat.categories:
-      mdf_train[column + '_ucct'] = mdf_train[column + '_ucct'].cat.add_categories(['zzzinfill'])
-    if 'zzzinfill' not in mdf_test[column + '_ucct'].cat.categories:
-      mdf_test[column + '_ucct'] = mdf_test[column + '_ucct'].cat.add_categories(['zzzinfill'])
+    if 'zzzinfill' not in mdf_train[suffixcolumn].cat.categories:
+      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].cat.add_categories(['zzzinfill'])
+    if 'zzzinfill' not in mdf_test[suffixcolumn].cat.categories:
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].cat.add_categories(['zzzinfill'])
 
     #replace NA with a dummy variable
-    mdf_train[column + '_ucct'] = mdf_train[column + '_ucct'].fillna('zzzinfill')
-    mdf_test[column + '_ucct'] = mdf_test[column + '_ucct'].fillna('zzzinfill')
+    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna('zzzinfill')
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna('zzzinfill')
 
     #replace numerical with string equivalent
-    mdf_train[column + '_ucct'] = mdf_train[column + '_ucct'].astype(str)
-    mdf_test[column + '_ucct'] = mdf_test[column + '_ucct'].astype(str)
+    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype(str)
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(str)
     
     #extract categories for column labels
     #with values sorted by frequency of occurance from most to least
-    labels_train = pd.DataFrame(mdf_train[column + '_ucct'].value_counts())
-    labels_train = labels_train.rename_axis('zzzinfill').sort_values(by = [column + '_ucct', 'zzzinfill'], ascending = [False, True])
+    labels_train = pd.DataFrame(mdf_train[suffixcolumn].value_counts())
+    labels_train = labels_train.rename_axis('zzzinfill').sort_values(by = [suffixcolumn, 'zzzinfill'], ascending = [False, True])
     labels_train = list(labels_train.index)
     
-#     labels_train = list(mdf_train[column + '_ordl'].unique())
+#     labels_train = list(mdf_train[suffixcolumn].unique())
 #     labels_train.sort()
-    labels_test = list(mdf_test[column + '_ucct'].unique())
+    labels_test = list(mdf_test[suffixcolumn].unique())
     labels_test.sort()
 
     #if infill not present in train set, insert
@@ -14846,20 +15065,20 @@ class AutoMunge:
     
     #here we replace the overlaps with version with jibberish suffix
     if len(overlap_list) > 0:
-      mdf_train[column + '_ucct'] = mdf_train[column + '_ucct'].replace(overlap_replace)
-      mdf_test[column + '_ucct'] = mdf_test[column + '_ucct'].replace(overlap_replace)
+      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].replace(overlap_replace)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(overlap_replace)
       
       #then we'll redo the encodings
       
       #extract categories for column labels
       #note that .unique() extracts the labels as a numpy array
-      labels_train = pd.DataFrame(mdf_train[column + '_ucct'].value_counts())
-      labels_train = labels_train.rename_axis('zzzinfill').sort_values(by = [column + '_ucct', 'zzzinfill'], ascending = [False, True])
+      labels_train = pd.DataFrame(mdf_train[suffixcolumn].value_counts())
+      labels_train = labels_train.rename_axis('zzzinfill').sort_values(by = [suffixcolumn, 'zzzinfill'], ascending = [False, True])
       labels_train = list(labels_train.index)
       
 #       labels_train = list(mdf_train[column + '_ord2'].unique())
 #       labels_train.sort()
-      labels_test = list(mdf_test[column + '_ucct'].unique())
+      labels_test = list(mdf_test[suffixcolumn].unique())
       labels_test.sort()
       
     #clear up memory
@@ -14873,11 +15092,11 @@ class AutoMunge:
     rowcount = mdf_train.shape[0]
     
     for item in labels_train:
-      item_count = mdf_train[mdf_train[column + '_ucct'] == item].shape[0]
+      item_count = mdf_train[mdf_train[suffixcolumn] == item].shape[0]
       ordinal_dict.update({item: item_count / rowcount})
     
     #replace the cateogries in train set via ordinal trasnformation
-    mdf_train[column + '_ucct'] = mdf_train[column + '_ucct'].replace(ordinal_dict)
+    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].replace(ordinal_dict)
     
     #in test set, we'll need to strike any categories that weren't present in train
     #first let'/s identify what applies
@@ -14885,19 +15104,19 @@ class AutoMunge:
     
     #so we'll just replace those items with our plug value
     testplug_dict = dict(zip(testspecificcategories, ['zzzinfill'] * len(testspecificcategories)))
-    mdf_test[column + '_ucct'] = mdf_test[column + '_ucct'].replace(testplug_dict)
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(testplug_dict)
     
     #now we'll apply the ordinal transformation to the test set
-    mdf_test[column + '_ucct'] = mdf_test[column + '_ucct'].replace(ordinal_dict)
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(ordinal_dict)
 
     #new driftreport metric ordl_activations_dict
     ordl_activations_dict = {}
     for key in ordinal_dict:
-      sumcalc = (mdf_train[column+'_ucct'] == ordinal_dict[key]).sum() 
-      ratio = sumcalc / mdf_train[column+'_ucct'].shape[0]
+      sumcalc = (mdf_train[suffixcolumn] == ordinal_dict[key]).sum() 
+      ratio = sumcalc / mdf_train[suffixcolumn].shape[0]
       ordl_activations_dict.update({key:ratio})
     
-    categorylist = [column + '_ucct']  
+    categorylist = [suffixcolumn]  
         
     column_dict_list = []
     
@@ -14905,6 +15124,7 @@ class AutoMunge:
         
       normalization_dict = {tc : {'ordinal_dict' : ordinal_dict, \
                                   'ordinal_overlap_replace' : overlap_replace, \
+                                  'suffix' : suffix, \
                                   'ordl_activations_dict' : ordl_activations_dict}}
     
       column_dict = {tc : {'category' : 'ucct', \
@@ -14941,41 +15161,48 @@ class AutoMunge:
       str_convert = params['str_convert']
     else:
       str_convert = False
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = '1010'
+      
+    suffixcolumn = column + '_' + suffix
     
     #create new column for trasnformation
     mdf_train, suffixoverlap_results = \
-    self._df_copy_train(mdf_train, column, column + '_1010', suffixoverlap_results)
+    self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results)
     
-    mdf_test[column + '_1010'] = mdf_test[column].copy()
+    mdf_test[suffixcolumn] = mdf_test[column].copy()
     
     #convert column to category
-    mdf_train[column + '_1010'] = mdf_train[column + '_1010'].astype('category')
-    mdf_test[column + '_1010'] = mdf_test[column + '_1010'].astype('category')
+    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype('category')
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('category')
 
     #if set is categorical we'll need the plug value for missing values included
-    if 'zzzinfill' not in mdf_train[column + '_1010'].cat.categories:
-      mdf_train[column + '_1010'] = mdf_train[column + '_1010'].cat.add_categories(['zzzinfill'])
-    if 'zzzinfill' not in mdf_test[column + '_1010'].cat.categories:
-      mdf_test[column + '_1010'] = mdf_test[column + '_1010'].cat.add_categories(['zzzinfill'])
+    if 'zzzinfill' not in mdf_train[suffixcolumn].cat.categories:
+      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].cat.add_categories(['zzzinfill'])
+    if 'zzzinfill' not in mdf_test[suffixcolumn].cat.categories:
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].cat.add_categories(['zzzinfill'])
 
     #replace NA with a dummy variable
-    mdf_train[column + '_1010'] = mdf_train[column + '_1010'].fillna('zzzinfill')
-    mdf_test[column + '_1010'] = mdf_test[column + '_1010'].fillna('zzzinfill')
+    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna('zzzinfill')
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna('zzzinfill')
 
     if str_convert is True:
       #replace numerical with string equivalent
-      mdf_train[column + '_1010'] = mdf_train[column + '_1010'].astype(str)
-      mdf_test[column + '_1010'] = mdf_test[column + '_1010'].astype(str)
+      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype(str)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(str)
     else:
-      mdf_train[column + '_1010'] = mdf_train[column + '_1010'].astype('object')
-      mdf_test[column + '_1010'] = mdf_test[column + '_1010'].astype('object')
+      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype('object')
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('object')
     
     #extract categories for column labels
     #note that .unique() extracts the labels as a numpy array
-    labels_train = list(mdf_train[column + '_1010'].unique())
+    labels_train = list(mdf_train[suffixcolumn].unique())
 #     labels_train.sort()
     labels_train = sorted(labels_train, key=str)
-    labels_test = list(mdf_test[column + '_1010'].unique())
+    labels_test = list(mdf_test[suffixcolumn].unique())
 #     labels_test.sort()
     labels_test = sorted(labels_test, key=str)
 
@@ -15045,18 +15272,18 @@ class AutoMunge:
     #here we replace the overlaps with version with jibberish suffix
     if len(overlap_list) > 0:
       
-      mdf_train[column + '_1010'] = mdf_train[column + '_1010'].replace(overlap_replace)
-      mdf_test[column + '_1010'] = mdf_test[column + '_1010'].replace(overlap_replace)
+      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].replace(overlap_replace)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(overlap_replace)
       
       #then we'll redo the encodings
       
       #extract categories for column labels
       #note that .unique() extracts the labels as a numpy array
-      labels_train = list(mdf_train[column + '_1010'].unique())
+      labels_train = list(mdf_train[suffixcolumn].unique())
       labels_train = sorted(labels_train, key=str)
 #       labels_train.sort()
       
-      labels_test = list(mdf_test[column + '_1010'].unique())
+      labels_test = list(mdf_test[suffixcolumn].unique())
       labels_test = sorted(labels_test, key=str)
 #       labels_test.sort()
 
@@ -15098,40 +15325,40 @@ class AutoMunge:
     #new driftreport metric _1010_activations_dict
     _1010_activations_dict = {}
     for key in binary_encoding_dict:
-      sumcalc = (mdf_train[column+'_1010'] == key).sum() 
-      ratio = sumcalc / mdf_train[column+'_1010'].shape[0]
+      sumcalc = (mdf_train[suffixcolumn] == key).sum() 
+      ratio = sumcalc / mdf_train[suffixcolumn].shape[0]
       _1010_activations_dict.update({key:ratio})
     
     #____
     
     #replace the cateogries in train set via ordinal trasnformation
     
-    if mdf_train[column + '_1010'].dtype.name != 'object':
-      mdf_train[column + '_1010'] = mdf_train[column + '_1010'].astype('object')
+    if mdf_train[suffixcolumn].dtype.name != 'object':
+      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype('object')
     
-    mdf_train[column + '_1010'] = mdf_train[column + '_1010'].replace(binary_encoding_dict)      
+    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].replace(binary_encoding_dict)      
     
     #in test set, we'll need to strike any categories that weren't present in train
     #first let'/s identify what applies
     testspecificcategories = list(set(labels_test)-set(labels_train))
     
     #so we'll just replace those items with our plug value
-    if mdf_test[column + '_1010'].dtype.name != 'object':
-      mdf_test[column + '_1010'] = mdf_test[column + '_1010'].astype('object')
+    if mdf_test[suffixcolumn].dtype.name != 'object':
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('object')
     testplug_dict = dict(zip(testspecificcategories, ['zzzinfill'] * len(testspecificcategories)))
-    mdf_test[column + '_1010'] = mdf_test[column + '_1010'].replace(testplug_dict)    
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(testplug_dict)    
     
     #now we'll apply the 1010 transformation to the test set
-    if mdf_test[column + '_1010'].dtype.name != 'object':
-      mdf_test[column + '_1010'] = mdf_test[column + '_1010'].astype('object')
-    mdf_test[column + '_1010'] = mdf_test[column + '_1010'].replace(binary_encoding_dict)    
+    if mdf_test[suffixcolumn].dtype.name != 'object':
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('object')
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(binary_encoding_dict)    
 
     #ok let's create a list of columns to store each entry of the binary encoding
     _1010_columnlist = []
     
     for i in range(binary_column_count):
       
-      _1010_columnlist.append(column + '_1010_' + str(i))
+      _1010_columnlist.append(column + '_' + suffix + '_' + str(i))
       
     suffixoverlap_results = \
     self._df_check_suffixoverlap(mdf_train, _1010_columnlist, suffixoverlap_results)
@@ -15140,15 +15367,15 @@ class AutoMunge:
     i=0
     for _1010_column in _1010_columnlist:
       
-      mdf_train[_1010_column] = mdf_train[column + '_1010'].str.slice(i,i+1).astype(np.int8)
+      mdf_train[_1010_column] = mdf_train[suffixcolumn].str.slice(i,i+1).astype(np.int8)
       
-      mdf_test[_1010_column] = mdf_test[column + '_1010'].str.slice(i,i+1).astype(np.int8)
+      mdf_test[_1010_column] = mdf_test[suffixcolumn].str.slice(i,i+1).astype(np.int8)
       
       i+=1
   
     #now delete the support column
-    del mdf_train[column + '_1010']
-    del mdf_test[column + '_1010']
+    del mdf_train[suffixcolumn]
+    del mdf_test[suffixcolumn]
     
     #now store the column_dict entries
     
@@ -15162,6 +15389,7 @@ class AutoMunge:
                                   '_1010_overlap_replace' : overlap_replace, \
                                   '_1010_binary_column_count' : binary_column_count, \
                                   '_1010_activations_dict' : _1010_activations_dict, \
+                                  'suffix' : suffix, \
                                   'str_convert' : str_convert}}
     
       column_dict = {tc : {'category' : '1010', \
@@ -15200,31 +15428,38 @@ class AutoMunge:
       end = params['end']
     else:
       end = 17
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'bshr'
+      
+    suffixcolumn = column + '_' + suffix
       
     suffixoverlap_results = \
-    self._df_check_suffixoverlap(df, column+'_bshr', suffixoverlap_results)
+    self._df_check_suffixoverlap(df, suffixcolumn, suffixoverlap_results)
     
     #convert improperly formatted values to datetime in new column
-    df[column+'_bshr'] = pd.to_datetime(df[column], errors = 'coerce')
+    df[suffixcolumn] = pd.to_datetime(df[column], errors = 'coerce')
     
     #This is kind of hack for whole hour increments, if we were needing
     #to evlauate hour ranges between seperate days a different metod
     #would be required
     #For now we'll defer to Dollly Parton
-    df[column+'_bshr'] = df[column+'_bshr'].dt.hour
-    df[column+'_bshr'] = df[column+'_bshr'].between(start, end)
+    df[suffixcolumn] = df[suffixcolumn].dt.hour
+    df[suffixcolumn] = df[suffixcolumn].between(start, end)
     
     #reduce memory footprint
-    df[column+'_bshr'] = df[column+'_bshr'].astype(np.int8)
+    df[suffixcolumn] = df[suffixcolumn].astype(np.int8)
     
     #create list of columns
-    datecolumns = [column + '_bshr']
+    datecolumns = [suffixcolumn]
 
     #grab some driftreport metrics
-    activationratio = df[column + '_bshr'].sum() / df[column + '_bshr'].shape[0]
+    activationratio = df[suffixcolumn].sum() / df[suffixcolumn].shape[0]
 
     #create normalization dictionary
-    normalization_dict = {column + '_bshr' : {'activationratio' : activationratio}}
+    normalization_dict = {suffixcolumn : {'activationratio' : activationratio, 'suffix' : suffix}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -15256,32 +15491,39 @@ class AutoMunge:
     '''
     
     suffixoverlap_results = {}
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'wkdy'
+      
+    suffixcolumn = column + '_' + suffix
     
     suffixoverlap_results = \
-    self._df_check_suffixoverlap(df, column+'_wkdy', suffixoverlap_results)
+    self._df_check_suffixoverlap(df, suffixcolumn, suffixoverlap_results)
     
     #convert improperly formatted values to datetime in new column
-    df[column+'_wkdy'] = pd.to_datetime(df[column], errors = 'coerce')
+    df[suffixcolumn] = pd.to_datetime(df[column], errors = 'coerce')
     
     #This is kind of hack for whole hour increments, if we were needing
     #to evlauate hour ranges between seperate days a different metod
     #would be required
     #For now we'll defer to Dollly Parton
-    df[column+'_wkdy'] = pd.DatetimeIndex(df[column+'_wkdy']).dayofweek
+    df[suffixcolumn] = pd.DatetimeIndex(df[suffixcolumn]).dayofweek
     
-    df[column+'_wkdy'] = df[column+'_wkdy'].between(0,4)
+    df[suffixcolumn] = df[suffixcolumn].between(0,4)
     
     #reduce memory footprint
-    df[column+'_wkdy'] = df[column+'_wkdy'].astype(np.int8)
+    df[suffixcolumn] = df[suffixcolumn].astype(np.int8)
     
     #create list of columns
-    datecolumns = [column+'_wkdy']
+    datecolumns = [suffixcolumn]
 
     #grab some driftreport metrics
-    activationratio = df[column + '_wkdy'].sum() / df[column + '_wkdy'].shape[0]
+    activationratio = df[suffixcolumn].sum() / df[suffixcolumn].shape[0]
 
     #create normalization dictionary
-    normalization_dict = {column + '_wkdy' : {'activationratio' : activationratio}}
+    normalization_dict = {suffixcolumn : {'activationratio' : activationratio, 'suffix' : suffix}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -15319,6 +15561,13 @@ class AutoMunge:
       holiday_list = params['holiday_list']
     else:
       holiday_list = []
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'hldy'
+      
+    suffixcolumn = column + '_' + suffix
     
     if len(holiday_list) > 0:
     
@@ -15337,14 +15586,14 @@ class AutoMunge:
       timestamp_list = []
       
     suffixoverlap_results = \
-    self._df_check_suffixoverlap(df, column+'_hldy', suffixoverlap_results)
+    self._df_check_suffixoverlap(df, suffixcolumn, suffixoverlap_results)
     
     #convert improperly formatted values to datetime in new column
-    df[column+'_hldy'] = pd.to_datetime(df[column], errors = 'coerce')
+    df[suffixcolumn] = pd.to_datetime(df[column], errors = 'coerce')
     
-    df[column+'_hldy'] = df[column+'_hldy'].dt.date
+    df[suffixcolumn] = df[suffixcolumn].dt.date
     
-    df[column+'_hldy'] = pd.to_datetime(df[column+'_hldy'], errors = 'coerce')
+    df[suffixcolumn] = pd.to_datetime(df[suffixcolumn], errors = 'coerce')
     
     #grab list of holidays from import
     holidays = USFederalHolidayCalendar().holidays().tolist()
@@ -15352,19 +15601,19 @@ class AutoMunge:
     holidays += timestamp_list
     
     #activate boolean identifier for holidays
-    df[column+'_hldy'] = df[column+'_hldy'].isin(holidays)
+    df[suffixcolumn] = df[suffixcolumn].isin(holidays)
 
     #reduce memory footprint
-    df[column+'_hldy'] = df[column+'_hldy'].astype(np.int8)
+    df[suffixcolumn] = df[suffixcolumn].astype(np.int8)
     
     #create list of columns
-    datecolumns = [column + '_hldy']
+    datecolumns = [suffixcolumn]
 
     #grab some driftreport metrics
-    activationratio = df[column + '_hldy'].sum() / df[column + '_hldy'].shape[0]
+    activationratio = df[suffixcolumn].sum() / df[suffixcolumn].shape[0]
 
     #create normalization dictionary
-    normalization_dict = {column + '_hldy' : {'activationratio' : activationratio}}
+    normalization_dict = {suffixcolumn : {'activationratio' : activationratio, 'suffix' : suffix}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -15402,62 +15651,70 @@ class AutoMunge:
       inplace = params['inplace']
     else:
       inplace = False
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'wkds'
+      
+    suffixcolumn = column + '_' + suffix
       
     if inplace is not True:
       
       #copy source column into new column
       df, suffixoverlap_results = \
-      self._df_copy_train(df, column, column + '_wkds', suffixoverlap_results)
+      self._df_copy_train(df, column, suffixcolumn, suffixoverlap_results)
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(df, column + '_wkds', suffixoverlap_results)
+      self._df_check_suffixoverlap(df, suffixcolumn, suffixoverlap_results)
       
-      df.rename(columns = {column : column + '_wkds'}, inplace = True)
+      df.rename(columns = {column : suffixcolumn}, inplace = True)
     
     #convert improperly formatted values to datetime in new column
-    df[column+'_wkds'] = pd.to_datetime(df[column+'_wkds'], errors = 'coerce')
+    df[suffixcolumn] = pd.to_datetime(df[suffixcolumn], errors = 'coerce')
     
     #This is kind of hack for whole hour increments, if we were needing
     #to evlauate hour ranges between seperate days a different metod
     #would be required
     #For now we'll defer to Dollly Parton
-    df[column+'_wkds'] = pd.DatetimeIndex(df[column+'_wkds']).dayofweek
+    df[suffixcolumn] = pd.DatetimeIndex(df[suffixcolumn]).dayofweek
     
 #     df[column+'_wkdy'] = df[column+'_wkdy'].between(0,4)
 
     #we'll use convention for default infill of eight days a week
-    df[column + '_wkds'] = df[column + '_wkds'].fillna(7)
+    df[suffixcolumn] = df[suffixcolumn].fillna(7)
     
     #reduce memory footprint
-    df[column+'_wkds'] = df[column+'_wkds'].astype(np.int8)
+    df[suffixcolumn] = df[suffixcolumn].astype(np.int8)
     
     #create list of columns
-    datecolumns = [column+'_wkds']
+    datecolumns = [suffixcolumn]
 
     #grab some driftreport metrics
-    numberofrows = df[column + '_wkds'].shape[0]
-    mon_ratio = df[df[column + '_wkds'] == 0].shape[0] / numberofrows
-    tue_ratio = df[df[column + '_wkds'] == 1].shape[0] / numberofrows
-    wed_ratio = df[df[column + '_wkds'] == 2].shape[0] / numberofrows
-    thr_ratio = df[df[column + '_wkds'] == 3].shape[0] / numberofrows
-    fri_ratio = df[df[column + '_wkds'] == 4].shape[0] / numberofrows
-    sat_ratio = df[df[column + '_wkds'] == 5].shape[0] / numberofrows
-    sun_ratio = df[df[column + '_wkds'] == 6].shape[0] / numberofrows
-    infill_ratio = df[df[column + '_wkds'] == 7].shape[0] / numberofrows
+    numberofrows = df[suffixcolumn].shape[0]
+    mon_ratio = df[df[suffixcolumn] == 0].shape[0] / numberofrows
+    tue_ratio = df[df[suffixcolumn] == 1].shape[0] / numberofrows
+    wed_ratio = df[df[suffixcolumn] == 2].shape[0] / numberofrows
+    thr_ratio = df[df[suffixcolumn] == 3].shape[0] / numberofrows
+    fri_ratio = df[df[suffixcolumn] == 4].shape[0] / numberofrows
+    sat_ratio = df[df[suffixcolumn] == 5].shape[0] / numberofrows
+    sun_ratio = df[df[suffixcolumn] == 6].shape[0] / numberofrows
+    infill_ratio = df[df[suffixcolumn] == 7].shape[0] / numberofrows
   
   
     #create normalization dictionary
-    normalization_dict = {column+'_wkds' : {'mon_ratio' : mon_ratio, \
-                                            'tue_ratio' : tue_ratio, \
-                                            'wed_ratio' : wed_ratio, \
-                                            'thr_ratio' : thr_ratio, \
-                                            'fri_ratio' : fri_ratio, \
-                                            'sat_ratio' : sat_ratio, \
-                                            'sun_ratio' : sun_ratio, \
-                                            'infill_ratio' : infill_ratio, \
-                                            'inplace' : inplace}}
+    normalization_dict = {suffixcolumn : {'mon_ratio' : mon_ratio, \
+                                          'tue_ratio' : tue_ratio, \
+                                          'wed_ratio' : wed_ratio, \
+                                          'thr_ratio' : thr_ratio, \
+                                          'fri_ratio' : fri_ratio, \
+                                          'sat_ratio' : sat_ratio, \
+                                          'sun_ratio' : sun_ratio, \
+                                          'infill_ratio' : infill_ratio, \
+                                          'suffix' : suffix, \
+                                          'inplace' : inplace}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -15495,72 +15752,80 @@ class AutoMunge:
       inplace = params['inplace']
     else:
       inplace = False
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'mnts'
+      
+    suffixcolumn = column + '_' + suffix
       
     if inplace is not True:
       
       #copy source column into new column
       df, suffixoverlap_results = \
-      self._df_copy_train(df, column, column + '_mnts', suffixoverlap_results)
+      self._df_copy_train(df, column, suffixcolumn, suffixoverlap_results)
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(df, column + '_mnts', suffixoverlap_results)
+      self._df_check_suffixoverlap(df, suffixcolumn, suffixoverlap_results)
       
-      df.rename(columns = {column : column + '_mnts'}, inplace = True)
+      df.rename(columns = {column : suffixcolumn}, inplace = True)
     
     #convert improperly formatted values to datetime in new column
-    df[column+'_mnts'] = pd.to_datetime(df[column+'_mnts'], errors = 'coerce')
+    df[suffixcolumn] = pd.to_datetime(df[suffixcolumn], errors = 'coerce')
     
     #This is kind of hack for whole hour increments, if we were needing
     #to evlauate hour ranges between seperate days a different metod
     #would be required
     #For now we'll defer to Dollly Parton
-    df[column+'_mnts'] = pd.DatetimeIndex(df[column+'_mnts']).month
+    df[suffixcolumn] = pd.DatetimeIndex(df[suffixcolumn]).month
     
 #     df[column+'_wkdy'] = df[column+'_wkdy'].between(0,4)
 
     #we'll use convention for default infill of eight days a week
     #jan-dec is 1-12, 0 is default infill
-    df[column + '_mnts'] = df[column + '_mnts'].fillna(0)
+    df[suffixcolumn] = df[suffixcolumn].fillna(0)
     
     #reduce memory footprint
-    df[column+'_mnts'] = df[column+'_mnts'].astype(np.int8)
+    df[suffixcolumn] = df[suffixcolumn].astype(np.int8)
     
     #create list of columns
-    datecolumns = [column+'_mnts']
+    datecolumns = [suffixcolumn]
 
     #grab some driftreport metrics
-    numberofrows = df[column + '_mnts'].shape[0]
-    infill_ratio = df[df[column + '_mnts'] == 0].shape[0] / numberofrows
-    jan_ratio = df[df[column + '_mnts'] == 1].shape[0] / numberofrows
-    feb_ratio = df[df[column + '_mnts'] == 2].shape[0] / numberofrows
-    mar_ratio = df[df[column + '_mnts'] == 3].shape[0] / numberofrows
-    apr_ratio = df[df[column + '_mnts'] == 4].shape[0] / numberofrows
-    may_ratio = df[df[column + '_mnts'] == 5].shape[0] / numberofrows
-    jun_ratio = df[df[column + '_mnts'] == 6].shape[0] / numberofrows
-    jul_ratio = df[df[column + '_mnts'] == 7].shape[0] / numberofrows
-    aug_ratio = df[df[column + '_mnts'] == 8].shape[0] / numberofrows
-    sep_ratio = df[df[column + '_mnts'] == 9].shape[0] / numberofrows
-    oct_ratio = df[df[column + '_mnts'] == 10].shape[0] / numberofrows
-    nov_ratio = df[df[column + '_mnts'] == 11].shape[0] / numberofrows
-    dec_ratio = df[df[column + '_mnts'] == 12].shape[0] / numberofrows
+    numberofrows = df[suffixcolumn].shape[0]
+    infill_ratio = df[df[suffixcolumn] == 0].shape[0] / numberofrows
+    jan_ratio = df[df[suffixcolumn] == 1].shape[0] / numberofrows
+    feb_ratio = df[df[suffixcolumn] == 2].shape[0] / numberofrows
+    mar_ratio = df[df[suffixcolumn] == 3].shape[0] / numberofrows
+    apr_ratio = df[df[suffixcolumn] == 4].shape[0] / numberofrows
+    may_ratio = df[df[suffixcolumn] == 5].shape[0] / numberofrows
+    jun_ratio = df[df[suffixcolumn] == 6].shape[0] / numberofrows
+    jul_ratio = df[df[suffixcolumn] == 7].shape[0] / numberofrows
+    aug_ratio = df[df[suffixcolumn] == 8].shape[0] / numberofrows
+    sep_ratio = df[df[suffixcolumn] == 9].shape[0] / numberofrows
+    oct_ratio = df[df[suffixcolumn] == 10].shape[0] / numberofrows
+    nov_ratio = df[df[suffixcolumn] == 11].shape[0] / numberofrows
+    dec_ratio = df[df[suffixcolumn] == 12].shape[0] / numberofrows
   
     #create normalization dictionary
-    normalization_dict = {column+'_mnts' : {'infill_ratio' : infill_ratio, \
-                                            'jan_ratio' : jan_ratio, \
-                                            'feb_ratio' : feb_ratio, \
-                                            'mar_ratio' : mar_ratio, \
-                                            'apr_ratio' : apr_ratio, \
-                                            'may_ratio' : may_ratio, \
-                                            'jun_ratio' : jun_ratio, \
-                                            'jul_ratio' : jul_ratio, \
-                                            'aug_ratio' : aug_ratio, \
-                                            'sep_ratio' : sep_ratio, \
-                                            'oct_ratio' : oct_ratio, \
-                                            'nov_ratio' : nov_ratio, \
-                                            'dec_ratio' : dec_ratio, \
-                                            'inplace' : inplace}}
+    normalization_dict = {suffixcolumn : {'infill_ratio' : infill_ratio, \
+                                          'jan_ratio' : jan_ratio, \
+                                          'feb_ratio' : feb_ratio, \
+                                          'mar_ratio' : mar_ratio, \
+                                          'apr_ratio' : apr_ratio, \
+                                          'may_ratio' : may_ratio, \
+                                          'jun_ratio' : jun_ratio, \
+                                          'jul_ratio' : jul_ratio, \
+                                          'aug_ratio' : aug_ratio, \
+                                          'sep_ratio' : sep_ratio, \
+                                          'oct_ratio' : oct_ratio, \
+                                          'nov_ratio' : nov_ratio, \
+                                          'dec_ratio' : dec_ratio, \
+                                          'suffix' : suffix, \
+                                          'inplace' : inplace}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -15605,33 +15870,41 @@ class AutoMunge:
       timezone = params['timezone']
     else:
       timezone = False
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'tmzn'
+      
+    suffixcolumn = column + '_' + suffix
       
     if inplace is not True:
       
       #copy source column into new column
       df, suffixoverlap_results = \
-      self._df_copy_train(df, column, column + '_tmzn', suffixoverlap_results)
+      self._df_copy_train(df, column, suffixcolumn, suffixoverlap_results)
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(df, column + '_tmzn', suffixoverlap_results)
+      self._df_check_suffixoverlap(df, suffixcolumn, suffixoverlap_results)
       
-      df.rename(columns = {column : column + '_tmzn'}, inplace = True)
+      df.rename(columns = {column : suffixcolumn}, inplace = True)
       
     if timezone is not False:
 
-      df[column+'_tmzn'] = pd.to_datetime(df[column+'_tmzn'], errors = 'coerce', utc=True)
+      df[suffixcolumn] = pd.to_datetime(df[suffixcolumn], errors = 'coerce', utc=True)
       
-      df[column+'_tmzn'] = df[column+'_tmzn'].dt.tz_convert(timezone)
+      df[suffixcolumn] = df[suffixcolumn].dt.tz_convert(timezone)
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
     
-    datecolumns = [column+'_tmzn']
+    datecolumns = [suffixcolumn]
     
-    normalization_dict = {column+'_tmzn' : {'timezone' : timezone, \
-                                            'inplace' : inplace}}
+    normalization_dict = {suffixcolumn : {'timezone' : timezone, \
+                                          'suffix' : suffix, \
+                                          'inplace' : inplace}}
 
     for dc in datecolumns:
 
@@ -16072,14 +16345,21 @@ class AutoMunge:
     '''
     
     suffixoverlap_results = {}
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'bxcx'
+      
+    suffixcolumn = column + '_' + suffix
     
     #df_train, nmbrcolumns, nmbrnormalization_dict, categorylist = \
     mdf_train, column_dict_list = \
     self._process_bxcx_support(mdf_train, column, category, 1, bxcx_lmbda = None, \
-                              trnsfrm_mean = None)
+                              trnsfrm_mean = None, suffix = suffix)
 
     #grab the normalization_dict associated with the bxcx category
-    columnkeybxcx = column + '_bxcx'
+    columnkeybxcx = suffixcolumn
     for column_dict in column_dict_list:
       if columnkeybxcx in column_dict:
         bxcxnormalization_dict = column_dict[columnkeybxcx]['normalization_dict'][columnkeybxcx]
@@ -16088,11 +16368,11 @@ class AutoMunge:
     mdf_test, _1 = \
     self._process_bxcx_support(mdf_test, column, category, 1, bxcx_lmbda = \
                              bxcxnormalization_dict['bxcx_lmbda'], \
-                             trnsfrm_mean = bxcxnormalization_dict['trnsfrm_mean'])
+                             trnsfrm_mean = bxcxnormalization_dict['trnsfrm_mean'], suffix = suffix)
 
     return mdf_train, mdf_test, column_dict_list
 
-  def _process_bxcx_support(self, df, column, category, bxcxerrorcorrect, bxcx_lmbda = None, trnsfrm_mean = None):
+  def _process_bxcx_support(self, df, column, category, bxcxerrorcorrect, bxcx_lmbda = None, trnsfrm_mean = None, suffix = 'bxcx'):
     '''                      
     #process_bxcx(df, column, bxcx_lmbda = None, trnsfrm_mean = None, trnsfrm_std = None)
     #function that takes as input a dataframe with numnerical column for purposes
@@ -16109,7 +16389,7 @@ class AutoMunge:
     
     suffixoverlap_results = {}
     
-    bxcxcolumn = column + '_bxcx'
+    bxcxcolumn = column + '_' + suffix
 
     df, suffixoverlap_results = \
     self._df_copy_train(df, column, bxcxcolumn, suffixoverlap_results)
@@ -16197,6 +16477,7 @@ class AutoMunge:
       normalization_dict = {nc : {'trnsfrm_mean' : mean, \
                                   'bxcx_lmbda' : bxcx_lmbda, \
                                   'bxcxerrorcorrect' : bxcxerrorcorrect, \
+                                  'suffix' : suffix, \
                                   'mean' : mean}}
 
       column_dict = { nc : {'category' : 'bxcx', \
@@ -16225,7 +16506,7 @@ class AutoMunge:
     #and the name of the column string ('column') and parent category (category)
     #applies a logarithmic transform (base 10)
     #replaces zeros, negative, and missing or improperly formatted data with post-log mean as default infill
-    #returns same dataframes with new column of name column + '_log0'
+    #returns same dataframes with new column of name suffixcolumn
     '''
     
     suffixoverlap_results = {}
@@ -16234,63 +16515,70 @@ class AutoMunge:
       inplace = params['inplace']
     else:
       inplace = False
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'log0'
+      
+    suffixcolumn = column + '_' + suffix
     
     if inplace is not True:
       
       #copy source column into new column
       mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, column + '_log0', suffixoverlap_results)
+      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results)
 
-      mdf_test[column + '_log0'] = mdf_test[column].copy()
+      mdf_test[suffixcolumn] = mdf_test[column].copy()
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, column + '_log0', suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results)
       
-      mdf_train.rename(columns = {column : column + '_log0'}, inplace = True)
-      mdf_test.rename(columns = {column : column + '_log0'}, inplace = True)
+      mdf_train.rename(columns = {column : suffixcolumn}, inplace = True)
+      mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
 
     #convert all values to either numeric or NaN
-    mdf_train[column + '_log0'] = pd.to_numeric(mdf_train[column + '_log0'], errors='coerce')
-    mdf_test[column + '_log0'] = pd.to_numeric(mdf_test[column + '_log0'], errors='coerce')
+    mdf_train[suffixcolumn] = pd.to_numeric(mdf_train[suffixcolumn], errors='coerce')
+    mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
     
 #     #replace all zeros with nan for the log operation
 #     zeroreplace = {0 : np.nan}
-#     mdf_train[column + '_log0'] = mdf_train[column + '_log0'].replace(zeroreplace)
-#     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].replace(zeroreplace)
+#     mdf_train[suffixcolumn] = mdf_train[suffixcolumn].replace(zeroreplace)
+#     mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(zeroreplace)
     
     #replace all non-positive with nan for the log operation
-    mdf_train.loc[mdf_train[column + '_log0'] <= 0, (column + '_log0')] = np.nan
-    mdf_test.loc[mdf_test[column + '_log0'] <= 0, (column + '_log0')] = np.nan
+    mdf_train.loc[mdf_train[suffixcolumn] <= 0, (suffixcolumn)] = np.nan
+    mdf_test.loc[mdf_test[suffixcolumn] <= 0, (suffixcolumn)] = np.nan
     
     #log transform column
     #note that this replaces negative values with nan which we will infill with mean
-    mdf_train[column + '_log0'] = np.log10(mdf_train[column + '_log0'])
-    mdf_test[column + '_log0'] = np.log10(mdf_test[column + '_log0'])
+    mdf_train[suffixcolumn] = np.log10(mdf_train[suffixcolumn])
+    mdf_test[suffixcolumn] = np.log10(mdf_test[suffixcolumn])
     
     #get mean of train set
-    meanlog = mdf_train[column + '_log0'].mean()
+    meanlog = mdf_train[suffixcolumn].mean()
     
     if meanlog != meanlog:
       meanlog = 0
 
     #replace missing data with training set mean
-    mdf_train[column + '_log0'] = mdf_train[column + '_log0'].fillna(meanlog)
-    mdf_test[column + '_log0'] = mdf_test[column + '_log0'].fillna(meanlog)
+    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(meanlog)
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(meanlog)
 
 #     #replace missing data with 0
-#     mdf_train[column + '_log0'] = mdf_train[column + '_log0'].fillna(0)
-#     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].fillna(0)
+#     mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(0)
+#     mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(0)
 
 #     #change data type for memory savings
-#     mdf_train[column + '_log0'] = mdf_train[column + '_log0'].astype(np.float32)
-#     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].astype(np.float32)
+#     mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype(np.float32)
+#     mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.float32)
 
     #create list of columns
-    nmbrcolumns = [column + '_log0']
+    nmbrcolumns = [suffixcolumn]
 
-    nmbrnormalization_dict = {column + '_log0' : {'meanlog' : meanlog, 'inplace' : inplace}}
+    nmbrnormalization_dict = {suffixcolumn : {'meanlog' : meanlog, 'inplace' : inplace, 'suffix' : suffix}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -16322,7 +16610,7 @@ class AutoMunge:
     #and the name of the column string ('column') and parent category (category)
     #applies a logarithmic transform (base e)
     #replaces zeros, negative, and missing or improperly formatted data with post-log mean as default infill
-    #returns same dataframes with new column of name column + '_logn'
+    #returns same dataframes with new column of name suffixcolumn
     '''
     
     suffixoverlap_results = {}
@@ -16331,63 +16619,70 @@ class AutoMunge:
       inplace = params['inplace']
     else:
       inplace = False
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'logn'
+      
+    suffixcolumn = column + '_' + suffix
     
     if inplace is not True:
       
       #copy source column into new column
       mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, column + '_logn', suffixoverlap_results)
+      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results)
 
-      mdf_test[column + '_logn'] = mdf_test[column].copy()
+      mdf_test[suffixcolumn] = mdf_test[column].copy()
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, column + '_logn', suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results)
       
-      mdf_train.rename(columns = {column : column + '_logn'}, inplace = True)
-      mdf_test.rename(columns = {column : column + '_logn'}, inplace = True)
+      mdf_train.rename(columns = {column : suffixcolumn}, inplace = True)
+      mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
 
     #convert all values to either numeric or NaN
-    mdf_train[column + '_logn'] = pd.to_numeric(mdf_train[column + '_logn'], errors='coerce')
-    mdf_test[column + '_logn'] = pd.to_numeric(mdf_test[column + '_logn'], errors='coerce')
+    mdf_train[suffixcolumn] = pd.to_numeric(mdf_train[suffixcolumn], errors='coerce')
+    mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
     
 #     #replace all zeros with nan for the log operation
 #     zeroreplace = {0 : np.nan}
-#     mdf_train[column + '_log0'] = mdf_train[column + '_log0'].replace(zeroreplace)
-#     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].replace(zeroreplace)
+#     mdf_train[suffixcolumn] = mdf_train[suffixcolumn].replace(zeroreplace)
+#     mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(zeroreplace)
     
     #replace all non-positive with nan for the log operation
-    mdf_train.loc[mdf_train[column + '_logn'] <= 0, (column + '_logn')] = np.nan
-    mdf_test.loc[mdf_test[column + '_logn'] <= 0, (column + '_logn')] = np.nan
+    mdf_train.loc[mdf_train[suffixcolumn] <= 0, (suffixcolumn)] = np.nan
+    mdf_test.loc[mdf_test[suffixcolumn] <= 0, (suffixcolumn)] = np.nan
     
     #log transform column
     #note that this replaces negative values with nan which we will infill with mean
-    mdf_train[column + '_logn'] = np.log(mdf_train[column + '_logn'])
-    mdf_test[column + '_logn'] = np.log(mdf_test[column + '_logn'])
+    mdf_train[suffixcolumn] = np.log(mdf_train[suffixcolumn])
+    mdf_test[suffixcolumn] = np.log(mdf_test[suffixcolumn])
     
     #get mean of train set
-    meanlog = mdf_train[column + '_logn'].mean()
+    meanlog = mdf_train[suffixcolumn].mean()
     
     if meanlog != meanlog:
       meanlog = 0
 
     #replace missing data with training set mean
-    mdf_train[column + '_logn'] = mdf_train[column + '_logn'].fillna(meanlog)
-    mdf_test[column + '_logn'] = mdf_test[column + '_logn'].fillna(meanlog)
+    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(meanlog)
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(meanlog)
 
 #     #replace missing data with 0
-#     mdf_train[column + '_log0'] = mdf_train[column + '_log0'].fillna(0)
-#     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].fillna(0)
+#     mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(0)
+#     mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(0)
 
 #     #change data type for memory savings
-#     mdf_train[column + '_log0'] = mdf_train[column + '_log0'].astype(np.float32)
-#     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].astype(np.float32)
+#     mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype(np.float32)
+#     mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.float32)
 
     #create list of columns
-    nmbrcolumns = [column + '_logn']
+    nmbrcolumns = [suffixcolumn]
 
-    nmbrnormalization_dict = {column + '_logn' : {'meanlog' : meanlog, 'inplace' : inplace}}
+    nmbrnormalization_dict = {suffixcolumn : {'meanlog' : meanlog, 'inplace' : inplace, 'suffix' : suffix}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -16419,7 +16714,7 @@ class AutoMunge:
     #and the name of the column string ('column') and parent category (category)
     #applies a square root transform
     #replaces zeros, negative, and missing or improperly formatted data with post-log mean as default infill
-    #returns same dataframes with new column of name column + '_log0'
+    #returns same dataframes with new column of name suffixcolumn
     '''
     
     suffixoverlap_results = {}
@@ -16428,63 +16723,70 @@ class AutoMunge:
       inplace = params['inplace']
     else:
       inplace = False
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'sqrt'
+      
+    suffixcolumn = column + '_' + suffix
     
     if inplace is not True:
       
       #copy source column into new column
       mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, column + '_sqrt', suffixoverlap_results)
+      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results)
 
-      mdf_test[column + '_sqrt'] = mdf_test[column].copy()
+      mdf_test[suffixcolumn] = mdf_test[column].copy()
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, column + '_sqrt', suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results)
       
-      mdf_train.rename(columns = {column : column + '_sqrt'}, inplace = True)
-      mdf_test.rename(columns = {column : column + '_sqrt'}, inplace = True)
+      mdf_train.rename(columns = {column : suffixcolumn}, inplace = True)
+      mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
 
     #convert all values to either numeric or NaN
-    mdf_train[column + '_sqrt'] = pd.to_numeric(mdf_train[column + '_sqrt'], errors='coerce')
-    mdf_test[column + '_sqrt'] = pd.to_numeric(mdf_test[column + '_sqrt'], errors='coerce')
+    mdf_train[suffixcolumn] = pd.to_numeric(mdf_train[suffixcolumn], errors='coerce')
+    mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
     
 #     #replace all zeros with nan for the log operation
 #     zeroreplace = {0 : np.nan}
-#     mdf_train[column + '_log0'] = mdf_train[column + '_log0'].replace(zeroreplace)
-#     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].replace(zeroreplace)
+#     mdf_train[suffixcolumn] = mdf_train[suffixcolumn].replace(zeroreplace)
+#     mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(zeroreplace)
     
     #replace all non-positive with nan for the log operation
-    mdf_train.loc[mdf_train[column + '_sqrt'] < 0, (column + '_sqrt')] = np.nan
-    mdf_test.loc[mdf_test[column + '_sqrt'] < 0, (column + '_sqrt')] = np.nan
+    mdf_train.loc[mdf_train[suffixcolumn] < 0, (suffixcolumn)] = np.nan
+    mdf_test.loc[mdf_test[suffixcolumn] < 0, (suffixcolumn)] = np.nan
     
     #log transform column
     #note that this replaces negative values with nan which we will infill with mean
-    mdf_train[column + '_sqrt'] = np.sqrt(mdf_train[column + '_sqrt'])
-    mdf_test[column + '_sqrt'] = np.sqrt(mdf_test[column + '_sqrt'])
+    mdf_train[suffixcolumn] = np.sqrt(mdf_train[suffixcolumn])
+    mdf_test[suffixcolumn] = np.sqrt(mdf_test[suffixcolumn])
     
     #get mean of train set
-    meansqrt = mdf_train[column + '_sqrt'].mean()
+    meansqrt = mdf_train[suffixcolumn].mean()
     
     if meansqrt != meansqrt:
       meansqrt = 0
 
     #replace missing data with training set mean
-    mdf_train[column + '_sqrt'] = mdf_train[column + '_sqrt'].fillna(meansqrt)
-    mdf_test[column + '_sqrt'] = mdf_test[column + '_sqrt'].fillna(meansqrt)
+    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(meansqrt)
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(meansqrt)
 
 #     #replace missing data with 0
-#     mdf_train[column + '_log0'] = mdf_train[column + '_log0'].fillna(0)
-#     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].fillna(0)
+#     mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(0)
+#     mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(0)
 
 #     #change data type for memory savings
-#     mdf_train[column + '_log0'] = mdf_train[column + '_log0'].astype(np.float32)
-#     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].astype(np.float32)
+#     mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype(np.float32)
+#     mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.float32)
 
     #create list of columns
-    nmbrcolumns = [column + '_sqrt']
+    nmbrcolumns = [suffixcolumn]
 
-    nmbrnormalization_dict = {column + '_sqrt' : {'meansqrt' : meansqrt, 'inplace' : inplace}}
+    nmbrnormalization_dict = {suffixcolumn : {'meansqrt' : meansqrt, 'inplace' : inplace, 'suffix' : suffix}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -16517,7 +16819,7 @@ class AutoMunge:
     #accepts parameter 'add' for amount of addition, otherwise defaults to adding 1
     #applies an addition transform
     #replaces non-numeric entries with set mean after addition
-    #returns same dataframes with new column of name column + '_addd'
+    #returns same dataframes with new column of name suffixcolumn
     '''
     
     suffixoverlap_results = {}
@@ -16528,54 +16830,59 @@ class AutoMunge:
       inplace = False
     
     if 'add' in params:
-        
       add = params['add']
-    
     else:
-      
       add = 1
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'addd'
+      
+    suffixcolumn = column + '_' + suffix
     
     if inplace is not True:
       
       #copy source column into new column
       mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, column + '_addd', suffixoverlap_results)
+      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results)
 
-      mdf_test[column + '_addd'] = mdf_test[column].copy()
+      mdf_test[suffixcolumn] = mdf_test[column].copy()
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, column + '_addd', suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results)
       
-      mdf_train.rename(columns = {column : column + '_addd'}, inplace = True)
-      mdf_test.rename(columns = {column : column + '_addd'}, inplace = True)
+      mdf_train.rename(columns = {column : suffixcolumn}, inplace = True)
+      mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
 
     #convert all values to either numeric or NaN
-    mdf_train[column + '_addd'] = pd.to_numeric(mdf_train[column + '_addd'], errors='coerce')
-    mdf_test[column + '_addd'] = pd.to_numeric(mdf_test[column + '_addd'], errors='coerce')
+    mdf_train[suffixcolumn] = pd.to_numeric(mdf_train[suffixcolumn], errors='coerce')
+    mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
     
     
     #apply addition
-    mdf_train[column + '_addd'] = mdf_train[column + '_addd'] + add
-    mdf_test[column + '_addd'] = mdf_test[column + '_addd'] + add
+    mdf_train[suffixcolumn] = mdf_train[suffixcolumn] + add
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn] + add
     
     #get mean of train set
-    mean = mdf_train[column + '_addd'].mean()
+    mean = mdf_train[suffixcolumn].mean()
     
     if mean != mean:
       mean = 0
 
     #replace missing data with training set mean
-    mdf_train[column + '_addd'] = mdf_train[column + '_addd'].fillna(mean)
-    mdf_test[column + '_addd'] = mdf_test[column + '_addd'].fillna(mean)
+    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(mean)
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
 
     #create list of columns
-    nmbrcolumns = [column + '_addd']
+    nmbrcolumns = [suffixcolumn]
 
-    nmbrnormalization_dict = {column + '_addd' : {'mean' : mean, \
-                                                  'add' : add, \
-                                                  'inplace' : inplace}}
+    nmbrnormalization_dict = {suffixcolumn : {'mean' : mean, \
+                                              'add' : add, \
+                                              'suffix' : suffix, \
+                                              'inplace' : inplace}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -16608,7 +16915,7 @@ class AutoMunge:
     #accepts parameter 'subtract' for amount of subtraction, otherwise defaults to subtracting 1
     #applies a subtraction transform
     #replaces non-numeric entries with set mean after subtraction
-    #returns same dataframes with new column of name column + '_sbtr'
+    #returns same dataframes with new column of name suffixcolumn
     '''
     
     suffixoverlap_results = {}
@@ -16619,53 +16926,58 @@ class AutoMunge:
       inplace = False
     
     if 'subtract' in params:
-        
       subtract = params['subtract']
-    
     else:
-      
       subtract = 1
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'sbtr'
+      
+    suffixcolumn = column + '_' + suffix
     
     if inplace is not True:
       
       #copy source column into new column
       mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, column + '_sbtr', suffixoverlap_results)
+      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results)
 
-      mdf_test[column + '_sbtr'] = mdf_test[column].copy()
+      mdf_test[suffixcolumn] = mdf_test[column].copy()
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, column + '_sbtr', suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results)
       
-      mdf_train.rename(columns = {column : column + '_sbtr'}, inplace = True)
-      mdf_test.rename(columns = {column : column + '_sbtr'}, inplace = True)
+      mdf_train.rename(columns = {column : suffixcolumn}, inplace = True)
+      mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
 
     #convert all values to either numeric or NaN
-    mdf_train[column + '_sbtr'] = pd.to_numeric(mdf_train[column + '_sbtr'], errors='coerce')
-    mdf_test[column + '_sbtr'] = pd.to_numeric(mdf_test[column + '_sbtr'], errors='coerce')
+    mdf_train[suffixcolumn] = pd.to_numeric(mdf_train[suffixcolumn], errors='coerce')
+    mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
     
     #apply subtraction
-    mdf_train[column + '_sbtr'] = mdf_train[column + '_sbtr'] - subtract
-    mdf_test[column + '_sbtr'] = mdf_test[column + '_sbtr'] - subtract
+    mdf_train[suffixcolumn] = mdf_train[suffixcolumn] - subtract
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn] - subtract
     
     #get mean of train set
-    mean = mdf_train[column + '_sbtr'].mean()
+    mean = mdf_train[suffixcolumn].mean()
     
     if mean != mean:
       mean = 0
 
     #replace missing data with training set mean
-    mdf_train[column + '_sbtr'] = mdf_train[column + '_sbtr'].fillna(mean)
-    mdf_test[column + '_sbtr'] = mdf_test[column + '_sbtr'].fillna(mean)
+    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(mean)
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
 
     #create list of columns
-    nmbrcolumns = [column + '_sbtr']
+    nmbrcolumns = [suffixcolumn]
 
-    nmbrnormalization_dict = {column + '_sbtr' : {'mean' : mean, \
-                                                  'subtract' : subtract, \
-                                                  'inplace' : inplace}}
+    nmbrnormalization_dict = {suffixcolumn : {'mean' : mean, \
+                                              'subtract' : subtract, \
+                                              'suffix' : suffix, \
+                                              'inplace' : inplace}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -16698,7 +17010,7 @@ class AutoMunge:
     #accepts parameter 'multiply' for amount of addition, otherwise defaults to multiplying 2
     #applies an multiplication transform
     #replaces non-numeric entries with set mean after addition
-    #returns same dataframes with new column of name column + '_mltp'
+    #returns same dataframes with new column of name suffixcolumn
     '''
     
     suffixoverlap_results = {}
@@ -16709,54 +17021,59 @@ class AutoMunge:
       inplace = False
     
     if 'multiply' in params:
-        
       multiply = params['multiply']
-    
     else:
-      
       multiply = 2
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'mltp'
+      
+    suffixcolumn = column + '_' + suffix
     
     if inplace is not True:
       
       #copy source column into new column
       mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, column + '_mltp', suffixoverlap_results)
+      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results)
 
-      mdf_test[column + '_mltp'] = mdf_test[column].copy()
+      mdf_test[suffixcolumn] = mdf_test[column].copy()
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, column + '_mltp', suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results)
       
-      mdf_train.rename(columns = {column : column + '_mltp'}, inplace = True)
-      mdf_test.rename(columns = {column : column + '_mltp'}, inplace = True)
+      mdf_train.rename(columns = {column : suffixcolumn}, inplace = True)
+      mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
 
     #convert all values to either numeric or NaN
-    mdf_train[column + '_mltp'] = pd.to_numeric(mdf_train[column + '_mltp'], errors='coerce')
-    mdf_test[column + '_mltp'] = pd.to_numeric(mdf_test[column + '_mltp'], errors='coerce')
+    mdf_train[suffixcolumn] = pd.to_numeric(mdf_train[suffixcolumn], errors='coerce')
+    mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
     
     #apply multiplication
-    mdf_train[column + '_mltp'] = mdf_train[column + '_mltp'] * multiply
-    mdf_test[column + '_mltp'] = mdf_test[column + '_mltp'] * multiply
+    mdf_train[suffixcolumn] = mdf_train[suffixcolumn] * multiply
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn] * multiply
     
     #get mean of train set
-    mean = mdf_train[column + '_mltp'].mean()
+    mean = mdf_train[suffixcolumn].mean()
     
     if mean != mean:
       mean = 0
 
     #replace missing data with training set mean
-    mdf_train[column + '_mltp'] = mdf_train[column + '_mltp'].fillna(mean)
-    mdf_test[column + '_mltp'] = mdf_test[column + '_mltp'].fillna(mean)
+    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(mean)
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
 
     #create list of columns
-    nmbrcolumns = [column + '_mltp']
+    nmbrcolumns = [suffixcolumn]
 
 
-    nmbrnormalization_dict = {column + '_mltp' : {'mean' : mean, \
-                                                  'multiply' : multiply, \
-                                                  'inplace' : inplace}}
+    nmbrnormalization_dict = {suffixcolumn : {'mean' : mean, \
+                                              'multiply' : multiply, \
+                                              'suffix' : suffix, \
+                                              'inplace' : inplace}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -16787,7 +17104,7 @@ class AutoMunge:
     #accepts parameter 'divide' for amount of division, otherwise defaults to dividing by 2
     #applies an division transform
     #replaces non-numeric entries with set mean after division
-    #returns same dataframes with new column of name column + '_divd'
+    #returns same dataframes with new column of name suffixcolumn
     '''
     
     suffixoverlap_results = {}
@@ -16798,12 +17115,16 @@ class AutoMunge:
       inplace = False
     
     if 'divide' in params:
-        
       divide = params['divide']
-    
     else:
-      
       divide = 2
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'divd'
+      
+    suffixcolumn = column + '_' + suffix
       
     #special case override to avoid div by 0
     if divide == 0:
@@ -16813,45 +17134,46 @@ class AutoMunge:
       
       #copy source column into new column
       mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, column + '_divd', suffixoverlap_results)
+      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results)
 
-      mdf_test[column + '_divd'] = mdf_test[column].copy()
+      mdf_test[suffixcolumn] = mdf_test[column].copy()
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, column + '_divd', suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results)
       
-      mdf_train.rename(columns = {column : column + '_divd'}, inplace = True)
-      mdf_test.rename(columns = {column : column + '_divd'}, inplace = True)
+      mdf_train.rename(columns = {column : suffixcolumn}, inplace = True)
+      mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
 
     #convert all values to either numeric or NaN
-    mdf_train[column + '_divd'] = pd.to_numeric(mdf_train[column + '_divd'], errors='coerce')
-    mdf_test[column + '_divd'] = pd.to_numeric(mdf_test[column + '_divd'], errors='coerce')
+    mdf_train[suffixcolumn] = pd.to_numeric(mdf_train[suffixcolumn], errors='coerce')
+    mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
     
     
     #apply multiplication
-    mdf_train[column + '_divd'] = mdf_train[column + '_divd'] / divide
-    mdf_test[column + '_divd'] = mdf_test[column + '_divd'] / divide
+    mdf_train[suffixcolumn] = mdf_train[suffixcolumn] / divide
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn] / divide
     
     #get mean of train set
-    mean = mdf_train[column + '_divd'].mean()
+    mean = mdf_train[suffixcolumn].mean()
     
     if mean != mean:
       mean = 0
 
     #replace missing data with training set mean
-    mdf_train[column + '_divd'] = mdf_train[column + '_divd'].fillna(mean)
-    mdf_test[column + '_divd'] = mdf_test[column + '_divd'].fillna(mean)
+    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(mean)
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
 
 
     #create list of columns
-    nmbrcolumns = [column + '_divd']
+    nmbrcolumns = [suffixcolumn]
 
 
-    nmbrnormalization_dict = {column + '_divd' : {'mean' : mean, \
-                                                  'divide' : divide, \
-                                                  'inplace' : inplace}}
+    nmbrnormalization_dict = {suffixcolumn : {'mean' : mean, \
+                                              'divide' : divide, \
+                                              'suffix' : suffix, \
+                                              'inplace' : inplace}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -16882,7 +17204,7 @@ class AutoMunge:
     #accepts parameter 'raiser' for amount of power, otherwise defaults to square (raise by 2)
     #applies an raise transform
     #replaces non-numeric entries with set mean after raise
-    #returns same dataframes with new column of name column + '_rais'
+    #returns same dataframes with new column of name suffixcolumn
     '''
     
     suffixoverlap_results = {}
@@ -16893,53 +17215,58 @@ class AutoMunge:
       inplace = False
     
     if 'raiser' in params:
-        
       raiser = params['raiser']
-    
     else:
-      
       raiser = 2
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'rais'
+      
+    suffixcolumn = column + '_' + suffix
     
     if inplace is not True:
       
       #copy source column into new column
       mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, column + '_rais', suffixoverlap_results)
+      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results)
 
-      mdf_test[column + '_rais'] = mdf_test[column].copy()
+      mdf_test[suffixcolumn] = mdf_test[column].copy()
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, column + '_rais', suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results)
       
-      mdf_train.rename(columns = {column : column + '_rais'}, inplace = True)
-      mdf_test.rename(columns = {column : column + '_rais'}, inplace = True)
+      mdf_train.rename(columns = {column : suffixcolumn}, inplace = True)
+      mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
 
     #convert all values to either numeric or NaN
-    mdf_train[column + '_rais'] = pd.to_numeric(mdf_train[column + '_rais'], errors='coerce')
-    mdf_test[column + '_rais'] = pd.to_numeric(mdf_test[column + '_rais'], errors='coerce')
+    mdf_train[suffixcolumn] = pd.to_numeric(mdf_train[suffixcolumn], errors='coerce')
+    mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
     
     #apply addition
-    mdf_train[column + '_rais'] = mdf_train[column + '_rais'] ** raiser
-    mdf_test[column + '_rais'] = mdf_test[column + '_rais'] ** raiser
+    mdf_train[suffixcolumn] = mdf_train[suffixcolumn] ** raiser
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn] ** raiser
     
     #get mean of train set
-    mean = mdf_train[column + '_rais'].mean()
+    mean = mdf_train[suffixcolumn].mean()
     
     if mean != mean:
       mean = 0
 
     #replace missing data with training set mean
-    mdf_train[column + '_rais'] = mdf_train[column + '_rais'].fillna(mean)
-    mdf_test[column + '_rais'] = mdf_test[column + '_rais'].fillna(mean)
+    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(mean)
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
 
     #create list of columns
-    nmbrcolumns = [column + '_rais']
+    nmbrcolumns = [suffixcolumn]
 
-    nmbrnormalization_dict = {column + '_rais' : {'mean' : mean, \
-                                                  'raiser' : raiser, \
-                                                  'inplace' : inplace}}
+    nmbrnormalization_dict = {suffixcolumn : {'mean' : mean, \
+                                              'raiser' : raiser, \
+                                              'suffix' : suffix, \
+                                              'inplace' : inplace}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -16970,7 +17297,7 @@ class AutoMunge:
     #does not accept paraemters
     #applies an absolute transform
     #replaces non-numeric entries with set mean after transform
-    #returns same dataframes with new column of name column + '_absl'
+    #returns same dataframes with new column of name suffixcolumn
     '''
     
     suffixoverlap_results = {}
@@ -16979,45 +17306,52 @@ class AutoMunge:
       inplace = params['inplace']
     else:
       inplace = False
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'absl'
+      
+    suffixcolumn = column + '_' + suffix
     
     if inplace is not True:
       
       #copy source column into new column
       mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, column + '_absl', suffixoverlap_results)
+      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results)
 
-      mdf_test[column + '_absl'] = mdf_test[column].copy()
+      mdf_test[suffixcolumn] = mdf_test[column].copy()
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, column + '_absl', suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results)
       
-      mdf_train.rename(columns = {column : column + '_absl'}, inplace = True)
-      mdf_test.rename(columns = {column : column + '_absl'}, inplace = True)
+      mdf_train.rename(columns = {column : suffixcolumn}, inplace = True)
+      mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
 
     #convert all values to either numeric or NaN
-    mdf_train[column + '_absl'] = pd.to_numeric(mdf_train[column + '_absl'], errors='coerce')
-    mdf_test[column + '_absl'] = pd.to_numeric(mdf_test[column + '_absl'], errors='coerce')
+    mdf_train[suffixcolumn] = pd.to_numeric(mdf_train[suffixcolumn], errors='coerce')
+    mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
     
     #apply addition
-    mdf_train[column + '_absl'] = mdf_train[column + '_absl'].abs()
-    mdf_test[column + '_absl'] = mdf_test[column + '_absl'].abs()
+    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].abs()
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].abs()
     
     #get mean of train set
-    mean = mdf_train[column + '_absl'].mean()
+    mean = mdf_train[suffixcolumn].mean()
     
     if mean != mean:
       mean = 0
 
     #replace missing data with training set mean
-    mdf_train[column + '_absl'] = mdf_train[column + '_absl'].fillna(mean)
-    mdf_test[column + '_absl'] = mdf_test[column + '_absl'].fillna(mean)
+    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(mean)
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
 
     #create list of columns
-    nmbrcolumns = [column + '_absl']
+    nmbrcolumns = [suffixcolumn]
 
-    nmbrnormalization_dict = {column + '_absl' : {'mean' : mean, 'inplace' : inplace}}
+    nmbrnormalization_dict = {suffixcolumn : {'mean' : mean, 'inplace' : inplace, 'suffix' : suffix}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -17061,8 +17395,15 @@ class AutoMunge:
       negvalues = params['negvalues']
     else:
       negvalues = False
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'pwrs'
+      
+    suffixcolumn = column + '_' + suffix
     
-    tempcolumn = column + '_-10^'
+    tempcolumn = suffixcolumn + '_-10^'
 
     #store original column for later reversion
     mdf_train, suffixoverlap_results = \
@@ -17113,7 +17454,7 @@ class AutoMunge:
       else:
         #this is update for difference between pwr2 and pwrs
         if negvalues:
-          newunique = column + '_-10^' + str(int(unique))
+          newunique = suffixcolumn + '_-10^' + str(int(unique))
         else:
           newunique = np.nan
       train_neg_dict.update({unique : newunique})
@@ -17127,7 +17468,7 @@ class AutoMunge:
       else:
         #this is update for difference between pwr2 and pwrs
         if negvalues:
-          newunique = column + '_-10^' + str(int(unique))
+          newunique = suffixcolumn + '_-10^' + str(int(unique))
         else:
           newunique = np.nan
       if newunique in newunique_list and newunique == newunique:
@@ -17152,7 +17493,7 @@ class AutoMunge:
       if unique != unique:
         newunique = np.nan
       else:
-        newunique = column + '_10^' + str(int(unique))
+        newunique = suffixcolumn + '_10^' + str(int(unique))
       train_pos_dict.update({unique : newunique})
       newposunique_list.append(newunique)
       
@@ -17162,7 +17503,7 @@ class AutoMunge:
       if unique != unique:
         newunique = np.nan
       else:
-        newunique = column + '_10^' + str(int(unique))
+        newunique = suffixcolumn + '_10^' + str(int(unique))
       if newunique in newposunique_list and newunique == newunique:
         test_pos_dict.update({unique : newunique})
       else:
@@ -17240,6 +17581,7 @@ class AutoMunge:
                                        'labels_train' : labels_train, \
                                        'missing_cols' : missing_cols, \
                                        'negvalues' : negvalues, \
+                                       'suffix' : suffix, \
                                        tc_ratio : tcratio}}
     
       column_dict = {pc : {'category' : 'pwrs', \
@@ -17281,8 +17623,13 @@ class AutoMunge:
       negvalues = params['negvalues']
     else:
       negvalues = False
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'pwor'
     
-    pworcolumn = column + '_pwor'
+    pworcolumn = column + '_' + suffix
     
     if inplace is not True:
       
@@ -17475,6 +17822,7 @@ class AutoMunge:
                                        'test_replace_dict' : test_replace_dict, \
                                        'ordl_activations_dict' : ordl_activations_dict, \
                                        'negvalues' : negvalues, \
+                                       'suffix' : suffix, \
                                        'inplace' : inplace}}
     
       column_dict = {pc : {'category' : 'pwor', \
@@ -17522,8 +17870,13 @@ class AutoMunge:
       normalizedinput = params['normalizedinput']
     else:
       normalizedinput = False
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'bins'
     
-    binscolumn = column + '_bins'
+    binscolumn = column + '_' + suffix
     
     if bincount > 0:
 
@@ -17632,6 +17985,7 @@ class AutoMunge:
                                         'binsmean' : mean, \
                                         'binsstd' : std, \
                                         'normalizedinput' : normalizedinput, \
+                                        'suffix' : suffix, \
                                         tc_ratio : tcratio}}
 
         column_dict = { nc : {'category' : 'bins', \
@@ -17686,8 +18040,13 @@ class AutoMunge:
       normalizedinput = params['normalizedinput']
     else:
       normalizedinput = False
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'bsor'
     
-    binscolumn = column + '_bsor'
+    binscolumn = column + '_' + suffix
     
     if bincount > 0:
 
@@ -17800,6 +18159,7 @@ class AutoMunge:
                                         'bincount' : bincount, \
                                         'bincuts' : bincuts, \
                                         'binlabels' : binlabels, \
+                                        'suffix' : suffix, \
                                         'inplace' : inplace}}
 
         column_dict = { nc : {'category' : 'bsor', \
@@ -18526,7 +18886,12 @@ class AutoMunge:
     else:
       buckets = False
 
-    binscolumn = column + '_tlbn'
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'tlbn'
+
+    binscolumn = column + '_' + suffix
 
     #copy original column
     mdf_train, suffixoverlap_results = \
@@ -18698,7 +19063,6 @@ class AutoMunge:
       del mdf_train[binscolumn]
       del mdf_test[binscolumn]
       
-      
     else:
       mdf_train[binscolumn] = 0
       mdf_test[binscolumn] = 0
@@ -18737,6 +19101,7 @@ class AutoMunge:
                                       'bincount_tlbn' : bincount_orig, \
                                       'buckets_tlbn' : buckets, \
                                       'textcolumns' : textcolumns, \
+                                      'suffix' : suffix, \
                                       tc_ratio : tcratio}}
 
       column_dict = { nc : {'category' : 'tlbn', \
@@ -18774,8 +19139,13 @@ class AutoMunge:
     else:
       buckets = [0,1,2]
       origbuckets = [0,1,2]
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'bkt1'
       
-    binscolumn = column + '_bkt1'
+    binscolumn = column + '_' + suffix
 
     #store original column for later reversion
     mdf_train, suffixoverlap_results = \
@@ -18880,6 +19250,7 @@ class AutoMunge:
                                        tc_ratio : tcratio, \
                                       'trainmax' : trainmax, \
                                       'trainmin' : trainmin, \
+                                      'suffix' : suffix, \
                                       'origbuckets_bkt1' : origbuckets}}
 
       column_dict = { nc : {'category' : 'bkt1', \
@@ -18917,8 +19288,13 @@ class AutoMunge:
     else:
       buckets = [0,1,2]
       origbuckets = [0,1,2]
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'bkt2'
       
-    binscolumn = column + '_bkt2'
+    binscolumn = column + '_' + suffix
 
     #store original column for later reversion
     mdf_train, suffixoverlap_results = \
@@ -19020,6 +19396,7 @@ class AutoMunge:
                                        tc_ratio : tcratio, \
                                       'trainmax' : trainmax, \
                                       'trainmin' : trainmin, \
+                                      'suffix' : suffix, \
                                       'origbuckets_bkt2' : origbuckets}}
 
       column_dict = { nc : {'category' : 'bkt2', \
@@ -19057,14 +19434,16 @@ class AutoMunge:
       inplace = False
     
     if 'buckets' in params:
-        
       buckets = params['buckets']
-    
     else:
-      
       buckets = [0,1,2]
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'bkt3'
       
-    binscolumn = column + '_bkt3'
+    binscolumn = column + '_' + suffix
 
     if inplace is not True:
 
@@ -19173,6 +19552,7 @@ class AutoMunge:
                                       'ordl_activations_dict' : ordl_activations_dict, \
                                       'trainmax' : trainmax, \
                                       'trainmin' : trainmin, \
+                                      'suffix' : suffix, \
                                       'inplace' : inplace}}
 
       column_dict = { nc : {'category' : 'bkt3', \
@@ -19209,14 +19589,16 @@ class AutoMunge:
       inplace = False
     
     if 'buckets' in params:
-        
       buckets = params['buckets']
-    
     else:
-      
       buckets = [0,1,2]
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'bkt4'
       
-    binscolumn = column + '_bkt4'
+    binscolumn = column + '_' + suffix
 
     if inplace is not True:
 
@@ -19338,6 +19720,7 @@ class AutoMunge:
                                       'ordl_activations_dict' : ordl_activations_dict, \
                                       'trainmax' : trainmax, \
                                       'trainmin' : trainmin, \
+                                      'suffix' : suffix, \
                                       'inplace' : inplace}}
 
       column_dict = { nc : {'category' : 'bkt4', \
@@ -19401,8 +19784,13 @@ class AutoMunge:
       testnoise = params['testnoise']
     else:
       testnoise = False
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'DPnb'
       
-    DPnm_column = column + '_DPnb'
+    DPnm_column = column + '_' + suffix
     
     suffixoverlap_results = \
     self._df_check_suffixoverlap(mdf_train, DPnm_column, suffixoverlap_results)
@@ -19445,6 +19833,7 @@ class AutoMunge:
                                              'sigma' : sigma, \
                                              'flip_prob' : flip_prob, \
                                              'testnoise' : testnoise, \
+                                             'suffix' : suffix, \
                                              'noisedistribution' : noisedistribution}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
@@ -19516,9 +19905,14 @@ class AutoMunge:
       testnoise = params['testnoise']
     else:
       testnoise = False
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'DPmm'
       
-    DPmm_column = column + '_DPmm'
-    DPmm_column_temp1 = column + '_DPmm' + '_tmp1'
+    DPmm_column = column + '_' + suffix
+    DPmm_column_temp1 = column + '_' + suffix + '_tmp1'
     
     suffixoverlap_results = \
     self._df_check_suffixoverlap(mdf_train, [DPmm_column, DPmm_column_temp1], suffixoverlap_results)
@@ -19581,6 +19975,7 @@ class AutoMunge:
                                              'sigma' : sigma, \
                                              'flip_prob' : flip_prob, \
                                              'testnoise' : testnoise, \
+                                             'suffix' : suffix, \
                                              'noisedistribution' : noisedistribution}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
@@ -19694,10 +20089,15 @@ class AutoMunge:
       testnoise = params['testnoise']
     else:
       testnoise = False
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'DPrt'
       
-    DPrt_column = column + '_DPrt'
-    DPrt_column_temp1 = column + '_DPrt' + '_tmp1'
-    DPrt_column_temp2 = column + '_DPrt' + '_tmp2'
+    DPrt_column = column + '_' + suffix
+    DPrt_column_temp1 = column + '_' + suffix + '_tmp1'
+    DPrt_column_temp2 = column + '_' + suffix + '_tmp2'
     
     newcolumns = [DPrt_column, DPrt_column_temp1, DPrt_column_temp2]
     
@@ -19918,6 +20318,7 @@ class AutoMunge:
                                              'cap' : cap, \
                                              'floor' : floor, \
                                              'divisor' : divisor, \
+                                             'suffix' : suffix, \
                                              'testnoise' : testnoise, \
                                             }}
     
@@ -19967,8 +20368,13 @@ class AutoMunge:
       testnoise = params['testnoise']
     else:
       testnoise = False
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'DPbn'
       
-    DPbn_column = column + '_DPbn'
+    DPbn_column = column + '_' + suffix
     
     suffixoverlap_results = \
     self._df_check_suffixoverlap(mdf_train, DPbn_column, suffixoverlap_results)
@@ -19994,6 +20400,7 @@ class AutoMunge:
     nmbrcolumns = [DPbn_column]
 
     nmbrnormalization_dict = {DPbn_column : {'flip_prob' : flip_prob, \
+                                             'suffix' : suffix, \
                                              'testnoise' : testnoise}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
@@ -20047,10 +20454,15 @@ class AutoMunge:
       testnoise = params['testnoise']
     else:
       testnoise = False
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'DPod'
       
-    DPod_column = column + '_DPod'
-    DPod_tempcolumn1 = column + '_DPod_tmp1'
-    DPod_tempcolumn2 = column + '_DPod_tmp2'
+    DPod_column = column + '_' + suffix
+    DPod_tempcolumn1 = column + '_' + suffix + '_tmp1'
+    DPod_tempcolumn2 = column + '_' + suffix + '_tmp2'
     
     newcolumns = [DPod_column, DPod_tempcolumn1, DPod_tempcolumn2]
     
@@ -20092,6 +20504,7 @@ class AutoMunge:
     nmbrcolumns = [DPod_column]
 
     nmbrnormalization_dict = {DPod_column : {'flip_prob' : flip_prob, \
+                                             'suffix' : suffix, \
                                              'testnoise' : testnoise}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
@@ -20344,14 +20757,13 @@ class AutoMunge:
     '''
     
     suffixoverlap_results = {}
-    
+
     if 'suffix' in params:
-        
-      copy_column = column + '_' + params['suffix']
-    
+      suffix = params['suffix']
     else:
+      suffix = 'copy'
       
-      copy_column = column + '_' + 'copy'
+    copy_column = column + '_' + suffix
     
     df, suffixoverlap_results = \
     self._df_copy_train(df, column, copy_column, suffixoverlap_results)
@@ -20360,7 +20772,7 @@ class AutoMunge:
 
     column_dict = {copy_column : {'category' : 'copy', \
                                  'origcategory' : category, \
-                                 'normalization_dict' : {copy_column:{}}, \
+                                 'normalization_dict' : {copy_column:{'suffix' : suffix}}, \
                                  'origcolumn' : column, \
                                  'inputcolumn' : column, \
                                  'columnslist' : [copy_column], \
@@ -20398,8 +20810,14 @@ class AutoMunge:
       inplace = params['inplace']
     else:
       inplace = False
+
+    #external operations to subsequently scrub excl suffix rely on a known column + '_excl'
+    # if 'suffix' in params:
+    #   suffix = params['suffix']
+    # else:
+    suffix = 'excl'
     
-    exclcolumn = column + '_excl'
+    exclcolumn = column + '_' + suffix
 
     if inplace is not True:
 
@@ -20425,7 +20843,7 @@ class AutoMunge:
 
     column_dict = {exclcolumn : {'category' : 'excl', \
                                  'origcategory' : category, \
-                                 'normalization_dict' : {exclcolumn:{'inplace' : inplace}}, \
+                                 'normalization_dict' : {exclcolumn:{'inplace' : inplace, 'suffix' : suffix}}, \
                                  'origcolumn' : column, \
                                  'inputcolumn' : column, \
                                  'columnslist' : [exclcolumn], \
@@ -20454,8 +20872,13 @@ class AutoMunge:
       inplace = params['inplace']
     else:
       inplace = False
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'exc2'
     
-    exclcolumn = column + '_exc2'
+    exclcolumn = column + '_' + suffix
     
     if inplace is not True:
 
@@ -20491,7 +20914,7 @@ class AutoMunge:
     mdf_train[exclcolumn] = mdf_train[exclcolumn].fillna(fillvalue)
     mdf_test[exclcolumn] = mdf_test[exclcolumn].fillna(fillvalue)
     
-    exc2_normalization_dict = {exclcolumn : {'fillvalue' : fillvalue, 'inplace' : inplace}}
+    exc2_normalization_dict = {exclcolumn : {'fillvalue' : fillvalue, 'inplace' : inplace, 'suffix' : suffix}}
     
     column_dict_list = []
 
@@ -20526,8 +20949,13 @@ class AutoMunge:
       inplace = params['inplace']
     else:
       inplace = False
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'exc5'
     
-    exclcolumn = column + '_exc5'
+    exclcolumn = column + '_' + suffix
     
     if inplace is not True:
 
@@ -20567,7 +20995,7 @@ class AutoMunge:
     mdf_train[exclcolumn] = mdf_train[exclcolumn].fillna(fillvalue)
     mdf_test[exclcolumn] = mdf_test[exclcolumn].fillna(fillvalue)
     
-    exc2_normalization_dict = {exclcolumn : {'fillvalue' : fillvalue, 'inplace' : inplace}}
+    exc2_normalization_dict = {exclcolumn : {'fillvalue' : fillvalue, 'inplace' : inplace, 'suffix' : suffix}}
     
     column_dict_list = []
 
@@ -20601,40 +21029,47 @@ class AutoMunge:
       inplace = params['inplace']
     else:
       inplace = False
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = 'shfl'
+
+    suffixcolumn = column + '_' + suffix
     
     if inplace is not True:
       
       #copy source column into new column
       df, suffixoverlap_results = \
-      self._df_copy_train(df, column, column + '_shfl', suffixoverlap_results)
+      self._df_copy_train(df, column, suffixcolumn, suffixoverlap_results)
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(df, column + '_shfl', suffixoverlap_results)
+      self._df_check_suffixoverlap(df, suffixcolumn, suffixoverlap_results)
       
-      df.rename(columns = {column : column + '_shfl'}, inplace = True)
+      df.rename(columns = {column : suffixcolumn}, inplace = True)
     
     #we've introduced that randomseed is now accessible throughout in the postprocess_dict
     random = postprocess_dict['randomseed']
     
     #uses support function
-    df = self._df_shuffle_series(df, column + '_shfl', random)
+    df = self._df_shuffle_series(df, suffixcolumn, random)
     
     #we'll do the adjacent cell infill after the shuffle operation
     
     #apply ffill to replace NArows with value from adjacent cell in preceding row
-    df[column + '_shfl'] = df[column + '_shfl'].fillna(method='ffill')
+    df[suffixcolumn] = df[suffixcolumn].fillna(method='ffill')
     
     #we'll follow with a bfill just in case first row had a nan
-    df[column + '_shfl'] = df[column + '_shfl'].fillna(method='bfill')
+    df[suffixcolumn] = df[suffixcolumn].fillna(method='bfill')
     
     
     #create list of columns
-    nmbrcolumns = [column + '_shfl']
+    nmbrcolumns = [suffixcolumn]
 
 
-    nmbrnormalization_dict = {column + '_shfl' : {'inplace' : inplace}}
+    nmbrnormalization_dict = {suffixcolumn : {'inplace' : inplace, 'suffix' : suffix}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -27499,7 +27934,7 @@ class AutoMunge:
           
       if 'recorded_category' not in processdict[entry]:
         check_processdict_result = True
-        print("error: processdict missing 'MLinfilltype' entry for category: ", entry)
+        print("error: processdict missing 'recorded_category' entry for category: ", entry)
         print()
         
       if 'labelctgy' not in processdict[entry]:
@@ -30458,7 +30893,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.18'
+    automungeversion = '6.19'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -31160,41 +31595,45 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['floor']
       inplace = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
+      suffix = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
       
+      suffixcolumn = column + '_' + suffix
+
       if inplace is not True:
         #copy source column into new column
-        mdf_test[column + '_nmbr'] = mdf_test[column].copy()
+        mdf_test[suffixcolumn] = mdf_test[column].copy()
       else:
-        mdf_test.rename(columns = {column : column + '_nmbr'}, inplace = True)
+        mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
 
       #convert all values to either numeric or NaN
-      mdf_test[column + '_nmbr'] = pd.to_numeric(mdf_test[column + '_nmbr'], errors='coerce')
+      mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
       
       if cap is not False:
         #replace values in test > cap with cap
-        mdf_test.loc[mdf_test[column + '_nmbr'] > cap, (column + '_nmbr')] \
+        mdf_test.loc[mdf_test[suffixcolumn] > cap, (suffixcolumn)] \
         = cap
       
       if floor is not False:
         #replace values in test < floor with floor
-        mdf_test.loc[mdf_test[column + '_nmbr'] < floor, (column + '_nmbr')] \
+        mdf_test.loc[mdf_test[suffixcolumn] < floor, (suffixcolumn)] \
         = floor
 
       #replace missing data with training set mean
-      mdf_test[column + '_nmbr'] = mdf_test[column + '_nmbr'].fillna(mean)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
 
       #subtract mean from column
-      mdf_test[column + '_nmbr'] = mdf_test[column + '_nmbr'] - mean
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn] - mean
 
       #get standard deviation of training data
       std = std
 
       #divide column values by std
       #offset, multiplier are parameters that defaults to zero, one
-      mdf_test[column + '_nmbr'] = mdf_test[column + '_nmbr'] / std * multiplier + offset
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn] / std * multiplier + offset
 
   #     #change data type for memory savings
-  #     mdf_test[column + '_nmbr'] = mdf_test[column + '_nmbr'].astype(np.float32)
+  #     mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.float32)
 
     else:
 
@@ -31236,27 +31675,31 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['MAD']
       inplace = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
+      suffix = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+
+      suffixcolumn = column + '_' + suffix
 
       if inplace is not True:
-        mdf_test[column + '_MADn'] = mdf_test[column].copy()
+        mdf_test[suffixcolumn] = mdf_test[column].copy()
       
       else:
-        mdf_test.rename(columns = {column : column + '_MADn'}, inplace = True)
+        mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
 
       #convert all values to either numeric or NaN
-      mdf_test[column + '_MADn'] = pd.to_numeric(mdf_test[column + '_MADn'], errors='coerce')
+      mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
 
       #replace missing data with training set mean
-      mdf_test[column + '_MADn'] = mdf_test[column + '_MADn'].fillna(mean)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
 
       #subtract mean from column
-      mdf_test[column + '_MADn'] = mdf_test[column + '_MADn'] - mean
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn] - mean
 
       #get mean absolute deviation of training data
       MAD = MAD
 
       #divide column values by std
-      mdf_test[column + '_MADn'] = mdf_test[column + '_MADn'] / MAD
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn] / MAD
 
   #     #change data type for memory savings
   #     mdf_test[column + '_MADn'] = mdf_test[column + '_MADn'].astype(np.float32)
@@ -31303,27 +31746,31 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['datamax']
       inplace = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
+      suffix = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+
+      suffixcolumn = column + '_' + suffix
 
       if inplace is not True:
-        mdf_test[column + '_MAD3'] = mdf_test[column].copy()
+        mdf_test[suffixcolumn] = mdf_test[column].copy()
       
       else:
-        mdf_test.rename(columns = {column : column + '_MAD3'}, inplace = True)
+        mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
 
       #convert all values to either numeric or NaN
-      mdf_test[column + '_MAD3'] = pd.to_numeric(mdf_test[column + '_MAD3'], errors='coerce')
+      mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
 
       #replace missing data with training set mean
-      mdf_test[column + '_MAD3'] = mdf_test[column + '_MAD3'].fillna(mean)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
 
       #subtract datamax from column
-      mdf_test[column + '_MAD3'] = mdf_test[column + '_MAD3'] - datamax
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn] - datamax
 
       #get mean absolute deviation of training data
       MAD = MAD
 
       #divide column values by std
-      mdf_test[column + '_MAD3'] = mdf_test[column + '_MAD3'] / MAD
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn] / MAD
 
   #     #change data type for memory savings
   #     mdf_test[column + '_MAD3'] = mdf_test[column + '_MAD3'].astype(np.float32)
@@ -31374,18 +31821,22 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['floor']
       inplace = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
+      suffix = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+
+      suffixcolumn = column + '_' + suffix
       
       if inplace is not True:
         #copy source column into new column
-        mdf_test[column + '_mnmx'] = mdf_test[column].copy()
+        mdf_test[suffixcolumn] = mdf_test[column].copy()
       else:
-        mdf_test.rename(columns = {column : column + '_mnmx'}, inplace = True)
+        mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
 
       #convert all values to either numeric or NaN
-      mdf_test[column + '_mnmx'] = pd.to_numeric(mdf_test[column + '_mnmx'], errors='coerce')
+      mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
 
       #replace missing data with training set mean
-      mdf_test[column + '_mnmx'] = mdf_test[column + '_mnmx'].fillna(mean)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
       
       #avoid outlier div by zero when max = min
       maxminusmin = maximum - minimum
@@ -31393,17 +31844,17 @@ class AutoMunge:
         maxminusmin = 1
 
       #perform min-max scaling to test set using values from train
-      mdf_test[column + '_mnmx'] = (mdf_test[column + '_mnmx'] - minimum) / \
+      mdf_test[suffixcolumn] = (mdf_test[suffixcolumn] - minimum) / \
                                   (maxminusmin)
 
       if cap is not False:
         #replace values in test > cap with cap
-        mdf_test.loc[mdf_test[column + '_mnmx'] > (cap - minimum)/maxminusmin, (column + '_mnmx')] \
+        mdf_test.loc[mdf_test[suffixcolumn] > (cap - minimum)/maxminusmin, (suffixcolumn)] \
         = (cap - minimum)/maxminusmin
       
       if floor is not False:
         #replace values in test < floor with floor
-        mdf_test.loc[mdf_test[column + '_mnmx'] < (floor - minimum)/maxminusmin, (column + '_mnmx')] \
+        mdf_test.loc[mdf_test[suffixcolumn] < (floor - minimum)/maxminusmin, (suffixcolumn)] \
         = (floor - minimum)/maxminusmin
 
     else:
@@ -31449,28 +31900,32 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['quantilemax']
       inplace = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
+      suffix = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+
+      suffixcolumn = column + '_' + suffix
       
       if inplace is not True:
-        mdf_test[column + '_mnm3'] = mdf_test[column].copy()
+        mdf_test[suffixcolumn] = mdf_test[column].copy()
       
       else:
-        mdf_test.rename(columns = {column : column + '_mnm3'}, inplace = True)
+        mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
 
       #convert all values to either numeric or NaN
-      mdf_test[column + '_mnm3'] = pd.to_numeric(mdf_test[column + '_mnm3'], errors='coerce')
+      mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
 
   #     #get mean of training data
   #     mean = mean    
       
       #replace values > quantilemax with quantilemax
-      mdf_test.loc[mdf_test[column + '_mnm3'] > quantilemax, (column + '_mnm3')] \
+      mdf_test.loc[mdf_test[suffixcolumn] > quantilemax, (suffixcolumn)] \
       = quantilemax
       #replace values < quantile10 with quantile10
-      mdf_test.loc[mdf_test[column + '_mnm3'] < quantilemin, (column + '_mnm3')] \
+      mdf_test.loc[mdf_test[suffixcolumn] < quantilemin, (suffixcolumn)] \
       = quantilemin
       
       #replace missing data with training set mean
-      mdf_test[column + '_mnm3'] = mdf_test[column + '_mnm3'].fillna(mean)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
       
       #avoid outlier div by zero when max = min
       maxminusmin = quantilemax - quantilemin
@@ -31478,11 +31933,11 @@ class AutoMunge:
         maxminusmin = 1
 
       #perform min-max scaling to test set using values from train
-      mdf_test[column + '_mnm3'] = (mdf_test[column + '_mnm3'] - quantilemin) / \
+      mdf_test[suffixcolumn] = (mdf_test[suffixcolumn] - quantilemin) / \
                                   (maxminusmin)
 
   #     #change data type for memory savings
-  #     mdf_test[column + '_mnm3'] = mdf_test[column + '_mnm3'].astype(np.float32)
+  #     mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.float32)
 
     else:
 
@@ -31517,25 +31972,29 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
       inplace = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
+      suffix = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+
+      suffixcolumn = column + '_' + suffix
       
       if inplace is not True:
         #copy source column into new column
-        mdf_test[column + '_mxab'] = mdf_test[column].copy()
+        mdf_test[suffixcolumn] = mdf_test[column].copy()
       else:
-        mdf_test.rename(columns = {column : column + '_mxab'}, inplace = True)
+        mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
 
       #convert all values to either numeric or NaN
-      mdf_test[column + '_mxab'] = pd.to_numeric(mdf_test[column + '_mxab'], errors='coerce')
+      mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
 
       #replace missing data with training set mean
-      mdf_test[column + '_mxab'] = mdf_test[column + '_mxab'].fillna(mean)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
       
       #avoid outlier div by zero 
       if maxabs == 0:
         maxabs = 1
 
       #perform max abs scaling to test set using values from train
-      mdf_test[column + '_mxab'] = mdf_test[column + '_mxab'] / \
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn] / \
                                   (maxabs)
 
     else:
@@ -31569,7 +32028,7 @@ class AutoMunge:
     
     #replaces missing or improperly formatted data with mean of remaining values
     
-    #returns same dataframes with new column of name column + '_retn'
+    #returns same dataframes with new column of name suffixcolumn
     #note this is a "dualprocess" function since is applied to both dataframes
     
     #note with parameters divisor can also be set as standard deviation
@@ -31606,28 +32065,32 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['divisor']
       inplace = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
+      suffix = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+
+      suffixcolumn = column + '_' + suffix
       
       if inplace is not True:
         #copy source column into new column
-        mdf_test[column + '_retn'] = mdf_test[column].copy()
+        mdf_test[suffixcolumn] = mdf_test[column].copy()
       else:
-        mdf_test.rename(columns = {column : column + '_retn'}, inplace = True)
+        mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
 
       #convert all values to either numeric or NaN
-      mdf_test[column + '_retn'] = pd.to_numeric(mdf_test[column + '_retn'], errors='coerce')
+      mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
       
       if cap is not False:
         #replace values in test > cap with cap
-        mdf_test.loc[mdf_test[column + '_retn'] > cap, (column + '_retn')] \
+        mdf_test.loc[mdf_test[suffixcolumn] > cap, (suffixcolumn)] \
         = cap
       
       if floor is not False:
         #replace values in test < floor with floor
-        mdf_test.loc[mdf_test[column + '_retn'] < floor, (column + '_retn')] \
+        mdf_test.loc[mdf_test[suffixcolumn] < floor, (suffixcolumn)] \
         = floor
 
       #replace missing data with training set mean
-      mdf_test[column + '_retn'] = mdf_test[column + '_retn'].fillna(mean)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
       
       #avoid outlier div by zero when max = min
       maxminusmin = maximum - minimum
@@ -31636,19 +32099,19 @@ class AutoMunge:
       
       if scalingapproach == 'retn':
         
-        mdf_test[column + '_retn'] = (mdf_test[column + '_retn']) / \
+        mdf_test[suffixcolumn] = (mdf_test[suffixcolumn]) / \
                                       (divisor) * multiplier + offset
         
       elif scalingapproach == 'mnmx':
       
         #perform min-max scaling to test set using values from train
-        mdf_test[column + '_retn'] = (mdf_test[column + '_retn'] - minimum) / \
+        mdf_test[suffixcolumn] = (mdf_test[suffixcolumn] - minimum) / \
                                     (divisor) * multiplier + offset
         
       elif scalingapproach == 'mxmn':
       
         #perform min-max scaling to test set using values from train
-        mdf_test[column + '_retn'] = (mdf_test[column + '_retn'] - maximum) / \
+        mdf_test[suffixcolumn] = (mdf_test[suffixcolumn] - maximum) / \
                                     (divisor) * multiplier + offset
 
     else:
@@ -31703,35 +32166,39 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['floor']
       inplace = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
+      suffix = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+
+      suffixcolumn = column + '_' + suffix
 
       if inplace is not True:
-        mdf_test[column + '_mean'] = mdf_test[column].copy()
+        mdf_test[suffixcolumn] = mdf_test[column].copy()
       
       else:
-        mdf_test.rename(columns = {column : column + '_mean'}, inplace = True)
+        mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
 
       #convert all values to either numeric or NaN
-      mdf_test[column + '_mean'] = pd.to_numeric(mdf_test[column + '_mean'], errors='coerce')
+      mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
       
       if cap is not False:
         #replace values in test > cap with cap
-        mdf_test.loc[mdf_test[column + '_mean'] > cap, (column + '_mean')] \
+        mdf_test.loc[mdf_test[suffixcolumn] > cap, (suffixcolumn)] \
         = cap
       
       if floor is not False:
         #replace values in test < floor with floor
-        mdf_test.loc[mdf_test[column + '_mean'] < floor, (column + '_mean')] \
+        mdf_test.loc[mdf_test[suffixcolumn] < floor, (suffixcolumn)] \
         = floor
 
       #replace missing data with training set mean
-      mdf_test[column + '_mean'] = mdf_test[column + '_mean'].fillna(mean)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
 
       #perform min-max scaling to test set using values from train
-      mdf_test[column + '_mean'] = (mdf_test[column + '_mean'] - mean) / \
+      mdf_test[suffixcolumn] = (mdf_test[suffixcolumn] - mean) / \
                                   (maxminusmin) * multiplier + offset
 
   #     #change data type for memory savings
-  #     mdf_test[column + '_mnmx'] = mdf_test[column + '_mnmx'].astype(np.float32)
+  #     mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.float32)
 
     else:
 
@@ -31777,18 +32244,22 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey][0]
       inplace = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
+      suffix = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+
+      suffixcolumn = column + '_' + suffix
 
       if inplace is not True:
-        mdf_test[column + '_bnry'] = mdf_test[column].copy()
+        mdf_test[suffixcolumn] = mdf_test[column].copy()
       
       else:
-        mdf_test.rename(columns = {column : column + '_bnry'}, inplace = True)
+        mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
       
       if str_convert is True:
-        mdf_test[column + '_bnry'] = mdf_test[column + '_bnry'].astype(str)
+        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(str)
 
       #replace missing data with specified classification
-      mdf_test[column + '_bnry'] = mdf_test[column + '_bnry'].fillna(binary_missing_plug)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(binary_missing_plug)
 
       #this addressess issue where nunique for mdftest > than that for mdf_train
       #note is currently an oportunity for improvement that NArows won't identify these poinsts as candiadates
@@ -31796,21 +32267,21 @@ class AutoMunge:
       #in the mean time a workaround could be for user to manually replace extra values with nan prior to
       #postmunge application such as if they want to apply ML infill
       #this will only be an issue when nunique for df_train == 2, and nunique for df_test > 2
-      #if len(mdf_test[column + '_bnry'].unique()) > 2:
-      uniqueintest = mdf_test[column + '_bnry'].unique()
+      #if len(mdf_test[suffixcolumn].unique()) > 2:
+      uniqueintest = mdf_test[suffixcolumn].unique()
       for unique in uniqueintest:
         if unique not in {onevalue, zerovalue}:
-          mdf_test[column + '_bnry'] = \
-          np.where(mdf_test[column + '_bnry'] == unique, binary_missing_plug, mdf_test[column + '_bnry'])
+          mdf_test[suffixcolumn] = \
+          np.where(mdf_test[suffixcolumn] == unique, binary_missing_plug, mdf_test[suffixcolumn])
       
       #convert column to binary 0/1 classification (replaces scikit LabelBinarizer)
-      mdf_test[column + '_bnry'] = np.where(mdf_test[column + '_bnry'] == onevalue, 1, 0)
+      mdf_test[suffixcolumn] = np.where(mdf_test[suffixcolumn] == onevalue, 1, 0)
 
       #create list of columns
-      bnrycolumns = [column + '_bnry']
+      bnrycolumns = [suffixcolumn]
 
       #change data types to 8-bit (1 byte) integers for memory savings
-      mdf_test[column + '_bnry'] = mdf_test[column + '_bnry'].astype(np.int8)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.int8)
 
     else:
 
@@ -31856,18 +32327,22 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey][0]
       inplace = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
+      suffix = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+
+      suffixcolumn = column + '_' + suffix
 
       if inplace is not True:
-        mdf_test[column + '_bnr2'] = mdf_test[column].copy()
+        mdf_test[suffixcolumn] = mdf_test[column].copy()
       
       else:
-        mdf_test.rename(columns = {column : column + '_bnr2'}, inplace = True)
+        mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
       
       if str_convert is True:
-        mdf_test[column + '_bnr2'] = mdf_test[column + '_bnr2'].astype(str)
+        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(str)
 
       #replace missing data with specified classification
-      mdf_test[column + '_bnr2'] = mdf_test[column + '_bnr2'].fillna(binary_missing_plug)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(binary_missing_plug)
 
       #this addressess issue where nunique for mdftest > than that for mdf_train
       #note is currently an oportunity for improvement that NArows won't identify these poinsts as candiadates
@@ -31875,21 +32350,21 @@ class AutoMunge:
       #in the mean time a workaround could be for user to manually replace extra values with nan prior to
       #postmunge application such as if they want to apply ML infill
       #this will only be an issue when nunique for df_train == 2, and nunique for df_test > 2
-      #if len(mdf_test[column + '_bnry'].unique()) > 2:
-      uniqueintest = mdf_test[column + '_bnr2'].unique()
+      #if len(mdf_test[suffixcolumn].unique()) > 2:
+      uniqueintest = mdf_test[suffixcolumn].unique()
       for unique in uniqueintest:
         if unique not in {onevalue, zerovalue}:
-          mdf_test[column + '_bnr2'] = \
-          np.where(mdf_test[column + '_bnr2'] == unique, binary_missing_plug, mdf_test[column + '_bnr2'])
+          mdf_test[suffixcolumn] = \
+          np.where(mdf_test[suffixcolumn] == unique, binary_missing_plug, mdf_test[suffixcolumn])
       
       #convert column to binary 0/1 classification (replaces scikit LabelBinarizer)
-      mdf_test[column + '_bnr2'] = np.where(mdf_test[column + '_bnr2'] == onevalue, 1, 0)
+      mdf_test[suffixcolumn] = np.where(mdf_test[suffixcolumn] == onevalue, 1, 0)
 
       #create list of columns
-      bnrycolumns = [column + '_bnr2']
+      bnrycolumns = [suffixcolumn]
 
       #change data types to 8-bit (1 byte) integers for memory savings
-      mdf_test[column + '_bnr2'] = mdf_test[column + '_bnr2'].astype(np.int8)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.int8)
 
     else:
 
@@ -31920,8 +32395,10 @@ class AutoMunge:
       
       str_convert = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['str_convert']
+      suffix = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
       
-      tempcolumn = column + '_onht_'
+      tempcolumn = column + '_' + suffix + '_'
 
       #create copy of original column for later retrieval
       mdf_test[tempcolumn] = mdf_test[column].copy()
@@ -32148,8 +32625,11 @@ class AutoMunge:
 
       categorylist = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['categorylist']
+
+      suffix = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
       
-      tempcolumn = column + '_smth_'
+      tempcolumn = column + '_' + suffix + '_'
 
       #check if df_test is to be treated as train or test data
       traindata = postprocess_dict['traindata']
@@ -33143,22 +33623,26 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['hashcolumns']
       inplace = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
+      suffix = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+
+      suffixcolumn = column + '_' + suffix
 
       if hash_alg == 'md5':
         from hashlib import md5
 
       if inplace is not True:
         #copy source column into new column
-        mdf_test[column + '_hash'] = mdf_test[column].copy()
+        mdf_test[suffixcolumn] = mdf_test[column].copy()
       else:
-        mdf_test.rename(columns = {column : column + '_hash'}, inplace = True)
+        mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
 
       #convert column to string, note this means that missing data converted to 'nan'
-      mdf_test[column + '_hash'] = mdf_test[column + '_hash'].astype(str)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(str)
       
       #now scrub special characters
       for scrub_punctuation in excluded_characters:
-        mdf_test[column + '_hash'] = mdf_test[column + '_hash'].str.replace(scrub_punctuation, '')
+        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].str.replace(scrub_punctuation, '')
 
       #define some support functions
       def _assemble_wordlist(string, space = ' ', max_column_count = max_column_count):
@@ -33248,36 +33732,36 @@ class AutoMunge:
       #e.g. this converts "Two words" to ['Two', 'words']
       #if you don't want to split words can pass space = ''
       if space != '':
-        mdf_test[column + '_hash'] = mdf_test[column + '_hash'].transform(_assemble_wordlist)
+        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].transform(_assemble_wordlist)
       else:
-        mdf_test[column + '_hash'] = mdf_test[column + '_hash'].transform(lambda x: [x])
+        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].transform(lambda x: [x])
 
       #now apply hashing to convert to integers based on vocab_size
-      mdf_test[column + '_hash'] = mdf_test[column + '_hash'].transform(_md5_hash)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].transform(_md5_hash)
 
       #the other entries are padded out with 0 to reach same length, if a train entry has longer length it is trimmed
-      mdf_test[column + '_hash'] = mdf_test[column + '_hash'].transform(_pad_hash)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].transform(_pad_hash)
 
       if max_length > 1:
 
         hashcolumns = []
         for i in range(max_length):
 
-          hash_column = column + '_hash_' + str(i)
+          hash_column = column + '_' + suffix + '_' + str(i)
 
           hashcolumns += [hash_column]
 
           #now populate the column with i'th entry from hashed list
-          mdf_test[hash_column] = mdf_test[column + '_hash'].transform(lambda x: x[i])
+          mdf_test[hash_column] = mdf_test[suffixcolumn].transform(lambda x: x[i])
 
         #remove support column
-        del mdf_test[column + '_hash']
+        del mdf_test[suffixcolumn]
 
       else:
-        hashcolumns = [column + '_hash']
+        hashcolumns = [suffixcolumn]
 
         #now populate the column with i'th entry from hashed list
-        mdf_test[column + '_hash'] = mdf_test[column + '_hash'].transform(lambda x: x[0])
+        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].transform(lambda x: x[0])
         
       #returned data type is conditional on the size of encoding space
       for hashcolumn in hashcolumns:
@@ -33340,22 +33824,26 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['hash_alg']
       inplace = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
+      suffix = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+
+      suffixcolumn = column + '_' + suffix
       
       if hash_alg == 'md5':
         from hashlib import md5
       
       if inplace is not True:
         #copy source column into new column
-        mdf_test[column + '_hs10'] = mdf_test[column].copy()
+        mdf_test[suffixcolumn] = mdf_test[column].copy()
       else:
-        mdf_test.rename(columns = {column : column + '_hs10'}, inplace = True)
+        mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
         
       #convert column to string, note this means that missing data converted to 'nan'
-      mdf_test[column + '_hs10'] = mdf_test[column + '_hs10'].astype(str)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(str)
 
       #now scrub special characters
       for scrub_punctuation in excluded_characters:
-        mdf_test[column + '_hs10'] = mdf_test[column + '_hs10'].str.replace(scrub_punctuation, '')
+        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].str.replace(scrub_punctuation, '')
       
       def _md5_hash(entry):
         """
@@ -33370,29 +33858,29 @@ class AutoMunge:
           return hash(salt + entry) % (vocab_size)
 
       #now apply hashing to convert to integers based on vocab_size
-      mdf_test[column + '_hs10'] = mdf_test[column + '_hs10'].transform(_md5_hash)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].transform(_md5_hash)
       
       #convert integer encoding to binary
-      mdf_test[column + '_hs10'] = mdf_test[column + '_hs10'].transform(bin)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].transform(bin)
       
       #convert format to string of digits
-      mdf_test[column + '_hs10'] = mdf_test[column + '_hs10'].str[2:]
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].str[2:]
       
       #pad out zeros
-      mdf_test[column + '_hs10'] = mdf_test[column + '_hs10'].str.zfill(binary_column_count)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].str.zfill(binary_column_count)
       
       hashcolumns = []
       for i in range(binary_column_count):
 
-        hash_column = column + '_hs10_' + str(i)
+        hash_column = column + '_' + suffix + '_' + str(i)
         
         hashcolumns += [hash_column]
         
         #now populate the column with i'th entry from hashed list
-        mdf_test[hash_column] = mdf_test[column + '_hs10'].str[i].astype(np.int8)
+        mdf_test[hash_column] = mdf_test[suffixcolumn].str[i].astype(np.int8)
       
       #remove support column
-      del mdf_test[column + '_hs10']
+      del mdf_test[suffixcolumn]
 
     else:
 
@@ -33536,6 +34024,9 @@ class AutoMunge:
       
       aggregated_dict = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['aggregated_dict']
+
+      suffix = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
       
 #       #now for mdf_test
 
@@ -33577,7 +34068,7 @@ class AutoMunge:
         
         if len(overlap_dict[dict_key]) > 0:
 
-          newcolumn = column + '_src2_' + dict_key
+          newcolumn = column + '_' + suffix + '_' + dict_key
 
   #         mdf_train[newcolumn] = mdf_train[column].copy()
           mdf_test[newcolumn] = mdf_test[column].copy()
@@ -33663,6 +34154,9 @@ class AutoMunge:
       
       search = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['search']
+
+      suffix = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
       
       #now for mdf_test
 
@@ -33704,7 +34198,7 @@ class AutoMunge:
         
         if len(overlap_dict[dict_key]) > 0:
 
-          newcolumn = column + '_src3_' + dict_key
+          newcolumn = column + '_' + suffix + '_' + dict_key
 
   #         mdf_train[newcolumn] = mdf_train[column].copy()
           mdf_test[newcolumn] = mdf_test[column].copy()
@@ -33794,9 +34288,14 @@ class AutoMunge:
       
       inverse_search_dict = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inverse_search_dict']
+
+      suffix = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+
+      suffixcolumn = column + '_' + suffix
       
       if len(search_dict) == 0:
-        mdf_test[column + '_src4'] = 0
+        mdf_test[suffixcolumn] = 0
         
       else:
 
@@ -33809,11 +34308,11 @@ class AutoMunge:
 
     #       mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
 
-        mdf_test[column + '_src4'] = 0
+        mdf_test[suffixcolumn] = 0
 
         for newcolumn in newcolumns:
-          mdf_test[column + '_src4'] = \
-          np.where(mdf_test[newcolumn] == 1, ordl_dict2[newcolumn], mdf_test[column + '_src4'])
+          mdf_test[suffixcolumn] = \
+          np.where(mdf_test[newcolumn] == 1, ordl_dict2[newcolumn], mdf_test[suffixcolumn])
           del mdf_test[newcolumn]
           
         #now we consolidate activations
@@ -33826,16 +34325,16 @@ class AutoMunge:
             target_for_aggregation_column = inverse_search_dict[target_for_aggregation]
             target_for_aggregation_encoding = ordl_dict2[target_for_aggregation_column]
 
-            mdf_test[column + '_src4'] = \
-            np.where(mdf_test[column + '_src4'] == target_for_aggregation_encoding, aggregated_dict_key_encoding, mdf_test[column + '_src4'])
+            mdf_test[suffixcolumn] = \
+            np.where(mdf_test[suffixcolumn] == target_for_aggregation_encoding, aggregated_dict_key_encoding, mdf_test[suffixcolumn])
 
         #we'll base the integer type on number of ordinal entries
         if len(ordl_dict1) < 254:
-          mdf_test[column + '_src4'] = mdf_test[column + '_src4'].astype(np.uint8)
+          mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.uint8)
         elif len(ordl_dict1) < 65534:
-          mdf_test[column + '_src4'] = mdf_test[column + '_src4'].astype(np.uint16)
+          mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.uint16)
         else:
-          mdf_test[column + '_src4'] = mdf_test[column + '_src4'].astype(np.uint32)
+          mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.uint32)
 
     else:
 
@@ -34016,35 +34515,39 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['str_convert']
       inplace = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
+      suffix = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+
+      suffixcolumn = column + '_' + suffix
       
       if inplace is not True:
         #copy source column into new column
-        mdf_test[column + '_ordl'] = mdf_test[column].copy()
+        mdf_test[suffixcolumn] = mdf_test[column].copy()
       else:
-        mdf_test.rename(columns = {column : column + '_ordl'}, inplace = True)
+        mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
       
       #convert column to category
-      mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype('category')
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('category')
       
       #if set is categorical we'll need the plug value for missing values included
-      if 'zzzinfill' not in mdf_test[column + '_ordl'].cat.categories:
-        mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].cat.add_categories(['zzzinfill'])
+      if 'zzzinfill' not in mdf_test[suffixcolumn].cat.categories:
+        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].cat.add_categories(['zzzinfill'])
 
       #replace NA with a dummy variable
-      mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].fillna('zzzinfill')
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna('zzzinfill')
       
       if str_convert is True:
         #replace numerical with string equivalent
-        mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype(str)
+        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(str)
       else:
-        mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype('object')
+        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('object')
       
       #extract categories for column labels
       #note that .unique() extracts the labels as a numpy array
       #train categories are in the ordinal_dict we p[ulled from normalization_dict
       labels_train = list(ordinal_dict.keys())
       labels_train = sorted(labels_train, key=str)
-      labels_test = list(mdf_test[column + '_ordl'].unique())
+      labels_test = list(mdf_test[suffixcolumn].unique())
       labels_test = sorted(labels_test, key=str)
       
       #if infill not present in train set, insert
@@ -34057,37 +34560,37 @@ class AutoMunge:
         
       #here we replace the overlaps with version with jibberish suffix
       if len(overlap_replace) > 0:
-        mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].replace(overlap_replace)
+        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(overlap_replace)
       
       #in test set, we'll need to strike any categories that weren't present in train
       #first let'/s identify what applies
       testspecificcategories = list(set(labels_test)-set(labels_train))
       
       #edge case, replace operation do0esn't work when column dtype is int
-      if mdf_test[column + '_ordl'].dtype.name != 'object':
-        mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype('object')
+      if mdf_test[suffixcolumn].dtype.name != 'object':
+        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('object')
 
       #so we'll just replace those items with our plug value
       testplug_dict = dict(zip(testspecificcategories, ['zzzinfill'] * len(testspecificcategories)))
-      mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].replace(testplug_dict)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(testplug_dict)
 
       #edge case, replace operation do0esn't work when column dtype is int
-      if mdf_test[column + '_ordl'].dtype.name != 'object':
-        mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype('object')
+      if mdf_test[suffixcolumn].dtype.name != 'object':
+        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('object')
 
       #now we'll apply the ordinal transformation to the test set
-      mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].replace(ordinal_dict)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(ordinal_dict)
       
       #just want to make sure these arent' being saved as floats for memory considerations
       if len(ordinal_dict) < 254:
-        mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype(np.uint8)
+        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.uint8)
       elif len(ordinal_dict) < 65534:
-        mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype(np.uint16)
+        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.uint16)
       else:
-        mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype(np.uint32)
+        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.uint32)
       
   #     #convert column to category
-  #     mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype('category')
+  #     mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('category')
 
     else:
 
@@ -34128,35 +34631,39 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['str_convert']
       inplace = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
+      suffix = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+
+      suffixcolumn = column + '_' + suffix
       
       if inplace is not True:
         #copy source column into new column
-        mdf_test[column + '_ord3'] = mdf_test[column].copy()
+        mdf_test[suffixcolumn] = mdf_test[column].copy()
       else:
-        mdf_test.rename(columns = {column : column + '_ord3'}, inplace = True)
+        mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
       
       #convert column to category
-      mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype('category')
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('category')
       
       #if set is categorical we'll need the plug value for missing values included
-      if 'zzzinfill' not in mdf_test[column + '_ord3'].cat.categories:
-        mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].cat.add_categories(['zzzinfill'])
+      if 'zzzinfill' not in mdf_test[suffixcolumn].cat.categories:
+        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].cat.add_categories(['zzzinfill'])
 
       #replace NA with a dummy variable
-      mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].fillna('zzzinfill')
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna('zzzinfill')
       
       if str_convert is True:
         #replace numerical with string equivalent
-        mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype(str)  
+        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(str)  
       else:
-        mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype('object')
+        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('object')
       
       #extract categories for column labels
       #note that .unique() extracts the labels as a numpy array
       #train categories are in the ordinal_dict we p[ulled from normalization_dict
       labels_train = list(ordinal_dict.keys())
   #     labels_train.sort()
-      labels_test = list(mdf_test[column + '_ord3'].unique())
+      labels_test = list(mdf_test[suffixcolumn].unique())
       labels_test = sorted(labels_test, key=str)
       
       #if infill not present in train set, insert
@@ -34169,7 +34676,7 @@ class AutoMunge:
         
       #here we replace the overlaps with version with jibberish suffix
       if len(overlap_replace) > 0:
-        mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].replace(overlap_replace)
+        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(overlap_replace)
       
       #in test set, we'll need to strike any categories that weren't present in train
       #first let'/s identify what applies
@@ -34178,25 +34685,25 @@ class AutoMunge:
       #so we'll just replace those items with our plug value
       testplug_dict = dict(zip(testspecificcategories, ['zzzinfill'] * len(testspecificcategories)))
       #edge case for replace operation if dtype drifted such as to numeric
-      if mdf_test[column + '_ord3'].dtype.name != 'object':
-        mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype('object')
-      mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].replace(testplug_dict)
+      if mdf_test[suffixcolumn].dtype.name != 'object':
+        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('object')
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(testplug_dict)
       
       #now we'll apply the ordinal transformation to the test set
-      if mdf_test[column + '_ord3'].dtype.name != 'object':
-        mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype('object')
-      mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].replace(ordinal_dict)
+      if mdf_test[suffixcolumn].dtype.name != 'object':
+        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('object')
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(ordinal_dict)
       
       #just want to make sure these arent' being saved as floats for memory considerations
       if len(ordinal_dict) < 254:
-        mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype(np.uint8)
+        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.uint8)
       elif len(ordinal_dict) < 65534:
-        mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype(np.uint16)
+        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.uint16)
       else:
-        mdf_test[column + '_ord3'] = mdf_test[column + '_ord3'].astype(np.uint32)
+        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.uint32)
           
   #     #convert column to category
-  #     mdf_test[column + '_ordl'] = mdf_test[column + '_ordl'].astype('category')
+  #     mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('category')
 
     else:
 
@@ -34230,44 +34737,48 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['new_maxactivation']
       inplace = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
+      suffix = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+
+      suffixcolumn = column + '_' + suffix
       
       if inplace is not True:
         #copy source column into new column
-        mdf_test[column + '_maxb'] = mdf_test[column].copy()
+        mdf_test[suffixcolumn] = mdf_test[column].copy()
       else:
-        mdf_test.rename(columns = {column : column + '_maxb'}, inplace = True)
+        mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
 
       #convert all values to either numeric or NaN
-      mdf_test[column + '_maxb'] = pd.to_numeric(mdf_test[column + '_maxb'], errors='coerce')
+      mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
       
       #non integers are subject to infill
-      mdf_test[column + '_maxb'] = np.where(mdf_test[column + '_maxb'] == mdf_test[column + '_maxb'].round(), mdf_test[column + '_maxb'], np.nan)
+      mdf_test[suffixcolumn] = np.where(mdf_test[suffixcolumn] == mdf_test[suffixcolumn].round(), mdf_test[suffixcolumn], np.nan)
       
       #apply ffill to replace nan with value from adjacent cell in pre4ceding row
-      mdf_test[column + '_maxb'] = mdf_test[column + '_maxb'].fillna(method='ffill')
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(method='ffill')
       
       #we'll follow with a bfill just in case first row had a nan
-      mdf_test[column + '_maxb'] = mdf_test[column + '_maxb'].fillna(method='bfill')
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(method='bfill')
       
       #then one more infill with to address scenario when data wasn't numeric
       #get arbitrary cell value, if one is nan then all will be
-      mdf_test[column + '_maxb'] = mdf_test[column + '_maxb'].fillna(0)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(0)
       
       #get maximum train set activation which for ord3 will be least frequent entry
-      maxactivation = int(mdf_test[column + '_maxb'].max())
+      maxactivation = int(mdf_test[suffixcolumn].max())
       
       if new_maxactivation < maxactivation:
         
-        mdf_test[column + '_maxb'] = \
-        np.where(mdf_test[column + '_maxb'] < new_maxactivation, mdf_test[column + '_maxb'], new_maxactivation)
+        mdf_test[suffixcolumn] = \
+        np.where(mdf_test[suffixcolumn] < new_maxactivation, mdf_test[suffixcolumn], new_maxactivation)
         
       #set integer type based on encoding depth
       if new_maxactivation < 254:
-        mdf_test[column + '_maxb'] = mdf_test[column + '_maxb'].astype(np.uint8)
+        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.uint8)
       elif new_maxactivation < 65534:
-        mdf_test[column + '_maxb'] = mdf_test[column + '_maxb'].astype(np.uint16)
+        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.uint16)
       else:
-        mdf_test[column + '_maxb'] = mdf_test[column + '_maxb'].astype(np.uint32)
+        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.uint32)
 
     else:
 
@@ -34305,29 +34816,33 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordinal_dict']
       overlap_replace = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordinal_overlap_replace']
+      suffix = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+
+      suffixcolumn = column + '_' + suffix
       
       #create new column for trasnformation
-      mdf_test[column + '_ucct'] = mdf_test[column].copy()
+      mdf_test[suffixcolumn] = mdf_test[column].copy()
       
       #convert column to category
-      mdf_test[column + '_ucct'] = mdf_test[column + '_ucct'].astype('category')
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('category')
       
       #if set is categorical we'll need the plug value for missing values included
-      if 'zzzinfill' not in mdf_test[column + '_ucct'].cat.categories:
-        mdf_test[column + '_ucct'] = mdf_test[column + '_ucct'].cat.add_categories(['zzzinfill'])
+      if 'zzzinfill' not in mdf_test[suffixcolumn].cat.categories:
+        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].cat.add_categories(['zzzinfill'])
 
       #replace NA with a dummy variable
-      mdf_test[column + '_ucct'] = mdf_test[column + '_ucct'].fillna('zzzinfill')
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna('zzzinfill')
       
       #replace numerical with string equivalent
-      mdf_test[column + '_ucct'] = mdf_test[column + '_ucct'].astype(str)    
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(str)    
       
       #extract categories for column labels
       #note that .unique() extracts the labels as a numpy array
       #train categories are in the ordinal_dict we p[ulled from normalization_dict
       labels_train = list(ordinal_dict.keys())
   #     labels_train.sort()
-      labels_test = list(mdf_test[column + '_ucct'].unique())
+      labels_test = list(mdf_test[suffixcolumn].unique())
       labels_test.sort()
       
       #if infill not present in train set, insert
@@ -34340,7 +34855,7 @@ class AutoMunge:
         
       #here we replace the overlaps with version with jibberish suffix
       if len(overlap_replace) > 0:
-        mdf_test[column + '_ucct'] = mdf_test[column + '_ucct'].replace(overlap_replace)
+        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(overlap_replace)
       
       #in test set, we'll need to strike any categories that weren't present in train
       #first let'/s identify what applies
@@ -34348,10 +34863,10 @@ class AutoMunge:
       
       #so we'll just replace those items with our plug value
       testplug_dict = dict(zip(testspecificcategories, ['zzzinfill'] * len(testspecificcategories)))
-      mdf_test[column + '_ucct'] = mdf_test[column + '_ucct'].replace(testplug_dict)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(testplug_dict)
       
       #now we'll apply the ordinal transformation to the test set
-      mdf_test[column + '_ucct'] = mdf_test[column + '_ucct'].replace(ordinal_dict)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(ordinal_dict)
 
     else:
 
@@ -34383,93 +34898,95 @@ class AutoMunge:
     #normkey is False when process function returns empty set
     if normkey is not False:
       
-      if normkey in postprocess_dict['column_dict']:
-      
-        #grab normalization parameters from postprocess_dict
-        binary_encoding_dict = \
-        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['_1010_binary_encoding_dict']
-        overlap_replace = \
-        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['_1010_overlap_replace']
-        binary_column_count = \
-        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['_1010_binary_column_count']
-        str_convert = \
-        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['str_convert']
+      #grab normalization parameters from postprocess_dict
+      binary_encoding_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['_1010_binary_encoding_dict']
+      overlap_replace = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['_1010_overlap_replace']
+      binary_column_count = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['_1010_binary_column_count']
+      str_convert = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['str_convert']
+      suffix = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
 
-        #create new column for trasnformation
-        mdf_test[column + '_1010'] = mdf_test[column].copy()    
+      suffixcolumn = column + '_' + suffix
 
-        #convert column to category
-        mdf_test[column + '_1010'] = mdf_test[column + '_1010'].astype('category')
+      #create new column for trasnformation
+      mdf_test[suffixcolumn] = mdf_test[column].copy()    
 
-        #if set is categorical we'll need the plug value for missing values included
-        if 'zzzinfill' not in mdf_test[column + '_1010'].cat.categories:
-          mdf_test[column + '_1010'] = mdf_test[column + '_1010'].cat.add_categories(['zzzinfill'])
+      #convert column to category
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('category')
 
-        #replace NA with a dummy variable
-        mdf_test[column + '_1010'] = mdf_test[column + '_1010'].fillna('zzzinfill')
+      #if set is categorical we'll need the plug value for missing values included
+      if 'zzzinfill' not in mdf_test[suffixcolumn].cat.categories:
+        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].cat.add_categories(['zzzinfill'])
 
-        if str_convert is True:
-          #replace numerical with string equivalent
-          mdf_test[column + '_1010'] = mdf_test[column + '_1010'].astype(str)
-        else:
-          mdf_test[column + '_1010'] = mdf_test[column + '_1010'].astype('object')
+      #replace NA with a dummy variable
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna('zzzinfill')
 
-        #extract categories for column labels
-        #note that .unique() extracts the labels as a numpy array
-        #train categories are in the ordinal_dict we p[ulled from normalization_dict
-        labels_train = list(binary_encoding_dict.keys())
-  #       labels_train.sort()
-        labels_test = list(mdf_test[column + '_1010'].unique())
-  #       labels_test.sort()
+      if str_convert is True:
+        #replace numerical with string equivalent
+        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(str)
+      else:
+        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('object')
+
+      #extract categories for column labels
+      #note that .unique() extracts the labels as a numpy array
+      #train categories are in the ordinal_dict we p[ulled from normalization_dict
+      labels_train = list(binary_encoding_dict.keys())
+#       labels_train.sort()
+      labels_test = list(mdf_test[suffixcolumn].unique())
+#       labels_test.sort()
+      labels_test = sorted(labels_test, key=str)
+
+      #if infill not present in train set, insert
+      if 'zzzinfill' not in labels_train:
+        labels_train = labels_train + ['zzzinfill']
+#         labels_train.sort()
+        labels_train = sorted(labels_train, key=str)
+      if 'zzzinfill' not in labels_test:
+        labels_test = labels_test + ['zzzinfill']
+#         labels_test.sort()
         labels_test = sorted(labels_test, key=str)
 
-        #if infill not present in train set, insert
-        if 'zzzinfill' not in labels_train:
-          labels_train = labels_train + ['zzzinfill']
-  #         labels_train.sort()
-          labels_train = sorted(labels_train, key=str)
-        if 'zzzinfill' not in labels_test:
-          labels_test = labels_test + ['zzzinfill']
-  #         labels_test.sort()
-          labels_test = sorted(labels_test, key=str)
+      #here we replace the overlaps with version with jibberish suffix
+      if len(overlap_replace) > 0:
 
-        #here we replace the overlaps with version with jibberish suffix
-        if len(overlap_replace) > 0:
+        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(overlap_replace)
 
-          mdf_test[column + '_1010'] = mdf_test[column + '_1010'].replace(overlap_replace)
+      #in test set, we'll need to strike any categories that weren't present in train
+      #first let'/s identify what applies
+      testspecificcategories = list(set(labels_test)-set(labels_train))
 
-        #in test set, we'll need to strike any categories that weren't present in train
-        #first let'/s identify what applies
-        testspecificcategories = list(set(labels_test)-set(labels_train))
+      #so we'll just replace those items with our plug value
+      testplug_dict = dict(zip(testspecificcategories, ['zzzinfill'] * len(testspecificcategories)))
+      if mdf_test[suffixcolumn].dtype.name != 'object':
+        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('object')
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(testplug_dict)    
 
-        #so we'll just replace those items with our plug value
-        testplug_dict = dict(zip(testspecificcategories, ['zzzinfill'] * len(testspecificcategories)))
-        if mdf_test[column + '_1010'].dtype.name != 'object':
-          mdf_test[column + '_1010'] = mdf_test[column + '_1010'].astype('object')
-        mdf_test[column + '_1010'] = mdf_test[column + '_1010'].replace(testplug_dict)    
+      #now we'll apply the 1010 transformation to the test set
+      if mdf_test[suffixcolumn].dtype.name != 'object':
+        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('object')
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(binary_encoding_dict)   
 
-        #now we'll apply the 1010 transformation to the test set
-        if mdf_test[column + '_1010'].dtype.name != 'object':
-          mdf_test[column + '_1010'] = mdf_test[column + '_1010'].astype('object')
-        mdf_test[column + '_1010'] = mdf_test[column + '_1010'].replace(binary_encoding_dict)   
+      #ok let's create a list of columns to store each entry of the binary encoding
+      _1010_columnlist = []
 
-        #ok let's create a list of columns to store each entry of the binary encoding
-        _1010_columnlist = []
+      for i in range(binary_column_count):
 
-        for i in range(binary_column_count):
+        _1010_columnlist.append(column + '_' + suffix + '_' + str(i))
 
-          _1010_columnlist.append(column + '_1010_' + str(i))
+      #now let's store the encoding
+      i=0
+      for _1010_column in _1010_columnlist:
 
-        #now let's store the encoding
-        i=0
-        for _1010_column in _1010_columnlist:
+        mdf_test[_1010_column] = mdf_test[suffixcolumn].str.slice(i,i+1).astype(np.int8)
 
-          mdf_test[_1010_column] = mdf_test[column + '_1010'].str.slice(i,i+1).astype(np.int8)
+        i+=1
 
-          i+=1
-
-        #now delete the support column
-        del mdf_test[column + '_1010']
+      #now delete the support column
+      del mdf_test[suffixcolumn]
 
     else:
 
@@ -34774,7 +35291,7 @@ class AutoMunge:
     #and the name of the column string ('column') and parent category (category)
     #applies a logarithmic transform (base 10)
     #replaces zeros, negative, and missing or improperly formatted data with post-log mean as default infill
-    #returns same dataframes with new column of name column + '_log0'
+    #returns same dataframes with new column of name suffixcolumn
     '''
     
     #normkey used to retrieve the normalization dictionary 
@@ -34789,33 +35306,37 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['meanlog']
       inplace = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
+      suffix = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+
+      suffixcolumn = column + '_' + suffix
 
       if inplace is not True:
-        mdf_test[column + '_log0'] = mdf_test[column].copy()
+        mdf_test[suffixcolumn] = mdf_test[column].copy()
       else:
-        mdf_test.rename(columns = {column : column + '_log0'}, inplace = True)
+        mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
 
       #convert all values to either numeric or NaN
-      mdf_test[column + '_log0'] = pd.to_numeric(mdf_test[column + '_log0'], errors='coerce')
+      mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
       
       #replace all non-positive with nan for the log operation
-      mdf_test.loc[mdf_test[column + '_log0'] <= 0, (column + '_log0')] = np.nan
+      mdf_test.loc[mdf_test[suffixcolumn] <= 0, (suffixcolumn)] = np.nan
       
       #log transform column
       #note that this replaces negative values with nan which we will infill with meanlog
-      mdf_test[column + '_log0'] = np.log10(mdf_test[column + '_log0'])
+      mdf_test[suffixcolumn] = np.log10(mdf_test[suffixcolumn])
 
       #get mean of training data
       meanlog = meanlog  
 
       #replace missing data with training set mean
-      mdf_test[column + '_log0'] = mdf_test[column + '_log0'].fillna(meanlog)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(meanlog)
 
   #     #replace missing data with 0
-  #     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].fillna(0)
+  #     mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(0)
 
   #     #change data type for memory savings
-  #     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].astype(np.float32)
+  #     mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.float32)
 
     else:
 
@@ -34837,7 +35358,7 @@ class AutoMunge:
     #and the name of the column string ('column') and parent category (category)
     #applies a logarithmic transform (base e)
     #replaces zeros, negative, and missing or improperly formatted data with post-log mean as default infill
-    #returns same dataframes with new column of name column + '_logn'
+    #returns same dataframes with new column of name suffixcolumn
     '''
     
     #normkey used to retrieve the normalization dictionary 
@@ -34852,33 +35373,37 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['meanlog']
       inplace = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
+      suffix = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+
+      suffixcolumn = column + '_' + suffix
 
       if inplace is not True:
-        mdf_test[column + '_logn'] = mdf_test[column].copy()
+        mdf_test[suffixcolumn] = mdf_test[column].copy()
       else:
-        mdf_test.rename(columns = {column : column + '_logn'}, inplace = True)
+        mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
 
       #convert all values to either numeric or NaN
-      mdf_test[column + '_logn'] = pd.to_numeric(mdf_test[column + '_logn'], errors='coerce')
+      mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
       
       #replace all non-positive with nan for the log operation
-      mdf_test.loc[mdf_test[column + '_logn'] <= 0, (column + '_logn')] = np.nan
+      mdf_test.loc[mdf_test[suffixcolumn] <= 0, (suffixcolumn)] = np.nan
       
       #log transform column
       #note that this replaces negative values with nan which we will infill with meanlog
-      mdf_test[column + '_logn'] = np.log(mdf_test[column + '_logn'])
+      mdf_test[suffixcolumn] = np.log(mdf_test[suffixcolumn])
 
       #get mean of training data
       meanlog = meanlog  
 
       #replace missing data with training set mean
-      mdf_test[column + '_logn'] = mdf_test[column + '_logn'].fillna(meanlog)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(meanlog)
 
   #     #replace missing data with 0
-  #     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].fillna(0)
+  #     mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(0)
 
   #     #change data type for memory savings
-  #     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].astype(np.float32)
+  #     mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.float32)
 
     else:
 
@@ -34900,7 +35425,7 @@ class AutoMunge:
     #and the name of the column string ('column') and parent category (category)
     #applies a square root transform
     #replaces zeros, negative, and missing or improperly formatted data with post-log mean as default infill
-    #returns same dataframes with new column of name column + '_log0'
+    #returns same dataframes with new column of name suffixcolumn
     '''
     
     #normkey used to retrieve the normalization dictionary 
@@ -34915,33 +35440,37 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['meansqrt']
       inplace = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
+      suffix = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+
+      suffixcolumn = column + '_' + suffix
 
       if inplace is not True:
-        mdf_test[column + '_sqrt'] = mdf_test[column].copy()
+        mdf_test[suffixcolumn] = mdf_test[column].copy()
       else:
-        mdf_test.rename(columns = {column : column + '_sqrt'}, inplace = True)
+        mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
 
       #convert all values to either numeric or NaN
-      mdf_test[column + '_sqrt'] = pd.to_numeric(mdf_test[column + '_sqrt'], errors='coerce')
+      mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
       
       #replace all non-positive with nan for the log operation
-      mdf_test.loc[mdf_test[column + '_sqrt'] < 0, (column + '_sqrt')] = np.nan
+      mdf_test.loc[mdf_test[suffixcolumn] < 0, (suffixcolumn)] = np.nan
       
       #log transform column
       #note that this replaces negative values with nan which we will infill with meanlog
-      mdf_test[column + '_sqrt'] = np.sqrt(mdf_test[column + '_sqrt'])
+      mdf_test[suffixcolumn] = np.sqrt(mdf_test[suffixcolumn])
 
       #get mean of training data
       meansqrt = meansqrt  
 
       #replace missing data with training set mean
-      mdf_test[column + '_sqrt'] = mdf_test[column + '_sqrt'].fillna(meansqrt)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(meansqrt)
 
   #     #replace missing data with 0
-  #     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].fillna(0)
+  #     mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(0)
 
   #     #change data type for memory savings
-  #     mdf_test[column + '_log0'] = mdf_test[column + '_log0'].astype(np.float32)
+  #     mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.float32)
 
     else:
 
@@ -34964,7 +35493,7 @@ class AutoMunge:
     #accepts parameter 'add' for amount of addition, otherwise defaults to adding 1
     #applies an addition transform
     #replaces non-numeric entries with set mean after addition
-    #returns same dataframes with new column of name column + '_addd'
+    #returns same dataframes with new column of name suffixcolumn
     '''
     
     #normkey used to retrieve the normalization dictionary 
@@ -34981,20 +35510,24 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['add']
       inplace = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
+      suffix = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+
+      suffixcolumn = column + '_' + suffix
 
       if inplace is not True:
-        mdf_test[column + '_addd'] = mdf_test[column].copy()
+        mdf_test[suffixcolumn] = mdf_test[column].copy()
       else:
-        mdf_test.rename(columns = {column : column + '_addd'}, inplace = True)
+        mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
 
       #convert all values to either numeric or NaN
-      mdf_test[column + '_addd'] = pd.to_numeric(mdf_test[column + '_addd'], errors='coerce')
+      mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
       
       #lperform addition
-      mdf_test[column + '_addd'] = mdf_test[column + '_addd'] + add
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn] + add
       
       #replace missing data with training set mean
-      mdf_test[column + '_addd'] = mdf_test[column + '_addd'].fillna(mean)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
 
     else:
 
@@ -35017,7 +35550,7 @@ class AutoMunge:
     #accepts parameter 'subtract' for amount of subtraction, otherwise defaults to subtracting 1
     #applies a subtraction transform
     #replaces non-numeric entries with set mean after subtraction
-    #returns same dataframes with new column of name column + '_sbtr'
+    #returns same dataframes with new column of name suffixcolumn
     '''
         
     #normkey used to retrieve the normalization dictionary 
@@ -35034,20 +35567,24 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['subtract']
       inplace = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
+      suffix = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+
+      suffixcolumn = column + '_' + suffix
 
       if inplace is not True:
-        mdf_test[column + '_sbtr'] = mdf_test[column].copy()
+        mdf_test[suffixcolumn] = mdf_test[column].copy()
       else:
-        mdf_test.rename(columns = {column : column + '_sbtr'}, inplace = True)
+        mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
 
       #convert all values to either numeric or NaN
-      mdf_test[column + '_sbtr'] = pd.to_numeric(mdf_test[column + '_sbtr'], errors='coerce')
+      mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
       
       #lperform subtraction
-      mdf_test[column + '_sbtr'] = mdf_test[column + '_sbtr'] - subtract
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn] - subtract
       
       #replace missing data with training set mean
-      mdf_test[column + '_sbtr'] = mdf_test[column + '_sbtr'].fillna(mean)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
 
     else:
 
@@ -35070,7 +35607,7 @@ class AutoMunge:
     #accepts parameter 'multiply' for amount of addition, otherwise defaults to multiplying 2
     #applies an multiplication transform
     #replaces non-numeric entries with set mean after addition
-    #returns same dataframes with new column of name column + '_mltp'
+    #returns same dataframes with new column of name suffixcolumn
     '''
     
     #normkey used to retrieve the normalization dictionary 
@@ -35087,20 +35624,24 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['multiply']
       inplace = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
+      suffix = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+
+      suffixcolumn = column + '_' + suffix
 
       if inplace is not True:
-        mdf_test[column + '_mltp'] = mdf_test[column].copy()
+        mdf_test[suffixcolumn] = mdf_test[column].copy()
       else:
-        mdf_test.rename(columns = {column : column + '_mltp'}, inplace = True)
+        mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
 
       #convert all values to either numeric or NaN
-      mdf_test[column + '_mltp'] = pd.to_numeric(mdf_test[column + '_mltp'], errors='coerce')
+      mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
       
       #lperform addition
-      mdf_test[column + '_mltp'] = mdf_test[column + '_mltp'] * multiply
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn] * multiply
       
       #replace missing data with training set mean
-      mdf_test[column + '_mltp'] = mdf_test[column + '_mltp'].fillna(mean)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
 
     else:
 
@@ -35121,7 +35662,7 @@ class AutoMunge:
     #accepts parameter 'divide' for amount of division, otherwise defaults to dividing by 2
     #applies an division transform
     #replaces non-numeric entries with set mean after division
-    #returns same dataframes with new column of name column + '_divd'
+    #returns same dataframes with new column of name suffixcolumn
     '''
     
     #normkey used to retrieve the normalization dictionary 
@@ -35138,20 +35679,24 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['divide']
       inplace = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
+      suffix = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+
+      suffixcolumn = column + '_' + suffix
 
       if inplace is not True:
-        mdf_test[column + '_divd'] = mdf_test[column].copy()
+        mdf_test[suffixcolumn] = mdf_test[column].copy()
       else:
-        mdf_test.rename(columns = {column : column + '_divd'}, inplace = True)
+        mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
 
       #convert all values to either numeric or NaN
-      mdf_test[column + '_divd'] = pd.to_numeric(mdf_test[column + '_divd'], errors='coerce')
+      mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
       
       #lperform addition
-      mdf_test[column + '_divd'] = mdf_test[column + '_divd'] / divide
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn] / divide
       
       #replace missing data with training set mean
-      mdf_test[column + '_divd'] = mdf_test[column + '_divd'].fillna(mean)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
 
     else:
 
@@ -35172,7 +35717,7 @@ class AutoMunge:
     #accepts parameter 'raiser' for amount of power, otherwise defaults to square (raise by 2)
     #applies an raise transform
     #replaces non-numeric entries with set mean after raise
-    #returns same dataframes with new column of name column + '_rais'
+    #returns same dataframes with new column of name suffixcolumn
     '''
         
     #normkey used to retrieve the normalization dictionary 
@@ -35189,20 +35734,24 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['raiser']
       inplace = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
+      suffix = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+
+      suffixcolumn = column + '_' + suffix
 
       if inplace is not True:
-        mdf_test[column + '_rais'] = mdf_test[column].copy()
+        mdf_test[suffixcolumn] = mdf_test[column].copy()
       else:
-        mdf_test.rename(columns = {column : column + '_rais'}, inplace = True)
+        mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
 
       #convert all values to either numeric or NaN
-      mdf_test[column + '_rais'] = pd.to_numeric(mdf_test[column + '_rais'], errors='coerce')
+      mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
       
       #lperform addition
-      mdf_test[column + '_rais'] = mdf_test[column + '_rais'] ** raiser
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn] ** raiser
       
       #replace missing data with training set mean
-      mdf_test[column + '_rais'] = mdf_test[column + '_rais'].fillna(mean)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
 
     else:
 
@@ -35223,7 +35772,7 @@ class AutoMunge:
     #does not accept paraemters
     #applies an absolute transform
     #replaces non-numeric entries with set mean after transform
-    #returns same dataframes with new column of name column + '_absl'
+    #returns same dataframes with new column of name suffixcolumn
     '''
     
     #normkey used to retrieve the normalization dictionary 
@@ -35238,20 +35787,24 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
       inplace = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
+      suffix = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+
+      suffixcolumn = column + '_' + suffix
 
       if inplace is not True:
-        mdf_test[column + '_absl'] = mdf_test[column].copy()
+        mdf_test[suffixcolumn] = mdf_test[column].copy()
       else:
-        mdf_test.rename(columns = {column : column + '_absl'}, inplace = True)
+        mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
 
       #convert all values to either numeric or NaN
-      mdf_test[column + '_absl'] = pd.to_numeric(mdf_test[column + '_absl'], errors='coerce')
+      mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
       
       #lperform addition
-      mdf_test[column + '_absl'] = mdf_test[column + '_absl'].abs()
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].abs()
       
       #replace missing data with training set mean
-      mdf_test[column + '_absl'] = mdf_test[column + '_absl'].fillna(mean)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
 
     else:
 
@@ -35293,10 +35846,14 @@ class AutoMunge:
       powerlabelsdict = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['powerlabelsdict_pwrs']
       labels_train = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['labels_train']
       negvalues = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['negvalues']
+      suffix = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+
+      suffixcolumn = column + '_' + suffix
 
       textcolumns = postprocess_dict['column_dict'][normkey]['categorylist']
 
-      tempcolumn = column + '_-10^'
+      tempcolumn = suffixcolumn + '_-10^'
       
       #store original column for later reversion
       mdf_test[tempcolumn] = mdf_test[column].copy()
@@ -35333,7 +35890,7 @@ class AutoMunge:
         else:
           #this is update for difference between pwr2 and pwrs
           if negvalues:
-            newunique = column + '_-10^' + str(int(unique))
+            newunique = suffixcolumn + '_-10^' + str(int(unique))
           else:
             newunique = np.nan
         if newunique in labels_train and newunique == newunique:
@@ -35353,7 +35910,7 @@ class AutoMunge:
         if unique != unique:
           newunique = np.nan
         else:
-          newunique = column + '_10^' + str(int(unique))
+          newunique = suffixcolumn + '_10^' + str(int(unique))
         if newunique in labels_train and newunique == newunique:
           test_pos_dict.update({unique : newunique})
         else:
@@ -35432,8 +35989,10 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['activations_list']
       inplace = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
+      suffix = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
       
-      pworcolumn = column + '_pwor'
+      pworcolumn = column + '_' + suffix
 
       if inplace is not True:
         mdf_test[pworcolumn] = mdf_test[column].copy()
@@ -35578,8 +36137,10 @@ class AutoMunge:
       binlabels = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binlabels']
       textcolumns = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binscolumns']
       normalizedinput = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['normalizedinput']
+      suffix = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
 
-      binscolumn = column + '_bins'
+      binscolumn = column + '_' + suffix
 
       mdf_test[binscolumn] = mdf_test[column].copy()
 
@@ -35664,8 +36225,10 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
       bincount = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bincount']
+      suffix = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
       
-      binscolumn = column + '_bsor'
+      binscolumn = column + '_' + suffix
 
       if inplace is not True:
         mdf_test[binscolumn] = mdf_test[column].copy()
@@ -36037,8 +36600,10 @@ class AutoMunge:
       bincount = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bincount']
       textcolumns = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['textcolumns']
       buckets = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['buckets_tlbn']
+      suffix = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
       
-      binscolumn = column + '_tlbn'
+      binscolumn = column + '_' + suffix
       
       #copy original column
       mdf_test[binscolumn] = mdf_test[column].copy()
@@ -36143,8 +36708,10 @@ class AutoMunge:
       bins_cuts = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_cuts']
       bins_id = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_id']
       textcolumns = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['textcolumns']
+      suffix = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
       
-      binscolumn = column + '_bkt1'
+      binscolumn = column + '_' + suffix
       
       #store original column for later reversion
       mdf_test[binscolumn] = mdf_test[column].copy()
@@ -36207,8 +36774,10 @@ class AutoMunge:
       bins_cuts = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_cuts']
       bins_id = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_id']
       textcolumns = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['textcolumns']
+      suffix = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
       
-      binscolumn = column + '_bkt2'
+      binscolumn = column + '_' + suffix
       
       #store original column for later reversion
       mdf_test[binscolumn] = mdf_test[column].copy()
@@ -36273,8 +36842,10 @@ class AutoMunge:
       ordl_activations_dict = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordl_activations_dict']
       infill_activation = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['infill_activation']
       inplace = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
+      suffix = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
 
-      binscolumn = column + '_bkt3'
+      binscolumn = column + '_' + suffix
       
       if inplace is not True:
         mdf_test[binscolumn] = mdf_test[column].copy()
@@ -36343,8 +36914,10 @@ class AutoMunge:
       ordl_activations_dict = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordl_activations_dict']
       infill_activation = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['infill_activation']
       inplace = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
+      suffix = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
 
-      binscolumn = column + '_bkt4'
+      binscolumn = column + '_' + suffix
       
       if inplace is not True:
         mdf_test[binscolumn] = mdf_test[column].copy()
@@ -36428,9 +37001,10 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['noisedistribution']
       testnoise = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['testnoise']
-
+      suffix = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
       
-      DPnm_column = column + '_DPnb'
+      DPnm_column = column + '_' + suffix
       
       #check if df_test is to be treated as train or test data
       traindata = postprocess_dict['traindata']
@@ -36505,9 +37079,11 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['noisedistribution']
       testnoise = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['testnoise']
+      suffix = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
 
-      DPmm_column = column + '_DPmm'
-      DPmm_column_temp1 = column + '_DPmm' + '_tmp1'
+      DPmm_column = column + '_' + suffix
+      DPmm_column_temp1 = column + '_' + suffix + '_tmp1'
       
       #check if df_test is to be treated as train or test data
       traindata = postprocess_dict['traindata']
@@ -36637,11 +37213,14 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['flip_prob']
       noisedistribution = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['noisedistribution']
+
+      suffix = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
       
       #initialize returned column and support columns
-      DPrt_column = column + '_DPrt'
-      DPrt_column_temp1 = column + '_DPrt' + '_tmp1'
-      DPrt_column_temp2 = column + '_DPrt' + '_tmp2'
+      DPrt_column = column + '_' + suffix
+      DPrt_column_temp1 = column + '_' + suffix + '_tmp1'
+      DPrt_column_temp2 = column + '_' + suffix + '_tmp2'
       
       #copy original column for implementation
       mdf_test[DPrt_column] = mdf_test[column].copy()
@@ -36783,8 +37362,10 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['flip_prob']
       testnoise = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['testnoise']
+      suffix = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
 
-      DPbn_column = column + '_DPbn'
+      DPbn_column = column + '_' + suffix
       
       #check if df_test is to be treated as train or test data
       traindata = postprocess_dict['traindata']
@@ -36844,10 +37425,12 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['flip_prob']
       testnoise = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['testnoise']
+      suffix = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
 
-      DPod_column = column + '_DPod'
-      DPod_tempcolumn1 = column + '_DPod_tmp1'
-      DPod_tempcolumn2 = column + '_DPod_tmp2'
+      DPod_column = column + '_' + suffix
+      DPod_tempcolumn1 = column + '_' + suffix + '_tmp1'
+      DPod_tempcolumn2 = column + '_' + suffix + '_tmp2'
       
       #check if df_test is to be treated as train or test data
       traindata = postprocess_dict['traindata']
@@ -36916,8 +37499,10 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['fillvalue']
       inplace = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
+      suffix = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
       
-      exclcolumn = column + '_exc2'
+      exclcolumn = column + '_' + suffix
       
       if inplace is not True:
         mdf_test[exclcolumn] = mdf_test[column].copy()
@@ -36964,8 +37549,10 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['fillvalue']
       inplace = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
+      suffix = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
       
-      exclcolumn = column + '_exc5'
+      exclcolumn = column + '_' + suffix
       
       if inplace is not True:
         mdf_test[exclcolumn] = mdf_test[column].copy()
@@ -39925,6 +40512,8 @@ class AutoMunge:
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['binscolumns']
     bincount = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bincount']
+    suffix = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
     
     inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
     
@@ -39940,7 +40529,7 @@ class AutoMunge:
     for bucket in binlabels:
       
       #relies on suffix appender conventions
-      column = inputcolumn + '_bins_' + bucket
+      column = inputcolumn + '_' + suffix + '_' + bucket
       value = (i * binsstd + binsmean)
       
       returned_values_dict.update({column : value})
@@ -40251,6 +40840,8 @@ class AutoMunge:
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_id']
     buckets_bkt1 = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['buckets_bkt1']
+    suffix = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
     
     inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
     
@@ -40262,12 +40853,12 @@ class AutoMunge:
     
     bucket_ids = []
     for textcolumn in textcolumns:
-      bucket_id = textcolumn.replace(inputcolumn + '_bkt1_', '')
+      bucket_id = textcolumn.replace(inputcolumn + '_' + suffix + '_', '')
       bucket_ids.append(int(bucket_id))
 
     for i in bucket_ids:
       
-      textcolumn = inputcolumn + '_bkt1_' + str(i)
+      textcolumn = inputcolumn + '_' + suffix + '_' + str(i)
       
       if i == 0:
         
@@ -40304,6 +40895,8 @@ class AutoMunge:
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_cuts']
     textcolumns = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['textcolumns']
+    suffix = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
     
     inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
     
@@ -40315,14 +40908,14 @@ class AutoMunge:
     
     bucket_ids = []
     for textcolumn in textcolumns:
-      bucket_id = textcolumn.replace(inputcolumn + '_bkt2_', '')
+      bucket_id = textcolumn.replace(inputcolumn + '_' + suffix + '_', '')
       bucket_ids.append(int(bucket_id))
       
     for i in bucket_ids:
       
       value = (bins_cuts[i] + bins_cuts[i+1]) / 2
       
-      df[inputcolumn] = np.where(df[inputcolumn + '_bkt2_' + str(i)]==1, value, df[inputcolumn])
+      df[inputcolumn] = np.where(df[inputcolumn + '_' + suffix + '_' + str(i)]==1, value, df[inputcolumn])
     
     return df, inputcolumn
   
@@ -41020,8 +41613,8 @@ class AutoMunge:
     
     newcolumns = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['src2_newcolumns_src2']
-#     overlap_dict = \
-#     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['overlap_dict']
+    suffix = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
     
     df[inputcolumn] = 'zzzinfill'
     
@@ -41030,7 +41623,7 @@ class AutoMunge:
     
     for column in newcolumns:
       
-      searchterm = column.replace(inputcolumn + '_src2_', '')
+      searchterm = column.replace(inputcolumn + '_' + suffix + '_', '')
       
       if column in df.columns:
       
@@ -41056,8 +41649,8 @@ class AutoMunge:
     
     newcolumns = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['srch_newcolumns_src3']
-#     overlap_dict = \
-#     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['overlap_dict']
+    suffix = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
     
     df[inputcolumn] = 'zzzinfill'
     
@@ -41066,7 +41659,7 @@ class AutoMunge:
     
     for column in newcolumns:
       
-      searchterm = column.replace(inputcolumn + '_src3_', '')
+      searchterm = column.replace(inputcolumn + '_' + suffix + '_', '')
       
       if column in df.columns:
       
@@ -41092,6 +41685,8 @@ class AutoMunge:
     
     ordl_dict1 = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordl_dict1']
+    suffix = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
     
     df[inputcolumn] = 'zzzinfill'
     
@@ -41104,7 +41699,7 @@ class AutoMunge:
     
     for key in keys:
       
-      searchterm = ordl_dict1[key].replace(inputcolumn + '_src4_', '')
+      searchterm = ordl_dict1[key].replace(inputcolumn + '_' + suffix + '_', '')
       
       df[inputcolumn] = np.where((df[normkey] == key) & (df[inputcolumn] == 'zzzinfill'), searchterm, df[inputcolumn])
     
