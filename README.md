@@ -1280,6 +1280,9 @@ Note the family primitives tree of transformations can be summarized as:
 ![image](https://user-images.githubusercontent.com/44011748/76485331-a2a24380-63f2-11ea-8559-08bb1c3be395.png)
 
 Note that a user should avoid redundant entries across a set of upstream or downstream primitives.
+If a redundant transformation function is desired to a distinct upstream or downstream inputcolumn (such as may be desired 
+to apply same transform but with different parameters), each of the redundant applications needs a distinct transformation category defined in 
+the processdict, as well as a distinct suffix parameter as can be passed in the processdict with defaultparams.
 Since there is recursion involved a user should be careful of creating infinite loops from passing
 downstream primitive entries with offspring whose own offspring coincide with an earlier generation.
 (The presence of infinite loops is tested for to a max depth of 111 offspring, an arbitrary figure.)
@@ -2103,6 +2106,7 @@ string by 'strg' (some ML libraries prefer string encoded labels to recognize th
       cap and floor based on pre-transform values
     - 'muilitplier' and 'offset' to apply multiplier and offset to posttransform values, default to 1,0,
       note that multiplier is applied prior to offset
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: mean / std / max / min
   - inversion available: yes with full recovery
 * mean/mea2/mea3: mean normalization (like z-score in the numerator and min-max in the denominator)<br/>
@@ -2119,6 +2123,7 @@ My intuition says z-score has some benefits but really up to the user which they
       cap and floor based on pre-transform values
     - 'muilitplier' and 'offset' to apply multiplier and offset to posttransform values, default to 1,0,
       note that multiplier is applied prior to offset
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: minimum / maximum / mean / std
   - inversion available: yes with full recovery
 * mnmx/mnm2/mnm5/mmdx/mmd2/mmd3: vanilla min-max scaling<br/>
@@ -2132,6 +2137,7 @@ My intuition says z-score has some benefits but really up to the user which they
       True means floor/cap based on training set min/max, otherwise passed values serve as floor/cap to scaling, 
       noting that if cap<max then max reset to cap and if floor>min then min reset to floor
       cap and floor based on pre-transform values
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: minimum / maximum / maxminusmin / mean / std / cap / floor
   - inversion available: yes with full recovery
 * mnm3/mnm4: min-max scaling with outliers capped at 0.01 and 0.99 quantiles
@@ -2141,6 +2147,7 @@ My intuition says z-score has some benefits but really up to the user which they
   - suffix appender: '_mnm3'
   - assignparam parameters accepted: 
     - qmax or qmin to change the quantiles from 0.99/0.01
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: quantilemin / quantilemax / mean / std
   - inversion available: yes
 * mnm6: min-max scaling with test floor set capped at min of train set (ensures
@@ -2150,6 +2157,7 @@ test set returned values >= 0, such as might be useful for kernel PCA for instan
   - default NArowtype: numeric
   - suffix appender: '_mnmx'
   - assignparam parameters accepted:
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: minimum / maximum / mean / std
   - inversion available: yes
 * retn: related to min/max scaling but retains +/- of values, based on conditions
@@ -2168,6 +2176,7 @@ elif max<=0 and min<=0 x=(x-max)/(max-min)
       note that multiplier is applied prior to offset
     - 'divisor' to select between default of 'minmax' or 'mad, 'std', where minmax means scaling by divisor of max-min
 	std based on scaling by divisor of standard deviation and mad by median absolute deviation
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: minimum / maximum / mean / std
   - inversion available: yes with full recovery
 * rtbn: retain normalization supplemented by ordinal encoded standard deviation bins
@@ -2179,6 +2188,7 @@ elif max<=0 and min<=0 x=(x-max)/(max-min)
   - default NArowtype: numeric
   - suffix appender: '_MADn'
   - assignparam parameters accepted:
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: mean / MAD / maximum / minimum
   - inversion available: yes with full recovery
 * MAD3: mean absolute deviation normalization, subtract set maximum<br/>
@@ -2188,6 +2198,7 @@ elif max<=0 and min<=0 x=(x-max)/(max-min)
   - default NArowtype: numeric
   - suffix appender: '_MAD3'
   - assignparam parameters accepted:
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: mean / MAD / datamax / maximum / minimum
   - inversion available: yes with full recovery
 * mxab: max absolute scaling normalization (just including this one for completeness, retn is a much better option to ensure consistent scaling between sets)<br/>
@@ -2197,6 +2208,7 @@ elif max<=0 and min<=0 x=(x-max)/(max-min)
   - default NArowtype: numeric
   - suffix appender: '_mxab'
   - assignparam parameters accepted:
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: minimum / maximum / maxabs / mean / std
   - inversion available: yes with full recovery
 * lgnm: normalization intended for lognormal distributed numerical sets,
@@ -2206,6 +2218,7 @@ achieved by performing a logn transform upstream of a nmbr normalization.
   - default NArowtype: positivenumeric
   - suffix appender: '_logn_nmbr'
   - assignparam parameters accepted: can pass params to nmbr consistent with nmbr documentation above
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: consistent with both logn and nmbr
   - inversion available: yes with full recovery
 ### Numerical Set Transformations
@@ -2217,7 +2230,8 @@ family trees below for full set of transfomration categories asscoiated with the
   - default infill: mean (i.e. mean of values > 0)
   - default NArowtype: positivenumeric
   - suffix appender: '_bxcx'
-  - assignparam parameters accepted: none
+  - assignparam parameters accepted:
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: trnsfrm_mean / bxcx_lmbda / bxcxerrorcorrect / mean
   - inversion available: no
 * log0/log1: performs logarithmic transform (base 10). Applies infill to values <= 0.
@@ -2225,7 +2239,8 @@ family trees below for full set of transfomration categories asscoiated with the
   - default infill: meanlog
   - default NArowtype: positivenumeric
   - suffix appender: '_log0'
-  - assignparam parameters accepted: none
+  - assignparam parameters accepted:
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: meanlog
   - inversion available: yes with full recovery
 * logn: performs natural logarithmic transform (base e). Applies infill to values <= 0.
@@ -2233,7 +2248,8 @@ family trees below for full set of transfomration categories asscoiated with the
   - default infill: meanlog
   - default NArowtype: positivenumeric
   - suffix appender: '_logn'
-  - assignparam parameters accepted: none
+  - assignparam parameters accepted:
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: meanlog
   - inversion available: yes with full recovery
 * sqrt: performs square root transform. Applies infill to values < 0.
@@ -2241,7 +2257,8 @@ family trees below for full set of transfomration categories asscoiated with the
   - default infill: mean
   - default NArowtype: nonnegativenumeric
   - suffix appender: '_sqrt'
-  - assignparam parameters accepted: none
+  - assignparam parameters accepted:
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: meansqrt
   - inversion available: yes with full recovery
 * addd: performs addition of an integer or float to a set
@@ -2249,7 +2266,9 @@ family trees below for full set of transfomration categories asscoiated with the
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '_addd'
-  - assignparam parameters accepted: 'add' for value added (default to 1)
+  - assignparam parameters accepted: 
+    - 'add' for value added (default to 1)
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: mean, add
   - inversion available: yes with full recovery
 * sbtr: performs subtraction of an integer or float to a set
@@ -2257,7 +2276,9 @@ family trees below for full set of transfomration categories asscoiated with the
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '_sbtr'
-  - assignparam parameters accepted: 'subtract' for value subtracted (default to 1)
+  - assignparam parameters accepted: 
+    - 'subtract' for value subtracted (default to 1)
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: mean, subtract
   - inversion available: yes with full recovery
 * mltp: performs multiplication of an integer or float to a set
@@ -2265,7 +2286,9 @@ family trees below for full set of transfomration categories asscoiated with the
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '_mltp'
-  - assignparam parameters accepted: 'multiply' for value multiplied (default to 2)
+  - assignparam parameters accepted: 
+    - 'multiply' for value multiplied (default to 2)
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: mean, multiply
   - inversion available: yes with full recovery
 * divd: performs division of an integer or float to a set
@@ -2273,7 +2296,9 @@ family trees below for full set of transfomration categories asscoiated with the
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '_divd'
-  - assignparam parameters accepted: 'divide' for value subtracted (default to 2)
+  - assignparam parameters accepted: 
+    - 'divide' for value subtracted (default to 2)
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: mean, divide
   - inversion available: yes with full recovery
 * rais: performs raising to a power of an integer or float to a set
@@ -2281,7 +2306,9 @@ family trees below for full set of transfomration categories asscoiated with the
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '_rais'
-  - assignparam parameters accepted: 'raiser' for value raised (default to 2)
+  - assignparam parameters accepted: 
+    - 'raiser' for value raised (default to 2)
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: mean, raiser
   - inversion available: yes with full recovery
 * absl: performs absolute value transform to a set
@@ -2289,7 +2316,8 @@ family trees below for full set of transfomration categories asscoiated with the
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '_absl'
-  - assignparam parameters accepted: (none)
+  - assignparam parameters accepted:
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: mean
   - inversion available: yes with partial recovery
 
@@ -2308,6 +2336,7 @@ standard deviations from mean and approximately 4 significant figures in decimal
     - sign_bit: boolean defaults to True to include sign register
     - integer_bits: defaults to 3 for number of bits in register
     - fractional_bits: defaults to 12 for number of bits in register
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: maximum, minimum, mean, stdev
   - inversion available: yes with full recovery
 * qbt2: binary encoded signed integers with registers for sign and integers, default overflow at +/-32,767
@@ -2320,6 +2349,7 @@ standard deviations from mean and approximately 4 significant figures in decimal
     - sign_bit: boolean defaults to True to include sign register
     - integer_bits: defaults to 15 for number of bits in register
     - fractional_bits: defaults to 0 for number of bits in register
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: maximum, minimum, mean, stdev
   - inversion available: yes with full recovery
 * qbt3: binary encoded unsigned floats with registers for integers and fractionals, default overflow at 8.000 and <0
@@ -2359,10 +2389,11 @@ Other Q Notation root categories:
   - useful for: featuere engineering for linear models, also for oversampling bins with TrainFreqLevelizer parameter
   - default infill: no activation
   - default NArowtype: positivenumeric
-  - suffix appender: '_10^#' where # is integer indicating target powers of 10 for column
+  - suffix appender: '\_pwrs_10^#' where # is integer indicating target powers of 10 for column
   - assignparam parameters accepted: 
     - 'negvalues', boolean defaults to False, True bins values <0
       (recomend using pwr2 instead of this parameter since won't update NArowtype)
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: powerlabelsdict / meanlog / maxlog / 
 	                           <column> + '_ratio' (column specific)
   - inversion available: yes with partial recovery
@@ -2370,10 +2401,11 @@ Other Q Notation root categories:
   - useful for: featuere engineering for linear models, also for oversampling bins with TrainFreqLevelizer parameter
   - default infill: no activation
   - default NArowtype: nonzeronumeric
-  - suffix appender: '\_10^#' or '\_-10^#' where # is integer indicating target powers of 10 for column
+  - suffix appender: '\_pwrs_10^#' or '\_pwrs_-10^#' where # is integer indicating target powers of 10 for column
   - assignparam parameters accepted: 
     - 'negvalues', boolean defaults to True, True bins values <0
       (recomend using pwrs instead of this parameter since won't update NArowtype)
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: powerlabelsdict / labels_train / missing_cols / 
 			           <column> + '_ratio' (column specific)
   - inversion available: yes with partial recovery
@@ -2385,6 +2417,7 @@ value fell with respect to powers of 10
   - suffix appender: '_pwor'
   - assignparam parameters accepted: 
     - 'negvalues', boolean defaults to False, True bins values <0
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: meanlog / maxlog / ordl_activations_dict
   - inversion available: yes with partial recovery
 * por2: for numerical sets, outputs an ordinal encoding indicating where a
@@ -2395,6 +2428,7 @@ value fell with respect to powers of 10 (comparable to pwor with negvalues param
   - suffix appender: '_por2'
   - assignparam parameters accepted: 
     - 'negvalues', boolean defaults to True, True bins values <0
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: train_replace_dict / test_replace_dict / ordl_activations_dict
   - inversion available: yes with partial recovery
 * pwbn: comparable to pwor but followed by a binary encoding, such as may be useful for data with 
@@ -2403,7 +2437,8 @@ high variability
   - default infill: zero (a distinct encoding)
   - default NArowtype: nonzeronumeric
   - suffix appender: '_pwor_1010_#' (where # is integer for binary encoding activation number) 
-  - assignparam parameters accepted: none
+  - assignparam parameters accepted:
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: train_replace_dict / test_replace_dict / ordl_activations_dict
   - inversion available: yes with partial recovery
 * por3: comparable to por2 but followed by a binary encoding, such as may be useful for data with 
@@ -2412,7 +2447,8 @@ high variability
   - default infill: zero (a distinct encoding)
   - default NArowtype: nonzeronumeric
   - suffix appender: '_por2_1010_#' (where # is integer for binary encoding activation number) 
-  - assignparam parameters accepted: none
+  - assignparam parameters accepted:
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: train_replace_dict / test_replace_dict / ordl_activations_dict
   - inversion available: yes with partial recovery
 * bins: for numerical sets, outputs a set of 6 columns indicating where a
@@ -2425,6 +2461,7 @@ Note this can be activated to supplment numeric sets with binstransform automung
   - suffix appender: '\_bins\_#' where # is integer identifier of bin
   - assignparam parameters accepted: 
     - bincount integer for number of bins, defaults to 6
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: binsmean / binsstd / <column> + '_ratio' (column specific)
   - inversion available: yes with partial recovery
 * bsor: for numerical sets, outputs an ordinal encoding indicating where a
@@ -2436,6 +2473,7 @@ set (i.e. integer encoding represent # from mean as <-2:0, -2-1:1, -10:2, 01:3, 
   - suffix appender: '_bsor'
   - assignparam parameters accepted: 
     - bincount as integer for # of bins (defaults to 6)
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: ordinal_dict / ordl_activations_dict / binsmean / binsstd
   - inversion available: yes with partial recovery
 * bnwd/bnwK/bnwM: for numerical set graining to fixed width bins for one-hot encoded bins 
@@ -2448,6 +2486,7 @@ bins default to width of 1/1000/1000000 eg for bnwd/bnwK/bnwM
                      and 'bnwd' as bnwK or bnwM based on variant
   - assignparam parameters accepted: 
     - 'width' to set bin width
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: binsmean / bn_min / bn_max / bn_delta / bn_count / bins_id / 
 			           bins_cuts / bn_width_bnwd (or bnwK/bnwM) / textcolumns / 
                                    <column> + '_ratio' (column specific)
@@ -2461,6 +2500,7 @@ bins default to width of 1/1000/1000000 eg for bnwd/bnwK/bnwM
   - suffix appender: '_bnwo' (or '_bnKo', '_bnMo')
   - assignparam parameters accepted: 
     - 'width' to set bin width
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: binsmean / bn_min / bn_max / bn_delta / bn_count / bins_id / 
 			           bins_cuts / bn_width / ordl_activations_dict
   - inversion available: yes with partial recovery
@@ -2470,7 +2510,9 @@ bin count defaults to 5/7/9 eg for bnep/bne7/bne9
   - default infill: no activation
   - default NArowtype: numeric
   - suffix appender: '\_bnep\_#1' where #1 is the bin identifier (# from min) (or bne7/bne9 instead of bnep)
-  - assignparam parameters accepted: 'bincount' to set number of bins
+  - assignparam parameters accepted: 
+    - 'bincount' to set number of bins
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: binsmean / bn_min / bn_max / bn_delta / bn_count / bins_id / 
                                    bins_cuts / bincount_bnep (or bne7/bne9) / textcolumns / 
                                    <column> + '_ratio' (column specific)
@@ -2483,6 +2525,7 @@ bin count defaults to 5/7/9 eg for bneo/bn7o/bn9o
   - suffix appender: '\_bneo' (or bn7o/bn9o)
   - assignparam parameters accepted: 
     - 'bincount' to set number of bins
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: binsmean / bn_min / bn_max / bn_delta / bn_count / bins_id / 
 			           bins_cuts / bincount / ordl_activations_dict
   - inversion available: yes with partial recovery
@@ -2494,6 +2537,7 @@ bin count defaults to 5/7/9 eg for bneo/bn7o/bn9o
   - assignparam parameters accepted: 
     - 'buckets', a list of numbers, to set bucket boundaries (leave out +/-'inf')
       defaults to [0,1,2] (arbitrary plug values), can also pass buckets values as percent of range by framing as a set instead of list eg {0,0.25,0.50,1}
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: binsmean / buckets_bkt1 / bins_cuts / bins_id / textcolumns / 
 					   <column> + '_ratio' (column specific)
   - inversion available: yes with partial recovery
@@ -2505,6 +2549,7 @@ bin count defaults to 5/7/9 eg for bneo/bn7o/bn9o
   - assignparam parameters accepted: 
     - 'buckets', a list of numbers, to set bucket boundaries
       defaults to [0,1,2] (arbitrary plug values), can also pass buckets values as percent of range by framing as a set instead of list eg {0,0.25,0.50,1}
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: binsmean / buckets_bkt2 / bins_cuts / bins_id / textcolumns / 
 					   <column> + '_ratio' (column specific)
   - inversion available: yes with partial recovery
@@ -2516,6 +2561,7 @@ bin count defaults to 5/7/9 eg for bneo/bn7o/bn9o
   - assignparam parameters accepted: 
     - 'buckets', a list of numbers, to set bucket boundaries (leave out +/-'inf')
       defaults to [0,1,2] (arbitrary plug values), can also pass buckets values as percent of range by framing as a set instead of list eg {0,0.25,0.50,1}
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: binsmean / buckets / bins_cuts / bins_id / ordl_activations_dict
   - inversion available: yes with partial recovery
 * bkt4: for numerical set graining to user specified ordinal encoded bins. First and last bins bounded.
@@ -2526,6 +2572,7 @@ bin count defaults to 5/7/9 eg for bneo/bn7o/bn9o
   - assignparam parameters accepted: 
     - 'buckets', a list of numbers, to set bucket boundaries
       defaults to [0,1,2] (arbitrary plug values), can also pass buckets values as percent of range by framing as a set instead of list eg {0,0.25,0.50,1}
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: binsmean / buckets / bins_cuts / bins_id / ordl_activations_dict
   - inversion available: yes with partial recovery
 * note that bins each have variants for one-hot vs ordinal vs binary encodings
@@ -2544,6 +2591,7 @@ with metric2 results from a feature importance evaluation)
     - 'bincount' to set number of bins (defaults to 9)
     - 'buckets', defaults to False, can pass as a list of bucket boundaries for custom distribution segments
       which will take precedence over bincount (leave out -/+inf which will be added for first and last bins internally)
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: binsmean / bn_min / bn_max / bn_delta / bn_count / bins_id / 
 			           bins_cuts / bincount_tlbn / textcolumns / <column> + '_ratio' (column specific)
   - inversion available: yes
@@ -2559,6 +2607,7 @@ normalization which scales data with min/max while retaining +/- sign
   - suffix appender: '_dxdt'
   - assignparam parameters accepted: 
     - 'periods' sets number of time steps offset to evaluate, defaults to 1
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: positiveratio / negativeratio / zeroratio / minimum / maximum / mean / std
   - inversion available: no
 * dxd2/d2d2/d3d2/d4d2/d5d2/d6d2: denoised rate of change (average of last two or more rows minus average
@@ -2570,6 +2619,7 @@ and d2d2), all returned sets include 'retn' normalization
   - suffix appender: '_dxd2'
   - assignparam parameters accepted: 
     - 'periods' sets number of time steps offset to evaluate, defaults to 2
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: positiveratio / negativeratio / zeroratio / minimum / maximum / mean / std
   - inversion available: no
 * nmdx/nmd2/nmd3/nmd4/nmd5/nmd6: comparable to dxdt but includes upstream of sequential transforms a 
@@ -2602,6 +2652,7 @@ to set with >2 entries applies infill to those entries beyond two most common.
   - assignparam parameters accepted:
     - 'str_convert', boolean defaults as False for distinct encodings between numbers and string equivalents
       e.g. 2 != '2', when passed as True e.g. 2 == '2'
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: missing / 1 / 0 / extravalues / oneratio / zeroratio
   - inversion available: yes with full recovery
 * bnr2: (Same as bnry except for default infill.)
@@ -2612,6 +2663,7 @@ to set with >2 entries applies infill to those entries beyond two most common.
   - assignparam parameters accepted:
     - 'str_convert', boolean defaults as False for distinct encodings between numbers and string equivalents
       e.g. 2 != '2', when passed as True e.g. 2 == '2'
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: missing / 1 / 0 / extravalues / oneratio / zeroratio
   - inversion available: yes with full recovery
 * text/txt2: converts categorical sets to one-hot encoded set of boolean identifiers 
@@ -2619,7 +2671,8 @@ to set with >2 entries applies infill to those entries beyond two most common.
   - useful for: one hot encoding, returns distinct column activation per unique entry
   - default infill: all entries zero
   - default NArowtype: justNaN
-  - suffix appender: '_(category)' where category is the categoric entry target of column activations
+  - suffix appender: 
+    - '_(category)' where category is the categoric entry target of column activations
   - assignparam parameters accepted:
   - driftreport postmunge metrics: textlabelsdict_text / <column> + '_ratio' (column specific)
   - inversion available: yes with full recovery
@@ -2632,6 +2685,7 @@ to set with >2 entries applies infill to those entries beyond two most common.
   - assignparam parameters accepted:
     - 'str_convert', boolean defaults as False for distinct encodings between numbers and string equivalents
       e.g. 2 != '2', when passed as True e.g. 2 == '2'
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: textlabelsdict_text / <column> + '_ratio' (column specific)
 			           text_categorylist is key between columns and target entries
   - inversion available: yes with full recovery
@@ -2645,6 +2699,7 @@ to set with >2 entries applies infill to those entries beyond two most common.
       if found integer encoding order defers to that basis
     - 'str_convert', boolean defaults as False for distinct encodings between numbers and string equivalents
       e.g. 2 != '2', when passed as True e.g. 2 == '2'
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: ordinal_dict / ordinal_overlap_replace / ordinal_activations_dict
   - inversion available: yes with full recovery
 * ord3: converts categoric sets to ordinal integer encoded set, sorted first by frequency of category 
@@ -2658,6 +2713,7 @@ occurrence, second basis for common count entries is alphabetical
       if found integer encoding order defers to that basis
     - 'str_convert', boolean defaults as False for distinct encodings between numbers and string equivalents
       e.g. 2 != '2', when passed as True e.g. 2 == '2'
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: ordinal_dict / ordinal_overlap_replace / ordinal_activations_dict
   - inversion available: yes with full recovery
 * ord4: derived by an ord3 transform followed by a mnmx transform. Useful as a scaled metric
@@ -2674,6 +2730,7 @@ efficient than one-hot encoding)
   - assignparam parameters accepted:
     - 'str_convert', boolean defaults as False for distinct encodings between numbers and string equivalents
       e.g. 2 != '2', when passed as True e.g. 2 == '2'
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: _1010_binary_encoding_dict / _1010_overlap_replace / 
 	                           _1010_binary_column_count / _1010_activations_dict
   (for example if 1010 encoded to three columns based on number of categories <8,
@@ -2689,6 +2746,7 @@ maxb (ordinal), matx (one hot), and ma10 (binary).
     - 'maxbincount': set a maximum number of activations (integer) default False
     - 'minentrycount': set a minimum number of entries in train set to register an activation (integer) default False
     - 'minentryratio': set a minimum ratio of entries in train set to register an activation (float between 0-1)
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: new_maxactivation / consolidation_count
   - inversion available: yes with full recovery
 * ucct: converts categorical sets to a normalized float of unique class count,
@@ -2698,7 +2756,8 @@ and comparable to test set independent of test set row count
   - default infill: ratio of infill in train set
   - default NArowtype: justNaN
   - suffix appender: '_ucct'
-  - assignparam parameters accepted: none
+  - assignparam parameters accepted:
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: ordinal_dict / ordinal_overlap_replace / ordinal_activations_dict
   - inversion available: no
 * lngt, lnlg: returns string length of categoric entries (lngt followed by min/max, lnlg by log)
@@ -2706,7 +2765,8 @@ and comparable to test set independent of test set row count
   - default infill: plug value of 3 (based on len(str(np.nan)) )
   - default NArowtype: justNaN
   - suffix appender: '_lngt'
-  - assignparam parameters accepted: none
+  - assignparam parameters accepted:
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: maximum, minimum, mean, std
   - inversion available: no
 * aggt: consolidate categoric entries based on user passed aggregate parameter
@@ -2716,6 +2776,7 @@ and comparable to test set independent of test set row count
   - suffix appender: '_aggt'
   - assignparam parameters accepted: 
     - 'aggregate' as a list or as a list of lists of aggregation sets
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: aggregate
   - inversion available: yes with partial recovery
 * smth: applies a one-hot encoding followed by a label smoothing operation to reduce activation value and increase null value. The smoothing is applied to train data but not validation or test data. Smoothing can be applied to test data in postmunge(.) by activating the traindata parameter.
@@ -2727,6 +2788,7 @@ and comparable to test set independent of test set row count
     - 'activation' defaults to 0.9, a float between 0.5-1 to designate activation value
     - 'LSfit' defaults to False, when True applies fitted label smoothing (consistent with fsmh)
     - 'testsmooth' defaults to False, when True applies smoothing to test data in both automunge and postmunge
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: comparable to onht
   - inversion available: yes with full recovery
 * fsmh: comparable to smth but applies by default a fitted label smoothing, in which null values are fit to ratio of activations corresponding to current activation. The smoothing is applied to train data but not validation or test data. Smoothing can be applied to test data in postmunge(.) by activating the traindata parameter.
@@ -2754,6 +2816,7 @@ is not supported as there is possibility of redundant encodings for different un
     - 'hash_alg', defaults to 'hash' for use of native python hash function for speed, 'md5' uses hashlib md5 function instead
     - 'max_column_count', defaults to False, can pass as integer to cap the number of returned columns, in which case when
       words are extracted the final entrty within cap will contain all remaining word and space characters
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: col_count (number of columns), vocab_size
   - inversion available: no
 * hsh2: similar to hash but does not partition entries by space seperator, so only returns one column. Note this version doesn't scrub special characters prior to encoding.
@@ -2768,6 +2831,7 @@ is not supported as there is possibility of redundant encodings for different un
     - 'excluded_characters', a list of strings, defaults to [] (an empty set), these characters are stripped prior to enconding
     - 'salt', arbitrary string, defaults to empty string '', appended to entries to perturb encoding basis for privacy
     - 'hash_alg', defaults to 'hash' for use of native python hash function for speed, 'md5' uses hashlib md5 function instead
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: col_count (number of columns), vocab_size
   - inversion available: no
 * hs10: similar to hsh2 but returns activations in a set of columns with binary encodings, similar to 1010
@@ -2782,6 +2846,7 @@ is not supported as there is possibility of redundant encodings for different un
     - 'excluded_characters', a list of strings, defaults to [] (an empty set), these characters are stripped prior to enconding
     - 'salt', arbitrary string, defaults to empty string '', appended to entries to perturb encoding basis for privacy
     - 'hash_alg', defaults to 'hash' for use of native python hash function for speed, 'md5' uses hashlib md5 function instead
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: col_count (number of columns), vocab_size
   - inversion available: no
 * UPCS: convert string entries to all uppercase characters
@@ -2791,6 +2856,7 @@ is not supported as there is possibility of redundant encodings for different un
   - suffix appender: '_UPCS'
   - assignparam parameters accepted: 
     - 'activate', boolean defaults to True, False makes this a passthrough without conversion
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: activate
   - inversion available: yes with partial recovery
 * new processing functions Unht / Utxt / Utx2 / Utx3 / Uord / Uor2 / Uor3 / Uor6 / U101 / Ucct / Uhsh / Uhs2 / Uh10
@@ -2801,7 +2867,8 @@ is not supported as there is possibility of redundant encodings for different un
   - and may be assigned other infill methods in assigninfill
   - default NArowtype: 'justNaN'
   - suffix appender: '_UPCS'
-  - assignparam parameters accepted: none
+  - assignparam parameters accepted:
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: comparable to functions text / txt2 / txt3 / ordl / ord2 / ord3 / ors6 / 1010 / ucct
   - inversion available: yes
 * ntgr/ntg2/ntg3: sets of transformations intended for application to integer sets of unknown interpretation
@@ -2827,6 +2894,7 @@ columns (year/month/day/hour/minute/second) and then performs z-score normalizat
     - timezone: defaults to False as passthrough, otherwise can pass time zone abbreviation 
       (useful to consolidate different time zones such as for bus hr bins)
       for list of pandas accepted abbreviations see pytz.all_timezones
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: meanyear / stdyear / meanmonth / stdmonth / meanday / stdday / 
 			           meanhour / stdhour / meanmint / stdmint / meanscnd / stdscnd
   - inversion available: pending
@@ -2843,7 +2911,8 @@ dual columns with sin and cos transformations for time scale period (eg 12 month
   - default infill: mean
   - default NArowtype: datetime
   - suffix appender: includes appenders for (mnsn/mncs/dysn/dycs/hrsn/hrcs/misn/mics/scsn/sccs)
-  - assignparam parameters accepted: none
+  - assignparam parameters accepted:
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: timemean / timemax / timemin / timestd
   - inversion available: pending
 * mdsn/mdcs: similar sin/cos treatment, but for combined month/day, note that periodicity is based on 
@@ -2852,15 +2921,16 @@ number of days in specific months, including account for leap year, with 12 mont
   - default infill: mean
   - default NArowtype: datetime
   - suffix appender: includes appenders for (mdsn/mdcs)
-  - assignparam parameters accepted: none
+  - assignparam parameters accepted:
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: timemean / timemax / timemin / timestd
   - inversion available: pending
 * dhms/dhmc: similar sin/cos treatment, but for combined day/hour/min, with 7 day periodicity
-
   - default infill: mean
   - default NArowtype: datetime
   - suffix appender: includes appenders for (dhms/dhmc)
-  - assignparam parameters accepted: none
+  - assignparam parameters accepted:
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: timemean / timemax / timemin / timestd
   - inversion available: pending
 * hmss/hmsc: similar sin/cos treatment, but for combined hour/minute/second, with 24 hour periodicity
@@ -2868,7 +2938,8 @@ number of days in specific months, including account for leap year, with 12 mont
   - default infill: mean
   - default NArowtype: datetime
   - suffix appender: includes appenders for (hmss/hmsc)
-  - assignparam parameters accepted: none
+  - assignparam parameters accepted:
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: timemean / timemax / timemin / timestd
   - inversion available: pending
 * mssn/mscs: similar sin/cos treatment, but for combined minute/second, with 1 hour periodicity
@@ -2876,7 +2947,8 @@ number of days in specific months, including account for leap year, with 12 mont
   - default infill: mean
   - default NArowtype: datetime
   - suffix appender: includes appenders for (hmss/hmsc)
-  - assignparam parameters accepted: none
+  - assignparam parameters accepted:
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: timemean / timemax / timemin / timestd
   - inversion available: pending
 * dat6: default transformation set for time series data, returns:
@@ -2889,6 +2961,7 @@ number of days in specific months, including account for leap year, with 12 mont
     - timezone: defaults to False as passthrough, otherwise can pass time zone abbreviation 
       (useful to consolidate different time zones such as for bus hr bins)
       for list of pandas accepted abbreviations see pytz.all_timezones
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: meanyear / stdyear / mean_mdsn / mean_mdcs / mean_hmss / mean_hmsc
   - inversion available: pending
 ### Date-Time Data Bins
@@ -2897,7 +2970,8 @@ number of days in specific months, including account for leap year, with 12 mont
   - default infill: none
   - default NArowtype: datetime
   - suffix appender: '_wkdy'
-  - assignparam parameters accepted: none
+  - assignparam parameters accepted:
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: activationratio
   - inversion available: pending
 * wkds/wkdo: encoded weekdays 0-6, 'wkds' for one-hot via 'text', 'wkdo' for ordinal via 'ord3'
@@ -2905,7 +2979,8 @@ number of days in specific months, including account for leap year, with 12 mont
   - default infill: 7 (eg eight days a week)
   - default NArowtype: datetime
   - suffix appender: '_wkds'
-  - assignparam parameters accepted: none
+  - assignparam parameters accepted:
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: mon_ratio / tue_ratio / wed_ratio / thr_ratio / fri_ratio / sat_ratio / 
 	  sun_ratio / infill_ratio
   - inversion available: pending
@@ -2914,7 +2989,8 @@ number of days in specific months, including account for leap year, with 12 mont
   - default infill: 0
   - default NArowtype: datetime
   - suffix appender: '_mnts'
-  - assignparam parameters accepted: none
+  - assignparam parameters accepted:
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: infill_ratio / jan_ratio / feb_ratio / mar_ratio / apr_ratio / may_ratio / 
 	  jun_ratio / jul_ratio / aug_ratio / sep_ratio / oct_ratio / nov_ratio / dec_ratio
   - inversion available: pending
@@ -2926,6 +3002,7 @@ hours (9-5, time zone unaware)
   - suffix appender: '_bshr'
   - assignparam parameters accepted: 
     - 'start' and 'end', which default to 9 and 17
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: activationratio
   - inversion available: pending
 * hldy: boolean identifier indicating whether a datetime object is a US Federal
@@ -2937,6 +3014,7 @@ holiday
   - assignparam parameters accepted: 
     - 'holiday_list', should be passed as a list of strings of dates of additional holidays to be recognized 
       e.g. ['2020/03/30']
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: activationratio
   - inversion available: pending
 ### Differential Privacy Noise Injections
@@ -2959,6 +3037,7 @@ on flip_prob parameter.
     - 'sigma' for noise scale, defaults to 0.06
     - 'testnoise' defaults to False, when True noise is injected to test data in both automunge and postmunge by default
     - parameters should be passed to 'DPnb' transformation category from family tree
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: mu, sigma for DPnm, upstream z score via nmbr for others
   - inversion available: yes
 * DPmm: applies a min-max scaling followed by a noise injection to train data sampled
@@ -2975,6 +3054,7 @@ remains in range 0-1 (by scaling neg noise when scaled input <0.5 and scaling po
     - 'sigma' for noise scale, defaults to 0.03
     - 'testnoise' defaults to False, when True noise is injected to test data in both automunge and postmunge by default
     - parameters should be passed to 'DPmm' transformation category from family tree
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: mu, sigma for DPnm, upstream minmax via mnmx for others
   - inversion available: yes
 * DPrt: applies a retn normalization with a noise injection to train data sampled
@@ -2992,6 +3072,7 @@ remains in range 0-1 (by scaling neg noise when scaled and centered input <0.5 a
     - 'flip_prob' for percent of entries recieving noise injection, defaults to 0.03
     - 'testnoise' defaults to False, when True noise is injected to test data in both automunge and postmunge by default
     - Parameters should be passed to 'DPrt' transformation category from family tree.
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: mu, sigma, flip_prob for DPrt, also metrics comparable to retn
   - inversion available: yes
 * DLmm/DLnb/DLrt: comparable to DPmm/DPnb/DPrt but applies laplace distributed noise instead of gaussian
@@ -3007,6 +3088,7 @@ flips the activation per parameter flip_prob which defaults to 0.03
     - 'flip_prob' for percent of activation flips (defaults to 0.03), 
     - 'testnoise' defaults to False, when True noise is injected to test data in both automunge and postmunge by default
     - parameters should be passed to 'DPbn' transformation category from family tree
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: flip_prob for DPbn, upstream binary via bnry for others
   - inversion available: yes
 * DPod: applies an ordinal encoding (ord3) followed by a noise injection to train data which
@@ -3021,6 +3103,7 @@ on number of activations)
     - 'flip_prob' for percent of activation flips (defaults to 0.03), 
     - 'testnoise' defaults to False, when True noise is injected to test data in both automunge and postmunge by default
     - parameters should be passed to 'DPod' transformation category from family tree
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: flip_prob for DPod, upstream ordinal via ord3 for others
   - inversion available: yes
 * DPoh: applies an ordinal encoding (ord3) followed by a noise injection to train data which
@@ -3035,6 +3118,7 @@ on number of activations), followed by a one-hot encoding
     - 'flip_prob' for percent of activation flips (defaults to 0.03), 
     - 'testnoise' defaults to False, when True noise is injected to test data in both automunge and postmunge by default
     - parameters should be passed to 'DPo2' transformation category from family tree
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: flip_prob for DPod, upstream ordinal via ord3 and downstream onht for others
   - inversion available: yes
 * DP10: applies an ordinal encoding (ord3) followed by a noise injection to train data which
@@ -3049,6 +3133,7 @@ on number of activations), followed by a 1010 binary encoding
     - 'flip_prob' for percent of activation flips (defaults to 0.03), 
     - 'testnoise' defaults to False, when True noise is injected to test data in both automunge and postmunge by default
     - parameters should be passed to 'DPo3' transformation category from family tree
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: flip_prob for DPod, upstream ordinal via ord3 and downstream 1010 for others
   - inversion available: yes
 ### Misc. Functions
@@ -3077,7 +3162,8 @@ when applying TrainLabelFreqLevel to a numeric label set)
   - default infill: mode
   - default NArowtype: numeric
   - suffix appender: '_exc2'
-  - assignparam parameters accepted: none
+  - assignparam parameters accepted:
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: none
   - inversion available: yes
 * exc5/exc8: passes source column unaltered other than force to numeric, mode infill applied for non-integers
@@ -3085,7 +3171,8 @@ when applying TrainLabelFreqLevel to a numeric label set)
   - default infill: mode
   - default NArowtype: integer
   - suffix appender: '_exc5'
-  - assignparam parameters accepted: none
+  - assignparam parameters accepted:
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: none
   - inversion available: yes
 * eval: performs data property evaluation consistent with default automation to designated column
@@ -3110,7 +3197,8 @@ than once with different parameters. Does not prepare column for ML on it's own.
   - default infill: exclude
   - default NArowtype: exclude
   - suffix appender: '_copy'
-  - assignparam parameters accepted: 'suffix' for custom suffix appender
+  - assignparam parameters accepted: 
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: none
   - inversion available: yes
 * shfl: shuffles the values of a column based on passed randomseed (Note that returned data may not 
@@ -3120,7 +3208,8 @@ unless an additional transform is applied downstream.)
   - default infill: exclude
   - default NArowtype: justNAN
   - suffix appender: '_shfl'
-  - assignparam parameters accepted: none
+  - assignparam parameters accepted:
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: none
   - inversion available: no
 * NArw: produces a column of boolean identifiers for rows in the source
@@ -3131,7 +3220,8 @@ when NArw is passed as the root category it bases NArowtype on default.
   - default infill: not applicable
   - default NArowtype: justNaN
   - suffix appender: '_NArw'
-  - assignparam parameters accepted: none
+  - assignparam parameters accepted:
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: pct_NArw
   - inversion available: no
 * NAr2: produces a column of boolean identifiers for rows in the source
@@ -3140,7 +3230,8 @@ column with missing or improperly formatted values.
   - default infill: not applicable
   - default NArowtype: numeric
   - suffix appender: '_NArw'
-  - assignparam parameters accepted: none
+  - assignparam parameters accepted:
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: pct_NArw
   - inversion available: no
 * NAr3: produces a column of boolean identifiers for rows in the source
@@ -3149,7 +3240,8 @@ column with missing or improperly formatted values.
   - default infill: not applicable
   - default NArowtype: positivenumeric
   - suffix appender: '_NArw'
-  - assignparam parameters accepted: none
+  - assignparam parameters accepted:
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: pct_NArw
   - inversion available: no
 * NAr4: produces a column of boolean identifiers for rows in the source
@@ -3158,7 +3250,8 @@ column with missing or improperly formatted values.
   - default infill: not applicable
   - default NArowtype: nonnegativenumeric
   - suffix appender: '_NArw'
-  - assignparam parameters accepted: none
+  - assignparam parameters accepted:
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: pct_NArw
   - inversion available: no
 * NAr5: produces a column of boolean identifiers for rows in the source
@@ -3167,7 +3260,8 @@ column with missing or improperly formatted values.
   - default infill: not applicable
   - default NArowtype: integer
   - suffix appender: '_NArw'
-  - assignparam parameters accepted: none
+  - assignparam parameters accepted:
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: pct_NArw
   - inversion available: no
 ### Parsed Categoric Encodings
@@ -3302,6 +3396,7 @@ for identified overlap entries.
       (note search parameter list can included embedded lists of terms for 
       aggregated activations of terms in the sublist)
     - 'case': bool to indicate case sensitivity of search, defaults True
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: overlap_dict / splt_newcolumns_splt / minsplit
   - inversion available: yes with partial recovery
 * src2: comparable to srch but expected to be more efficient when target set has narrow range of entries
@@ -3313,6 +3408,7 @@ for identified overlap entries.
     - 'search': a list of strings, defaults as empty set
       (note search parameter list can included embedded lists of terms for 
       aggregated activations of terms in the sublist)
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: overlap_dict / splt_newcolumns_splt / minsplit
   - inversion available: yes with partial recovery
 * src3: comparable to src2 with additional support for test set entries not found in train set
@@ -3327,6 +3423,7 @@ for identified overlap entries. (Note for multiple activations encoding priority
       (note search parameter list can included embedded lists of terms for 
       aggregated activations of terms in the sublist)
     - 'case': bool to indicate case sensitivity of search, defaults True
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: overlap_dict / splt_newcolumns_splt / minsplit
   - inversion available: yes with partial recovery
 * nmrc/nmr2/nmr3: parses strings and returns any number groupings, prioritized by longest length
@@ -3334,7 +3431,8 @@ for identified overlap entries. (Note for multiple activations encoding priority
   - default infill: mean
   - default NArowtype: parsenumeric
   - suffix appender: '_nmrc'
-  - assignparam parameters accepted: none
+  - assignparam parameters accepted:
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: overlap_dict / mean / maximum / minimum
   - inversion available: yes with full recovery
 * nmcm/nmc2/nmc3: similar to nmrc, but recognizes numbers with commas, returns numbers stripped of commas
@@ -3342,7 +3440,8 @@ for identified overlap entries. (Note for multiple activations encoding priority
   - default infill: mean
   - default NArowtype: parsenumeric
   - suffix appender: '_nmcm'
-  - assignparam parameters accepted: none
+  - assignparam parameters accepted:
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: overlap_dict / mean / maximum / minimum
   - inversion available: yes with full recovery
 * nmEU/nmE2/nmE3: similar to nmcm, but recognizes numbers with period or space thousands deliminator and comma decimal
@@ -3350,7 +3449,8 @@ for identified overlap entries. (Note for multiple activations encoding priority
   - default infill: mean
   - default NArowtype: parsenumeric
   - suffix appender: '_nmEU'
-  - assignparam parameters accepted: none
+  - assignparam parameters accepted:
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: overlap_dict / mean / maximum / minimum
   - inversion available: yes with full recovery
 * strn: parses strings and returns any non-number groupings, prioritized by longest length
@@ -3358,7 +3458,8 @@ for identified overlap entries. (Note for multiple activations encoding priority
   - default infill: 'zzzinfill'
   - default NArowtype: justNaN
   - suffix appender: '_strn'
-  - assignparam parameters accepted: none
+  - assignparam parameters accepted:
+    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: overlap_dict
   - inversion available: pending
 ### More Efficient Parsed Categoric Encodings
