@@ -3154,3 +3154,20 @@ am.postmunge(postprocess_dict, df_test)
 - also found and fixed a small edge case for Binary dimensionality reduction when applied to an all numeric set (which is a pass through)
 - a few small cleanups and code comments for support function _postprocess_textsupport
 - update to the demonstration of custom postprocess function definition in read me
+
+6.19
+- new convention for the library
+- now every transform supports the 'suffix' parameter
+- which can be passed as a (traditionally 4 character) string
+- which will be appended on the returned column(s) with a leading underscore
+- previously this parameter was only supported in a selection of transforms
+- where without the parameter the suffix was a hard coded property of a transformation function
+- the benefit of the convention is to support use case where user wishes to redundantly perform the same transform on the same input column but with different parameters
+- as an example to conduct redundant bin aggregators with different boundaries
+- the only requirement to facilitate is that each of the redundant applications have the transformation function associated with a distinct transformation category and a distinct suffix parameter entry
+- where the suffix parameter could be part of the category's processdict definition by use of a defaultparams entry
+- such that each of the distinct transformation categories can be entered into the root category family tree
+- only exception to this convention is for the text and excl transforms which have some quirks with suffix conventions
+- updated the pwrs transform suffix convention to support suffix parameter
+- fixed validation function printout associated with new recorded_category processdict entry introduced in 6.16
+- found and fixed a small formatting snafu in splt and sbst transforms associated with int_headers option
