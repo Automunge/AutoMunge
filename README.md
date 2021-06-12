@@ -1482,12 +1482,12 @@ And could then be passed to automunge function call such as:
 ```
 evalcat = evalcat
 ```
-I recommend using the evalcategory function defined in master file as starting point. 
+I recommend using the \_evalcategory function defined in master file as starting point. 
 (Minus the 'self' parameter since defining external to class.) Note that the 
 parameters eval_ratio, numbercategoryheuristic, powertransform, and labels are passed as user 
-parameters in automunge(.) call and only used in evalcategory function, so if user wants 
+parameters in automunge(.) call and only used in \_evalcategory function, so if user wants 
 to repurpose them totally can do so. (They default to .5, 255, False, False.) Note evalcat 
-defaults to False to use built-in evalcategory function. Note evalcat will only be 
+defaults to False to use built-in \_evalcategory function. Note evalcat will only be 
 applied to columns not assigned in assigncat. (Note that columns assigned to 'eval' / 'ptfm'
 in assigncat will be passed to this function for evaluation with powertransform = False / True
 respectively.) Note that function currently uses python collections library and datetime as dt.
