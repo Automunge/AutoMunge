@@ -7378,12 +7378,17 @@ def process_mnm8(mdf_train, mdf_test, column, category, \
   #functions and later returned from automunge
   #and params are any column specific parameters to be passed by user in assignparam
   
-  #first, if this function accepts any parameters (it doesn't but just to demonstrate)
+  #first, if this function accepts any parameters 
   #we'll access those parameters from params, otherwise assign default values
-  #if 'parameter1' in params:
-  #  mnm8_parameter = params['parameter1']
-  #else:
-  #  mnm8_parameter = (some default value)
+  #we find it's good practice to make the suffix appender a passed parameter
+  if 'suffix' in params:
+    suffix = params['suffix']
+  else:
+    #generally we suggest matching the column suffix to the transformation category
+    suffix = 'mnm8'
+
+  #then we can initialize the variable used to store name of new column
+  suffixcolumn = column + '_' + suffix
   
   #we'll initialize an item to store results from a type of validation on copy operation
   #to detect suffix overlap error
@@ -7395,28 +7400,28 @@ def process_mnm8(mdf_train, mdf_test, column, category, \
   #the first copies parallel to the validation, the second is just the validation
   
   #mdf_train, suffixoverlap_results = \
-  #am._df_copy_train(mdf_train, column, column + '_mnm8', suffixoverlap_results)
+  #am._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results)
   
   #or to run validation independant of copy operation could also run
   #suffixoverlap_results = \
-  #am._df_check_suffixoverlap(mdf_train, [column + '_mnm8'], suffixoverlap_results)
+  #am._df_check_suffixoverlap(mdf_train, [suffixcolumn], suffixoverlap_results)
   #(using am. for externally defined functions or self. for internally defined)
   
-  #or just copy source column into new column
-  mdf_train[column + '_mnm8'] = mdf_train[column].copy()
-  mdf_test[column + '_mnm8'] = mdf_test[column].copy()
+  #or for quick and dirty just copy source column into new column
+  mdf_train[suffixcolumn] = mdf_train[column].copy()
+  mdf_test[suffixcolumn] = mdf_test[column].copy()
   
   #perform an initial (default) infill method, here we use mean as a plug, automunge
   #may separately perform a infill method per user specifications elsewhere
   #convert all values to either numeric or NaN
-  mdf_train[column + '_mnm8'] = pd.to_numeric(mdf_train[column + '_mnm8'], errors='coerce')
-  mdf_test[column + '_mnm8'] = pd.to_numeric(mdf_test[column + '_mnm8'], errors='coerce')
+  mdf_train[suffixcolumn] = pd.to_numeric(mdf_train[suffixcolumn], errors='coerce')
+  mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
 
   #if we want to collect any statistics for the driftreport we could do so prior
   #to transformations and save them in the normalization dictionary below with the
   #other normalization parameters, e.g.
-  min = mdf_train[column + '_mnm8'].min()
-  max = mdf_train[column + '_mnm8'].max()
+  min = mdf_train[suffixcolumn].min()
+  max = mdf_train[suffixcolumn].max()
   
   #Now we do the specifics of the processing function, here we're demonstrating
   #the min-max scaling method capping values at 0.001 and 0.999 quantiles
@@ -7424,41 +7429,41 @@ def process_mnm8(mdf_train, mdf_test, column, category, \
   #we'll do that first
   
   #get high quantile of training column for min-max scaling
-  quantilemax = mdf_train[column + '_mnm8'].quantile(.999)
+  quantilemax = mdf_train[suffixcolumn].quantile(.999)
   
   #outlier scenario for when data wasn't numeric (nan != nan)
   if quantilemax != quantilemax:
     quantilemax = 0
 
   #get low quantile of training column for min-max scaling
-  quantilemin = mdf_train[column + '_mnm8'].quantile(.001)
+  quantilemin = mdf_train[suffixcolumn].quantile(.001)
   
   if quantilemax != quantilemax:
     quantilemax = 0
 
   #replace values > quantilemax with quantilemax for both train and test data
-  mdf_train.loc[mdf_train[column + '_mnm8'] > quantilemax, (column + '_mnm8')] \
+  mdf_train.loc[mdf_train[suffixcolumn] > quantilemax, (suffixcolumn)] \
   = quantilemax
-  mdf_test.loc[mdf_train[column + '_mnm8'] > quantilemax, (column + '_mnm8')] \
+  mdf_test.loc[mdf_train[suffixcolumn] > quantilemax, (suffixcolumn)] \
   = quantilemax
   
   #replace values < quantilemin with quantilemin for both train and test data
-  mdf_train.loc[mdf_train[column + '_mnm8'] < quantilemin, (column + '_mnm8')] \
+  mdf_train.loc[mdf_train[suffixcolumn] < quantilemin, (suffixcolumn)] \
   = quantilemin
-  mdf_test.loc[mdf_train[column + '_mnm8'] < quantilemin, (column + '_mnm8')] \
+  mdf_test.loc[mdf_train[suffixcolumn] < quantilemin, (suffixcolumn)] \
   = quantilemin
 
 
   #note the infill method is now completed after the quantile evaluation / replacement
   #get mean of training data for infill
-  mean = mdf_train[column + '_mnm8'].mean()
+  mean = mdf_train[suffixcolumn].mean()
   
   if mean != mean:
     mean = 0
      
   #replace missing data with training set mean
-  mdf_train[column + '_mnm8'] = mdf_train[column + '_mnm8'].fillna(mean)
-  mdf_test[column + '_mnm8'] = mdf_test[column + '_mnm8'].fillna(mean)
+  mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(mean)
+  mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
     
   #this is to avoid outlier div by zero when max = min
   maxminusmin = quantilemax - quantilemin
@@ -7466,16 +7471,16 @@ def process_mnm8(mdf_train, mdf_test, column, category, \
     maxminusmin = 1
 
   #perform min-max scaling to train and test sets using values derived from train
-  mdf_train[column + '_mnm8'] = (mdf_train[column + '_mnm8'] - quantilemin) / \
+  mdf_train[suffixcolumn] = (mdf_train[suffixcolumn] - quantilemin) / \
                                 (maxminusmin)
-  mdf_test[column + '_mnm8'] = (mdf_test[column + '_mnm8'] - quantilemin) / \
+  mdf_test[suffixcolumn] = (mdf_test[suffixcolumn] - quantilemin) / \
                                (maxminusmin)
 
 
   #ok here's where we populate the data structures
 
   #create list of columns (here it will only be one column returned)
-  nmbrcolumns = [column + '_mnm8']
+  nmbrcolumns = [suffixcolumn]
   
   #The normalization dictionary is how we pass values between the "dualprocess"
   #function and the "postprocess" function. This is also where we save any metrics
@@ -7486,11 +7491,12 @@ def process_mnm8(mdf_train, mdf_test, column, category, \
   #note that if we're returning a multicolumn set we'll need one of these
   #for each column_dict entry populated below, using that column as the key
   #note any stats collected for driftreport are also saved here.
-  nmbrnormalization_dict = {column + '_mnm8' : {'quantilemin' : quantilemin, \
-                                                'quantilemax' : quantilemax, \
-                                                'mean' : mean, \
-                                                'minimum' : min, \
-                                                'maximum' : max}}
+  nmbrnormalization_dict = {suffixcolumn : {'quantilemin' : quantilemin, \
+                                            'quantilemax' : quantilemax, \
+                                            'mean' : mean, \
+                                            'minimum' : min, \
+                                            'maximum' : max, \
+                                            'suffix' : suffix}}
 						
   #as an asterisk, please note there are a small number of reserved normalization dicitonary key strings
   #documented in code base under _check_normalization_dict function
@@ -7549,23 +7555,23 @@ def process_mnm8(mdf_train, mdf_test, column, category, \
 #and test sets, we'll need to define a corresponding "postprocess" function
 #intended for use on just the test set
 
-def postprocess_mnm3(mdf_test, column, postprocess_dict, columnkey, params={}):
+def postprocess_mnm8(mdf_test, column, postprocess_dict, columnkey, params={}):
   #where mdf_test is a dataframe of the test set
   #column is the string of the column header
   #postprocess_dict is how we carry packets of data between the 
   #functions in automunge and postmunge
   #columnkey is a list of columns returned from all instances of this transformation function applied to same inputcolumn
   #and params are any column specific parameters to be passed by user in assignparam
-
-  #retrieve normalization parameters from postprocess_dict
   
-  #normkey used to retrieve the normalization dictionary 
+  #normkey used to retrieve the normalization dictionary entries
   normkey = False
   if len(columnkey) > 0:      
     normkey = columnkey[0]
           
   #normkey is False when process function returns empty set
   if normkey is not False:
+
+    #retrieve normalization parameters from postprocess_dict
 
     mean = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
@@ -7575,22 +7581,24 @@ def postprocess_mnm3(mdf_test, column, postprocess_dict, columnkey, params={}):
 
     quantilemax = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['quantilemax']
+
+    suffix = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
   
-    #(note that for cases where you might not know the suffix that was appended in advance,
-    #there are methods to retrieve a normkey using properties of data structures, contact
-    #the author and I can point you to them.)
+    #then recreate the new column title
+    suffixcolumn = column + '_' + suffix
 
     #copy original column for implementation
-    mdf_test[column + '_mnm8'] = mdf_test[column].copy()
+    mdf_test[suffixcolumn] = mdf_test[column].copy()
 
     #convert all values to either numeric or NaN
-    mdf_test[column + '_mnm8'] = pd.to_numeric(mdf_test[column + '_mnm8'], errors='coerce')
+    mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
 
     #get mean of training data
     mean = mean  
 
     #replace missing data with training set mean
-    mdf_test[column + '_mnm8'] = mdf_test[column + '_mnm8'].fillna(mean)
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
   
     #this is to avoid outlier div by zero when max = min
     maxminusmin = quantilemax - quantilemin
@@ -7598,7 +7606,7 @@ def postprocess_mnm3(mdf_test, column, postprocess_dict, columnkey, params={}):
       maxminusmin = 1
 
     #perform min-max scaling to test set using values from train
-    mdf_test[column + '_mnm8'] = (mdf_test[column + '_mnm8'] - quantilemin) / \
+    mdf_test[suffixcolumn] = (mdf_test[suffixcolumn] - quantilemin) / \
                                  (maxminusmin)
 
   #if returns an empty set we'll need to account for scenario where this transform selected as inplace operation
