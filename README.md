@@ -522,7 +522,7 @@ demonstrated with the pickle library above.
 A few useful entries in the postprocess_dict include:
 - postprocess_dict['finalcolumns_train']: list of returned column headers for train set including suffix appenders
 - postprocess_dict['columntype_report']: a report classifying the returned column types
-- postprocess_dict['column_map']:  a report mapping the input columns to their associated returned columns (excluding those consolidated as part of a dimensionality reduction). May be useful to inspect sets returned for a specific feature e.g. train[postprocess_dict['column_map']['<inputcolumn>']]
+- postprocess_dict['column_map']:  a report mapping the input columns to their associated returned columns (excluding those consolidated as part of a dimensionality reduction). May be useful to inspect sets returned for a specific feature e.g. train[postprocess_dict['column_map']['input_column_header']]
 - postprocess_dict['FS_sorted]: sorted results of feature importance evaluation if elected
 
 ...
