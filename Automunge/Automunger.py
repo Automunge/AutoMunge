@@ -3391,8 +3391,8 @@ class AutoMunge:
     # - 'concurrent_nmbr' for multicolumn sets with numerical entries
     # - 'exclude' for columns which will be excluded from ML infill
     # - '1010' for binary encoded columns, will be converted to onehot for ML
-    # - 'boolexclude' boolean set suitable for Binary transform but exluded from infill
-    # - 'ordlexclude' ordinal set exluded from infill
+    # - 'boolexclude' boolean set suitable for Binary transform but excluded from infill
+    # - 'ordlexclude' ordinal set excluded from infill
     # - 'totalexclude' sets excluded from all methods that inspect MLinfilltype, such as for excl category
 
     #at least one of sets of ('dualprocess' and 'postprocess') or ('singleprocess') needs to be specified
@@ -29347,6 +29347,15 @@ class AutoMunge:
 
         columnkeylist = \
         postprocess_dict['origcolumn'][postprocess_dict['column_dict'][finalcolumn2]['origcolumn']]['columnkeylist']
+  
+        #special case for excl category to remove suffix to align with returned form
+        if postprocess_dict['excl_suffix'] is False:
+          columnkeylist_copy = columnkeylist.copy()
+          for columnkeylistentry in columnkeylist_copy:
+            if columnkeylistentry in postprocess_dict['excl_columns_with_suffix']:
+              columnkeylist.remove(columnkeylistentry)
+#               columnkeylist.append(columnkeylistentry[:-5])
+              columnkeylist.insert(columnkeylist_copy.index(columnkeylistentry),columnkeylistentry[:-5])
 
         #if entry was already populated for multiple returned columns it overwrites it with same info
         column_map.update({postprocess_dict['column_dict'][finalcolumn2]['origcolumn'] : columnkeylist})
@@ -30893,7 +30902,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.19'
+    automungeversion = '6.20'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
