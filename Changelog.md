@@ -3171,3 +3171,14 @@ am.postmunge(postprocess_dict, df_test)
 - updated the pwrs transform suffix convention to support suffix parameter
 - fixed validation function printout associated with new recorded_category processdict entry introduced in 6.16
 - found and fixed a small formatting snafu in splt and sbst transforms associated with int_headers option
+
+6.20
+- ok just realized that the column_map had an edge case
+- associated with the excl transform
+- where excl is direct pass-through, and is unique in library for suffix convention
+- in that suffix is recorded in internal data structures to support operation
+- and then removed in the returned dataframe so that returned column title is consistent with recieved
+- which makes sense since excl is for use on direct pass-through with no infill
+- (where if excl suffix retention is desired in returned data to support data structure navigation the excl_suffix parameter can still be activated)
+- anyway point was that the column_map for excl columns was showing the internal representation with suffix even when returned data did not include
+- so new convention is that excl column suffix convention in column_map is consistent with returned data
