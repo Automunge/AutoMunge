@@ -3182,3 +3182,11 @@ am.postmunge(postprocess_dict, df_test)
 - (where if excl suffix retention is desired in returned data to support data structure navigation the excl_suffix parameter can still be activated)
 - anyway point was that the column_map for excl columns was showing the internal representation with suffix even when returned data did not include
 - so new convention is that excl column suffix convention in column_map is consistent with returned data
+
+6.21
+- sort of a quality control audit / additional walkthrough of edits from last week
+- found and fixed bug in pwr2 inversion function originating from new suffix convention from 6.19
+- everything else looked good
+- a few code comments added here and there
+- removed the '\' character in family tree definitions since shown in read me
+- and since went that far went ahead and conformed the process_dict intitializer to match
