@@ -54,6 +54,13 @@ import random
 #import datetime as dt
 import types
 
+#we also have imports for auto ML options in the support functions with their application
+#(this allows us to include the option without having their library install as a dependancy)
+# from autogluon import TabularPrediction as task
+# from flaml import AutoML
+# from catboost import CatBoostClassifier
+# from catboost import CatBoostRegressor
+
 class AutoMunge:
   
   def __init__(self):
@@ -61,7 +68,7 @@ class AutoMunge:
 
   def _assembletransformdict(self, binstransform, NArw_marker):
     '''
-    #assembles the range of transformations to be applied based on the evaluated \
+    #assembles the range of transformations to be applied based on the evaluated
     #category of data
     #the primitives are intented as follows:
     #_greatgrandparents_: supplemental column derived from source column, only applied
@@ -69,10 +76,10 @@ class AutoMunge:
     #_grandparents_: supplemental column derived from source column, only applied
     #to first generation
     #_parents_: replace source column, with downstream trasnforms performed
-    #_siblings_: supplemental column derived from source column, \
+    #_siblings_: supplemental column derived from source column,
     #with downstream transforms performed
     #_auntsuncles_: replace source column, without downstream transforms performed
-    #_cousins_: supplemental column derived from source column, \
+    #_cousins_: supplemental column derived from source column,
     #without downstream transforms performed
     #downstream transform primitives are:
     #_children_: becomes downstream parent
@@ -80,7 +87,7 @@ class AutoMunge:
     #_coworkers_: becomes a downstream auntsuncles
     #_friends_: become downstream cousins    
     
-    #for example, if we set 'bxcx' entry to have both 'bxcx' as parents and \
+    #for example, if we set 'bxcx' entry to have both 'bxcx' as parents and
     #'nmbr' as cousin, then the output would be column_nmbr, column_bxcx_nmbr
     #(because 'bxcx' has a downstream primitive entry of 'nmbr' as well 
     
@@ -103,3255 +110,3253 @@ class AutoMunge:
 
     #initialize trasnform_dict. Note in a future extension the range of categories
     #is intended to be built out
-    transform_dict.update({'nmbr' : {'parents'       : ['nmbr'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'nmbr' : {'parents'       : ['nmbr'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : [bint]}})
     
-    transform_dict.update({'dxdt' : {'parents'       : ['dxdt'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['retn'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['retn'], \
+    transform_dict.update({'dxdt' : {'parents'       : ['dxdt'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['retn'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['retn'],
                                      'friends'       : []}})
     
-    transform_dict.update({'d2dt' : {'parents'       : ['d2dt'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['retn'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : ['dxdt'], \
-                                     'coworkers'     : ['retn'], \
+    transform_dict.update({'d2dt' : {'parents'       : ['d2dt'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['retn'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : ['dxdt'],
+                                     'coworkers'     : ['retn'],
                                      'friends'       : []}})
     
-    transform_dict.update({'d3dt' : {'parents'       : ['d3dt'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['retn'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : ['d2dt'], \
-                                     'coworkers'     : ['retn'], \
+    transform_dict.update({'d3dt' : {'parents'       : ['d3dt'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['retn'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : ['d2dt'],
+                                     'coworkers'     : ['retn'],
                                      'friends'       : []}})
 
-    transform_dict.update({'d4dt' : {'parents'       : ['d4dt'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['retn'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : ['d3dt'], \
-                                     'coworkers'     : ['retn'], \
+    transform_dict.update({'d4dt' : {'parents'       : ['d4dt'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['retn'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : ['d3dt'],
+                                     'coworkers'     : ['retn'],
                                      'friends'       : []}})
 
-    transform_dict.update({'d5dt' : {'parents'       : ['d5dt'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['retn'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : ['d4dt'], \
-                                     'coworkers'     : ['retn'], \
+    transform_dict.update({'d5dt' : {'parents'       : ['d5dt'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['retn'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : ['d4dt'],
+                                     'coworkers'     : ['retn'],
                                      'friends'       : []}})
 
-    transform_dict.update({'d6dt' : {'parents'       : ['d6dt'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['retn'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : ['d5dt'], \
-                                     'coworkers'     : ['retn'], \
+    transform_dict.update({'d6dt' : {'parents'       : ['d6dt'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['retn'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : ['d5dt'],
+                                     'coworkers'     : ['retn'],
                                      'friends'       : []}})
     
-    transform_dict.update({'dxd2' : {'parents'       : ['dxd2'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['retn'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['retn'], \
+    transform_dict.update({'dxd2' : {'parents'       : ['dxd2'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['retn'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['retn'],
                                      'friends'       : []}})
     
-    transform_dict.update({'d2d2' : {'parents'       : ['d2d2'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['retn'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : ['dxd2'], \
-                                     'coworkers'     : ['retn'], \
+    transform_dict.update({'d2d2' : {'parents'       : ['d2d2'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['retn'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : ['dxd2'],
+                                     'coworkers'     : ['retn'],
                                      'friends'       : []}})
     
-    transform_dict.update({'d3d2' : {'parents'       : ['d3d2'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['retn'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : ['d2d2'], \
-                                     'coworkers'     : ['retn'], \
+    transform_dict.update({'d3d2' : {'parents'       : ['d3d2'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['retn'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : ['d2d2'],
+                                     'coworkers'     : ['retn'],
                                      'friends'       : []}})
 
-    transform_dict.update({'d4d2' : {'parents'       : ['d4d2'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['retn'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : ['d3d2'], \
-                                     'coworkers'     : ['retn'], \
+    transform_dict.update({'d4d2' : {'parents'       : ['d4d2'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['retn'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : ['d3d2'],
+                                     'coworkers'     : ['retn'],
                                      'friends'       : []}})
 
-    transform_dict.update({'d5d2' : {'parents'       : ['d5d2'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['retn'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : ['d4d2'], \
-                                     'coworkers'     : ['retn'], \
+    transform_dict.update({'d5d2' : {'parents'       : ['d5d2'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['retn'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : ['d4d2'],
+                                     'coworkers'     : ['retn'],
                                      'friends'       : []}})
 
-    transform_dict.update({'d6d2' : {'parents'       : ['d6d2'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['retn'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : ['d5d2'], \
-                                     'coworkers'     : ['retn'], \
+    transform_dict.update({'d6d2' : {'parents'       : ['d6d2'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['retn'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : ['d5d2'],
+                                     'coworkers'     : ['retn'],
                                      'friends'       : []}})
     
-    transform_dict.update({'nmdx' : {'parents'       : ['nmdx'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : ['dxdt'], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['retn'], \
+    transform_dict.update({'nmdx' : {'parents'       : ['nmdx'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : ['dxdt'],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['retn'],
                                      'friends'       : []}})
     
-    transform_dict.update({'nmd2' : {'parents'       : ['nmd2'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : ['d2dt'], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['retn'], \
+    transform_dict.update({'nmd2' : {'parents'       : ['nmd2'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : ['d2dt'],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['retn'],
                                      'friends'       : []}})
     
-    transform_dict.update({'nmd3' : {'parents'       : ['nmd3'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : ['d3dt'], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['retn'], \
+    transform_dict.update({'nmd3' : {'parents'       : ['nmd3'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : ['d3dt'],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['retn'],
                                      'friends'       : []}})
 
-    transform_dict.update({'nmd4' : {'parents'       : ['nmd4'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : ['d4dt'], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['retn'], \
+    transform_dict.update({'nmd4' : {'parents'       : ['nmd4'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : ['d4dt'],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['retn'],
                                      'friends'       : []}})
 
-    transform_dict.update({'nmd5' : {'parents'       : ['nmd5'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : ['d5dt'], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['retn'], \
+    transform_dict.update({'nmd5' : {'parents'       : ['nmd5'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : ['d5dt'],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['retn'],
                                      'friends'       : []}})
 
-    transform_dict.update({'nmd6' : {'parents'       : ['nmd6'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : ['d6dt'], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['retn'], \
+    transform_dict.update({'nmd6' : {'parents'       : ['nmd6'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : ['d6dt'],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['retn'],
                                      'friends'       : []}})
     
-    transform_dict.update({'mmdx' : {'parents'       : ['mmdx'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['nbr2'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['nbr2'], \
+    transform_dict.update({'mmdx' : {'parents'       : ['mmdx'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['nbr2'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['nbr2'],
                                      'friends'       : []}})
     
-    transform_dict.update({'mmd2' : {'parents'       : ['mmd2'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['nbr2'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : ['mmdx'], \
-                                     'coworkers'     : ['nbr2'], \
+    transform_dict.update({'mmd2' : {'parents'       : ['mmd2'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['nbr2'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : ['mmdx'],
+                                     'coworkers'     : ['nbr2'],
                                      'friends'       : []}})
     
-    transform_dict.update({'mmd3' : {'parents'       : ['mmd3'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['nbr2'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : ['mmd2'], \
-                                     'coworkers'     : ['nbr2'], \
+    transform_dict.update({'mmd3' : {'parents'       : ['mmd3'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['nbr2'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : ['mmd2'],
+                                     'coworkers'     : ['nbr2'],
                                      'friends'       : []}})
 
-    transform_dict.update({'mmd4' : {'parents'       : ['mmd4'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['nbr2'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : ['mmd3'], \
-                                     'coworkers'     : ['nbr2'], \
+    transform_dict.update({'mmd4' : {'parents'       : ['mmd4'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['nbr2'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : ['mmd3'],
+                                     'coworkers'     : ['nbr2'],
                                      'friends'       : []}})
 
-    transform_dict.update({'mmd5' : {'parents'       : ['mmd5'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['nbr2'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : ['mmd4'], \
-                                     'coworkers'     : ['nbr2'], \
+    transform_dict.update({'mmd5' : {'parents'       : ['mmd5'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['nbr2'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : ['mmd4'],
+                                     'coworkers'     : ['nbr2'],
                                      'friends'       : []}})
 
-    transform_dict.update({'mmd6' : {'parents'       : ['mmd6'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['nbr2'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : ['mmd5'], \
-                                     'coworkers'     : ['nbr2'], \
+    transform_dict.update({'mmd6' : {'parents'       : ['mmd6'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['nbr2'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : ['mmd5'],
+                                     'coworkers'     : ['nbr2'],
                                      'friends'       : []}})
     
-    transform_dict.update({'dddt' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['dddt', 'exc2'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'dddt' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['dddt', 'exc2'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'ddd2' : {'parents'       : ['ddd2'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['exc2'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : ['dddt'], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'ddd2' : {'parents'       : ['ddd2'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['exc2'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : ['dddt'],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'ddd3' : {'parents'       : ['ddd3'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['exc2'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : ['ddd2'], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'ddd3' : {'parents'       : ['ddd3'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['exc2'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : ['ddd2'],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
 
-    transform_dict.update({'ddd4' : {'parents'       : ['ddd4'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['exc2'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : ['ddd3'], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'ddd4' : {'parents'       : ['ddd4'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['exc2'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : ['ddd3'],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
 
-    transform_dict.update({'ddd5' : {'parents'       : ['ddd5'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['exc2'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : ['ddd4'], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'ddd5' : {'parents'       : ['ddd5'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['exc2'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : ['ddd4'],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
 
-    transform_dict.update({'ddd6' : {'parents'       : ['ddd6'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['exc2'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : ['ddd5'], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'ddd6' : {'parents'       : ['ddd6'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['exc2'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : ['ddd5'],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'dedt' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['dedt', 'exc2'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'dedt' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['dedt', 'exc2'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'ded2' : {'parents'       : ['ded2'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['exc2'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : ['dedt'], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'ded2' : {'parents'       : ['ded2'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['exc2'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : ['dedt'],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'ded3' : {'parents'       : ['ded3'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['exc2'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : ['ded2'], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'ded3' : {'parents'       : ['ded3'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['exc2'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : ['ded2'],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
 
-    transform_dict.update({'ded4' : {'parents'       : ['ded4'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['exc2'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : ['ded3'], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'ded4' : {'parents'       : ['ded4'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['exc2'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : ['ded3'],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
 
-    transform_dict.update({'ded5' : {'parents'       : ['ded5'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['exc2'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : ['ded4'], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'ded5' : {'parents'       : ['ded5'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['exc2'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : ['ded4'],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
 
-    transform_dict.update({'ded6' : {'parents'       : ['ded6'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['exc2'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : ['ded5'], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'ded6' : {'parents'       : ['ded6'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['exc2'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : ['ded5'],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
 
-    transform_dict.update({'shft' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['shft'], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'shft' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['shft'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
   
-    transform_dict.update({'shf2' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['shf2'], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'shf2' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['shf2'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'shf3' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['shf3'], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'shf3' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['shf3'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
 
-    transform_dict.update({'shf4' : {'parents'       : ['shf4'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['retn'], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['retn'], \
+    transform_dict.update({'shf4' : {'parents'       : ['shf4'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['retn'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['retn'],
                                      'friends'       : []}})
   
-    transform_dict.update({'shf5' : {'parents'       : ['shf5'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['retn'], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['retn'], \
+    transform_dict.update({'shf5' : {'parents'       : ['shf5'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['retn'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['retn'],
                                      'friends'       : []}})
     
-    transform_dict.update({'shf6' : {'parents'       : ['shf6'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['retn'], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['retn'], \
+    transform_dict.update({'shf6' : {'parents'       : ['shf6'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['retn'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['retn'],
                                      'friends'       : []}})
 
-    transform_dict.update({'shf7' : {'parents'       : ['shf4', 'shf5'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['retn'], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['retn'], \
+    transform_dict.update({'shf7' : {'parents'       : ['shf4', 'shf5'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['retn'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['retn'],
                                      'friends'       : []}})
     
-    transform_dict.update({'shf8' : {'parents'       : ['shf4', 'shf5', 'shf6'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['retn'], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['retn'], \
+    transform_dict.update({'shf8' : {'parents'       : ['shf4', 'shf5', 'shf6'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['retn'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['retn'],
                                      'friends'       : []}})
 
-    transform_dict.update({'bnry' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['bnry'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'bnry' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['bnry'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'bnr2' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['bnr2'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'bnr2' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['bnr2'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
 
-    transform_dict.update({'onht' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['onht'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'onht' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['onht'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'text' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['text'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'text' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['text'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'txt2' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['text'], \
-                                     'cousins'       : [NArw, 'splt'], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'txt2' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['text'],
+                                     'cousins'       : [NArw, 'splt'],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'txt3' : {'parents'       : ['txt3'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['text'], \
+    transform_dict.update({'txt3' : {'parents'       : ['txt3'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['text'],
                                      'friends'       : []}})
 
-    transform_dict.update({'smth' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['smth'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'smth' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['smth'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
   
-    transform_dict.update({'fsmh' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['fsmh'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'fsmh' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['fsmh'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
 
-    transform_dict.update({'lngt' : {'parents'       : ['lngt'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['mnmx'], \
+    transform_dict.update({'lngt' : {'parents'       : ['lngt'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['mnmx'],
                                      'friends'       : []}})
   
-    transform_dict.update({'lnlg' : {'parents'       : ['lnlg'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['log0'], \
+    transform_dict.update({'lnlg' : {'parents'       : ['lnlg'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['log0'],
                                      'friends'       : []}})
 
-    transform_dict.update({'UPCS' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['UPCS'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'UPCS' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['UPCS'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'Unht' : {'parents'       : ['Unht'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['onht'], \
+    transform_dict.update({'Unht' : {'parents'       : ['Unht'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['onht'],
                                      'friends'       : []}})
   
-    transform_dict.update({'Utxt' : {'parents'       : ['Utxt'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['text'], \
+    transform_dict.update({'Utxt' : {'parents'       : ['Utxt'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['text'],
                                      'friends'       : []}})
     
-    transform_dict.update({'Utx2' : {'parents'       : ['Utx2'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['text'], \
+    transform_dict.update({'Utx2' : {'parents'       : ['Utx2'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['text'],
                                      'friends'       : ['splt']}})
 
-    transform_dict.update({'Utx3' : {'parents'       : ['Utx3'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : ['txt3'], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'Utx3' : {'parents'       : ['Utx3'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : ['txt3'],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'Ucct' : {'parents'       : ['Ucct'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['ucct', 'ord3'], \
+    transform_dict.update({'Ucct' : {'parents'       : ['Ucct'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['ucct', 'ord3'],
                                      'friends'       : []}})
     
-    transform_dict.update({'Uord' : {'parents'       : ['Uord'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['ordl'], \
+    transform_dict.update({'Uord' : {'parents'       : ['Uord'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['ordl'],
                                      'friends'       : []}})
         
-    transform_dict.update({'Uor2' : {'parents'       : ['Uor2'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : ['ord2'], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'Uor2' : {'parents'       : ['Uor2'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : ['ord2'],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'Uor3' : {'parents'       : ['Uor3'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['ord3'], \
+    transform_dict.update({'Uor3' : {'parents'       : ['Uor3'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['ord3'],
                                      'friends'       : []}})
     
-    transform_dict.update({'Uor6' : {'parents'       : ['Uor6'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : ['spl6'], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['ord3'], \
+    transform_dict.update({'Uor6' : {'parents'       : ['Uor6'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : ['spl6'],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['ord3'],
                                      'friends'       : []}})
     
-    transform_dict.update({'U101' : {'parents'       : ['U101'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['1010'], \
+    transform_dict.update({'U101' : {'parents'       : ['U101'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['1010'],
                                      'friends'       : []}})
     
-    transform_dict.update({'splt' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['splt'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'splt' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['splt'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'spl2' : {'parents'       : ['spl2'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['ord3'], \
+    transform_dict.update({'spl2' : {'parents'       : ['spl2'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['ord3'],
                                      'friends'       : []}})
     
-    transform_dict.update({'spl5' : {'parents'       : ['spl5'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['ord3'], \
+    transform_dict.update({'spl5' : {'parents'       : ['spl5'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['ord3'],
                                      'friends'       : []}})
     
-    transform_dict.update({'spl6' : {'parents'       : ['spl6'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : ['splt'], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'spl6' : {'parents'       : ['spl6'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : ['splt'],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : ['ord3']}})
     
-    transform_dict.update({'spl7' : {'parents'       : ['spl7'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['ord3'], \
+    transform_dict.update({'spl7' : {'parents'       : ['spl7'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['ord3'],
                                      'friends'       : []}})
 
-    transform_dict.update({'spl8' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['spl8'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'spl8' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['spl8'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
 
-    transform_dict.update({'spl9' : {'parents'       : ['spl9'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['ord3'], \
+    transform_dict.update({'spl9' : {'parents'       : ['spl9'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['ord3'],
                                      'friends'       : []}})
 
-    transform_dict.update({'sp10' : {'parents'       : ['sp10'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['ord3'], \
+    transform_dict.update({'sp10' : {'parents'       : ['sp10'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['ord3'],
                                      'friends'       : []}})
     
-    
-    transform_dict.update({'sp11' : {'parents'       : ['sp11'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : ['spl5'], \
-                                     'coworkers'     : ['ord3'], \
+    transform_dict.update({'sp11' : {'parents'       : ['sp11'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : ['spl5'],
+                                     'coworkers'     : ['ord3'],
                                      'friends'       : []}})
     
-    transform_dict.update({'sp12' : {'parents'       : ['sp12'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : ['sp11'], \
-                                     'coworkers'     : ['ord3'], \
+    transform_dict.update({'sp12' : {'parents'       : ['sp12'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : ['sp11'],
+                                     'coworkers'     : ['ord3'],
                                      'friends'       : []}})
     
-    transform_dict.update({'sp13' : {'parents'       : ['sp13'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : ['sp10'], \
-                                     'coworkers'     : ['ord3'], \
+    transform_dict.update({'sp13' : {'parents'       : ['sp13'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : ['sp10'],
+                                     'coworkers'     : ['ord3'],
                                      'friends'       : []}})
     
-    transform_dict.update({'sp14' : {'parents'       : ['sp14'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : ['sp13'], \
-                                     'coworkers'     : ['ord3'], \
+    transform_dict.update({'sp14' : {'parents'       : ['sp14'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : ['sp13'],
+                                     'coworkers'     : ['ord3'],
                                      'friends'       : []}})
     
-    transform_dict.update({'sp15' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['sp15'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'sp15' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['sp15'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
   
-    transform_dict.update({'sp16' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['sp16'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'sp16' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['sp16'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'sp17' : {'parents'       : ['sp17'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : ['spl5'], \
-                                     'coworkers'     : ['ord3'], \
+    transform_dict.update({'sp17' : {'parents'       : ['sp17'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : ['spl5'],
+                                     'coworkers'     : ['ord3'],
                                      'friends'       : []}})
     
-    transform_dict.update({'sp18' : {'parents'       : ['sp18'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : ['sp17'], \
-                                     'coworkers'     : ['ord3'], \
+    transform_dict.update({'sp18' : {'parents'       : ['sp18'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : ['sp17'],
+                                     'coworkers'     : ['ord3'],
                                      'friends'       : []}})
 
-    transform_dict.update({'sp19' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['sp19'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'sp19' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['sp19'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
 
-    transform_dict.update({'sp20' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['sp20'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'sp20' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['sp20'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
 
-    transform_dict.update({'sbst' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['sbst'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'sbst' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['sbst'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
 
-    transform_dict.update({'sbs2' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['sbs2'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'sbs2' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['sbs2'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
 
-    transform_dict.update({'sbs3' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['sbs3'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'sbs3' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['sbs3'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
 
-    transform_dict.update({'sbs4' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['sbs4'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'sbs4' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['sbs4'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
 
-    transform_dict.update({'hash' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['hash'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'hash' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['hash'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
 
-    transform_dict.update({'hsh2' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['hsh2'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'hsh2' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['hsh2'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'hs10' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['hs10'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'hs10' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['hs10'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'Uhsh' : {'parents'       : ['Uhsh'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['hash'], \
+    transform_dict.update({'Uhsh' : {'parents'       : ['Uhsh'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['hash'],
                                      'friends'       : []}})
 
-    transform_dict.update({'Uhs2' : {'parents'       : ['Uhs2'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['hsh2'], \
+    transform_dict.update({'Uhs2' : {'parents'       : ['Uhs2'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['hsh2'],
                                      'friends'       : []}})
     
-    transform_dict.update({'Uh10' : {'parents'       : ['Uh10'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['hs10'], \
+    transform_dict.update({'Uh10' : {'parents'       : ['Uh10'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['hs10'],
                                      'friends'       : []}})
     
-    transform_dict.update({'srch' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['srch'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'srch' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['srch'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
   
-    transform_dict.update({'src2' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['src2'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'src2' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['src2'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'src3' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['src3'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'src3' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['src3'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'src4' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['src4'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'src4' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['src4'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'aggt' : {'parents'       : ['aggt'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['ord3'], \
+    transform_dict.update({'aggt' : {'parents'       : ['aggt'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['ord3'],
                                      'friends'       : []}})
     
-    transform_dict.update({'strn' : {'parents'       : ['strn'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['ord3'], \
+    transform_dict.update({'strn' : {'parents'       : ['strn'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['ord3'],
                                      'friends'       : []}})
 
-  
-    transform_dict.update({'strg' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['strg'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'strg' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['strg'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'nmrc' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['nmrc'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'nmrc' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['nmrc'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
   
-    transform_dict.update({'nmr2' : {'parents'       : ['nmr2'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : ['nmbr'], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'nmr2' : {'parents'       : ['nmr2'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : ['nmbr'],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'nmr3' : {'parents'       : ['nmr3'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : ['mnmx'], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'nmr3' : {'parents'       : ['nmr3'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : ['mnmx'],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
 
-    transform_dict.update({'nmr4' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['nmr4'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'nmr4' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['nmr4'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
   
-    transform_dict.update({'nmr5' : {'parents'       : ['nmr5'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : ['nmbr'], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'nmr5' : {'parents'       : ['nmr5'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : ['nmbr'],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'nmr6' : {'parents'       : ['nmr6'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : ['mnmx'], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'nmr6' : {'parents'       : ['nmr6'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : ['mnmx'],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'nmr7' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['nmr7'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'nmr7' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['nmr7'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
   
-    transform_dict.update({'nmr8' : {'parents'       : ['nmr8'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : ['nmbr'], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'nmr8' : {'parents'       : ['nmr8'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : ['nmbr'],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'nmr9' : {'parents'       : ['nmr9'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : ['mnmx'], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'nmr9' : {'parents'       : ['nmr9'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : ['mnmx'],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'nmcm' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['nmcm'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'nmcm' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['nmcm'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
   
-    transform_dict.update({'nmc2' : {'parents'       : ['nmc2'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : ['nmbr'], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'nmc2' : {'parents'       : ['nmc2'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : ['nmbr'],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'nmc3' : {'parents'       : ['nmc3'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : ['mnmx'], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'nmc3' : {'parents'       : ['nmc3'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : ['mnmx'],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
 
-    transform_dict.update({'nmc4' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['nmc4'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'nmc4' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['nmc4'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
   
-    transform_dict.update({'nmc5' : {'parents'       : ['nmc5'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : ['nmbr'], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'nmc5' : {'parents'       : ['nmc5'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : ['nmbr'],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'nmc6' : {'parents'       : ['nmc6'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : ['mnmx'], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'nmc6' : {'parents'       : ['nmc6'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : ['mnmx'],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
 
-    transform_dict.update({'nmc7' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['nmc7'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'nmc7' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['nmc7'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
   
-    transform_dict.update({'nmc8' : {'parents'       : ['nmc8'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : ['nmbr'], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'nmc8' : {'parents'       : ['nmc8'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : ['nmbr'],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'nmc9' : {'parents'       : ['nmc9'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : ['mnmx'], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'nmc9' : {'parents'       : ['nmc9'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : ['mnmx'],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'nmEU' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['nmEU'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'nmEU' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['nmEU'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
   
-    transform_dict.update({'nmE2' : {'parents'       : ['nmE2'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : ['nmbr'], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'nmE2' : {'parents'       : ['nmE2'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : ['nmbr'],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'nmE3' : {'parents'       : ['nmE3'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : ['mnmx'], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'nmE3' : {'parents'       : ['nmE3'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : ['mnmx'],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'nmE4' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['nmE4'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'nmE4' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['nmE4'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
   
-    transform_dict.update({'nmE5' : {'parents'       : ['nmE5'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : ['nmbr'], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'nmE5' : {'parents'       : ['nmE5'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : ['nmbr'],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'nmE6' : {'parents'       : ['nmE6'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : ['mnmx'], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'nmE6' : {'parents'       : ['nmE6'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : ['mnmx'],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'nmE7' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['nmE7'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'nmE7' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['nmE7'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
   
-    transform_dict.update({'nmE8' : {'parents'       : ['nmE8'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : ['nmbr'], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'nmE8' : {'parents'       : ['nmE8'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : ['nmbr'],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'nmE9' : {'parents'       : ['nmE9'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : ['mnmx'], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'nmE9' : {'parents'       : ['nmE9'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : ['mnmx'],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'ors7' : {'parents'       : ['spl6', 'nmr2'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['ord3'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'ors7' : {'parents'       : ['spl6', 'nmr2'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['ord3'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'ors5' : {'parents'       : ['spl5'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['ord3'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'ors5' : {'parents'       : ['spl5'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['ord3'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'ors6' : {'parents'       : ['spl6'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['ord3'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'ors6' : {'parents'       : ['spl6'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['ord3'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'ordl' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['ordl'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'ordl' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['ordl'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
         
-    transform_dict.update({'ord2' : {'parents'       : ['ord2'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['mnmx'], \
+    transform_dict.update({'ord2' : {'parents'       : ['ord2'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['mnmx'],
                                      'friends'       : []}})
     
-    transform_dict.update({'ord3' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['ord3'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'ord3' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['ord3'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
 
-    transform_dict.update({'ord5' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['ord5'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'ord5' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['ord5'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
 
-    transform_dict.update({'maxb' : {'parents'       : ['or3b'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'maxb' : {'parents'       : ['or3b'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
   
-    transform_dict.update({'or3b' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['or3b'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['maxb'], \
+    transform_dict.update({'or3b' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['or3b'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['maxb'],
                                      'friends'       : []}})
   
-    transform_dict.update({'matx' : {'parents'       : ['or3c'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['onht'], \
+    transform_dict.update({'matx' : {'parents'       : ['or3c'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['onht'],
                                      'friends'       : []}})
     
-    transform_dict.update({'or3c' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['or3c'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : ['matx'], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'or3c' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['or3c'],
+                                     'cousins'       : [NArw],
+                                     'children'      : ['matx'],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'ma10' : {'parents'       : ['or3d'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['1010'], \
+    transform_dict.update({'ma10' : {'parents'       : ['or3d'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['1010'],
                                      'friends'       : []}})
     
-    transform_dict.update({'or3d' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['or3d'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : ['ma10'], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'or3d' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['or3d'],
+                                     'cousins'       : [NArw],
+                                     'children'      : ['ma10'],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'ucct' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['ucct'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'ucct' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['ucct'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
         
-    transform_dict.update({'ord4' : {'parents'       : ['ord4'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['mnmx'], \
+    transform_dict.update({'ord4' : {'parents'       : ['ord4'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['mnmx'],
                                      'friends'       : []}})
     
-    transform_dict.update({'ors2' : {'parents'       : ['spl2'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['ord3'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'ors2' : {'parents'       : ['spl2'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['ord3'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'or10' : {'parents'       : ['ord4'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['1010'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['mnmx'], \
+    transform_dict.update({'or10' : {'parents'       : ['ord4'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['1010'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['mnmx'],
                                      'friends'       : []}})
     
-    transform_dict.update({'or11' : {'parents'       : ['sp11'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['1010'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'or11' : {'parents'       : ['sp11'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['1010'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
   
-    transform_dict.update({'or12' : {'parents'       : ['nmr2'], \
-                                     'siblings'      : ['sp11'], \
-                                     'auntsuncles'   : ['1010'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'or12' : {'parents'       : ['nmr2'],
+                                     'siblings'      : ['sp11'],
+                                     'auntsuncles'   : ['1010'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'or13' : {'parents'       : ['sp12'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['1010'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'or13' : {'parents'       : ['sp12'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['1010'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'or14' : {'parents'       : ['nmr2'], \
-                                     'siblings'      : ['sp12'], \
-                                     'auntsuncles'   : ['1010'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'or14' : {'parents'       : ['nmr2'],
+                                     'siblings'      : ['sp12'],
+                                     'auntsuncles'   : ['1010'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
 
-    transform_dict.update({'or15' : {'parents'       : ['or15'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : ['sp13'], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['1010'], \
+    transform_dict.update({'or15' : {'parents'       : ['or15'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : ['sp13'],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['1010'],
                                      'friends'       : []}})
   
-    transform_dict.update({'or16' : {'parents'       : ['or16'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : ['nmr2'], \
-                                     'niecesnephews' : ['sp13'], \
-                                     'coworkers'     : ['1010'], \
+    transform_dict.update({'or16' : {'parents'       : ['or16'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : ['nmr2'],
+                                     'niecesnephews' : ['sp13'],
+                                     'coworkers'     : ['1010'],
                                      'friends'       : []}})
     
-    transform_dict.update({'or17' : {'parents'       : ['or17'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : ['sp14'], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['1010'], \
+    transform_dict.update({'or17' : {'parents'       : ['or17'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : ['sp14'],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['1010'],
                                      'friends'       : []}})
     
-    transform_dict.update({'or18' : {'parents'       : ['or18'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : ['nmr2'], \
-                                     'niecesnephews' : ['sp14'], \
-                                     'coworkers'     : ['1010'], \
+    transform_dict.update({'or18' : {'parents'       : ['or18'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : ['nmr2'],
+                                     'niecesnephews' : ['sp14'],
+                                     'coworkers'     : ['1010'],
                                      'friends'       : []}})
 
-    transform_dict.update({'or19' : {'parents'       : ['or19'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : ['nmc8'], \
-                                     'niecesnephews' : ['sp13'], \
-                                     'coworkers'     : ['1010'], \
+    transform_dict.update({'or19' : {'parents'       : ['or19'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : ['nmc8'],
+                                     'niecesnephews' : ['sp13'],
+                                     'coworkers'     : ['1010'],
                                      'friends'       : []}})
     
-    transform_dict.update({'or20' : {'parents'       : ['or20'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : ['nmc8'], \
-                                     'niecesnephews' : ['sp14'], \
-                                     'coworkers'     : ['1010'], \
+    transform_dict.update({'or20' : {'parents'       : ['or20'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : ['nmc8'],
+                                     'niecesnephews' : ['sp14'],
+                                     'coworkers'     : ['1010'],
                                      'friends'       : []}})
     
-    transform_dict.update({'or21' : {'parents'       : ['or21'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : ['nmc8'], \
-                                     'niecesnephews' : ['sp17'], \
-                                     'coworkers'     : ['1010'], \
+    transform_dict.update({'or21' : {'parents'       : ['or21'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : ['nmc8'],
+                                     'niecesnephews' : ['sp17'],
+                                     'coworkers'     : ['1010'],
                                      'friends'       : []}})
     
-    transform_dict.update({'or22' : {'parents'       : ['or22'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : ['nmc8'], \
-                                     'niecesnephews' : ['sp18'], \
-                                     'coworkers'     : ['1010'], \
+    transform_dict.update({'or22' : {'parents'       : ['or22'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : ['nmc8'],
+                                     'niecesnephews' : ['sp18'],
+                                     'coworkers'     : ['1010'],
                                      'friends'       : []}})
 
-    transform_dict.update({'or23' : {'parents'       : ['or23'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['nmcm', 'sp19', 'ord3'], \
+    transform_dict.update({'or23' : {'parents'       : ['or23'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['nmcm', 'sp19', 'ord3'],
                                      'friends'       : []}})
     
-    transform_dict.update({'om10' : {'parents'       : ['ord4'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['1010', 'mnmx'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['mnmx'], \
+    transform_dict.update({'om10' : {'parents'       : ['ord4'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['1010', 'mnmx'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['mnmx'],
                                      'friends'       : []}})
 
-    transform_dict.update({'mmor' : {'parents'       : ['ord4'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['mnmx'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'mmor' : {'parents'       : ['ord4'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['mnmx'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'1010' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['1010'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'1010' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['1010'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
 
-    transform_dict.update({'null' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['null'], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'null' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['null'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'NArw' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['NArw'], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'NArw' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['NArw'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'NAr2' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['NAr2'], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'NAr2' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['NAr2'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'NAr3' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['NAr3'], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'NAr3' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['NAr3'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'NAr4' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['NAr4'], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'NAr4' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['NAr4'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'NAr5' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['NAr5'], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'NAr5' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['NAr5'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'nbr2' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['nmbr'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'nbr2' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['nmbr'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'nbr3' : {'parents'       : ['nbr3'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'nbr3' : {'parents'       : ['nbr3'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : ['bint']}})
     
-    transform_dict.update({'MADn' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['MADn'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'MADn' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['MADn'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'MAD2' : {'parents'       : ['MAD2'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : ['nmbr'], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'MAD2' : {'parents'       : ['MAD2'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : ['nmbr'],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'MAD3' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['MAD3'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'MAD3' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['MAD3'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'mnmx' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['mnmx'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'mnmx' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['mnmx'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'mnm2' : {'parents'       : ['nmbr'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['mnmx'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'mnm2' : {'parents'       : ['nmbr'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['mnmx'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'mnm3' : {'parents'       : ['nmbr'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['mnm3'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'mnm3' : {'parents'       : ['nmbr'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['mnm3'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'mnm4' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['mnm3'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'mnm4' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['mnm3'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'mnm5' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['mnmx'], \
-                                     'cousins'       : ['nmbr', NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'mnm5' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['mnmx'],
+                                     'cousins'       : ['nmbr', NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'mnm6' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['mnm6'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'mnm6' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['mnm6'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'mnm7' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['mnmx', 'bins'], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
-                                     'friends'       : []}})
-
-    transform_dict.update({'mxab' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['mxab'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
-                                     'friends'       : []}})
-    
-    transform_dict.update({'retn' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['retn'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'mnm7' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['mnmx', 'bins'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
 
-    transform_dict.update({'rtbn' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['retn', 'bsor'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'mxab' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['mxab'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+    
+    transform_dict.update({'retn' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['retn'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
 
-    transform_dict.update({'rtb2' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['retn', 'bins'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'rtbn' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['retn', 'bsor'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
 
-    transform_dict.update({'mean' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['mean'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
-                                     'friends'       : []}})
-    
-    transform_dict.update({'mea2' : {'parents'       : ['nmbr'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['mean'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
-                                     'friends'       : []}})
-    
-    transform_dict.update({'mea3' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['mean', 'bins'], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'rtb2' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['retn', 'bins'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
 
-    transform_dict.update({'tmzn' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['tmzn'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'mean' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['mean'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+    
+    transform_dict.update({'mea2' : {'parents'       : ['nmbr'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['mean'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+    
+    transform_dict.update({'mea3' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['mean', 'bins'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
 
-    transform_dict.update({'date' : {'parents'       : ['date'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['year', 'mnth', 'days', 'hour', 'mint', 'scnd'], \
-                                     'friends'       : []}})
-  
-    transform_dict.update({'dat2' : {'parents'       : ['dat2'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['bshr', 'wkdy', 'hldy'], \
-                                     'friends'       : []}})
-    
-    transform_dict.update({'dat3' : {'parents'       : ['dat3'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['year', 'mnsn', 'mncs', 'dysn', 'dycs', 'hrsn', 'hrcs', 'misn', 'mics', 'scsn', 'sccs'], \
-                                     'friends'       : []}})
-    
-    transform_dict.update({'dat4' : {'parents'       : ['dat4'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['year', 'mdsn', 'mdcs', 'hmss', 'hmsc'], \
-                                     'friends'       : []}})
-    
-    transform_dict.update({'dat5' : {'parents'       : ['dat5'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['year', 'mdsn', 'mdcs', 'dysn', 'dycs', 'hmss', 'hmsc'], \
-                                     'friends'       : []}})
-    
-    transform_dict.update({'dat6' : {'parents'       : ['dat6'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['year', 'mdsn', 'mdcs', 'hmss', 'hmsc', 'bshr', 'wkdy', 'hldy'], \
-                                     'friends'       : []}})
-    
-    transform_dict.update({'year' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['year'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
-                                     'friends'       : []}})
-  
-    transform_dict.update({'yea2' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['year', 'yrsn', 'yrcs', 'mdsn', 'mdcs'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'tmzn' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['tmzn'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
 
-    transform_dict.update({'yrcs' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['yrcs'], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
-                                     'friends'       : []}})
-    
-    transform_dict.update({'yrsn' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['yrsn'], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
-                                     'friends'       : []}})
-    
-    transform_dict.update({'mnth' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['mnth'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'date' : {'parents'       : ['date'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['year', 'mnth', 'days', 'hour', 'mint', 'scnd'],
                                      'friends'       : []}})
   
-    transform_dict.update({'mnt2' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['mnsn', 'mncs'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'dat2' : {'parents'       : ['dat2'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['bshr', 'wkdy', 'hldy'],
                                      'friends'       : []}})
     
-    transform_dict.update({'mnt3' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['mnsn', 'mncs', 'dysn', 'dycs', 'hrsn', 'hrcs', 'misn', 'mics', 'scsn', 'sccs'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'dat3' : {'parents'       : ['dat3'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['year', 'mnsn', 'mncs', 'dysn', 'dycs', 'hrsn', 'hrcs', 'misn', 'mics', 'scsn', 'sccs'],
                                      'friends'       : []}})
     
-    transform_dict.update({'mnt4' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['mdsn', 'mdcs'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'dat4' : {'parents'       : ['dat4'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['year', 'mdsn', 'mdcs', 'hmss', 'hmsc'],
                                      'friends'       : []}})
     
-    transform_dict.update({'mnt5' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['mdsn', 'mdcs', 'hmss', 'hmsc'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'dat5' : {'parents'       : ['dat5'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['year', 'mdsn', 'mdcs', 'dysn', 'dycs', 'hmss', 'hmsc'],
                                      'friends'       : []}})
     
-    transform_dict.update({'mnt6' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['mdsn', 'mdcs', 'dysn', 'dycs', 'hmss', 'hmsc'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'dat6' : {'parents'       : ['dat6'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['year', 'mdsn', 'mdcs', 'hmss', 'hmsc', 'bshr', 'wkdy', 'hldy'],
                                      'friends'       : []}})
     
-    transform_dict.update({'mnsn' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['mnsn'], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'year' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['year'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
-    
-    transform_dict.update({'mncs' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['mncs'], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
-                                     'friends'       : []}})
-    
-    transform_dict.update({'mdsn' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['mdsn'], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
-                                     'friends'       : []}})
-    
-    transform_dict.update({'mdcs' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['mdcs'], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+  
+    transform_dict.update({'yea2' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['year', 'yrsn', 'yrcs', 'mdsn', 'mdcs'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
 
-    transform_dict.update({'days' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['days'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'yrcs' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['yrcs'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+    
+    transform_dict.update({'yrsn' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['yrsn'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+    
+    transform_dict.update({'mnth' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['mnth'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
   
-    transform_dict.update({'day2' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['dysn', 'dycs'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'mnt2' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['mnsn', 'mncs'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'day3' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['dysn', 'dycs', 'hrsn', 'hrcs', 'misn', 'mics', 'scsn', 'sccs'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'mnt3' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['mnsn', 'mncs', 'dysn', 'dycs', 'hrsn', 'hrcs', 'misn', 'mics', 'scsn', 'sccs'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'day4' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['dhms', 'dhmc'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'mnt4' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['mdsn', 'mdcs'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'day5' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['dhms', 'dhmc', 'hmss', 'hmsc'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'mnt5' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['mdsn', 'mdcs', 'hmss', 'hmsc'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'dysn' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['dysn'], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'mnt6' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['mdsn', 'mdcs', 'dysn', 'dycs', 'hmss', 'hmsc'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'dycs' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['dycs'], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'mnsn' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['mnsn'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'dhms' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['dhms'], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'mncs' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['mncs'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'dhmc' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['dhmc'], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'mdsn' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['mdsn'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'hour' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['hour'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
-                                     'friends'       : []}})
-  
-    transform_dict.update({'hrs2' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['hrsn', 'hrcs'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
-                                     'friends'       : []}})
-    
-    transform_dict.update({'hrs3' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['hrsn', 'hrcs', 'misn', 'mics', 'scsn', 'sccs'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
-                                     'friends'       : []}})
-    
-    transform_dict.update({'hrs4' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['hmss', 'hmsc'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
-                                     'friends'       : []}})
-    
-    transform_dict.update({'hrsn' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['hrsn'], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
-                                     'friends'       : []}})
-    
-    transform_dict.update({'hrcs' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['hrcs'], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
-                                     'friends'       : []}})
-    
-    transform_dict.update({'hmss' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['hmss'], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
-                                     'friends'       : []}})
-    
-    transform_dict.update({'hmsc' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['hmsc'], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
-                                     'friends'       : []}})
-    
-    transform_dict.update({'mint' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['mint'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
-                                     'friends'       : []}})
-  
-    transform_dict.update({'min2' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['misn', 'mics'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
-                                     'friends'       : []}})
-    
-    transform_dict.update({'min3' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['misn', 'mics', 'scsn', 'sccs'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
-                                     'friends'       : []}})
-    
-    transform_dict.update({'min4' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['mssn', 'mscs'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
-                                     'friends'       : []}})
-    
-    transform_dict.update({'misn' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['misn'], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
-                                     'friends'       : []}})
-    
-    transform_dict.update({'mics' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['mics'], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
-                                     'friends'       : []}})
-    
-    transform_dict.update({'mssn' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['mssn'], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
-                                     'friends'       : []}})
-    
-    transform_dict.update({'mscs' : {'parents'       : [], \
-                                     'siblings': [], \
-                                     'auntsuncles'   : ['mscs'], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'mdcs' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['mdcs'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
 
-    transform_dict.update({'scnd' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['scnd'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'days' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['days'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
   
-    transform_dict.update({'scn2' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['scsn', 'sccs'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'day2' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['dysn', 'dycs'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'scsn' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['scsn'], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'day3' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['dysn', 'dycs', 'hrsn', 'hrcs', 'misn', 'mics', 'scsn', 'sccs'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'sccs' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['sccs'], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'day4' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['dhms', 'dhmc'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'bxcx' : {'parents'       : ['bxcx'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : ['nmbr'], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'day5' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['dhms', 'dhmc', 'hmss', 'hmsc'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'bxc2' : {'parents'       : ['bxc2'], \
-                                     'siblings'      : ['nmbr'], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : ['nmbr'], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'dysn' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['dysn'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'bxc3' : {'parents'       : ['bxc3'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : ['nmbr'], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'dycs' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['dycs'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'bxc4' : {'parents'       : ['bxc4'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['nbr2'], \
+    transform_dict.update({'dhms' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['dhms'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+    
+    transform_dict.update({'dhmc' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['dhmc'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+    
+    transform_dict.update({'hour' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['hour'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+  
+    transform_dict.update({'hrs2' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['hrsn', 'hrcs'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+    
+    transform_dict.update({'hrs3' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['hrsn', 'hrcs', 'misn', 'mics', 'scsn', 'sccs'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+    
+    transform_dict.update({'hrs4' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['hmss', 'hmsc'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+    
+    transform_dict.update({'hrsn' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['hrsn'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+    
+    transform_dict.update({'hrcs' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['hrcs'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+    
+    transform_dict.update({'hmss' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['hmss'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+    
+    transform_dict.update({'hmsc' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['hmsc'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+    
+    transform_dict.update({'mint' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['mint'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+  
+    transform_dict.update({'min2' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['misn', 'mics'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+    
+    transform_dict.update({'min3' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['misn', 'mics', 'scsn', 'sccs'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+    
+    transform_dict.update({'min4' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['mssn', 'mscs'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+    
+    transform_dict.update({'misn' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['misn'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+    
+    transform_dict.update({'mics' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['mics'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+    
+    transform_dict.update({'mssn' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['mssn'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+    
+    transform_dict.update({'mscs' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['mscs'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
 
-    transform_dict.update({'bxc5' : {'parents'       : ['bxc5'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['mnmx'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['nbr2', 'bins'], \
+    transform_dict.update({'scnd' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['scnd'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+  
+    transform_dict.update({'scn2' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['scsn', 'sccs'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+    
+    transform_dict.update({'scsn' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['scsn'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+    
+    transform_dict.update({'sccs' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['sccs'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+    
+    transform_dict.update({'bxcx' : {'parents'       : ['bxcx'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : ['nmbr'],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+    
+    transform_dict.update({'bxc2' : {'parents'       : ['bxc2'],
+                                     'siblings'      : ['nmbr'],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : ['nmbr'],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+    
+    transform_dict.update({'bxc3' : {'parents'       : ['bxc3'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : ['nmbr'],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+    
+    transform_dict.update({'bxc4' : {'parents'       : ['bxc4'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['nbr2'],
                                      'friends'       : []}})
 
-    transform_dict.update({'ntgr' : {'parents'       : ['ntgr'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['retn', '1010', 'ordl'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['mnmx'], \
-                                     'friends'       : []}})
-    
-    transform_dict.update({'ntg2' : {'parents'       : ['ntg2'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['retn', '1010', 'ordl', 'pwr2'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['mnmx'], \
-                                     'friends'       : []}})
-    
-    transform_dict.update({'ntg3' : {'parents'       : ['ntg3'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['retn', 'ordl', 'por2'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['mnmx'], \
-                                     'friends'       : []}})
-    
-    transform_dict.update({'pwrs' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['pwrs'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
-                                     'friends'       : []}})
-    
-    transform_dict.update({'pwr2' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['pwr2'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
-                                     'friends'       : []}})
-    
-    transform_dict.update({'log0' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['log0'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
-                                     'friends'       : []}})
-    
-    transform_dict.update({'log1' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['log0', 'pwr2'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
-                                     'friends'       : []}})
-    
-    transform_dict.update({'logn' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['logn'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
-                                     'friends'       : []}})
-  
-    transform_dict.update({'lgnm' : {'parents'       : ['lgnm'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['nmbr'], \
-                                     'friends'       : []}})
-    
-    transform_dict.update({'sqrt' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['sqrt'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
-                                     'friends'       : []}})
-    
-    transform_dict.update({'addd' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['addd'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
-                                     'friends'       : []}})
-  
-    transform_dict.update({'sbtr' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['sbtr'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
-                                     'friends'       : []}})
-    
-    transform_dict.update({'mltp' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['mltp'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
-                                     'friends'       : []}})
-    
-    transform_dict.update({'divd' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['divd'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
-                                     'friends'       : []}})
-    
-    transform_dict.update({'rais' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['rais'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
-                                     'friends'       : []}})
-    
-    transform_dict.update({'absl' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['absl'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
-                                     'friends'       : []}})
-    
-    transform_dict.update({'bkt1' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['bkt1'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
-                                     'friends'       : []}})
-    
-    transform_dict.update({'bkt2' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['bkt2'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
-                                     'friends'       : []}})
-    
-    transform_dict.update({'bkt3' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['bkt3'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
-                                     'friends'       : []}})
-    
-    transform_dict.update({'bkt4' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['bkt4'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
-                                     'friends'       : []}})
-    
-    transform_dict.update({'wkdy' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['wkdy'], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
-                                     'friends'       : []}})
-    
-    transform_dict.update({'bshr' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['bshr'], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
-                                     'friends'       : []}})
-    
-    transform_dict.update({'hldy' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['hldy'], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
-                                     'friends'       : []}})
-    
-    transform_dict.update({'wkds' : {'parents'       : ['wkds'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['text'], \
-                                     'friends'       : []}})
-  
-    transform_dict.update({'wkdo' : {'parents'       : ['wkdo'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['ordl'], \
-                                     'friends'       : []}})
-    
-    transform_dict.update({'mnts' : {'parents'       : ['mnts'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['text'], \
-                                     'friends'       : []}})
-  
-    transform_dict.update({'mnto' : {'parents'       : ['mnto'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['ordl'], \
-                                     'friends'       : []}})
-    
-    transform_dict.update({'bins' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['bins'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'bxc5' : {'parents'       : ['bxc5'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['mnmx'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['nbr2', 'bins'],
                                      'friends'       : []}})
 
-    transform_dict.update({'bint' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['bint'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'ntgr' : {'parents'       : ['ntgr'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['retn', '1010', 'ordl'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['mnmx'],
                                      'friends'       : []}})
     
-    transform_dict.update({'bsor' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['bsor'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'ntg2' : {'parents'       : ['ntg2'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['retn', '1010', 'ordl', 'pwr2'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['mnmx'],
+                                     'friends'       : []}})
+    
+    transform_dict.update({'ntg3' : {'parents'       : ['ntg3'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['retn', 'ordl', 'por2'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['mnmx'],
+                                     'friends'       : []}})
+    
+    transform_dict.update({'pwrs' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['pwrs'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+    
+    transform_dict.update({'pwr2' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['pwr2'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+    
+    transform_dict.update({'log0' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['log0'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+    
+    transform_dict.update({'log1' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['log0', 'pwr2'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+    
+    transform_dict.update({'logn' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['logn'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+  
+    transform_dict.update({'lgnm' : {'parents'       : ['lgnm'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['nmbr'],
+                                     'friends'       : []}})
+    
+    transform_dict.update({'sqrt' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['sqrt'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+    
+    transform_dict.update({'addd' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['addd'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+  
+    transform_dict.update({'sbtr' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['sbtr'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+    
+    transform_dict.update({'mltp' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['mltp'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+    
+    transform_dict.update({'divd' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['divd'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+    
+    transform_dict.update({'rais' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['rais'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+    
+    transform_dict.update({'absl' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['absl'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+    
+    transform_dict.update({'bkt1' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['bkt1'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+    
+    transform_dict.update({'bkt2' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['bkt2'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+    
+    transform_dict.update({'bkt3' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['bkt3'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+    
+    transform_dict.update({'bkt4' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['bkt4'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+    
+    transform_dict.update({'wkdy' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['wkdy'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+    
+    transform_dict.update({'bshr' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['bshr'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+    
+    transform_dict.update({'hldy' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['hldy'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+    
+    transform_dict.update({'wkds' : {'parents'       : ['wkds'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['text'],
+                                     'friends'       : []}})
+  
+    transform_dict.update({'wkdo' : {'parents'       : ['wkdo'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['ordl'],
+                                     'friends'       : []}})
+    
+    transform_dict.update({'mnts' : {'parents'       : ['mnts'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['text'],
+                                     'friends'       : []}})
+  
+    transform_dict.update({'mnto' : {'parents'       : ['mnto'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['ordl'],
+                                     'friends'       : []}})
+    
+    transform_dict.update({'bins' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['bins'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
 
-    transform_dict.update({'btor' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['btor'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'bint' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['bint'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'bnwd' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['bnwd'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'bsor' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['bsor'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+
+    transform_dict.update({'btor' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['btor'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'bnwK' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['bnwK'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'bnwd' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['bnwd'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+    
+    transform_dict.update({'bnwK' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['bnwK'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
   
-    transform_dict.update({'bnwM' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['bnwM'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'bnwM' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['bnwM'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'bnwo' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['bnwo'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'bnwo' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['bnwo'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
   
-    transform_dict.update({'bnKo' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['bnKo'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'bnKo' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['bnKo'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'bnMo' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['bnMo'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'bnMo' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['bnMo'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})    
     
-    transform_dict.update({'bnep' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['bnep'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'bnep' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['bnep'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'bne7' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['bne7'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'bne7' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['bne7'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'bne9' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['bne9'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'bne9' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['bne9'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'bneo' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['bneo'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'bneo' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['bneo'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'bn7o' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['bn7o'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'bn7o' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['bn7o'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
 
-    transform_dict.update({'bn9o' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['bn9o'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'bn9o' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['bn9o'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'tlbn' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['tlbn'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'tlbn' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['tlbn'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'pwor' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['pwor'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'pwor' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['pwor'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'por2' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['por2'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'por2' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['por2'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
 
-    transform_dict.update({'por3' : {'parents'       : ['por3'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['1010'], \
+    transform_dict.update({'por3' : {'parents'       : ['por3'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['1010'],
                                      'friends'       : []}})
 
-    transform_dict.update({'bkb3' : {'parents'       : ['bkb3'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['1010'], \
+    transform_dict.update({'bkb3' : {'parents'       : ['bkb3'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['1010'],
                                      'friends'       : []}})
   
-    transform_dict.update({'bkb4' : {'parents'       : ['bkb4'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['1010'], \
+    transform_dict.update({'bkb4' : {'parents'       : ['bkb4'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['1010'],
                                      'friends'       : []}})
     
-    transform_dict.update({'bsbn' : {'parents'       : ['bsbn'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['1010'], \
+    transform_dict.update({'bsbn' : {'parents'       : ['bsbn'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['1010'],
                                      'friends'       : []}})
     
-    transform_dict.update({'bnwb' : {'parents'       : ['bnwb'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['1010'], \
+    transform_dict.update({'bnwb' : {'parents'       : ['bnwb'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['1010'],
                                      'friends'       : []}})
     
-    transform_dict.update({'bnKb' : {'parents'       : ['bnKb'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['1010'], \
+    transform_dict.update({'bnKb' : {'parents'       : ['bnKb'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['1010'],
                                      'friends'       : []}})
 
-    transform_dict.update({'bnMb' : {'parents'       : ['bnMb'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['1010'], \
+    transform_dict.update({'bnMb' : {'parents'       : ['bnMb'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['1010'],
                                      'friends'       : []}})
     
-    transform_dict.update({'bneb' : {'parents'       : ['bneb'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['1010'], \
+    transform_dict.update({'bneb' : {'parents'       : ['bneb'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['1010'],
                                      'friends'       : []}})
 
-    transform_dict.update({'bn7b' : {'parents'       : ['bn7b'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['1010'], \
+    transform_dict.update({'bn7b' : {'parents'       : ['bn7b'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['1010'],
                                      'friends'       : []}})
     
-    transform_dict.update({'bn9b' : {'parents'       : ['bn9b'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['1010'], \
+    transform_dict.update({'bn9b' : {'parents'       : ['bn9b'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['1010'],
                                      'friends'       : []}})
     
-    transform_dict.update({'pwbn' : {'parents'       : ['pwbn'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['1010'], \
+    transform_dict.update({'pwbn' : {'parents'       : ['pwbn'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['1010'],
                                      'friends'       : []}})
 
-    transform_dict.update({'DPnb' : {'parents'       : ['DPn3'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'DPnb' : {'parents'       : ['DPn3'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'DPn3' : {'parents'       : ['DPn3'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['DPnb'], \
+    transform_dict.update({'DPn3' : {'parents'       : ['DPn3'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['DPnb'],
                                      'friends'       : []}})
 
-    transform_dict.update({'DPmm' : {'parents'       : ['DPm2'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'DPmm' : {'parents'       : ['DPm2'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
   
-    transform_dict.update({'DPm2' : {'parents'       : ['DPm2'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['DPmm'], \
+    transform_dict.update({'DPm2' : {'parents'       : ['DPm2'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['DPmm'],
                                      'friends'       : []}})
 
-    transform_dict.update({'DPrt' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['DPrt'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'DPrt' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['DPrt'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
 
-    transform_dict.update({'DLnb' : {'parents'       : ['DLn3'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'DLnb' : {'parents'       : ['DLn3'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'DLn3' : {'parents'       : ['DLn3'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['DLnb'], \
+    transform_dict.update({'DLn3' : {'parents'       : ['DLn3'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['DLnb'],
                                      'friends'       : []}})
 
-    transform_dict.update({'DLmm' : {'parents'       : ['DLm2'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'DLmm' : {'parents'       : ['DLm2'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
   
-    transform_dict.update({'DLm2' : {'parents'       : ['DLm2'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['DLmm'], \
+    transform_dict.update({'DLm2' : {'parents'       : ['DLm2'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['DLmm'],
                                      'friends'       : []}})
 
-    transform_dict.update({'DLrt' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['DLrt'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'DLrt' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['DLrt'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
   
-    transform_dict.update({'DPbn' : {'parents'       : ['DPb2'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'DPbn' : {'parents'       : ['DPb2'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'DPb2' : {'parents'       : ['DPb2'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['DPbn'], \
+    transform_dict.update({'DPb2' : {'parents'       : ['DPb2'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['DPbn'],
                                      'friends'       : []}})
     
-    transform_dict.update({'DPod' : {'parents'       : ['DPo4'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'DPod' : {'parents'       : ['DPo4'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'DPo4' : {'parents'       : ['DPo4'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['DPod'], \
+    transform_dict.update({'DPo4' : {'parents'       : ['DPo4'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['DPod'],
                                      'friends'       : []}})
     
-    transform_dict.update({'DPoh' : {'parents'       : ['DPo5'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : ['onht'], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'DPoh' : {'parents'       : ['DPo5'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : ['onht'],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'DPo5' : {'parents'       : ['DPo5'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : ['DPo2'], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'DPo5' : {'parents'       : ['DPo5'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : ['DPo2'],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'DPo2' : {'parents'       : ['DPo2'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['onht'], \
+    transform_dict.update({'DPo2' : {'parents'       : ['DPo2'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['onht'],
                                      'friends'       : []}})
     
-    transform_dict.update({'DP10' : {'parents'       : ['DPo6'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : ['1010'], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'DP10' : {'parents'       : ['DPo6'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : ['1010'],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'DPo6' : {'parents'       : ['DPo6'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : ['DPo3'], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'DPo6' : {'parents'       : ['DPo6'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : ['DPo3'],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'DPo3' : {'parents'       : ['DPo3'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['1010'], \
+    transform_dict.update({'DPo3' : {'parents'       : ['DPo3'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['1010'],
                                      'friends'       : []}})
 
-    transform_dict.update({'qbt1' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['qbt1'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'qbt1' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['qbt1'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
   
-    transform_dict.update({'qbt2' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['qbt2'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'qbt2' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['qbt2'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'qbt3' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['qbt3'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'qbt3' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['qbt3'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'qbt4' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['qbt4'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'qbt4' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['qbt4'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
 
-    transform_dict.update({'nmqb' : {'parents'       : ['nmqb'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['qbt1'], \
+    transform_dict.update({'nmqb' : {'parents'       : ['nmqb'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['qbt1'],
                                      'friends'       : []}})
   
-    transform_dict.update({'nmq2' : {'parents'       : ['nmq2'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'nmq2' : {'parents'       : ['nmq2'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : ['qbt1']}})
   
-    transform_dict.update({'mmqb' : {'parents'       : ['mmqb'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['qbt3'], \
+    transform_dict.update({'mmqb' : {'parents'       : ['mmqb'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['qbt3'],
                                      'friends'       : []}})
     
-    transform_dict.update({'mmq2' : {'parents'       : ['mmq2'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'mmq2' : {'parents'       : ['mmq2'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : ['qbt3']}})
     
-    transform_dict.update({'copy' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['copy'], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'copy' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['copy'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'excl' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['excl'], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'excl' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['excl'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'exc2' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['exc2'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'exc2' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['exc2'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'exc3' : {'parents'       : ['exc3'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'exc3' : {'parents'       : ['exc3'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : ['bins']}})
     
-    transform_dict.update({'exc4' : {'parents'       : ['exc4'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'exc4' : {'parents'       : ['exc4'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : ['pwr2']}})
     
-    transform_dict.update({'exc5' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['exc5'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'exc5' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['exc5'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
 
-    transform_dict.update({'exc6' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['exc2'], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'exc6' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['exc2'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
 
-    transform_dict.update({'exc7' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['exc5'], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'exc7' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['exc5'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
 
-    transform_dict.update({'exc8' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['exc5'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'exc8' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['exc5'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
 
-    transform_dict.update({'exc9' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['exc5'], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'exc9' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['exc5'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'shfl' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['shfl'], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'shfl' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['shfl'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
 
-    transform_dict.update({'nmbd' : {'parents'       : ['nmbr'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'nmbd' : {'parents'       : ['nmbr'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : [bint]}})
 
-    transform_dict.update({'101d' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['1010'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'101d' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['1010'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'ordd' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['ord3'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'ordd' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['ord3'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'texd' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['text'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'texd' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['text'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'bnrd' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['bnry'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'bnrd' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['bnry'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'datd' : {'parents'       : ['datd'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['year', 'mdsn', 'mdcs', 'hmss', 'hmsc', 'bshr', 'wkdy', 'hldy'], \
+    transform_dict.update({'datd' : {'parents'       : ['datd'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['year', 'mdsn', 'mdcs', 'hmss', 'hmsc', 'bshr', 'wkdy', 'hldy'],
                                      'friends'       : []}})
     
-    transform_dict.update({'nuld' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['null'], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'nuld' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['null'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'lbnm' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['exc2'], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'lbnm' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['exc2'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
 
-    transform_dict.update({'lbnb' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['nmbr'], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'lbnb' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['nmbr'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
 
-    transform_dict.update({'lb10' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['1010'], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'lb10' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['1010'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'lbor' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['ordl'], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'lbor' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['ordl'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
 
-    transform_dict.update({'lbos' : {'parents'       : ['lbos'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['strg'], \
+    transform_dict.update({'lbos' : {'parents'       : ['lbos'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['strg'],
                                      'friends'       : []}})
     
-    transform_dict.update({'lbte' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['text'], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'lbte' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['text'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'lbbn' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['bnry'], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'lbbn' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['bnry'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
 
-    transform_dict.update({'lbsm' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['lbsm'], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'lbsm' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['lbsm'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
   
-    transform_dict.update({'lbfs' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['lbfs'], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'lbfs' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['lbfs'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'lbda' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['year', 'mdsn', 'mdcs', 'hmss', 'hmsc', 'bshr', 'wkdy', 'hldy'], \
-                                     'cousins'       : [], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'lbda' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['year', 'mdsn', 'mdcs', 'hmss', 'hmsc', 'bshr', 'wkdy', 'hldy'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
 
-    transform_dict.update({'lgnr' : {'parents'       : ['lgnr', 'sgn3'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : ['lgn2'], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'lgnr' : {'parents'       : ['lgnr', 'sgn3'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : ['lgn2'],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
   
-    transform_dict.update({'lgn2' : {'parents'       : ['lgn2'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['qbt5'], \
+    transform_dict.update({'lgn2' : {'parents'       : ['lgn2'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['qbt5'],
                                      'friends'       : []}})
     
-    transform_dict.update({'sgn1' : {'parents'       : ['sgn1'], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : [], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : ['sgn2'], \
+    transform_dict.update({'sgn1' : {'parents'       : ['sgn1'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['sgn2'],
                                      'friends'       : []}})
     
-    transform_dict.update({'qbt5' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['qbt5'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'qbt5' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['qbt5'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'sgn2' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['sgn2'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : [], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'sgn2' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['sgn2'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
 
-    transform_dict.update({'sgn3' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['sgn3'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : ['sgn4'], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'sgn3' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['sgn3'],
+                                     'cousins'       : [NArw],
+                                     'children'      : ['sgn4'],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
 
-    transform_dict.update({'sgn4' : {'parents'       : [], \
-                                     'siblings'      : [], \
-                                     'auntsuncles'   : ['sgn4'], \
-                                     'cousins'       : [NArw], \
-                                     'children'      : ['sgn1'], \
-                                     'niecesnephews' : [], \
-                                     'coworkers'     : [], \
+    transform_dict.update({'sgn4' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['sgn4'],
+                                     'cousins'       : [NArw],
+                                     'children'      : ['sgn1'],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
                                      'friends'       : []}})
 
     return transform_dict
@@ -3412,3514 +3417,3513 @@ class AutoMunge:
     #to automunge
 
     #dual column functions
-    process_dict.update({'nmbr' : {'dualprocess' : self._process_numerical, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_numerical, \
-                                  'inverseprocess' : self._inverseprocess_nmbr, \
-                                  'recorded_category' : 'nmbr', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'nmbr' : {'dualprocess' : self._process_numerical,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_numerical,
+                                  'inverseprocess' : self._inverseprocess_nmbr,
+                                  'recorded_category' : 'nmbr',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
-    process_dict.update({'dxdt' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_dxdt, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : 'dxdt', \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'dxdt' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_dxdt,
+                                  'postprocess' : None,
+                                  'recorded_category' : 'dxdt',
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
-    process_dict.update({'d2dt' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_dxdt, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : 'dxdt', \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'d2dt' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_dxdt,
+                                  'postprocess' : None,
+                                  'recorded_category' : 'dxdt',
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
-    process_dict.update({'d3dt' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_dxdt, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : 'dxdt', \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'d3dt' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_dxdt,
+                                  'postprocess' : None,
+                                  'recorded_category' : 'dxdt',
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
-    process_dict.update({'d4dt' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_dxdt, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : 'dxdt', \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'d4dt' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_dxdt,
+                                  'postprocess' : None,
+                                  'recorded_category' : 'dxdt',
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
-    process_dict.update({'d5dt' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_dxdt, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : 'dxdt', \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'d5dt' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_dxdt,
+                                  'postprocess' : None,
+                                  'recorded_category' : 'dxdt',
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
-    process_dict.update({'d6dt' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_dxdt, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : 'dxdt', \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'d6dt' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_dxdt,
+                                  'postprocess' : None,
+                                  'recorded_category' : 'dxdt',
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
-    process_dict.update({'dxd2' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_dxd2, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : 'dxd2', \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'dxd2' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_dxd2,
+                                  'postprocess' : None,
+                                  'recorded_category' : 'dxd2',
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
-    process_dict.update({'d2d2' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_dxd2, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : 'dxd2', \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'d2d2' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_dxd2,
+                                  'postprocess' : None,
+                                  'recorded_category' : 'dxd2',
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
-    process_dict.update({'d3d2' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_dxd2, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : 'dxd2', \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'d3d2' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_dxd2,
+                                  'postprocess' : None,
+                                  'recorded_category' : 'dxd2',
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
-    process_dict.update({'d4d2' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_dxd2, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : 'dxd2', \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'d4d2' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_dxd2,
+                                  'postprocess' : None,
+                                  'recorded_category' : 'dxd2',
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
-    process_dict.update({'d5d2' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_dxd2, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : 'dxd2', \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'d5d2' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_dxd2,
+                                  'postprocess' : None,
+                                  'recorded_category' : 'dxd2',
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
-    process_dict.update({'d6d2' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_dxd2, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : 'dxd2', \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'d6d2' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_dxd2,
+                                  'postprocess' : None,
+                                  'recorded_category' : 'dxd2',
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
-    process_dict.update({'nmdx' : {'dualprocess' : self._process_numerical, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_numerical, \
-                                  'inverseprocess' : self._inverseprocess_nmbr, \
-                                  'recorded_category' : 'nmbr', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'nmdx' : {'dualprocess' : self._process_numerical,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_numerical,
+                                  'inverseprocess' : self._inverseprocess_nmbr,
+                                  'recorded_category' : 'nmbr',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
-    process_dict.update({'nmd2' : {'dualprocess' : self._process_numerical, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_numerical, \
-                                  'inverseprocess' : self._inverseprocess_nmbr, \
-                                  'recorded_category' : 'nmbr', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'nmd2' : {'dualprocess' : self._process_numerical,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_numerical,
+                                  'inverseprocess' : self._inverseprocess_nmbr,
+                                  'recorded_category' : 'nmbr',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
-    process_dict.update({'nmd3' : {'dualprocess' : self._process_numerical, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_numerical, \
-                                  'inverseprocess' : self._inverseprocess_nmbr, \
-                                  'recorded_category' : 'nmbr', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'nmd3' : {'dualprocess' : self._process_numerical,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_numerical,
+                                  'inverseprocess' : self._inverseprocess_nmbr,
+                                  'recorded_category' : 'nmbr',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
-    process_dict.update({'nmd4' : {'dualprocess' : self._process_numerical, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_numerical, \
-                                  'inverseprocess' : self._inverseprocess_nmbr, \
-                                  'recorded_category' : 'nmbr', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'nmd4' : {'dualprocess' : self._process_numerical,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_numerical,
+                                  'inverseprocess' : self._inverseprocess_nmbr,
+                                  'recorded_category' : 'nmbr',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
-    process_dict.update({'nmd5' : {'dualprocess' : self._process_numerical, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_numerical, \
-                                  'inverseprocess' : self._inverseprocess_nmbr, \
-                                  'recorded_category' : 'nmbr', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'nmd5' : {'dualprocess' : self._process_numerical,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_numerical,
+                                  'inverseprocess' : self._inverseprocess_nmbr,
+                                  'recorded_category' : 'nmbr',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
-    process_dict.update({'nmd6' : {'dualprocess' : self._process_numerical, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_numerical, \
-                                  'inverseprocess' : self._inverseprocess_nmbr, \
-                                  'recorded_category' : 'nmbr', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'nmd6' : {'dualprocess' : self._process_numerical,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_numerical,
+                                  'inverseprocess' : self._inverseprocess_nmbr,
+                                  'recorded_category' : 'nmbr',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
-    process_dict.update({'mmdx' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_dxdt, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : 'dxdt', \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'mmdx' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_dxdt,
+                                  'postprocess' : None,
+                                  'recorded_category' : 'dxdt',
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
-    process_dict.update({'mmd2' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_dxdt, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : 'dxdt', \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'mmd2' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_dxdt,
+                                  'postprocess' : None,
+                                  'recorded_category' : 'dxdt',
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
-    process_dict.update({'mmd3' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_dxdt, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : 'dxdt', \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'mmd3' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_dxdt,
+                                  'postprocess' : None,
+                                  'recorded_category' : 'dxdt',
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
-    process_dict.update({'mmd4' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_dxdt, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : 'dxdt', \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'mmd4' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_dxdt,
+                                  'postprocess' : None,
+                                  'recorded_category' : 'dxdt',
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
-    process_dict.update({'mmd5' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_dxdt, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : 'dxdt', \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'mmd5' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_dxdt,
+                                  'postprocess' : None,
+                                  'recorded_category' : 'dxdt',
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
-    process_dict.update({'mmd6' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_dxdt, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : 'dxdt', \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'mmd6' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_dxdt,
+                                  'postprocess' : None,
+                                  'recorded_category' : 'dxdt',
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
-    process_dict.update({'dddt' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_dxdt, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : 'dxdt', \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'dddt' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_dxdt,
+                                  'postprocess' : None,
+                                  'recorded_category' : 'dxdt',
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'dxdt'}})
-    process_dict.update({'ddd2' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_dxdt, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : 'dxdt', \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'ddd2' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_dxdt,
+                                  'postprocess' : None,
+                                  'recorded_category' : 'dxdt',
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'dxdt'}})
-    process_dict.update({'ddd3' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_dxdt, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : 'dxdt', \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'ddd3' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_dxdt,
+                                  'postprocess' : None,
+                                  'recorded_category' : 'dxdt',
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'dxdt'}})
-    process_dict.update({'ddd4' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_dxdt, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : 'dxdt', \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'ddd4' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_dxdt,
+                                  'postprocess' : None,
+                                  'recorded_category' : 'dxdt',
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'dxdt'}})
-    process_dict.update({'ddd5' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_dxdt, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : 'dxdt', \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'ddd5' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_dxdt,
+                                  'postprocess' : None,
+                                  'recorded_category' : 'dxdt',
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'dxdt'}})
-    process_dict.update({'ddd6' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_dxdt, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : 'dxdt', \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'ddd6' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_dxdt,
+                                  'postprocess' : None,
+                                  'recorded_category' : 'dxdt',
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'dxdt'}})
-    process_dict.update({'dedt' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_dxd2, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : 'dxd2', \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'dedt' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_dxd2,
+                                  'postprocess' : None,
+                                  'recorded_category' : 'dxd2',
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'dxd2'}})
-    process_dict.update({'ded2' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_dxd2, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : 'dxd2', \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'ded2' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_dxd2,
+                                  'postprocess' : None,
+                                  'recorded_category' : 'dxd2',
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'dxd2'}})
-    process_dict.update({'ded3' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_dxd2, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : 'dxd2', \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'ded3' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_dxd2,
+                                  'postprocess' : None,
+                                  'recorded_category' : 'dxd2',
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'dxd2'}})
-    process_dict.update({'ded4' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_dxd2, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : 'dxd2', \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'ded4' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_dxd2,
+                                  'postprocess' : None,
+                                  'recorded_category' : 'dxd2',
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'dxd2'}})
-    process_dict.update({'ded5' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_dxd2, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : 'dxd2', \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'ded5' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_dxd2,
+                                  'postprocess' : None,
+                                  'recorded_category' : 'dxd2',
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'dxd2'}})
-    process_dict.update({'ded6' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_dxd2, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : 'dxd2', \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'ded6' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_dxd2,
+                                  'postprocess' : None,
+                                  'recorded_category' : 'dxd2',
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'dxd2'}})
-    process_dict.update({'shft' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_shft, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : 'shft', \
-                                  'inverseprocess' : self._inverseprocess_shft, \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'exclude', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'shft' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_shft,
+                                  'postprocess' : None,
+                                  'recorded_category' : 'shft',
+                                  'inverseprocess' : self._inverseprocess_shft,
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'exclude',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'shft'}})
-    process_dict.update({'shf2' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_shf2, \
-                                  'postprocess' : None, \
-                                  'inverseprocess' : self._inverseprocess_shft, \
-                                  'recorded_category' : 'shf2', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'exclude', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'shf2' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_shf2,
+                                  'postprocess' : None,
+                                  'inverseprocess' : self._inverseprocess_shft,
+                                  'recorded_category' : 'shf2',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'exclude',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'shf2'}})
-    process_dict.update({'shf3' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_shf3, \
-                                  'postprocess' : None, \
-                                  'inverseprocess' : self._inverseprocess_shft, \
-                                  'recorded_category' : 'shf3', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'exclude', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'shf3' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_shf3,
+                                  'postprocess' : None,
+                                  'inverseprocess' : self._inverseprocess_shft,
+                                  'recorded_category' : 'shf3',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'exclude',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'shf3'}})
-    process_dict.update({'shf4' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_shft, \
-                                  'postprocess' : None, \
-                                  'inverseprocess' : self._inverseprocess_shft, \
-                                  'recorded_category' : 'shft', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'exclude', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'shf4' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_shft,
+                                  'postprocess' : None,
+                                  'inverseprocess' : self._inverseprocess_shft,
+                                  'recorded_category' : 'shft',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'exclude',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
-    process_dict.update({'shf5' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_shf2, \
-                                  'postprocess' : None, \
-                                  'inverseprocess' : self._inverseprocess_shft, \
-                                  'recorded_category' : 'shf2', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'exclude', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'shf5' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_shf2,
+                                  'postprocess' : None,
+                                  'inverseprocess' : self._inverseprocess_shft,
+                                  'recorded_category' : 'shf2',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'exclude',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
-    process_dict.update({'shf6' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_shf3, \
-                                  'postprocess' : None, \
-                                  'inverseprocess' : self._inverseprocess_shft, \
-                                  'recorded_category' : 'shf3', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'exclude', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'shf6' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_shf3,
+                                  'postprocess' : None,
+                                  'inverseprocess' : self._inverseprocess_shft,
+                                  'recorded_category' : 'shf3',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'exclude',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
-    process_dict.update({'shf7' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_shft, \
-                                  'postprocess' : None, \
-                                  'inverseprocess' : self._inverseprocess_shft, \
-                                  'recorded_category' : 'shft', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'exclude', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'shf7' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_shft,
+                                  'postprocess' : None,
+                                  'inverseprocess' : self._inverseprocess_shft,
+                                  'recorded_category' : 'shft',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'exclude',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
-    process_dict.update({'shf8' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_shft, \
-                                  'postprocess' : None, \
-                                  'inverseprocess' : self._inverseprocess_shft, \
-                                  'recorded_category' : 'shft', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'exclude', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'shf8' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_shft,
+                                  'postprocess' : None,
+                                  'inverseprocess' : self._inverseprocess_shft,
+                                  'recorded_category' : 'shft',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'exclude',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
-    process_dict.update({'nbr2' : {'dualprocess' : self._process_numerical, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_numerical, \
-                                  'inverseprocess' : self._inverseprocess_nmbr, \
-                                  'recorded_category' : 'nmbr', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'nbr2' : {'dualprocess' : self._process_numerical,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_numerical,
+                                  'inverseprocess' : self._inverseprocess_nmbr,
+                                  'recorded_category' : 'nmbr',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
-    process_dict.update({'nbr3' : {'dualprocess' : self._process_numerical, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_numerical, \
-                                  'inverseprocess' : self._inverseprocess_nmbr, \
-                                  'recorded_category' : 'nmbr', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'nbr3' : {'dualprocess' : self._process_numerical,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_numerical,
+                                  'inverseprocess' : self._inverseprocess_nmbr,
+                                  'recorded_category' : 'nmbr',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
-    process_dict.update({'MADn' : {'dualprocess' : self._process_MADn, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_MADn, \
-                                  'inverseprocess' : self._inverseprocess_MADn, \
-                                  'recorded_category' : 'MADn', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'MADn' : {'dualprocess' : self._process_MADn,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_MADn,
+                                  'inverseprocess' : self._inverseprocess_MADn,
+                                  'recorded_category' : 'MADn',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'MADn'}})
-    process_dict.update({'MAD2' : {'dualprocess' : self._process_MADn, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_MADn, \
-                                  'inverseprocess' : self._inverseprocess_MADn, \
-                                  'recorded_category' : 'MADn', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'MAD2' : {'dualprocess' : self._process_MADn,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_MADn,
+                                  'inverseprocess' : self._inverseprocess_MADn,
+                                  'recorded_category' : 'MADn',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'MADn'}})
-    process_dict.update({'MAD3' : {'dualprocess' : self._process_MAD3, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_MAD3, \
-                                  'inverseprocess' : self._inverseprocess_MAD3, \
-                                  'recorded_category' : 'MAD3', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'MAD3' : {'dualprocess' : self._process_MAD3,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_MAD3,
+                                  'inverseprocess' : self._inverseprocess_MAD3,
+                                  'recorded_category' : 'MAD3',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'MAD3'}})
-    process_dict.update({'mnmx' : {'dualprocess' : self._process_mnmx, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_mnmx, \
-                                  'inverseprocess' : self._inverseprocess_mnmx, \
-                                  'recorded_category' : 'mnmx', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'mnmx' : {'dualprocess' : self._process_mnmx,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_mnmx,
+                                  'inverseprocess' : self._inverseprocess_mnmx,
+                                  'recorded_category' : 'mnmx',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mnmx'}})
-    process_dict.update({'mnm2' : {'dualprocess' : self._process_mnmx, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_mnmx, \
-                                  'inverseprocess' : self._inverseprocess_mnmx, \
-                                  'recorded_category' : 'mnmx', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'mnm2' : {'dualprocess' : self._process_mnmx,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_mnmx,
+                                  'inverseprocess' : self._inverseprocess_mnmx,
+                                  'recorded_category' : 'mnmx',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mnmx'}})
-    process_dict.update({'mnm3' : {'dualprocess' : self._process_mnm3, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_mnm3, \
-                                  'inverseprocess' : self._inverseprocess_mnm3, \
-                                  'recorded_category' : 'mnm3', \
-                                  'info_retention' : False, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'mnm3' : {'dualprocess' : self._process_mnm3,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_mnm3,
+                                  'inverseprocess' : self._inverseprocess_mnm3,
+                                  'recorded_category' : 'mnm3',
+                                  'info_retention' : False,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mnm3'}})
-    process_dict.update({'mnm4' : {'dualprocess' : self._process_mnm3, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_mnm3, \
-                                  'inverseprocess' : self._inverseprocess_mnm3, \
-                                  'recorded_category' : 'mnm3', \
-                                  'info_retention' : False, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'mnm4' : {'dualprocess' : self._process_mnm3,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_mnm3,
+                                  'inverseprocess' : self._inverseprocess_mnm3,
+                                  'recorded_category' : 'mnm3',
+                                  'info_retention' : False,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mnm3'}})
-    process_dict.update({'mnm5' : {'dualprocess' : self._process_mnmx, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_mnmx, \
-                                  'inverseprocess' : self._inverseprocess_mnmx, \
-                                  'recorded_category' : 'mnmx', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'mnm5' : {'dualprocess' : self._process_mnmx,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_mnmx,
+                                  'inverseprocess' : self._inverseprocess_mnmx,
+                                  'recorded_category' : 'mnmx',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mnmx'}})
-    process_dict.update({'mnm6' : {'dualprocess' : self._process_mnmx, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_mnmx, \
-                                  'inverseprocess' : self._inverseprocess_mnmx, \
-                                  'recorded_category' : 'mnmx', \
-                                  'defaultparams' : {'floor' : True}, \
-                                  'info_retention' : False, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'mnm6' : {'dualprocess' : self._process_mnmx,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_mnmx,
+                                  'inverseprocess' : self._inverseprocess_mnmx,
+                                  'recorded_category' : 'mnmx',
+                                  'defaultparams' : {'floor' : True},
+                                  'info_retention' : False,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mnmx'}})
-    process_dict.update({'mnm7' : {'dualprocess' : None, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : False, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'mnm7' : {'dualprocess' : None,
+                                  'singleprocess' : None,
+                                  'postprocess' : None,
+                                  'recorded_category' : False,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mnm7'}})
-    process_dict.update({'mxab' : {'dualprocess' : self._process_mxab, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_mxab, \
-                                  'inverseprocess' : self._inverseprocess_mxab, \
-                                  'recorded_category' : 'mxab', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'mxab' : {'dualprocess' : self._process_mxab,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_mxab,
+                                  'inverseprocess' : self._inverseprocess_mxab,
+                                  'recorded_category' : 'mxab',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mxab'}})
-    process_dict.update({'retn' : {'dualprocess' : self._process_retn, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_retn, \
-                                  'inverseprocess' : self._inverseprocess_retn, \
-                                  'recorded_category' : 'retn', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'retn' : {'dualprocess' : self._process_retn,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_retn,
+                                  'inverseprocess' : self._inverseprocess_retn,
+                                  'recorded_category' : 'retn',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
-    process_dict.update({'rtbn' : {'dualprocess' : self._process_retn, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_retn, \
-                                  'inverseprocess' : self._inverseprocess_retn, \
-                                  'recorded_category' : 'retn', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'rtbn' : {'dualprocess' : self._process_retn,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_retn,
+                                  'inverseprocess' : self._inverseprocess_retn,
+                                  'recorded_category' : 'retn',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
-    process_dict.update({'rtb2' : {'dualprocess' : self._process_retn, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_retn, \
-                                  'inverseprocess' : self._inverseprocess_retn, \
-                                  'recorded_category' : 'retn', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'rtb2' : {'dualprocess' : self._process_retn,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_retn,
+                                  'inverseprocess' : self._inverseprocess_retn,
+                                  'recorded_category' : 'retn',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
-    process_dict.update({'mean' : {'dualprocess' : self._process_mean, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_mean, \
-                                  'inverseprocess' : self._inverseprocess_mean, \
-                                  'recorded_category' : 'mean', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'mean' : {'dualprocess' : self._process_mean,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_mean,
+                                  'inverseprocess' : self._inverseprocess_mean,
+                                  'recorded_category' : 'mean',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mean'}})
-    process_dict.update({'mea2' : {'dualprocess' : self._process_mean, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_mean, \
-                                  'inverseprocess' : self._inverseprocess_mean, \
-                                  'recorded_category' : 'mean', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'mea2' : {'dualprocess' : self._process_mean,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_mean,
+                                  'inverseprocess' : self._inverseprocess_mean,
+                                  'recorded_category' : 'mean',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mean'}})
-    process_dict.update({'mea3' : {'dualprocess' : self._process_mean, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_mean, \
-                                  'inverseprocess' : self._inverseprocess_mean, \
-                                  'recorded_category' : 'mean', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'mea3' : {'dualprocess' : self._process_mean,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_mean,
+                                  'inverseprocess' : self._inverseprocess_mean,
+                                  'recorded_category' : 'mean',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mean'}})
-    process_dict.update({'bnry' : {'dualprocess' : self._process_binary, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_binary, \
-                                  'inverseprocess' : self._inverseprocess_bnry, \
-                                  'recorded_category' : 'bnry', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'binary', \
+    process_dict.update({'bnry' : {'dualprocess' : self._process_binary,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_binary,
+                                  'inverseprocess' : self._inverseprocess_bnry,
+                                  'recorded_category' : 'bnry',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'binary',
                                   'labelctgy' : 'bnry'}})
-    process_dict.update({'bnr2' : {'dualprocess' : self._process_binary2, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_binary2, \
-                                  'inverseprocess' : self._inverseprocess_bnry, \
-                                  'recorded_category' : 'bnr2', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'binary', \
+    process_dict.update({'bnr2' : {'dualprocess' : self._process_binary2,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_binary2,
+                                  'inverseprocess' : self._inverseprocess_bnry,
+                                  'recorded_category' : 'bnr2',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'binary',
                                   'labelctgy' : 'bnr2'}})
-    process_dict.update({'onht' : {'dualprocess' : self._process_onht, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_onht, \
-                                  'inverseprocess' : self._inverseprocess_onht, \
-                                  'recorded_category' : 'onht', \
-                                  'info_retention' : True, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'multirt', \
+    process_dict.update({'onht' : {'dualprocess' : self._process_onht,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_onht,
+                                  'inverseprocess' : self._inverseprocess_onht,
+                                  'recorded_category' : 'onht',
+                                  'info_retention' : True,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'onht'}})
-    process_dict.update({'text' : {'dualprocess' : self._process_text, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_text, \
-                                  'inverseprocess' : self._inverseprocess_text, \
-                                  'recorded_category' : 'text', \
-                                  'info_retention' : True, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'multirt', \
+    process_dict.update({'text' : {'dualprocess' : self._process_text,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_text,
+                                  'inverseprocess' : self._inverseprocess_text,
+                                  'recorded_category' : 'text',
+                                  'info_retention' : True,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'text'}})
-    process_dict.update({'txt2' : {'dualprocess' : self._process_text, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_text, \
-                                  'inverseprocess' : self._inverseprocess_text, \
-                                  'recorded_category' : 'text', \
-                                  'info_retention' : True, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'multirt', \
+    process_dict.update({'txt2' : {'dualprocess' : self._process_text,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_text,
+                                  'inverseprocess' : self._inverseprocess_text,
+                                  'recorded_category' : 'text',
+                                  'info_retention' : True,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'text'}})
-    process_dict.update({'txt3' : {'dualprocess' : self._process_spl2, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_spl2, \
-                                  'inverseprocess' : self._inverseprocess_spl2, \
-                                  'recorded_category' : 'spl2', \
-                                  'info_retention' : False, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'exclude', \
+    process_dict.update({'txt3' : {'dualprocess' : self._process_spl2,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_spl2,
+                                  'inverseprocess' : self._inverseprocess_spl2,
+                                  'recorded_category' : 'spl2',
+                                  'info_retention' : False,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'text'}})
-    process_dict.update({'smth' : {'dualprocess' : self._process_smth, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_smth, \
-                                  'inverseprocess' : self._inverseprocess_smth, \
-                                  'recorded_category' : 'smth', \
-                                  'info_retention' : True, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'exclude', \
+    process_dict.update({'smth' : {'dualprocess' : self._process_smth,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_smth,
+                                  'inverseprocess' : self._inverseprocess_smth,
+                                  'recorded_category' : 'smth',
+                                  'info_retention' : True,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'smth'}})
-    process_dict.update({'fsmh' : {'dualprocess' : self._process_smth, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_smth, \
-                                  'inverseprocess' : self._inverseprocess_smth, \
-                                  'recorded_category' : 'smth', \
-                                  'info_retention' : True, \
-                                  'defaultparams' : {'LSfit' : True}, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'exclude', \
+    process_dict.update({'fsmh' : {'dualprocess' : self._process_smth,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_smth,
+                                  'inverseprocess' : self._inverseprocess_smth,
+                                  'recorded_category' : 'smth',
+                                  'info_retention' : True,
+                                  'defaultparams' : {'LSfit' : True},
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'smth'}})
-    process_dict.update({'lngt' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_lngt, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : 'lngt', \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'integer', \
+    process_dict.update({'lngt' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_lngt,
+                                  'postprocess' : None,
+                                  'recorded_category' : 'lngt',
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'integer',
                                   'labelctgy' : 'mnmx'}})
-    process_dict.update({'lnlg' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_lngt, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : 'lngt', \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'integer', \
+    process_dict.update({'lnlg' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_lngt,
+                                  'postprocess' : None,
+                                  'recorded_category' : 'lngt',
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'integer',
                                   'labelctgy' : 'log0'}})
-    process_dict.update({'UPCS' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_UPCS, \
-                                  'postprocess' : None, \
-                                  'inverseprocess' : self._inverseprocess_UPCS, \
-                                  'recorded_category' : 'UPCS', \
-                                  'info_retention' : False, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'exclude', \
+    process_dict.update({'UPCS' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_UPCS,
+                                  'postprocess' : None,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
+                                  'recorded_category' : 'UPCS',
+                                  'info_retention' : False,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'exclude'}})
-    process_dict.update({'Unht' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_UPCS, \
-                                  'postprocess' : None, \
-                                  'inverseprocess' : self._inverseprocess_UPCS, \
-                                  'recorded_category' : 'UPCS', \
-                                  'info_retention' : False, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'exclude', \
+    process_dict.update({'Unht' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_UPCS,
+                                  'postprocess' : None,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
+                                  'recorded_category' : 'UPCS',
+                                  'info_retention' : False,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'onht'}})
-    process_dict.update({'Utxt' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_UPCS, \
-                                  'postprocess' : None, \
-                                  'inverseprocess' : self._inverseprocess_UPCS, \
-                                  'recorded_category' : 'UPCS', \
-                                  'info_retention' : False, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'exclude', \
+    process_dict.update({'Utxt' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_UPCS,
+                                  'postprocess' : None,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
+                                  'recorded_category' : 'UPCS',
+                                  'info_retention' : False,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'text'}})
-    process_dict.update({'Utx2' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_UPCS, \
-                                  'postprocess' : None, \
-                                  'inverseprocess' : self._inverseprocess_UPCS, \
-                                  'recorded_category' : 'UPCS', \
-                                  'info_retention' : False, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'exclude', \
+    process_dict.update({'Utx2' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_UPCS,
+                                  'postprocess' : None,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
+                                  'recorded_category' : 'UPCS',
+                                  'info_retention' : False,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'text'}})
-    process_dict.update({'Utx3' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_UPCS, \
-                                  'postprocess' : None, \
-                                  'inverseprocess' : self._inverseprocess_UPCS, \
-                                  'recorded_category' : 'UPCS', \
-                                  'info_retention' : False, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'exclude', \
+    process_dict.update({'Utx3' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_UPCS,
+                                  'postprocess' : None,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
+                                  'recorded_category' : 'UPCS',
+                                  'info_retention' : False,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'text'}})
-    process_dict.update({'Ucct' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_UPCS, \
-                                  'postprocess' : None, \
-                                  'inverseprocess' : self._inverseprocess_UPCS, \
-                                  'recorded_category' : 'UPCS', \
-                                  'info_retention' : False, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'exclude', \
+    process_dict.update({'Ucct' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_UPCS,
+                                  'postprocess' : None,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
+                                  'recorded_category' : 'UPCS',
+                                  'info_retention' : False,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'ucct'}})
-    process_dict.update({'Uord' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_UPCS, \
-                                  'postprocess' : None, \
-                                  'inverseprocess' : self._inverseprocess_UPCS, \
-                                  'recorded_category' : 'UPCS', \
-                                  'info_retention' : False, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'exclude', \
+    process_dict.update({'Uord' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_UPCS,
+                                  'postprocess' : None,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
+                                  'recorded_category' : 'UPCS',
+                                  'info_retention' : False,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'ordl'}})
-    process_dict.update({'Uor2' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_UPCS, \
-                                  'postprocess' : None, \
-                                  'inverseprocess' : self._inverseprocess_UPCS, \
-                                  'recorded_category' : 'UPCS', \
-                                  'info_retention' : False, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'exclude', \
+    process_dict.update({'Uor2' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_UPCS,
+                                  'postprocess' : None,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
+                                  'recorded_category' : 'UPCS',
+                                  'info_retention' : False,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'mnmx'}})
-    process_dict.update({'Uor3' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_UPCS, \
-                                  'postprocess' : None, \
-                                  'inverseprocess' : self._inverseprocess_UPCS, \
-                                  'recorded_category' : 'UPCS', \
-                                  'info_retention' : False, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'exclude', \
+    process_dict.update({'Uor3' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_UPCS,
+                                  'postprocess' : None,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
+                                  'recorded_category' : 'UPCS',
+                                  'info_retention' : False,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'ord3'}})
-    process_dict.update({'Uor6' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_UPCS, \
-                                  'postprocess' : None, \
-                                  'inverseprocess' : self._inverseprocess_UPCS, \
-                                  'recorded_category' : 'UPCS', \
-                                  'info_retention' : False, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'exclude', \
+    process_dict.update({'Uor6' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_UPCS,
+                                  'postprocess' : None,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
+                                  'recorded_category' : 'UPCS',
+                                  'info_retention' : False,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'ord3'}})
-    process_dict.update({'U101' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_UPCS, \
-                                  'postprocess' : None, \
-                                  'inverseprocess' : self._inverseprocess_UPCS, \
-                                  'recorded_category' : 'UPCS', \
-                                  'info_retention' : False, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'exclude', \
+    process_dict.update({'U101' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_UPCS,
+                                  'postprocess' : None,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
+                                  'recorded_category' : 'UPCS',
+                                  'info_retention' : False,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'exclude',
                                   'labelctgy' : '1010'}})
-    process_dict.update({'splt' : {'dualprocess' : self._process_splt, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_splt, \
-                                  'inverseprocess' : self._inverseprocess_splt, \
-                                  'recorded_category' : 'splt', \
-                                  'info_retention' : False, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'multirt', \
+    process_dict.update({'splt' : {'dualprocess' : self._process_splt,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_splt,
+                                  'inverseprocess' : self._inverseprocess_splt,
+                                  'recorded_category' : 'splt',
+                                  'info_retention' : False,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'splt'}})
-
-    process_dict.update({'spl2' : {'dualprocess' : self._process_spl2, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_spl2, \
-                                  'inverseprocess' : self._inverseprocess_spl2, \
-                                  'recorded_category' : 'spl2', \
-                                  'info_retention' : False, \
-                                  'defaultparams' : {'suffix' : 'spl2', \
-                                                     'test_same_as_train' : False, \
-                                                     'consolidate_nonoverlaps' : False}, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'exclude', \
+    process_dict.update({'spl2' : {'dualprocess' : self._process_spl2,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_spl2,
+                                  'inverseprocess' : self._inverseprocess_spl2,
+                                  'recorded_category' : 'spl2',
+                                  'info_retention' : False,
+                                  'defaultparams' : {'suffix' : 'spl2',
+                                                     'test_same_as_train' : False,
+                                                     'consolidate_nonoverlaps' : False},
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'ord3'}})
-    process_dict.update({'spl5' : {'dualprocess' : self._process_spl2, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_spl2, \
-                                  'inverseprocess' : self._inverseprocess_spl2, \
-                                  'recorded_category' : 'spl2', \
-                                  'info_retention' : False, \
-                                  'defaultparams' : {'suffix' : 'spl5', \
-                                                     'test_same_as_train' : False, \
-                                                     'consolidate_nonoverlaps' : True}, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'exclude', \
+    process_dict.update({'spl5' : {'dualprocess' : self._process_spl2,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_spl2,
+                                  'inverseprocess' : self._inverseprocess_spl2,
+                                  'recorded_category' : 'spl2',
+                                  'info_retention' : False,
+                                  'defaultparams' : {'suffix' : 'spl5',
+                                                     'test_same_as_train' : False,
+                                                     'consolidate_nonoverlaps' : True},
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'ord3'}})
-    process_dict.update({'spl6' : {'dualprocess' : self._process_spl2, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_spl2, \
-                                  'inverseprocess' : self._inverseprocess_spl2, \
-                                  'recorded_category' : 'spl2', \
-                                  'info_retention' : False, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'exclude', \
+    process_dict.update({'spl6' : {'dualprocess' : self._process_spl2,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_spl2,
+                                  'inverseprocess' : self._inverseprocess_spl2,
+                                  'recorded_category' : 'spl2',
+                                  'info_retention' : False,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'ord3'}})
-    process_dict.update({'spl7' : {'dualprocess' : self._process_spl2, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_spl2, \
-                                  'inverseprocess' : self._inverseprocess_spl2, \
-                                  'recorded_category' : 'spl2', \
-                                  'info_retention' : False, \
-                                  'defaultparams' : {'suffix' : 'spl7', \
-                                                     'test_same_as_train' : False, \
-                                                     'consolidate_nonoverlaps' : True, \
-                                                     'minsplit' : 1}, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'exclude', \
+    process_dict.update({'spl7' : {'dualprocess' : self._process_spl2,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_spl2,
+                                  'inverseprocess' : self._inverseprocess_spl2,
+                                  'recorded_category' : 'spl2',
+                                  'info_retention' : False,
+                                  'defaultparams' : {'suffix' : 'spl7',
+                                                     'test_same_as_train' : False,
+                                                     'consolidate_nonoverlaps' : True,
+                                                     'minsplit' : 1},
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'ord3'}})
-    process_dict.update({'spl8' : {'dualprocess' : self._process_splt, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_splt, \
-                                  'inverseprocess' : self._inverseprocess_splt, \
-                                  'recorded_category' : 'splt', \
-                                  'info_retention' : False, \
-                                  'defaultparams' : {'suffix' : 'spl8', 'test_same_as_train' : True}, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'multirt', \
+    process_dict.update({'spl8' : {'dualprocess' : self._process_splt,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_splt,
+                                  'inverseprocess' : self._inverseprocess_splt,
+                                  'recorded_category' : 'splt',
+                                  'info_retention' : False,
+                                  'defaultparams' : {'suffix' : 'spl8', 'test_same_as_train' : True},
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'splt'}})
-    process_dict.update({'spl9' : {'dualprocess' : self._process_spl2, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_spl2, \
-                                  'inverseprocess' : self._inverseprocess_spl2, \
-                                  'recorded_category' : 'spl2', \
-                                  'info_retention' : False, \
-                                  'defaultparams' : {'suffix' : 'spl9', \
-                                                     'test_same_as_train' : True, \
-                                                     'consolidate_nonoverlaps' : False}, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'exclude', \
+    process_dict.update({'spl9' : {'dualprocess' : self._process_spl2,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_spl2,
+                                  'inverseprocess' : self._inverseprocess_spl2,
+                                  'recorded_category' : 'spl2',
+                                  'info_retention' : False,
+                                  'defaultparams' : {'suffix' : 'spl9',
+                                                     'test_same_as_train' : True,
+                                                     'consolidate_nonoverlaps' : False},
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'ord3'}})
-    process_dict.update({'sp10' : {'dualprocess' : self._process_spl2, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_spl2, \
-                                  'inverseprocess' : self._inverseprocess_spl2, \
-                                  'recorded_category' : 'spl2', \
-                                  'info_retention' : False, \
-                                  'defaultparams' : {'suffix' : 'sp10', \
-                                                     'test_same_as_train' : True, \
-                                                     'consolidate_nonoverlaps' : True}, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'exclude', \
+    process_dict.update({'sp10' : {'dualprocess' : self._process_spl2,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_spl2,
+                                  'inverseprocess' : self._inverseprocess_spl2,
+                                  'recorded_category' : 'spl2',
+                                  'info_retention' : False,
+                                  'defaultparams' : {'suffix' : 'sp10',
+                                                     'test_same_as_train' : True,
+                                                     'consolidate_nonoverlaps' : True},
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'ord3'}})
-    process_dict.update({'sp11' : {'dualprocess' : self._process_spl2, \
-                                   'singleprocess' : None, \
-                                   'postprocess' : self._postprocess_spl2, \
-                                   'inverseprocess' : self._inverseprocess_spl2, \
-                                  'recorded_category' : 'spl2', \
-                                   'info_retention' : False, \
-                                  'defaultparams' : {'suffix' : 'spl2', \
-                                                     'test_same_as_train' : False, \
-                                                     'consolidate_nonoverlaps' : False}, \
-                                   'NArowtype' : 'justNaN', \
-                                   'MLinfilltype' : 'exclude', \
+    process_dict.update({'sp11' : {'dualprocess' : self._process_spl2,
+                                   'singleprocess' : None,
+                                   'postprocess' : self._postprocess_spl2,
+                                   'inverseprocess' : self._inverseprocess_spl2,
+                                  'recorded_category' : 'spl2',
+                                   'info_retention' : False,
+                                  'defaultparams' : {'suffix' : 'spl2',
+                                                     'test_same_as_train' : False,
+                                                     'consolidate_nonoverlaps' : False},
+                                   'NArowtype' : 'justNaN',
+                                   'MLinfilltype' : 'exclude',
                                    'labelctgy' : 'ord3'}})
-    process_dict.update({'sp12' : {'dualprocess' : self._process_spl2, \
-                                   'singleprocess' : None, \
-                                   'postprocess' : self._postprocess_spl2, \
-                                   'inverseprocess' : self._inverseprocess_spl2, \
-                                  'recorded_category' : 'spl2', \
-                                   'info_retention' : False, \
-                                  'defaultparams' : {'suffix' : 'spl2', \
-                                                     'test_same_as_train' : False, \
-                                                     'consolidate_nonoverlaps' : False}, \
-                                   'NArowtype' : 'justNaN', \
-                                   'MLinfilltype' : 'exclude', \
+    process_dict.update({'sp12' : {'dualprocess' : self._process_spl2,
+                                   'singleprocess' : None,
+                                   'postprocess' : self._postprocess_spl2,
+                                   'inverseprocess' : self._inverseprocess_spl2,
+                                  'recorded_category' : 'spl2',
+                                   'info_retention' : False,
+                                  'defaultparams' : {'suffix' : 'spl2',
+                                                     'test_same_as_train' : False,
+                                                     'consolidate_nonoverlaps' : False},
+                                   'NArowtype' : 'justNaN',
+                                   'MLinfilltype' : 'exclude',
                                    'labelctgy' : 'ord3'}})
-    process_dict.update({'sp13' : {'dualprocess' : self._process_spl2, \
-                                   'singleprocess' : None, \
-                                   'postprocess' : self._postprocess_spl2, \
-                                   'inverseprocess' : self._inverseprocess_spl2, \
-                                  'recorded_category' : 'spl2', \
-                                   'info_retention' : False, \
-                                  'defaultparams' : {'suffix' : 'spl9', \
-                                                     'test_same_as_train' : True, \
-                                                     'consolidate_nonoverlaps' : False}, \
-                                   'NArowtype' : 'justNaN', \
-                                   'MLinfilltype' : 'exclude', \
+    process_dict.update({'sp13' : {'dualprocess' : self._process_spl2,
+                                   'singleprocess' : None,
+                                   'postprocess' : self._postprocess_spl2,
+                                   'inverseprocess' : self._inverseprocess_spl2,
+                                  'recorded_category' : 'spl2',
+                                   'info_retention' : False,
+                                  'defaultparams' : {'suffix' : 'spl9',
+                                                     'test_same_as_train' : True,
+                                                     'consolidate_nonoverlaps' : False},
+                                   'NArowtype' : 'justNaN',
+                                   'MLinfilltype' : 'exclude',
                                    'labelctgy' : 'ord3'}})
-    process_dict.update({'sp14' : {'dualprocess' : self._process_spl2, \
-                                   'singleprocess' : None, \
-                                   'postprocess' : self._postprocess_spl2, \
-                                   'inverseprocess' : self._inverseprocess_spl2, \
-                                  'recorded_category' : 'spl2', \
-                                   'info_retention' : False, \
-                                  'defaultparams' : {'suffix' : 'spl9', \
-                                                     'test_same_as_train' : True, \
-                                                     'consolidate_nonoverlaps' : False}, \
-                                   'NArowtype' : 'justNaN', \
-                                   'MLinfilltype' : 'exclude', \
+    process_dict.update({'sp14' : {'dualprocess' : self._process_spl2,
+                                   'singleprocess' : None,
+                                   'postprocess' : self._postprocess_spl2,
+                                   'inverseprocess' : self._inverseprocess_spl2,
+                                  'recorded_category' : 'spl2',
+                                   'info_retention' : False,
+                                  'defaultparams' : {'suffix' : 'spl9',
+                                                     'test_same_as_train' : True,
+                                                     'consolidate_nonoverlaps' : False},
+                                   'NArowtype' : 'justNaN',
+                                   'MLinfilltype' : 'exclude',
                                    'labelctgy' : 'ord3'}})
-    process_dict.update({'sp15' : {'dualprocess' : self._process_splt, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_splt, \
-                                  'inverseprocess' : self._inverseprocess_splt, \
-                                  'recorded_category' : 'splt', \
-                                  'info_retention' : False, \
-                                  'defaultparams' : {'suffix' : 'sp15', \
-                                                     'concurrent_activations': True, \
-                                                     'test_same_as_train' : False}, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'concurrent_act', \
+    process_dict.update({'sp15' : {'dualprocess' : self._process_splt,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_splt,
+                                  'inverseprocess' : self._inverseprocess_splt,
+                                  'recorded_category' : 'splt',
+                                  'info_retention' : False,
+                                  'defaultparams' : {'suffix' : 'sp15',
+                                                     'concurrent_activations': True,
+                                                     'test_same_as_train' : False},
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'concurrent_act',
                                   'labelctgy' : 'splt'}})
-    process_dict.update({'sp16' : {'dualprocess' : self._process_splt, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_splt, \
-                                  'inverseprocess' : self._inverseprocess_splt, \
-                                  'recorded_category' : 'splt', \
-                                  'info_retention' : False, \
-                                  'defaultparams' : {'suffix' : 'sp16', \
-                                                     'concurrent_activations': True, \
-                                                     'test_same_as_train' : True}, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'concurrent_act', \
+    process_dict.update({'sp16' : {'dualprocess' : self._process_splt,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_splt,
+                                  'inverseprocess' : self._inverseprocess_splt,
+                                  'recorded_category' : 'splt',
+                                  'info_retention' : False,
+                                  'defaultparams' : {'suffix' : 'sp16',
+                                                     'concurrent_activations': True,
+                                                     'test_same_as_train' : True},
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'concurrent_act',
                                   'labelctgy' : 'splt'}})
-    process_dict.update({'sp17' : {'dualprocess' : self._process_spl2, \
-                                   'singleprocess' : None, \
-                                   'postprocess' : self._postprocess_spl2, \
-                                   'inverseprocess' : self._inverseprocess_spl2, \
-                                  'recorded_category' : 'spl2', \
-                                   'info_retention' : False, \
-                                  'defaultparams' : {'suffix' : 'spl2', \
-                                                     'test_same_as_train' : False, \
-                                                     'consolidate_nonoverlaps' : False}, \
-                                   'NArowtype' : 'justNaN', \
-                                   'MLinfilltype' : 'exclude', \
+    process_dict.update({'sp17' : {'dualprocess' : self._process_spl2,
+                                   'singleprocess' : None,
+                                   'postprocess' : self._postprocess_spl2,
+                                   'inverseprocess' : self._inverseprocess_spl2,
+                                  'recorded_category' : 'spl2',
+                                   'info_retention' : False,
+                                  'defaultparams' : {'suffix' : 'spl2',
+                                                     'test_same_as_train' : False,
+                                                     'consolidate_nonoverlaps' : False},
+                                   'NArowtype' : 'justNaN',
+                                   'MLinfilltype' : 'exclude',
                                    'labelctgy' : 'ord3'}})
-    process_dict.update({'sp18' : {'dualprocess' : self._process_spl2, \
-                                   'singleprocess' : None, \
-                                   'postprocess' : self._postprocess_spl2, \
-                                   'inverseprocess' : self._inverseprocess_spl2, \
-                                  'recorded_category' : 'spl2', \
-                                   'info_retention' : False, \
-                                  'defaultparams' : {'suffix' : 'spl2', \
-                                                     'test_same_as_train' : False, \
-                                                     'consolidate_nonoverlaps' : False}, \
-                                   'NArowtype' : 'justNaN', \
-                                   'MLinfilltype' : 'exclude', \
+    process_dict.update({'sp18' : {'dualprocess' : self._process_spl2,
+                                   'singleprocess' : None,
+                                   'postprocess' : self._postprocess_spl2,
+                                   'inverseprocess' : self._inverseprocess_spl2,
+                                  'recorded_category' : 'spl2',
+                                   'info_retention' : False,
+                                  'defaultparams' : {'suffix' : 'spl2',
+                                                     'test_same_as_train' : False,
+                                                     'consolidate_nonoverlaps' : False},
+                                   'NArowtype' : 'justNaN',
+                                   'MLinfilltype' : 'exclude',
                                    'labelctgy' : 'ord3'}})
-    process_dict.update({'sp19' : {'dualprocess' : self._process_sp19, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_sp19, \
-                                  'inverseprocess' : self._inverseprocess_sp19, \
-                                  'recorded_category' : 'sp19', \
-                                  'info_retention' : False, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : '1010', \
+    process_dict.update({'sp19' : {'dualprocess' : self._process_sp19,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_sp19,
+                                  'inverseprocess' : self._inverseprocess_sp19,
+                                  'recorded_category' : 'sp19',
+                                  'info_retention' : False,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : '1010',
                                   'labelctgy' : 'sp19'}})
-    process_dict.update({'sp20' : {'dualprocess' : self._process_sp19, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_sp19, \
-                                  'inverseprocess' : self._inverseprocess_sp19, \
-                                  'recorded_category' : 'sp19', \
-                                  'info_retention' : False, \
-                                  'defaultparams' : {'suffix' : 'sp20', \
-                                                     'test_same_as_train' : True}, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : '1010', \
+    process_dict.update({'sp20' : {'dualprocess' : self._process_sp19,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_sp19,
+                                  'inverseprocess' : self._inverseprocess_sp19,
+                                  'recorded_category' : 'sp19',
+                                  'info_retention' : False,
+                                  'defaultparams' : {'suffix' : 'sp20',
+                                                     'test_same_as_train' : True},
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : '1010',
                                   'labelctgy' : 'sp19'}})
-    process_dict.update({'sbst' : {'dualprocess' : self._process_sbst, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_sbst, \
-                                  'inverseprocess' : self._inverseprocess_sbst, \
-                                  'recorded_category' : 'sbst', \
-                                  'info_retention' : False, \
-                                  'defaultparams' : {'suffix' : 'sbst', \
-                                                     'test_same_as_train' : False}, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'concurrent_act', \
+    process_dict.update({'sbst' : {'dualprocess' : self._process_sbst,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_sbst,
+                                  'inverseprocess' : self._inverseprocess_sbst,
+                                  'recorded_category' : 'sbst',
+                                  'info_retention' : False,
+                                  'defaultparams' : {'suffix' : 'sbst',
+                                                     'test_same_as_train' : False},
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'concurrent_act',
                                   'labelctgy' : 'sbst'}})
-    process_dict.update({'sbs2' : {'dualprocess' : self._process_sbst, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_sbst, \
-                                  'inverseprocess' : self._inverseprocess_sbst, \
-                                  'recorded_category' : 'sbst', \
-                                  'info_retention' : False, \
-                                  'defaultparams' : {'suffix' : 'sbs2', \
-                                                     'test_same_as_train' : True}, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'concurrent_act', \
+    process_dict.update({'sbs2' : {'dualprocess' : self._process_sbst,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_sbst,
+                                  'inverseprocess' : self._inverseprocess_sbst,
+                                  'recorded_category' : 'sbst',
+                                  'info_retention' : False,
+                                  'defaultparams' : {'suffix' : 'sbs2',
+                                                     'test_same_as_train' : True},
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'concurrent_act',
                                   'labelctgy' : 'sbst'}})
-    process_dict.update({'sbs3' : {'dualprocess' : self._process_sbs3, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_sbs3, \
-                                  'inverseprocess' : self._inverseprocess_sbs3, \
-                                  'recorded_category' : 'sbs3', \
-                                  'info_retention' : False, \
-                                  'defaultparams' : {'suffix' : 'sbs3', \
-                                                     'test_same_as_train' : False}, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : '1010', \
+    process_dict.update({'sbs3' : {'dualprocess' : self._process_sbs3,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_sbs3,
+                                  'inverseprocess' : self._inverseprocess_sbs3,
+                                  'recorded_category' : 'sbs3',
+                                  'info_retention' : False,
+                                  'defaultparams' : {'suffix' : 'sbs3',
+                                                     'test_same_as_train' : False},
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : '1010',
                                   'labelctgy' : 'sbs3'}})
-    process_dict.update({'sbs4' : {'dualprocess' : self._process_sbs3, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_sbs3, \
-                                  'inverseprocess' : self._inverseprocess_sbs3, \
-                                  'recorded_category' : 'sbs3', \
-                                  'info_retention' : False, \
-                                  'defaultparams' : {'suffix' : 'sbs4', \
-                                                     'test_same_as_train' : True}, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : '1010', \
+    process_dict.update({'sbs4' : {'dualprocess' : self._process_sbs3,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_sbs3,
+                                  'inverseprocess' : self._inverseprocess_sbs3,
+                                  'recorded_category' : 'sbs3',
+                                  'info_retention' : False,
+                                  'defaultparams' : {'suffix' : 'sbs4',
+                                                     'test_same_as_train' : True},
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : '1010',
                                   'labelctgy' : 'sbs3'}})
-    process_dict.update({'hash' : {'dualprocess' : self._process_hash, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_hash, \
-                                  'recorded_category' : 'hash', \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'ordlexclude', \
+    process_dict.update({'hash' : {'dualprocess' : self._process_hash,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_hash,
+                                  'recorded_category' : 'hash',
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'ordlexclude',
                                   'labelctgy' : 'hash'}})
-    process_dict.update({'hsh2' : {'dualprocess' : self._process_hash, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_hash, \
-                                  'recorded_category' : 'hash', \
-                                  'inplace_option' : True, \
-                                  'defaultparams' : {'space' : '', \
-                                                     'excluded_characters' : []}, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'ordlexclude', \
+    process_dict.update({'hsh2' : {'dualprocess' : self._process_hash,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_hash,
+                                  'recorded_category' : 'hash',
+                                  'inplace_option' : True,
+                                  'defaultparams' : {'space' : '',
+                                                     'excluded_characters' : []},
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'ordlexclude',
                                   'labelctgy' : 'hash'}})
-    process_dict.update({'hs10' : {'dualprocess' : self._process_hs10, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_hs10, \
-                                  'recorded_category' : 'hs10', \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'boolexclude', \
+    process_dict.update({'hs10' : {'dualprocess' : self._process_hs10,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_hs10,
+                                  'recorded_category' : 'hs10',
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'boolexclude',
                                   'labelctgy' : 'hs10'}})
-    process_dict.update({'Uhsh' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_UPCS, \
-                                  'postprocess' : None, \
-                                  'inverseprocess' : self._inverseprocess_UPCS, \
-                                  'recorded_category' : 'UPCS', \
-                                  'info_retention' : False, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'exclude', \
+    process_dict.update({'Uhsh' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_UPCS,
+                                  'postprocess' : None,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
+                                  'recorded_category' : 'UPCS',
+                                  'info_retention' : False,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'hash'}})
-    process_dict.update({'Uhs2' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_UPCS, \
-                                  'postprocess' : None, \
-                                  'inverseprocess' : self._inverseprocess_UPCS, \
-                                  'recorded_category' : 'UPCS', \
-                                  'info_retention' : False, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'exclude', \
+    process_dict.update({'Uhs2' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_UPCS,
+                                  'postprocess' : None,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
+                                  'recorded_category' : 'UPCS',
+                                  'info_retention' : False,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'hash'}})
-    process_dict.update({'Uh10' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_UPCS, \
-                                  'postprocess' : None, \
-                                  'inverseprocess' : self._inverseprocess_UPCS, \
-                                  'recorded_category' : 'UPCS', \
-                                  'info_retention' : False, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'exclude', \
+    process_dict.update({'Uh10' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_UPCS,
+                                  'postprocess' : None,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
+                                  'recorded_category' : 'UPCS',
+                                  'info_retention' : False,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'hs10'}})
-    process_dict.update({'srch' : {'dualprocess' : self._process_srch, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_srch, \
-                                  'inverseprocess' : self._inverseprocess_srch, \
-                                  'recorded_category' : 'srch', \
-                                  'info_retention' : False, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'concurrent_act', \
+    process_dict.update({'srch' : {'dualprocess' : self._process_srch,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_srch,
+                                  'inverseprocess' : self._inverseprocess_srch,
+                                  'recorded_category' : 'srch',
+                                  'info_retention' : False,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'concurrent_act',
                                   'labelctgy' : 'srch'}})
-    process_dict.update({'src2' : {'dualprocess' : self._process_src2, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_src2, \
-                                  'inverseprocess' : self._inverseprocess_src2, \
-                                  'recorded_category' : 'src2', \
-                                  'info_retention' : False, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'concurrent_act', \
+    process_dict.update({'src2' : {'dualprocess' : self._process_src2,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_src2,
+                                  'inverseprocess' : self._inverseprocess_src2,
+                                  'recorded_category' : 'src2',
+                                  'info_retention' : False,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'concurrent_act',
                                   'labelctgy' : 'src2'}})
-    process_dict.update({'src3' : {'dualprocess' : self._process_src3, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_src3, \
-                                  'inverseprocess' : self._inverseprocess_src3, \
-                                  'recorded_category' : 'src3', \
-                                  'info_retention' : False, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'concurrent_act', \
+    process_dict.update({'src3' : {'dualprocess' : self._process_src3,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_src3,
+                                  'inverseprocess' : self._inverseprocess_src3,
+                                  'recorded_category' : 'src3',
+                                  'info_retention' : False,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'concurrent_act',
                                   'labelctgy' : 'src3'}})
-    process_dict.update({'src4' : {'dualprocess' : self._process_src4, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_src4, \
-                                  'inverseprocess' : self._inverseprocess_src4, \
-                                  'recorded_category' : 'src4', \
-                                  'info_retention' : False, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'singlct', \
+    process_dict.update({'src4' : {'dualprocess' : self._process_src4,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_src4,
+                                  'inverseprocess' : self._inverseprocess_src4,
+                                  'recorded_category' : 'src4',
+                                  'info_retention' : False,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'src4'}})
-    process_dict.update({'aggt' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_aggt, \
-                                  'postprocess' : None, \
-                                  'inverseprocess' : self._inverseprocess_UPCS, \
-                                  'recorded_category' : 'aggt', \
-                                  'info_retention' : False, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'exclude', \
+    process_dict.update({'aggt' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_aggt,
+                                  'postprocess' : None,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
+                                  'recorded_category' : 'aggt',
+                                  'info_retention' : False,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'ord3'}})
-    process_dict.update({'strn' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_strn, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : 'strn', \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'exclude', \
+    process_dict.update({'strn' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_strn,
+                                  'postprocess' : None,
+                                  'recorded_category' : 'strn',
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'ord3'}})
-    process_dict.update({'strg' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_strg, \
-                                  'postprocess' : None, \
-                                  'inverseprocess' : self._inverseprocess_strg, \
-                                  'recorded_category' : 'strg', \
-                                  'info_retention' : True, \
-                                  'NArowtype' : 'integer', \
-                                  'MLinfilltype' : 'exclude', \
+    process_dict.update({'strg' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_strg,
+                                  'postprocess' : None,
+                                  'inverseprocess' : self._inverseprocess_strg,
+                                  'recorded_category' : 'strg',
+                                  'info_retention' : True,
+                                  'NArowtype' : 'integer',
+                                  'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'ord3'}})
-    process_dict.update({'nmrc' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_nmrc, \
-                                  'postprocess' : None, \
-                                  'inverseprocess' : self._inverseprocess_nmrc, \
-                                  'recorded_category' : 'nmrc', \
-                                  'info_retention' : True, \
-                                  'defaultparams' : {'convention' : 'numbers', \
-                                                     'suffix' : 'nmrc'}, \
-                                  'NArowtype' : 'parsenumeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'nmrc' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_nmrc,
+                                  'postprocess' : None,
+                                  'inverseprocess' : self._inverseprocess_nmrc,
+                                  'recorded_category' : 'nmrc',
+                                  'info_retention' : True,
+                                  'defaultparams' : {'convention' : 'numbers',
+                                                     'suffix' : 'nmrc'},
+                                  'NArowtype' : 'parsenumeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmrc'}})
-    process_dict.update({'nmr2' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_nmrc, \
-                                  'postprocess' : None, \
-                                  'inverseprocess' : self._inverseprocess_nmrc, \
-                                  'recorded_category' : 'nmrc', \
-                                  'info_retention' : False, \
-                                  'defaultparams' : {'convention' : 'numbers', \
-                                                     'suffix' : 'nmrc'}, \
-                                  'NArowtype' : 'parsenumeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'nmr2' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_nmrc,
+                                  'postprocess' : None,
+                                  'inverseprocess' : self._inverseprocess_nmrc,
+                                  'recorded_category' : 'nmrc',
+                                  'info_retention' : False,
+                                  'defaultparams' : {'convention' : 'numbers',
+                                                     'suffix' : 'nmrc'},
+                                  'NArowtype' : 'parsenumeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
-    process_dict.update({'nmr3' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_nmrc, \
-                                  'postprocess' : None, \
-                                  'inverseprocess' : self._inverseprocess_nmrc, \
-                                  'recorded_category' : 'nmrc', \
-                                  'info_retention' : False, \
-                                  'defaultparams' : {'convention' : 'numbers', \
-                                                     'suffix' : 'nmrc'}, \
-                                  'NArowtype' : 'parsenumeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'nmr3' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_nmrc,
+                                  'postprocess' : None,
+                                  'inverseprocess' : self._inverseprocess_nmrc,
+                                  'recorded_category' : 'nmrc',
+                                  'info_retention' : False,
+                                  'defaultparams' : {'convention' : 'numbers',
+                                                     'suffix' : 'nmrc'},
+                                  'NArowtype' : 'parsenumeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mnmx'}})
-    process_dict.update({'nmr4' : {'dualprocess' : self._process_nmr4, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_nmr4, \
-                                  'inverseprocess' : self._inverseprocess_nmrc, \
-                                  'recorded_category' : 'nmr4', \
-                                  'info_retention' : True, \
-                                  'defaultparams' : {'convention' : 'numbers', \
-                                                     'suffix' : 'nmr4', \
-                                                     'test_same_as_train' : True}, \
-                                  'NArowtype' : 'parsenumeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'nmr4' : {'dualprocess' : self._process_nmr4,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_nmr4,
+                                  'inverseprocess' : self._inverseprocess_nmrc,
+                                  'recorded_category' : 'nmr4',
+                                  'info_retention' : True,
+                                  'defaultparams' : {'convention' : 'numbers',
+                                                     'suffix' : 'nmr4',
+                                                     'test_same_as_train' : True},
+                                  'NArowtype' : 'parsenumeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmrc'}})
-    process_dict.update({'nmr5' : {'dualprocess' : self._process_nmr4, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_nmr4, \
-                                  'inverseprocess' : self._inverseprocess_nmrc, \
-                                  'recorded_category' : 'nmr4', \
-                                  'info_retention' : False, \
-                                  'defaultparams' : {'convention' : 'numbers', \
-                                                     'suffix' : 'nmr4', \
-                                                     'test_same_as_train' : True}, \
-                                  'NArowtype' : 'parsenumeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'nmr5' : {'dualprocess' : self._process_nmr4,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_nmr4,
+                                  'inverseprocess' : self._inverseprocess_nmrc,
+                                  'recorded_category' : 'nmr4',
+                                  'info_retention' : False,
+                                  'defaultparams' : {'convention' : 'numbers',
+                                                     'suffix' : 'nmr4',
+                                                     'test_same_as_train' : True},
+                                  'NArowtype' : 'parsenumeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
-    process_dict.update({'nmr6' : {'dualprocess' : self._process_nmr4, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_nmr4, \
-                                  'inverseprocess' : self._inverseprocess_nmrc, \
-                                  'recorded_category' : 'nmr4', \
-                                  'info_retention' : False, \
-                                  'defaultparams' : {'convention' : 'numbers', \
-                                                     'suffix' : 'nmr4', \
-                                                     'test_same_as_train' : True}, \
-                                  'NArowtype' : 'parsenumeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'nmr6' : {'dualprocess' : self._process_nmr4,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_nmr4,
+                                  'inverseprocess' : self._inverseprocess_nmrc,
+                                  'recorded_category' : 'nmr4',
+                                  'info_retention' : False,
+                                  'defaultparams' : {'convention' : 'numbers',
+                                                     'suffix' : 'nmr4',
+                                                     'test_same_as_train' : True},
+                                  'NArowtype' : 'parsenumeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mnmx'}})
-    process_dict.update({'nmr7' : {'dualprocess' : self._process_nmr4, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_nmr4, \
-                                  'inverseprocess' : self._inverseprocess_nmrc, \
-                                  'recorded_category' : 'nmr4', \
-                                  'info_retention' : False, \
-                                  'defaultparams' : {'convention' : 'numbers', \
-                                                     'suffix' : 'nmr7', \
-                                                     'test_same_as_train' : False}, \
-                                  'NArowtype' : 'parsenumeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'nmr7' : {'dualprocess' : self._process_nmr4,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_nmr4,
+                                  'inverseprocess' : self._inverseprocess_nmrc,
+                                  'recorded_category' : 'nmr4',
+                                  'info_retention' : False,
+                                  'defaultparams' : {'convention' : 'numbers',
+                                                     'suffix' : 'nmr7',
+                                                     'test_same_as_train' : False},
+                                  'NArowtype' : 'parsenumeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmrc'}})
-    process_dict.update({'nmr8' : {'dualprocess' : self._process_nmr4, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_nmr4, \
-                                  'inverseprocess' : self._inverseprocess_nmrc, \
-                                  'recorded_category' : 'nmr4', \
-                                  'info_retention' : False, \
-                                  'defaultparams' : {'convention' : 'numbers', \
-                                                     'suffix' : 'nmr7', \
-                                                     'test_same_as_train' : False}, \
-                                  'NArowtype' : 'parsenumeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'nmr8' : {'dualprocess' : self._process_nmr4,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_nmr4,
+                                  'inverseprocess' : self._inverseprocess_nmrc,
+                                  'recorded_category' : 'nmr4',
+                                  'info_retention' : False,
+                                  'defaultparams' : {'convention' : 'numbers',
+                                                     'suffix' : 'nmr7',
+                                                     'test_same_as_train' : False},
+                                  'NArowtype' : 'parsenumeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
-    process_dict.update({'nmr9' : {'dualprocess' : self._process_nmr4, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_nmr4, \
-                                  'inverseprocess' : self._inverseprocess_nmrc, \
-                                  'recorded_category' : 'nmr4', \
-                                  'info_retention' : False, \
-                                  'defaultparams' : {'convention' : 'numbers', \
-                                                     'suffix' : 'nmr7', \
-                                                     'test_same_as_train' : False}, \
-                                  'NArowtype' : 'parsenumeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'nmr9' : {'dualprocess' : self._process_nmr4,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_nmr4,
+                                  'inverseprocess' : self._inverseprocess_nmrc,
+                                  'recorded_category' : 'nmr4',
+                                  'info_retention' : False,
+                                  'defaultparams' : {'convention' : 'numbers',
+                                                     'suffix' : 'nmr7',
+                                                     'test_same_as_train' : False},
+                                  'NArowtype' : 'parsenumeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mnmx'}})
-    process_dict.update({'nmcm' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_nmrc, \
-                                  'postprocess' : None, \
-                                  'inverseprocess' : self._inverseprocess_nmrc, \
-                                  'recorded_category' : 'nmrc', \
-                                  'info_retention' : True, \
-                                  'defaultparams' : {'convention' : 'commas', \
-                                                     'suffix' : 'nmcm'}, \
-                                  'NArowtype' : 'parsenumeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'nmcm' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_nmrc,
+                                  'postprocess' : None,
+                                  'inverseprocess' : self._inverseprocess_nmrc,
+                                  'recorded_category' : 'nmrc',
+                                  'info_retention' : True,
+                                  'defaultparams' : {'convention' : 'commas',
+                                                     'suffix' : 'nmcm'},
+                                  'NArowtype' : 'parsenumeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmcm'}})
-    process_dict.update({'nmc2' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_nmrc, \
-                                  'postprocess' : None, \
-                                  'inverseprocess' : self._inverseprocess_nmrc, \
-                                  'recorded_category' : 'nmrc', \
-                                  'info_retention' : False, \
-                                  'defaultparams' : {'convention' : 'commas', \
-                                                     'suffix' : 'nmcm'}, \
-                                  'NArowtype' : 'parsenumeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'nmc2' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_nmrc,
+                                  'postprocess' : None,
+                                  'inverseprocess' : self._inverseprocess_nmrc,
+                                  'recorded_category' : 'nmrc',
+                                  'info_retention' : False,
+                                  'defaultparams' : {'convention' : 'commas',
+                                                     'suffix' : 'nmcm'},
+                                  'NArowtype' : 'parsenumeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
-    process_dict.update({'nmc3' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_nmrc, \
-                                  'postprocess' : None, \
-                                  'inverseprocess' : self._inverseprocess_nmrc, \
-                                  'recorded_category' : 'nmrc', \
-                                  'info_retention' : False, \
-                                  'defaultparams' : {'convention' : 'commas', \
-                                                     'suffix' : 'nmcm'}, \
-                                  'NArowtype' : 'parsenumeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'nmc3' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_nmrc,
+                                  'postprocess' : None,
+                                  'inverseprocess' : self._inverseprocess_nmrc,
+                                  'recorded_category' : 'nmrc',
+                                  'info_retention' : False,
+                                  'defaultparams' : {'convention' : 'commas',
+                                                     'suffix' : 'nmcm'},
+                                  'NArowtype' : 'parsenumeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mnmx'}})
-    process_dict.update({'nmc4' : {'dualprocess' : self._process_nmr4, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_nmr4, \
-                                  'inverseprocess' : self._inverseprocess_nmrc, \
-                                  'recorded_category' : 'nmr4', \
-                                  'info_retention' : True, \
-                                  'defaultparams' : {'convention' : 'commas', \
-                                                     'suffix' : 'nmc4', \
-                                                     'test_same_as_train' : True}, \
-                                  'NArowtype' : 'parsenumeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'nmc4' : {'dualprocess' : self._process_nmr4,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_nmr4,
+                                  'inverseprocess' : self._inverseprocess_nmrc,
+                                  'recorded_category' : 'nmr4',
+                                  'info_retention' : True,
+                                  'defaultparams' : {'convention' : 'commas',
+                                                     'suffix' : 'nmc4',
+                                                     'test_same_as_train' : True},
+                                  'NArowtype' : 'parsenumeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmrc'}})
-    process_dict.update({'nmc5' : {'dualprocess' : self._process_nmr4, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_nmr4, \
-                                  'inverseprocess' : self._inverseprocess_nmrc, \
-                                  'recorded_category' : 'nmr4', \
-                                  'info_retention' : False, \
-                                  'defaultparams' : {'convention' : 'commas', \
-                                                     'suffix' : 'nmc4', \
-                                                     'test_same_as_train' : True}, \
-                                  'NArowtype' : 'parsenumeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'nmc5' : {'dualprocess' : self._process_nmr4,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_nmr4,
+                                  'inverseprocess' : self._inverseprocess_nmrc,
+                                  'recorded_category' : 'nmr4',
+                                  'info_retention' : False,
+                                  'defaultparams' : {'convention' : 'commas',
+                                                     'suffix' : 'nmc4',
+                                                     'test_same_as_train' : True},
+                                  'NArowtype' : 'parsenumeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
-    process_dict.update({'nmc6' : {'dualprocess' : self._process_nmr4, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_nmr4, \
-                                  'inverseprocess' : self._inverseprocess_nmrc, \
-                                  'recorded_category' : 'nmr4', \
-                                  'info_retention' : False, \
-                                  'defaultparams' : {'convention' : 'commas', \
-                                                     'suffix' : 'nmc4', \
-                                                     'test_same_as_train' : True}, \
-                                  'NArowtype' : 'parsenumeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'nmc6' : {'dualprocess' : self._process_nmr4,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_nmr4,
+                                  'inverseprocess' : self._inverseprocess_nmrc,
+                                  'recorded_category' : 'nmr4',
+                                  'info_retention' : False,
+                                  'defaultparams' : {'convention' : 'commas',
+                                                     'suffix' : 'nmc4',
+                                                     'test_same_as_train' : True},
+                                  'NArowtype' : 'parsenumeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mnmx'}})
-    process_dict.update({'nmc7' : {'dualprocess' : self._process_nmr4, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_nmr4, \
-                                  'inverseprocess' : self._inverseprocess_nmrc, \
-                                  'recorded_category' : 'nmr4', \
-                                  'info_retention' : False, \
-                                  'defaultparams' : {'convention' : 'commas', \
-                                                     'suffix' : 'nmc7', \
-                                                     'test_same_as_train' : False}, \
-                                  'NArowtype' : 'parsenumeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'nmc7' : {'dualprocess' : self._process_nmr4,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_nmr4,
+                                  'inverseprocess' : self._inverseprocess_nmrc,
+                                  'recorded_category' : 'nmr4',
+                                  'info_retention' : False,
+                                  'defaultparams' : {'convention' : 'commas',
+                                                     'suffix' : 'nmc7',
+                                                     'test_same_as_train' : False},
+                                  'NArowtype' : 'parsenumeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmrc'}})
-    process_dict.update({'nmc8' : {'dualprocess' : self._process_nmr4, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_nmr4, \
-                                  'inverseprocess' : self._inverseprocess_nmrc, \
-                                  'recorded_category' : 'nmr4', \
-                                  'info_retention' : False, \
-                                  'defaultparams' : {'convention' : 'commas', \
-                                                     'suffix' : 'nmc7', \
-                                                     'test_same_as_train' : False}, \
-                                  'NArowtype' : 'parsenumeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'nmc8' : {'dualprocess' : self._process_nmr4,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_nmr4,
+                                  'inverseprocess' : self._inverseprocess_nmrc,
+                                  'recorded_category' : 'nmr4',
+                                  'info_retention' : False,
+                                  'defaultparams' : {'convention' : 'commas',
+                                                     'suffix' : 'nmc7',
+                                                     'test_same_as_train' : False},
+                                  'NArowtype' : 'parsenumeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
-    process_dict.update({'nmc9' : {'dualprocess' : self._process_nmr4, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_nmr4, \
-                                  'inverseprocess' : self._inverseprocess_nmrc, \
-                                  'recorded_category' : 'nmr4', \
-                                  'info_retention' : False, \
-                                  'defaultparams' : {'convention' : 'commas', \
-                                                     'suffix' : 'nmc7', \
-                                                     'test_same_as_train' : False}, \
-                                  'NArowtype' : 'parsenumeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'nmc9' : {'dualprocess' : self._process_nmr4,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_nmr4,
+                                  'inverseprocess' : self._inverseprocess_nmrc,
+                                  'recorded_category' : 'nmr4',
+                                  'info_retention' : False,
+                                  'defaultparams' : {'convention' : 'commas',
+                                                     'suffix' : 'nmc7',
+                                                     'test_same_as_train' : False},
+                                  'NArowtype' : 'parsenumeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mnmx'}})
-    process_dict.update({'nmEU' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_nmrc, \
-                                  'postprocess' : None, \
-                                  'inverseprocess' : self._inverseprocess_nmrc, \
-                                  'recorded_category' : 'nmrc', \
-                                  'info_retention' : True, \
-                                  'defaultparams' : {'convention' : 'spaces', \
-                                                     'suffix' : 'nmEU'}, \
-                                  'NArowtype' : 'parsenumeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'nmEU' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_nmrc,
+                                  'postprocess' : None,
+                                  'inverseprocess' : self._inverseprocess_nmrc,
+                                  'recorded_category' : 'nmrc',
+                                  'info_retention' : True,
+                                  'defaultparams' : {'convention' : 'spaces',
+                                                     'suffix' : 'nmEU'},
+                                  'NArowtype' : 'parsenumeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmrc'}})
-    process_dict.update({'nmE2' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_nmrc, \
-                                  'postprocess' : None, \
-                                  'inverseprocess' : self._inverseprocess_nmrc, \
-                                  'recorded_category' : 'nmrc', \
-                                  'info_retention' : False, \
-                                  'defaultparams' : {'convention' : 'spaces', \
-                                                     'suffix' : 'nmEU'}, \
-                                  'NArowtype' : 'parsenumeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'nmE2' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_nmrc,
+                                  'postprocess' : None,
+                                  'inverseprocess' : self._inverseprocess_nmrc,
+                                  'recorded_category' : 'nmrc',
+                                  'info_retention' : False,
+                                  'defaultparams' : {'convention' : 'spaces',
+                                                     'suffix' : 'nmEU'},
+                                  'NArowtype' : 'parsenumeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
-    process_dict.update({'nmE3' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_nmrc, \
-                                  'postprocess' : None, \
-                                  'inverseprocess' : self._inverseprocess_nmrc, \
-                                  'recorded_category' : 'nmrc', \
-                                  'info_retention' : False, \
-                                  'defaultparams' : {'convention' : 'spaces', \
-                                                     'suffix' : 'nmEU'}, \
-                                  'NArowtype' : 'parsenumeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'nmE3' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_nmrc,
+                                  'postprocess' : None,
+                                  'inverseprocess' : self._inverseprocess_nmrc,
+                                  'recorded_category' : 'nmrc',
+                                  'info_retention' : False,
+                                  'defaultparams' : {'convention' : 'spaces',
+                                                     'suffix' : 'nmEU'},
+                                  'NArowtype' : 'parsenumeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mnmx'}})
-    process_dict.update({'nmE4' : {'dualprocess' : self._process_nmr4, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_nmr4, \
-                                  'inverseprocess' : self._inverseprocess_nmrc, \
-                                  'recorded_category' : 'nmr4', \
-                                  'info_retention' : True, \
-                                  'defaultparams' : {'convention' : 'spaces', \
-                                                     'suffix' : 'nmE4', \
-                                                     'test_same_as_train' : True}, \
-                                  'NArowtype' : 'parsenumeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'nmE4' : {'dualprocess' : self._process_nmr4,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_nmr4,
+                                  'inverseprocess' : self._inverseprocess_nmrc,
+                                  'recorded_category' : 'nmr4',
+                                  'info_retention' : True,
+                                  'defaultparams' : {'convention' : 'spaces',
+                                                     'suffix' : 'nmE4',
+                                                     'test_same_as_train' : True},
+                                  'NArowtype' : 'parsenumeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmrc'}})
-    process_dict.update({'nmE5' : {'dualprocess' : self._process_nmr4, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_nmr4, \
-                                  'inverseprocess' : self._inverseprocess_nmrc, \
-                                  'recorded_category' : 'nmr4', \
-                                  'info_retention' : False, \
-                                  'defaultparams' : {'convention' : 'spaces', \
-                                                     'suffix' : 'nmE4', \
-                                                     'test_same_as_train' : True}, \
-                                  'NArowtype' : 'parsenumeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'nmE5' : {'dualprocess' : self._process_nmr4,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_nmr4,
+                                  'inverseprocess' : self._inverseprocess_nmrc,
+                                  'recorded_category' : 'nmr4',
+                                  'info_retention' : False,
+                                  'defaultparams' : {'convention' : 'spaces',
+                                                     'suffix' : 'nmE4',
+                                                     'test_same_as_train' : True},
+                                  'NArowtype' : 'parsenumeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
-    process_dict.update({'nmE6' : {'dualprocess' : self._process_nmr4, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_nmr4, \
-                                  'inverseprocess' : self._inverseprocess_nmrc, \
-                                  'recorded_category' : 'nmr4', \
-                                  'info_retention' : False, \
-                                  'defaultparams' : {'convention' : 'spaces', \
-                                                     'suffix' : 'nmE4', \
-                                                     'test_same_as_train' : True}, \
-                                  'NArowtype' : 'parsenumeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'nmE6' : {'dualprocess' : self._process_nmr4,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_nmr4,
+                                  'inverseprocess' : self._inverseprocess_nmrc,
+                                  'recorded_category' : 'nmr4',
+                                  'info_retention' : False,
+                                  'defaultparams' : {'convention' : 'spaces',
+                                                     'suffix' : 'nmE4',
+                                                     'test_same_as_train' : True},
+                                  'NArowtype' : 'parsenumeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mnmx'}})
-    process_dict.update({'nmE7' : {'dualprocess' : self._process_nmr4, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_nmr4, \
-                                  'inverseprocess' : self._inverseprocess_nmrc, \
-                                  'recorded_category' : 'nmr4', \
-                                  'info_retention' : False, \
-                                  'defaultparams' : {'convention' : 'spaces', \
-                                                     'suffix' : 'nmE7', \
-                                                     'test_same_as_train' : False}, \
-                                  'NArowtype' : 'parsenumeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'nmE7' : {'dualprocess' : self._process_nmr4,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_nmr4,
+                                  'inverseprocess' : self._inverseprocess_nmrc,
+                                  'recorded_category' : 'nmr4',
+                                  'info_retention' : False,
+                                  'defaultparams' : {'convention' : 'spaces',
+                                                     'suffix' : 'nmE7',
+                                                     'test_same_as_train' : False},
+                                  'NArowtype' : 'parsenumeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmrc'}})
-    process_dict.update({'nmE8' : {'dualprocess' : self._process_nmr4, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_nmr4, \
-                                  'inverseprocess' : self._inverseprocess_nmrc, \
-                                  'recorded_category' : 'nmr4', \
-                                  'info_retention' : False, \
-                                  'defaultparams' : {'convention' : 'spaces', \
-                                                     'suffix' : 'nmE7', \
-                                                     'test_same_as_train' : False}, \
-                                  'NArowtype' : 'parsenumeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'nmE8' : {'dualprocess' : self._process_nmr4,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_nmr4,
+                                  'inverseprocess' : self._inverseprocess_nmrc,
+                                  'recorded_category' : 'nmr4',
+                                  'info_retention' : False,
+                                  'defaultparams' : {'convention' : 'spaces',
+                                                     'suffix' : 'nmE7',
+                                                     'test_same_as_train' : False},
+                                  'NArowtype' : 'parsenumeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
-    process_dict.update({'nmE9' : {'dualprocess' : self._process_nmr4, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_nmr4, \
-                                  'inverseprocess' : self._inverseprocess_nmrc, \
-                                  'recorded_category' : 'nmr4', \
-                                  'info_retention' : False, \
-                                  'defaultparams' : {'convention' : 'spaces', \
-                                                     'suffix' : 'nmE7', \
-                                                     'test_same_as_train' : False}, \
-                                  'NArowtype' : 'parsenumeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'nmE9' : {'dualprocess' : self._process_nmr4,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_nmr4,
+                                  'inverseprocess' : self._inverseprocess_nmrc,
+                                  'recorded_category' : 'nmr4',
+                                  'info_retention' : False,
+                                  'defaultparams' : {'convention' : 'spaces',
+                                                     'suffix' : 'nmE7',
+                                                     'test_same_as_train' : False},
+                                  'NArowtype' : 'parsenumeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mnmx'}})
-    process_dict.update({'ors7' : {'dualprocess' : self._process_spl2, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_spl2, \
-                                  'inverseprocess' : self._inverseprocess_spl2, \
-                                  'recorded_category' : 'spl2', \
-                                  'info_retention' : False, \
-                                  'defaultparams' : {'suffix' : 'spl5', \
-                                                     'test_same_as_train' : False, \
-                                                     'consolidate_nonoverlaps' : True}, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'exclude', \
+    process_dict.update({'ors7' : {'dualprocess' : self._process_spl2,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_spl2,
+                                  'inverseprocess' : self._inverseprocess_spl2,
+                                  'recorded_category' : 'spl2',
+                                  'info_retention' : False,
+                                  'defaultparams' : {'suffix' : 'spl5',
+                                                     'test_same_as_train' : False,
+                                                     'consolidate_nonoverlaps' : True},
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'ord3'}})
-    process_dict.update({'ors5' : {'dualprocess' : self._process_spl2, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_spl2, \
-                                  'inverseprocess' : self._inverseprocess_spl2, \
-                                  'recorded_category' : 'spl2', \
-                                  'info_retention' : False, \
-                                  'defaultparams' : {'suffix' : 'spl5', \
-                                                     'test_same_as_train' : False, \
-                                                     'consolidate_nonoverlaps' : True}, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'exclude', \
+    process_dict.update({'ors5' : {'dualprocess' : self._process_spl2,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_spl2,
+                                  'inverseprocess' : self._inverseprocess_spl2,
+                                  'recorded_category' : 'spl2',
+                                  'info_retention' : False,
+                                  'defaultparams' : {'suffix' : 'spl5',
+                                                     'test_same_as_train' : False,
+                                                     'consolidate_nonoverlaps' : True},
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'ord3'}})
-    process_dict.update({'ors6' : {'dualprocess' : self._process_spl2, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_spl2, \
-                                  'inverseprocess' : self._inverseprocess_spl2, \
-                                  'recorded_category' : 'spl2', \
-                                  'info_retention' : False, \
-                                  'defaultparams' : {'suffix' : 'spl5', \
-                                                     'test_same_as_train' : False, \
-                                                     'consolidate_nonoverlaps' : True}, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'exclude', \
+    process_dict.update({'ors6' : {'dualprocess' : self._process_spl2,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_spl2,
+                                  'inverseprocess' : self._inverseprocess_spl2,
+                                  'recorded_category' : 'spl2',
+                                  'info_retention' : False,
+                                  'defaultparams' : {'suffix' : 'spl5',
+                                                     'test_same_as_train' : False,
+                                                     'consolidate_nonoverlaps' : True},
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'ord3'}})
-    process_dict.update({'ordl' : {'dualprocess' : self._process_ordl, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_ordl, \
-                                  'inverseprocess' : self._inverseprocess_ordl, \
-                                  'recorded_category' : 'ordl', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'singlct', \
+    process_dict.update({'ordl' : {'dualprocess' : self._process_ordl,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_ordl,
+                                  'inverseprocess' : self._inverseprocess_ordl,
+                                  'recorded_category' : 'ordl',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'ordl'}})
-    process_dict.update({'ord2' : {'dualprocess' : self._process_ordl, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_ordl, \
-                                  'inverseprocess' : self._inverseprocess_ordl, \
-                                  'recorded_category' : 'ordl', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'singlct', \
+    process_dict.update({'ord2' : {'dualprocess' : self._process_ordl,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_ordl,
+                                  'inverseprocess' : self._inverseprocess_ordl,
+                                  'recorded_category' : 'ordl',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'mnmx'}})
-    process_dict.update({'ord3' : {'dualprocess' : self._process_ord3, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_ord3, \
-                                  'inverseprocess' : self._inverseprocess_ord3, \
-                                  'recorded_category' : 'ord3', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'singlct', \
+    process_dict.update({'ord3' : {'dualprocess' : self._process_ord3,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_ord3,
+                                  'inverseprocess' : self._inverseprocess_ord3,
+                                  'recorded_category' : 'ord3',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'ord3'}})
-    process_dict.update({'ord5' : {'dualprocess' : self._process_ordl, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_ordl, \
-                                  'inverseprocess' : self._inverseprocess_ordl, \
-                                  'recorded_category' : 'ordl', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'exclude', \
+    process_dict.update({'ord5' : {'dualprocess' : self._process_ordl,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_ordl,
+                                  'inverseprocess' : self._inverseprocess_ordl,
+                                  'recorded_category' : 'ordl',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'ordl'}})
-    process_dict.update({'maxb' : {'dualprocess' : self._process_maxb, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_maxb, \
-                                  'inverseprocess' : self._inverseprocess_UPCS, \
-                                  'recorded_category' : 'maxb', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'singlct', \
+    process_dict.update({'maxb' : {'dualprocess' : self._process_maxb,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_maxb,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
+                                  'recorded_category' : 'maxb',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'maxb'}})
-    process_dict.update({'or3b' : {'dualprocess' : self._process_ord3, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_ord3, \
-                                  'inverseprocess' : self._inverseprocess_ord3, \
-                                  'recorded_category' : 'ord3', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'singlct', \
+    process_dict.update({'or3b' : {'dualprocess' : self._process_ord3,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_ord3,
+                                  'inverseprocess' : self._inverseprocess_ord3,
+                                  'recorded_category' : 'ord3',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'maxb'}})
-    process_dict.update({'matx' : {'dualprocess' : self._process_maxb, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_maxb, \
-                                  'inverseprocess' : self._inverseprocess_UPCS, \
-                                  'recorded_category' : 'maxb', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'singlct', \
+    process_dict.update({'matx' : {'dualprocess' : self._process_maxb,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_maxb,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
+                                  'recorded_category' : 'maxb',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'onht'}})
-    process_dict.update({'or3c' : {'dualprocess' : self._process_ord3, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_ord3, \
-                                  'inverseprocess' : self._inverseprocess_ord3, \
-                                  'recorded_category' : 'ord3', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'singlct', \
+    process_dict.update({'or3c' : {'dualprocess' : self._process_ord3,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_ord3,
+                                  'inverseprocess' : self._inverseprocess_ord3,
+                                  'recorded_category' : 'ord3',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'onht'}})
-    process_dict.update({'ma10' : {'dualprocess' : self._process_maxb, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_maxb, \
-                                  'inverseprocess' : self._inverseprocess_UPCS, \
-                                  'recorded_category' : 'maxb', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'singlct', \
+    process_dict.update({'ma10' : {'dualprocess' : self._process_maxb,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_maxb,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
+                                  'recorded_category' : 'maxb',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'singlct',
                                   'labelctgy' : '1010'}})
-    process_dict.update({'or3d' : {'dualprocess' : self._process_ord3, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_ord3, \
-                                  'inverseprocess' : self._inverseprocess_ord3, \
-                                  'recorded_category' : 'ord3', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'singlct', \
+    process_dict.update({'or3d' : {'dualprocess' : self._process_ord3,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_ord3,
+                                  'inverseprocess' : self._inverseprocess_ord3,
+                                  'recorded_category' : 'ord3',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'singlct',
                                   'labelctgy' : '1010'}})
-    process_dict.update({'ucct' : {'dualprocess' : self._process_ucct, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_ucct, \
-                                  'recorded_category' : 'ucct', \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'ucct' : {'dualprocess' : self._process_ucct,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_ucct,
+                                  'recorded_category' : 'ucct',
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'ucct'}})
-    process_dict.update({'ord4' : {'dualprocess' : self._process_ord3, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_ord3, \
-                                  'inverseprocess' : self._inverseprocess_ord3, \
-                                  'recorded_category' : 'ord3', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'singlct', \
+    process_dict.update({'ord4' : {'dualprocess' : self._process_ord3,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_ord3,
+                                  'inverseprocess' : self._inverseprocess_ord3,
+                                  'recorded_category' : 'ord3',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'mnmx'}})
-    process_dict.update({'ors2' : {'dualprocess' : self._process_spl2, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_spl2, \
-                                  'inverseprocess' : self._inverseprocess_spl2, \
-                                  'recorded_category' : 'spl2', \
-                                  'info_retention' : False, \
-                                  'defaultparams' : {'suffix' : 'spl2', \
-                                                     'test_same_as_train' : False, \
-                                                     'consolidate_nonoverlaps' : False}, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'exclude', \
+    process_dict.update({'ors2' : {'dualprocess' : self._process_spl2,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_spl2,
+                                  'inverseprocess' : self._inverseprocess_spl2,
+                                  'recorded_category' : 'spl2',
+                                  'info_retention' : False,
+                                  'defaultparams' : {'suffix' : 'spl2',
+                                                     'test_same_as_train' : False,
+                                                     'consolidate_nonoverlaps' : False},
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'ord3'}})
-    process_dict.update({'or10' : {'dualprocess' : None, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : False, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'exclude', \
+    process_dict.update({'or10' : {'dualprocess' : None,
+                                  'singleprocess' : None,
+                                  'postprocess' : None,
+                                  'recorded_category' : False,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'mnmx'}})
-    process_dict.update({'or11' : {'dualprocess' : self._process_1010, \
-                                   'singleprocess' : None, \
-                                   'postprocess' : self._postprocess_1010, \
-                                   'inverseprocess' : self._inverseprocess_1010, \
-                                   'recorded_category' : '1010', \
-                                   'info_retention' : True, \
-                                   'NArowtype' : 'justNaN', \
-                                   'MLinfilltype' : '1010', \
+    process_dict.update({'or11' : {'dualprocess' : self._process_1010,
+                                   'singleprocess' : None,
+                                   'postprocess' : self._postprocess_1010,
+                                   'inverseprocess' : self._inverseprocess_1010,
+                                   'recorded_category' : '1010',
+                                   'info_retention' : True,
+                                   'NArowtype' : 'justNaN',
+                                   'MLinfilltype' : '1010',
                                    'labelctgy' : 'ord3'}})
-    process_dict.update({'or12' : {'dualprocess' : self._process_1010, \
-                                   'singleprocess' : None, \
-                                   'postprocess' : self._postprocess_1010, \
-                                   'inverseprocess' : self._inverseprocess_1010, \
-                                   'recorded_category' : '1010', \
-                                   'info_retention' : True, \
-                                   'NArowtype' : 'justNaN', \
-                                   'MLinfilltype' : '1010', \
+    process_dict.update({'or12' : {'dualprocess' : self._process_1010,
+                                   'singleprocess' : None,
+                                   'postprocess' : self._postprocess_1010,
+                                   'inverseprocess' : self._inverseprocess_1010,
+                                   'recorded_category' : '1010',
+                                   'info_retention' : True,
+                                   'NArowtype' : 'justNaN',
+                                   'MLinfilltype' : '1010',
                                    'labelctgy' : 'ord3'}})
-    process_dict.update({'or13' : {'dualprocess' : self._process_1010, \
-                                   'singleprocess' : None, \
-                                   'postprocess' : self._postprocess_1010, \
-                                   'inverseprocess' : self._inverseprocess_1010, \
-                                   'recorded_category' : '1010', \
-                                   'info_retention' : True, \
-                                   'NArowtype' : 'justNaN', \
-                                   'MLinfilltype' : '1010', \
+    process_dict.update({'or13' : {'dualprocess' : self._process_1010,
+                                   'singleprocess' : None,
+                                   'postprocess' : self._postprocess_1010,
+                                   'inverseprocess' : self._inverseprocess_1010,
+                                   'recorded_category' : '1010',
+                                   'info_retention' : True,
+                                   'NArowtype' : 'justNaN',
+                                   'MLinfilltype' : '1010',
                                    'labelctgy' : 'ord3'}})
-    process_dict.update({'or14' : {'dualprocess' : self._process_1010, \
-                                   'singleprocess' : None, \
-                                   'postprocess' : self._postprocess_1010, \
-                                   'inverseprocess' : self._inverseprocess_1010, \
-                                   'recorded_category' : '1010', \
-                                   'info_retention' : True, \
-                                   'NArowtype' : 'justNaN', \
-                                   'MLinfilltype' : '1010', \
+    process_dict.update({'or14' : {'dualprocess' : self._process_1010,
+                                   'singleprocess' : None,
+                                   'postprocess' : self._postprocess_1010,
+                                   'inverseprocess' : self._inverseprocess_1010,
+                                   'recorded_category' : '1010',
+                                   'info_retention' : True,
+                                   'NArowtype' : 'justNaN',
+                                   'MLinfilltype' : '1010',
                                    'labelctgy' : 'ord3'}})
-    process_dict.update({'or15' : {'dualprocess' : None, \
-                                   'singleprocess' : self._process_UPCS, \
-                                   'postprocess' : None, \
-                                   'inverseprocess' : self._inverseprocess_UPCS, \
-                                   'recorded_category' : 'UPCS', \
-                                   'info_retention' : False, \
-                                   'inplace_option' : True, \
-                                   'NArowtype' : 'justNaN', \
-                                   'MLinfilltype' : 'exclude', \
+    process_dict.update({'or15' : {'dualprocess' : None,
+                                   'singleprocess' : self._process_UPCS,
+                                   'postprocess' : None,
+                                   'inverseprocess' : self._inverseprocess_UPCS,
+                                   'recorded_category' : 'UPCS',
+                                   'info_retention' : False,
+                                   'inplace_option' : True,
+                                   'NArowtype' : 'justNaN',
+                                   'MLinfilltype' : 'exclude',
                                    'labelctgy' : 'ord3'}})
-    process_dict.update({'or16' : {'dualprocess' : None, \
-                                   'singleprocess' : self._process_UPCS, \
-                                   'postprocess' : None, \
-                                   'inverseprocess' : self._inverseprocess_UPCS, \
-                                   'recorded_category' : 'UPCS', \
-                                   'info_retention' : False, \
-                                   'inplace_option' : True, \
-                                   'NArowtype' : 'justNaN', \
-                                   'MLinfilltype' : 'exclude', \
+    process_dict.update({'or16' : {'dualprocess' : None,
+                                   'singleprocess' : self._process_UPCS,
+                                   'postprocess' : None,
+                                   'inverseprocess' : self._inverseprocess_UPCS,
+                                   'recorded_category' : 'UPCS',
+                                   'info_retention' : False,
+                                   'inplace_option' : True,
+                                   'NArowtype' : 'justNaN',
+                                   'MLinfilltype' : 'exclude',
                                    'labelctgy' : 'ord3'}})
-    process_dict.update({'or17' : {'dualprocess' : None, \
-                                   'singleprocess' : self._process_UPCS, \
-                                   'postprocess' : None, \
-                                   'inverseprocess' : self._inverseprocess_UPCS, \
-                                   'recorded_category' : 'UPCS', \
-                                   'info_retention' : False, \
-                                   'inplace_option' : True, \
-                                   'NArowtype' : 'justNaN', \
-                                   'MLinfilltype' : 'exclude', \
+    process_dict.update({'or17' : {'dualprocess' : None,
+                                   'singleprocess' : self._process_UPCS,
+                                   'postprocess' : None,
+                                   'inverseprocess' : self._inverseprocess_UPCS,
+                                   'recorded_category' : 'UPCS',
+                                   'info_retention' : False,
+                                   'inplace_option' : True,
+                                   'NArowtype' : 'justNaN',
+                                   'MLinfilltype' : 'exclude',
                                    'labelctgy' : 'ord3'}})
-    process_dict.update({'or18' : {'dualprocess' : None, \
-                                   'singleprocess' : self._process_UPCS, \
-                                   'postprocess' : None, \
-                                   'inverseprocess' : self._inverseprocess_UPCS, \
-                                   'recorded_category' : 'UPCS', \
-                                   'info_retention' : False, \
-                                   'inplace_option' : True, \
-                                   'NArowtype' : 'justNaN', \
-                                   'MLinfilltype' : 'exclude', \
+    process_dict.update({'or18' : {'dualprocess' : None,
+                                   'singleprocess' : self._process_UPCS,
+                                   'postprocess' : None,
+                                   'inverseprocess' : self._inverseprocess_UPCS,
+                                   'recorded_category' : 'UPCS',
+                                   'info_retention' : False,
+                                   'inplace_option' : True,
+                                   'NArowtype' : 'justNaN',
+                                   'MLinfilltype' : 'exclude',
                                    'labelctgy' : 'ord3'}})
-    process_dict.update({'or19' : {'dualprocess' : None, \
-                                   'singleprocess' : self._process_UPCS, \
-                                   'postprocess' : None, \
-                                   'inverseprocess' : self._inverseprocess_UPCS, \
-                                   'recorded_category' : 'UPCS', \
-                                   'info_retention' : False, \
-                                   'inplace_option' : True, \
-                                   'NArowtype' : 'justNaN', \
-                                   'MLinfilltype' : 'exclude', \
+    process_dict.update({'or19' : {'dualprocess' : None,
+                                   'singleprocess' : self._process_UPCS,
+                                   'postprocess' : None,
+                                   'inverseprocess' : self._inverseprocess_UPCS,
+                                   'recorded_category' : 'UPCS',
+                                   'info_retention' : False,
+                                   'inplace_option' : True,
+                                   'NArowtype' : 'justNaN',
+                                   'MLinfilltype' : 'exclude',
                                    'labelctgy' : 'ord3'}})
-    process_dict.update({'or20' : {'dualprocess' : None, \
-                                   'singleprocess' : self._process_UPCS, \
-                                   'postprocess' : None, \
-                                   'inverseprocess' : self._inverseprocess_UPCS, \
-                                   'recorded_category' : 'UPCS', \
-                                   'info_retention' : False, \
-                                   'inplace_option' : True, \
-                                   'NArowtype' : 'justNaN', \
-                                   'MLinfilltype' : 'exclude', \
+    process_dict.update({'or20' : {'dualprocess' : None,
+                                   'singleprocess' : self._process_UPCS,
+                                   'postprocess' : None,
+                                   'inverseprocess' : self._inverseprocess_UPCS,
+                                   'recorded_category' : 'UPCS',
+                                   'info_retention' : False,
+                                   'inplace_option' : True,
+                                   'NArowtype' : 'justNaN',
+                                   'MLinfilltype' : 'exclude',
                                    'labelctgy' : 'ord3'}})
-    process_dict.update({'or21' : {'dualprocess' : None, \
-                                   'singleprocess' : self._process_UPCS, \
-                                   'postprocess' : None, \
-                                   'inverseprocess' : self._inverseprocess_UPCS, \
-                                   'recorded_category' : 'UPCS', \
-                                   'info_retention' : False, \
-                                   'inplace_option' : True, \
-                                   'NArowtype' : 'justNaN', \
-                                   'MLinfilltype' : 'exclude', \
+    process_dict.update({'or21' : {'dualprocess' : None,
+                                   'singleprocess' : self._process_UPCS,
+                                   'postprocess' : None,
+                                   'inverseprocess' : self._inverseprocess_UPCS,
+                                   'recorded_category' : 'UPCS',
+                                   'info_retention' : False,
+                                   'inplace_option' : True,
+                                   'NArowtype' : 'justNaN',
+                                   'MLinfilltype' : 'exclude',
                                    'labelctgy' : 'ord3'}})
-    process_dict.update({'or22' : {'dualprocess' : None, \
-                                   'singleprocess' : self._process_UPCS, \
-                                   'postprocess' : None, \
-                                   'inverseprocess' : self._inverseprocess_UPCS, \
-                                   'recorded_category' : 'UPCS', \
-                                   'info_retention' : False, \
-                                   'inplace_option' : True, \
-                                   'NArowtype' : 'justNaN', \
-                                   'MLinfilltype' : 'exclude', \
+    process_dict.update({'or22' : {'dualprocess' : None,
+                                   'singleprocess' : self._process_UPCS,
+                                   'postprocess' : None,
+                                   'inverseprocess' : self._inverseprocess_UPCS,
+                                   'recorded_category' : 'UPCS',
+                                   'info_retention' : False,
+                                   'inplace_option' : True,
+                                   'NArowtype' : 'justNaN',
+                                   'MLinfilltype' : 'exclude',
                                    'labelctgy' : 'ord3'}})
-    process_dict.update({'or23' : {'dualprocess' : None, \
-                                   'singleprocess' : self._process_UPCS, \
-                                   'postprocess' : None, \
-                                   'inverseprocess' : self._inverseprocess_UPCS, \
-                                   'recorded_category' : 'UPCS', \
-                                   'info_retention' : False, \
-                                   'inplace_option' : True, \
-                                   'NArowtype' : 'justNaN', \
-                                   'MLinfilltype' : 'exclude', \
+    process_dict.update({'or23' : {'dualprocess' : None,
+                                   'singleprocess' : self._process_UPCS,
+                                   'postprocess' : None,
+                                   'inverseprocess' : self._inverseprocess_UPCS,
+                                   'recorded_category' : 'UPCS',
+                                   'info_retention' : False,
+                                   'inplace_option' : True,
+                                   'NArowtype' : 'justNaN',
+                                   'MLinfilltype' : 'exclude',
                                    'labelctgy' : 'ord3'}})
-    process_dict.update({'om10' : {'dualprocess' : None, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : False, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'exclude', \
+    process_dict.update({'om10' : {'dualprocess' : None,
+                                  'singleprocess' : None,
+                                  'postprocess' : None,
+                                  'recorded_category' : False,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'mnmx'}})
-    process_dict.update({'mmor' : {'dualprocess' : None, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : False, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'mmor' : {'dualprocess' : None,
+                                  'singleprocess' : None,
+                                  'postprocess' : None,
+                                  'recorded_category' : False,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mnmx'}})
-    process_dict.update({'1010' : {'dualprocess' : self._process_1010, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_1010, \
-                                  'inverseprocess' : self._inverseprocess_1010, \
-                                  'recorded_category' : '1010', \
-                                  'info_retention' : True, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : '1010', \
+    process_dict.update({'1010' : {'dualprocess' : self._process_1010,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_1010,
+                                  'inverseprocess' : self._inverseprocess_1010,
+                                  'recorded_category' : '1010',
+                                  'info_retention' : True,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : '1010',
                                   'labelctgy' : '1010'}})
-    process_dict.update({'bxcx' : {'dualprocess' : self._process_bxcx, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_bxcx, \
-                                  'recorded_category' : 'bxcx', \
-                                  'NArowtype' : 'positivenumeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'bxcx' : {'dualprocess' : self._process_bxcx,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_bxcx,
+                                  'recorded_category' : 'bxcx',
+                                  'NArowtype' : 'positivenumeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
-    process_dict.update({'tmsc' : {'dualprocess' : None, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : False, \
-                                  'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'tmsc' : {'dualprocess' : None,
+                                  'singleprocess' : None,
+                                  'postprocess' : None,
+                                  'recorded_category' : False,
+                                  'NArowtype' : 'datetime',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'tmsc'}})
-    process_dict.update({'time' : {'dualprocess' : None, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : False, \
-                                  'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'time' : {'dualprocess' : None,
+                                  'singleprocess' : None,
+                                  'postprocess' : None,
+                                  'recorded_category' : False,
+                                  'NArowtype' : 'datetime',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'time'}})
-    process_dict.update({'tmzn' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_tmzn, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : 'tmzn', \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'exclude', \
+    process_dict.update({'tmzn' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_tmzn,
+                                  'postprocess' : None,
+                                  'recorded_category' : 'tmzn',
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'datetime',
+                                  'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'tmzn'}})
-    process_dict.update({'date' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_tmzn, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : 'tmzn', \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'exclude', \
+    process_dict.update({'date' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_tmzn,
+                                  'postprocess' : None,
+                                  'recorded_category' : 'tmzn',
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'datetime',
+                                  'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'time'}})
-    process_dict.update({'dat2' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_tmzn, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : 'tmzn', \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'exclude', \
+    process_dict.update({'dat2' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_tmzn,
+                                  'postprocess' : None,
+                                  'recorded_category' : 'tmzn',
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'datetime',
+                                  'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'hldy'}})
-    process_dict.update({'dat3' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_tmzn, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : 'tmzn', \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'exclude', \
+    process_dict.update({'dat3' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_tmzn,
+                                  'postprocess' : None,
+                                  'recorded_category' : 'tmzn',
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'datetime',
+                                  'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'tmsc'}})
-    process_dict.update({'dat4' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_tmzn, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : 'tmzn', \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'exclude', \
+    process_dict.update({'dat4' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_tmzn,
+                                  'postprocess' : None,
+                                  'recorded_category' : 'tmzn',
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'datetime',
+                                  'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'tmsc'}})
-    process_dict.update({'dat5' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_tmzn, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : 'tmzn', \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'exclude', \
+    process_dict.update({'dat5' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_tmzn,
+                                  'postprocess' : None,
+                                  'recorded_category' : 'tmzn',
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'datetime',
+                                  'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'tmsc'}})
-    process_dict.update({'dat6' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_tmzn, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : 'tmzn', \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'exclude', \
+    process_dict.update({'dat6' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_tmzn,
+                                  'postprocess' : None,
+                                  'recorded_category' : 'tmzn',
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'datetime',
+                                  'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'tmsc'}})
-    process_dict.update({'year' : {'dualprocess' : self._process_time, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_time, \
-                                  'inverseprocess' : self._inverseprocess_year, \
-                                  'recorded_category' : 'time', \
-                                  'info_retention' : False, \
-                                  'defaultparams' : {'scale' : 'year', \
-                                                     'suffix' : 'year', \
-                                                     'normalization' : 'zscore'}, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'year' : {'dualprocess' : self._process_time,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_time,
+                                  'inverseprocess' : self._inverseprocess_year,
+                                  'recorded_category' : 'time',
+                                  'info_retention' : False,
+                                  'defaultparams' : {'scale' : 'year',
+                                                     'suffix' : 'year',
+                                                     'normalization' : 'zscore'},
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'datetime',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'time'}})
-    process_dict.update({'yea2' : {'dualprocess' : None, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : False, \
-                                  'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'yea2' : {'dualprocess' : None,
+                                  'singleprocess' : None,
+                                  'postprocess' : None,
+                                  'recorded_category' : False,
+                                  'NArowtype' : 'datetime',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'time'}})
-    process_dict.update({'yrsn' : {'dualprocess' : self._process_tmsc, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_tmsc, \
-                                  'recorded_category' : 'tmsc', \
-                                  'defaultparams' : {'scale' : 'year', \
-                                                     'suffix' : 'yrsn', \
-                                                     'function' : 'sin'}, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'yrsn' : {'dualprocess' : self._process_tmsc,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_tmsc,
+                                  'recorded_category' : 'tmsc',
+                                  'defaultparams' : {'scale' : 'year',
+                                                     'suffix' : 'yrsn',
+                                                     'function' : 'sin'},
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'datetime',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'tmsc'}})
-    process_dict.update({'yrcs' : {'dualprocess' : self._process_tmsc, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_tmsc, \
-                                  'recorded_category' : 'tmsc', \
-                                  'defaultparams' : {'scale' : 'year', \
-                                                     'suffix' : 'yrcs', \
-                                                     'function' : 'cos'}, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'yrcs' : {'dualprocess' : self._process_tmsc,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_tmsc,
+                                  'recorded_category' : 'tmsc',
+                                  'defaultparams' : {'scale' : 'year',
+                                                     'suffix' : 'yrcs',
+                                                     'function' : 'cos'},
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'datetime',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'tmsc'}})
-    process_dict.update({'mnth' : {'dualprocess' : self._process_time, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_time, \
-                                  'recorded_category' : 'time', \
-                                  'defaultparams' : {'scale' : 'month', \
-                                                     'suffix' : 'mnth', \
-                                                     'normalization' : 'zscore'}, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'mnth' : {'dualprocess' : self._process_time,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_time,
+                                  'recorded_category' : 'time',
+                                  'defaultparams' : {'scale' : 'month',
+                                                     'suffix' : 'mnth',
+                                                     'normalization' : 'zscore'},
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'datetime',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'time'}})
-    process_dict.update({'mnt2' : {'dualprocess' : None, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : False, \
-                                  'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'mnt2' : {'dualprocess' : None,
+                                  'singleprocess' : None,
+                                  'postprocess' : None,
+                                  'recorded_category' : False,
+                                  'NArowtype' : 'datetime',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'tmsc'}})
-    process_dict.update({'mnt3' : {'dualprocess' : None, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : False, \
-                                  'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'mnt3' : {'dualprocess' : None,
+                                  'singleprocess' : None,
+                                  'postprocess' : None,
+                                  'recorded_category' : False,
+                                  'NArowtype' : 'datetime',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'tmsc'}})
-    process_dict.update({'mnt4' : {'dualprocess' : None, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : False, \
-                                  'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'mnt4' : {'dualprocess' : None,
+                                  'singleprocess' : None,
+                                  'postprocess' : None,
+                                  'recorded_category' : False,
+                                  'NArowtype' : 'datetime',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'tmsc'}})
-    process_dict.update({'mnt5' : {'dualprocess' : None, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : False, \
-                                  'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'mnt5' : {'dualprocess' : None,
+                                  'singleprocess' : None,
+                                  'postprocess' : None,
+                                  'recorded_category' : False,
+                                  'NArowtype' : 'datetime',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'tmsc'}})
-    process_dict.update({'mnt6' : {'dualprocess' : None, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : False, \
-                                  'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'mnt6' : {'dualprocess' : None,
+                                  'singleprocess' : None,
+                                  'postprocess' : None,
+                                  'recorded_category' : False,
+                                  'NArowtype' : 'datetime',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'tmsc'}})
-    process_dict.update({'mnsn' : {'dualprocess' : self._process_tmsc, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_tmsc, \
-                                  'recorded_category' : 'tmsc', \
-                                  'defaultparams' : {'scale' : 'month', \
-                                                     'suffix' : '_mnsn', \
-                                                     'function' : 'sin'}, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'mnsn' : {'dualprocess' : self._process_tmsc,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_tmsc,
+                                  'recorded_category' : 'tmsc',
+                                  'defaultparams' : {'scale' : 'month',
+                                                     'suffix' : '_mnsn',
+                                                     'function' : 'sin'},
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'datetime',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'tmsc'}})
-    process_dict.update({'mncs' : {'dualprocess' : self._process_tmsc, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_tmsc, \
-                                  'recorded_category' : 'tmsc', \
-                                  'defaultparams' : {'scale' : 'month', \
-                                                     'suffix' : 'mncs', \
-                                                     'function' : 'cos'}, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'mncs' : {'dualprocess' : self._process_tmsc,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_tmsc,
+                                  'recorded_category' : 'tmsc',
+                                  'defaultparams' : {'scale' : 'month',
+                                                     'suffix' : 'mncs',
+                                                     'function' : 'cos'},
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'datetime',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'tmsc'}})
-    process_dict.update({'mdsn' : {'dualprocess' : self._process_tmsc, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_tmsc, \
-                                  'recorded_category' : 'tmsc', \
-                                  'defaultparams' : {'scale' : 'monthday', \
-                                                     'suffix' : 'mdsn', \
-                                                     'function' : 'sin'}, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'mdsn' : {'dualprocess' : self._process_tmsc,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_tmsc,
+                                  'recorded_category' : 'tmsc',
+                                  'defaultparams' : {'scale' : 'monthday',
+                                                     'suffix' : 'mdsn',
+                                                     'function' : 'sin'},
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'datetime',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'tmsc'}})
-    process_dict.update({'mdcs' : {'dualprocess' : self._process_tmsc, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_tmsc, \
-                                  'recorded_category' : 'tmsc', \
-                                  'defaultparams' : {'scale' : 'monthday', \
-                                                     'suffix' : 'mdcs', \
-                                                     'function' : 'cos'}, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'mdcs' : {'dualprocess' : self._process_tmsc,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_tmsc,
+                                  'recorded_category' : 'tmsc',
+                                  'defaultparams' : {'scale' : 'monthday',
+                                                     'suffix' : 'mdcs',
+                                                     'function' : 'cos'},
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'datetime',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'tmsc'}})
-    process_dict.update({'days' : {'dualprocess' : self._process_time, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_time, \
-                                  'recorded_category' : 'time', \
-                                  'defaultparams' : {'scale' : 'day', \
-                                                     'suffix' : 'days', \
-                                                     'normalization' : 'zscore'}, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'days' : {'dualprocess' : self._process_time,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_time,
+                                  'recorded_category' : 'time',
+                                  'defaultparams' : {'scale' : 'day',
+                                                     'suffix' : 'days',
+                                                     'normalization' : 'zscore'},
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'datetime',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'time'}})
-    process_dict.update({'day2' : {'dualprocess' : None, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : False, \
-                                  'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'day2' : {'dualprocess' : None,
+                                  'singleprocess' : None,
+                                  'postprocess' : None,
+                                  'recorded_category' : False,
+                                  'NArowtype' : 'datetime',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'tmsc'}})
-    process_dict.update({'day3' : {'dualprocess' : None, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : False, \
-                                  'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'day3' : {'dualprocess' : None,
+                                  'singleprocess' : None,
+                                  'postprocess' : None,
+                                  'recorded_category' : False,
+                                  'NArowtype' : 'datetime',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'tmsc'}})
-    process_dict.update({'day4' : {'dualprocess' : None, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : False, \
-                                  'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'day4' : {'dualprocess' : None,
+                                  'singleprocess' : None,
+                                  'postprocess' : None,
+                                  'recorded_category' : False,
+                                  'NArowtype' : 'datetime',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'tmsc'}})
-    process_dict.update({'day5' : {'dualprocess' : None, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : False, \
-                                  'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'day5' : {'dualprocess' : None,
+                                  'singleprocess' : None,
+                                  'postprocess' : None,
+                                  'recorded_category' : False,
+                                  'NArowtype' : 'datetime',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'tmsc'}})
-    process_dict.update({'dysn' : {'dualprocess' : self._process_tmsc, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_tmsc, \
-                                  'recorded_category' : 'tmsc', \
-                                  'defaultparams' : {'scale' : 'day', \
-                                                     'suffix' : 'dysn', \
-                                                     'function' : 'sin'}, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'dysn' : {'dualprocess' : self._process_tmsc,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_tmsc,
+                                  'recorded_category' : 'tmsc',
+                                  'defaultparams' : {'scale' : 'day',
+                                                     'suffix' : 'dysn',
+                                                     'function' : 'sin'},
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'datetime',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'tmsc'}})
-    process_dict.update({'dycs' : {'dualprocess' : self._process_tmsc, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_tmsc, \
-                                  'recorded_category' : 'tmsc', \
-                                  'defaultparams' : {'scale' : 'day', \
-                                                     'suffix' : 'dycs', \
-                                                     'function' : 'cos'}, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'dycs' : {'dualprocess' : self._process_tmsc,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_tmsc,
+                                  'recorded_category' : 'tmsc',
+                                  'defaultparams' : {'scale' : 'day',
+                                                     'suffix' : 'dycs',
+                                                     'function' : 'cos'},
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'datetime',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'tmsc'}})
-    process_dict.update({'dhms' : {'dualprocess' : self._process_tmsc, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_tmsc, \
-                                  'recorded_category' : 'tmsc', \
-                                  'defaultparams' : {'scale' : 'dayhourminute', \
-                                                     'suffix' : 'dhms', \
-                                                     'function' : 'sin'}, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'dhms' : {'dualprocess' : self._process_tmsc,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_tmsc,
+                                  'recorded_category' : 'tmsc',
+                                  'defaultparams' : {'scale' : 'dayhourminute',
+                                                     'suffix' : 'dhms',
+                                                     'function' : 'sin'},
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'datetime',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'tmsc'}})
-    process_dict.update({'dhmc' : {'dualprocess' : self._process_tmsc, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_tmsc, \
-                                  'recorded_category' : 'tmsc', \
-                                  'defaultparams' : {'scale' : 'dayhourminute', \
-                                                     'suffix' : 'dhmc', \
-                                                     'function' : 'cos'}, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'dhmc' : {'dualprocess' : self._process_tmsc,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_tmsc,
+                                  'recorded_category' : 'tmsc',
+                                  'defaultparams' : {'scale' : 'dayhourminute',
+                                                     'suffix' : 'dhmc',
+                                                     'function' : 'cos'},
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'datetime',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'tmsc'}})
-    process_dict.update({'hour' : {'dualprocess' : self._process_time, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_time, \
-                                  'recorded_category' : 'time', \
-                                  'defaultparams' : {'scale' : 'hour', \
-                                                     'suffix' : 'hour', \
-                                                     'normalization' : 'zscore'}, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'hour' : {'dualprocess' : self._process_time,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_time,
+                                  'recorded_category' : 'time',
+                                  'defaultparams' : {'scale' : 'hour',
+                                                     'suffix' : 'hour',
+                                                     'normalization' : 'zscore'},
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'datetime',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'time'}})
-    process_dict.update({'hrs2' : {'dualprocess' : None, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : False, \
-                                  'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'hrs2' : {'dualprocess' : None,
+                                  'singleprocess' : None,
+                                  'postprocess' : None,
+                                  'recorded_category' : False,
+                                  'NArowtype' : 'datetime',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'tmsc'}})
-    process_dict.update({'hrs3' : {'dualprocess' : None, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : False, \
-                                  'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'hrs3' : {'dualprocess' : None,
+                                  'singleprocess' : None,
+                                  'postprocess' : None,
+                                  'recorded_category' : False,
+                                  'NArowtype' : 'datetime',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'tmsc'}})
-    process_dict.update({'hrs4' : {'dualprocess' : None, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : False, \
-                                  'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'hrs4' : {'dualprocess' : None,
+                                  'singleprocess' : None,
+                                  'postprocess' : None,
+                                  'recorded_category' : False,
+                                  'NArowtype' : 'datetime',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'tmsc'}})
-    process_dict.update({'hrsn' : {'dualprocess' : self._process_tmsc, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_tmsc, \
-                                  'recorded_category' : 'tmsc', \
-                                  'defaultparams' : {'scale' : 'hour', \
-                                                     'suffix' : 'hrsn', \
-                                                     'function' : 'sin'}, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'hrsn' : {'dualprocess' : self._process_tmsc,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_tmsc,
+                                  'recorded_category' : 'tmsc',
+                                  'defaultparams' : {'scale' : 'hour',
+                                                     'suffix' : 'hrsn',
+                                                     'function' : 'sin'},
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'datetime',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'tmsc'}})
-    process_dict.update({'hrcs' : {'dualprocess' : self._process_tmsc, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_tmsc, \
-                                  'recorded_category' : 'tmsc', \
-                                  'defaultparams' : {'scale' : 'hour', \
-                                                     'suffix' : 'hrcs', \
-                                                     'function' : 'cos'}, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'hrcs' : {'dualprocess' : self._process_tmsc,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_tmsc,
+                                  'recorded_category' : 'tmsc',
+                                  'defaultparams' : {'scale' : 'hour',
+                                                     'suffix' : 'hrcs',
+                                                     'function' : 'cos'},
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'datetime',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'tmsc'}})
-    process_dict.update({'hmss' : {'dualprocess' : self._process_tmsc, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_tmsc, \
-                                  'recorded_category' : 'tmsc', \
-                                  'defaultparams' : {'scale' : 'hourminutesecond', \
-                                                     'suffix' : 'hmss', \
-                                                     'function' : 'sin'}, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'hmss' : {'dualprocess' : self._process_tmsc,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_tmsc,
+                                  'recorded_category' : 'tmsc',
+                                  'defaultparams' : {'scale' : 'hourminutesecond',
+                                                     'suffix' : 'hmss',
+                                                     'function' : 'sin'},
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'datetime',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'tmsc'}})
-    process_dict.update({'hmsc' : {'dualprocess' : self._process_tmsc, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_tmsc, \
-                                  'recorded_category' : 'tmsc', \
-                                  'defaultparams' : {'scale' : 'hourminutesecond', \
-                                                     'suffix' : 'hmsc', \
-                                                     'function' : 'cos'}, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'hmsc' : {'dualprocess' : self._process_tmsc,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_tmsc,
+                                  'recorded_category' : 'tmsc',
+                                  'defaultparams' : {'scale' : 'hourminutesecond',
+                                                     'suffix' : 'hmsc',
+                                                     'function' : 'cos'},
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'datetime',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'tmsc'}})
-    process_dict.update({'mint' : {'dualprocess' : self._process_time, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_time, \
-                                  'recorded_category' : 'time', \
-                                  'defaultparams' : {'scale' : 'minute', \
-                                                     'suffix' : 'mint', \
-                                                     'normalization' : 'zscore'}, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'mint' : {'dualprocess' : self._process_time,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_time,
+                                  'recorded_category' : 'time',
+                                  'defaultparams' : {'scale' : 'minute',
+                                                     'suffix' : 'mint',
+                                                     'normalization' : 'zscore'},
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'datetime',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'time'}})
-    process_dict.update({'min2' : {'dualprocess' : None, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : False, \
-                                  'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'min2' : {'dualprocess' : None,
+                                  'singleprocess' : None,
+                                  'postprocess' : None,
+                                  'recorded_category' : False,
+                                  'NArowtype' : 'datetime',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'tmsc'}})
-    process_dict.update({'min3' : {'dualprocess' : None, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : False, \
-                                  'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'min3' : {'dualprocess' : None,
+                                  'singleprocess' : None,
+                                  'postprocess' : None,
+                                  'recorded_category' : False,
+                                  'NArowtype' : 'datetime',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'tmsc'}})
-    process_dict.update({'min4' : {'dualprocess' : None, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : False, \
-                                  'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'min4' : {'dualprocess' : None,
+                                  'singleprocess' : None,
+                                  'postprocess' : None,
+                                  'recorded_category' : False,
+                                  'NArowtype' : 'datetime',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'misn'}})
-    process_dict.update({'misn' : {'dualprocess' : self._process_tmsc, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_tmsc, \
-                                  'recorded_category' : 'tmsc', \
-                                  'defaultparams' : {'scale' : 'minute', \
-                                                     'suffix' : 'misn', \
-                                                     'function' : 'sin'}, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'misn' : {'dualprocess' : self._process_tmsc,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_tmsc,
+                                  'recorded_category' : 'tmsc',
+                                  'defaultparams' : {'scale' : 'minute',
+                                                     'suffix' : 'misn',
+                                                     'function' : 'sin'},
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'datetime',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'tmsc'}})
-    process_dict.update({'mics' : {'dualprocess' : self._process_tmsc, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_tmsc, \
-                                  'recorded_category' : 'tmsc', \
-                                  'defaultparams' : {'scale' : 'minute', \
-                                                     'suffix' : 'mics', \
-                                                     'function' : 'cos'}, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'mics' : {'dualprocess' : self._process_tmsc,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_tmsc,
+                                  'recorded_category' : 'tmsc',
+                                  'defaultparams' : {'scale' : 'minute',
+                                                     'suffix' : 'mics',
+                                                     'function' : 'cos'},
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'datetime',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mics'}})
-    process_dict.update({'mssn' : {'dualprocess' : self._process_tmsc, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_tmsc, \
-                                  'recorded_category' : 'tmsc', \
-                                  'defaultparams' : {'scale' : 'minutesecond', \
-                                                     'suffix' : 'mssn', \
-                                                     'function' : 'sin'}, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'mssn' : {'dualprocess' : self._process_tmsc,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_tmsc,
+                                  'recorded_category' : 'tmsc',
+                                  'defaultparams' : {'scale' : 'minutesecond',
+                                                     'suffix' : 'mssn',
+                                                     'function' : 'sin'},
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'datetime',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'tmsc'}})
-    process_dict.update({'mscs' : {'dualprocess' : self._process_tmsc, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_tmsc, \
-                                  'recorded_category' : 'tmsc', \
-                                  'defaultparams' : {'scale' : 'minutesecond', \
-                                                     'suffix' : 'mscs', \
-                                                     'function' : 'cos'}, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'mscs' : {'dualprocess' : self._process_tmsc,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_tmsc,
+                                  'recorded_category' : 'tmsc',
+                                  'defaultparams' : {'scale' : 'minutesecond',
+                                                     'suffix' : 'mscs',
+                                                     'function' : 'cos'},
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'datetime',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'tmsc'}})
-    process_dict.update({'scnd' : {'dualprocess' : self._process_time, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_time, \
-                                  'recorded_category' : 'time', \
-                                  'defaultparams' : {'scale' : 'second', \
-                                                     'suffix' : 'scnd', \
-                                                     'normalization' : 'zscore'}, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'scnd' : {'dualprocess' : self._process_time,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_time,
+                                  'recorded_category' : 'time',
+                                  'defaultparams' : {'scale' : 'second',
+                                                     'suffix' : 'scnd',
+                                                     'normalization' : 'zscore'},
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'datetime',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'time'}})
-    process_dict.update({'scn2' : {'dualprocess' : None, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : False, \
-                                  'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'scn2' : {'dualprocess' : None,
+                                  'singleprocess' : None,
+                                  'postprocess' : None,
+                                  'recorded_category' : False,
+                                  'NArowtype' : 'datetime',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'tmsc'}})
-    process_dict.update({'scsn' : {'dualprocess' : self._process_tmsc, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_tmsc, \
-                                  'recorded_category' : 'tmsc', \
-                                  'defaultparams' : {'scale' : 'second', \
-                                                     'suffix' : 'scsn', \
-                                                     'function' : 'sin'}, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'scsn' : {'dualprocess' : self._process_tmsc,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_tmsc,
+                                  'recorded_category' : 'tmsc',
+                                  'defaultparams' : {'scale' : 'second',
+                                                     'suffix' : 'scsn',
+                                                     'function' : 'sin'},
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'datetime',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'tmsc'}})
-    process_dict.update({'sccs' : {'dualprocess' : self._process_tmsc, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_tmsc, \
-                                  'recorded_category' : 'tmsc', \
-                                  'defaultparams' : {'scale' : 'second', \
-                                                     'suffix' : 'sccs', \
-                                                     'function' : 'cos'}, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'sccs' : {'dualprocess' : self._process_tmsc,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_tmsc,
+                                  'recorded_category' : 'tmsc',
+                                  'defaultparams' : {'scale' : 'second',
+                                                     'suffix' : 'sccs',
+                                                     'function' : 'cos'},
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'datetime',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'tmsc'}})
-    process_dict.update({'bxc2' : {'dualprocess' : self._process_bxcx, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_bxcx, \
-                                  'recorded_category' : 'bxcx', \
-                                  'NArowtype' : 'nonzeronumeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'bxc2' : {'dualprocess' : self._process_bxcx,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_bxcx,
+                                  'recorded_category' : 'bxcx',
+                                  'NArowtype' : 'nonzeronumeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
-    process_dict.update({'bxc3' : {'dualprocess' : self._process_bxcx, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_bxcx, \
-                                  'recorded_category' : 'bxcx', \
-                                  'NArowtype' : 'positivenumeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'bxc3' : {'dualprocess' : self._process_bxcx,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_bxcx,
+                                  'recorded_category' : 'bxcx',
+                                  'NArowtype' : 'positivenumeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
-    process_dict.update({'bxc4' : {'dualprocess' : self._process_bxcx, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_bxcx, \
-                                  'recorded_category' : 'bxcx', \
-                                  'NArowtype' : 'positivenumeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'bxc4' : {'dualprocess' : self._process_bxcx,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_bxcx,
+                                  'recorded_category' : 'bxcx',
+                                  'NArowtype' : 'positivenumeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
-    process_dict.update({'bxc5' : {'dualprocess' : self._process_bxcx, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_bxcx, \
-                                  'recorded_category' : 'bxcx', \
-                                  'NArowtype' : 'positivenumeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'bxc5' : {'dualprocess' : self._process_bxcx,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_bxcx,
+                                  'recorded_category' : 'bxcx',
+                                  'NArowtype' : 'positivenumeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
-    process_dict.update({'ntgr' : {'dualprocess' : self._process_ord3, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_ord3, \
-                                  'inverseprocess' : self._inverseprocess_ord3, \
-                                  'recorded_category' : 'ord3', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'integer', \
-                                  'MLinfilltype' : 'singlct', \
+    process_dict.update({'ntgr' : {'dualprocess' : self._process_ord3,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_ord3,
+                                  'inverseprocess' : self._inverseprocess_ord3,
+                                  'recorded_category' : 'ord3',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'integer',
+                                  'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'mnmx'}})
-    process_dict.update({'ntg2' : {'dualprocess' : self._process_ord3, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_ord3, \
-                                  'inverseprocess' : self._inverseprocess_ord3, \
-                                  'recorded_category' : 'ord3', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'integer', \
-                                  'MLinfilltype' : 'singlct', \
+    process_dict.update({'ntg2' : {'dualprocess' : self._process_ord3,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_ord3,
+                                  'inverseprocess' : self._inverseprocess_ord3,
+                                  'recorded_category' : 'ord3',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'integer',
+                                  'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'mnmx'}})
-    process_dict.update({'ntg3' : {'dualprocess' : self._process_ord3, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_ord3, \
-                                  'inverseprocess' : self._inverseprocess_ord3, \
-                                  'recorded_category' : 'ord3', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'integer', \
-                                  'MLinfilltype' : 'singlct', \
+    process_dict.update({'ntg3' : {'dualprocess' : self._process_ord3,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_ord3,
+                                  'inverseprocess' : self._inverseprocess_ord3,
+                                  'recorded_category' : 'ord3',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'integer',
+                                  'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'mnmx'}})
-    process_dict.update({'pwrs' : {'dualprocess' : self._process_pwrs, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_pwrs, \
-                                  'inverseprocess' : self._inverseprocess_pwr2, \
-                                  'recorded_category' : 'pwrs', \
-                                  'info_retention' : False, \
-                                  'NArowtype' : 'positivenumeric', \
-                                  'MLinfilltype' : 'multirt', \
+    process_dict.update({'pwrs' : {'dualprocess' : self._process_pwrs,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_pwrs,
+                                  'inverseprocess' : self._inverseprocess_pwr2,
+                                  'recorded_category' : 'pwrs',
+                                  'info_retention' : False,
+                                  'NArowtype' : 'positivenumeric',
+                                  'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'pwrs'}})
-    process_dict.update({'pwr2' : {'dualprocess' : self._process_pwrs, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_pwrs, \
-                                  'inverseprocess' : self._inverseprocess_pwr2, \
-                                  'recorded_category' : 'pwrs', \
-                                  'info_retention' : False, \
-                                  'defaultparams' : {'negvalues' : True}, \
-                                  'NArowtype' : 'nonzeronumeric', \
-                                  'MLinfilltype' : 'multirt', \
+    process_dict.update({'pwr2' : {'dualprocess' : self._process_pwrs,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_pwrs,
+                                  'inverseprocess' : self._inverseprocess_pwr2,
+                                  'recorded_category' : 'pwrs',
+                                  'info_retention' : False,
+                                  'defaultparams' : {'negvalues' : True},
+                                  'NArowtype' : 'nonzeronumeric',
+                                  'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'pwrs'}})
-    process_dict.update({'log0' : {'dualprocess' : self._process_log0, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_log0, \
-                                  'inverseprocess' : self._inverseprocess_log0, \
-                                  'recorded_category' : 'log0', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'positivenumeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'log0' : {'dualprocess' : self._process_log0,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_log0,
+                                  'inverseprocess' : self._inverseprocess_log0,
+                                  'recorded_category' : 'log0',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'positivenumeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'log0'}})
-    process_dict.update({'log1' : {'dualprocess' : self._process_log0, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_log0, \
-                                  'inverseprocess' : self._inverseprocess_log0, \
-                                  'recorded_category' : 'log0', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'positivenumeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'log1' : {'dualprocess' : self._process_log0,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_log0,
+                                  'inverseprocess' : self._inverseprocess_log0,
+                                  'recorded_category' : 'log0',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'positivenumeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'log0'}})
-    process_dict.update({'logn' : {'dualprocess' : self._process_logn, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_logn, \
-                                  'inverseprocess' : self._inverseprocess_logn, \
-                                  'recorded_category' : 'logn', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'positivenumeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'logn' : {'dualprocess' : self._process_logn,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_logn,
+                                  'inverseprocess' : self._inverseprocess_logn,
+                                  'recorded_category' : 'logn',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'positivenumeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'logn'}})
-    process_dict.update({'lgnm' : {'dualprocess' : self._process_logn, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_logn, \
-                                  'inverseprocess' : self._inverseprocess_logn, \
-                                  'recorded_category' : 'logn', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'positivenumeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'lgnm' : {'dualprocess' : self._process_logn,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_logn,
+                                  'inverseprocess' : self._inverseprocess_logn,
+                                  'recorded_category' : 'logn',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'positivenumeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
-    process_dict.update({'sqrt' : {'dualprocess' : self._process_sqrt, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_sqrt, \
-                                  'inverseprocess' : self._inverseprocess_sqrt, \
-                                  'recorded_category' : 'sqrt', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'nonnegativenumeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'sqrt' : {'dualprocess' : self._process_sqrt,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_sqrt,
+                                  'inverseprocess' : self._inverseprocess_sqrt,
+                                  'recorded_category' : 'sqrt',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'nonnegativenumeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'sqrt'}})
-    process_dict.update({'addd' : {'dualprocess' : self._process_addd, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_addd, \
-                                  'inverseprocess' : self._inverseprocess_addd, \
-                                  'recorded_category' : 'addd', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'addd' : {'dualprocess' : self._process_addd,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_addd,
+                                  'inverseprocess' : self._inverseprocess_addd,
+                                  'recorded_category' : 'addd',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'addd'}})
-    process_dict.update({'sbtr' : {'dualprocess' : self._process_sbtr, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_sbtr, \
-                                  'inverseprocess' : self._inverseprocess_sbtr, \
-                                  'recorded_category' : 'sbtr', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'sbtr' : {'dualprocess' : self._process_sbtr,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_sbtr,
+                                  'inverseprocess' : self._inverseprocess_sbtr,
+                                  'recorded_category' : 'sbtr',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'sbtr'}})
-    process_dict.update({'mltp' : {'dualprocess' : self._process_mltp, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_mltp, \
-                                  'inverseprocess' : self._inverseprocess_mltp, \
-                                  'recorded_category' : 'mltp', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'mltp' : {'dualprocess' : self._process_mltp,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_mltp,
+                                  'inverseprocess' : self._inverseprocess_mltp,
+                                  'recorded_category' : 'mltp',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mltp'}})
-    process_dict.update({'divd' : {'dualprocess' : self._process_divd, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_divd, \
-                                  'inverseprocess' : self._inverseprocess_divd, \
-                                  'recorded_category' : 'divd', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'divd' : {'dualprocess' : self._process_divd,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_divd,
+                                  'inverseprocess' : self._inverseprocess_divd,
+                                  'recorded_category' : 'divd',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'divd'}})
-    process_dict.update({'rais' : {'dualprocess' : self._process_rais, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_rais, \
-                                  'inverseprocess' : self._inverseprocess_rais, \
-                                  'recorded_category' : 'rais', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'rais' : {'dualprocess' : self._process_rais,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_rais,
+                                  'inverseprocess' : self._inverseprocess_rais,
+                                  'recorded_category' : 'rais',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'rais'}})
-    process_dict.update({'absl' : {'dualprocess' : self._process_absl, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_absl, \
-                                  'inverseprocess' : self._inverseprocess_absl, \
-                                  'recorded_category' : 'absl', \
-                                  'info_retention' : False, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'absl' : {'dualprocess' : self._process_absl,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_absl,
+                                  'inverseprocess' : self._inverseprocess_absl,
+                                  'recorded_category' : 'absl',
+                                  'info_retention' : False,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'absl'}})
-    process_dict.update({'bkt1' : {'dualprocess' : self._process_bkt1, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_bkt1, \
-                                  'inverseprocess' : self._inverseprocess_bkt1, \
-                                  'recorded_category' : 'bkt1', \
-                                  'info_retention' : False, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'multirt', \
+    process_dict.update({'bkt1' : {'dualprocess' : self._process_bkt1,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_bkt1,
+                                  'inverseprocess' : self._inverseprocess_bkt1,
+                                  'recorded_category' : 'bkt1',
+                                  'info_retention' : False,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'bkt1'}})
-    process_dict.update({'bkt2' : {'dualprocess' : self._process_bkt2, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_bkt2, \
-                                  'inverseprocess' : self._inverseprocess_bkt2, \
-                                  'recorded_category' : 'bkt2', \
-                                  'info_retention' : False, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'multirt', \
+    process_dict.update({'bkt2' : {'dualprocess' : self._process_bkt2,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_bkt2,
+                                  'inverseprocess' : self._inverseprocess_bkt2,
+                                  'recorded_category' : 'bkt2',
+                                  'info_retention' : False,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'bkt2'}})
-    process_dict.update({'bkt3' : {'dualprocess' : self._process_bkt3, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_bkt3, \
-                                  'inverseprocess' : self._inverseprocess_bkt3, \
-                                  'recorded_category' : 'bkt3', \
-                                  'info_retention' : False, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'singlct', \
+    process_dict.update({'bkt3' : {'dualprocess' : self._process_bkt3,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_bkt3,
+                                  'inverseprocess' : self._inverseprocess_bkt3,
+                                  'recorded_category' : 'bkt3',
+                                  'info_retention' : False,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'bkt3'}})
-    process_dict.update({'bkt4' : {'dualprocess' : self._process_bkt4, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_bkt4, \
-                                  'inverseprocess' : self._inverseprocess_bkt4, \
-                                  'recorded_category' : 'bkt4', \
-                                  'info_retention' : False, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'singlct', \
+    process_dict.update({'bkt4' : {'dualprocess' : self._process_bkt4,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_bkt4,
+                                  'inverseprocess' : self._inverseprocess_bkt4,
+                                  'recorded_category' : 'bkt4',
+                                  'info_retention' : False,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'bkt4'}})
-    process_dict.update({'wkdy' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_wkdy, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : 'wkdy', \
-                                  'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'binary', \
+    process_dict.update({'wkdy' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_wkdy,
+                                  'postprocess' : None,
+                                  'recorded_category' : 'wkdy',
+                                  'NArowtype' : 'datetime',
+                                  'MLinfilltype' : 'binary',
                                   'labelctgy' : 'wkdy'}})
-    process_dict.update({'bshr' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_bshr, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : 'bshr', \
-                                  'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'binary', \
+    process_dict.update({'bshr' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_bshr,
+                                  'postprocess' : None,
+                                  'recorded_category' : 'bshr',
+                                  'NArowtype' : 'datetime',
+                                  'MLinfilltype' : 'binary',
                                   'labelctgy' : 'bshr'}})
-    process_dict.update({'hldy' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_hldy, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : 'hldy', \
-                                  'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'binary', \
+    process_dict.update({'hldy' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_hldy,
+                                  'postprocess' : None,
+                                  'recorded_category' : 'hldy',
+                                  'NArowtype' : 'datetime',
+                                  'MLinfilltype' : 'binary',
                                   'labelctgy' : 'hldy'}})
-    process_dict.update({'wkds' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_wkds, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : 'wkds', \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'singlct', \
+    process_dict.update({'wkds' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_wkds,
+                                  'postprocess' : None,
+                                  'recorded_category' : 'wkds',
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'datetime',
+                                  'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'text'}})
-    process_dict.update({'wkdo' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_wkds, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : 'wkds', \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'singlct', \
+    process_dict.update({'wkdo' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_wkds,
+                                  'postprocess' : None,
+                                  'recorded_category' : 'wkds',
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'datetime',
+                                  'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'ord3'}})
-    process_dict.update({'mnts' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_mnts, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : 'mnts', \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'singlct', \
+    process_dict.update({'mnts' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_mnts,
+                                  'postprocess' : None,
+                                  'recorded_category' : 'mnts',
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'datetime',
+                                  'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'text'}})
-    process_dict.update({'mnto' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_mnts, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : 'mnts', \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'singlct', \
+    process_dict.update({'mnto' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_mnts,
+                                  'postprocess' : None,
+                                  'recorded_category' : 'mnts',
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'datetime',
+                                  'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'ord3'}})
-    process_dict.update({'bins' : {'dualprocess' : self._process_bins, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_bins, \
-                                  'inverseprocess' : self._inverseprocess_bins, \
-                                  'recorded_category' : 'bins', \
-                                  'info_retention' : False, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'multirt', \
+    process_dict.update({'bins' : {'dualprocess' : self._process_bins,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_bins,
+                                  'inverseprocess' : self._inverseprocess_bins,
+                                  'recorded_category' : 'bins',
+                                  'info_retention' : False,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'bins'}})
-    process_dict.update({'bint' : {'dualprocess' : self._process_bins, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_bins, \
-                                  'inverseprocess' : self._inverseprocess_bins, \
-                                  'recorded_category' : 'bins', \
-                                  'info_retention' : False, \
-                                  'defaultparams' : {'normalizedinput' : True}, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'multirt', \
+    process_dict.update({'bint' : {'dualprocess' : self._process_bins,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_bins,
+                                  'inverseprocess' : self._inverseprocess_bins,
+                                  'recorded_category' : 'bins',
+                                  'info_retention' : False,
+                                  'defaultparams' : {'normalizedinput' : True},
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'bins'}})
-    process_dict.update({'bsor' : {'dualprocess' : self._process_bsor, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_bsor, \
-                                  'inverseprocess' : self._inverseprocess_bsor, \
-                                  'recorded_category' : 'bsor', \
-                                  'info_retention' : False, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'singlct', \
+    process_dict.update({'bsor' : {'dualprocess' : self._process_bsor,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_bsor,
+                                  'inverseprocess' : self._inverseprocess_bsor,
+                                  'recorded_category' : 'bsor',
+                                  'info_retention' : False,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'bsor'}})
-    process_dict.update({'btor' : {'dualprocess' : self._process_bsor, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_bsor, \
-                                  'inverseprocess' : self._inverseprocess_bsor, \
-                                  'recorded_category' : 'bsor', \
-                                  'info_retention' : False, \
-                                  'defaultparams' : {'normalizedinput' : True}, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'singlct', \
+    process_dict.update({'btor' : {'dualprocess' : self._process_bsor,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_bsor,
+                                  'inverseprocess' : self._inverseprocess_bsor,
+                                  'recorded_category' : 'bsor',
+                                  'info_retention' : False,
+                                  'defaultparams' : {'normalizedinput' : True},
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'bsor'}})
-    process_dict.update({'bnwd' : {'dualprocess' : self._process_bnwd, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_bnwd, \
-                                  'inverseprocess' : self._inverseprocess_bnwd, \
-                                  'recorded_category' : 'bnwd', \
-                                  'info_retention' : False, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'multirt', \
+    process_dict.update({'bnwd' : {'dualprocess' : self._process_bnwd,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_bnwd,
+                                  'inverseprocess' : self._inverseprocess_bnwd,
+                                  'recorded_category' : 'bnwd',
+                                  'info_retention' : False,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'bnwd'}})
-    process_dict.update({'bnwK' : {'dualprocess' : self._process_bnwd, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_bnwd, \
-                                  'inverseprocess' : self._inverseprocess_bnwd, \
-                                  'recorded_category' : 'bnwd', \
-                                  'info_retention' : False, \
-                                  'defaultparams' : {'suffix':'bnwK', 'width':1000}, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'multirt', \
+    process_dict.update({'bnwK' : {'dualprocess' : self._process_bnwd,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_bnwd,
+                                  'inverseprocess' : self._inverseprocess_bnwd,
+                                  'recorded_category' : 'bnwd',
+                                  'info_retention' : False,
+                                  'defaultparams' : {'suffix':'bnwK', 'width':1000},
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'bnwd'}})
-    process_dict.update({'bnwM' : {'dualprocess' : self._process_bnwd, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_bnwd, \
-                                  'inverseprocess' : self._inverseprocess_bnwd, \
-                                  'recorded_category' : 'bnwd', \
-                                  'info_retention' : False, \
-                                  'defaultparams' : {'suffix':'bnwM', 'width':1000000}, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'multirt', \
+    process_dict.update({'bnwM' : {'dualprocess' : self._process_bnwd,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_bnwd,
+                                  'inverseprocess' : self._inverseprocess_bnwd,
+                                  'recorded_category' : 'bnwd',
+                                  'info_retention' : False,
+                                  'defaultparams' : {'suffix':'bnwM', 'width':1000000},
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'bnwd'}})
-    process_dict.update({'bnwo' : {'dualprocess' : self._process_bnwo, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_bnwo, \
-                                  'inverseprocess' : self._inverseprocess_bnwo, \
-                                  'recorded_category' : 'bnwo', \
-                                  'info_retention' : False, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'singlct', \
+    process_dict.update({'bnwo' : {'dualprocess' : self._process_bnwo,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_bnwo,
+                                  'inverseprocess' : self._inverseprocess_bnwo,
+                                  'recorded_category' : 'bnwo',
+                                  'info_retention' : False,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'bnwo'}})
-    process_dict.update({'bnKo' : {'dualprocess' : self._process_bnwo, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_bnwo, \
-                                  'inverseprocess' : self._inverseprocess_bnwo, \
-                                  'recorded_category' : 'bnwo', \
-                                  'info_retention' : False, \
-                                  'inplace_option' : True, \
-                                  'defaultparams' : {'suffix':'bnKo', 'width':1000}, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'singlct', \
+    process_dict.update({'bnKo' : {'dualprocess' : self._process_bnwo,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_bnwo,
+                                  'inverseprocess' : self._inverseprocess_bnwo,
+                                  'recorded_category' : 'bnwo',
+                                  'info_retention' : False,
+                                  'inplace_option' : True,
+                                  'defaultparams' : {'suffix':'bnKo', 'width':1000},
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'bnwo'}})
-    process_dict.update({'bnMo' : {'dualprocess' : self._process_bnwo, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_bnwo, \
-                                  'inverseprocess' : self._inverseprocess_bnwo, \
-                                  'recorded_category' : 'bnwo', \
-                                  'info_retention' : False, \
-                                  'inplace_option' : True, \
-                                  'defaultparams' : {'suffix':'bnMo', 'width':1000000}, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'singlct', \
+    process_dict.update({'bnMo' : {'dualprocess' : self._process_bnwo,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_bnwo,
+                                  'inverseprocess' : self._inverseprocess_bnwo,
+                                  'recorded_category' : 'bnwo',
+                                  'info_retention' : False,
+                                  'inplace_option' : True,
+                                  'defaultparams' : {'suffix':'bnMo', 'width':1000000},
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'bnwo'}})
-    process_dict.update({'bnep' : {'dualprocess' : self._process_bnep, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_bnep, \
-                                  'inverseprocess' : self._inverseprocess_bnep, \
-                                  'recorded_category' : 'bnep', \
-                                  'info_retention' : False, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'multirt', \
+    process_dict.update({'bnep' : {'dualprocess' : self._process_bnep,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_bnep,
+                                  'inverseprocess' : self._inverseprocess_bnep,
+                                  'recorded_category' : 'bnep',
+                                  'info_retention' : False,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'bnep'}})
-    process_dict.update({'bne7' : {'dualprocess' : self._process_bnep, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_bnep, \
-                                  'inverseprocess' : self._inverseprocess_bnep, \
-                                  'recorded_category' : 'bnep', \
-                                  'info_retention' : False, \
-                                  'defaultparams' : {'suffix':'bne7', 'bincount':7}, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'multirt', \
+    process_dict.update({'bne7' : {'dualprocess' : self._process_bnep,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_bnep,
+                                  'inverseprocess' : self._inverseprocess_bnep,
+                                  'recorded_category' : 'bnep',
+                                  'info_retention' : False,
+                                  'defaultparams' : {'suffix':'bne7', 'bincount':7},
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'bnep'}})
-    process_dict.update({'bne9' : {'dualprocess' : self._process_bnep, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_bnep, \
-                                  'inverseprocess' : self._inverseprocess_bnep, \
-                                  'recorded_category' : 'bnep', \
-                                  'info_retention' : False, \
-                                  'defaultparams' : {'suffix':'bne9', 'bincount':9}, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'multirt', \
+    process_dict.update({'bne9' : {'dualprocess' : self._process_bnep,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_bnep,
+                                  'inverseprocess' : self._inverseprocess_bnep,
+                                  'recorded_category' : 'bnep',
+                                  'info_retention' : False,
+                                  'defaultparams' : {'suffix':'bne9', 'bincount':9},
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'bnep'}})
-    process_dict.update({'bneo' : {'dualprocess' : self._process_bneo, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_bneo, \
-                                  'inverseprocess' : self._inverseprocess_bneo, \
-                                  'recorded_category' : 'bneo', \
-                                  'info_retention' : False, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'singlct', \
+    process_dict.update({'bneo' : {'dualprocess' : self._process_bneo,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_bneo,
+                                  'inverseprocess' : self._inverseprocess_bneo,
+                                  'recorded_category' : 'bneo',
+                                  'info_retention' : False,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'bneo'}})
-    process_dict.update({'bn7o' : {'dualprocess' : self._process_bneo, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_bneo, \
-                                  'inverseprocess' : self._inverseprocess_bneo, \
-                                  'recorded_category' : 'bneo', \
-                                  'info_retention' : False, \
-                                  'defaultparams' : {'suffix':'bn7o', 'bincount':7}, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'singlct', \
+    process_dict.update({'bn7o' : {'dualprocess' : self._process_bneo,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_bneo,
+                                  'inverseprocess' : self._inverseprocess_bneo,
+                                  'recorded_category' : 'bneo',
+                                  'info_retention' : False,
+                                  'defaultparams' : {'suffix':'bn7o', 'bincount':7},
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'bneo'}})
-    process_dict.update({'bn9o' : {'dualprocess' : self._process_bneo, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_bneo, \
-                                  'inverseprocess' : self._inverseprocess_bneo, \
-                                  'recorded_category' : 'bneo', \
-                                  'info_retention' : False, \
-                                  'defaultparams' : {'suffix':'bn9o', 'bincount':9}, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'singlct', \
+    process_dict.update({'bn9o' : {'dualprocess' : self._process_bneo,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_bneo,
+                                  'inverseprocess' : self._inverseprocess_bneo,
+                                  'recorded_category' : 'bneo',
+                                  'info_retention' : False,
+                                  'defaultparams' : {'suffix':'bn9o', 'bincount':9},
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'bneo'}})
-    process_dict.update({'tlbn' : {'dualprocess' : self._process_tlbn, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_tlbn, \
-                                  'inverseprocess' : self._inverseprocess_tlbn, \
-                                  'recorded_category' : 'tlbn', \
-                                  'info_retention' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'concurrent_nmbr', \
+    process_dict.update({'tlbn' : {'dualprocess' : self._process_tlbn,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_tlbn,
+                                  'inverseprocess' : self._inverseprocess_tlbn,
+                                  'recorded_category' : 'tlbn',
+                                  'info_retention' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'concurrent_nmbr',
                                   'labelctgy' : 'tlbn'}})
-    process_dict.update({'pwor' : {'dualprocess' : self._process_pwor, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_pwor, \
-                                  'inverseprocess' : self._inverseprocess_por2, \
-                                  'recorded_category' : 'pwor', \
-                                  'info_retention' : False, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'positivenumeric', \
-                                  'MLinfilltype' : 'singlct', \
+    process_dict.update({'pwor' : {'dualprocess' : self._process_pwor,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_pwor,
+                                  'inverseprocess' : self._inverseprocess_por2,
+                                  'recorded_category' : 'pwor',
+                                  'info_retention' : False,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'positivenumeric',
+                                  'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'pwor'}})
-    process_dict.update({'por2' : {'dualprocess' : self._process_pwor, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_pwor, \
-                                  'inverseprocess' : self._inverseprocess_por2, \
-                                  'recorded_category' : 'pwor', \
-                                  'info_retention' : False, \
-                                  'inplace_option' : True, \
-                                  'defaultparams' : {'negvalues' : True}, \
-                                  'NArowtype' : 'nonzeronumeric', \
-                                  'MLinfilltype' : 'singlct', \
+    process_dict.update({'por2' : {'dualprocess' : self._process_pwor,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_pwor,
+                                  'inverseprocess' : self._inverseprocess_por2,
+                                  'recorded_category' : 'pwor',
+                                  'info_retention' : False,
+                                  'inplace_option' : True,
+                                  'defaultparams' : {'negvalues' : True},
+                                  'NArowtype' : 'nonzeronumeric',
+                                  'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'pwor'}})
-    process_dict.update({'por3' : {'dualprocess' : self._process_pwor, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_pwor, \
-                                  'inverseprocess' : self._inverseprocess_por2, \
-                                  'recorded_category' : 'pwor', \
-                                  'info_retention' : False, \
-                                  'inplace_option' : True, \
-                                  'defaultparams' : {'negvalues' : True}, \
-                                  'NArowtype' : 'nonzeronumeric', \
-                                  'MLinfilltype' : 'singlct', \
+    process_dict.update({'por3' : {'dualprocess' : self._process_pwor,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_pwor,
+                                  'inverseprocess' : self._inverseprocess_por2,
+                                  'recorded_category' : 'pwor',
+                                  'info_retention' : False,
+                                  'inplace_option' : True,
+                                  'defaultparams' : {'negvalues' : True},
+                                  'NArowtype' : 'nonzeronumeric',
+                                  'MLinfilltype' : 'singlct',
                                   'labelctgy' : '1010'}})
-    process_dict.update({'bkb3' : {'dualprocess' : self._process_bkt3, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_bkt3, \
-                                  'inverseprocess' : self._inverseprocess_bkt3, \
-                                  'recorded_category' : 'bkt3', \
-                                  'info_retention' : False, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'singlct', \
+    process_dict.update({'bkb3' : {'dualprocess' : self._process_bkt3,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_bkt3,
+                                  'inverseprocess' : self._inverseprocess_bkt3,
+                                  'recorded_category' : 'bkt3',
+                                  'info_retention' : False,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'singlct',
                                   'labelctgy' : '1010'}})
-    process_dict.update({'bkb4' : {'dualprocess' : self._process_bkt4, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_bkt4, \
-                                  'inverseprocess' : self._inverseprocess_bkt4, \
-                                  'recorded_category' : 'bkt4', \
-                                  'info_retention' : False, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'singlct', \
+    process_dict.update({'bkb4' : {'dualprocess' : self._process_bkt4,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_bkt4,
+                                  'inverseprocess' : self._inverseprocess_bkt4,
+                                  'recorded_category' : 'bkt4',
+                                  'info_retention' : False,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'singlct',
                                   'labelctgy' : '1010'}})
-    process_dict.update({'bsbn' : {'dualprocess' : self._process_bsor, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_bsor, \
-                                  'inverseprocess' : self._inverseprocess_bsor, \
-                                  'recorded_category' : 'bsor', \
-                                  'info_retention' : False, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'singlct', \
+    process_dict.update({'bsbn' : {'dualprocess' : self._process_bsor,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_bsor,
+                                  'inverseprocess' : self._inverseprocess_bsor,
+                                  'recorded_category' : 'bsor',
+                                  'info_retention' : False,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'singlct',
                                   'labelctgy' : '1010'}})
-    process_dict.update({'bnwb' : {'dualprocess' : self._process_bnwo, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_bnwo, \
-                                  'inverseprocess' : self._inverseprocess_bnwo, \
-                                  'recorded_category' : 'bnwo', \
-                                  'info_retention' : False, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'singlct', \
+    process_dict.update({'bnwb' : {'dualprocess' : self._process_bnwo,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_bnwo,
+                                  'inverseprocess' : self._inverseprocess_bnwo,
+                                  'recorded_category' : 'bnwo',
+                                  'info_retention' : False,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'singlct',
                                   'labelctgy' : '1010'}})
-    process_dict.update({'bnKb' : {'dualprocess' : self._process_bnwo, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_bnwo, \
-                                  'inverseprocess' : self._inverseprocess_bnwo, \
-                                  'recorded_category' : 'bnwo', \
-                                  'info_retention' : False, \
-                                  'defaultparams' : {'suffix':'bnKo', 'width':1000}, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'singlct', \
+    process_dict.update({'bnKb' : {'dualprocess' : self._process_bnwo,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_bnwo,
+                                  'inverseprocess' : self._inverseprocess_bnwo,
+                                  'recorded_category' : 'bnwo',
+                                  'info_retention' : False,
+                                  'defaultparams' : {'suffix':'bnKo', 'width':1000},
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'singlct',
                                   'labelctgy' : '1010'}})
-    process_dict.update({'bnMb' : {'dualprocess' : self._process_bnwo, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_bnwo, \
-                                  'inverseprocess' : self._inverseprocess_bnwo, \
-                                  'recorded_category' : 'bnwo', \
-                                  'info_retention' : False, \
-                                  'defaultparams' : {'suffix':'bnMo', 'width':1000000}, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'singlct', \
+    process_dict.update({'bnMb' : {'dualprocess' : self._process_bnwo,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_bnwo,
+                                  'inverseprocess' : self._inverseprocess_bnwo,
+                                  'recorded_category' : 'bnwo',
+                                  'info_retention' : False,
+                                  'defaultparams' : {'suffix':'bnMo', 'width':1000000},
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'singlct',
                                   'labelctgy' : '1010'}})
-    process_dict.update({'bneb' : {'dualprocess' : self._process_bneo, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_bneo, \
-                                  'inverseprocess' : self._inverseprocess_bneo, \
-                                  'recorded_category' : 'bneo', \
-                                  'info_retention' : False, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'singlct', \
+    process_dict.update({'bneb' : {'dualprocess' : self._process_bneo,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_bneo,
+                                  'inverseprocess' : self._inverseprocess_bneo,
+                                  'recorded_category' : 'bneo',
+                                  'info_retention' : False,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'singlct',
                                   'labelctgy' : '1010'}})
-    process_dict.update({'bn7b' : {'dualprocess' : self._process_bneo, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_bneo, \
-                                  'inverseprocess' : self._inverseprocess_bneo, \
-                                  'recorded_category' : 'bneo', \
-                                  'info_retention' : False, \
-                                  'defaultparams' : {'suffix':'bn7o', 'bincount':7}, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'singlct', \
+    process_dict.update({'bn7b' : {'dualprocess' : self._process_bneo,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_bneo,
+                                  'inverseprocess' : self._inverseprocess_bneo,
+                                  'recorded_category' : 'bneo',
+                                  'info_retention' : False,
+                                  'defaultparams' : {'suffix':'bn7o', 'bincount':7},
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'singlct',
                                   'labelctgy' : '1010'}})
-    process_dict.update({'bn9b' : {'dualprocess' : self._process_bneo, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_bneo, \
-                                  'inverseprocess' : self._inverseprocess_bneo, \
-                                  'recorded_category' : 'bneo', \
-                                  'info_retention' : False, \
-                                  'defaultparams' : {'suffix':'bn9o', 'bincount':9}, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'singlct', \
+    process_dict.update({'bn9b' : {'dualprocess' : self._process_bneo,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_bneo,
+                                  'inverseprocess' : self._inverseprocess_bneo,
+                                  'recorded_category' : 'bneo',
+                                  'info_retention' : False,
+                                  'defaultparams' : {'suffix':'bn9o', 'bincount':9},
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'singlct',
                                   'labelctgy' : '1010'}})
-    process_dict.update({'pwbn' : {'dualprocess' : self._process_pwor, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_pwor, \
-                                  'inverseprocess' : self._inverseprocess_por2, \
-                                  'recorded_category' : 'pwor', \
-                                  'info_retention' : False, \
-                                  'NArowtype' : 'positivenumeric', \
-                                  'MLinfilltype' : 'singlct', \
+    process_dict.update({'pwbn' : {'dualprocess' : self._process_pwor,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_pwor,
+                                  'inverseprocess' : self._inverseprocess_por2,
+                                  'recorded_category' : 'pwor',
+                                  'info_retention' : False,
+                                  'NArowtype' : 'positivenumeric',
+                                  'MLinfilltype' : 'singlct',
                                   'labelctgy' : '1010'}})
-    process_dict.update({'DPn3' : {'dualprocess' : self._process_numerical, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_numerical, \
-                                  'inverseprocess' : self._inverseprocess_nmbr, \
-                                  'recorded_category' : 'nmbr', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'DPn3' : {'dualprocess' : self._process_numerical,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_numerical,
+                                  'inverseprocess' : self._inverseprocess_nmbr,
+                                  'recorded_category' : 'nmbr',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'DPnb'}})
-    process_dict.update({'DPnb' : {'dualprocess' : self._process_DPnb, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_DPnb, \
-                                  'inverseprocess' : self._inverseprocess_UPCS, \
-                                  'recorded_category' : 'DPnb', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : False, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'DPnb' : {'dualprocess' : self._process_DPnb,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_DPnb,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
+                                  'recorded_category' : 'DPnb',
+                                  'info_retention' : True,
+                                  'inplace_option' : False,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'DPnb'}})
-    process_dict.update({'DPm2' : {'dualprocess' : self._process_mnmx, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_mnmx, \
-                                  'inverseprocess' : self._inverseprocess_mnmx, \
-                                  'recorded_category' : 'mnmx', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'DPm2' : {'dualprocess' : self._process_mnmx,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_mnmx,
+                                  'inverseprocess' : self._inverseprocess_mnmx,
+                                  'recorded_category' : 'mnmx',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'DPmm'}})
-    process_dict.update({'DPmm' : {'dualprocess' : self._process_DPmm, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_DPmm, \
-                                  'inverseprocess' : self._inverseprocess_UPCS, \
-                                  'recorded_category' : 'DPmm', \
-                                  'info_retention' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'DPmm' : {'dualprocess' : self._process_DPmm,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_DPmm,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
+                                  'recorded_category' : 'DPmm',
+                                  'info_retention' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'DPmm'}})
-    process_dict.update({'DPrt' : {'dualprocess' : self._process_DPrt, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_DPrt, \
-                                  'inverseprocess' : self._inverseprocess_retn, \
-                                  'recorded_category' : 'DPrt', \
-                                  'info_retention' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'DPrt' : {'dualprocess' : self._process_DPrt,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_DPrt,
+                                  'inverseprocess' : self._inverseprocess_retn,
+                                  'recorded_category' : 'DPrt',
+                                  'info_retention' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'DPrt'}})
-    process_dict.update({'DLn3' : {'dualprocess' : self._process_numerical, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_numerical, \
-                                  'inverseprocess' : self._inverseprocess_nmbr, \
-                                  'recorded_category' : 'nmbr', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'DLn3' : {'dualprocess' : self._process_numerical,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_numerical,
+                                  'inverseprocess' : self._inverseprocess_nmbr,
+                                  'recorded_category' : 'nmbr',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'DLnb'}})
-    process_dict.update({'DLnb' : {'dualprocess' : self._process_DPnb, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_DPnb, \
-                                  'inverseprocess' : self._inverseprocess_UPCS, \
-                                  'recorded_category' : 'DPnb', \
-                                  'info_retention' : True, \
-                                  'defaultparams' : {'noisedistribution' : 'laplace'}, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'DLnb' : {'dualprocess' : self._process_DPnb,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_DPnb,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
+                                  'recorded_category' : 'DPnb',
+                                  'info_retention' : True,
+                                  'defaultparams' : {'noisedistribution' : 'laplace'},
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'DLnb'}})
-    process_dict.update({'DLm2' : {'dualprocess' : self._process_mnmx, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_mnmx, \
-                                  'inverseprocess' : self._inverseprocess_mnmx, \
-                                  'recorded_category' : 'mnmx', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'DLm2' : {'dualprocess' : self._process_mnmx,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_mnmx,
+                                  'inverseprocess' : self._inverseprocess_mnmx,
+                                  'recorded_category' : 'mnmx',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'DLmm'}})
-    process_dict.update({'DLmm' : {'dualprocess' : self._process_DPmm, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_DPmm, \
-                                  'inverseprocess' : self._inverseprocess_UPCS, \
-                                  'recorded_category' : 'DPmm', \
-                                  'info_retention' : True, \
-                                  'defaultparams' : {'noisedistribution' : 'laplace'}, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'DLmm' : {'dualprocess' : self._process_DPmm,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_DPmm,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
+                                  'recorded_category' : 'DPmm',
+                                  'info_retention' : True,
+                                  'defaultparams' : {'noisedistribution' : 'laplace'},
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'DLmm'}})
-    process_dict.update({'DLrt' : {'dualprocess' : self._process_DPrt, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_DPrt, \
-                                  'inverseprocess' : self._inverseprocess_retn, \
-                                  'recorded_category' : 'DPrt', \
-                                  'info_retention' : True, \
-                                  'defaultparams' : {'noisedistribution' : 'laplace'}, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'DLrt' : {'dualprocess' : self._process_DPrt,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_DPrt,
+                                  'inverseprocess' : self._inverseprocess_retn,
+                                  'recorded_category' : 'DPrt',
+                                  'info_retention' : True,
+                                  'defaultparams' : {'noisedistribution' : 'laplace'},
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'DLrt'}})
-    process_dict.update({'DPb2' : {'dualprocess' : self._process_binary, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_binary, \
-                                  'inverseprocess' : self._inverseprocess_bnry, \
-                                  'recorded_category' : 'bnry', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'binary', \
+    process_dict.update({'DPb2' : {'dualprocess' : self._process_binary,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_binary,
+                                  'inverseprocess' : self._inverseprocess_bnry,
+                                  'recorded_category' : 'bnry',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'binary',
                                   'labelctgy' : 'DPbn'}})
-    process_dict.update({'DPbn' : {'dualprocess' : self._process_DPbn, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_DPbn, \
-                                  'inverseprocess' : self._inverseprocess_UPCS, \
-                                  'recorded_category' : 'DPbn', \
-                                  'info_retention' : True, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'binary', \
+    process_dict.update({'DPbn' : {'dualprocess' : self._process_DPbn,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_DPbn,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
+                                  'recorded_category' : 'DPbn',
+                                  'info_retention' : True,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'binary',
                                   'labelctgy' : 'DPbn'}})
-    process_dict.update({'DPo4' : {'dualprocess' : self._process_ord3, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_ord3, \
-                                  'inverseprocess' : self._inverseprocess_ord3, \
-                                  'recorded_category' : 'ord3', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'singlct', \
+    process_dict.update({'DPo4' : {'dualprocess' : self._process_ord3,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_ord3,
+                                  'inverseprocess' : self._inverseprocess_ord3,
+                                  'recorded_category' : 'ord3',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'DPod'}})
-    process_dict.update({'DPod' : {'dualprocess' : self._process_DPod, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_DPod, \
-                                  'inverseprocess' : self._inverseprocess_UPCS, \
-                                  'recorded_category' : 'DPod', \
-                                  'info_retention' : True, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'singlct', \
+    process_dict.update({'DPod' : {'dualprocess' : self._process_DPod,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_DPod,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
+                                  'recorded_category' : 'DPod',
+                                  'info_retention' : True,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'DPod'}})
-    process_dict.update({'DPo5' : {'dualprocess' : self._process_ord3, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_ord3, \
-                                  'inverseprocess' : self._inverseprocess_ord3, \
-                                  'recorded_category' : 'ord3', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'singlct', \
+    process_dict.update({'DPo5' : {'dualprocess' : self._process_ord3,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_ord3,
+                                  'inverseprocess' : self._inverseprocess_ord3,
+                                  'recorded_category' : 'ord3',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'onht'}})
-    process_dict.update({'DPo2' : {'dualprocess' : self._process_DPod, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_DPod, \
-                                  'inverseprocess' : self._inverseprocess_UPCS, \
-                                  'recorded_category' : 'DPod', \
-                                  'info_retention' : True, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'singlct', \
+    process_dict.update({'DPo2' : {'dualprocess' : self._process_DPod,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_DPod,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
+                                  'recorded_category' : 'DPod',
+                                  'info_retention' : True,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'onht'}})
-    process_dict.update({'DPoh' : {'dualprocess' : self._process_DPod, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_DPod, \
-                                  'inverseprocess' : self._inverseprocess_UPCS, \
-                                  'recorded_category' : 'DPod', \
-                                  'info_retention' : True, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'singlct', \
+    process_dict.update({'DPoh' : {'dualprocess' : self._process_DPod,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_DPod,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
+                                  'recorded_category' : 'DPod',
+                                  'info_retention' : True,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'onht'}})
-    process_dict.update({'DP10' : {'dualprocess' : self._process_DPod, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_DPod, \
-                                  'inverseprocess' : self._inverseprocess_UPCS, \
-                                  'recorded_category' : 'DPod', \
-                                  'info_retention' : True, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'singlct', \
+    process_dict.update({'DP10' : {'dualprocess' : self._process_DPod,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_DPod,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
+                                  'recorded_category' : 'DPod',
+                                  'info_retention' : True,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'singlct',
                                   'labelctgy' : '1010'}})
-    process_dict.update({'DPo6' : {'dualprocess' : self._process_ord3, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_ord3, \
-                                  'inverseprocess' : self._inverseprocess_ord3, \
-                                  'recorded_category' : 'ord3', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'singlct', \
+    process_dict.update({'DPo6' : {'dualprocess' : self._process_ord3,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_ord3,
+                                  'inverseprocess' : self._inverseprocess_ord3,
+                                  'recorded_category' : 'ord3',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'singlct',
                                   'labelctgy' : '1010'}})
-    process_dict.update({'DPo3' : {'dualprocess' : self._process_DPod, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_DPod, \
-                                  'inverseprocess' : self._inverseprocess_UPCS, \
-                                  'recorded_category' : 'DPod', \
-                                  'info_retention' : True, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'singlct', \
+    process_dict.update({'DPo3' : {'dualprocess' : self._process_DPod,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_DPod,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
+                                  'recorded_category' : 'DPod',
+                                  'info_retention' : True,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'singlct',
                                   'labelctgy' : '1010'}})
-    process_dict.update({'qbt1' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_qbt1, \
-                                  'postprocess' : None, \
-                                  'inverseprocess' : self._inverseprocess_qbt1, \
-                                  'recorded_category' : 'qbt1', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'exclude', \
+    process_dict.update({'qbt1' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_qbt1,
+                                  'postprocess' : None,
+                                  'inverseprocess' : self._inverseprocess_qbt1,
+                                  'recorded_category' : 'qbt1',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'qbt1'}})
-    process_dict.update({'qbt2' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_qbt1, \
-                                  'postprocess' : None, \
-                                  'inverseprocess' : self._inverseprocess_qbt1, \
-                                  'recorded_category' : 'qbt1', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'defaultparams' : {'suffix' : 'qbt2', \
-                                                     'integer_bits' : 15, \
-                                                     'fractional_bits' : 0}, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'exclude', \
+    process_dict.update({'qbt2' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_qbt1,
+                                  'postprocess' : None,
+                                  'inverseprocess' : self._inverseprocess_qbt1,
+                                  'recorded_category' : 'qbt1',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'defaultparams' : {'suffix' : 'qbt2',
+                                                     'integer_bits' : 15,
+                                                     'fractional_bits' : 0},
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'qbt2'}})
-    process_dict.update({'qbt3' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_qbt1, \
-                                  'postprocess' : None, \
-                                  'inverseprocess' : self._inverseprocess_qbt1, \
-                                  'recorded_category' : 'qbt1', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'defaultparams' : {'suffix' : 'qbt3', \
-                                                     'sign_bit' : False, \
-                                                     'fractional_bits' : 13}, \
-                                  'NArowtype' : 'nonnegativenumeric', \
-                                  'MLinfilltype' : 'exclude', \
+    process_dict.update({'qbt3' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_qbt1,
+                                  'postprocess' : None,
+                                  'inverseprocess' : self._inverseprocess_qbt1,
+                                  'recorded_category' : 'qbt1',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'defaultparams' : {'suffix' : 'qbt3',
+                                                     'sign_bit' : False,
+                                                     'fractional_bits' : 13},
+                                  'NArowtype' : 'nonnegativenumeric',
+                                  'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'qbt3'}})
-    process_dict.update({'qbt4' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_qbt1, \
-                                  'postprocess' : None, \
-                                  'inverseprocess' : self._inverseprocess_qbt1, \
-                                  'recorded_category' : 'qbt1', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'defaultparams' : {'suffix' : 'qbt4', \
-                                                     'sign_bit' : False, \
-                                                     'integer_bits' : 16, \
-                                                     'fractional_bits' : 0}, \
-                                  'NArowtype' : 'nonnegativenumeric', \
-                                  'MLinfilltype' : 'exclude', \
+    process_dict.update({'qbt4' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_qbt1,
+                                  'postprocess' : None,
+                                  'inverseprocess' : self._inverseprocess_qbt1,
+                                  'recorded_category' : 'qbt1',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'defaultparams' : {'suffix' : 'qbt4',
+                                                     'sign_bit' : False,
+                                                     'integer_bits' : 16,
+                                                     'fractional_bits' : 0},
+                                  'NArowtype' : 'nonnegativenumeric',
+                                  'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'qbt4'}})
-    process_dict.update({'nmqb' : {'dualprocess' : self._process_numerical, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_numerical, \
-                                  'inverseprocess' : self._inverseprocess_nmbr, \
-                                  'recorded_category' : 'nmbr', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'nmqb' : {'dualprocess' : self._process_numerical,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_numerical,
+                                  'inverseprocess' : self._inverseprocess_nmbr,
+                                  'recorded_category' : 'nmbr',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'qbt1'}})
-    process_dict.update({'nmq2' : {'dualprocess' : self._process_numerical, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_numerical, \
-                                  'inverseprocess' : self._inverseprocess_nmbr, \
-                                  'recorded_category' : 'nmbr', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'nmq2' : {'dualprocess' : self._process_numerical,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_numerical,
+                                  'inverseprocess' : self._inverseprocess_nmbr,
+                                  'recorded_category' : 'nmbr',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
-    process_dict.update({'mmqb' : {'dualprocess' : self._process_mnmx, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_mnmx, \
-                                  'inverseprocess' : self._inverseprocess_mnmx, \
-                                  'recorded_category' : 'mnmx', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'mmqb' : {'dualprocess' : self._process_mnmx,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_mnmx,
+                                  'inverseprocess' : self._inverseprocess_mnmx,
+                                  'recorded_category' : 'mnmx',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'qbt3'}})
-    process_dict.update({'mmq2' : {'dualprocess' : self._process_mnmx, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_mnmx, \
-                                  'inverseprocess' : self._inverseprocess_mnmx, \
-                                  'recorded_category' : 'mnmx', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'mmq2' : {'dualprocess' : self._process_mnmx,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_mnmx,
+                                  'inverseprocess' : self._inverseprocess_mnmx,
+                                  'recorded_category' : 'mnmx',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mnmx'}})
-    process_dict.update({'NArw' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_NArw, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : 'NArw', \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'boolexclude', \
+    process_dict.update({'NArw' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_NArw,
+                                  'postprocess' : None,
+                                  'recorded_category' : 'NArw',
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'boolexclude',
                                   'labelctgy' : 'NArw'}})
-    process_dict.update({'NAr2' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_NArw, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : 'NArw', \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'boolexclude', \
+    process_dict.update({'NAr2' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_NArw,
+                                  'postprocess' : None,
+                                  'recorded_category' : 'NArw',
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'boolexclude',
                                   'labelctgy' : 'NArw'}})
-    process_dict.update({'NAr3' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_NArw, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : 'NArw', \
-                                  'NArowtype' : 'positivenumeric', \
-                                  'MLinfilltype' : 'boolexclude', \
+    process_dict.update({'NAr3' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_NArw,
+                                  'postprocess' : None,
+                                  'recorded_category' : 'NArw',
+                                  'NArowtype' : 'positivenumeric',
+                                  'MLinfilltype' : 'boolexclude',
                                   'labelctgy' : 'NArw'}})
-    process_dict.update({'NAr4' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_NArw, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : 'NArw', \
-                                  'NArowtype' : 'nonnegativenumeric', \
-                                  'MLinfilltype' : 'boolexclude', \
+    process_dict.update({'NAr4' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_NArw,
+                                  'postprocess' : None,
+                                  'recorded_category' : 'NArw',
+                                  'NArowtype' : 'nonnegativenumeric',
+                                  'MLinfilltype' : 'boolexclude',
                                   'labelctgy' : 'NArw'}})
-    process_dict.update({'NAr5' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_NArw, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : 'NArw', \
-                                  'NArowtype' : 'integer', \
-                                  'MLinfilltype' : 'boolexclude', \
+    process_dict.update({'NAr5' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_NArw,
+                                  'postprocess' : None,
+                                  'recorded_category' : 'NArw',
+                                  'NArowtype' : 'integer',
+                                  'MLinfilltype' : 'boolexclude',
                                   'labelctgy' : 'NArw'}})
-    process_dict.update({'null' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_null, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : 'null', \
-                                  'inplace_option' : False, \
-                                  'NArowtype' : 'exclude', \
-                                  'MLinfilltype' : 'exclude', \
+    process_dict.update({'null' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_null,
+                                  'postprocess' : None,
+                                  'recorded_category' : 'null',
+                                  'inplace_option' : False,
+                                  'NArowtype' : 'exclude',
+                                  'MLinfilltype' : 'exclude',
                                   'labelctgy' : None}})
-    process_dict.update({'copy' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_copy, \
-                                  'postprocess' : None, \
-                                  'inverseprocess' : self._inverseprocess_excl, \
-                                  'recorded_category' : 'copy', \
-                                  'info_retention' : True, \
-                                  'NArowtype' : 'exclude', \
-                                  'MLinfilltype' : 'exclude', \
+    process_dict.update({'copy' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_copy,
+                                  'postprocess' : None,
+                                  'inverseprocess' : self._inverseprocess_excl,
+                                  'recorded_category' : 'copy',
+                                  'info_retention' : True,
+                                  'NArowtype' : 'exclude',
+                                  'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'copy'}})
-    process_dict.update({'excl' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_excl, \
-                                  'postprocess' : None, \
-                                  'inverseprocess' : self._inverseprocess_excl, \
-                                  'recorded_category' : 'excl', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'exclude', \
-                                  'MLinfilltype' : 'totalexclude', \
+    process_dict.update({'excl' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_excl,
+                                  'postprocess' : None,
+                                  'inverseprocess' : self._inverseprocess_excl,
+                                  'recorded_category' : 'excl',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'excl'}})
-    process_dict.update({'exc2' : {'dualprocess' : self._process_exc2, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_exc2, \
-                                  'inverseprocess' : self._inverseprocess_UPCS, \
-                                  'recorded_category' : 'exc2', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'exc2' : {'dualprocess' : self._process_exc2,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_exc2,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
+                                  'recorded_category' : 'exc2',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'exc2'}})
-    process_dict.update({'exc3' : {'dualprocess' : self._process_exc2, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_exc2, \
-                                  'inverseprocess' : self._inverseprocess_UPCS, \
-                                  'recorded_category' : 'exc2', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'exc3' : {'dualprocess' : self._process_exc2,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_exc2,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
+                                  'recorded_category' : 'exc2',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'exc2'}})
-    process_dict.update({'exc4' : {'dualprocess' : self._process_exc2, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_exc2, \
-                                  'inverseprocess' : self._inverseprocess_UPCS, \
-                                  'recorded_category' : 'exc2', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'exc4' : {'dualprocess' : self._process_exc2,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_exc2,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
+                                  'recorded_category' : 'exc2',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'exc2'}})
-    process_dict.update({'exc5' : {'dualprocess' : self._process_exc5, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_exc5, \
-                                  'inverseprocess' : self._inverseprocess_UPCS, \
-                                  'recorded_category' : 'exc5', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'integer', \
-                                  'MLinfilltype' : 'singlct', \
+    process_dict.update({'exc5' : {'dualprocess' : self._process_exc5,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_exc5,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
+                                  'recorded_category' : 'exc5',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'integer',
+                                  'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'exc5'}})
-    process_dict.update({'exc6' : {'dualprocess' : self._process_exc2, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_exc2, \
-                                  'inverseprocess' : self._inverseprocess_UPCS, \
-                                  'recorded_category' : 'exc2', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'exc6' : {'dualprocess' : self._process_exc2,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_exc2,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
+                                  'recorded_category' : 'exc2',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'exc2'}})
-    process_dict.update({'exc7' : {'dualprocess' : self._process_exc5, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_exc5, \
-                                  'inverseprocess' : self._inverseprocess_UPCS, \
-                                  'recorded_category' : 'exc5', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'integer', \
-                                  'MLinfilltype' : 'singlct', \
+    process_dict.update({'exc7' : {'dualprocess' : self._process_exc5,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_exc5,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
+                                  'recorded_category' : 'exc5',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'integer',
+                                  'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'exc5'}})
-    process_dict.update({'exc8' : {'dualprocess' : self._process_exc5, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_exc5, \
-                                  'inverseprocess' : self._inverseprocess_UPCS, \
-                                  'recorded_category' : 'exc5', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'integer', \
-                                  'MLinfilltype' : 'integer', \
+    process_dict.update({'exc8' : {'dualprocess' : self._process_exc5,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_exc5,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
+                                  'recorded_category' : 'exc5',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'integer',
+                                  'MLinfilltype' : 'integer',
                                   'labelctgy' : 'exc5'}})
-    process_dict.update({'exc9' : {'dualprocess' : self._process_exc5, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_exc5, \
-                                  'inverseprocess' : self._inverseprocess_UPCS, \
-                                  'recorded_category' : 'exc5', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'integer', \
-                                  'MLinfilltype' : 'integer', \
+    process_dict.update({'exc9' : {'dualprocess' : self._process_exc5,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_exc5,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
+                                  'recorded_category' : 'exc5',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'integer',
+                                  'MLinfilltype' : 'integer',
                                   'labelctgy' : 'exc5'}})
-    process_dict.update({'shfl' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_shfl, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : 'shfl', \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'exclude', \
-                                  'MLinfilltype' : 'exclude', \
+    process_dict.update({'shfl' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_shfl,
+                                  'postprocess' : None,
+                                  'recorded_category' : 'shfl',
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'exclude',
+                                  'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'shfl'}})
-    process_dict.update({'nmbd' : {'dualprocess' : self._process_numerical, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_numerical, \
-                                  'inverseprocess' : self._inverseprocess_nmbr, \
-                                  'recorded_category' : 'nmbr', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'nmbd' : {'dualprocess' : self._process_numerical,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_numerical,
+                                  'inverseprocess' : self._inverseprocess_nmbr,
+                                  'recorded_category' : 'nmbr',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
-    process_dict.update({'101d' : {'dualprocess' : self._process_1010, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_1010, \
-                                  'inverseprocess' : self._inverseprocess_1010, \
-                                  'recorded_category' : '1010', \
-                                  'info_retention' : True, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : '1010', \
+    process_dict.update({'101d' : {'dualprocess' : self._process_1010,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_1010,
+                                  'inverseprocess' : self._inverseprocess_1010,
+                                  'recorded_category' : '1010',
+                                  'info_retention' : True,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : '1010',
                                   'labelctgy' : '1010'}})
-    process_dict.update({'ordd' : {'dualprocess' : self._process_ord3, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_ord3, \
-                                  'inverseprocess' : self._inverseprocess_ord3, \
-                                  'recorded_category' : 'ord3', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'singlct', \
+    process_dict.update({'ordd' : {'dualprocess' : self._process_ord3,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_ord3,
+                                  'inverseprocess' : self._inverseprocess_ord3,
+                                  'recorded_category' : 'ord3',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'ord3'}})
-    process_dict.update({'texd' : {'dualprocess' : self._process_text, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_text, \
-                                  'inverseprocess' : self._inverseprocess_text, \
-                                  'recorded_category' : 'text', \
-                                  'info_retention' : True, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'multirt', \
+    process_dict.update({'texd' : {'dualprocess' : self._process_text,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_text,
+                                  'inverseprocess' : self._inverseprocess_text,
+                                  'recorded_category' : 'text',
+                                  'info_retention' : True,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'text'}})
-    process_dict.update({'bnrd' : {'dualprocess' : self._process_binary, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_binary, \
-                                  'inverseprocess' : self._inverseprocess_bnry, \
-                                  'recorded_category' : 'bnry', \
-                                  'info_retention' : True, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'binary', \
+    process_dict.update({'bnrd' : {'dualprocess' : self._process_binary,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_binary,
+                                  'inverseprocess' : self._inverseprocess_bnry,
+                                  'recorded_category' : 'bnry',
+                                  'info_retention' : True,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'binary',
                                   'labelctgy' : 'bnry'}})
-    process_dict.update({'datd' : {'dualprocess' : None, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : False, \
-                                  'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'exclude', \
+    process_dict.update({'datd' : {'dualprocess' : None,
+                                  'singleprocess' : None,
+                                  'postprocess' : None,
+                                  'recorded_category' : False,
+                                  'NArowtype' : 'datetime',
+                                  'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'mdsn'}})
-    process_dict.update({'nuld' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_null, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : 'null', \
-                                  'inplace_option' : False, \
-                                  'NArowtype' : 'exclude', \
-                                  'MLinfilltype' : 'exclude', \
+    process_dict.update({'nuld' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_null,
+                                  'postprocess' : None,
+                                  'recorded_category' : 'null',
+                                  'inplace_option' : False,
+                                  'NArowtype' : 'exclude',
+                                  'MLinfilltype' : 'exclude',
                                   'labelctgy' : None}})
-    process_dict.update({'lbnm' : {'dualprocess' : self._process_exc2, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_exc2, \
-                                  'inverseprocess' : self._inverseprocess_UPCS, \
-                                  'recorded_category' : 'exc2', \
-                                  'info_retention' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'lbnm' : {'dualprocess' : self._process_exc2,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_exc2,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
+                                  'recorded_category' : 'exc2',
+                                  'info_retention' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'exc2'}})
-    process_dict.update({'lbnb' : {'dualprocess' : self._process_numerical, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_numerical, \
-                                  'inverseprocess' : self._inverseprocess_nmbr, \
-                                  'recorded_category' : 'nmbr', \
-                                  'info_retention' : True, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'lbnb' : {'dualprocess' : self._process_numerical,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_numerical,
+                                  'inverseprocess' : self._inverseprocess_nmbr,
+                                  'recorded_category' : 'nmbr',
+                                  'info_retention' : True,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
-    process_dict.update({'lb10' : {'dualprocess' : self._process_text, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_text, \
-                                  'inverseprocess' : self._inverseprocess_text, \
-                                  'recorded_category' : 'text', \
-                                  'info_retention' : True, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'multirt', \
+    process_dict.update({'lb10' : {'dualprocess' : self._process_text,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_text,
+                                  'inverseprocess' : self._inverseprocess_text,
+                                  'recorded_category' : 'text',
+                                  'info_retention' : True,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'text'}})
-    process_dict.update({'lbor' : {'dualprocess' : self._process_ordl, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_ordl, \
-                                  'inverseprocess' : self._inverseprocess_ordl, \
-                                  'recorded_category' : 'ordl', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'singlct', \
+    process_dict.update({'lbor' : {'dualprocess' : self._process_ordl,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_ordl,
+                                  'inverseprocess' : self._inverseprocess_ordl,
+                                  'recorded_category' : 'ordl',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'ordl'}})
-    process_dict.update({'lbos' : {'dualprocess' : self._process_ordl, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_ordl, \
-                                  'inverseprocess' : self._inverseprocess_ordl, \
-                                  'recorded_category' : 'ordl', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'singlct', \
+    process_dict.update({'lbos' : {'dualprocess' : self._process_ordl,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_ordl,
+                                  'inverseprocess' : self._inverseprocess_ordl,
+                                  'recorded_category' : 'ordl',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'ordl'}})
-    process_dict.update({'lbte' : {'dualprocess' : self._process_text, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_text, \
-                                  'inverseprocess' : self._inverseprocess_text, \
-                                  'recorded_category' : 'text', \
-                                  'info_retention' : True, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'multirt', \
+    process_dict.update({'lbte' : {'dualprocess' : self._process_text,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_text,
+                                  'inverseprocess' : self._inverseprocess_text,
+                                  'recorded_category' : 'text',
+                                  'info_retention' : True,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'text'}})
-    process_dict.update({'lbbn' : {'dualprocess' : self._process_binary, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_binary, \
-                                  'inverseprocess' : self._inverseprocess_bnry, \
-                                  'recorded_category' : 'bnry', \
-                                  'info_retention' : True, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'multirt', \
+    process_dict.update({'lbbn' : {'dualprocess' : self._process_binary,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_binary,
+                                  'inverseprocess' : self._inverseprocess_bnry,
+                                  'recorded_category' : 'bnry',
+                                  'info_retention' : True,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'bnry'}})
-    process_dict.update({'lbsm' : {'dualprocess' : self._process_smth, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_smth, \
-                                  'inverseprocess' : self._inverseprocess_smth, \
-                                  'recorded_category' : 'smth', \
-                                  'info_retention' : True, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'exclude', \
+    process_dict.update({'lbsm' : {'dualprocess' : self._process_smth,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_smth,
+                                  'inverseprocess' : self._inverseprocess_smth,
+                                  'recorded_category' : 'smth',
+                                  'info_retention' : True,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'smth'}})
-    process_dict.update({'lbfs' : {'dualprocess' : self._process_smth, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_smth, \
-                                  'inverseprocess' : self._inverseprocess_smth, \
-                                  'recorded_category' : 'smth', \
-                                  'info_retention' : True, \
-                                  'defaultparams' : {'LSfit' : True}, \
-                                  'NArowtype' : 'justNaN', \
-                                  'MLinfilltype' : 'exclude', \
+    process_dict.update({'lbfs' : {'dualprocess' : self._process_smth,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_smth,
+                                  'inverseprocess' : self._inverseprocess_smth,
+                                  'recorded_category' : 'smth',
+                                  'info_retention' : True,
+                                  'defaultparams' : {'LSfit' : True},
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'smth'}})
-    process_dict.update({'lbda' : {'dualprocess' : None, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : None, \
-                                  'recorded_category' : False, \
-                                  'NArowtype' : 'datetime', \
-                                  'MLinfilltype' : 'exclude', \
+    process_dict.update({'lbda' : {'dualprocess' : None,
+                                  'singleprocess' : None,
+                                  'postprocess' : None,
+                                  'recorded_category' : False,
+                                  'NArowtype' : 'datetime',
+                                  'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'mdsn'}})
-    process_dict.update({'lgnr' : {'dualprocess' : self._process_absl, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_absl, \
-                                  'inverseprocess' : self._inverseprocess_absl, \
-                                  'recorded_category' : 'absl', \
-                                  'info_retention' : False, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'nonzeronumeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'lgnr' : {'dualprocess' : self._process_absl,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_absl,
+                                  'inverseprocess' : self._inverseprocess_absl,
+                                  'recorded_category' : 'absl',
+                                  'info_retention' : False,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'nonzeronumeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'qbt5'}})
-    process_dict.update({'lgn2' : {'dualprocess' : self._process_logn, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_logn, \
-                                  'inverseprocess' : self._inverseprocess_logn, \
-                                  'recorded_category' : 'logn', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
-                                  'NArowtype' : 'positivenumeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'lgn2' : {'dualprocess' : self._process_logn,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_logn,
+                                  'inverseprocess' : self._inverseprocess_logn,
+                                  'recorded_category' : 'logn',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'positivenumeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'logn'}})
-    process_dict.update({'qbt5' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_qbt1, \
-                                  'postprocess' : None, \
-                                  'inverseprocess' : self._inverseprocess_qbt1, \
-                                  'recorded_category' : 'qbt1', \
-                                  'info_retention' : True, \
-                                  'inplace_option' : True, \
+    process_dict.update({'qbt5' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_qbt1,
+                                  'postprocess' : None,
+                                  'inverseprocess' : self._inverseprocess_qbt1,
+                                  'recorded_category' : 'qbt1',
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
                                   'defaultparams' : {'suffix' : 'lgnr',
-                                                          'integer_bits' : 4,
-                                                          'fractional_bits' : 3,
-                                                          'sign_bit' : True}, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'exclude', \
+                                                     'integer_bits' : 4,
+                                                     'fractional_bits' : 3,
+                                                     'sign_bit' : True},
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'qbt1'}})
-    process_dict.update({'sgn3' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_copy, \
-                                  'postprocess' : None, \
-                                  'inverseprocess' : self._inverseprocess_excl, \
-                                  'recorded_category' : 'copy', \
-                                  'info_retention' : True, \
-                                  'defaultparams' : {'suffix' : ''}, \
-                                  'NArowtype' : 'exclude', \
-                                  'MLinfilltype' : 'exclude', \
+    process_dict.update({'sgn3' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_copy,
+                                  'postprocess' : None,
+                                  'inverseprocess' : self._inverseprocess_excl,
+                                  'recorded_category' : 'copy',
+                                  'info_retention' : True,
+                                  'defaultparams' : {'suffix' : ''},
+                                  'NArowtype' : 'exclude',
+                                  'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'copy'}})
-    process_dict.update({'sgn4' : {'dualprocess' : None, \
-                                  'singleprocess' : self._process_copy, \
-                                  'postprocess' : None, \
-                                  'inverseprocess' : self._inverseprocess_excl, \
-                                  'recorded_category' : 'copy', \
-                                  'info_retention' : True, \
-                                  'defaultparams' : {'suffix' : ''}, \
-                                  'NArowtype' : 'exclude', \
-                                  'MLinfilltype' : 'exclude', \
+    process_dict.update({'sgn4' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_copy,
+                                  'postprocess' : None,
+                                  'inverseprocess' : self._inverseprocess_excl,
+                                  'recorded_category' : 'copy',
+                                  'info_retention' : True,
+                                  'defaultparams' : {'suffix' : ''},
+                                  'NArowtype' : 'exclude',
+                                  'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'copy'}})
-    process_dict.update({'sgn1' : {'dualprocess' : self._process_mltp, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_mltp, \
-                                  'inverseprocess' : self._inverseprocess_mltp, \
-                                  'recorded_category' : 'mltp', \
-                                  'info_retention' : False, \
-                                  'inplace_option' : True, \
-                                  'defaultparams' : {'multiply' : -1}, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'numeric', \
+    process_dict.update({'sgn1' : {'dualprocess' : self._process_mltp,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_mltp,
+                                  'inverseprocess' : self._inverseprocess_mltp,
+                                  'recorded_category' : 'mltp',
+                                  'info_retention' : False,
+                                  'inplace_option' : True,
+                                  'defaultparams' : {'multiply' : -1},
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mltp'}})
-    process_dict.update({'sgn2' : {'dualprocess' : self._process_bkt3, \
-                                  'singleprocess' : None, \
-                                  'postprocess' : self._postprocess_bkt3, \
-                                  'inverseprocess' : self._inverseprocess_bkt3, \
-                                  'recorded_category' : 'bkt3', \
-                                  'info_retention' : False, \
-                                  'inplace_option' : True, \
-                                  'defaultparams' : {'buckets' : [0]}, \
-                                  'NArowtype' : 'numeric', \
-                                  'MLinfilltype' : 'singlct', \
+    process_dict.update({'sgn2' : {'dualprocess' : self._process_bkt3,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_bkt3,
+                                  'inverseprocess' : self._inverseprocess_bkt3,
+                                  'recorded_category' : 'bkt3',
+                                  'info_retention' : False,
+                                  'inplace_option' : True,
+                                  'defaultparams' : {'buckets' : [0]},
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'bkt3'}})
 
     return process_dict
@@ -7105,7 +7109,7 @@ class AutoMunge:
     #to derive a normkey when returned column isn't known or may return emtpy set
     #
     #populates in the form:
-    #columnkey_dict.update({inputcolumn : {recorded_category : categorylist_aggregate}})
+    #columnkey_dict.update({inputcolumn : {transformationcategory : categorylist_aggregate}})
     #where categorylist_aggregate is a combination of all categorylists 
     #derived from some functions with recorded category applied to a given input column
     #  
@@ -7121,8 +7125,10 @@ class AutoMunge:
       if transformationcategory not in postprocess_dict['columnkey_dict'][inputcolumn]:
         postprocess_dict['columnkey_dict'][inputcolumn].update({transformationcategory : []})
 
+      #another way to do this could be to just grab one of the categorylist entries, this is equivalent
       for column_dict in column_dict_list:
-
+        #convention is column_dict_list is a list of column_dict dictionaries returned from a transformation, 
+        #each with a single first layer key of one of the returned columns
         categorylist_entry = list(column_dict)[0]
         postprocess_dict['columnkey_dict'][inputcolumn][transformationcategory].append(categorylist_entry)
 
@@ -27932,10 +27938,11 @@ class AutoMunge:
           print("error: invalid 'MLinfilltype' processdict entry for category: ", entry)
           print()
           
-      if 'recorded_category' not in processdict[entry]:
-        check_processdict_result = True
-        print("error: processdict missing 'recorded_category' entry for category: ", entry)
-        print()
+      #currently recorded_category is just for informational purposes and not used elsewhere so not required
+      # if 'recorded_category' not in processdict[entry]:
+      #   check_processdict_result = True
+      #   print("error: processdict missing 'recorded_category' entry for category: ", entry)
+      #   print()
         
       if 'labelctgy' not in processdict[entry]:
         check_processdict_result = True
@@ -30902,7 +30909,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.20'
+    automungeversion = '6.21'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -32759,8 +32766,8 @@ class AutoMunge:
     
     if len(textcolumns) > 0:
       tempcolumn = textcolumns[0]
-    else:
-      tempcolumn = column + '_onht'
+    # else:
+    #   tempcolumn = column + '_onht'
 
     #note that suffix overlap will have already been checked externally based on textcolumns in automunge
 
@@ -40236,7 +40243,7 @@ class AutoMunge:
 
     #this is to recover sign convention for lgnr
     #this breaks convention that inversion only based on columns in categorylist
-    #based on lgnr family tree as of 5.85
+    #based on lgnr family tree and process_dict's as of 5.85
     if inputcolumn in postprocess_dict['column_dict']:
 
       input_toinputcolumn = \
@@ -40435,6 +40442,9 @@ class AutoMunge:
     
     normkey = categorylist[0]
     
+    suffix = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+    
     inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
     
     df[inputcolumn] = 0
@@ -40442,15 +40452,15 @@ class AutoMunge:
     #for pwr2 trasnform suffix is either '_10^#' for positive values or '_-10^#' for negative
     for column in categorylist:
       
-      if column[len(inputcolumn)+1] == '1':
+      if column[len(inputcolumn) + 2 + len(suffix)] == '1':
       
-        power = int(column.replace(inputcolumn + '_10^', ''))
+        power = int(column.replace(inputcolumn + '_' + suffix + '_10^', ''))
       
         df[inputcolumn] = np.where(df[column] == 1, 10 ** power, df[inputcolumn])
         
-      if column[len(inputcolumn)+1] == '-':
+      if column[len(inputcolumn) + 2 + len(suffix)] == '-':
         
-        power = int(column.replace(inputcolumn + '_-10^', ''))
+        power = int(column.replace(inputcolumn + '_' + suffix + '_-10^', ''))
         
         df[inputcolumn] = np.where(df[column] == 1, -(10 ** power), df[inputcolumn])
         
