@@ -469,7 +469,13 @@ and arguments. Further below is documentation for the library of transformations
 ## automunge(.) returned sets:
 
 Automunge defaults to returning data sets as pandas dataframes, or for
-single column sets as pandas series.
+single column sets as pandas series. 
+
+For dataframes, data types of returned columns are based on the transformation applied, 
+for example columns with boolean integers are cast as int8, ordinal encoded
+columns are given a conditional type based on the size of encoding space as either
+uint8, uint16, or uint32. Continuous sets are cast as float16, float32, or float64
+based on the automunge(.) floatprecision parameter.
 
 * train: a numerically encoded set of data intended to be used to train a
 downstream machine learning model in the framework of a user's choice
@@ -1561,6 +1567,12 @@ Here now are descriptions for the returned sets from postmunge, which
 will be followed by descriptions of the parameters which can be passed to
 the function. Default is that returned sets are pandas dataframes, with
 single column sets returned as pandas series.
+
+For dataframes, data types of returned columns are based on the transformation applied, 
+for example columns with boolean integers are cast as int8, ordinal encoded
+columns are given a conditional type based on the size of encoding space as either
+uint8, uint16, or uint32. Continuous sets are cast as float16, float32, or float64
+based on the automunge(.) floatprecision parameter.
 
 * test: the set of features, consistently encoded and normalized as the
 training data, that can be used to generate predictions from a model
