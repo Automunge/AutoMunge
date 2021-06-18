@@ -1811,32 +1811,6 @@ process_dict.update({'mnmx' : {'dualprocess'    : self.process_mnmx,
                                'labelctgy'      : 'mnmx'}})
 ```
 
-And here is an example of the convention for inverseprocess functions, such as may be passed 
-to a process_dict entry:
-```
-  def inverseprocess_mnmx(self, df, categorylist, postprocess_dict):
-    """
-    #inverse transform corresponding to process_mnmx
-    #assumes any relevant parameters were saved in normalization_dict
-    #does not perform infill, assumes clean data
-    """
-    
-    normkey = categorylist[0]
-    
-    minimum = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['minimum']
-    maximum = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['maximum']
-    maxminusmin = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['maxminusmin']
-    
-    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
-    
-    df[inputcolumn] = df[normkey] * maxminusmin + minimum
-    
-    return df, inputcolumn
-```
-
 * traindata: boolean _{True, False}_, defaults to False. Only inspected when a transformation
 is called that treats train data different than test data (currently only relevant to 
 DP family of transforms for noise injection to train sets or label smoothing transforms in smth family). When passed 
@@ -7489,6 +7463,7 @@ def process_mnm8(mdf_train, mdf_test, column, category, postprocess_dict, params
                                             'mean' : mean,
                                             'minimum' : min,
                                             'maximum' : max,
+                                            'maxminusmin' : maxminusmin,
                                             'suffix' : suffix}}
 						
   #as an asterisk, please note there are a small number of reserved normalization dicitonary key strings
@@ -7614,9 +7589,7 @@ def postprocess_mnm8(mdf_test, column, postprocess_dict, columnkey, params={}):
 
   return mdf_test
 
-#Voila
-
-#One more demonstration, note that if we didn't need to pass any properties
+#Another demonstration, note that if we didn't need to pass any properties
 #between the train and test set, we could have just processed one at a time,
 #and in that case we wouldn't need to define separate functions for 
 #dualprocess and postprocess, we could just define what we call a singleprocess 
@@ -7630,6 +7603,34 @@ def process_mnm8(df, column, category, postprocess_dict, params = {}):
   #etc
   
   return df, column_dict_list
+
+#And finally here is an example of the convention for inverseprocess functions, such as may be passed 
+#to a processdict entry to support an inversion operation on a custom transformation function:
+
+def inverseprocess_mnm8(self, df, categorylist, postprocess_dict):
+  """
+  #inverse transform corresponding to process_mnm8
+  """
+    
+  #normkey used to access normalization_dict entries
+  normkey = categorylist[0]
+    
+  #access normalization_dict entries used in inversion
+  minimum = \
+  postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['minimum']
+  maximum = \
+  postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['maximum']
+  maxminusmin = \
+  postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['maxminusmin']
+    
+  #the normkey can also be used to access the title of input column
+  inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+  
+  #then can perform the inversion operation
+  #note that for this case there will be some information loss due to the quantile cap and floor
+  df[inputcolumn] = df[normkey] * maxminusmin + minimum
+    
+  return df, inputcolumn
 ```
 
 ## Conclusion
