@@ -30909,7 +30909,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.21'
+    automungeversion = '6.22'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -40712,29 +40712,32 @@ class AutoMunge:
     inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
     
     df[inputcolumn] = 0
-    
-    for i in range(len(textcolumns)):
+
+    #bins_id is False when original data in train set was all non-numeric
+    if bins_id is not False:
       
-      column = textcolumns[i]
-      _id = int(bins_id[i])
-      
-      if i == 0:
+      for i in range(len(textcolumns)):
         
-        value = bins_cuts[i+1]
+        column = textcolumns[i]
+        _id = int(bins_id[i])
         
-        df[inputcolumn] = np.where(df[column] == 1, value, df[inputcolumn])
-        
-      elif i == len(textcolumns)-1:
-        
-        value = bins_cuts[i]
-        
-        df[inputcolumn] = np.where(df[column] == 1, value, df[inputcolumn])
-        
-      else:
-        
-        value = (bins_cuts[i] + bins_cuts[i+1]) / 2
-        
-        df[inputcolumn] = np.where(df[column] == 1, value, df[inputcolumn])
+        if i == 0:
+          
+          value = bins_cuts[i+1]
+          
+          df[inputcolumn] = np.where(df[column] == 1, value, df[inputcolumn])
+          
+        elif i == len(textcolumns)-1:
+          
+          value = bins_cuts[i]
+          
+          df[inputcolumn] = np.where(df[column] == 1, value, df[inputcolumn])
+          
+        else:
+          
+          value = (bins_cuts[i] + bins_cuts[i+1]) / 2
+          
+          df[inputcolumn] = np.where(df[column] == 1, value, df[inputcolumn])
     
     return df, inputcolumn
   
@@ -40766,28 +40769,31 @@ class AutoMunge:
 
     #we'll convert the input to integers
     df[normkey] = df[normkey].astype(int, errors='ignore')
-    
-    for i in range(len(bins_id)):
+
+    #bins_id is False when original train set was all non-numeric
+    if bins_id is not False:
       
-      _id = int(bins_id[i])
-      
-      if i == 0:
+      for i in range(len(bins_id)):
         
-        value = bins_cuts[i+1]
+        _id = int(bins_id[i])
         
-        df[inputcolumn] = np.where(df[normkey] == _id, value, df[inputcolumn])
-        
-      elif i == len(bins_id)-1:
-        
-        value = bins_cuts[i]
-        
-        df[inputcolumn] = np.where(df[normkey] == _id, value, df[inputcolumn])
-        
-      else:
-        
-        value = (bins_cuts[i] + bins_cuts[i+1]) / 2
-        
-        df[inputcolumn] = np.where(df[normkey] == _id, value, df[inputcolumn])
+        if i == 0:
+          
+          value = bins_cuts[i+1]
+          
+          df[inputcolumn] = np.where(df[normkey] == _id, value, df[inputcolumn])
+          
+        elif i == len(bins_id)-1:
+          
+          value = bins_cuts[i]
+          
+          df[inputcolumn] = np.where(df[normkey] == _id, value, df[inputcolumn])
+          
+        else:
+          
+          value = (bins_cuts[i] + bins_cuts[i+1]) / 2
+          
+          df[inputcolumn] = np.where(df[normkey] == _id, value, df[inputcolumn])
     
     return df, inputcolumn
 
@@ -40814,29 +40820,32 @@ class AutoMunge:
     inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
     
     df[inputcolumn] = 'zzzinfill'
-    
-    for i, textcolumn in enumerate(textcolumns):
+
+    #bins_cuts is False when original train set was all non-numeric
+    if bins_cuts is not False:
       
-      if i == 0:
+      for i, textcolumn in enumerate(textcolumns):
         
-        df[inputcolumn] = \
-        np.where(df[textcolumn] >= 0, \
-                 df[textcolumn] * (-1) * (bins_cuts[i+1] - bn_min) + bins_cuts[i+1], \
-                 df[inputcolumn])
-        
-      elif i == bincount - 1:
-        
-        df[inputcolumn] = \
-        np.where(df[textcolumn] >= 0, \
-                 df[textcolumn] * (bn_max - bins_cuts[i]) + bins_cuts[i], \
-                 df[inputcolumn])
-        
-      else:
-        
-        df[inputcolumn] = \
-        np.where(df[textcolumn] >= 0, \
-                 df[textcolumn] * (bins_cuts[i+1] - bins_cuts[i]) + bins_cuts[i], \
-                 df[inputcolumn])
+        if i == 0:
+          
+          df[inputcolumn] = \
+          np.where(df[textcolumn] >= 0, \
+                  df[textcolumn] * (-1) * (bins_cuts[i+1] - bn_min) + bins_cuts[i+1], \
+                  df[inputcolumn])
+          
+        elif i == bincount - 1:
+          
+          df[inputcolumn] = \
+          np.where(df[textcolumn] >= 0, \
+                  df[textcolumn] * (bn_max - bins_cuts[i]) + bins_cuts[i], \
+                  df[inputcolumn])
+          
+        else:
+          
+          df[inputcolumn] = \
+          np.where(df[textcolumn] >= 0, \
+                  df[textcolumn] * (bins_cuts[i+1] - bins_cuts[i]) + bins_cuts[i], \
+                  df[inputcolumn])
     
     return df, inputcolumn
   
@@ -41301,7 +41310,7 @@ class AutoMunge:
 
       for column in preint_newcolumns:
 
-        overlap = column.replace(inputcolumn + suffix + '_', '')
+        overlap = column.replace(inputcolumn + '_' + suffix + '_', '')
 
         df[inputcolumn] = np.where(df[column] == 1, overlap, df[inputcolumn])
     
@@ -41311,7 +41320,7 @@ class AutoMunge:
         
         newcolumn = column_conversion_dict[column]
         
-        overlap = column.replace(inputcolumn + suffix + '_', '')
+        overlap = column.replace(inputcolumn + '_' + suffix + '_', '')
         
         df[inputcolumn] = np.where(df[newcolumn] == 1, overlap, df[inputcolumn])
 
@@ -41471,7 +41480,7 @@ class AutoMunge:
 
       for column in preint_newcolumns:
 
-        overlap = column.replace(inputcolumn + suffix + '_', '')
+        overlap = column.replace(inputcolumn + '_' + suffix + '_', '')
 
         df[inputcolumn] = np.where(df[column] == 1, overlap, df[inputcolumn])
     
@@ -41482,7 +41491,7 @@ class AutoMunge:
         
         newcolumn = newcolumns[i]
         
-        overlap = column.replace(inputcolumn + suffix + '_', '')
+        overlap = column.replace(inputcolumn + '_' + suffix + '_', '')
         
         df[inputcolumn] = np.where(df[newcolumn] == 1, overlap, df[inputcolumn])
         
