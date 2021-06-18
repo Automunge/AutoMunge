@@ -3190,3 +3190,12 @@ am.postmunge(postprocess_dict, df_test)
 - a few code comments added here and there
 - removed the '\' character in family tree definitions since shown in read me
 - and since went that far went ahead and conformed the process_dict intitializer to match
+
+6.22
+- some additional quality control conducted
+- performed a visual inspection on entire inversion library
+- in the process identified a few small snafus
+- bnep/bneo/tlbn -> found and fixed inversion edge case associated with all non-numeric data in train set
+- splt/sbst -> found and fixed inversion bug originating from new suffix parameter support from 6.19
+- in the process developed a new validation test for inversion library to be performed prior to rollouts
+- which should help catch edge cases going forward for inversion
