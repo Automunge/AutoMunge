@@ -3199,3 +3199,22 @@ am.postmunge(postprocess_dict, df_test)
 - splt/sbst -> found and fixed inversion bug originating from new suffix parameter support from 6.19
 - in the process developed a new validation test for inversion library to be performed prior to rollouts
 - which should help catch edge cases going forward for inversion
+
+6.23
+- struck an unneccesary numpy conversion in PCA application
+- revisited a heuristic in place for PCA application associated with identifying cases when didn't have enough samples for the number of features (aka the col_row_ratio)
+- since this was previously struck in documentation went ahead and initialized variable so it isn't inspected in ML_cmnd
+- but left the code in place in case later decide to reintroduce
+- improved a convention used in _postprocess_DPod from accessing an upstream normalization_dict to accessing own (just needed to add an additional entry to DPod normalization_dict)
+- conducted audit of returned data types from entire library
+- where convention is returned continuous sets have data type not addressed in transformation function but are converted based on the floatprecision parameter externally
+- boolean integer sets are cast as np.int8
+- and ordinal encoded integer sets are given a conditional data type based on size of encoding space as either uint8, uint16, or uint32
+- found a few transforms needing update to dtype convention
+- recast bsor from int8 to conditional (since bin count is customizable by parameter)
+- added missing data type casting for DPbn (int8) and DPod (conditional)
+- added some documentation to the read me associated with returned data types in section on automunge(.) returned sets and postmunge(.) returned sets
+- then just a few opportunities to consolidate transformations to reduce lines of code:
+- consolidated bnry and bnr2 to use of a single comnmon transformation function by adding parameter for infillconvention
+- consolidated MADn and MAD3 to use of a single common transformation function by adding parameter for center
+- consolidated transformation functions for shft, shf2, and shf3 into a single common trasnformation function (taking advantage of what is now standard accross library allowing redundant transformations to common input column applied with different parameters)
