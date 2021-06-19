@@ -3734,29 +3734,35 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_shft,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultparams' : {'periods' : 1,
+                                                     'suffix' : 'shft'},
                                   'NArowtype' : 'exclude',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'shft'}})
     process_dict.update({'shf2' : {'dualprocess' : None,
-                                  'singleprocess' : self._process_shf2,
+                                  'singleprocess' : self._process_shft,
                                   'postprocess' : None,
                                   'inverseprocess' : self._inverseprocess_shft,
-                                  'recorded_category' : 'shf2',
+                                  'recorded_category' : 'shft',
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultparams' : {'periods' : 2,
+                                                     'suffix' : 'shf2'},
                                   'NArowtype' : 'exclude',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'shf2'}})
+                                  'labelctgy' : 'shft'}})
     process_dict.update({'shf3' : {'dualprocess' : None,
-                                  'singleprocess' : self._process_shf3,
+                                  'singleprocess' : self._process_shft,
                                   'postprocess' : None,
                                   'inverseprocess' : self._inverseprocess_shft,
-                                  'recorded_category' : 'shf3',
+                                  'recorded_category' : 'shft',
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultparams' : {'periods' : 3,
+                                                     'suffix' : 'shf3'},
                                   'NArowtype' : 'exclude',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'shf3'}})
+                                  'labelctgy' : 'shft'}})
     process_dict.update({'shf4' : {'dualprocess' : None,
                                   'singleprocess' : self._process_shft,
                                   'postprocess' : None,
@@ -3764,26 +3770,32 @@ class AutoMunge:
                                   'recorded_category' : 'shft',
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultparams' : {'periods' : 1,
+                                                     'suffix' : 'shf4'},
                                   'NArowtype' : 'exclude',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
     process_dict.update({'shf5' : {'dualprocess' : None,
-                                  'singleprocess' : self._process_shf2,
+                                  'singleprocess' : self._process_shft,
                                   'postprocess' : None,
                                   'inverseprocess' : self._inverseprocess_shft,
-                                  'recorded_category' : 'shf2',
+                                  'recorded_category' : 'shft',
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultparams' : {'periods' : 2,
+                                                     'suffix' : 'shf5'},
                                   'NArowtype' : 'exclude',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
     process_dict.update({'shf6' : {'dualprocess' : None,
-                                  'singleprocess' : self._process_shf3,
+                                  'singleprocess' : self._process_shft,
                                   'postprocess' : None,
                                   'inverseprocess' : self._inverseprocess_shft,
-                                  'recorded_category' : 'shf3',
+                                  'recorded_category' : 'shft',
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultparams' : {'periods' : 3,
+                                                     'suffix' : 'shf6'},
                                   'NArowtype' : 'exclude',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
@@ -3834,6 +3846,8 @@ class AutoMunge:
                                   'recorded_category' : 'MADn',
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultparams' : {'center' : 'mean',
+                                                     'suffix' : 'MADn'},
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'MADn'}})
@@ -3844,19 +3858,23 @@ class AutoMunge:
                                   'recorded_category' : 'MADn',
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultparams' : {'center' : 'mean',
+                                                     'suffix' : 'MAD2'},
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'MADn'}})
-    process_dict.update({'MAD3' : {'dualprocess' : self._process_MAD3,
+    process_dict.update({'MAD3' : {'dualprocess' : self._process_MADn,
                                   'singleprocess' : None,
-                                  'postprocess' : self._postprocess_MAD3,
-                                  'inverseprocess' : self._inverseprocess_MAD3,
-                                  'recorded_category' : 'MAD3',
+                                  'postprocess' : self._postprocess_MADn,
+                                  'inverseprocess' : self._inverseprocess_MADn,
+                                  'recorded_category' : 'MADn',
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultparams' : {'center' : 'max',
+                                                     'suffix' : 'MAD3'},
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'MAD3'}})
+                                  'labelctgy' : 'MADn'}})
     process_dict.update({'mnmx' : {'dualprocess' : self._process_mnmx,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_mnmx,
@@ -4002,19 +4020,23 @@ class AutoMunge:
                                   'recorded_category' : 'bnry',
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultparams' : {'infillconvention' : 'onevalue',
+                                                     'suffix' : 'bnry'},
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'binary',
                                   'labelctgy' : 'bnry'}})
-    process_dict.update({'bnr2' : {'dualprocess' : self._process_binary2,
+    process_dict.update({'bnr2' : {'dualprocess' : self._process_binary,
                                   'singleprocess' : None,
-                                  'postprocess' : self._postprocess_binary2,
+                                  'postprocess' : self._postprocess_binary,
                                   'inverseprocess' : self._inverseprocess_bnry,
-                                  'recorded_category' : 'bnr2',
+                                  'recorded_category' : 'bnry',
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultparams' : {'infillconvention' : 'zerovalue',
+                                                     'suffix' : 'bnr2'},
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'binary',
-                                  'labelctgy' : 'bnr2'}})
+                                  'labelctgy' : 'bnry'}})
     process_dict.update({'onht' : {'dualprocess' : self._process_onht,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_onht,
@@ -8129,228 +8151,6 @@ class AutoMunge:
       column_dict_list.append(column_dict.copy())
         
     return df, column_dict_list
-  
-  def _process_shf2(self, df, column, category, postprocess_dict, params = {}):
-    '''
-    #process_shft(df, column, category, postprocess_dict)
-    #function to shift a sequential set forward by one or more time steps    
-    #for missing values, uses adjacent cell infill as default
-    #accepts parameter 'periods' for number of time steps, defaults to one
-    #accepts parameter 'suffix' for column suffix appender
-    #such as may be useful if applying this transform to the same column more than once
-    '''
-    
-    suffixoverlap_results = {}
-    
-    if 'inplace' in params:
-      inplace = params['inplace']
-    else:
-      inplace = False
-    
-    #initialize parameters
-    if 'periods' in params:
-      periods = params['periods']
-    else:
-      periods = 2
-    if 'suffix' in params:
-      suffix = params['suffix']
-    else:
-      suffix = 'shf2'
-      
-    shft_column = column + '_' + suffix
-    
-    if inplace is not True:
-      
-      #copy source column into new column
-      df, suffixoverlap_results = \
-      self._df_copy_train(df, column, shft_column, suffixoverlap_results)
-    
-    else:
-      
-      suffixoverlap_results = \
-      self._df_check_suffixoverlap(df, shft_column, suffixoverlap_results)
-      
-      df.rename(columns = {column : shft_column}, inplace = True)
-    
-    #convert all values to either numeric or NaN
-    df[shft_column] = pd.to_numeric(df[shft_column], errors='coerce')
-    
-    #apply ffill to replace NArows with value from adjacent cell in pre4ceding row
-    df[shft_column] = df[shft_column].fillna(method='ffill')
-    
-    #we'll follow with a bfill just in case first row had a nan
-    df[shft_column] = df[shft_column].fillna(method='bfill') 
-    
-    #shift from preceding row
-    df[shft_column] = df[shft_column].shift(periods = periods)
-    
-    #first row will have a nan so just one more backfill
-    df[shft_column] = df[shft_column].fillna(method='bfill')
-    
-    #then one more infill with to address scenario when data wasn't numeric
-    #get arbitrary cell value, if one is nan then all will be
-    value = df[shft_column][0]
-    if value != value:
-      value = 0
-
-      df[shft_column] = df[shft_column].fillna(value)
-    
-    #create list of columns
-    nmbrcolumns = [shft_column]
-
-    #grab some driftreport metrics
-    #note that if this function implemented for data streams at scale it may be appropriate
-    #to consider creating an alternate to dxdt without the driftreport metrics for postmunge efficiency
-    positiveratio = df[df[shft_column] >= 0].shape[0] / df[shft_column].shape[0]
-    negativeratio = df[df[shft_column] < 0].shape[0] / df[shft_column].shape[0]
-    zeroratio = df[df[shft_column] == 0].shape[0] / df[shft_column].shape[0]
-    minimum = df[shft_column].min()
-    maximum = df[shft_column].max()
-    mean = df[shft_column].mean()
-    std = df[shft_column].std()
-
-    nmbrnormalization_dict = {shft_column :      {'positiveratio' : positiveratio, \
-                                                  'negativeratio' : negativeratio, \
-                                                  'zeroratio' : zeroratio, \
-                                                  'minimum' : minimum, \
-                                                  'maximum' : maximum, \
-                                                  'mean' : mean, \
-                                                  'std' : std, \
-                                                  'periods' : periods, \
-                                                  'suffix' : suffix, \
-                                                  'inplace' : inplace}}
-
-    #store some values in the nmbr_dict{} for use later in ML infill methods
-    column_dict_list = []
-
-    for nc in nmbrcolumns:
-      
-      column_dict = { nc : {'category' : 'shf2', \
-                           'origcategory' : category, \
-                           'normalization_dict' : nmbrnormalization_dict, \
-                           'origcolumn' : column, \
-                           'inputcolumn' : column, \
-                           'columnslist' : nmbrcolumns, \
-                           'categorylist' : nmbrcolumns, \
-                           'infillmodel' : False, \
-                           'infillcomplete' : False, \
-                           'suffixoverlap_results' : suffixoverlap_results, \
-                           'deletecolumn' : False}}
-
-      column_dict_list.append(column_dict.copy())
-        
-    return df, column_dict_list
-  
-  def _process_shf3(self, df, column, category, postprocess_dict, params = {}):
-    '''
-    #process_shft(df, column, category, postprocess_dict)
-    #function to shift a sequential set forward by one or more time steps    
-    #for missing values, uses adjacent cell infill as default
-    #accepts parameter 'periods' for number of time steps, defaults to one
-    #accepts parameter 'suffix' for column suffix appender
-    #such as may be useful if applying this transform to the same column more than once
-    '''
-    
-    suffixoverlap_results = {}
-    
-    if 'inplace' in params:
-      inplace = params['inplace']
-    else:
-      inplace = False
-    
-    #initialize parameters
-    if 'periods' in params:
-      periods = params['periods']
-    else:
-      periods = 3
-    if 'suffix' in params:
-      suffix = params['suffix']
-    else:
-      suffix = 'shf3'
-      
-    shft_column = column + '_' + suffix
-    
-    if inplace is not True:
-      
-      #copy source column into new column
-      df, suffixoverlap_results = \
-      self._df_copy_train(df, column, shft_column, suffixoverlap_results)
-    
-    else:
-      
-      suffixoverlap_results = \
-      self._df_check_suffixoverlap(df, shft_column, suffixoverlap_results)
-      
-      df.rename(columns = {column : shft_column}, inplace = True)
-    
-    #convert all values to either numeric or NaN
-    df[shft_column] = pd.to_numeric(df[shft_column], errors='coerce')
-    
-    #apply ffill to replace NArows with value from adjacent cell in pre4ceding row
-    df[shft_column] = df[shft_column].fillna(method='ffill')
-    
-    #we'll follow with a bfill just in case first row had a nan
-    df[shft_column] = df[shft_column].fillna(method='bfill') 
-    
-    #shift from preceding row
-    df[shft_column] = df[shft_column].shift(periods = periods)
-    
-    #first row will have a nan so just one more backfill
-    df[shft_column] = df[shft_column].fillna(method='bfill')
-    
-    #then one more infill with to address scenario when data wasn't numeric
-    #get arbitrary cell value, if one is nan then all will be
-    value = df[shft_column][0]
-    if value != value:
-      value = 0
-
-      df[shft_column] = df[shft_column].fillna(value)
-    
-    #create list of columns
-    nmbrcolumns = [shft_column]
-
-    #grab some driftreport metrics
-    #note that if this function implemented for data streams at scale it may be appropriate
-    #to consider creating an alternate to dxdt without the driftreport metrics for postmunge efficiency
-    positiveratio = df[df[shft_column] >= 0].shape[0] / df[shft_column].shape[0]
-    negativeratio = df[df[shft_column] < 0].shape[0] / df[shft_column].shape[0]
-    zeroratio = df[df[shft_column] == 0].shape[0] / df[shft_column].shape[0]
-    minimum = df[shft_column].min()
-    maximum = df[shft_column].max()
-    mean = df[shft_column].mean()
-    std = df[shft_column].std()
-
-    nmbrnormalization_dict = {shft_column :      {'positiveratio' : positiveratio, \
-                                                  'negativeratio' : negativeratio, \
-                                                  'zeroratio' : zeroratio, \
-                                                  'minimum' : minimum, \
-                                                  'maximum' : maximum, \
-                                                  'mean' : mean, \
-                                                  'std' : std, \
-                                                  'periods' : periods, \
-                                                  'suffix' : suffix, \
-                                                  'inplace' : inplace}}
-
-    #store some values in the nmbr_dict{} for use later in ML infill methods
-    column_dict_list = []
-
-    for nc in nmbrcolumns:
-      
-      column_dict = { nc : {'category' : 'shf3', \
-                           'origcategory' : category, \
-                           'normalization_dict' : nmbrnormalization_dict, \
-                           'origcolumn' : column, \
-                           'inputcolumn' : column, \
-                           'columnslist' : nmbrcolumns, \
-                           'categorylist' : nmbrcolumns, \
-                           'infillmodel' : False, \
-                           'infillcomplete' : False, \
-                           'suffixoverlap_results' : suffixoverlap_results, \
-                           'deletecolumn' : False}}
-
-      column_dict_list.append(column_dict.copy())
-        
-    return df, column_dict_list
 
   def _process_MADn(self, mdf_train, mdf_test, column, category, \
                               postprocess_dict, params = {}):
@@ -8377,6 +8177,13 @@ class AutoMunge:
       suffix = params['suffix']
     else:
       suffix = 'MADn'
+      
+    #center can be passed as 'mean' or 'max', which serves as subtractor in numerator of normalization 
+    #MADn applies mean, MAD3 applies max
+    if 'center' in params:
+      center = params['center']
+    else:
+      center = 'mean'
       
     suffixcolumn = column + '_' + suffix
     
@@ -8414,10 +8221,21 @@ class AutoMunge:
     #replace missing data with training set mean
     mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(mean)
     mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
+    
+    if center == 'mean':
 
-    #subtract mean from column for both train and test
-    mdf_train[suffixcolumn] = mdf_train[suffixcolumn] - mean
-    mdf_test[suffixcolumn] = mdf_test[suffixcolumn] - mean
+      #subtract mean from column for both train and test
+      mdf_train[suffixcolumn] = mdf_train[suffixcolumn] - mean
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn] - mean
+      
+    if center == 'max':
+      
+      if maximum != maximum:
+        maximum = 0
+
+      #subtract maximum from column for both train and test
+      mdf_train[suffixcolumn] = mdf_train[suffixcolumn] - maximum
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn] - maximum
 
     #get mean absolute deviation of training data
     MAD = mdf_train[suffixcolumn].mad()
@@ -8437,7 +8255,7 @@ class AutoMunge:
     #create list of columns
     nmbrcolumns = [suffixcolumn]
 
-    nmbrnormalization_dict = {suffixcolumn : {'mean' : mean, 'MAD' : MAD, \
+    nmbrnormalization_dict = {suffixcolumn : {'mean' : mean, 'MAD' : MAD, 'center' : center, \
                                               'maximum':maximum, 'minimum':minimum, \
                                               'inplace' : inplace, 'suffix' : suffix}}
 
@@ -8460,121 +8278,6 @@ class AutoMunge:
 
       column_dict_list.append(column_dict.copy())
     
-    return mdf_train, mdf_test, column_dict_list
-
-  def _process_MAD3(self, mdf_train, mdf_test, column, category, \
-                              postprocess_dict, params = {}):
-    '''
-    #process_MAD3(mdf_train, mdf_test, column, category)
-    #function to normalize data by subtracting maximum and dividing by median absolute deviation
-    #takes as arguement pandas dataframe of training and test data (mdf_train), (mdf_test)\
-    #and the name of the column string ('column') and parent category (category)
-    #replaces missing or improperly formatted data with mean of remaining values
-    #returns same dataframes with new column of name column + '_MADn'
-    #note this is a "dualprocess" function since is applied to both train and test dataframes
-    #expect this approach works better than z-score for when the numerical distribution isn't thin tailed
-    #if only have training but not test data handy, use same training data for both dataframe inputs
-    #the use of maximum instead of mean for normalization based on comment from RWRI lectures 
-    #documented in medium essay "Machine Learning and Miscelanea"
-    '''
-    
-    suffixoverlap_results = {}
-    
-    if 'inplace' in params:
-      inplace = params['inplace']
-    else:
-      inplace = False
-
-    if 'suffix' in params:
-      suffix = params['suffix']
-    else:
-      suffix = 'MAD3'
-      
-    suffixcolumn = column + '_' + suffix
-    
-    if inplace is not True:
-      
-      #copy source column into new column
-      mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results)
-
-      mdf_test[suffixcolumn] = mdf_test[column].copy()
-    
-    else:
-      
-      suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results)
-      
-      mdf_train.rename(columns = {column : suffixcolumn}, inplace = True)
-      mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
-
-    #convert all values to either numeric or NaN
-    mdf_train[suffixcolumn] = pd.to_numeric(mdf_train[suffixcolumn], errors='coerce')
-    mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
-    
-    #a few more metrics collected for driftreport
-    #get maximum value of training column
-    maximum = mdf_train[suffixcolumn].max()
-    #get minimum value of training column
-    minimum = mdf_train[suffixcolumn].min()
-
-    #get mean of training data
-    mean = mdf_train[suffixcolumn].mean()
-    if mean != mean:
-      mean = 0
-    
-    #replace missing data with training set mean
-    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(mean)
-    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
-
-    #get max of training data
-    datamax = mdf_train[suffixcolumn].max()
-    
-    #get mean absolute deviation of training data
-    MAD = mdf_train[suffixcolumn].mad()
-    
-    #special case to avoid div by 0
-    if MAD == 0:
-      MAD = 1
-    
-    #subtract max from column for both train and test
-    mdf_train[suffixcolumn] = mdf_train[suffixcolumn] - datamax
-    mdf_test[suffixcolumn] = mdf_test[suffixcolumn] - datamax
-
-    #divide column values by mad for both training and test data
-    mdf_train[suffixcolumn] = mdf_train[suffixcolumn] / MAD
-    mdf_test[suffixcolumn] = mdf_test[suffixcolumn] / MAD
-
-#     #change data type for memory savings
-#     mdf_train[column + '_MAD3'] = mdf_train[column + '_MAD3'].astype(np.float32)
-#     mdf_test[column + '_MAD3'] = mdf_test[column + '_MAD3'].astype(np.float32)
-
-    #create list of columns
-    nmbrcolumns = [suffixcolumn]
-
-    nmbrnormalization_dict = {suffixcolumn : {'mean' : mean, 'MAD' : MAD, 'datamax' : datamax, \
-                                              'maximum':maximum, 'minimum':minimum, \
-                                              'inplace' : inplace, 'suffix' : suffix}}
-
-    #store some values in the nmbr_dict{} for use later in ML infill methods
-    column_dict_list = []
-
-    for nc in nmbrcolumns:
-
-      column_dict = { nc : {'category' : 'MAD3', \
-                           'origcategory' : category, \
-                           'normalization_dict' : nmbrnormalization_dict, \
-                           'origcolumn' : column, \
-                           'inputcolumn' : column, \
-                           'columnslist' : nmbrcolumns, \
-                           'categorylist' : nmbrcolumns, \
-                           'infillmodel' : False, \
-                           'infillcomplete' : False, \
-                           'suffixoverlap_results' : suffixoverlap_results, \
-                           'deletecolumn' : False}}
-
-      column_dict_list.append(column_dict.copy())
-        
     return mdf_train, mdf_test, column_dict_list
 
   def _process_mnmx(self, mdf_train, mdf_test, column, category, \
@@ -9445,6 +9148,13 @@ class AutoMunge:
     else:
       suffix = 'bnry'
       
+    #can pass as 'onevalue' or 'zerovalue'
+    #where onevalue used for bnry and zerovalue used for bnr2
+    if 'infillconvention' in params:
+      infillconvention = params['infillconvention']
+    else:
+      infillconvention = 'onevalue'
+      
     suffixcolumn = column + '_' + suffix
     
     if inplace is not True:
@@ -9475,7 +9185,10 @@ class AutoMunge:
     if len(valuecounts) > 0:
 
       if len(valuecounts) > 1:
-        binary_missing_plug = valuecounts[0]
+        if infillconvention == 'onevalue':
+          binary_missing_plug = valuecounts[0]
+        elif infillconvention == 'zerovalue':
+          binary_missing_plug = valuecounts[1]
       else:
         #making an executive decision here to deviate from standardinfill of most common value
         #for this edge case where a column evaluated as binary has only single value and NaN's
@@ -9483,7 +9196,10 @@ class AutoMunge:
 
       #test for nan
       if binary_missing_plug != binary_missing_plug:
-        binary_missing_plug = valuecounts[1]
+        if infillconvention == 'onevalue':
+          binary_missing_plug = valuecounts[1]
+        elif infillconvention == 'zerovalue':
+          binary_missing_plug = valuecounts[0]
 
       #edge case when applying this transform to set with >2 values
       #this only comes up when caluclating driftreport in postmunge
@@ -9563,7 +9279,10 @@ class AutoMunge:
 
       #edge case that might come up in drift report
       if binary_missing_plug not in {onevalue, zerovalue}:
-        binary_missing_plug = onevalue
+        if infillconvention == 'onevalue':
+          binary_missing_plug = onevalue
+        elif infillconvention == 'zerovalue':
+          binary_missing_plug = zerovalue
 
       #edge case when applying this transform to set with >2 values
       #this only comes up when caluclating driftreport in postmunge
@@ -9627,6 +9346,7 @@ class AutoMunge:
   #                                                   'zerovalue' : zerovalue}}
     
     bnrynormalization_dict = {suffixcolumn : {'missing' : binary_missing_plug, \
+                                              'infillconvention' : infillconvention, \
                                                   1 : onevalue, \
                                                   0 : zerovalue, \
                                                   'extravalues' : extravalues, \
@@ -9655,252 +9375,6 @@ class AutoMunge:
 
       column_dict_list.append(column_dict.copy())
 
-    return mdf_train, mdf_test, column_dict_list
-
-  def _process_binary2(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
-    '''
-    #process_binary2(mdf, column, missing)
-    #converts binary classification values to 0 or 1
-    #takes as arguement a pandas dataframe (mdf_train, mdf_test), \
-    #the name of the column string ('column') \
-    #and the category from parent columkn (category)
-    #fills missing valules with least common value (different than bnry)
-    #returns same dataframes with new column of name suffixcolumn
-    #note this is a "dualprocess" function since is applied to both dataframes
-    '''
-    
-    suffixoverlap_results = {}
-    
-    if 'inplace' in params:
-      inplace = params['inplace']
-    else:
-      inplace = False
-      
-    #str_convert provides consistent encodings between numbers and string equivalent, eg 2 == '2'
-    if 'str_convert' in params:
-      str_convert = params['str_convert']
-    else:
-      str_convert = False
-
-    if 'suffix' in params:
-      suffix = params['suffix']
-    else:
-      suffix = 'bnr2'
-      
-    suffixcolumn = column + '_' + suffix
-    
-    if inplace is not True:
-      
-      #copy source column into new column
-      mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results)
-
-      mdf_test[suffixcolumn] = mdf_test[column].copy()
-    
-    else:
-      
-      suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results)
-      
-      mdf_train.rename(columns = {column : suffixcolumn}, inplace = True)
-      mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
-    
-    if str_convert is True:
-      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype(str)
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(str)
-
-    #create plug value for missing cells as most common value
-    valuecounts = pd.DataFrame(mdf_train[suffixcolumn].value_counts())
-    valuecounts = valuecounts.rename_axis('zzzinfill').sort_values(by = [suffixcolumn, 'zzzinfill'], ascending = [False, True])
-    valuecounts = list(valuecounts.index)
-    
-    if len(valuecounts) > 0:
-
-      if len(valuecounts) > 1:
-        #binary_missing_plug = valuecounts[0]
-        binary_missing_plug = valuecounts[1]
-      else:
-        #making an executive decision here to deviate from standardinfill of most common value
-        #for this edge case where a column evaluated as binary has only single value and NaN's
-        binary_missing_plug = 'zzzinfill'
-
-      #test for nan
-      if binary_missing_plug != binary_missing_plug:
-        #binary_missing_plug = valuecounts[1]
-        binary_missing_plug = valuecounts[0]
-
-      #edge case when applying this transform to set with >2 values
-      #this only comes up when caluclating driftreport in postmunge
-      extravalues = []
-      if len(valuecounts) > 2:
-        i=0
-        for value in valuecounts:
-          if i>1:
-            extravalues.append(value)
-          i+=1
-
-      #replace nan in valuecounts with binary_missing_plug so we can sort
-      valuecounts = [x if x == x else binary_missing_plug for x in valuecounts]
-  #     #convert everything to string for sort
-  #     valuecounts = [str(x) for x in valuecounts]
-
-      #note LabelBinarizer encodes alphabetically, with 1 assigned to first and 0 to second
-      #we'll take different approach of going by most common value to 1 unless 0 or 1
-      #are already in the set then we'll defer to keeping those designations in place
-      #there's some added complexity here to deal with edge case of passing this function
-      #to a set with >2 values as we might run into when caluclating drift in postmunge
-
-  #     valuecounts.sort()
-  #     valuecounts = sorted(valuecounts)
-      #in case this includes both strings and integers for instance we'll sort this way
-  #     valuecounts = sorted(valuecounts, key=lambda p: str(p))
-
-      #we'll save these in the normalization dictionary for future reference
-      onevalue = valuecounts[0]
-      if len(valuecounts) > 1:
-        zerovalue = valuecounts[1]
-      else:
-        zerovalue = 'zzzinfill'
-
-      #special case for when the source column is already encoded as 0/1
-
-      if len(valuecounts) <= 2:
-
-        if 0 in valuecounts:
-          zerovalue = 0
-          if 1 in valuecounts:
-            onevalue = 1
-          else:
-            if valuecounts[0] == 0:
-              if len(valuecounts) > 1:
-                onevalue = valuecounts[1]
-              else:
-                onevalue = 'zzzinfill'
-
-        if 1 in valuecounts:
-          if 0 not in valuecounts:
-            if valuecounts[0] != 1:
-              onevalue = 1
-              zerovalue = valuecounts[0]
-
-      #edge case same as above but when values of 0 or 1. are in set and 
-      #len(valuecounts) > 2
-      if len(valuecounts) > 2:
-        valuecounts2 = valuecounts[:2]
-
-        if 0 in valuecounts2:
-          zerovalue = 0
-          if 1 in valuecounts2:
-            onevalue = 1
-          else:
-            if valuecounts2[0] == 0:
-              if len(valuecounts) > 1:
-                onevalue = valuecounts2[1]
-              else:
-                onevalue = 'zzzinfill'
-
-        if 1 in valuecounts2:
-          if 0 not in valuecounts2:
-            if valuecounts2[0] != 1:
-              onevalue = 1
-              zerovalue = valuecounts2[0]
-
-      #edge case that might come up in drift report
-      if binary_missing_plug not in {onevalue, zerovalue}:
-        #binary_missing_plug = onevalue
-        binary_missing_plug = zerovalue
-
-      #edge case when applying this transform to set with >2 values
-      #this only comes up when caluclating driftreport in postmunge
-      if len(valuecounts) > 2:
-        for value in extravalues:
-          mdf_train[suffixcolumn] = \
-          np.where(mdf_train[suffixcolumn] == value, binary_missing_plug, mdf_train[suffixcolumn])
-          mdf_test[suffixcolumn] = \
-          np.where(mdf_test[suffixcolumn] == value, binary_missing_plug, mdf_test[suffixcolumn])
-
-      #replace missing data with specified classification
-      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(binary_missing_plug)
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(binary_missing_plug)
-
-      #this addressess issue where nunique for mdftest > than that for mdf_train
-      #note is currently an oportunity for improvement that NArows won't identify these poinsts as candiadates
-      #for user specified infill, and as currently addressed will default to infill with most common value
-      #in the mean time a workaround could be for user to manually replace extra values with nan prior to
-      #postmunge application such as if they want to apply ML infill
-      #this will only be an issue when nunique for df_train == 2, and nunique for df_test > 2
-      #if len(mdf_test[suffixcolumn].unique()) > 2:
-      uniqueintest = mdf_test[suffixcolumn].unique()
-      for unique in uniqueintest:
-        if unique not in {onevalue, zerovalue}:
-          mdf_test[suffixcolumn] = \
-          np.where(mdf_test[suffixcolumn] == unique, binary_missing_plug, mdf_test[suffixcolumn])
-
-      #convert column to binary 0/1 classification (replaces scikit LabelBinarizer)
-      mdf_train[suffixcolumn] = np.where(mdf_train[suffixcolumn] == onevalue, 1, 0)
-      mdf_test[suffixcolumn] = np.where(mdf_test[suffixcolumn] == onevalue, 1, 0)
-
-      #create list of columns
-      bnrycolumns = [suffixcolumn]
-
-      #change data types to 8-bit (1 byte) integers for memory savings
-      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype(np.int8)
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.int8)
-
-      #a few more metrics collected for driftreport
-      oneratio = mdf_train[suffixcolumn].sum() / mdf_train[suffixcolumn].shape[0]
-      zeroratio = (mdf_train[suffixcolumn].shape[0] - mdf_train[suffixcolumn].sum() )\
-                  / mdf_train[suffixcolumn].shape[0]
-
-      #create list of columns associated with categorical transform (blank for now)
-      categorylist = []
-    
-    else:
-      mdf_train[suffixcolumn] = 0
-      mdf_test[suffixcolumn] = 0
-      
-      binary_missing_plug = 0
-      onevalue = 1
-      zerovalue = 0
-      extravalues = 0
-      oneratio = 0
-      zeroratio = 0
-      bnrycolumns = [suffixcolumn]
-
-  #     bnrynormalization_dict = {suffixcolumn : {'missing' : binary_missing_plug, \
-  #                                                   'onevalue' : onevalue, \
-  #                                                   'zerovalue' : zerovalue}}
-    
-    bnrynormalization_dict = {suffixcolumn : {'missing' : binary_missing_plug, \
-                                              1 : onevalue, \
-                                              0 : zerovalue, \
-                                              'extravalues' : extravalues, \
-                                              'oneratio' : oneratio, \
-                                              'zeroratio' : zeroratio, \
-                                              'str_convert' : str_convert, \
-                                              'suffix' : suffix, \
-                                              'inplace' : inplace}}
-
-    #store some values in the column_dict{} for use later in ML infill methods
-    column_dict_list = []
-
-    for bc in bnrycolumns:
-
-      column_dict = { bc : {'category' : 'bnr2', \
-                           'origcategory' : category, \
-                           'normalization_dict' : bnrynormalization_dict, \
-                           'origcolumn' : column, \
-                           'inputcolumn' : column, \
-                           'columnslist' : bnrycolumns, \
-                           'categorylist' : bnrycolumns, \
-                           'infillmodel' : False, \
-                           'infillcomplete' : False, \
-                           'suffixoverlap_results' : suffixoverlap_results, \
-                           'deletecolumn' : False}}
-
-      column_dict_list.append(column_dict.copy())
-
-    #return mdf, bnrycolumns, categorylist, column_dict_list
     return mdf_train, mdf_test, column_dict_list
   
   def _process_onht(self, mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
@@ -18142,8 +17616,16 @@ class AutoMunge:
       inverse_ordinal_dict = {value:key for key,value in ordinal_dict.items()}
       activations_list = list(inverse_ordinal_dict)
 
-      mdf_train[binscolumn] = mdf_train[binscolumn].astype(np.int8)
-      mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.int8)
+      #data type is conditional based on encoding space
+      if len(ordinal_dict) < 254:
+        mdf_train[binscolumn] = mdf_train[binscolumn].astype(np.uint8)
+        mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint8)
+      elif len(ordinal_dict) < 65534:
+        mdf_train[binscolumn] = mdf_train[binscolumn].astype(np.uint16)
+        mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint16)
+      else:
+        mdf_train[binscolumn] = mdf_train[binscolumn].astype(np.uint32)
+        mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint32)
 
       #create list of columns
       nmbrcolumns = [binscolumn]
@@ -20401,6 +19883,9 @@ class AutoMunge:
       #now inject noise
       mdf_test[DPbn_column] = abs(mdf_test[column] - mdf_test[DPbn_column])
       
+    #change data types to 8-bit (1 byte) integers for memory savings
+    mdf_train[DPbn_column] = mdf_train[DPbn_column].astype(np.int8)
+    mdf_test[DPbn_column] = mdf_test[DPbn_column].astype(np.int8)
     
     #create list of columns
     nmbrcolumns = [DPbn_column]
@@ -20506,10 +19991,22 @@ class AutoMunge:
       del mdf_test[DPod_tempcolumn1]
       del mdf_test[DPod_tempcolumn2]
 
+    #data type is conditional based on encoding space
+    if len(ord_encodings) < 254:
+      mdf_train[DPod_column] = mdf_train[DPod_column].astype(np.uint8)
+      mdf_test[DPod_column] = mdf_test[DPod_column].astype(np.uint8)
+    elif len(ord_encodings) < 65534:
+      mdf_train[DPod_column] = mdf_train[DPod_column].astype(np.uint16)
+      mdf_test[DPod_column] = mdf_test[DPod_column].astype(np.uint16)
+    else:
+      mdf_train[DPod_column] = mdf_train[DPod_column].astype(np.uint32)
+      mdf_test[DPod_column] = mdf_test[DPod_column].astype(np.uint32)
+
     #create list of columns
     nmbrcolumns = [DPod_column]
 
     nmbrnormalization_dict = {DPod_column : {'flip_prob' : flip_prob, \
+                                             'ord_encodings' : ord_encodings, \
                                              'suffix' : suffix, \
                                              'testnoise' : testnoise}}
 
@@ -26277,11 +25774,20 @@ class AutoMunge:
     number_rows = df_train.shape[0]
     number_columns = df_train.shape[1]
     
-    #ok this is to allow user to set the default columns/rows ratio for automated PCA
-    if 'col_row_ratio' in ML_cmnd['PCA_cmnd']:
-      col_row_ratio = ML_cmnd['PCA_cmnd']['col_row_ratio']
-    else:
-      col_row_ratio = 0.50
+    #col_row_ratio was a heuristic used in earlier iterations where we included
+    #a default PCA application when had too many features for the number of samples
+    #col_row_ratio is high when there aren't enough samples (rows) recorded
+    #decided was adding too much complexity so struck from documentation
+    #going to leave the code here in case later decide to reintroduce
+
+    # #ok this is to allow user to set the default columns/rows ratio for automated PCA
+    # if 'col_row_ratio' in ML_cmnd['PCA_cmnd']:
+    #   col_row_ratio = ML_cmnd['PCA_cmnd']['col_row_ratio']
+    # else:
+    #   col_row_ratio = 0.50
+
+    #this will ensure number_columns / number_rows < col_row_ratio:
+    col_row_ratio = np.inf
 
     if ML_cmnd['PCA_type'] == 'default':
 
@@ -26700,9 +26206,9 @@ class AutoMunge:
     PCAdefaults = \
     self._populatePCAdefaults(randomseed)
     
-    #convert PCAsets to numpy arrays
-    PCAset_train = PCAset_train.to_numpy()
-    PCAset_test = PCAset_test.to_numpy()
+    # #convert PCAsets to numpy arrays
+    # PCAset_train = PCAset_train.to_numpy()
+    # PCAset_test = PCAset_test.to_numpy()
     
     #initialize a PCA model
     #PCAmodel = PCA(n_components = PCAn_components, random_state = randomseed)
@@ -26731,7 +26237,7 @@ class AutoMunge:
     PCAset_train = PCAmodel.transform(PCAset_train)
     PCAset_test = PCAmodel.transform(PCAset_test)
 
-    #get new number of columns
+    #get new number of columns (scikit PCA returns as numpy so using np.size)
     newcolumncount = np.size(PCAset_train,1)
 
     #generate a list of column names for the conversion to pandas
@@ -30909,7 +30415,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.22'
+    automungeversion = '6.23'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -31693,6 +31199,10 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
       suffix = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+      center = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['center']
+      maximum = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['maximum']
 
       suffixcolumn = column + '_' + suffix
 
@@ -31707,9 +31217,16 @@ class AutoMunge:
 
       #replace missing data with training set mean
       mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
+      
+      if center == 'mean':
 
-      #subtract mean from column
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn] - mean
+        #subtract mean from column
+        mdf_test[suffixcolumn] = mdf_test[suffixcolumn] - mean
+        
+      elif center == 'max':
+        
+        #subtract maximum from column
+        mdf_test[suffixcolumn] = mdf_test[suffixcolumn] - maximum
 
       #get mean absolute deviation of training data
       MAD = MAD
@@ -31719,77 +31236,6 @@ class AutoMunge:
 
   #     #change data type for memory savings
   #     mdf_test[column + '_MADn'] = mdf_test[column + '_MADn'].astype(np.float32)
-
-    else:
-
-      if 'inplace' in params:
-        inplace = params['inplace']
-      else:
-        inplace = False
-
-      if inplace is True:
-        del mdf_test[column]
-
-    return mdf_test
-    
-  def _postprocess_MAD3(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
-    '''
-    #postprocess_MADn(mdf_test, column, postprocess_dict, columnkey)
-    #function to normalize data by subtracting max and dividing by mean absolute deviation from training distribution
-    #takes as arguement pandas dataframe of test data (mdf_test)\
-    #and the name of the column string ('column'), and the mean and MAD from the train set \
-    #stored in postprocess_dict
-    #replaces missing or improperly formatted data with mean of remaining values
-    #leaves original specified column in dataframe
-    #returns transformed dataframe
-    #expect this approach works better than z-score for when the numerical distribution isn't thin tailed
-    #if only have training but not test data handy, use same training data for both dataframe inputs
-    '''
-    
-    #normkey used to retrieve the normalization dictionary 
-    normkey = False
-    if len(columnkey) > 0:      
-      normkey = columnkey[0]
-          
-    #normkey is False when process function returns empty set
-    if normkey is not False:
-      
-      mean = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
-      MAD = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['MAD']
-      datamax = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['datamax']
-      inplace = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
-      suffix = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
-
-      suffixcolumn = column + '_' + suffix
-
-      if inplace is not True:
-        mdf_test[suffixcolumn] = mdf_test[column].copy()
-      
-      else:
-        mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
-
-      #convert all values to either numeric or NaN
-      mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
-
-      #replace missing data with training set mean
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
-
-      #subtract datamax from column
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn] - datamax
-
-      #get mean absolute deviation of training data
-      MAD = MAD
-
-      #divide column values by std
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn] / MAD
-
-  #     #change data type for memory savings
-  #     mdf_test[column + '_MAD3'] = mdf_test[column + '_MAD3'].astype(np.float32)
 
     else:
 
@@ -32229,89 +31675,6 @@ class AutoMunge:
     return mdf_test
 
   def _postprocess_binary(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
-    '''
-    #postprocess_binary(mdf, column, postprocess_dict, columnkey)
-    #converts binary classification values to 0 or 1
-    #takes as arguement a pandas dataframe (mdf_test), \
-    #the name of the column string ('column') \
-    #and the string classification to assign to missing data ('missing')
-    #saved in the postprocess_dict
-    #replaces original specified column in dataframe
-    #returns transformed dataframe
-    #missing category must be identical to one of the two existing categories
-    #returns error message if more than two categories remain
-    '''
-    
-    #normkey used to retrieve the normalization dictionary 
-    normkey = False
-    if len(columnkey) > 0:      
-      normkey = columnkey[0]
-          
-    #normkey is False when process function returns empty set
-    if normkey is not False:
-
-      binary_missing_plug = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['missing']
-      str_convert = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['str_convert']
-      onevalue = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey][1]
-      zerovalue = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey][0]
-      inplace = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
-      suffix = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
-
-      suffixcolumn = column + '_' + suffix
-
-      if inplace is not True:
-        mdf_test[suffixcolumn] = mdf_test[column].copy()
-      
-      else:
-        mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
-      
-      if str_convert is True:
-        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(str)
-
-      #replace missing data with specified classification
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(binary_missing_plug)
-
-      #this addressess issue where nunique for mdftest > than that for mdf_train
-      #note is currently an oportunity for improvement that NArows won't identify these poinsts as candiadates
-      #for user specified infill, and as currently addressed will default to infill with most common value
-      #in the mean time a workaround could be for user to manually replace extra values with nan prior to
-      #postmunge application such as if they want to apply ML infill
-      #this will only be an issue when nunique for df_train == 2, and nunique for df_test > 2
-      #if len(mdf_test[suffixcolumn].unique()) > 2:
-      uniqueintest = mdf_test[suffixcolumn].unique()
-      for unique in uniqueintest:
-        if unique not in {onevalue, zerovalue}:
-          mdf_test[suffixcolumn] = \
-          np.where(mdf_test[suffixcolumn] == unique, binary_missing_plug, mdf_test[suffixcolumn])
-      
-      #convert column to binary 0/1 classification (replaces scikit LabelBinarizer)
-      mdf_test[suffixcolumn] = np.where(mdf_test[suffixcolumn] == onevalue, 1, 0)
-
-      #create list of columns
-      bnrycolumns = [suffixcolumn]
-
-      #change data types to 8-bit (1 byte) integers for memory savings
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.int8)
-
-    else:
-
-      if 'inplace' in params:
-        inplace = params['inplace']
-      else:
-        inplace = False
-
-      if inplace is True:
-        del mdf_test[column]
-
-    return mdf_test
-  
-  def _postprocess_binary2(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #postprocess_binary(mdf, column, postprocess_dict, columnkey)
     #converts binary classification values to 0 or 1
@@ -36267,7 +35630,13 @@ class AutoMunge:
       pd.cut( mdf_test[binscolumn], bins = bincuts,  \
              labels = binlabels, precision=4)
 
-      mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.int8)
+      #data type is conditional based on encoding space
+      if len(ordinal_dict) < 254:
+        mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint8)
+      elif len(ordinal_dict) < 65534:
+        mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint16)
+      else:
+        mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint32)
 
     else:
 
@@ -37399,6 +36768,9 @@ class AutoMunge:
         #for test data is just pass-through
         mdf_test[DPbn_column] = mdf_test[column].copy()
 
+      #change data types to 8-bit (1 byte) integers for memory savings
+      mdf_test[DPbn_column] = mdf_test[DPbn_column].astype(np.int8)
+
     else:
 
       if 'inplace' in params:
@@ -37443,6 +36815,8 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['testnoise']
       suffix = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+      ord_encodings = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ord_encodings']
 
       DPod_column = column + '_' + suffix
       DPod_tempcolumn1 = column + '_' + suffix + '_tmp1'
@@ -37452,20 +36826,6 @@ class AutoMunge:
       traindata = postprocess_dict['traindata']
       
       if traindata is True or testnoise is True:
-        
-        ord_encodings = False
-        
-        #we'll suplement a dif approach to grab ordinal encodings in postmunge
-        #since all activations may not be present in test set
-        #so we'll rely on convention that ordinal sets have a list of activations in norm_dict
-        #saved as 'activations_list'
-        if column in postprocess_dict['column_dict']:
-          if 'activations_list' in postprocess_dict['column_dict'][column]['normalization_dict'][column]:
-            ord_encodings = np.array(postprocess_dict['column_dict'][column]['normalization_dict'][column]['activations_list'])
-        
-        #else just grab set of unique entries
-        if ord_encodings is False:
-          ord_encodings = mdf_test[column].unique()
         
         #now we'll derive our sampled noise for injection
         mdf_test[DPod_tempcolumn1] = pd.DataFrame(np.random.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0])))
@@ -37483,6 +36843,14 @@ class AutoMunge:
         
         #for test data is just pass-through
         mdf_test[DPod_column] = mdf_test[column].copy()
+
+      #data type is conditional based on encoding space
+      if len(ord_encodings) < 254:
+        mdf_test[DPod_column] = mdf_test[DPod_column].astype(np.uint8)
+      elif len(ord_encodings) < 65534:
+        mdf_test[DPod_column] = mdf_test[DPod_column].astype(np.uint16)
+      else:
+        mdf_test[DPod_column] = mdf_test[DPod_column].astype(np.uint32)
 
     else:
 
@@ -37990,8 +37358,8 @@ class AutoMunge:
 
     PCAmodel = postprocess_dict['PCAmodel']
 
-    #convert PCAsets to numpy arrays
-    PCAset_test = PCAset_test.to_numpy()
+    # #convert PCAsets to numpy arrays
+    # PCAset_test = PCAset_test.to_numpy()
 
     #apply the transform
     PCAset_test = PCAmodel.transform(PCAset_test)
@@ -40066,10 +39434,17 @@ class AutoMunge:
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
     MAD = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['MAD']
+    center = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['center']
+    maximum = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['maximum']
     
     inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
     
-    df[inputcolumn] = df[normkey] * MAD + mean
+    if center == 'mean':
+      df[inputcolumn] = df[normkey] * MAD + mean
+    elif center == 'max':
+      df[inputcolumn] = df[normkey] * MAD + maximum
     
     return df, inputcolumn
   
