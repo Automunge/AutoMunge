@@ -3218,3 +3218,23 @@ am.postmunge(postprocess_dict, df_test)
 - consolidated bnry and bnr2 to use of a single comnmon transformation function by adding parameter for infillconvention
 - consolidated MADn and MAD3 to use of a single common transformation function by adding parameter for center
 - consolidated transformation functions for shft, shf2, and shf3 into a single common trasnformation function (taking advantage of what is now standard accross library allowing redundant transformations to common input column applied with different parameters)
+
+6.24
+- updated returned data type convention for exc5 and exc8 which are for integer passthrough
+- exc5 has mlinfilltype singlct as intended for encoded categoric sets
+- exc8 has mlinfilltype integer as intended for continuous integer sets
+- previously these were being returned as float data types based on floatprecision designation
+- recast to set data type in the transformation, making use of new assignparam parameter integertype
+- where integertype defaults to 'singlect' and can also be passed as 'integer'
+- where for 'singlct' returned data type is conditional uint based on max in train set which is used as proxy for encoding space, which is the default for exc5
+- and for 'integer' returned data type is int32, which is the default for exc8
+- updated the logic test for powertransform = 'infill' to distinguish between assigning exc5 and exc8
+- previously exc5 was default for integer sets unless for train len unique set > 75% number of rows then cast as exc8
+- now new scenario added to exc8 for cases where any negative integers found in train set allowing us to infer set is a continuous integer
+- new convention for floatprecision conversion to now only be applied to columns returned from transforms with MLinfilltype in {'numeric', 'concurrent_nmbr'} or columns returned from PCA
+- instead of previous convention's use of a type check for float
+- which in practice means that now excl passthrough columns will retain their data type from received data instead of defering to floatprecision
+- moved the application of floatprecision conversion in automunge and postmunge workflow to take place prior to excl suffix extraction to accomodate the MLinfilltype check
+- which as side benefit means don't have to worry about privacy encodings
+- finally, an update to methods for populating the column_map report
+- which now will include empty set entries for source columns that had all of their derivations conolidated in a PCA or Binary dimensionality reduction
