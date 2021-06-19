@@ -3237,4 +3237,4 @@ am.postmunge(postprocess_dict, df_test)
 - moved the application of floatprecision conversion in automunge and postmunge workflow to take place prior to excl suffix extraction to accomodate the MLinfilltype check
 - which as side benefit means don't have to worry about privacy encodings
 - finally, an update to methods for populating the column_map report
-- which now will include empty set entries for source columns that had all of their derivations conolidated in a PCA or Binary dimensionality reduction
+- which now will include empty set entries for source columns that had all of their derivations consolidated in a PCA or Binary dimensionality reduction
