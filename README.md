@@ -716,7 +716,7 @@ modeinfill. (These two excl arguments may be useful if a user wants to experimen
 with specific transforms on a subset of the columns without incurring processing 
 time of an entire set.) Finally can pass as 'infill' which may be useful when data is already 
 numerically encoded and just infill is desired. 'infill' treats sets with any non-integer 
-floats with exc2 (pass-through numeric), integer sets with unique ratio >0.75 with exc8 
+floats with exc2 (pass-through numeric), integer sets with any negative entries or unique ratio >0.75 with exc8 
 (for pass-through continuous integer sets subject to ml infill regression), and otherwise 
 integer sets with exc5 (pass-through integer subject to ml infill classification). Of course the rule of treating 
 integer sets with >0.75 ratio of unique entries as targets for ML infill regression or otherwise 
@@ -3243,8 +3243,9 @@ when applying TrainLabelFreqLevel to a numeric label set)
   - suffix appender: '_exc5'
   - assignparam parameters accepted:
     - 'suffix': to change suffix appender (leading underscore added internally)
+    - 'integertype': sets the convention for returned datatype exc5 defaults to 'singlct', exc8 defaults to 'integer'
   - driftreport postmunge metrics: none
-  - returned datatype: based on automunge(.) floatprecision parameter (defaults to float32)
+  - returned datatype: exc5 is conditional uint based on size of encoding space, exc8 is int32
   - inversion available: yes
 * eval: performs data property evaluation consistent with default automation to designated column
   - useful for: applying automated evaluation to distinct columns for cases where default automated evaluation turned off by powertransform='excl'
