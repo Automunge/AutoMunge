@@ -6667,6 +6667,8 @@ class AutoMunge:
                                   'recorded_category' : 'exc5',
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultparams' : {'suffix' : 'exc5',
+                                                     'integertype' : 'singlct'},
                                   'NArowtype' : 'integer',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'exc5'}})
@@ -6687,6 +6689,8 @@ class AutoMunge:
                                   'recorded_category' : 'exc5',
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultparams' : {'suffix' : 'exc5',
+                                                     'integertype' : 'singlct'},
                                   'NArowtype' : 'integer',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'exc5'}})
@@ -6697,6 +6701,8 @@ class AutoMunge:
                                   'recorded_category' : 'exc5',
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultparams' : {'suffix' : 'exc8',
+                                                     'integertype' : 'integer'},
                                   'NArowtype' : 'integer',
                                   'MLinfilltype' : 'integer',
                                   'labelctgy' : 'exc5'}})
@@ -6707,6 +6713,8 @@ class AutoMunge:
                                   'recorded_category' : 'exc5',
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultparams' : {'suffix' : 'exc8',
+                                                     'integertype' : 'integer'},
                                   'NArowtype' : 'integer',
                                   'MLinfilltype' : 'integer',
                                   'labelctgy' : 'exc5'}})
@@ -20452,6 +20460,15 @@ class AutoMunge:
       inplace = params['inplace']
     else:
       inplace = False
+      
+    #we'll accept parameter integertype for determination of returned data type
+    #where for 'singlct' we'll do a conditional uint based on max
+    #and for 'integer' we'll just do a int32 (which allows negative values)
+    #we'll define in processdict exc5 with singlct and exc8 with integer
+    if 'integertype' in params:
+      integertype = params['integertype']
+    else:
+      integertype = 'singlct'
 
     if 'suffix' in params:
       suffix = params['suffix']
@@ -20498,7 +20515,34 @@ class AutoMunge:
     mdf_train[exclcolumn] = mdf_train[exclcolumn].fillna(fillvalue)
     mdf_test[exclcolumn] = mdf_test[exclcolumn].fillna(fillvalue)
     
-    exc2_normalization_dict = {exclcolumn : {'fillvalue' : fillvalue, 'inplace' : inplace, 'suffix' : suffix}}
+    #set data type based on integertype parameter
+    if integertype == 'singlct':
+      
+      #assume encoding space is max of train data
+      encodingspace = mdf_train[exclcolumn].max()
+      
+      if encodingspace < 254:
+        mdf_train[exclcolumn] = mdf_train[exclcolumn].astype(np.uint8)
+        mdf_test[exclcolumn] = mdf_test[exclcolumn].astype(np.uint8)
+      elif encodingspace < 65534:
+        mdf_train[exclcolumn] = mdf_train[exclcolumn].astype(np.uint16)
+        mdf_test[exclcolumn] = mdf_test[exclcolumn].astype(np.uint16)
+      else:
+        mdf_train[exclcolumn] = mdf_train[exclcolumn].astype(np.uint32)
+        mdf_test[exclcolumn] = mdf_test[exclcolumn].astype(np.uint32)
+      
+    if integertype == 'integer':
+      
+      encodingspace = False
+      
+      mdf_train[exclcolumn] = mdf_train[exclcolumn].astype(np.int32)
+      mdf_test[exclcolumn] = mdf_test[exclcolumn].astype(np.int32)
+      
+    exc2_normalization_dict = {exclcolumn : {'fillvalue' : fillvalue, 
+                                             'inplace' : inplace, 
+                                             'suffix' : suffix,
+                                             'encodingspace' : encodingspace,
+                                             'integertype' : integertype}}
     
     column_dict_list = []
 
@@ -20649,6 +20693,7 @@ class AutoMunge:
       actualintegercount = integercount - integerstringcount
       uniquecount = df[column].nunique()
       rowcount = df[column].shape[0]
+      setminimum = df[column].min()
       actualfloatratio = actualfloatcount / rowcount
       actualintegerratio = actualintegercount / rowcount
       uniqueratio = uniquecount / rowcount
@@ -20661,8 +20706,9 @@ class AutoMunge:
       elif actualfloatratio > 0:
         category = 'exc2'
 
-      #exc8 for integer type with unique ratio > 0.75
-      elif (actualfloatratio == 0 and actualintegerratio > 0 and uniqueratio > 0.75):
+      #exc8 for integer type with unique ratio > 0.75 or if any negative integers present
+      elif (actualfloatratio == 0 and actualintegerratio > 0 and uniqueratio > 0.75) \
+      or (actualfloatratio == 0 and actualintegerratio > 0 and setminimum < 0):
         category = 'exc8'
 
       #exc5 for integers
@@ -27858,7 +27904,7 @@ class AutoMunge:
     """
     #floatprecision is a parameter user passed to automunge
     #allowable values are 16/32/64
-    #if 64 do nothing (we'll assume our transofrm functions default to 64)
+    #if 64 do nothing (we'll assume our transform functions default to 64)
     #if 16 or 32 then check each column in df for columnkeylist and if
     #float convert to this precision
     """
@@ -28873,11 +28919,11 @@ class AutoMunge:
         #if entry was already populated for multiple returned columns it overwrites it with same info
         column_map.update({postprocess_dict['column_dict'][finalcolumn2]['origcolumn'] : columnkeylist})
 
-    #this handles columns that did not return any sets (such as for null category)
+    #this handles columns that did not return any sets 
+    # (such as for null category or source columns whose returned sets were consolidated as part of dimensionality reduction)
     for origcolumn in postprocess_dict['origcolumn']:
       if origcolumn not in column_map:
-        if postprocess_dict['origcolumn'][origcolumn]['columnkeylist'] == []:
-          column_map.update({origcolumn : []})
+        column_map.update({origcolumn : []})
       
     return column_map
 
@@ -29747,11 +29793,6 @@ class AutoMunge:
         if templist2_entry not in templist1:
           columnkeylist.append(templist2_entry)
 
-#       #now we'll apply the floatprecision transformation
-#       df_train = self._floatprecision_transform(df_train, columnkeylist, floatprecision)
-#       df_test = self._floatprecision_transform(df_test, columnkeylist, floatprecision)
-      #(floatprocsiion is now done at conclusion of transforms below)
-
       ##
       #so last line I believe returns string if only one entry, so let's run a test
       if isinstance(columnkeylist, str):
@@ -29905,10 +29946,6 @@ class AutoMunge:
       for templist2_entry in templist2:
         if templist2_entry not in templist1:
           columnkeylist.append(templist2_entry)
-      
-#       #now we'll apply the floatprecision transformation
-#       df_labels = self._floatprecision_transform(df_labels, columnkeylist, floatprecision)
-#       df_testlabels = self._floatprecision_transform(df_testlabels, columnkeylist, floatprecision)
 
       if isinstance(columnkeylist, str):
         columnkey = columnkeylist
@@ -30358,6 +30395,37 @@ class AutoMunge:
 
     #great the data is processed now let's do a few moore global training preps
 
+    #now we'll apply the floatprecision transformation
+    floatcolumns_train = list(df_train)
+    floatcolumns_labels = list(df_labels)
+    
+    #floatprecision adjustment only applied to columns returned from transforms
+    #with mlinfilltype in {'numeric', 'concurrent_nmbr'}
+    floatcolumns_train_copy = floatcolumns_train.copy()
+    for floatcolumn in floatcolumns_train_copy:
+      if floatcolumn not in returned_PCA_columns and \
+      floatcolumn in postprocess_dict['column_dict'] and \
+      postprocess_dict['process_dict'][postprocess_dict['column_dict'][floatcolumn]['category']]['MLinfilltype'] \
+      not in {'numeric', 'concurrent_nmbr'}:
+        floatcolumns_train.remove(floatcolumn)
+        
+    floatcolumns_labels_copy = floatcolumns_labels.copy()
+    for floatcolumn in floatcolumns_labels_copy:
+      if floatcolumn not in returned_PCA_columns and \
+      floatcolumn in postprocess_dict['column_dict'] and \
+      postprocess_dict['process_dict'][postprocess_dict['column_dict'][floatcolumn]['category']]['MLinfilltype'] \
+      not in {'numeric', 'concurrent_nmbr'}:
+        floatcolumns_labels.remove(floatcolumn)
+
+    df_train = self._floatprecision_transform(df_train, floatcolumns_train, floatprecision)
+    if test_plug_marker is False:
+      df_test = self._floatprecision_transform(df_test, floatcolumns_train, floatprecision)
+    if labels_column is not False:
+      # finalcolumns_labels = list(df_labels)
+      df_labels = self._floatprecision_transform(df_labels, floatcolumns_labels, floatprecision)
+      if labelspresenttest is True:
+        df_testlabels = self._floatprecision_transform(df_testlabels, floatcolumns_labels, floatprecision)
+
     #a special case, those columns that we completely excluded from processing via excl
     #we'll scrub the suffix appender
     
@@ -30415,7 +30483,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.23'
+    automungeversion = '6.24'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -30642,23 +30710,7 @@ class AutoMunge:
     #then reset returned test sets to empty
     if test_plug_marker is True:
       df_test = pd.DataFrame()
-      df_testID = pd.DataFrame()    
-
-    #now we'll apply the floatprecision transformation
-    floatcolumns_train = finalcolumns_train
-    floatcolumns_labels = finalcolumns_labels
-    if privacy_encode is True:
-      floatcolumns_train = privacy_headers_train
-      floatcolumns_labels = privacy_headers_labels
-
-    df_train = self._floatprecision_transform(df_train, floatcolumns_train, floatprecision)
-    if test_plug_marker is False:
-      df_test = self._floatprecision_transform(df_test, floatcolumns_train, floatprecision)
-    if labels_column is not False:
-      # finalcolumns_labels = list(df_labels)
-      df_labels = self._floatprecision_transform(df_labels, floatcolumns_labels, floatprecision)
-      if labelspresenttest is True:
-        df_testlabels = self._floatprecision_transform(df_testlabels, floatcolumns_labels, floatprecision)
+      df_testID = pd.DataFrame()
 
     #printout display progress
     if printstatus is True:
@@ -36935,6 +36987,10 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
       suffix = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+      encodingspace = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['encodingspace']
+      integertype = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['integertype']
       
       exclcolumn = column + '_' + suffix
       
@@ -36954,6 +37010,21 @@ class AutoMunge:
       
       #replace missing data with fill value
       mdf_test[exclcolumn] = mdf_test[exclcolumn].fillna(fillvalue)
+      
+      #set data type based on integertype parameter
+      if integertype == 'singlct':
+
+        if encodingspace < 254:
+          mdf_test[exclcolumn] = mdf_test[exclcolumn].astype(np.uint8)
+        elif encodingspace < 65534:
+          mdf_test[exclcolumn] = mdf_test[exclcolumn].astype(np.uint16)
+        else:
+          mdf_test[exclcolumn] = mdf_test[exclcolumn].astype(np.uint32)
+
+      if integertype == 'integer':
+
+        mdf_train[exclcolumn] = mdf_train[exclcolumn].astype(np.int32)
+        mdf_test[exclcolumn] = mdf_test[exclcolumn].astype(np.int32)
 
     else:
 
@@ -38440,10 +38511,6 @@ class AutoMunge:
       self._postcircleoflife(df_test, column, category, category, process_dict, \
                             transform_dict, postprocess_dict)
 
-#         #now we'll apply the floatprecision transformation
-#         columnkeylist = postprocess_dict['origcolumn'][column]['columnkeylist']
-#         df_test = self._floatprecision_transform(df_test, columnkeylist, floatprecision)
-
       #printout display progress
       if printstatus is True:
         print(" returned columns:")
@@ -38493,10 +38560,6 @@ class AutoMunge:
       df_testlabels = \
       self._postcircleoflife(df_testlabels, labels_column, labelscategory, labelscategory, process_dict, \
                             transform_dict, postprocess_dict)
-      
-      #now we'll apply the floatprecision transformation
-#       columnkeylist = postprocess_dict['origcolumn'][labels_column]['columnkeylist']
-#       df_testlabels = self._floatprecision_transform(df_testlabels, columnkeylist, floatprecision)
 
       #marker for printouts
       pmsmoothing = False
@@ -38699,6 +38762,34 @@ class AutoMunge:
       if testID_column is not False:
         df_testID = self._df_shuffle(df_testID, postprocess_dict['randomseed'])
 
+    #now we'll apply the floatprecision transformation
+    floatcolumns_test = list(df_test)
+    floatcolumns_testlabels = list(df_testlabels)
+
+    #floatprecision adjustment only applied to columns returned from transforms
+    #with mlinfilltype in {'numeric', 'concurrent_nmbr'}
+    floatcolumns_test_copy = floatcolumns_test.copy()
+    for floatcolumn in floatcolumns_test_copy:
+      if floatcolumn not in postprocess_dict['returned_PCA_columns'] and \
+      floatcolumn in postprocess_dict['column_dict'] and \
+      postprocess_dict['process_dict'][postprocess_dict['column_dict'][floatcolumn]['category']]['MLinfilltype'] \
+      not in {'numeric', 'concurrent_nmbr'}:
+        floatcolumns_test.remove(floatcolumn)
+
+    floatcolumns_testlabels_copy = floatcolumns_testlabels.copy()
+    for floatcolumn in floatcolumns_testlabels_copy:
+      if floatcolumn not in postprocess_dict['returned_PCA_columns'] and \
+      floatcolumn in postprocess_dict['column_dict'] and \
+      postprocess_dict['process_dict'][postprocess_dict['column_dict'][floatcolumn]['category']]['MLinfilltype'] \
+      not in {'numeric', 'concurrent_nmbr'}:
+        floatcolumns_testlabels.remove(floatcolumn)
+
+    #now we'll apply the floatprecision transformation
+    df_test = self._floatprecision_transform(df_test, floatcolumns_test, floatprecision)
+    if labelscolumn is not False:
+      finalcolumns_labels = list(df_testlabels)
+      df_testlabels = self._floatprecision_transform(df_testlabels, floatcolumns_testlabels, floatprecision)
+
     #a special case, those columns that we completely excluded from processing via excl
     #we'll scrub the suffix appender
     #(we won't perform this step to test data if PCA was applied)
@@ -38748,20 +38839,6 @@ class AutoMunge:
         print("Postmunge returned label column set: ")
         print(list(df_testlabels))
         print("")
-
-    #now we'll apply the floatprecision transformation
-    floatcolumns_test = finalcolumns_test
-    floatcolumns_testlabels = list(df_testlabels)
-    if postprocess_dict['privacy_encode'] is True:
-      floatcolumns_test = postprocess_dict['privacy_headers_train']
-      if labelscolumn is not False:
-        floatcolumns_testlabels = postprocess_dict['privacy_headers_labels']
-
-    #now we'll apply the floatprecision transformation
-    df_test = self._floatprecision_transform(df_test, floatcolumns_test, floatprecision)
-    if labelscolumn is not False:
-      finalcolumns_labels = list(df_testlabels)
-      df_testlabels = self._floatprecision_transform(df_testlabels, floatcolumns_testlabels, floatprecision)
 
     if testID_column is not False:
       #testID = df_testID
