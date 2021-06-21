@@ -6617,6 +6617,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_excl,
                                   'recorded_category' : 'copy',
                                   'info_retention' : True,
+                                  'inplace_option' : True,
                                   'NArowtype' : 'exclude',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'copy'}})
@@ -6919,6 +6920,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_excl,
                                   'recorded_category' : 'copy',
                                   'info_retention' : True,
+                                  'inplace_option' : True,
                                   'defaultparams' : {'suffix' : ''},
                                   'NArowtype' : 'exclude',
                                   'MLinfilltype' : 'exclude',
@@ -6929,6 +6931,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_excl,
                                   'recorded_category' : 'copy',
                                   'info_retention' : True,
+                                  'inplace_option' : True,
                                   'defaultparams' : {'suffix' : ''},
                                   'NArowtype' : 'exclude',
                                   'MLinfilltype' : 'exclude',
@@ -20241,6 +20244,7 @@ class AutoMunge:
     # df = df.drop([column], axis=1)
     #deletion takes place in circle of life function
 
+    #note that when transforms return an empty set should return column_dict_list as empty list
     column_dict_list = []
 
     # column_dict = {column : {'category' : 'null', \
@@ -20265,9 +20269,18 @@ class AutoMunge:
     #copy function
     #accepts parameter 'suffix' for suffix appender
     #useful if want to apply same function more than once with different parameters
+    #
+    #this also may be useful when defining a family tree where the shortest path isn't desired inversion path
+    #can add some intermediate copy operations to shortest path so that inversion selects the desired path
+    #(as inversion operates on heuristic of selecting shortest path with full information retention, else shortest path)
     '''
     
     suffixoverlap_results = {}
+    
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
 
     if 'suffix' in params:
       suffix = params['suffix']
@@ -20276,8 +20289,18 @@ class AutoMunge:
       
     copy_column = column + '_' + suffix
     
-    df, suffixoverlap_results = \
-    self._df_copy_train(df, column, copy_column, suffixoverlap_results)
+    if inplace is not True:
+      
+      #copy source column into new column
+      df, suffixoverlap_results = \
+      self._df_copy_train(df, column, copy_column, suffixoverlap_results)
+    
+    else:
+      
+      suffixoverlap_results = \
+      self._df_check_suffixoverlap(df, copy_column, suffixoverlap_results)
+      
+      df.rename(columns = {column : copy_column}, inplace = True)
 
     column_dict_list = []
 
@@ -24043,11 +24066,16 @@ class AutoMunge:
       print("Begin Feature Importance evaluation")
       print("")
     
+    FS_validations = {}
+
     if labels_column is False:
       
       FSmodel = False
 
       baseaccuracy = False
+
+      FS_validations.update({'FS_numeric_data_result': False})
+      FS_validations.update({'FS_all_valid_entries_result': False})
       
       #printout display progress
       if printstatus is True:
@@ -24100,6 +24128,9 @@ class AutoMunge:
         FSmodel = False
 
         baseaccuracy = False
+
+        FS_validations.update({'FS_numeric_data_result': False})
+        FS_validations.update({'FS_all_valid_entries_result': False})
         
         #printout display progress
         if printstatus is True:
@@ -24161,6 +24192,13 @@ class AutoMunge:
           print("_______________")
           print("Training feature importance evaluation model")
           print("")
+
+        #first validate that data is all valid numeric
+        FS_numeric_data_result, FS_all_valid_entries_result = \
+        self.validate_allvalidnumeric(am_train)
+  
+        FS_validations.update({'FS_numeric_data_result': FS_numeric_data_result})
+        FS_validations.update({'FS_all_valid_entries_result': FS_all_valid_entries_result})
 
         #apply function trainFSmodel
         #FSmodel, baseaccuracy = \
@@ -24418,7 +24456,7 @@ class AutoMunge:
       print("Feature Importance evaluation complete")
       print("")
     
-    return madethecut, FSmodel, FScolumn_dict, FS_sorted
+    return madethecut, FSmodel, FScolumn_dict, FS_sorted, FS_validations
   
   def _assemblepostprocess_assigninfill(self, assigninfill, infillcolumns_list, 
                                        columns_train, postprocess_dict, MLinfill):
@@ -24627,6 +24665,29 @@ class AutoMunge:
       
     #initialize validation results
     infill_validations = {}
+
+    #if ML infill to be performed, validate that data is all numeric with all valid entries
+    if len(postprocess_assigninfill_dict['MLinfill']) > 0:
+
+      train_numeric_data_result, train_all_valid_entries_result = \
+      self.validate_allvalidnumeric(df_train)
+
+      infill_validations.update({'MLinfill_train_numeric_data_result': train_numeric_data_result})
+      infill_validations.update({'MLinfill_train_all_valid_entries_result': train_all_valid_entries_result})
+      
+      test_numeric_data_result, test_all_valid_entries_result = \
+      self.validate_allvalidnumeric(df_test)
+
+      infill_validations.update({'MLinfill_test_numeric_data_result': test_numeric_data_result})
+      infill_validations.update({'MLinfill_test_all_valid_entries_result': test_all_valid_entries_result})
+      
+    else:
+      
+      infill_validations.update({'MLinfill_train_numeric_data_result': False})
+      infill_validations.update({'MLinfill_train_all_valid_entries_result': False})
+      
+      infill_validations.update({'MLinfill_test_numeric_data_result': False})
+      infill_validations.update({'MLinfill_test_all_valid_entries_result': False})
       
     while iteration < infilliterate:
       
@@ -24908,6 +24969,22 @@ class AutoMunge:
     #just the convention
     if infilliterate == 0:
       infilliterate = 1
+
+    infill_validations = {}
+
+    #if ML infill to be performed, validate that data is all numeric with all valid entries
+    if len(postprocess_assigninfill_dict['MLinfill']) > 0:
+      
+      test_numeric_data_result, test_all_valid_entries_result = \
+      self.validate_allvalidnumeric(df_test)
+
+      infill_validations.update({'MLinfill_test_numeric_data_result': test_numeric_data_result})
+      infill_validations.update({'MLinfill_test_all_valid_entries_result': test_all_valid_entries_result})
+      
+    else:
+      
+      infill_validations.update({'MLinfill_test_numeric_data_result': False})
+      infill_validations.update({'MLinfill_test_all_valid_entries_result': False})
     
     while iteration < infilliterate:
       
@@ -25123,7 +25200,7 @@ class AutoMunge:
       
       iteration += 1
       
-    return df_test
+    return df_test, infill_validations
 
   def _zeroinfillfunction(self, df, column, postprocess_dict, \
                         masterNArows):
@@ -26825,6 +26902,42 @@ class AutoMunge:
         infill_validations.update({'MLinfill_validations': False})
       
     return infill_validations
+
+  def validate_allvalidnumeric(self, df):
+    """
+    #some methods in library, such as ML infilll, PCA, and feature importance, 
+    #require all numeric data with all valid entries
+    #most transforms always meet this requirement
+    #but there are a few special cases where returned data may not be all numeric
+    #such as excl, copy, shfl, strg
+    #this function validates that a data set meets requirement of all numeric and all valid entries
+    #False is good
+    """
+    
+    numeric_data_result = False
+    all_valid_entries_result = False
+    
+    #first ensure data is all numeric
+    if df.shape[1] != df.select_dtypes(include=np.number).shape[1]:
+      
+      numeric_data_result = True
+      
+      print("error: data was passed to ML infill, PCA, or feature importance with non-numeric data.")
+      print("Some transforms in library may not convert data to numeric, such as the passthrough transform excl.")
+      print("Alternatives to excl for pass-through with force to numeric and infill are available as exc2 - exc8.")
+      print()
+    
+    #then check for all valid entries
+    if df.isna().values.sum() > 0:
+      
+      all_valid_entries_result = True
+      
+      print("error: data was passed to ML infill, PCA, or feature importance with missing entries (NaN values).")
+      print("Some transforms in library may not conduct infill, such as the passthrough transform excl.")
+      print("Alternatives to excl for pass-through with force to numeric and infill are available as exc2 - exc8.")
+      print()
+    
+    return numeric_data_result, all_valid_entries_result
 
   def _check_assigncat(self, assigncat):
     """
@@ -29250,10 +29363,13 @@ class AutoMunge:
         FScolumn_dict = {}
         FS_sorted = {}
         featureimportance = {}
+        FS_validations = {}
+        FS_validations.update({'FS_numeric_data_result': False})
+        FS_validations.update({'FS_all_valid_entries_result': False})
 
       else:
 
-        madethecut, FSmodel, FScolumn_dict, FS_sorted = \
+        madethecut, FSmodel, FScolumn_dict, FS_sorted, FS_validations = \
         self._featureselect(df_train, labels_column, trainID_column, \
                           powertransform, binstransform, randomseed, \
                           numbercategoryheuristic, assigncat, transformdict, \
@@ -29289,6 +29405,11 @@ class AutoMunge:
       FScolumn_dict = {}
       FS_sorted = {}
       featureimportance = {}
+      FS_validations = {}
+      FS_validations.update({'FS_numeric_data_result': False})
+      FS_validations.update({'FS_all_valid_entries_result': False})
+
+    miscparameters_results.update(FS_validations)
 
     #validate that a model was trained
     check_FSmodel_result = self._check_FSmodel(featureselection, FSmodel)
@@ -29625,13 +29746,6 @@ class AutoMunge:
     #these are used in the ML infill methods
     masterNArows_train = pd.DataFrame()
     masterNArows_test = pd.DataFrame()
-
-    #create an empty dictionary to serve as store for categorical transforms lists
-    #of associated columns
-    multicolumntransform_dict = {}
-    
-    #create empty dictionary for cases where otherwise not populated with labels
-    LSfitparams_dict = {}
     
     #create an empty dictionary to serve as a store of processing variables from \
     #processing that were specific to the train dataset. These can be used for \
@@ -30125,6 +30239,19 @@ class AutoMunge:
         PCAset_train, PCAset_test, PCAexcl_posttransform = \
         self._createPCAsets(df_train, df_test, PCAexcl, postprocess_dict)
 
+        #run validation to ensure the PCA sets contain all valid numeric entries
+        PCA_train_numeric_data_result, PCA_train_all_valid_entries_result = \
+        self.validate_allvalidnumeric(PCAset_train)
+  
+        miscparameters_results.update({'PCA_train_numeric_data_result': PCA_train_numeric_data_result})
+        miscparameters_results.update({'PCA_train_all_valid_entries_result': PCA_train_all_valid_entries_result})
+      
+        PCA_test_numeric_data_result, PCA_test_all_valid_entries_result = \
+        self.validate_allvalidnumeric(PCAset_test)
+  
+        miscparameters_results.update({'PCA_test_numeric_data_result': PCA_test_numeric_data_result})
+        miscparameters_results.update({'PCA_test_all_valid_entries_result': PCA_test_all_valid_entries_result})
+
         #this is to train the PCA model and perform transforms on train and test set
         PCAset_train, PCAset_test, postprocess_dict, PCActgy = \
         self._PCAfunction(PCAset_train, PCAset_test, PCAn_components, postprocess_dict, \
@@ -30164,10 +30291,22 @@ class AutoMunge:
         postprocess_dict.update({'PCAmodel' : None})
         returned_PCA_columns = []
 
+        miscparameters_results.update({'PCA_train_numeric_data_result': False})
+        miscparameters_results.update({'PCA_train_all_valid_entries_result': False})
+        miscparameters_results.update({'PCA_test_numeric_data_result': False})
+        miscparameters_results.update({'PCA_test_all_valid_entries_result': False})
+
+        miscparameters_results.update({'PCA_suffixoverlap_results':{}})
+
     else:
       #else we'll just populate the PCAmodel slot in postprocess_dict with a placeholder
       postprocess_dict.update({'PCAmodel' : None})
       returned_PCA_columns = []
+
+      miscparameters_results.update({'PCA_train_numeric_data_result': False})
+      miscparameters_results.update({'PCA_train_all_valid_entries_result': False})
+      miscparameters_results.update({'PCA_test_numeric_data_result': False})
+      miscparameters_results.update({'PCA_test_all_valid_entries_result': False})
 
       miscparameters_results.update({'PCA_suffixoverlap_results':{}})
 
@@ -30428,6 +30567,9 @@ class AutoMunge:
 
     #a special case, those columns that we completely excluded from processing via excl
     #we'll scrub the suffix appender
+
+    #***Note that after this step any methods that use column headers to inspect postprocess_dict['column_dict']
+    #will have edge case for excl as the column_dict entries include the suffix***
     
     #first let's create a list of excl columns with and without suffix, just in case might come in handy
     postprocess_dict.update({'excl_columns_with_suffix':[], 'excl_columns_without_suffix':[]})
@@ -30483,7 +30625,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.24'
+    automungeversion = '6.25'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -30685,7 +30827,7 @@ class AutoMunge:
       #printout display progress
       if printstatus is True:
         print("_______________")
-        print("Begin Validation set processing with Postmunge")
+        print("Begin validation set processing with Postmunge")
         print("")
 
       #(postmunge shuffletrain not needed since data was already shuffled)
@@ -37469,6 +37611,7 @@ class AutoMunge:
       print("Begin Feature Importance evaluation")
       print("")
 
+    FS_validations = {}
 
     #this converts any numeric columns labels, such as from a passed numpy array, to strings
     testlabels=[]
@@ -37506,6 +37649,7 @@ class AutoMunge:
       FSpostprocess_dict['TrainLabelFreqLevel'] = False
       FSpostprocess_dict['MLinfill'] = False
       FSpostprocess_dict['featureselection'] = False
+      # FSpostprocess_dict['privacy_encode'] = False
       FSpostprocess_dict['PCAn_components'] = None
       FSpostprocess_dict['Binary'] = False
       FSpostprocess_dict['excl_suffix'] = True
@@ -37549,11 +37693,14 @@ class AutoMunge:
         FSmodel = False
 
         baseaccuracy = False
+
+        FS_validations.update({'FS_numeric_data_result': False})
+        FS_validations.update({'FS_all_valid_entries_result': False})
         
         #printout display progress
         if printstatus is True:
           print("_______________")
-          print("No labels returned from postmunge(.), Feature Importance halted")
+          print("No labels returned from Postmunge, Feature Importance halted")
           print("")
     
       #if am_labels is not an empty set
@@ -37611,6 +37758,13 @@ class AutoMunge:
           print("Training feature importance evaluation model")
           print("")
 
+        #first validate that data is all valid numeric
+        FS_numeric_data_result, FS_all_valid_entries_result = \
+        self.validate_allvalidnumeric(am_train)
+  
+        FS_validations.update({'FS_numeric_data_result': FS_numeric_data_result})
+        FS_validations.update({'FS_all_valid_entries_result': FS_all_valid_entries_result})
+
         #apply function trainFSmodel
         #FSmodel, baseaccuracy = \
         FSmodel = \
@@ -37626,6 +37780,9 @@ class AutoMunge:
           FS_origcolumns = list(FSpostprocess_dict['origcolumn'])
 
           baseaccuracy = False
+
+          FS_validations.update({'FS_numeric_data_result': False})
+          FS_validations.update({'FS_all_valid_entries_result': False})
           
           #printout display progress
           if printstatus is True:
@@ -37870,7 +38027,7 @@ class AutoMunge:
       print("Feature Importance evaluation complete")
       print("")
 
-    return FSmodel, FScolumn_dict, FS_sorted
+    return FSmodel, FScolumn_dict, FS_sorted, FS_validations
   
   def _prepare_driftreport(self, df_test, postprocess_dict, printstatus):
     """
@@ -38120,6 +38277,9 @@ class AutoMunge:
         FSmodel = False
         FScolumn_dict = {}
         FS_sorted = {}
+        FS_validations = {}
+        FS_validations.update({'FS_numeric_data_result': False})
+        FS_validations.update({'FS_all_valid_entries_result': False})
       
       elif postprocess_dict['labels_column'] is False:
         print("featureselection not available without labels_column in training set")
@@ -38129,10 +38289,13 @@ class AutoMunge:
         FSmodel = False
         FScolumn_dict = {}
         FS_sorted = {}
+        FS_validations = {}
+        FS_validations.update({'FS_numeric_data_result': False})
+        FS_validations.update({'FS_all_valid_entries_result': False})
 
       else:
 
-        FSmodel, FScolumn_dict, FS_sorted = \
+        FSmodel, FScolumn_dict, FS_sorted, FS_validations = \
         self._postfeatureselect(df_test, labelscolumn, testID_column, \
                                postprocess_dict, printstatus)
 
@@ -38144,6 +38307,11 @@ class AutoMunge:
       FSmodel = None
       FScolumn_dict = {}
       FS_sorted = {}
+      FS_validations = {}
+      FS_validations.update({'FS_numeric_data_result': False})
+      FS_validations.update({'FS_all_valid_entries_result': False})
+
+    pm_miscparameters_results.update(FS_validations)
 
     check_FSmodel_result = self._check_FSmodel(featureeval, FSmodel)
     pm_miscparameters_results.update({'FSmodel_valresult' : check_FSmodel_result})
@@ -38586,10 +38754,12 @@ class AutoMunge:
     postprocess_assigninfill_dict = \
     postprocess_dict['postprocess_assigninfill_dict']
     
-    df_test = \
+    df_test, infill_validations = \
     self._apply_pm_infill(df_test, postprocess_assigninfill_dict, \
                         postprocess_dict, printstatus, list(df_test), \
                         masterNArows_test, process_dict)
+
+    postreports_dict['pm_miscparameters_results'].update(infill_validations)
 
     #trim branches associated with feature selection
     if postprocess_dict['featureselection'] in {'pct', 'metric'}:
@@ -38646,6 +38816,13 @@ class AutoMunge:
             print("columns excluded from PCA: ")
             print(postprocess_dict['PCAexcl'])
             print("")
+            
+        #quick validation that PCA set has all valid numeric entries
+        PCA_test_numeric_data_result, PCA_test_all_valid_entries_result = \
+        self.validate_allvalidnumeric(PCAset_test)
+  
+        postreports_dict['pm_miscparameters_results'].update({'PCA_test_numeric_data_result': PCA_test_numeric_data_result})
+        postreports_dict['pm_miscparameters_results'].update({'PCA_test_all_valid_entries_result': PCA_test_all_valid_entries_result})
 
         PCAset_test, postprocess_dict = \
         self._postPCAfunction(PCAset_test, postprocess_dict)
@@ -38660,6 +38837,11 @@ class AutoMunge:
           print("")
 
         del PCAset_test
+        
+      else:
+        
+        postreports_dict['pm_miscparameters_results'].update({'PCA_test_numeric_data_result': False})
+        postreports_dict['pm_miscparameters_results'].update({'PCA_test_all_valid_entries_result': False})
 
     #Binary dimensionality reduction goes here
     #we'll only apply to test data not labels
