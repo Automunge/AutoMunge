@@ -3238,3 +3238,16 @@ am.postmunge(postprocess_dict, df_test)
 - which as side benefit means don't have to worry about privacy encodings
 - finally, an update to methods for populating the column_map report
 - which now will include empty set entries for source columns that had all of their derivations consolidated in a PCA or Binary dimensionality reduction
+
+6.25
+- new set of validations performed for scenarios with model training
+- including ML infill, feature selection, and PCA
+- now prior to training data is validated to confirm all valid numeric entries
+- which is automatic for most transforms in library, but there are a select few that may return non-numeric or NaN values
+- such as excl, copy, shfl, strg
+- if validation doesn't pass results in printout message
+- validation results are returned with other tests in postprocess_dict['miscparameters_results'] for automunge(.) 
+- and postreports_dict['pm_miscparameters_results'] for postmunge(.)
+- removed some automunge(.) initializations of variables that were no longer used (multicolumntransform_dict and LSfitparams_dict)
+- a few code comments added, a few tweaks to printouts
+- added inplace support for copy transform
