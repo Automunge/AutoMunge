@@ -3266,8 +3266,13 @@ parameter activated to designated column
   - driftreport postmunge metrics: none
   - returned datatype: based on transformation applied
   - inversion available: contingent on result				  
-* copy: create new copy of column, useful when applying the same transform to same column more
-than once with different parameters. Does not prepare column for ML on it's own.
+* copy: create new copy of column, may be used when applying the same transform to same column more
+than once with different parameters as an alternate to defining a distinct category processdict entry for each redundant application. 
+This also may be useful when defining a family tree where the shortest path isn't the desired inversion path, in which case
+can add some intermediate copy operations to shortest path until inversion selects the desired path
+(as inversion operates on heuristic of selecting shortest transformation path with full information retention, 
+unless full information retention isn't available then the shortest path without full information retention).
+Does not prepare column for ML on it's own (e.g. returned data will carry forward non-numeric entries and will not conduct infill).
   - default infill: exclude
   - default NArowtype: exclude
   - suffix appender: '_copy'
