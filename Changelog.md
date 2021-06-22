@@ -3251,3 +3251,10 @@ am.postmunge(postprocess_dict, df_test)
 - removed some automunge(.) initializations of variables that were no longer used (multicolumntransform_dict and LSfitparams_dict)
 - a few code comments added, a few tweaks to printouts
 - added inplace support for copy transform
+
+6.26
+- a refinement of the conditional data type conversions for ordinal encodings
+- which again convert transformation outputs to one of uint8/uint16/uint32
+- based on the size of the encoding space
+- found that our logic test for selection was off by a few integers
+- now will maximally utilize capacity of data types
