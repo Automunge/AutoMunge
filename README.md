@@ -475,7 +475,8 @@ For dataframes, data types of returned columns are based on the transformation a
 for example columns with boolean integers are cast as int8, ordinal encoded
 columns are given a conditional type based on the size of encoding space as either
 uint8, uint16, or uint32. Continuous sets are cast as float16, float32, or float64
-based on the automunge(.) floatprecision parameter.
+based on the automunge(.) floatprecision parameter. And direct passthrough columns
+via excl transform retain the recieved data type.
 
 * train: a numerically encoded set of data intended to be used to train a
 downstream machine learning model in the framework of a user's choice
@@ -1572,7 +1573,8 @@ For dataframes, data types of returned columns are based on the transformation a
 for example columns with boolean integers are cast as int8, ordinal encoded
 columns are given a conditional type based on the size of encoding space as either
 uint8, uint16, or uint32. Continuous sets are cast as float16, float32, or float64
-based on the automunge(.) floatprecision parameter.
+based on the automunge(.) floatprecision parameter. And direct passthrough columns
+via excl transform retain the recieved data type.
 
 * test: the set of features, consistently encoded and normalized as the
 training data, that can be used to generate predictions from a model
