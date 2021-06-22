@@ -12146,10 +12146,11 @@ class AutoMunge:
     #returned data type is conditional on the size of encoding space
     for hashcolumn in hashcolumns:
 
-      if vocab_size < 254:
+      max_encoding = vocab_size - 1
+      if max_encoding <= 255:
         mdf_train[hashcolumn] = mdf_train[hashcolumn].astype(np.uint8)
         mdf_test[hashcolumn] = mdf_test[hashcolumn].astype(np.uint8)
-      elif vocab_size < 65534:
+      elif max_encoding <= 65535:
         mdf_train[hashcolumn] = mdf_train[hashcolumn].astype(np.uint16)
         mdf_test[hashcolumn] = mdf_test[hashcolumn].astype(np.uint16)
       else:
@@ -13033,10 +13034,11 @@ class AutoMunge:
         np.where(mdf_test[suffixcolumn] == target_for_aggregation_encoding, aggregated_dict_key_encoding, mdf_test[suffixcolumn])
 
     #we'll base the integer type on number of ordinal entries
-    if len(ordl_dict1) < 254:
+    max_encoding = len(ordl_dict1)
+    if max_encoding <= 255:
       mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype(np.uint8)
       mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.uint8)
-    elif len(ordl_dict1) < 65534:
+    elif max_encoding <= 65535:
       mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype(np.uint16)
       mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.uint16)
     else:
@@ -13942,10 +13944,12 @@ class AutoMunge:
     mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(ordinal_dict)
     
     #just want to make sure these arent' being saved as floats for memory considerations
-    if len(ordinal_dict) < 254:
+    max_encoding = len(ordinal_dict) - 1
+
+    if max_encoding <= 255:
       mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype(np.uint8)
       mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.uint8)
-    elif len(ordinal_dict) < 65534:
+    elif max_encoding <= 65535:
       mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype(np.uint16)
       mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.uint16)
     else:
@@ -14195,10 +14199,12 @@ class AutoMunge:
     mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(ordinal_dict)
     
     #just want to make sure these arent' being saved as floats for memory considerations
-    if len(ordinal_dict) < 254:
+    max_encoding = len(ordinal_dict) - 1
+
+    if max_encoding <= 255:
       mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype(np.uint8)
       mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.uint8)
-    elif len(ordinal_dict) < 65534:
+    elif max_encoding <= 65535:
       mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype(np.uint16)
       mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.uint16)
     else:
@@ -14431,10 +14437,10 @@ class AutoMunge:
       consolidation_count = mdf_train[mdf_train[suffixcolumn] == new_maxactivation].shape[0]
       
     #set integer type based on encoding depth
-    if new_maxactivation < 254:
+    if new_maxactivation <= 255:
       mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype(np.uint8)
       mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.uint8)
-    elif new_maxactivation < 65534:
+    elif new_maxactivation <= 65535:
       mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype(np.uint16)
       mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.uint16)
     else:
@@ -17278,12 +17284,15 @@ class AutoMunge:
     del mdf_train[negtempcolumn]    
     del mdf_test[negtempcolumn]    
 
-    #returned data type is conditional on the size of encoding space
     bn_count = len(train_replace_dict)
-    if bn_count < 254:
+    inverse_train_replace_dict = {value:key for key,value in train_replace_dict.items()}
+    activations_list = list(inverse_train_replace_dict)
+
+    max_encoding = max(list(inverse_train_replace_dict))
+    if max_encoding <= 255:
       mdf_train[pworcolumn] = mdf_train[pworcolumn].astype(np.uint8)
       mdf_test[pworcolumn] = mdf_test[pworcolumn].astype(np.uint8)
-    elif bn_count < 65534:
+    elif max_encoding <= 65535:
       mdf_train[pworcolumn] = mdf_train[pworcolumn].astype(np.uint16)
       mdf_test[pworcolumn] = mdf_test[pworcolumn].astype(np.uint16)
     else:
@@ -17301,9 +17310,6 @@ class AutoMunge:
       sumcalc = (mdf_train[pworcolumn] == unique).sum() 
       ratio = sumcalc / mdf_train[pworcolumn].shape[0]
       ordl_activations_dict.update({unique:ratio})
-
-    inverse_train_replace_dict = {value:key for key,value in train_replace_dict.items()}
-    activations_list = list(inverse_train_replace_dict)
     
     for pc in powercolumns:
 
@@ -17628,10 +17634,11 @@ class AutoMunge:
       activations_list = list(inverse_ordinal_dict)
 
       #data type is conditional based on encoding space
-      if len(ordinal_dict) < 254:
+      max_encoding = len(ordinal_dict) - 1
+      if max_encoding <= 255:
         mdf_train[binscolumn] = mdf_train[binscolumn].astype(np.uint8)
         mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint8)
-      elif len(ordinal_dict) < 65534:
+      elif max_encoding <= 65535:
         mdf_train[binscolumn] = mdf_train[binscolumn].astype(np.uint16)
         mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint16)
       else:
@@ -17905,10 +17912,11 @@ class AutoMunge:
            labels = bins_id, precision=len(str(bn_count)))
     
     #returned data type is conditional on the size of encoding space
-    if bn_count < 254:
+    max_encoding = bn_count - 1
+    if max_encoding <= 255:
       mdf_train[binscolumn] = mdf_train[binscolumn].astype(np.uint8)
       mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint8)
-    elif bn_count < 65534:
+    elif max_encoding <= 65535:
       mdf_train[binscolumn] = mdf_train[binscolumn].astype(np.uint16)
       mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint16)
     else:
@@ -18283,10 +18291,11 @@ class AutoMunge:
       mdf_test[binscolumn] = mdf_test[binscolumn].fillna(0)
       
       #returned data type is conditional on the size of encoding space
-      if bn_count < 254:
+      max_encoding = bn_count - 1
+      if max_encoding <= 255:
         mdf_train[binscolumn] = mdf_train[binscolumn].astype(np.uint8)
         mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint8)
-      elif bn_count < 65534:
+      elif max_encoding <= 65535:
         mdf_train[binscolumn] = mdf_train[binscolumn].astype(np.uint16)
         mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint16)
       else:
@@ -19015,10 +19024,11 @@ class AutoMunge:
     mdf_test[binscolumn] = mdf_test[binscolumn].fillna(infill_activation)
     
     #returned data type is conditional on the size of encoding space
-    if len(bins_cuts) < 254:
+    max_encoding = len(bins_cuts) - 1
+    if max_encoding <= 255:
       mdf_train[binscolumn] = mdf_train[binscolumn].astype(np.uint8)
       mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint8)
-    elif len(bins_cuts) < 65534:
+    elif max_encoding <= 65535:
       mdf_train[binscolumn] = mdf_train[binscolumn].astype(np.uint16)
       mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint16)
     else:
@@ -19183,10 +19193,11 @@ class AutoMunge:
     mdf_test[binscolumn] = mdf_test[binscolumn].fillna(infill_activation)
 
     #returned data type is conditional on the size of encoding space
-    if len(bins_cuts) < 254:
+    max_encoding = len(bins_cuts) - 1
+    if max_encoding <= 255:
       mdf_train[binscolumn] = mdf_train[binscolumn].astype(np.uint8)
       mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint8)
-    elif len(bins_cuts) < 65534:
+    elif max_encoding <= 65535:
       mdf_train[binscolumn] = mdf_train[binscolumn].astype(np.uint16)
       mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint16)
     else:
@@ -20003,10 +20014,11 @@ class AutoMunge:
       del mdf_test[DPod_tempcolumn2]
 
     #data type is conditional based on encoding space
-    if len(ord_encodings) < 254:
+    max_encoding = len(ord_encodings) - 1
+    if max_encoding <= 255:
       mdf_train[DPod_column] = mdf_train[DPod_column].astype(np.uint8)
       mdf_test[DPod_column] = mdf_test[DPod_column].astype(np.uint8)
-    elif len(ord_encodings) < 65534:
+    elif max_encoding <= 65535:
       mdf_train[DPod_column] = mdf_train[DPod_column].astype(np.uint16)
       mdf_test[DPod_column] = mdf_test[DPod_column].astype(np.uint16)
     else:
@@ -20543,11 +20555,11 @@ class AutoMunge:
       
       #assume encoding space is max of train data
       encodingspace = mdf_train[exclcolumn].max()
-      
-      if encodingspace < 254:
+
+      if encodingspace <= 255:
         mdf_train[exclcolumn] = mdf_train[exclcolumn].astype(np.uint8)
         mdf_test[exclcolumn] = mdf_test[exclcolumn].astype(np.uint8)
-      elif encodingspace < 65534:
+      elif encodingspace <= 65535:
         mdf_train[exclcolumn] = mdf_train[exclcolumn].astype(np.uint16)
         mdf_test[exclcolumn] = mdf_test[exclcolumn].astype(np.uint16)
       else:
@@ -30625,7 +30637,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.25'
+    automungeversion = '6.26'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -33339,9 +33351,10 @@ class AutoMunge:
       #returned data type is conditional on the size of encoding space
       for hashcolumn in hashcolumns:
 
-        if vocab_size < 254:
+        max_encoding = vocab_size - 1
+        if max_encoding <= 255:
           mdf_test[hashcolumn] = mdf_test[hashcolumn].astype(np.uint8)
-        elif vocab_size < 65534:
+        elif max_encoding <= 65535:
           mdf_test[hashcolumn] = mdf_test[hashcolumn].astype(np.uint16)
         else:
           mdf_test[hashcolumn] = mdf_test[hashcolumn].astype(np.uint32)
@@ -33902,9 +33915,10 @@ class AutoMunge:
             np.where(mdf_test[suffixcolumn] == target_for_aggregation_encoding, aggregated_dict_key_encoding, mdf_test[suffixcolumn])
 
         #we'll base the integer type on number of ordinal entries
-        if len(ordl_dict1) < 254:
+        max_encoding = len(ordl_dict1)
+        if max_encoding <= 255:
           mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.uint8)
-        elif len(ordl_dict1) < 65534:
+        elif max_encoding <= 65535:
           mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.uint16)
         else:
           mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.uint32)
@@ -34155,9 +34169,10 @@ class AutoMunge:
       mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(ordinal_dict)
       
       #just want to make sure these arent' being saved as floats for memory considerations
-      if len(ordinal_dict) < 254:
+      max_encoding = len(ordinal_dict) - 1
+      if max_encoding <= 255:
         mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.uint8)
-      elif len(ordinal_dict) < 65534:
+      elif max_encoding <= 65535:
         mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.uint16)
       else:
         mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.uint32)
@@ -34266,15 +34281,16 @@ class AutoMunge:
       if mdf_test[suffixcolumn].dtype.name != 'object':
         mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('object')
       mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(ordinal_dict)
-      
+
       #just want to make sure these arent' being saved as floats for memory considerations
-      if len(ordinal_dict) < 254:
+      max_encoding = len(ordinal_dict) - 1
+      if max_encoding <= 255:
         mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.uint8)
-      elif len(ordinal_dict) < 65534:
+      elif max_encoding <= 65535:
         mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.uint16)
       else:
         mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.uint32)
-          
+
   #     #convert column to category
   #     mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('category')
 
@@ -34346,9 +34362,9 @@ class AutoMunge:
         np.where(mdf_test[suffixcolumn] < new_maxactivation, mdf_test[suffixcolumn], new_maxactivation)
         
       #set integer type based on encoding depth
-      if new_maxactivation < 254:
+      if new_maxactivation <= 255:
         mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.uint8)
-      elif new_maxactivation < 65534:
+      elif new_maxactivation <= 65535:
         mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.uint16)
       else:
         mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.uint32)
@@ -35564,6 +35580,8 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
       suffix = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+      inverse_train_replace_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inverse_train_replace_dict']
       
       pworcolumn = column + '_' + suffix
 
@@ -35658,12 +35676,12 @@ class AutoMunge:
 
       #replace original column from training data
       del mdf_test[negtempcolumn]
-      
+
       #returned data type is conditional on the size of encoding space
-      bn_count = len(activations_list)
-      if bn_count < 254:
+      max_encoding = max(list(inverse_train_replace_dict))
+      if max_encoding <= 255:
         mdf_test[pworcolumn] = mdf_test[pworcolumn].astype(np.uint8)
-      elif bn_count < 65534:
+      elif max_encoding <= 65535:
         mdf_test[pworcolumn] = mdf_test[pworcolumn].astype(np.uint16)
       else:
         mdf_test[pworcolumn] = mdf_test[pworcolumn].astype(np.uint32)
@@ -35825,9 +35843,10 @@ class AutoMunge:
              labels = binlabels, precision=4)
 
       #data type is conditional based on encoding space
-      if len(ordinal_dict) < 254:
+      max_encoding = len(ordinal_dict) - 1
+      if max_encoding <= 255:
         mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint8)
-      elif len(ordinal_dict) < 65534:
+      elif max_encoding <= 65535:
         mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint16)
       else:
         mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint32)
@@ -35968,9 +35987,10 @@ class AutoMunge:
             labels = bins_id, precision=len(str(bn_count)))
 
       #returned data type is conditional on the size of encoding space
-      if bn_count < 254:
+      max_encoding = bn_count - 1
+      if max_encoding <= 255:
         mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint8)
-      elif bn_count < 65534:
+      elif max_encoding <= 65535:
         mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint16)
       else:
         mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint32)
@@ -36124,11 +36144,12 @@ class AutoMunge:
 
         #and if the entire set was nan we'll infill with a 0 plug
         mdf_test[binscolumn] = mdf_test[binscolumn].fillna(0)
-        
+
         #returned data type is conditional on the size of encoding space
-        if bn_count < 254:
+        max_encoding = bn_count - 1
+        if max_encoding <= 255:
           mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint8)
-        elif bn_count < 65534:
+        elif max_encoding <= 65535:
           mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint16)
         else:
           mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint32)
@@ -36447,11 +36468,12 @@ class AutoMunge:
       
       #replace missing data with infill_activation
       mdf_test[binscolumn] = mdf_test[binscolumn].fillna(infill_activation)
-      
+
       #returned data type is conditional on the size of encoding space
-      if len(bins_cuts) < 254:
+      max_encoding = len(bins_cuts) - 1
+      if max_encoding <= 255:
         mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint8)
-      elif len(bins_cuts) < 65534:
+      elif max_encoding <= 65535:
         mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint16)
       else:
         mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint32)
@@ -36526,9 +36548,10 @@ class AutoMunge:
       mdf_test[binscolumn] = mdf_test[binscolumn].fillna(infill_activation)
 
       #returned data type is conditional on the size of encoding space
-      if len(bins_cuts) < 254:
+      max_encoding = len(bins_cuts) - 1
+      if max_encoding <= 255:
         mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint8)
-      elif len(bins_cuts) < 65534:
+      elif max_encoding <= 65535:
         mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint16)
       else:
         mdf_test[binscolumn] = mdf_test[binscolumn].astype(np.uint32)
@@ -37039,9 +37062,10 @@ class AutoMunge:
         mdf_test[DPod_column] = mdf_test[column].copy()
 
       #data type is conditional based on encoding space
-      if len(ord_encodings) < 254:
+      max_encoding = len(ord_encodings) - 1
+      if max_encoding <= 255:
         mdf_test[DPod_column] = mdf_test[DPod_column].astype(np.uint8)
-      elif len(ord_encodings) < 65534:
+      elif max_encoding <= 65535:
         mdf_test[DPod_column] = mdf_test[DPod_column].astype(np.uint16)
       else:
         mdf_test[DPod_column] = mdf_test[DPod_column].astype(np.uint32)
@@ -37156,9 +37180,9 @@ class AutoMunge:
       #set data type based on integertype parameter
       if integertype == 'singlct':
 
-        if encodingspace < 254:
+        if encodingspace <= 255:
           mdf_test[exclcolumn] = mdf_test[exclcolumn].astype(np.uint8)
-        elif encodingspace < 65534:
+        elif encodingspace <= 65535:
           mdf_test[exclcolumn] = mdf_test[exclcolumn].astype(np.uint16)
         else:
           mdf_test[exclcolumn] = mdf_test[exclcolumn].astype(np.uint32)
