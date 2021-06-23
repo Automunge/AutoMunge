@@ -1507,8 +1507,8 @@ are returned as pandas dataframe, a user may desire privacy preserving encodings
 column headers of received data are anonymized. This parameter when activated replaces
 headers and suffixes with integers, including distinct sets of integers between train, labels,
 and ID sets. Note that conversion information is available in returned postprocess_dict under
-privacy reports. Note that when activated consistent convention is applied in postmunge
-and inversion is supported.
+privacy reports (in other words, privacy can be circumvented if user has access to the postprocess_dict). 
+Note that when activated consistent convention is applied in postmunge and inversion is supported.
 
 * printstatus: user can pass _True/False_ indicating whether the function will print 
 status of processing during operation. Defaults to True.
