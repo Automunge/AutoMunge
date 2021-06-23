@@ -17258,12 +17258,14 @@ class AutoMunge:
     
     train_replace_dict = {}
     train_len = len(train_unique)
+    nan_marker = False
     for i in range(train_len):
       if train_unique[i] != train_unique[i]:
         train_replace_dict.update({train_unique[i] : 0})
+        nan_marker = True
       else:
         train_replace_dict.update({train_unique[i] : i+1})
-    if np.nan not in train_replace_dict:
+    if nan_marker is False:
       train_replace_dict.update({np.nan : 0})
       
     test_replace_dict = {}
@@ -21575,6 +21577,9 @@ class AutoMunge:
     (Each based on ScikitLearn default values)
   
     note that n_estimators set at 100 (default for version 0.22)
+
+    note that we apply our own random seed by default instead of defering to scikit
+    (where randomseed is randomized if not specified)
     '''
   
     MLinfilldefaults = {'RandomForestClassifier':{}, 'RandomForestRegressor':{}}
@@ -21595,7 +21600,10 @@ class AutoMunge:
                                                        'random_state':randomseed, \
                                                        'verbose':0, \
                                                        'warm_start':False, \
-                                                       'class_weight':None})
+                                                       'class_weight':None, \
+                                                       'ccp_alpha':0.0, \
+                                                       'max_samples':None, \
+                                                       })
   
     MLinfilldefaults['RandomForestRegressor'].update({'n_estimators':100, \
                                                       'criterion':'mse', \
@@ -21612,7 +21620,10 @@ class AutoMunge:
                                                       'n_jobs':None, \
                                                       'random_state':randomseed, \
                                                       'verbose':0, \
-                                                      'warm_start':False})
+                                                      'warm_start':False, \
+                                                      'ccp_alpha':0.0, \
+                                                      'max_samples':None, \
+                                                      })
 
     return MLinfilldefaults
 
@@ -21714,6 +21725,16 @@ class AutoMunge:
       class_weight = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['class_weight']
     else:
       class_weight = MLinfilldefaults['RandomForestClassifier']['class_weight']
+      
+    if 'ccp_alpha' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
+      ccp_alpha = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['ccp_alpha']
+    else:
+      ccp_alpha = MLinfilldefaults['RandomForestClassifier']['ccp_alpha']
+      
+    if 'max_samples' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
+      max_samples = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['max_samples']
+    else:
+      max_samples = MLinfilldefaults['RandomForestClassifier']['max_samples']
 
     #do other stuff?
 
@@ -21734,7 +21755,10 @@ class AutoMunge:
                                    random_state = random_state, \
                                    verbose = verbose, \
                                    warm_start = warm_start, \
-                                   class_weight = class_weight)
+                                   class_weight = class_weight, \
+                                   ccp_alpha = ccp_alpha, \
+                                   max_samples = max_samples, \
+                                  )
 
     return model
 
@@ -21830,6 +21854,16 @@ class AutoMunge:
       warm_start = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['warm_start']
     else:
       warm_start = MLinfilldefaults['RandomForestRegressor']['warm_start']
+      
+    if 'ccp_alpha' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
+      ccp_alpha = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['ccp_alpha']
+    else:
+      ccp_alpha = MLinfilldefaults['RandomForestRegressor']['ccp_alpha']
+      
+    if 'max_samples' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
+      max_samples = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['max_samples']
+    else:
+      max_samples = MLinfilldefaults['RandomForestRegressor']['max_samples']
 
     #do other stuff?
 
@@ -21849,7 +21883,10 @@ class AutoMunge:
                                   n_jobs = n_jobs, \
                                   random_state = random_state, \
                                   verbose = verbose, \
-                                  warm_start = warm_start)
+                                  warm_start = warm_start, \
+                                  ccp_alpha = ccp_alpha, \
+                                  max_samples = max_samples, \
+                                 )
 
     return model
   
@@ -30637,7 +30674,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.26'
+    automungeversion = '6.27'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -37673,7 +37710,7 @@ class AutoMunge:
       FSpostprocess_dict['TrainLabelFreqLevel'] = False
       FSpostprocess_dict['MLinfill'] = False
       FSpostprocess_dict['featureselection'] = False
-      # FSpostprocess_dict['privacy_encode'] = False
+      FSpostprocess_dict['privacy_encode'] = False
       FSpostprocess_dict['PCAn_components'] = None
       FSpostprocess_dict['Binary'] = False
       FSpostprocess_dict['excl_suffix'] = True
