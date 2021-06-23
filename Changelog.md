@@ -3258,3 +3258,8 @@ am.postmunge(postprocess_dict, df_test)
 - based on the size of the encoding space
 - found that our logic test for selection was off by a few integers
 - now will maximally utilize capacity of data types
+
+6.27
+- updated postmunge featureeval methods to include support for cases where automunge privacyencode was elected
+- updated scikit random forest initializer to include support for parameters ccp_alpha and max_samples (which scikit introduced in 0.22)
+- update tweak to pwor transform to circumvent some kind of strange interaction between np.nan serving as key to python dictionary
