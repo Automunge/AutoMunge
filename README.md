@@ -531,6 +531,7 @@ A few useful entries in the postprocess_dict include:
 - postprocess_dict['columntype_report']: a report classifying the returned column types
 - postprocess_dict['column_map']:  a report mapping the input columns to their associated returned columns (excluding those consolidated as part of a dimensionality reduction). May be useful to inspect sets returned for a specific feature e.g. train[postprocess_dict['column_map']['input_column_header']]
 - postprocess_dict['FS_sorted]: sorted results of feature importance evaluation if elected
+- postprocess_dict['miscparameters_results']: reporting results of validation tests performed on parameters and passed data
 
 ...
 
@@ -1609,6 +1610,7 @@ flattened (e.g. [[1,2,3]] converted to [1,2,3] )
   evaluation tracking properties of postmunge data derived from source 
   columns in comparison to the original data from automunge(.) call associated 
   with the postprocess_dict presumably used to train a model. 
+  - postreports_dict['pm_miscparameters_results']: reporting results of validation tests performed on parameters and passed data
   
 ```
 #the results of a postmunge driftreport assessment are returned in the postreports_dict 
