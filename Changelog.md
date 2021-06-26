@@ -3269,7 +3269,7 @@ am.postmunge(postprocess_dict, df_test)
 - to ensure validation test results are being recorded in appropriate reports
 - identified a few cases where validation checks were missing recorded results
 - so added new entries to postprocess_dict['miscparameters_results']
-- as trainID_column_valresult, testID_column_valresult, evalcat_valresult, validate_traintest_columnnumbercompare, validate_traintest_columnlabelscompare, validate_redundantcolumnlabels, validate_traintest_columnorder
+- as trainID_column_valresult, testID_column_valresult, evalcat_valresult, validate_traintest_columnnumbercompare, validate_traintest_columnlabelscompare, validate_redundantcolumnlabels, validate_traintest_columnorder, numbercategoryheuristic_valresult
 - and added new entries to postreports_dict['pm_miscparameters_results']
 - as testID_column_valresult, validate_traintest_columnlabelscompare, validate_traintest_columnorder, validate_labelscolumn_string
 - in the process developed some documentation defining various validation checks
