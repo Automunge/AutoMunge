@@ -26425,7 +26425,8 @@ class AutoMunge:
                              TrainLabelFreqLevel, dupl_rows, powertransform, binstransform, MLinfill, \
                              infilliterate, randomseed, eval_ratio, numbercategoryheuristic, pandasoutput, \
                              NArw_marker, featurethreshold, featureselection, inplace, \
-                             Binary, PCAn_components, PCAexcl, printstatus, excl_suffix):
+                             Binary, PCAn_components, PCAexcl, printstatus, excl_suffix, \
+                             trainID_column, testID_column, evalcat):
     """
     #Performs validation to confirm valid entries of passed automunge(.) parameters
     #Note that this function is intended specifically for non-dictionary parameters
@@ -26610,6 +26611,8 @@ class AutoMunge:
       print("Error: invalid entry passed for numbercategoryheuristic parameter.")
       print("Acceptable values are integers >= 1")
       print()
+
+    miscparameters_results.update({'numbercategoryheuristic_valresult' : numbercategoryheuristic_valresult})
       
     #check pandasoutput
     pandasoutput_valresult = False
@@ -26647,7 +26650,7 @@ class AutoMunge:
     if not isinstance(featurethreshold, float):
       featurethreshold_valresult = True
       print("Error: invalid entry passed for featurethreshold parameter.")
-      print("Acceptable values are floats within range 0.0 < featurethreshold < 1.0")
+      print("Acceptable values are floats within range 0.0 <= featurethreshold <= 1.0")
       print()
     elif (featurethreshold < 0.0 or featurethreshold > 1.0):
       featurethreshold_valresult = True
@@ -26743,12 +26746,45 @@ class AutoMunge:
       print()
       
     miscparameters_results.update({'excl_suffix_valresult' : excl_suffix_valresult})
+
+    #check trainID_column
+    trainID_column_valresult = False
+    if trainID_column is not False \
+    and not isinstance(trainID_column, str) \
+    and not isinstance(trainID_column, list):
+      trainID_column_valresult = True
+      print("Error: invalid entry passed for trainID_column parameter.")
+      print("trainID_column allowable values are False, string, or list.")
+
+    miscparameters_results.update({'trainID_column_valresult' : trainID_column_valresult})
+
+    #check testID_column
+    testID_column_valresult = False
+    if testID_column is not False \
+    and testID_column is not True \
+    and not isinstance(testID_column, str) \
+    and not isinstance(testID_column, list):
+      testID_column_valresult = True
+      print("Error: invalid entry passed for testID_column parameter.")
+      print("testID_column allowable values are boolean, string, or list.")
+
+    miscparameters_results.update({'testID_column_valresult' : testID_column_valresult})
+
+    #check evalcat
+    evalcat_valresult = False
+    if evalcat is not False \
+    and type(evalcat) != types.FunctionType:
+      evalcat_valresult = True
+      print("Error: invalid entry passed for evalcat parameter.")
+      print("evalcat allowable values are False or as a defined function per READ ME.")
+      
+    miscparameters_results.update({'evalcat_valresult' : evalcat_valresult})
     
     return miscparameters_results
     
   def _check_pm_miscparameters(self, pandasoutput, printstatus, TrainLabelFreqLevel, \
                               dupl_rows, featureeval, driftreport, inplace, \
-                              returnedsets, shuffletrain, inversion, traindata):
+                              returnedsets, shuffletrain, inversion, traindata, testID_column):
     """
     #Performs validation to confirm valid entries of passed postmunge(.) parameters
     #note one parameter not directly passed is df_test, just pass a list of the columns
@@ -26885,6 +26921,18 @@ class AutoMunge:
       print()
       
     pm_miscparameters_results.update({'traindata_valresult' : traindata_valresult})
+
+    #check testID_column
+    testID_column_valresult = False
+    if testID_column is not False \
+    and testID_column is not True \
+    and not isinstance(testID_column, str) \
+    and not isinstance(testID_column, list):
+      testID_column_valresult = True
+      print("Error: invalid entry passed for testID_column parameter.")
+      print("testID_column allowable values are boolean, string, or list.")
+
+    pm_miscparameters_results.update({'testID_column_valresult' : testID_column_valresult})
     
     return pm_miscparameters_results
 
@@ -27068,8 +27116,6 @@ class AutoMunge:
     #to ensure that for any listed root categories, 
     #any category entries to corresponding family tree primitives in transform_dict 
     #have a corresponding entry in the process_dict
-    #note that transformdict entries not required for root categories, 
-    #unless they are also entries to a family tree
     """
     
     #False is good
@@ -27348,10 +27394,10 @@ class AutoMunge:
         
     return check_transform_dict_roots_result
   
-  def _check_haltingproblem(self, transformdict, transform_dict, max_check_count = 111):
+  def _check_haltingproblem(self, transformdict, transform_dict, max_check_count = 1111):
     """
     #evaluates user passed transformdict entries to check for infinite loops
-    #we'll arbitrarily check for a max depth of 111 offspring to keep things manageable
+    #we'll arbitrarily check for a max depth of 1111 offspring to keep things manageable
     #we'll assume this takes place after user passed entries have been merged into transform_dict
     #such that transformdict is just user passed entries
     #and transform_dict is both user-passed and internal library
@@ -27411,7 +27457,7 @@ class AutoMunge:
             else:
 
               print("Number of offspring generations for root category ", root_category)
-              print("exceeded 111, infinite loop check halted.")
+              print("exceeded 1111, infinite loop check halted.")
               print()
               
               break
@@ -27466,7 +27512,7 @@ class AutoMunge:
           else:
 
             print("Number of offspring generations for root category ", root_category)
-            print("exceeded 111, infinite loop check halted.")
+            print("exceeded 1111, infinite loop check halted.")
             print()
             
             break
@@ -27484,9 +27530,10 @@ class AutoMunge:
     #and the lists contain entries for those source columns or root categories
     #which are to be converted to nan for purposes of infill
     
-    #this function confirms only entries for 'cat' or 'col' in first tier
-    #and that entries within cat are valid root categories from transform_dict
-    #and that entries within col are valid column headers from df_train
+    #this function confirms only entries for {'categories', 'columns', 'global', 'injections'} in first tier
+    #and that entries within categories are valid root categories from transform_dict
+    #and that entries within columns are valid column headers from df_train
+    #and that entries within injections are valid column headers from df_train
     """
     
     check_assignnan_toplevelentries_result = False
@@ -29277,7 +29324,8 @@ class AutoMunge:
                                  TrainLabelFreqLevel, dupl_rows, powertransform, binstransform, MLinfill, \
                                  infilliterate, randomseed, eval_ratio, numbercategoryheuristic, pandasoutput, \
                                  NArw_marker, featurethreshold, featureselection, inplace, \
-                                 Binary, PCAn_components, PCAexcl, printstatus, excl_suffix)
+                                 Binary, PCAn_components, PCAexcl, printstatus, excl_suffix, \
+                                 trainID_column, testID_column, evalcat)
 
     miscparameters_results.update({'check_assigncat_result' : check_assigncat_result, \
                                    'check_assigninfill_result' : check_assigninfill_result, \
@@ -29384,8 +29432,8 @@ class AutoMunge:
     miscparameters_results.update({'check_assigncat_result2' : check_assigncat_result2, \
                                    'check_assigncat_result3' : check_assigncat_result3})
 
-    check_assignparam = self._check_assignparam(assignparam, process_dict)
-    miscparameters_results.update({'check_assignparam' : check_assignparam})
+    check_assignparam_result = self._check_assignparam(assignparam, process_dict)
+    miscparameters_results.update({'check_assignparam_result' : check_assignparam_result})
 
     #initialize autoMLer which is data structure to support ML infill
     #a future extension may allow user to pass custom entries
@@ -29604,7 +29652,9 @@ class AutoMunge:
     elif isinstance(trainID_column, str):
       trainID_column = [trainID_column]
     elif not isinstance(trainID_column, list):
-      print("error, trainID_column allowable values are False, string, or list")
+      #validated in _check_am_miscparameters
+      pass
+      # print("error, trainID_column allowable values are False, string, or list")
 
     #non-range indexes we'll move into the ID sets for consistent shuffling and validation splits
     if type(df_train.index) != pd.RangeIndex:
@@ -29620,7 +29670,9 @@ class AutoMunge:
     elif isinstance(testID_column, str):
       testID_column = [testID_column]
     elif not isinstance(testID_column, list):
-      print("error, testID_column allowable values are False, string, or list")
+      #validated in _check_am_miscparameters
+      pass
+      # print("error, testID_column allowable values are False, string, or list")
 
     #for unnamed non-range index we'll rename as 'Orig_index_###' and include that in ID sets
     if type(df_test.index) != pd.RangeIndex:
@@ -29759,31 +29811,45 @@ class AutoMunge:
     #confirm consistency of train an test sets
 
     #check number of columns is consistent
+    validate_traintest_columnnumbercompare = False
     if df_train.shape[1] != df_test.shape[1]:
+      validate_traintest_columnnumbercompare = True
       print("error, different number of columns in train and test sets")
-      print("(This assesment excludes labels and ID columns.)")
+      print("(This assessment excludes labels and ID columns.)")
+      print("Note that if label column present in df_train and not df_test")
+      print("it should be designated with labels_column parameter.")
       return
+    miscparameters_results.update({'validate_traintest_columnnumbercompare' : validate_traintest_columnnumbercompare})
 
     #check column headers are consistent (this works independent of order)
     columns_train = set(list(df_train))
     columns_test = set(list(df_test))
+    validate_traintest_columnlabelscompare = False
     if columns_train != columns_test:
+      validate_traintest_columnlabelscompare = True
       print("error, different column labels in the train and test set")
-      print("(This assesment excludes labels and ID columns.)")
+      print("(This assessment excludes labels and ID columns.)")
       return
+    miscparameters_results.update({'validate_traintest_columnlabelscompare' : validate_traintest_columnlabelscompare})
 
     column_labels_count = len(list(df_train))
     unique_column_labels_count = len(set(list(df_train)))
+    validate_redundantcolumnlabels = False
     if unique_column_labels_count < column_labels_count:
+      validate_redundantcolumnlabels = True
       print("error, redundant column labels found, each column requires unique label")
       return
+    miscparameters_results.update({'validate_redundantcolumnlabels' : validate_redundantcolumnlabels})
 
     columns_train = list(df_train)
     columns_test = list(df_test)
+    validate_traintest_columnorder = False
     if columns_train != columns_test:
+      validate_traintest_columnorder = True
       print("error, different order of column labels in the train and test set")
-      print("(This assesment excludes labels and ID columns.)")
+      print("(This assessment excludes labels and ID columns.)")
       return
+    miscparameters_results.update({'validate_traintest_columnorder' : validate_traintest_columnorder})
 
     #extract column lists again but this time as a list
     columns_train = list(df_train)
@@ -29851,8 +29917,6 @@ class AutoMunge:
             elif type(evalcat) == types.FunctionType:
               category = evalcat(df_train, column, randomseed, eval_ratio, \
                                  numbercategoryheuristic, False, False)
-            else:
-              print("error: evalcat must be passed as either False or as a defined function per READ ME")
 
             category_test = category
 
@@ -29864,8 +29928,6 @@ class AutoMunge:
             elif type(evalcat) == types.FunctionType:
               category = evalcat(df_train, column, randomseed, eval_ratio, \
                                  numbercategoryheuristic, True, False)
-            else:
-              print("error: evalcat must be passed as either False or as a defined function per READ ME")
 
             category_test = category
 
@@ -29882,8 +29944,6 @@ class AutoMunge:
         elif type(evalcat) == types.FunctionType:
           category = evalcat(df_train, column, randomseed, eval_ratio, \
                              numbercategoryheuristic, powertransform, False)
-        else:
-          print("error: evalcat must be passed as either False or as a defined function per READ ME")
           
         #populate the result in the final_assigncat as informational resource
         if category in final_assigncat:
@@ -30019,8 +30079,6 @@ class AutoMunge:
             elif type(evalcat) == types.FunctionType:
               category = evalcat(df_labels, labels_column, randomseed, eval_ratio, \
                                  numbercategoryheuristic, False, True)
-            else:
-              print("error: evalcat must be passed as either False or as a defined function per READ ME")
 
             labelscategory = category
 
@@ -30032,8 +30090,6 @@ class AutoMunge:
             elif type(evalcat) == types.FunctionType:
               category = evalcat(df_labels, labels_column, randomseed, eval_ratio, \
                                  numbercategoryheuristic, True, True)
-            else:
-              print("error: evalcat must be passed as either False or as a defined function per READ ME")
 
             labelscategory = category
 
@@ -30056,8 +30112,6 @@ class AutoMunge:
         elif type(evalcat) == types.FunctionType:
           labelscategory = evalcat(df_labels, labels_column, randomseed, eval_ratio, \
                                    numbercategoryheuristic, False, True)
-        else:
-          print("error: evalcat must be passed as either False or as a defined function per READ ME")
           
         #populate the result in the final_assigncat as informational resource
         if labelscategory in final_assigncat:
@@ -30674,7 +30728,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.27'
+    automungeversion = '6.28'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -38319,7 +38373,7 @@ class AutoMunge:
     pm_miscparameters_results = \
     self._check_pm_miscparameters(pandasoutput, printstatus, TrainLabelFreqLevel, \
                                 dupl_rows, featureeval, driftreport, inplace, \
-                                returnedsets, shuffletrain, inversion, traindata)
+                                returnedsets, shuffletrain, inversion, traindata, testID_column)
     
     #printout display progress
     if printstatus is True:
@@ -38488,9 +38542,10 @@ class AutoMunge:
       testID_column = []
     elif isinstance(testID_column, str):
       testID_column = [testID_column]
-    elif not isinstance(testID_column, list):
-      if testID_column is not True:
-        print("error, testID_column allowable values are boolean, string, or list")
+    #validated in _check_pm_miscparameters
+    # elif not isinstance(testID_column, list):
+    #   if testID_column is not True:
+    #     print("error, testID_column allowable values are boolean, string, or list")
 
     #testID_column as True just means apply trainID_column from automunge
     if testID_column is True:
@@ -38532,6 +38587,7 @@ class AutoMunge:
     #   if postprocess_dict['labels_column'] in list(df_test):
     #     labelscolumn = postprocess_dict['labels_column']
 
+    validate_labelscolumn_string = False
     if labelscolumn is not False:
       labels_column = postprocess_dict['labels_column']
     
@@ -38539,6 +38595,7 @@ class AutoMunge:
 
       if labelscolumn is not True:
         if labelscolumn != labels_column:
+          validate_labelscolumn_string = True
           print("error, labelscolumn in test set passed to postmunge must have same column")
           print("labeling convention, labels column from automunge was: ", labels_column)
 
@@ -38552,12 +38609,15 @@ class AutoMunge:
   
     else:
       df_testlabels = pd.DataFrame()
+    postreports_dict['pm_miscparameters_results'].update({'validate_labelscolumn_string' : validate_labelscolumn_string})
 
     #confirm consistency of train an test sets
 
     #check columns passed to postmunge(.) are consistent with train set passed to automunge(.)
+    validate_traintest_columnlabelscompare = False
     if len(set(postprocess_dict['origtraincolumns']) - set(df_test)) > 0 \
     or len(set(df_test) - set(postprocess_dict['origtraincolumns'])) > 0:
+      validate_traintest_columnlabelscompare = True
       print("Error, inconsistent columns between train set passed to automunge(.)")
       print("and test set passed to postmunge(.)")
       print()
@@ -38591,11 +38651,14 @@ class AutoMunge:
         print()
       
       return
+    postreports_dict['pm_miscparameters_results'].update({'validate_traintest_columnlabelscompare' : validate_traintest_columnlabelscompare})
 
     #check order of column headers are consistent
     columns_train = postprocess_dict['origtraincolumns']
     columns_test = list(df_test)
+    validate_traintest_columnorder = False
     if columns_train != columns_test:
+      validate_traintest_columnorder = True
       print("error, different order of column labels in the train and test set")
       print()
       print("__________")
@@ -38609,6 +38672,7 @@ class AutoMunge:
       print(list(df_test))
       print()
       return
+    postreports_dict['pm_miscparameters_results'].update({'validate_traintest_columnorder' : validate_traintest_columnorder})
 
     #__________
     #here we'll perform drift report if elected
@@ -38756,6 +38820,7 @@ class AutoMunge:
     if labelscolumn is not False:
       if labelscolumn is not True:
         if labelscolumn != labels_column:
+          #note this is redundant with prior check recorded in postreports_dict['pm_miscparameters_results'] as validate_labelscolumn_string
           print("error, labelscolumn in test set passed to postmunge must have same column")
           print("labeling convention, labels column from automunge was: ", labels_column)
 
