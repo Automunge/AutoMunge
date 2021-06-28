@@ -3274,3 +3274,18 @@ am.postmunge(postprocess_dict, df_test)
 - as testID_column_valresult, validate_traintest_columnlabelscompare, validate_traintest_columnorder, validate_labelscolumn_string
 - in the process developed some documentation defining various validation checks
 - which am keeping as internal for time being
+
+6.29
+- improved function description in codebase for _evalcategory
+- new validation result reported in miscparameters_results
+- as suffixoverlap_aggregated_result which is single boolean marker aggregating all of the suffixoverlap_results into a single result
+- removed a redundant parameter inspection in _madethecut
+- found and offered accomodation to kind of a remote edge case where trainID_column passed as False and testID_column passed as True
+- in which case we just revert testID_column to match trainID_column
+- found and fixed edge case for Binary dimensionality reduction that was interfering with application of Binary to subset of categoric columns as specified by passing parameter as list
+- added entry to postprocess_dict of Binary_orig
+- assembled some new documentation detailing contents of postprocess_dict (keeping this as internal for now)
+- also 6.23 had struck convention for applying a PCA heuristic
+- which now realize was adequately covered in documentation
+- as this heuristic is only applied when PCAn_components passed as None
+- so went ahead and reintroduced option for heuristic to the code base
