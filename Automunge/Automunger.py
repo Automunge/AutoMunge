@@ -7523,13 +7523,21 @@ class AutoMunge:
     #Performs a final round of printouts in case of identified suffix overlap error
     #Also aggregates the validation results stored in column_dict
     #To a those returned in postprocess_dict['miscparameters_results']
+    
+    #suffixoverlap_aggregated_result is added to give single boolean signal
+    #for presence of suffix overlap error
+    #(False is good)
     """
+    
+    suffixoverlap_aggregated_result = False
     
     #then at completion of automunge(.), aggregate the suffixoverlap results
     #and do an additional printout if any column overlap error to be sure user sees message
     for entry1 in postprocess_dict['column_dict']:
       for entry2 in postprocess_dict['column_dict'][entry1]['suffixoverlap_results']:
         if postprocess_dict['column_dict'][entry1]['suffixoverlap_results'][entry2] is True:
+          
+          suffixoverlap_aggregated_result = True
           
           print("*****************")
           print("Warning of suffix overlap error")
@@ -7551,6 +7559,8 @@ class AutoMunge:
     for entry1 in postprocess_dict['miscparameters_results']['PCA_suffixoverlap_results']:
       if postprocess_dict['miscparameters_results']['PCA_suffixoverlap_results'][entry1] is True:
 
+          suffixoverlap_aggregated_result = True
+        
           print("*****************")
           print("Warning of suffix overlap error")
           print("When creating PCA column: ", entry1)
@@ -7564,6 +7574,8 @@ class AutoMunge:
     for entry1 in postprocess_dict['miscparameters_results']['Binary_suffixoverlap_results']:
       if postprocess_dict['miscparameters_results']['Binary_suffixoverlap_results'][entry1] is True:
 
+          suffixoverlap_aggregated_result = True
+        
           print("*****************")
           print("Warning of suffix overlap error")
           print("When creating Binary column: ", entry1)
@@ -7578,11 +7590,15 @@ class AutoMunge:
     for entry1 in postprocess_dict['miscparameters_results']['excl_suffixoverlap_results']:
       if postprocess_dict['miscparameters_results']['excl_suffixoverlap_results'][entry1] is True:
 
+          suffixoverlap_aggregated_result = True
+        
           print("*****************")
           print("Warning of suffix overlap error")
           print("When removing '_excl' suffix for column: ", entry1)
           print("The column without suffix was already found present in df_train headers.")
           print("")
+          
+    postprocess_dict['miscparameters_results'].update({'suffixoverlap_aggregated_result':suffixoverlap_aggregated_result})
           
     return postprocess_dict
 
@@ -20680,15 +20696,61 @@ class AutoMunge:
                    numbercategoryheuristic, powertransform, labels = False):
     '''
     #evalcategory(df, column)
-    #Function that dakes as input a dataframe and associated column id \
-    #evaluates the contents of cells and classifies the column into one of four categories
-    #category 1, 'bnry', is for columns with only two categorys of text or integer
-    #category 2, 'nmbr', is for columns with ndumerical integer or float values
-    #category 3: 'bxcx', is for nmbr category with all positive values
-    #category 4, 'text', is for columns with multiple categories appropriate for one-hot
-    #category 5, 'date', is for columns with Timestamp data
-    #category 6, 'null', is for columns with all nan values in training set
-    #returns category id as a string
+    #Function that takes as input a dataframe and associated column id \
+    #evaluates the contents of cells and classifies the column into one of following categories
+    
+    defaultcategorical = '1010'
+    1010: for categorical data excluding special cases described following, 
+    columns are subject to binarization encoding via '1010'. If the number 
+    of unique entries in the column exceeds the parameter 'numbercategoryheuristic' 
+    (which defaults to 255), the encoding will instead be by hashing.    
+    
+    defaultordinal = 'hsh2'
+    hsh2: for categorical data, if the number of unique entries in the column exceeds 
+    the parameter 'numbercategoryheuristic' (which defaults to 255), the encoding will 
+    instead be by 'hsh2' which is an ordinal (integer) encoding based on hashing. hsh2 
+    is excluded from ML infill.
+
+    defaultordinal_allunique = 'hash'
+    hash: for all unique entry categoric sets (based on sets with >75% unique entries), 
+    the encoding will be by hash which extracts distinct words within entries returned 
+    in a set of columns with an integer hashing. hash is excluded from ML infill. Note 
+    that for edge cases with large string entries resulting in too high dimensionality, 
+    the max_column_count parameter can be passed to default_assignparam in assignparam 
+    to put a cap on returned column count.
+
+    defaultbnry = 'bnry'
+    bnry: for categorical data of <=2 unique values excluding infill (eg NaN), 
+    the column is encoded to 0/1. Note that numerical sets with <= 2 unique values 
+    in train set default to bnry.
+      
+    defaultnumerical = 'nmbr'
+    nmbr: for numerical data, columns are treated with z-score normalization. 
+    If binstransform parameter was activated this will be supplemented by a 
+    collection of bins indicating number of standard deviations from the mean.
+    
+    defaultdatetime = 'dat6'
+    dat6: for time-series data, a set of derivations are performed returning 
+    'year', 'mdsn', 'mdcs', 'hmss', 'hmsc', 'bshr', 'wkdy', 'hldy'
+
+    defaultnull = 'null'
+    null: for columns without any valid values in training set (e.g. all NaN) 
+    column is deleted
+    
+    note that eval_ratio sets the ratio of rows to be inspected (as may speed things up)
+    
+    powertransform defaults to False to be consistent with defaults above
+    powertransform when activated changes the defaults in a few different scenarios
+    when powertransform = 'excl' columns not explicitly assigned to a root category in assigncat will be left untouched
+    when powertransform = 'exc2' columns not explicitly assigned to a root category in assigncat will be forced to numeric and subject to default modeinfill. 
+    when powertransform = 'infill' If the data is already numerically encoded with NaN entries for missing data, ML infill can be applied without further preprocessing transformations by passing
+    when powertransform = True a statistical evaluation will be performed on numerical sets to distinguish between columns to be subject to bxcx, nmbr, or mnmx.
+    
+    note that labels = True also changes the defaults to align with conventions for label sets
+    lbnm: for numerical data, a label set is treated with an 'exc2' pass-through transform (without normalization).
+    lbor: for categoric data of >2 unique values, a label set is treated with an 'ordl' ordinal encoding (alphabetical order of encodings).
+    
+    #_evalcategory returns category id as a string
     '''
     
     #we'll introduce convention of special values for powertransform to change default
@@ -24052,9 +24114,6 @@ class AutoMunge:
     
 #     #calculate the number of features we'll keep using the ratio passed from automunge
 #     numbermakingcut = int(metriccount * featurepct)
-    
-    if featureselection not in {True, 'pct', 'metric', 'report'}:
-      print("error featureselection object must be one of {True, 'pct', 'metric', 'report'}")
       
     if featureselection is True:
 
@@ -25950,16 +26009,17 @@ class AutoMunge:
     #a default PCA application when had too many features for the number of samples
     #col_row_ratio is high when there aren't enough samples (rows) recorded
     #decided was adding too much complexity so struck from documentation
-    #going to leave the code here in case later decide to reintroduce
+    #we ended up backing up from applying the heuristic as the default
+    #if desired PCAn_components can be passed as None instead of the default of False
 
-    # #ok this is to allow user to set the default columns/rows ratio for automated PCA
-    # if 'col_row_ratio' in ML_cmnd['PCA_cmnd']:
-    #   col_row_ratio = ML_cmnd['PCA_cmnd']['col_row_ratio']
-    # else:
-    #   col_row_ratio = 0.50
+    #ok this is to allow user to set the default columns/rows ratio for automated PCA
+    if 'col_row_ratio' in ML_cmnd['PCA_cmnd']:
+      col_row_ratio = ML_cmnd['PCA_cmnd']['col_row_ratio']
+    else:
+      col_row_ratio = 0.50
 
-    #this will ensure number_columns / number_rows < col_row_ratio:
-    col_row_ratio = np.inf
+    # #this will ensure number_columns / number_rows < col_row_ratio:
+    # col_row_ratio = np.inf
 
     if ML_cmnd['PCA_type'] == 'default':
 
@@ -26672,14 +26732,14 @@ class AutoMunge:
   
     #check Binary
     Binary_valresult = False
-    if Binary not in {True, False, 'retain'} and not isinstance(Binary, list):
+    if not isinstance(Binary, list) and Binary not in {True, False, 'retain'}:
       Binary_valresult = True
       print("Error: invalid entry passed for Binary parameter.")
       print("Acceptable values are one of {True, False, 'retain', [list]}")
       print()
-    elif Binary not in {'retain'} \
+    elif not isinstance(Binary, list) \
     and not isinstance(Binary, bool) \
-    and not isinstance(Binary, list):
+    and Binary not in {'retain'}:
       Binary_valresult = True
       print("Error: invalid entry passed for Binary parameter.")
       print("Acceptable values are one of {True, False, 'retain', [list]}")
@@ -29618,6 +29678,10 @@ class AutoMunge:
     #this code works, has been tested
     #there is a similar section in postmunge
     #this is probably the ugliest portion of codebase
+
+    #first a quick conversion to accomodate edge case
+    if trainID_column is False and testID_column is True:
+      testID_column = False
     
     #copy to internal state so as not to edit exterior objects
     if isinstance(trainID_column, list):
@@ -30417,7 +30481,8 @@ class AutoMunge:
     
     #we'll only apply to training and test data not labels
     #making an executive decvision for now that ordinal encoded columns will be excluded
-    if Binary in {True, 'retain'} or isinstance(Binary, list):
+    Binary_orig = Binary
+    if isinstance(Binary, list) or Binary in {True, 'retain'}:
       
       #printout display progress
       if printstatus is True:
@@ -30728,7 +30793,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.28'
+    automungeversion = '6.29'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -30772,6 +30837,7 @@ class AutoMunge:
                              'drift_dict' : drift_dict, \
                              'train_rowcount' : train_rowcount, \
                              'Binary' : Binary, \
+                             'Binary_orig' : Binary_orig, \
                              'Binary_dict' : Binary_dict, \
                              'returned_Binary_columns' : returned_Binary_columns, \
                              'PCA_applied' : PCA_applied, \
