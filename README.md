@@ -848,15 +848,17 @@ when applied a column named 'Binary' is used in derivation, thus this is a
 reserved column header when applying this transform.
 
 * PCAn_components: defaults to False for no PCA dimensionality reduction performed.
-If passed as _None_ not performed unless # features exceeds 0.5 # rows as a heuristic.
 A user can pass _an integer_ to define the number of PCA derived features for 
 purposes of dimensionality reduction, such integer to be less than the otherwise 
 returned number of sets. Function will default to kernel PCA for all non-negative 
 sets or otherwise Sparse PCA. Also if this value is passed as a _float <1.0_ then 
 linear PCA will be applied such that the returned number of sets are the minimum 
-number that can reproduce that percent of the variance. Note this can also be passed 
+number that can reproduce that percent of the variance. 
+Note this can also be passed 
 in conjunction with assigned PCA type or parameters in the ML_cmnd object. These methods
 apply PCA with the scikit-learn library.
+As a special convention, if PCAn_components passed as _None_ PCA is not performed unless # features exceeds 0.5 # rows (as a heuristic). 
+(The 0.5 value can also be updated in ML_cmnd by passing to ML_cmnd['PCA_cmnd']['col_row_ratio'].)
 
 * PCAexcl: a _list_ of column headers for columns that are to be excluded from
 any application of PCA
