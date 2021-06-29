@@ -861,7 +861,11 @@ As a special convention, if PCAn_components passed as _None_ PCA is not performe
 (The 0.5 value can also be updated in ML_cmnd by passing to ML_cmnd['PCA_cmnd']['col_row_ratio'].)
 
 * PCAexcl: a _list_ of column headers for columns that are to be excluded from
-any application of PCA
+any application of PCA, defaults to _False_ for cases where no numeric columns are desired to
+be excluded from PCA. Note that column headers can be passed as consistent with the passed df_train
+to exclude from PCA all columns derived from a particular input column or alternatively can be 
+passed with the returned column headers which include the suffix appenders to exclude just those
+specific columns from PCA.
 
 * excl_suffix: boolean selector _{True, False}_ for whether columns headers from 'excl' 
 transform are returned with suffix appender '\_excl' included. Defaults to False for
@@ -1081,18 +1085,24 @@ assignparam = {'splt' : {'column1' : {'minsplit' : 4}}}
 Note that the category identifier should be the category entry to the family 
 tree primitive associated with the transform, which may be different than the 
 root category of the family tree assigned in assigncat. The set of family 
-tree definitions for root categories are included below for reference. 
+tree definitions for root categories are included below for reference. Generally
+speaking, the transformation category to serve as a target for asisgnparam
+assignment will match the recorded suffix appender of the returned column headers.
 
-As an example to demonstrate edge case for cases where transformation category does 
-not match transformation function (based on entries to transformdict and 
+As an example, to demonstrate edge case for cases where the trasnformation category does not match
+the transformation function  (based on entries to transformdict and 
 processdict), if we want to pass a parameter to turn off UPCS transform included 
-in or19 family tree and associuated with the or19 transformation category for 
+in or19 family tree and associated with the or19 transformation category for 
 instance, we would pass the parameter to or19 instead of UPCS because assignparam 
 inspects the transformation category associated with the transformation function, 
 and UPCS function is the processdict entry for or19 category entry in the family 
 tree primitives associated with the or19 root category, even though 'activate' is 
-an UPCS transform parameter. (This clarification intended for advanced users to 
-avoid ambiguity.)
+an UPCS transformation function parameter. A helpful rule of thumb to help distinguish is that
+the suffix appender recorded in the returned column associated with an applied transformation
+function should match the trasnformation category serviing as target for assignparam assignment, 
+as in this case the UPCS transform records a 'or19' suffix appender. (This clarification 
+intended for advanced users to avoid ambiguity.)
+
 ```
 assignparam = {'or19' : {'column1' : {'activate' : False}}}
 ```
@@ -2090,7 +2100,7 @@ string by 'strg' (some ML libraries prefer string encoded labels to recognize th
   - useful for: normalizing numeric sets of unknown distribution
   - default infill: mean
   - default NArowtype: numeric
-  - suffix appender: '_nmbr'
+  - suffix appender: '\_nmbr' in base configuration or based on the family tree category
   - assignparam parameters accepted:  
     - 'cap' and 'floor', default to False for no floor or cap, 
       True means floor/cap based on training set min/max, otherwise passed values serve as floor/cap to scaling, 
@@ -2108,7 +2118,7 @@ My intuition says z-score has some benefits but really up to the user which they
   - useful for: similar to z-score except data remains in fixed range
   - default infill: mean
   - default NArowtype: numeric
-  - suffix appender: '_mean'
+  - suffix appender: '_mean' in base configuration or based on the family tree category
   - assignparam parameters accepted:
     - 'cap' and 'floor', default to False for no floor or cap, 
       True means floor/cap based on training set min/max, otherwise passed values serve as floor/cap to scaling, 
@@ -2125,7 +2135,7 @@ My intuition says z-score has some benefits but really up to the user which they
   - useful for: normalizing numeric sets where all non-negative output is preferred
   - default infill: mean
   - default NArowtype: numeric
-  - suffix appender: '_mnmx'
+  - suffix appender: '_mnmx' in base configuration or based on the family tree category
   - assignparam parameters accepted: 
     - 'cap' and 'floor', default to False for no floor or cap, 
       True means floor/cap based on training set min/max, otherwise passed values serve as floor/cap to scaling, 
@@ -2139,7 +2149,7 @@ My intuition says z-score has some benefits but really up to the user which they
   - useful for: normalizing numeric sets where all non-negative output is preferred, and outliers capped
   - default infill: mean
   - default NArowtype: numeric
-  - suffix appender: '_mnm3'
+  - suffix appender: '_mnm3' in base configuration or based on the family tree category
   - assignparam parameters accepted: 
     - qmax or qmin to change the quantiles from 0.99/0.01
     - 'suffix': to change suffix appender (leading underscore added internally)
@@ -2151,7 +2161,7 @@ test set returned values >= 0, such as might be useful for kernel PCA for instan
   - useful for: normalizing numeric sets where all non-negative output is preferred, guarantees nonnegative in postmunge
   - default infill: mean
   - default NArowtype: numeric
-  - suffix appender: '_mnmx'
+  - suffix appender: '_mnm6' in base configuration or based on the family tree category
   - assignparam parameters accepted:
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: minimum / maximum / mean / std
@@ -2163,7 +2173,7 @@ elif max<=0 and min<=0 x=(x-max)/(max-min)
   - useful for: normalization with sign retention for iterpretability
   - default infill: mean
   - default NArowtype: numeric
-  - suffix appender: '_retn'
+  - suffix appender: '_retn' in base configuration or based on the family tree category
   - assignparam parameters accepted:  
     - 'cap' and 'floor', default to False for no floor or cap, 
       True means floor/cap based on training set min/max, otherwise passed values serve as floor/cap to scaling, 
@@ -2184,7 +2194,7 @@ elif max<=0 and min<=0 x=(x-max)/(max-min)
   - useful for: normalizing sets with fat-tailed distribution
   - default infill: mean
   - default NArowtype: numeric
-  - suffix appender: '_MADn'
+  - suffix appender: '_MADn' in base configuration or based on the family tree category
   - assignparam parameters accepted:
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: mean / MAD / maximum / minimum
@@ -2195,7 +2205,7 @@ elif max<=0 and min<=0 x=(x-max)/(max-min)
   - useful for: normalizing sets with fat-tailed distribution
   - default infill: mean
   - default NArowtype: numeric
-  - suffix appender: '_MAD3'
+  - suffix appender: '_MAD3' in base configuration or based on the family tree category
   - assignparam parameters accepted:
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: mean / MAD / datamax / maximum / minimum
@@ -2206,7 +2216,7 @@ elif max<=0 and min<=0 x=(x-max)/(max-min)
   - useful for: normalizing sets by dividing by max, commonly used in some circles
   - default infill: mean
   - default NArowtype: numeric
-  - suffix appender: '_mxab'
+  - suffix appender: '_mxab' in base configuration or based on the family tree category
   - assignparam parameters accepted:
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: minimum / maximum / maxabs / mean / std
@@ -2217,7 +2227,7 @@ achieved by performing a logn transform upstream of a nmbr normalization.
   - useful for: normalizing sets within proximity of lognormal distribution
   - default infill: mean
   - default NArowtype: positivenumeric
-  - suffix appender: '_logn_nmbr'
+  - suffix appender: '_lgnm_nmbr'
   - assignparam parameters accepted: can pass params to nmbr consistent with nmbr documentation above
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: consistent with both logn and nmbr
@@ -2231,7 +2241,7 @@ family trees below for full set of transfomration categories asscoiated with the
   - useful for: translates power law distributions to closer approximate gaussian
   - default infill: mean (i.e. mean of values > 0)
   - default NArowtype: positivenumeric
-  - suffix appender: '_bxcx'
+  - suffix appender: '_bxcx' in base configuration or based on the family tree category
   - assignparam parameters accepted:
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: trnsfrm_mean / bxcx_lmbda / bxcxerrorcorrect / mean
@@ -2241,7 +2251,7 @@ family trees below for full set of transfomration categories asscoiated with the
   - useful for: sets with mixed range of large and small values
   - default infill: meanlog
   - default NArowtype: positivenumeric
-  - suffix appender: '_log0'
+  - suffix appender: '_log0' in base configuration or based on the family tree category
   - assignparam parameters accepted:
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: meanlog
@@ -2251,7 +2261,7 @@ family trees below for full set of transfomration categories asscoiated with the
   - useful for: sets with mixed range of large and small values
   - default infill: meanlog
   - default NArowtype: positivenumeric
-  - suffix appender: '_logn'
+  - suffix appender: '_logn' in base configuration or based on the family tree category
   - assignparam parameters accepted:
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: meanlog
@@ -2261,7 +2271,7 @@ family trees below for full set of transfomration categories asscoiated with the
   - useful for: common mathematic transform
   - default infill: mean
   - default NArowtype: nonnegativenumeric
-  - suffix appender: '_sqrt'
+  - suffix appender: '_sqrt' in base configuration or based on the family tree category
   - assignparam parameters accepted:
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: meansqrt
@@ -2271,7 +2281,7 @@ family trees below for full set of transfomration categories asscoiated with the
   - useful for: common mathematic transform
   - default infill: mean
   - default NArowtype: numeric
-  - suffix appender: '_addd'
+  - suffix appender: '_addd' in base configuration or based on the family tree category
   - assignparam parameters accepted: 
     - 'add' for value added (default to 1)
     - 'suffix': to change suffix appender (leading underscore added internally)
@@ -2282,7 +2292,7 @@ family trees below for full set of transfomration categories asscoiated with the
   - useful for: common mathematic transform
   - default infill: mean
   - default NArowtype: numeric
-  - suffix appender: '_sbtr'
+  - suffix appender: '_sbtr' in base configuration or based on the family tree category
   - assignparam parameters accepted: 
     - 'subtract' for value subtracted (default to 1)
     - 'suffix': to change suffix appender (leading underscore added internally)
@@ -2293,7 +2303,7 @@ family trees below for full set of transfomration categories asscoiated with the
   - useful for: common mathematic transform
   - default infill: mean
   - default NArowtype: numeric
-  - suffix appender: '_mltp'
+  - suffix appender: '_mltp' in base configuration or based on the family tree category
   - assignparam parameters accepted: 
     - 'multiply' for value multiplied (default to 2)
     - 'suffix': to change suffix appender (leading underscore added internally)
@@ -2304,7 +2314,7 @@ family trees below for full set of transfomration categories asscoiated with the
   - useful for: common mathematic transform
   - default infill: mean
   - default NArowtype: numeric
-  - suffix appender: '_divd'
+  - suffix appender: '_divd' in base configuration or based on the family tree category
   - assignparam parameters accepted: 
     - 'divide' for value subtracted (default to 2)
     - 'suffix': to change suffix appender (leading underscore added internally)
@@ -2315,7 +2325,7 @@ family trees below for full set of transfomration categories asscoiated with the
   - useful for: common mathematic transform
   - default infill: mean
   - default NArowtype: numeric
-  - suffix appender: '_rais'
+  - suffix appender: '_rais' in base configuration or based on the family tree category
   - assignparam parameters accepted: 
     - 'raiser' for value raised (default to 2)
     - 'suffix': to change suffix appender (leading underscore added internally)
@@ -2326,7 +2336,7 @@ family trees below for full set of transfomration categories asscoiated with the
   - useful for: common mathematic transform
   - default infill: mean
   - default NArowtype: numeric
-  - suffix appender: '_absl'
+  - suffix appender: '_absl' in base configuration or based on the family tree category
   - assignparam parameters accepted:
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: mean
@@ -2418,7 +2428,7 @@ Other Q Notation root categories:
   - useful for: featuere engineering for linear models, also for oversampling bins with TrainFreqLevelizer parameter
   - default infill: no activation
   - default NArowtype: nonzeronumeric
-  - suffix appender: '\_pwrs_10^#' or '\_pwrs_-10^#' where # is integer indicating target powers of 10 for column
+  - suffix appender: '\_pwr2_10^#' or '\_pwr2_-10^#' where # is integer indicating target powers of 10 for column
   - assignparam parameters accepted: 
     - 'negvalues', boolean defaults to True, True bins values <0
       (recomend using pwrs instead of this parameter since won't update NArowtype)
@@ -2432,7 +2442,7 @@ value fell with respect to powers of 10
   - useful for: ordinal version of pwrs
   - default infill: zero
   - default NArowtype: positivenumeric
-  - suffix appender: '_pwor'
+  - suffix appender: '_pwor' in base configuration or based on the family tree category
   - assignparam parameters accepted: 
     - 'negvalues', boolean defaults to False, True bins values <0
     - 'suffix': to change suffix appender (leading underscore added internally)
@@ -2444,7 +2454,7 @@ value fell with respect to powers of 10 (comparable to pwor with negvalues param
   - useful for: ordinal version of pwr2
   - default infill: zero (a distinct encoding)
   - default NArowtype: nonzeronumeric
-  - suffix appender: '_por2'
+  - suffix appender: '_por2' in base configuration or based on the family tree category
   - assignparam parameters accepted: 
     - 'negvalues', boolean defaults to True, True bins values <0
     - 'suffix': to change suffix appender (leading underscore added internally)
@@ -2456,7 +2466,7 @@ high variability
   - useful for: ordinal version of pwrs
   - default infill: zero (a distinct encoding)
   - default NArowtype: nonzeronumeric
-  - suffix appender: '_pwor_1010_#' (where # is integer for binary encoding activation number) 
+  - suffix appender: '_pwbn_1010_#' (where # is integer for binary encoding activation number) 
   - assignparam parameters accepted:
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: train_replace_dict / test_replace_dict / ordl_activations_dict
@@ -2467,7 +2477,7 @@ high variability
   - useful for: ordinal version of pwr2
   - default infill: zero (a distinct encoding)
   - default NArowtype: nonzeronumeric
-  - suffix appender: '_por2_1010_#' (where # is integer for binary encoding activation number) 
+  - suffix appender: '_por3_1010_#' (where # is integer for binary encoding activation number) 
   - assignparam parameters accepted:
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: train_replace_dict / test_replace_dict / ordl_activations_dict
@@ -2493,7 +2503,7 @@ set (i.e. integer encoding represent # from mean as <-2:0, -2-1:1, -10:2, 01:3, 
   - useful for: ordinal version of bins
   - default infill: mean
   - default NArowtype: numeric
-  - suffix appender: '_bsor'
+  - suffix appender: '_bsor' in base configuration or based on the family tree category
   - assignparam parameters accepted: 
     - bincount as integer for # of bins (defaults to 6)
     - 'suffix': to change suffix appender (leading underscore added internally)
@@ -2587,7 +2597,7 @@ bin count defaults to 5/7/9 eg for bneo/bn7o/bn9o
   - useful for: ordinal version of bkt1
   - default infill: unique activation
   - default NArowtype: numeric
-  - suffix appender: '_bkt3'
+  - suffix appender: '_bkt3' in base configuration or based on the family tree category
   - assignparam parameters accepted: 
     - 'buckets', a list of numbers, to set bucket boundaries (leave out +/-'inf')
       defaults to [0,1,2] (arbitrary plug values), can also pass buckets values as percent of range by framing as a set instead of list eg {0,0.25,0.50,1}
@@ -2599,7 +2609,7 @@ bin count defaults to 5/7/9 eg for bneo/bn7o/bn9o
   - useful for: ordinal version of bkt2
   - default infill: unique activation
   - default NArowtype: numeric
-  - suffix appender: '_bkt4'
+  - suffix appender: '_bkt4' in base configuration or based on the family tree category
   - assignparam parameters accepted: 
     - 'buckets', a list of numbers, to set bucket boundaries
       defaults to [0,1,2] (arbitrary plug values), can also pass buckets values as percent of range by framing as a set instead of list eg {0,0.25,0.50,1}
@@ -2637,7 +2647,7 @@ normalization which scales data with min/max while retaining +/- sign
   - useful for: time series data, also bounding sequential sets
   - default infill: adjacent cells
   - default NArowtype: numeric
-  - suffix appender: '_dxdt'
+  - suffix appender: '_dxdt' in base configuration or based on the family tree category
   - assignparam parameters accepted: 
     - 'periods' sets number of time steps offset to evaluate, defaults to 1
     - 'suffix': to change suffix appender (leading underscore added internally)
@@ -2650,7 +2660,7 @@ and d2d2), all returned sets include 'retn' normalization
   - useful for: time series data, also bounding sequential sets
   - default infill: adjacent cells
   - default NArowtype: numeric
-  - suffix appender: '_dxd2'
+  - suffix appender: '_dxd2' in base configuration or based on the family tree category
   - assignparam parameters accepted: 
     - 'periods' sets number of time steps offset to evaluate, defaults to 2
     - 'suffix': to change suffix appender (leading underscore added internally)
@@ -2668,7 +2678,7 @@ not supported for shift transforms, infill only available as adjacent cell
   - useful for: time series data, carrying prior time steps forward
   - default infill: adjacent cells
   - default NArowtype: numeric
-  - suffix appender: '_shft' / '_shf2' / '_shf3'
+  - suffix appender: '_shft'  in base configuration or based on the family tree category
   - assignparam parameters accepted: 
     - 'periods' sets number of time steps offset to evaluate, defaults to 1/2/3
     - 'suffix' sets the suffix appender of returned column
@@ -2684,7 +2694,7 @@ to set with >2 entries applies infill to those entries beyond two most common.
   - useful for: binarizing sets with two unique values (differs from 1010 in that distinct encoding isn't registered for missing data to return single column)
   - default infill: most common value
   - default NArowtype: justNaN
-  - suffix appender: '_bnry'
+  - suffix appender: '_bnry' in base configuration or based on the family tree category
   - assignparam parameters accepted:
     - 'str_convert', boolean defaults as False for distinct encodings between numbers and string equivalents
       e.g. 2 != '2', when passed as True e.g. 2 == '2'
@@ -2696,7 +2706,7 @@ to set with >2 entries applies infill to those entries beyond two most common.
   - useful for: similar to bnry preceding but with different default infill
   - default infill: least common value
   - default NArowtype: justNaN
-  - suffix appender: '_bnr2'
+  - suffix appender: '_bnr2' in base configuration or based on the family tree category
   - assignparam parameters accepted:
     - 'str_convert', boolean defaults as False for distinct encodings between numbers and string equivalents
       e.g. 2 != '2', when passed as True e.g. 2 == '2'
@@ -2710,7 +2720,7 @@ to set with >2 entries applies infill to those entries beyond two most common.
   - default infill: all entries zero
   - default NArowtype: justNaN
   - suffix appender: 
-    - '_(category)' where category is the categoric entry target of column activations
+    - '_(category)' where category is the categoric entry target of column activations (i.e. one of the unique values found in recieved column)
   - assignparam parameters accepted:
   - driftreport postmunge metrics: textlabelsdict_text / <column> + '_ratio' (column specific)
   - returned datatype: int8
@@ -2733,7 +2743,7 @@ to set with >2 entries applies infill to those entries beyond two most common.
   - useful for: categoric sets with high cardinality where one-hot or binarization may result in high dimensionality. Also default for categoric labels.
   - default infill: plug value 'zzzinfill'
   - default NArowtype: justNaN
-  - suffix appender: '_ordl'
+  - suffix appender: '_ordl' in base configuration or based on the family tree category
   - assignparam parameters accepted:
     - 'ordered_overide', boolean defaults True, when True instects for Pandas ordered categorical and 
       if found integer encoding order defers to that basis
@@ -2748,7 +2758,7 @@ occurrence, second basis for common count entries is alphabetical
   - useful for: similar to ordl preceding but activations are sorted by entry frequency instead of alphabetical
   - default infill: plug value 'zzzinfill'
   - default NArowtype: justNaN
-  - suffix appender: '_ord3'
+  - suffix appender: '_ord3' in base configuration or based on the family tree category
   - assignparam parameters accepted:
     - 'ordered_overide', boolean defaults True, when True instects for Pandas ordered categorical and 
       if found integer encoding order defers to that basis
@@ -2784,7 +2794,7 @@ maxb (ordinal), matx (one hot), and ma10 (binary).
   - useful for: categoric sets where some outlier entries may not occur with enough frequency for training purposes
   - default infill: plug value 'zzzinfill'
   - default NArowtype: justNaN
-  - suffix appender: '\_maxb'
+  - suffix appender: '\_maxb' in base configuration or based on the family tree category
   - assignparam parameters accepted:
     - 'maxbincount': set a maximum number of activations (integer) default False
     - 'minentrycount': set a minimum number of entries in train set to register an activation (integer) default False
@@ -2799,7 +2809,7 @@ and comparable to test set independent of test set row count
   - useful for: supplmenting categoric sets with a proxy for activation frequency
   - default infill: ratio of infill in train set
   - default NArowtype: justNaN
-  - suffix appender: '_ucct'
+  - suffix appender: '_ucct' in base configuration or based on the family tree category
   - assignparam parameters accepted:
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: ordinal_dict / ordinal_overlap_replace / ordinal_activations_dict
@@ -2809,7 +2819,7 @@ and comparable to test set independent of test set row count
   - useful for: supplementing categoric sets with a proxy for information content (based on string length)
   - default infill: plug value of 3 (based on len(str(np.nan)) )
   - default NArowtype: justNaN
-  - suffix appender: '_lngt'
+  - suffix appender: '_lngt' in base configuration or based on the family tree category
   - assignparam parameters accepted:
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: maximum, minimum, mean, std
@@ -2819,7 +2829,7 @@ and comparable to test set independent of test set row count
   - useful for: performing upstream of categoric encoding when some entries are redundant
   - default infill: none
   - default NArowtype: justNaN
-  - suffix appender: '_aggt'
+  - suffix appender: '_aggt' in base configuration or based on the family tree category
   - assignparam parameters accepted: 
     - 'aggregate' as a list or as a list of lists of aggregation sets
     - 'suffix': to change suffix appender (leading underscore added internally)
@@ -2830,7 +2840,7 @@ and comparable to test set independent of test set row count
   - useful for: label smoothing, speculate there may be benefit for categoric encodings with noisy entries of some error rate
   - default infill: none
   - default NArowtype: justNaN
-  - suffix appender: '\_smth\_#' where # is integer
+  - suffix appender: '\_smth\_#' where # is integer in base configuration or based on the family tree category
   - assignparam parameters accepted: 
     - 'activation' defaults to 0.9, a float between 0.5-1 to designate activation value
     - 'LSfit' defaults to False, when True applies fitted label smoothing (consistent with fsmh)
@@ -2853,7 +2863,7 @@ is not supported as there is possibility of redundant encodings for different un
   - useful for: categoric sets with very high cardinality, default for categoric sets with (nearly) all unique entries
   - default infill: none
   - default NArowtype: justNaN
-  - suffix appender: '\_hash\_#'
+  - suffix appender: '\_hash\_#' in base configuration or based on the family tree category
   - assignparam parameters accepted:
     - 'heuristic_multiplier', float defaults to 2
     - 'heuristic_cap', integer defaults to 1024
@@ -2872,7 +2882,7 @@ is not supported as there is possibility of redundant encodings for different un
   - useful for: categoric sets with very high cardinality, default for categoric sets with number of entries exceeding numbercategoryheuristic (defaulting to 255)
   - default infill: none
   - default NArowtype: justNaN
-  - suffix appender: '_hash'
+  - suffix appender: '_hsh2' in base configuration or based on the family tree category
   - assignparam parameters accepted: 
     - 'heuristic_multiplier', float defaults to 2
     - 'heuristic_cap', integer defaults to 1024
@@ -2888,7 +2898,7 @@ is not supported as there is possibility of redundant encodings for different un
   - useful for: binary version of hsh2
   - default infill: none
   - default NArowtype: justNaN
-  - suffix appender: '\_hs10\_#'
+  - suffix appender: '\_hs10\_#' in base configuration or based on the family tree category
   - assignparam parameters accepted: 
     - 'heuristic_multiplier', float defaults to 2
     - 'heuristic_cap', integer defaults to 1024
@@ -2904,7 +2914,7 @@ is not supported as there is possibility of redundant encodings for different un
   - useful for: performing upstream of categoric encodings when case configuration is irelevant
   - default infill: none
   - default NArowtype: justNaN
-  - suffix appender: '_UPCS'
+  - suffix appender: '_UPCS' in base configuration or based on the family tree category
   - assignparam parameters accepted: 
     - 'activate', boolean defaults to True, False makes this a passthrough without conversion
     - 'suffix': to change suffix appender (leading underscore added internally)
@@ -2918,7 +2928,7 @@ is not supported as there is possibility of redundant encodings for different un
   - default infill: in uppercase conversion NaN's are assigned distinct encoding 'NAN'
   - and may be assigned other infill methods in assigninfill
   - default NArowtype: 'justNaN'
-  - suffix appender: '_UPCS'
+  - suffix appender: '_UPCS' in base configuration or based on the family tree category
   - assignparam parameters accepted:
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: comparable to functions text / txt2 / txt3 / ordl / ord2 / ord3 / ors6 / 1010 / ucct
@@ -3030,7 +3040,7 @@ number of days in specific months, including account for leap year, with 12 mont
   - useful for: supplementing datetime encodings with weekday bins
   - default infill: none
   - default NArowtype: datetime
-  - suffix appender: '_wkdy'
+  - suffix appender: '_wkdy' in base configuration or based on the family tree category
   - assignparam parameters accepted:
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: activationratio
@@ -3040,7 +3050,7 @@ number of days in specific months, including account for leap year, with 12 mont
   - useful for: ordinal version of preceding wkdy
   - default infill: 7 (eg eight days a week)
   - default NArowtype: datetime
-  - suffix appender: '_wkds'
+  - suffix appender: '_wkds' in base configuration or based on the family tree category
   - assignparam parameters accepted:
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: mon_ratio / tue_ratio / wed_ratio / thr_ratio / fri_ratio / sat_ratio / 
@@ -3051,7 +3061,7 @@ number of days in specific months, including account for leap year, with 12 mont
   - useful for: supplementing datetime encodings with month bins
   - default infill: 0
   - default NArowtype: datetime
-  - suffix appender: '_mnts'
+  - suffix appender: '_mnts' in base configuration or based on the family tree category
   - assignparam parameters accepted:
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: infill_ratio / jan_ratio / feb_ratio / mar_ratio / apr_ratio / may_ratio / 
@@ -3063,7 +3073,7 @@ hours (9-5, time zone unaware)
   - useful for: supplementing datetime encodings with business hour bins
   - default infill: datetime
   - default NArowtype: justNaN
-  - suffix appender: '_bshr'
+  - suffix appender: '_bshr' in base configuration or based on the family tree category
   - assignparam parameters accepted: 
     - 'start' and 'end', which default to 9 and 17
     - 'suffix': to change suffix appender (leading underscore added internally)
@@ -3075,7 +3085,7 @@ holiday
   - useful for: supplementing datetime encodings with holiday bins
   - default infill: none
   - default NArowtype: datetime
-  - suffix appender: '_hldy'
+  - suffix appender: '_hldy' in base configuration or based on the family tree category
   - assignparam parameters accepted: 
     - 'holiday_list', should be passed as a list of strings of dates of additional holidays to be recognized 
       e.g. ['2020/03/30']
@@ -3095,7 +3105,7 @@ on flip_prob parameter.
   - useful for: noise injection for data augmentation, model perturbation for ensembles, differential privacy
   - default infill: the DP function does not apply a default infill assume upstream nmbr cleans data
   - default NArowtype: numeric
-  - suffix appender: '_nmbr_DPnb'
+  - suffix appender: '_DPn3_DPnb'
   - assignparam parameters accepted: 
     - 'noisedistribution' as {'normal', 'laplace'}, defaults to normal
     - 'flip_prob' for percent of entries recieving noise injection, defaults to 0.03
@@ -3113,7 +3123,7 @@ remains in range 0-1 (by scaling neg noise when scaled input <0.5 and scaling po
   - useful for: noise injection for data augmentation, model perturbation for ensembles, differential privacy
   - default infill: the DP function does not apply a default infill assume upstream mnmx cleans data
   - default NArowtype: numeric
-  - suffix appender: '_mnmx_DPmm'
+  - suffix appender: '_DPm2_DPmm'
   - assignparam parameters accepted: 
     - 'noisedistribution' as {'normal', 'laplace'}, defaults to normal
     - 'flip_prob' for percent of entries recieving noise injection, defaults to 0.03
@@ -3130,7 +3140,7 @@ from a Gaussian which defaults to 0 mu and 0.03 sigma. Note that noise is scaled
 remains in range 0-1 (by scaling neg noise when scaled and centered input <0.5 and scaling pos noise when scaled and centered input >0.5)
   - useful for: noise injection for data augmentation, model perturbation for ensembles, differential privacy
   - default infill: comparable to retn with mean (calculated before noise injection)
-  - suffix appender: '_DPrt'
+  - suffix appender: '_DPrt' in base configuration or based on the family tree category
   - assignparam parameters accepted: 
     - parameters comparable to retn divisor / offset / multiplier / 
     - cap / floor defaulting to 'minmax'/0/1/False/False, also
@@ -3152,7 +3162,7 @@ flips the activation per parameter flip_prob which defaults to 0.03
   - useful for: noise injection for data augmentation, model perturbation for ensembles, differential privacy
   - default infill: the DP function does not apply a default infill assume upstream bnry cleans data
   - default NArowtype: justNaN
-  - suffix appender: '_bnry_DPbn'
+  - suffix appender: '_DPb2_DPbn'
   - assignparam parameters accepted: 
     - 'flip_prob' for percent of activation flips (defaults to 0.03), 
     - 'testnoise' defaults to False, when True noise is injected to test data in both automunge and postmunge by default
@@ -3168,7 +3178,7 @@ on number of activations)
   - useful for: noise injection for data augmentation, model perturbation for ensembles, differential privacy
   - default infill: the DP function does not apply a default infill assume upstream ord3 cleans data
   - default NArowtype: justNaN
-  - suffix appender: '_ord3_DPod'
+  - suffix appender: '_DPo4_DPod'
   - assignparam parameters accepted: 
     - 'flip_prob' for percent of activation flips (defaults to 0.03), 
     - 'testnoise' defaults to False, when True noise is injected to test data in both automunge and postmunge by default
@@ -3184,7 +3194,7 @@ on number of activations), followed by a one-hot encoding
   - useful for: noise injection for data augmentation, model perturbation for ensembles, differential privacy
   - default infill: the DP function does not apply a default infill assume upstream ord3 cleans data
   - default NArowtype: justNaN
-  - suffix appender: '\_ord3\_DPod\_onht\_#' where # is integer for each categoric entry
+  - suffix appender: '\DPo5\DPo2\_onht\_#' where # is integer for each categoric entry
   - assignparam parameters accepted: 
     - 'flip_prob' for percent of activation flips (defaults to 0.03), 
     - 'testnoise' defaults to False, when True noise is injected to test data in both automunge and postmunge by default
@@ -3200,7 +3210,7 @@ on number of activations), followed by a 1010 binary encoding
   - useful for: noise injection for data augmentation, model perturbation for ensembles, differential privacy
   - default infill: the DP function does not apply a default infill assume upstream ord3 cleans data
   - default NArowtype: justNaN
-  - suffix appender: '\_ord3\_DPod\_1010\_#' where # is integer for each column which collectively encode categoric entries
+  - suffix appender: '\DPo6\DPo3\_1010\_#' where # is integer for each column which collectively encode categoric entries
   - assignparam parameters accepted: 
     - 'flip_prob' for percent of activation flips (defaults to 0.03), 
     - 'testnoise' defaults to False, when True noise is injected to test data in both automunge and postmunge by default
@@ -3236,7 +3246,7 @@ when applying TrainLabelFreqLevel to a numeric label set)
   - useful for: passthrough sets where all numeric entries desired, exc3 and exc4 useful for oversampling with numeric labels by TrainFreqLevelizer
   - default infill: mode
   - default NArowtype: numeric
-  - suffix appender: '_exc2'
+  - suffix appender: '_exc2' in base configuration or based on the family tree category
   - assignparam parameters accepted:
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: none
@@ -3246,7 +3256,7 @@ when applying TrainLabelFreqLevel to a numeric label set)
   - useful for: passthrough sets where all numeric entries desired
   - default infill: mode
   - default NArowtype: integer
-  - suffix appender: '_exc5'
+  - suffix appender: '_exc5' in base configuration or based on the family tree category
   - assignparam parameters accepted:
     - 'suffix': to change suffix appender (leading underscore added internally)
     - 'integertype': sets the convention for returned datatype exc5 defaults to 'singlct', exc8 defaults to 'integer'
@@ -3281,7 +3291,7 @@ unless full information retention isn't available then the shortest path without
 Does not prepare column for ML on it's own (e.g. returned data will carry forward non-numeric entries and will not conduct infill).
   - default infill: exclude
   - default NArowtype: exclude
-  - suffix appender: '_copy'
+  - suffix appender: '_copy' in base configuration or based on the family tree category
   - assignparam parameters accepted: 
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: none
@@ -3293,7 +3303,7 @@ unless an additional transform is applied downstream.)
   - useful for: shuffle useful to negate feature from influencing inference
   - default infill: exclude
   - default NArowtype: justNAN
-  - suffix appender: '_shfl'
+  - suffix appender: '_shfl' in base configuration or based on the family tree category
   - assignparam parameters accepted:
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: none
@@ -3306,7 +3316,7 @@ when NArw is passed as the root category it bases NArowtype on default.
   - useful for: supplmenting any transform with marker for missing entries. On by default by NArw_marker parameter
   - default infill: not applicable
   - default NArowtype: justNaN
-  - suffix appender: '_NArw'
+  - suffix appender: '_NArw' in base configuration or based on the family tree category
   - assignparam parameters accepted:
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: pct_NArw
@@ -3317,7 +3327,7 @@ column with missing or improperly formatted values.
   - useful for: similar to NArw but different default NArwtype for when used as a root category
   - default infill: not applicable
   - default NArowtype: numeric
-  - suffix appender: '_NArw'
+  - suffix appender: '_NAr2' in base configuration or based on the family tree category
   - assignparam parameters accepted:
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: pct_NArw
@@ -3328,7 +3338,7 @@ column with missing or improperly formatted values.
   - useful for: similar to NArw but different default NArwtype for when used as a root category
   - default infill: not applicable
   - default NArowtype: positivenumeric
-  - suffix appender: '_NArw'
+  - suffix appender: '_NAr3' in base configuration or based on the family tree category
   - assignparam parameters accepted:
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: pct_NArw
@@ -3339,7 +3349,7 @@ column with missing or improperly formatted values.
   - useful for: similar to NArw but different default NArwtype for when used as a root category
   - default infill: not applicable
   - default NArowtype: nonnegativenumeric
-  - suffix appender: '_NArw'
+  - suffix appender: '_NAr4' in base configuration or based on the family tree category
   - assignparam parameters accepted:
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: pct_NArw
@@ -3350,7 +3360,7 @@ column with missing or improperly formatted values.
   - useful for: similar to NArw but different default NArwtype for when used as a root category
   - default infill: not applicable
   - default NArowtype: integer
-  - suffix appender: '_NArw'
+  - suffix appender: '_NAr5' in base configuration or based on the family tree category
   - assignparam parameters accepted:
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: pct_NArw
@@ -3436,7 +3446,7 @@ entries with the abbreviated string overlap
   - useful for: similar to splt but returns single column, used in aggregations like or19
   - default infill: none
   - default NArowtype: justNaN
-  - suffix appender: '_spl2'
+  - suffix appender: '_spl2' in base configuration or based on the family tree category
   - assignparam parameters accepted: 
     - 'minsplit': indicating lowest character length for recognized overlaps 
     - 'space_and_punctuation': True/False, defaults to True, when passed as
@@ -3457,7 +3467,7 @@ entries with the abbreviated string overlap
   - useful for: final tier of spl2 aggregations such as in or19
   - default infill: none
   - default NArowtype: justNaN
-  - suffix appender: '_spl5'
+  - suffix appender: '_spl5' in base configuration or based on the family tree category
   - assignparam parameters accepted:
     - comaprable to spl2, consolidate_nonoverlaps as True
   - driftreport postmunge metrics: overlap_dict / spl2_newcolumns / spl2_overlap_dict / spl2_test_overlap_dict / 
@@ -3469,7 +3479,7 @@ within the overlaps
   - useful for: just a variation on parsing aggregations
   - default infill: none
   - default NArowtype: justNaN
-  - suffix appender: '_spl5'
+  - suffix appender: '_spl6' in base configuration or based on the family tree category
   - assignparam parameters accepted:
     - comparable to spl2
   - driftreport postmunge metrics: overlap_dict / spl2_newcolumns / spl2_overlap_dict / spl2_test_overlap_dict / 
@@ -3480,7 +3490,7 @@ within the overlaps
   - useful for: just a variation on parsing aggregations
   - default infill: none
   - default NArowtype: justNaN
-  - suffix appender: '_spl5'
+  - suffix appender: '_spl7' in base configuration or based on the family tree category
   - assignparam parameters accepted: 
     - comparble to spl5, minsplit defaults to 2
   - driftreport postmunge metrics: overlap_dict / srch_newcolumns_srch / search
@@ -3520,7 +3530,7 @@ for identified overlap entries. (Note for multiple activations encoding priority
   - useful for: ordinal version of srch
   - default infill: none
   - default NArowtype: justNaN
-  - suffix appender: '\_src4'
+  - suffix appender: '\_src4' in base configuration or based on the family tree category
   - assignparam parameters accepted: 
     - 'search': a list of strings, defaults as empty set
       (note search parameter list can included embedded lists of terms for 
@@ -3534,7 +3544,7 @@ for identified overlap entries. (Note for multiple activations encoding priority
   - useful for: extracting numeric character subsets of entries
   - default infill: mean
   - default NArowtype: parsenumeric
-  - suffix appender: '_nmrc'
+  - suffix appender: '_nmrc' in base configuration or based on the family tree category
   - assignparam parameters accepted:
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: overlap_dict / mean / maximum / minimum
@@ -3544,7 +3554,7 @@ for identified overlap entries. (Note for multiple activations encoding priority
   - useful for: extracting numeric character subsets of entries, recognizes commas
   - default infill: mean
   - default NArowtype: parsenumeric
-  - suffix appender: '_nmcm'
+  - suffix appender: '_nmcm' in base configuration or based on the family tree category
   - assignparam parameters accepted:
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: overlap_dict / mean / maximum / minimum
@@ -3554,7 +3564,7 @@ for identified overlap entries. (Note for multiple activations encoding priority
   - useful for: extracting numeric character subsets of entries, recognizes EU format
   - default infill: mean
   - default NArowtype: parsenumeric
-  - suffix appender: '_nmEU'
+  - suffix appender: '_nmEU' in base configuration or based on the family tree category
   - assignparam parameters accepted:
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: overlap_dict / mean / maximum / minimum
@@ -3983,164 +3993,13 @@ avoid unintentional duplication.
 The convention is that each transform returns a derived column or set of columns which are distinguished 
 from the source column by suffix appenders to the header strings. Note that in cases of root categories 
 whose family trees include multiple generations, there may be multiple inclusions of different suffix 
-appenders in a single returned column. Provided here is a concise sorted list of all suffix appenders so 
-that any user passing a custom defined transformation can avoid any unintentional duplication. Note that
+appenders in a single returned column. A list of included suffix appenders would be too long to include here
+since every transformation category serves as a distinct suffix appender. Note that
 the transformation functions test for suffix overlap error from creating new column with headers already
-present in dataframe and return results in postprocess_dict['miscparameters_results']['suffixoverlap_results'].
+present in dataframe and return results in final printouts and postprocess_dict['miscparameters_results']['suffixoverlap_results'].
 (Or for comparable validation results for PCA, Binary, and excl transforms see 'PCA_suffixoverlap_results', 
 'Binary_suffixoverlap_results', 'excl_suffixoverlap_results'.)
 
-- '\_-10^'
-- '\_-10^' + i (where i is an integer corresponding to the source number power of ten)
-- '\_10^' + i (where i is an integer corresponding to the source number power of ten)
-- '\_1010_' + i (where i is an integer corresponding to the ith digit of the binary encoding)
-- '_absl'
-- '_addd'
-- '_aggt'
-- '\_bins\_#' where # is an integer
-- '\_bkt1_' + i (where i is identifier of bin)
-- '\_bkt2_' + i (where i is identifier of bin)
-- '\_bkt3_' + i (where i is identifier of bin)
-- '\_bkt4_' + i (where i is identifier of bin)
-- '_bn7o'
-- '_bn9o'
-- '\_bne7_' + i (where i is identifier of bin)
-- '\_bne9_' + i (where i is identifier of bin)
-- '_bneo'
-- '\_bnep_' + i (where i is identifier of bin)
-- '_bnKo'
-- '_bnMo'
-- '_bnr2'
-- '_bnry'
-- '\_bnwd_' + i + '_' + j (where i is bin width and j is identifier of bin)
-- '\_bnwK_' + i + '_' + j (where i is bin width and j is identifier of bin)
-- '\_bnwM_' + i + '_' + j (where i is bin width and j is identifier of bin)
-- '_bnwo'
-- '_bshr'
-- '_bsor'
-- '_bxcx'
-- '_copy'
-- '_days'
-- '_dhmc'
-- '_dhms'
-- '_divd'
-- '_DP10'
-- '_DPbn'
-- '_DPmm'
-- '_DPmm_tmp1'
-- '_DPnb'
-- '_DPnm'
-- '_DPod'
-- '_DPod_tmp1'
-- '_DPod_tmp2'
-- '_DPoh'
-- '_DPrt'
-- '_DPrt_tmp1'
-- '_DPrt_tmp2'
-- '_dxd2'
-- '_dxdt'
-- '_dycs'
-- '_dysn'
-- '_exc2'
-- '_exc5'
-- '_excl'
-- '\_hash\_#' (where # is integer)
-- '\_hash'
-- '\_hs10\_#' (where # is integer)
-- '_hldy'
-- '_hmsc'
-- '_hmss'
-- '_hour'
-- '_hrcs'
-- '_hrsn'
-- '_lgnr'
-- '_lngt'
-- '_log0'
-- '_logn'
-- '_MAD3'
-- '_MADn'
-- '_maxb'
-- '_mdcs'
-- '_mdsn'
-- '_mean'
-- '_mics'
-- '_mint'
-- '_misn'
-- '_mltp'
-- '_mncs'
-- '_mnm3'
-- '_mnmx'
-- '_mnsn'
-- '_mnth'
-- '_mnts'
-- '_mscs'
-- '_mssn'
-- '_mxab'
-- '_NArows'
-- '_NArw'
-- '_nmbr'
-- '_nmc4'
-- '_nmc7'
-- '_nmcm'
-- '_nmE4'
-- '_nmE7'
-- '_nmEU'
-- '_nmr4'
-- '_nmr7'
-- '_nmrc'
-- '\_onht'
-- '\_onht_' + # (where # is integer associated with entry for activations)
-- '_ord3'
-- '_ordl'
-- '_por2'
-- '_pwor'
-- '\_qbt1\_sign' and '\_qbt1\_2^2#' where # is integer
-- '\_qbt2\_sign' and '\_qbt2\_2^2#' where # is integer
-- '\_qbt3\_2^2#' where # is integer
-- '\_qbt4\_2^2#' where # is integer
-- '_rais'
-- '_retn'
-- '\_sbs2_' + string (where string is an identified overlap of characters between categorical entries)
-- '\_sbs3_' + i (where i is ineteger)
-- '\_sbs4_' + i (where i is ineteger)
-- '\_sbst_' + string (where string is an identified overlap of characters between categorical entries)
-- '_sbtr'
-- '_sccs'
-- '_scnd'
-- '_scsn'
-- '_shf2'
-- '_shf3'
-- '_shf4'
-- '_shf5'
-- '_shf6'
-- '_shfl'
-- '_shft'
-- '_sp10'
-- '\_sp15_' + string (where string is an identified overlap of characters between categorical entries)
-- '\_sp16_' + string (where string is an identified overlap of characters between categorical entries)
-- '\_sp19_' + i (where i is ineteger)
-- '\_sp20_' + i (where i is ineteger)
-- '_spl2'
-- '_spl5'
-- '_spl7'
-- '\_spl8_' + string (where string is an identified overlap of characters between categorical entries)
-- '_spl9'
-- '\_splt_' + string (where string is an identified overlap of characters between categorical entries)
-- '_sqrt'
-- '\_src2_' + string (where string is an identified overlap of characters with user passed search string)
-- '\_src3_' + string (where string is an identified overlap of characters with user passed search string)
-- '_src4'
-- '\_srch_' + string (where string is an identified overlap of characters with user passed search string)
-- '_strn'
-- '_strg'
-- '\_tlbn_' + i (where i is identifier of bin)
-- '\_text_' + string (where string is a categorical entry in one-hot encoded set)
-- '_tmzn'
-- '_ucct'
-- '_UPCS'
-- '_wkds'
-- '_wkdy'
-- '_year'
  ___ 
 ### Other Reserved Strings
 - 'zzzinfill': a reserved string entry to data sets that is used in many places as an infill values such as for categorical encodings.
@@ -7465,6 +7324,10 @@ processdict = {'mnm8' : {'dualprocess'   : process_mnm8,
                          'MLinfilltype'  : 'numeric',
                          'labelctgy'     : 'mnm8'}}
 
+#Note that for the processdict entry key, shown here as 'mnm8', the convention in library
+#is that this key serves as the default suffix appender unless otherwise specified in assignparam.
+
+
 #Now we have to define the custom processing functions which we are passing through
 #the processdict to automunge.
 
@@ -7473,14 +7336,17 @@ processdict = {'mnm8' : {'dualprocess'   : process_mnm8,
 #function intended to just process a subsequent test set.
 
 #define the function
-def process_mnm8(mdf_train, mdf_test, column, category, postprocess_dict, params = {}):
+def process_mnm8(mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
   #where
   #mdf_train is the train data set (pandas dataframe)
   #mdf_test is the consistently formatted test dataset (if no test data 
   #set is passed to automunge a small dummy set will be passed in it's place)
   #column is the string identifying the column header
-  #category is the (traditionally 4 character) string category identifier, here is 
-  #will be 'mnm8', 
+  #category is the (traditionally 4 character) string category identifier of the family tree root category, 
+  #which is the key for accessing the family tree in transformdict, here it will be 'mnm8', 
+  #and treecategory is the family tree primitive entry associated with the transformation 
+  #which is used to access the processdict transformation functions,
+  #here it will also be 'mnm8'
   #postprocess_dict is an object we pass to share data between 
   #functions and later returned from automunge
   #and params are any column specific parameters to be passed by user in assignparam
@@ -7491,8 +7357,8 @@ def process_mnm8(mdf_train, mdf_test, column, category, postprocess_dict, params
   if 'suffix' in params:
     suffix = params['suffix']
   else:
-    #generally we suggest matching the column suffix to the transformation category
-    suffix = 'mnm8'
+    #generally we suggest matching the column suffix to the treecategory as a default
+    suffix = treecategory
 
   #then we can initialize the variable used to store name of new column
   suffixcolumn = column + '_' + suffix
@@ -7613,7 +7479,7 @@ def process_mnm8(mdf_train, mdf_test, column, category, postprocess_dict, params
   column_dict_list = []
   
   #where we're storing following
-  #{'category' : 'mnm8', \ -> identifier of the category fo transform applied
+  #{'category' : treecategory, \ -> identifier of the category of transform applied
   # 'origcategory' : category, \ -> category of original column in train set, passed in function call
   # 'normalization_dict' : nmbrnormalization_dict, \ -> normalization parameters of train set
   # 'origcolumn' : column, \ -> ID of original column in train set (just pass as column)
@@ -7629,7 +7495,7 @@ def process_mnm8(mdf_train, mdf_test, column, category, postprocess_dict, params
   #for column in nmbrcolumns
   for nc in nmbrcolumns:
 
-    column_dict = { nc : {'category' : 'mnm8',
+    column_dict = { nc : {'category' : treecategory,
                           'origcategory' : category,
                           'normalization_dict' : nmbrnormalization_dict,
                           'origcolumn' : column,
@@ -7734,7 +7600,7 @@ def postprocess_mnm8(mdf_test, column, postprocess_dict, columnkey, params={}):
 #and won't need to inspect a columnkey to derive a normkey
 
 #Such as:
-def process_mnm8(df, column, category, postprocess_dict, params = {}):
+def process_mnm8(df, column, category, treecategory, postprocess_dict, params = {}):
   
   #etc
   
