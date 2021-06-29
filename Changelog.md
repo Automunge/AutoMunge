@@ -3289,3 +3289,32 @@ am.postmunge(postprocess_dict, df_test)
 - which now realize was adequately covered in documentation
 - as this heuristic is only applied when PCAn_components passed as None
 - so went ahead and reintroduced option for heuristic to the code base
+
+6.30
+- important update: new convention for automunge trasnformation functions
+- now process and singleprocess functions have an additional parameter as treecategory
+- which is passed to the functions as the transformation category populated in the family tree
+- which is the category serving as the key for accessing those functions in process_dict
+- treecategory now serves as the default suffix for a transformation
+- unless suffix otherwise specified in assignparams or defaultparams
+- treecategory is also recorded in the column_dict entry for 'category'
+- replacing the hard coded transformation category recorded there previously
+- benefits of the update include that we can now tailor the inversion function applied
+- to each category with a process_dict entry
+- as opposed to prior convention where inversion function was based on recorded category in the function
+- no updates needed to inversion to support, everything already works as coded, difference is that now inversion inspects the recorded treecategory process_dict entry to access inversion function instead of the hard coded recorded category associated with a transformation function
+- another benefit is that methods that inspect mlinfilltype will no longer inspect mlinfilltype of the recorded category
+- they will instead inspect mlinfilltype of the treecategory
+- which means can now have multiple mlinfilltypes for a given transformation function as reorded in different process_dict entries
+- another benfit associated with the updated suffix convention
+- is that now the returned headers will display the categories that may serve as a key for assigning parameters in assignparam
+- where previously a user might have to dig into the documentaiton to identify a key based on the family trees
+- so went ahead and scrubbed (almost) all cases of suffix assignment in process_dict defaultparams
+- as will instead defer to matching suffix to treecategory which is much less confusing
+- another benefit is that we were able to strike use of process_dict entry for 'recorded_category'
+- as well as scrubbed recorded_cateory from support functions in place to accomodate such as for functionpointer
+- since now the recorded category will be the treecategory serving as key for the process_dict entry
+- also added validation check for PCAexcl parameter to _check_am_mioscparameters
+- result returned in miscparameters_results as PCAexcl_valresult
+- also updated featurethreshold validation test to allow passing integer 0 instead of float 0. if desired
+- finally small updates to postprocess_bxcx, and Binary dimensionality reduction, and inverseprocess_year to accomodate new default suffix convention associated with this update
