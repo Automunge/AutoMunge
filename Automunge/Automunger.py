@@ -6991,7 +6991,7 @@ class AutoMunge:
 
     return df_train, df_test, postprocess_dict, inplaceperformed
 
-  def _df_copy_train(self, df_train, column, newcolumn, suffixoverlap_results = {}):
+  def _df_copy_train(self, df_train, column, newcolumn, suffixoverlap_results = {}, printstatus = False):
     """
     #performs a copy operation to add column to a df_train
     #Before any new columns added to df_train
@@ -7002,43 +7002,7 @@ class AutoMunge:
     #test for overlap error
     if newcolumn in df_train.columns:
       
-      print("*****************")
-      print("Warning of suffix overlap error")
-      print("When creating new column: ", newcolumn)
-      print("The column was already found present in df_train headers.")
-      print("")
-      print("Some potential quick fixes for this error include:")
-      print("- rename columns to integers before passing to automunge(.)")
-      print("- strip underscores '_' from column header titles.")
-      print("(convention is all suffix appenders include an underscore)")
-      print("")
-      print("Please note any updates to column headers will need to be carried through to assignment parameters.")
-      print("*****************")
-      print("")
-      
-      suffixoverlap_results.update({newcolumn : True})
-      
-    else:
-      
-      df_train[newcolumn] = df_train[column].copy()
-      
-      suffixoverlap_results.update({newcolumn : False})
-    
-    return df_train, suffixoverlap_results
-
-  def _df_check_suffixoverlap(self, df_train, newcolumns, suffixoverlap_results = {}):
-    """
-    #checks that newcolumns list are not already present in df_train
-    #logs in suffixoverlap_results
-    """
-    
-    if not isinstance(newcolumns, list):
-      newcolumns = [newcolumns]
-    
-    for newcolumn in newcolumns:
-      
-      if newcolumn in df_train.columns:
-        
+      if printstatus != 'silent':
         print("*****************")
         print("Warning of suffix overlap error")
         print("When creating new column: ", newcolumn)
@@ -7052,6 +7016,44 @@ class AutoMunge:
         print("Please note any updates to column headers will need to be carried through to assignment parameters.")
         print("*****************")
         print("")
+      
+      suffixoverlap_results.update({newcolumn : True})
+      
+    else:
+      
+      df_train[newcolumn] = df_train[column].copy()
+      
+      suffixoverlap_results.update({newcolumn : False})
+    
+    return df_train, suffixoverlap_results
+
+  def _df_check_suffixoverlap(self, df_train, newcolumns, suffixoverlap_results = {}, printstatus = False):
+    """
+    #checks that newcolumns list are not already present in df_train
+    #logs in suffixoverlap_results
+    """
+    
+    if not isinstance(newcolumns, list):
+      newcolumns = [newcolumns]
+    
+    for newcolumn in newcolumns:
+      
+      if newcolumn in df_train.columns:
+        
+        if printstatus != 'silent':
+          print("*****************")
+          print("Warning of suffix overlap error")
+          print("When creating new column: ", newcolumn)
+          print("The column was already found present in df_train headers.")
+          print("")
+          print("Some potential quick fixes for this error include:")
+          print("- rename columns to integers before passing to automunge(.)")
+          print("- strip underscores '_' from column header titles.")
+          print("(convention is all suffix appenders include an underscore)")
+          print("")
+          print("Please note any updates to column headers will need to be carried through to assignment parameters.")
+          print("*****************")
+          print("")
 
         suffixoverlap_results.update({newcolumn : True})
 
@@ -7081,20 +7083,20 @@ class AutoMunge:
         if postprocess_dict['column_dict'][entry1]['suffixoverlap_results'][entry2] is True:
           
           suffixoverlap_aggregated_result = True
-          
-          print("*****************")
-          print("Warning of suffix overlap error")
-          print("When creating new column: ", entry2)
-          print("The column was already found present in df_train headers.")
-          print("")
-          print("Some potential quick fixes for this error include:")
-          print("- rename columns to integers before passing to automunge(.)")
-          print("- strip underscores '_' from column header titles.")
-          print("(convention is all suffix appenders include an underscore)")
-          print("")
-          print("Please note any updates to column headers will need to be carried through to assignment parameters.")
-          print("*****************")
-          print("")
+          if postprocess_dict['printstatus'] != 'silent':
+            print("*****************")
+            print("Warning of suffix overlap error")
+            print("When creating new column: ", entry2)
+            print("The column was already found present in df_train headers.")
+            print("")
+            print("Some potential quick fixes for this error include:")
+            print("- rename columns to integers before passing to automunge(.)")
+            print("- strip underscores '_' from column header titles.")
+            print("(convention is all suffix appenders include an underscore)")
+            print("")
+            print("Please note any updates to column headers will need to be carried through to assignment parameters.")
+            print("*****************")
+            print("")
       
       postprocess_dict['miscparameters_results']['suffixoverlap_results'].update(
       postprocess_dict['column_dict'][entry1]['suffixoverlap_results'])
@@ -7103,46 +7105,46 @@ class AutoMunge:
       if postprocess_dict['miscparameters_results']['PCA_suffixoverlap_results'][entry1] is True:
 
           suffixoverlap_aggregated_result = True
-        
-          print("*****************")
-          print("Warning of suffix overlap error")
-          print("When creating PCA column: ", entry1)
-          print("The column was already found present in df_train headers.")
-          print("")
-          print("Note that PCA returned columns are of form: PCAcol0")
-          print("Where # is integer")
-          print("This form of column header should be avoided in passed data.")
-          print("")
+          if postprocess_dict['printstatus'] != 'silent':
+            print("*****************")
+            print("Warning of suffix overlap error")
+            print("When creating PCA column: ", entry1)
+            print("The column was already found present in df_train headers.")
+            print("")
+            print("Note that PCA returned columns are of form: PCAcol0")
+            print("Where # is integer")
+            print("This form of column header should be avoided in passed data.")
+            print("")
 
     for entry1 in postprocess_dict['miscparameters_results']['Binary_suffixoverlap_results']:
       if postprocess_dict['miscparameters_results']['Binary_suffixoverlap_results'][entry1] is True:
 
           suffixoverlap_aggregated_result = True
-        
-          print("*****************")
-          print("Warning of suffix overlap error")
-          print("When creating Binary column: ", entry1)
-          print("The column was already found present in df_train headers.")
-          print("")
-          print("Note that Binary returned columns are of form: Binary_1010_#")
-          print("Where # is integer")
-          print("This error might have occured if you passed data including column header 'Binary' to '1010' transform")
-          print("This form of column header should be avoided in passed data.")
-          print("")
+          if postprocess_dict['printstatus'] != 'silent':
+            print("*****************")
+            print("Warning of suffix overlap error")
+            print("When creating Binary column: ", entry1)
+            print("The column was already found present in df_train headers.")
+            print("")
+            print("Note that Binary returned columns are of form: Binary_1010_#")
+            print("Where # is integer")
+            print("This error might have occured if you passed data including column header 'Binary' to '1010' transform")
+            print("This form of column header should be avoided in passed data.")
+            print("")
 
     for entry1 in postprocess_dict['miscparameters_results']['excl_suffixoverlap_results']:
       if postprocess_dict['miscparameters_results']['excl_suffixoverlap_results'][entry1] is True:
 
           suffixoverlap_aggregated_result = True
-        
-          print("*****************")
-          print("Warning of suffix overlap error")
-          print("When removing '_excl' suffix for column: ", entry1)
-          print("The column without suffix was already found present in df_train headers.")
-          print("")
+          if postprocess_dict['printstatus'] != 'silent':
+            print("*****************")
+            print("Warning of suffix overlap error")
+            print("When removing '_excl' suffix for column: ", entry1)
+            print("The column without suffix was already found present in df_train headers.")
+            print("")
           
     postprocess_dict['miscparameters_results'].update({'suffixoverlap_aggregated_result':suffixoverlap_aggregated_result})
-          
+    
     return postprocess_dict
 
   def _process_NArw(self, df, column, category, treecategory, postprocess_dict, params = {}):
@@ -7164,7 +7166,7 @@ class AutoMunge:
     suffixcolumn = column + '_' + suffix
     
     suffixoverlap_results = \
-    self._df_check_suffixoverlap(df, suffixcolumn, suffixoverlap_results)
+    self._df_check_suffixoverlap(df, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
 
     df[suffixcolumn] = self._getNArows(df, column, category, postprocess_dict)
 
@@ -7259,14 +7261,14 @@ class AutoMunge:
       
       #copy source column into new column
       mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results)
+      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
 
       mdf_test[suffixcolumn] = mdf_test[column].copy()
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
       
       mdf_train.rename(columns = {column : suffixcolumn}, inplace = True)
       mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
@@ -7405,12 +7407,12 @@ class AutoMunge:
       
       #copy source column into new column
       df, suffixoverlap_results = \
-      self._df_copy_train(df, column, suffixcolumn, suffixoverlap_results)
+      self._df_copy_train(df, column, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(df, suffixcolumn, suffixoverlap_results)
+      self._df_check_suffixoverlap(df, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
       
       df.rename(columns = {column : suffixcolumn}, inplace = True)
     
@@ -7519,12 +7521,12 @@ class AutoMunge:
       
       #copy source column into new column
       df, suffixoverlap_results = \
-      self._df_copy_train(df, column, suffixcolumn, suffixoverlap_results)
+      self._df_copy_train(df, column, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(df, suffixcolumn, suffixoverlap_results)
+      self._df_check_suffixoverlap(df, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
       
       df.rename(columns = {column : suffixcolumn}, inplace = True)
     
@@ -7542,7 +7544,7 @@ class AutoMunge:
 #                            - ((df[column + '_dxd2'].shift(periods=2) + df[column + '_dxd2'].shift(periods=3)) / 2)
 
     suffixoverlap_results = \
-    self._df_check_suffixoverlap(df, [column + '_temp1'], suffixoverlap_results)
+    self._df_check_suffixoverlap(df, [column + '_temp1'], suffixoverlap_results, postprocess_dict['printstatus'])
 
     df[column + '_temp1'] = df[suffixcolumn].copy()
     # df_train['number7_temp3'] = df_train['number7'].copy()
@@ -7644,12 +7646,12 @@ class AutoMunge:
       
       #copy source column into new column
       df, suffixoverlap_results = \
-      self._df_copy_train(df, column, shft_column, suffixoverlap_results)
+      self._df_copy_train(df, column, shft_column, suffixoverlap_results, postprocess_dict['printstatus'])
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(df, shft_column, suffixoverlap_results)
+      self._df_check_suffixoverlap(df, shft_column, suffixoverlap_results, postprocess_dict['printstatus'])
       
       df.rename(columns = {column : shft_column}, inplace = True)
     
@@ -7761,14 +7763,14 @@ class AutoMunge:
       
       #copy source column into new column
       mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results)
+      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
 
       mdf_test[suffixcolumn] = mdf_test[column].copy()
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
       
       mdf_train.rename(columns = {column : suffixcolumn}, inplace = True)
       mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
@@ -7899,14 +7901,14 @@ class AutoMunge:
       
       #copy source column into new column
       mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results)
+      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
 
       mdf_test[suffixcolumn] = mdf_test[column].copy()
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
       
       mdf_train.rename(columns = {column : suffixcolumn}, inplace = True)
       mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
@@ -8055,14 +8057,14 @@ class AutoMunge:
       
       #copy source column into new column
       mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results)
+      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
 
       mdf_test[suffixcolumn] = mdf_test[column].copy()
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
       
       mdf_train.rename(columns = {column : suffixcolumn}, inplace = True)
       mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
@@ -8185,14 +8187,14 @@ class AutoMunge:
       
       #copy source column into new column
       mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results)
+      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
 
       mdf_test[suffixcolumn] = mdf_test[column].copy()
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
       
       mdf_train.rename(columns = {column : suffixcolumn}, inplace = True)
       mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
@@ -8345,14 +8347,14 @@ class AutoMunge:
       
       #copy source column into new column
       mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results)
+      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
 
       mdf_test[suffixcolumn] = mdf_test[column].copy()
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
       
       mdf_train.rename(columns = {column : suffixcolumn}, inplace = True)
       mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
@@ -8431,7 +8433,9 @@ class AutoMunge:
     
     #divisor
     if divisor not in {'minmax', 'std', 'mad'}:
-      print("Error: retn transform parameter 'divisor' only accepts entries of 'minmax' 'mad' or 'std'")
+      if postprocess_dict['printstatus'] != 'silent':
+        print("Error: retn transform parameter 'divisor' only accepts entries of 'minmax' 'mad' or 'std'")
+        print()
     if divisor == 'minmax':
       divisor = maxminusmin
     elif divisor == 'mad':
@@ -8570,14 +8574,14 @@ class AutoMunge:
       
       #copy source column into new column
       mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results)
+      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
 
       mdf_test[suffixcolumn] = mdf_test[column].copy()
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
       
       mdf_train.rename(columns = {column : suffixcolumn}, inplace = True)
       mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
@@ -8731,14 +8735,14 @@ class AutoMunge:
       
       #copy source column into new column
       mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results)
+      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
 
       mdf_test[suffixcolumn] = mdf_test[column].copy()
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
       
       mdf_train.rename(columns = {column : suffixcolumn}, inplace = True)
       mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
@@ -8970,7 +8974,7 @@ class AutoMunge:
     tempcolumn = column + '_' + suffix + '_'
     
     suffixoverlap_results = \
-    self._df_check_suffixoverlap(mdf_train, tempcolumn, suffixoverlap_results)
+    self._df_check_suffixoverlap(mdf_train, tempcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
     
     #store original column for later retrieval
     mdf_train[tempcolumn] = mdf_train[column].copy()
@@ -9033,7 +9037,7 @@ class AutoMunge:
     missing_cols = set( df_train_cat.columns ) - set( labels_test )
     
     suffixoverlap_results = \
-    self._df_check_suffixoverlap(mdf_train, list(df_train_cat), suffixoverlap_results)
+    self._df_check_suffixoverlap(mdf_train, list(df_train_cat), suffixoverlap_results, postprocess_dict['printstatus'])
 
     #concatinate the sparse set with the rest of our training data
     mdf_train = pd.concat([mdf_train, df_train_cat], axis=1)
@@ -9153,7 +9157,7 @@ class AutoMunge:
     tempcolumn = column + '_' + tempsuffix
     
     suffixoverlap_results = \
-    self._df_check_suffixoverlap(mdf_train, tempcolumn, suffixoverlap_results)
+    self._df_check_suffixoverlap(mdf_train, tempcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
     
     #store original column for later retrieval
     mdf_train[tempcolumn] = mdf_train[column].copy()
@@ -9213,7 +9217,7 @@ class AutoMunge:
     del mdf_test[tempcolumn]
     
     suffixoverlap_results = \
-    self._df_check_suffixoverlap(mdf_train, list(df_train_cat), suffixoverlap_results)
+    self._df_check_suffixoverlap(mdf_train, list(df_train_cat), suffixoverlap_results, postprocess_dict['printstatus'])
     
     #concatinate the sparse set with the rest of our training data
     mdf_train = pd.concat([mdf_train, df_train_cat], axis=1)
@@ -9327,7 +9331,7 @@ class AutoMunge:
     tempcolumn = column + '_' + suffix + '_'
     
     suffixoverlap_results = \
-    self._df_check_suffixoverlap(mdf_train, tempcolumn, suffixoverlap_results)
+    self._df_check_suffixoverlap(mdf_train, tempcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
     
     #store original column for later retrieval
     mdf_train[tempcolumn] = mdf_train[column].copy()
@@ -9390,7 +9394,7 @@ class AutoMunge:
     missing_cols = set( df_train_cat.columns ) - set( labels_test )
     
     suffixoverlap_results = \
-    self._df_check_suffixoverlap(mdf_train, list(df_train_cat), suffixoverlap_results)
+    self._df_check_suffixoverlap(mdf_train, list(df_train_cat), suffixoverlap_results, postprocess_dict['printstatus'])
 
     #concatinate the sparse set with the rest of our training data
     mdf_train = pd.concat([mdf_train, df_train_cat], axis=1)
@@ -9549,12 +9553,12 @@ class AutoMunge:
       
       #copy source column into new column
       df, suffixoverlap_results = \
-      self._df_copy_train(df, column, suffixcolumn, suffixoverlap_results)
+      self._df_copy_train(df, column, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(df, suffixcolumn, suffixoverlap_results)
+      self._df_check_suffixoverlap(df, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
       
       df.rename(columns = {column : suffixcolumn}, inplace = True)
     
@@ -9638,12 +9642,12 @@ class AutoMunge:
       
       #copy source column into new column
       df, suffixoverlap_results = \
-      self._df_copy_train(df, column, suffixcolumn, suffixoverlap_results)
+      self._df_copy_train(df, column, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(df, suffixcolumn, suffixoverlap_results)
+      self._df_check_suffixoverlap(df, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
       
       df.rename(columns = {column : suffixcolumn}, inplace = True)
     
@@ -9938,7 +9942,7 @@ class AutoMunge:
       newcolumn = column + '_' + suffix + '_' + dict_key
       
       mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, newcolumn, suffixoverlap_results)
+      self._df_copy_train(mdf_train, column, newcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
       
       mdf_test[newcolumn] = mdf_test[column].copy()
 
@@ -9967,7 +9971,7 @@ class AutoMunge:
         
       #now convert column headers from string to int convention
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, newcolumns, suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, newcolumns, suffixoverlap_results, postprocess_dict['printstatus'])
       
       mdf_train = mdf_train.rename(columns=int_labels_dict)
       mdf_test  = mdf_test.rename(columns=int_labels_dict)
@@ -10307,7 +10311,7 @@ class AutoMunge:
     newcolumn = column + '_' + suffix
     
     mdf_train, suffixoverlap_results = \
-    self._df_copy_train(mdf_train, column, newcolumn, suffixoverlap_results)
+    self._df_copy_train(mdf_train, column, newcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
     
     mdf_test[newcolumn] = mdf_test[column].copy()
     
@@ -10624,7 +10628,7 @@ class AutoMunge:
       newcolumn = column + '_sp15_' + dict_key
       
       mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, newcolumn, suffixoverlap_results)
+      self._df_copy_train(mdf_train, column, newcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
 #       mdf_train[newcolumn] = mdf_train[column].copy()
       
       mdf_test[newcolumn] = mdf_test[column].copy()
@@ -10758,7 +10762,7 @@ class AutoMunge:
         _1010_columnlist.append(column + '_' + suffix + '_' + str(i))
 
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, _1010_columnlist, suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, _1010_columnlist, suffixoverlap_results, postprocess_dict['printstatus'])
 
       #now let's store the encoding
       i=0
@@ -10990,7 +10994,7 @@ class AutoMunge:
       newcolumn = column + '_' + suffix + '_' + dict_key
       
       mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, newcolumn, suffixoverlap_results)
+      self._df_copy_train(mdf_train, column, newcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
       
 #       mdf_train[newcolumn] = mdf_train[column].copy()
   
@@ -11021,7 +11025,7 @@ class AutoMunge:
         
       #now convert column headers from string to int convention
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, newcolumns, suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, newcolumns, suffixoverlap_results, postprocess_dict['printstatus'])
       
       mdf_train = mdf_train.rename(columns=int_labels_dict)
       mdf_test  = mdf_test.rename(columns=int_labels_dict)
@@ -11240,7 +11244,7 @@ class AutoMunge:
       newcolumn = column + '_sbst_' + dict_key
       
       mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, newcolumn, suffixoverlap_results)
+      self._df_copy_train(mdf_train, column, newcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
       
 #       mdf_train[newcolumn] = mdf_train[column].copy()
   
@@ -11271,7 +11275,7 @@ class AutoMunge:
         
       #now convert column headers from string to int convention
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, newcolumns, suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, newcolumns, suffixoverlap_results, postprocess_dict['printstatus'])
       
       mdf_train = mdf_train.rename(columns=int_labels_dict)
       mdf_test  = mdf_test.rename(columns=int_labels_dict)
@@ -11378,7 +11382,7 @@ class AutoMunge:
         _1010_columnlist.append(column + '_' + suffix + '_' + str(i))
 
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, _1010_columnlist, suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, _1010_columnlist, suffixoverlap_results, postprocess_dict['printstatus'])
 
       #now let's store the encoding
       i=0
@@ -11527,14 +11531,14 @@ class AutoMunge:
       
       #copy source column into new column
       mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results)
+      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
       
       mdf_test[suffixcolumn] = mdf_test[column].copy()
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
       
       mdf_train.rename(columns = {column : suffixcolumn}, inplace = True)
       mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
@@ -11685,7 +11689,7 @@ class AutoMunge:
 
         #check for column header overlap
         suffixoverlap_results = \
-        self._df_check_suffixoverlap(mdf_train, hash_column, suffixoverlap_results)
+        self._df_check_suffixoverlap(mdf_train, hash_column, suffixoverlap_results, postprocess_dict['printstatus'])
 
         #now populate the column with i'th entry from hashed list
         mdf_train[hash_column] = mdf_train[suffixcolumn].transform(lambda x: x[i])
@@ -11822,14 +11826,14 @@ class AutoMunge:
       
       #copy source column into new column
       mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results)
+      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
       
       mdf_test[suffixcolumn] = mdf_test[column].copy()
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
       
       mdf_train.rename(columns = {column : suffixcolumn}, inplace = True)
       mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
@@ -11891,7 +11895,7 @@ class AutoMunge:
       
       #check for column header overlap
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, hash_column, suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, hash_column, suffixoverlap_results, postprocess_dict['printstatus'])
       
       #now populate the column with i'th entry from hashed list
       mdf_train[hash_column] = mdf_train[suffixcolumn].str[i].astype(np.int8)
@@ -12005,7 +12009,7 @@ class AutoMunge:
       
     for newcolumn in search_dict:
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, newcolumn, suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, newcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
       
       mdf_train[newcolumn] = \
       np.where(mdf_train[column].astype(str).str.contains(search_dict[newcolumn], case=case, regex=False), 1, 0)
@@ -12213,7 +12217,7 @@ class AutoMunge:
         newcolumn = column + '_' + suffix + '_' + dict_key
 
         mdf_train, suffixoverlap_results = \
-        self._df_copy_train(mdf_train, column, newcolumn, suffixoverlap_results)
+        self._df_copy_train(mdf_train, column, newcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
         
         mdf_test[newcolumn] = mdf_test[column].copy()
 
@@ -12407,7 +12411,7 @@ class AutoMunge:
         newcolumn = column + '_' + suffix + '_' + dict_key
 
         mdf_train, suffixoverlap_results = \
-        self._df_copy_train(mdf_train, column, newcolumn, suffixoverlap_results)
+        self._df_copy_train(mdf_train, column, newcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
         
         mdf_test[newcolumn] = mdf_test[column].copy()
 
@@ -12528,7 +12532,7 @@ class AutoMunge:
       
     for newcolumn in search_dict:
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, newcolumn, suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, newcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
       
       mdf_train[newcolumn] = \
       np.where(mdf_train[column].astype(str).str.contains(search_dict[newcolumn], case=case, regex=False), 1, 0)
@@ -12555,7 +12559,7 @@ class AutoMunge:
       i += 1
       
     suffixoverlap_results = \
-    self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results)
+    self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
       
     mdf_train[suffixcolumn] = 0
     mdf_test[suffixcolumn] = 0
@@ -12667,7 +12671,7 @@ class AutoMunge:
     suffixcolumn = column + '_' + suffix
       
     df, suffixoverlap_results = \
-    self._df_copy_train(df, column, suffixcolumn, suffixoverlap_results)
+    self._df_copy_train(df, column, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
 
     for sublist in aggregate:
       
@@ -12813,7 +12817,7 @@ class AutoMunge:
                 overlap_dict.update({unique : np.nan})
     
     suffixoverlap_results = \
-    self._df_check_suffixoverlap(df, suffixcolumn, suffixoverlap_results)
+    self._df_check_suffixoverlap(df, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
     
     df[suffixcolumn] = df[column].astype(str)
     df[suffixcolumn] = df[suffixcolumn].replace(overlap_dict)
@@ -12876,7 +12880,7 @@ class AutoMunge:
     strg_column = column + '_' + suffix
     
     df, suffixoverlap_results = \
-    self._df_copy_train(df, column, strg_column, suffixoverlap_results)
+    self._df_copy_train(df, column, strg_column, suffixoverlap_results, postprocess_dict['printstatus'])
     
     df[strg_column] = df[strg_column].astype(str)
 
@@ -12926,7 +12930,7 @@ class AutoMunge:
     nmrc_column = column + '_' + suffix
     
     df, suffixoverlap_results = \
-    self._df_copy_train(df, column, nmrc_column, suffixoverlap_results)
+    self._df_copy_train(df, column, nmrc_column, suffixoverlap_results, postprocess_dict['printstatus'])
     
     unique_list = list(df[nmrc_column].unique())
 
@@ -13087,7 +13091,7 @@ class AutoMunge:
     nmrc_column = column + '_' + suffix
     
     mdf_train, suffixoverlap_results = \
-    self._df_copy_train(mdf_train, column, nmrc_column, suffixoverlap_results)
+    self._df_copy_train(mdf_train, column, nmrc_column, suffixoverlap_results, postprocess_dict['printstatus'])
     
     mdf_test[nmrc_column] = mdf_test[column].copy()
     
@@ -13353,14 +13357,14 @@ class AutoMunge:
       
       #copy source column into new column
       mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results)
+      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
 
       mdf_test[suffixcolumn] = mdf_test[column].copy()
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
       
       mdf_train.rename(columns = {column : suffixcolumn}, inplace = True)
       mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
@@ -13609,14 +13613,14 @@ class AutoMunge:
       
       #copy source column into new column
       mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results)
+      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
 
       mdf_test[suffixcolumn] = mdf_test[column].copy()
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
       
       mdf_train.rename(columns = {column : suffixcolumn}, inplace = True)
       mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
@@ -13875,14 +13879,14 @@ class AutoMunge:
       
       #copy source column into new column
       mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results)
+      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
 
       mdf_test[suffixcolumn] = mdf_test[column].copy()
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
       
       mdf_train.rename(columns = {column : suffixcolumn}, inplace = True)
       mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
@@ -14062,7 +14066,7 @@ class AutoMunge:
     
     #create new column for trasnformation
     mdf_train, suffixoverlap_results = \
-    self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results)
+    self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
     
     mdf_test[suffixcolumn] = mdf_test[column].copy()
     
@@ -14227,7 +14231,7 @@ class AutoMunge:
     
     #create new column for trasnformation
     mdf_train, suffixoverlap_results = \
-    self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results)
+    self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
     
     mdf_test[suffixcolumn] = mdf_test[column].copy()
     
@@ -14417,7 +14421,7 @@ class AutoMunge:
       _1010_columnlist.append(column + '_' + suffix + '_' + str(i))
       
     suffixoverlap_results = \
-    self._df_check_suffixoverlap(mdf_train, _1010_columnlist, suffixoverlap_results)
+    self._df_check_suffixoverlap(mdf_train, _1010_columnlist, suffixoverlap_results, postprocess_dict['printstatus'])
       
     #now let's store the encoding
     i=0
@@ -14493,7 +14497,7 @@ class AutoMunge:
     suffixcolumn = column + '_' + suffix
       
     suffixoverlap_results = \
-    self._df_check_suffixoverlap(df, suffixcolumn, suffixoverlap_results)
+    self._df_check_suffixoverlap(df, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
     
     #convert improperly formatted values to datetime in new column
     df[suffixcolumn] = pd.to_datetime(df[column], errors = 'coerce')
@@ -14556,7 +14560,7 @@ class AutoMunge:
     suffixcolumn = column + '_' + suffix
     
     suffixoverlap_results = \
-    self._df_check_suffixoverlap(df, suffixcolumn, suffixoverlap_results)
+    self._df_check_suffixoverlap(df, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
     
     #convert improperly formatted values to datetime in new column
     df[suffixcolumn] = pd.to_datetime(df[column], errors = 'coerce')
@@ -14642,7 +14646,7 @@ class AutoMunge:
       timestamp_list = []
       
     suffixoverlap_results = \
-    self._df_check_suffixoverlap(df, suffixcolumn, suffixoverlap_results)
+    self._df_check_suffixoverlap(df, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
     
     #convert improperly formatted values to datetime in new column
     df[suffixcolumn] = pd.to_datetime(df[column], errors = 'coerce')
@@ -14719,12 +14723,12 @@ class AutoMunge:
       
       #copy source column into new column
       df, suffixoverlap_results = \
-      self._df_copy_train(df, column, suffixcolumn, suffixoverlap_results)
+      self._df_copy_train(df, column, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(df, suffixcolumn, suffixoverlap_results)
+      self._df_check_suffixoverlap(df, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
       
       df.rename(columns = {column : suffixcolumn}, inplace = True)
     
@@ -14820,12 +14824,12 @@ class AutoMunge:
       
       #copy source column into new column
       df, suffixoverlap_results = \
-      self._df_copy_train(df, column, suffixcolumn, suffixoverlap_results)
+      self._df_copy_train(df, column, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(df, suffixcolumn, suffixoverlap_results)
+      self._df_check_suffixoverlap(df, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
       
       df.rename(columns = {column : suffixcolumn}, inplace = True)
     
@@ -14938,12 +14942,12 @@ class AutoMunge:
       
       #copy source column into new column
       df, suffixoverlap_results = \
-      self._df_copy_train(df, column, suffixcolumn, suffixoverlap_results)
+      self._df_copy_train(df, column, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(df, suffixcolumn, suffixoverlap_results)
+      self._df_check_suffixoverlap(df, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
       
       df.rename(columns = {column : suffixcolumn}, inplace = True)
       
@@ -15024,14 +15028,14 @@ class AutoMunge:
       
       #copy source column into new column
       mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, time_column, suffixoverlap_results)
+      self._df_copy_train(mdf_train, column, time_column, suffixoverlap_results, postprocess_dict['printstatus'])
 
       mdf_test[time_column] = mdf_test[column].copy()
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, time_column, suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, time_column, suffixoverlap_results, postprocess_dict['printstatus'])
       
       mdf_train.rename(columns = {column : time_column}, inplace = True)
       mdf_test.rename(columns = {column : time_column}, inplace = True)
@@ -15095,7 +15099,7 @@ class AutoMunge:
       tempcolumn2 = time_column + '_tmp2'
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, [tempcolumn1, tempcolumn2], suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, [tempcolumn1, tempcolumn2], suffixoverlap_results, postprocess_dict['printstatus'])
       
       #temp1 is for number of days in month, temp2 is to handle leap year support
       mdf_train[tempcolumn1] = mdf_train[time_column].copy()
@@ -15274,14 +15278,14 @@ class AutoMunge:
       
       #copy source column into new column
       mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, time_column, suffixoverlap_results)
+      self._df_copy_train(mdf_train, column, time_column, suffixoverlap_results, postprocess_dict['printstatus'])
 
       mdf_test[time_column] = mdf_test[column].copy()
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, time_column, suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, time_column, suffixoverlap_results, postprocess_dict['printstatus'])
       
       mdf_train.rename(columns = {column : time_column}, inplace = True)
       mdf_test.rename(columns = {column : time_column}, inplace = True)
@@ -15448,7 +15452,7 @@ class AutoMunge:
     bxcxcolumn = column + '_' + suffix
 
     df, suffixoverlap_results = \
-    self._df_copy_train(df, column, bxcxcolumn, suffixoverlap_results)
+    self._df_copy_train(df, column, bxcxcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
 
     #convert all values to either numeric or NaN
     df[bxcxcolumn] = pd.to_numeric(df[bxcxcolumn], errors='coerce')
@@ -15504,7 +15508,9 @@ class AutoMunge:
       bxcxerrorcorrect = 0
       df[bxcxcolumn] = 0
       bxcxcolumn = bxcxcolumn
-      print("overflow condition found in boxcox transofrm, column set to 0: ", bxcxcolumn)
+      if postprocess_dict['printstatus'] != 'silent':
+        print("overflow condition found in boxcox transofrm, column set to 0: ", bxcxcolumn)
+        print()
 
 #     #replace original column
 #     del df[column]
@@ -15583,14 +15589,14 @@ class AutoMunge:
       
       #copy source column into new column
       mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results)
+      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
 
       mdf_test[suffixcolumn] = mdf_test[column].copy()
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
       
       mdf_train.rename(columns = {column : suffixcolumn}, inplace = True)
       mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
@@ -15687,14 +15693,14 @@ class AutoMunge:
       
       #copy source column into new column
       mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results)
+      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
 
       mdf_test[suffixcolumn] = mdf_test[column].copy()
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
       
       mdf_train.rename(columns = {column : suffixcolumn}, inplace = True)
       mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
@@ -15791,14 +15797,14 @@ class AutoMunge:
       
       #copy source column into new column
       mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results)
+      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
 
       mdf_test[suffixcolumn] = mdf_test[column].copy()
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
       
       mdf_train.rename(columns = {column : suffixcolumn}, inplace = True)
       mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
@@ -15901,14 +15907,14 @@ class AutoMunge:
       
       #copy source column into new column
       mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results)
+      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
 
       mdf_test[suffixcolumn] = mdf_test[column].copy()
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
       
       mdf_train.rename(columns = {column : suffixcolumn}, inplace = True)
       mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
@@ -15997,14 +16003,14 @@ class AutoMunge:
       
       #copy source column into new column
       mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results)
+      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
 
       mdf_test[suffixcolumn] = mdf_test[column].copy()
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
       
       mdf_train.rename(columns = {column : suffixcolumn}, inplace = True)
       mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
@@ -16092,14 +16098,14 @@ class AutoMunge:
       
       #copy source column into new column
       mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results)
+      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
 
       mdf_test[suffixcolumn] = mdf_test[column].copy()
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
       
       mdf_train.rename(columns = {column : suffixcolumn}, inplace = True)
       mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
@@ -16190,14 +16196,14 @@ class AutoMunge:
       
       #copy source column into new column
       mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results)
+      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
 
       mdf_test[suffixcolumn] = mdf_test[column].copy()
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
       
       mdf_train.rename(columns = {column : suffixcolumn}, inplace = True)
       mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
@@ -16286,14 +16292,14 @@ class AutoMunge:
       
       #copy source column into new column
       mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results)
+      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
 
       mdf_test[suffixcolumn] = mdf_test[column].copy()
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
       
       mdf_train.rename(columns = {column : suffixcolumn}, inplace = True)
       mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
@@ -16374,14 +16380,14 @@ class AutoMunge:
       
       #copy source column into new column
       mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results)
+      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
 
       mdf_test[suffixcolumn] = mdf_test[column].copy()
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
       
       mdf_train.rename(columns = {column : suffixcolumn}, inplace = True)
       mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
@@ -16463,7 +16469,7 @@ class AutoMunge:
 
     #store original column for later reversion
     mdf_train, suffixoverlap_results = \
-    self._df_copy_train(mdf_train, column, tempcolumn, suffixoverlap_results)
+    self._df_copy_train(mdf_train, column, tempcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
     
     mdf_test[tempcolumn] = mdf_test[column].copy()
 
@@ -16474,7 +16480,7 @@ class AutoMunge:
     #create copy with negative values
     negtempcolumn = column + '_negtemp'
     mdf_train, suffixoverlap_results = \
-    self._df_copy_train(mdf_train, tempcolumn, negtempcolumn, suffixoverlap_results)
+    self._df_copy_train(mdf_train, tempcolumn, negtempcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
     
     mdf_test[negtempcolumn] = mdf_test[tempcolumn].copy()
     
@@ -16590,7 +16596,7 @@ class AutoMunge:
     df_test_cat = df_test_cat[df_train_cat.columns]
     
     suffixoverlap_results = \
-    self._df_check_suffixoverlap(mdf_train, list(df_train_cat), suffixoverlap_results)
+    self._df_check_suffixoverlap(mdf_train, list(df_train_cat), suffixoverlap_results, postprocess_dict['printstatus'])
     
     #concatinate the sparse set with the rest of our training data
     mdf_train = pd.concat([mdf_train, df_train_cat], axis=1)
@@ -16691,14 +16697,14 @@ class AutoMunge:
       
       #copy source column into new column
       mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, pworcolumn, suffixoverlap_results)
+      self._df_copy_train(mdf_train, column, pworcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
       
       mdf_test[pworcolumn] = mdf_test[column].copy()
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, pworcolumn, suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, pworcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
       
       mdf_train.rename(columns = {column : pworcolumn}, inplace = True)
       mdf_test.rename(columns = {column : pworcolumn}, inplace = True)
@@ -16711,7 +16717,7 @@ class AutoMunge:
     negtempcolumn = column + '_negtempcolumn'
     
     mdf_train, suffixoverlap_results = \
-    self._df_copy_train(mdf_train, pworcolumn, negtempcolumn, suffixoverlap_results)
+    self._df_copy_train(mdf_train, pworcolumn, negtempcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
     
     mdf_test[negtempcolumn] = mdf_test[pworcolumn].copy()
     
@@ -16939,7 +16945,7 @@ class AutoMunge:
     if bincount > 0:
 
       mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, binscolumn, suffixoverlap_results)
+      self._df_copy_train(mdf_train, column, binscolumn, suffixoverlap_results, postprocess_dict['printstatus'])
 
       mdf_test[binscolumn] = mdf_test[column].copy()
 
@@ -17010,7 +17016,7 @@ class AutoMunge:
         textcolumns.append(binscolumn + '_' + binlabel)
 
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, textcolumns, suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, textcolumns, suffixoverlap_results, postprocess_dict['printstatus'])
 
       #process bins as a categorical set
       mdf_train = \
@@ -17112,14 +17118,14 @@ class AutoMunge:
 
         #copy source column into new column
         mdf_train, suffixoverlap_results = \
-        self._df_copy_train(mdf_train, column, binscolumn, suffixoverlap_results)
+        self._df_copy_train(mdf_train, column, binscolumn, suffixoverlap_results, postprocess_dict['printstatus'])
 
         mdf_test[binscolumn] = mdf_test[column].copy()
 
       else:
 
         suffixoverlap_results = \
-        self._df_check_suffixoverlap(mdf_train, binscolumn, suffixoverlap_results)
+        self._df_check_suffixoverlap(mdf_train, binscolumn, suffixoverlap_results, postprocess_dict['printstatus'])
 
         mdf_train.rename(columns = {column : binscolumn}, inplace = True)
         mdf_test.rename(columns = {column : binscolumn}, inplace = True)
@@ -17277,7 +17283,7 @@ class AutoMunge:
 
     #store original column for later reversion
     mdf_train, suffixoverlap_results = \
-    self._df_copy_train(mdf_train, column, binscolumn, suffixoverlap_results)
+    self._df_copy_train(mdf_train, column, binscolumn, suffixoverlap_results, postprocess_dict['printstatus'])
     
     mdf_test[binscolumn] = mdf_test[column].copy()
 
@@ -17330,7 +17336,7 @@ class AutoMunge:
     textcolumns.sort()
     
     suffixoverlap_results = \
-    self._df_check_suffixoverlap(mdf_train, textcolumns, suffixoverlap_results)
+    self._df_check_suffixoverlap(mdf_train, textcolumns, suffixoverlap_results, postprocess_dict['printstatus'])
     
     #process bins as a categorical set
     mdf_train = \
@@ -17421,14 +17427,14 @@ class AutoMunge:
 
       #copy source column into new column
       mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, binscolumn, suffixoverlap_results)
+      self._df_copy_train(mdf_train, column, binscolumn, suffixoverlap_results, postprocess_dict['printstatus'])
 
       mdf_test[binscolumn] = mdf_test[column].copy()
 
     else:
 
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, binscolumn, suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, binscolumn, suffixoverlap_results, postprocess_dict['printstatus'])
 
       mdf_train.rename(columns = {column : binscolumn}, inplace = True)
       mdf_test.rename(columns = {column : binscolumn}, inplace = True)
@@ -17560,7 +17566,7 @@ class AutoMunge:
 
     #copy original column
     mdf_train, suffixoverlap_results = \
-    self._df_copy_train(mdf_train, column, binscolumn, suffixoverlap_results)
+    self._df_copy_train(mdf_train, column, binscolumn, suffixoverlap_results, postprocess_dict['printstatus'])
     
     mdf_test[binscolumn] = mdf_test[column].copy()
 
@@ -17652,7 +17658,7 @@ class AutoMunge:
       textcolumns.sort()
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, textcolumns, suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, textcolumns, suffixoverlap_results, postprocess_dict['printstatus'])
 
       #process bins as a categorical set
       mdf_train = \
@@ -17753,14 +17759,14 @@ class AutoMunge:
 
       #copy source column into new column
       mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, binscolumn, suffixoverlap_results)
+      self._df_copy_train(mdf_train, column, binscolumn, suffixoverlap_results, postprocess_dict['printstatus'])
 
       mdf_test[binscolumn] = mdf_test[column].copy()
 
     else:
 
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, binscolumn, suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, binscolumn, suffixoverlap_results, postprocess_dict['printstatus'])
 
       mdf_train.rename(columns = {column : binscolumn}, inplace = True)
       mdf_test.rename(columns = {column : binscolumn}, inplace = True)
@@ -17964,7 +17970,7 @@ class AutoMunge:
 
     #copy original column
     mdf_train, suffixoverlap_results = \
-    self._df_copy_train(mdf_train, column, binscolumn, suffixoverlap_results)
+    self._df_copy_train(mdf_train, column, binscolumn, suffixoverlap_results, postprocess_dict['printstatus'])
     
     mdf_test[binscolumn] = mdf_test[column].copy()
 
@@ -18071,7 +18077,7 @@ class AutoMunge:
       textcolumns.sort()
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, textcolumns, suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, textcolumns, suffixoverlap_results, postprocess_dict['printstatus'])
 
       #process bins as a categorical set
       mdf_train = \
@@ -18218,7 +18224,7 @@ class AutoMunge:
 
     #store original column for later reversion
     mdf_train, suffixoverlap_results = \
-    self._df_copy_train(mdf_train, column, binscolumn, suffixoverlap_results)
+    self._df_copy_train(mdf_train, column, binscolumn, suffixoverlap_results, postprocess_dict['printstatus'])
     
     mdf_test[binscolumn] = mdf_test[column].copy()
 
@@ -18280,7 +18286,7 @@ class AutoMunge:
     textcolumns = [x for x in textcolumns if x[-3:] != 'nan']
     
     suffixoverlap_results = \
-    self._df_check_suffixoverlap(mdf_train, textcolumns, suffixoverlap_results)
+    self._df_check_suffixoverlap(mdf_train, textcolumns, suffixoverlap_results, postprocess_dict['printstatus'])
     
     #process bins as a categorical set
     mdf_train = \
@@ -18367,7 +18373,7 @@ class AutoMunge:
 
     #store original column for later reversion
     mdf_train, suffixoverlap_results = \
-    self._df_copy_train(mdf_train, column, binscolumn, suffixoverlap_results)
+    self._df_copy_train(mdf_train, column, binscolumn, suffixoverlap_results, postprocess_dict['printstatus'])
     
     mdf_test[binscolumn] = mdf_test[column].copy()
 
@@ -18429,7 +18435,7 @@ class AutoMunge:
     textcolumns = [x for x in textcolumns if x[-3:] != 'nan']
     
     suffixoverlap_results = \
-    self._df_check_suffixoverlap(mdf_train, textcolumns, suffixoverlap_results)
+    self._df_check_suffixoverlap(mdf_train, textcolumns, suffixoverlap_results, postprocess_dict['printstatus'])
     
     #process bins as a categorical set
     mdf_train = \
@@ -18518,14 +18524,14 @@ class AutoMunge:
 
       #copy source column into new column
       mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, binscolumn, suffixoverlap_results)
+      self._df_copy_train(mdf_train, column, binscolumn, suffixoverlap_results, postprocess_dict['printstatus'])
 
       mdf_test[binscolumn] = mdf_test[column].copy()
 
     else:
 
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, binscolumn, suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, binscolumn, suffixoverlap_results, postprocess_dict['printstatus'])
 
       mdf_train.rename(columns = {column : binscolumn}, inplace = True)
       mdf_test.rename(columns = {column : binscolumn}, inplace = True)
@@ -18674,14 +18680,14 @@ class AutoMunge:
 
       #copy source column into new column
       mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, binscolumn, suffixoverlap_results)
+      self._df_copy_train(mdf_train, column, binscolumn, suffixoverlap_results, postprocess_dict['printstatus'])
 
       mdf_test[binscolumn] = mdf_test[column].copy()
 
     else:
 
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, binscolumn, suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, binscolumn, suffixoverlap_results, postprocess_dict['printstatus'])
 
       mdf_train.rename(columns = {column : binscolumn}, inplace = True)
       mdf_test.rename(columns = {column : binscolumn}, inplace = True)
@@ -18864,7 +18870,7 @@ class AutoMunge:
     DPnm_column = column + '_' + suffix
     
     suffixoverlap_results = \
-    self._df_check_suffixoverlap(mdf_train, DPnm_column, suffixoverlap_results)
+    self._df_check_suffixoverlap(mdf_train, DPnm_column, suffixoverlap_results, postprocess_dict['printstatus'])
       
     #first we'll derive our sampled noise for injection
     if noisedistribution == 'normal':
@@ -18986,7 +18992,7 @@ class AutoMunge:
     DPmm_column_temp1 = column + '_' + suffix + '_tmp1'
     
     suffixoverlap_results = \
-    self._df_check_suffixoverlap(mdf_train, [DPmm_column, DPmm_column_temp1], suffixoverlap_results)
+    self._df_check_suffixoverlap(mdf_train, [DPmm_column, DPmm_column_temp1], suffixoverlap_results, postprocess_dict['printstatus'])
     
     def _injectmmnoise(df, DPmm_column, DPmm_column_temp1):
       #support function for noise injection
@@ -19173,7 +19179,7 @@ class AutoMunge:
     newcolumns = [DPrt_column, DPrt_column_temp1, DPrt_column_temp2]
     
     suffixoverlap_results = \
-    self._df_check_suffixoverlap(mdf_train, newcolumns, suffixoverlap_results)
+    self._df_check_suffixoverlap(mdf_train, newcolumns, suffixoverlap_results, postprocess_dict['printstatus'])
     
     #copy source column into new column
     mdf_train[DPrt_column] = mdf_train[column].copy()
@@ -19253,7 +19259,9 @@ class AutoMunge:
       
     #divisor
     if divisor not in {'minmax', 'std', 'mad'}:
-      print("Error: retn transform parameter 'divisor' only accepts entries of 'minmax' 'mad' or 'std'")
+      if postprocess_dict['printstatus'] != 'silent':
+        print("Error: retn transform parameter 'divisor' only accepts entries of 'minmax' 'mad' or 'std'")
+        print()
     if divisor == 'minmax':
       divisor = maxminusmin
     elif divisor == 'mad':
@@ -19448,7 +19456,7 @@ class AutoMunge:
     DPbn_column = column + '_' + suffix
     
     suffixoverlap_results = \
-    self._df_check_suffixoverlap(mdf_train, DPbn_column, suffixoverlap_results)
+    self._df_check_suffixoverlap(mdf_train, DPbn_column, suffixoverlap_results, postprocess_dict['printstatus'])
       
     #first we'll derive our sampled noise for injection
     mdf_train[DPbn_column] = pd.DataFrame(np.random.binomial(n=1, p=flip_prob, size=(mdf_train.shape[0])))
@@ -19541,7 +19549,7 @@ class AutoMunge:
     newcolumns = [DPod_column, DPod_tempcolumn1, DPod_tempcolumn2]
     
     suffixoverlap_results = \
-    self._df_check_suffixoverlap(mdf_train, newcolumns, suffixoverlap_results)
+    self._df_check_suffixoverlap(mdf_train, newcolumns, suffixoverlap_results, postprocess_dict['printstatus'])
     
     #we'll want to know the set of activations present in column, for automunge this is unique values
     ord_encodings = mdf_train[column].unique()
@@ -19667,12 +19675,12 @@ class AutoMunge:
       
       #copy source column into new column
       df, suffixoverlap_results = \
-      self._df_copy_train(df, column, qbt1_column, suffixoverlap_results)
+      self._df_copy_train(df, column, qbt1_column, suffixoverlap_results, postprocess_dict['printstatus'])
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(df, qbt1_column, suffixoverlap_results)
+      self._df_check_suffixoverlap(df, qbt1_column, suffixoverlap_results, postprocess_dict['printstatus'])
       
       df.rename(columns = {column : qbt1_column}, inplace = True)
     
@@ -19723,7 +19731,7 @@ class AutoMunge:
     allcolumns = sign_columns + integer_columns + fractional_columns
     
     suffixoverlap_results = \
-    self._df_check_suffixoverlap(df, allcolumns, suffixoverlap_results)
+    self._df_check_suffixoverlap(df, allcolumns, suffixoverlap_results, postprocess_dict['printstatus'])
       
     #populate sign column, note that 0 is positive, 1 is negative
     if sign_bit is True:
@@ -19866,12 +19874,12 @@ class AutoMunge:
       
       #copy source column into new column
       df, suffixoverlap_results = \
-      self._df_copy_train(df, column, copy_column, suffixoverlap_results)
+      self._df_copy_train(df, column, copy_column, suffixoverlap_results, postprocess_dict['printstatus'])
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(df, copy_column, suffixoverlap_results)
+      self._df_check_suffixoverlap(df, copy_column, suffixoverlap_results, postprocess_dict['printstatus'])
       
       df.rename(columns = {column : copy_column}, inplace = True)
 
@@ -19930,12 +19938,12 @@ class AutoMunge:
     if inplace is not True:
 
       df, suffixoverlap_results = \
-      self._df_copy_train(df, column, exclcolumn, suffixoverlap_results)
+      self._df_copy_train(df, column, exclcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
 
     else:
     
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(df, exclcolumn, suffixoverlap_results)
+      self._df_check_suffixoverlap(df, exclcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
       
       df.rename(columns = {column : exclcolumn}, inplace = True)
 
@@ -19993,14 +20001,14 @@ class AutoMunge:
 
       #copy source column into new column
       mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, exclcolumn, suffixoverlap_results)
+      self._df_copy_train(mdf_train, column, exclcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
 
       mdf_test[exclcolumn] = mdf_test[column].copy()
 
     else:
 
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, exclcolumn, suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, exclcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
 
       mdf_train.rename(columns = {column : exclcolumn}, inplace = True)
       mdf_test.rename(columns = {column : exclcolumn}, inplace = True)
@@ -20079,14 +20087,14 @@ class AutoMunge:
 
       #copy source column into new column
       mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, exclcolumn, suffixoverlap_results)
+      self._df_copy_train(mdf_train, column, exclcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
 
       mdf_test[exclcolumn] = mdf_test[column].copy()
 
     else:
 
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, exclcolumn, suffixoverlap_results)
+      self._df_check_suffixoverlap(mdf_train, exclcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
 
       mdf_train.rename(columns = {column : exclcolumn}, inplace = True)
       mdf_test.rename(columns = {column : exclcolumn}, inplace = True)
@@ -20186,12 +20194,12 @@ class AutoMunge:
       
       #copy source column into new column
       df, suffixoverlap_results = \
-      self._df_copy_train(df, column, suffixcolumn, suffixoverlap_results)
+      self._df_copy_train(df, column, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
     
     else:
       
       suffixoverlap_results = \
-      self._df_check_suffixoverlap(df, suffixcolumn, suffixoverlap_results)
+      self._df_check_suffixoverlap(df, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
       
       df.rename(columns = {column : suffixcolumn}, inplace = True)
     
@@ -22285,7 +22293,9 @@ class AutoMunge:
                                      param_distributions = tune_params, scoring = grid_scoring, \
                                      n_iter = randomCV_n_iter)
       else:
-        print("error: hyperparam_tuner currently only supports 'gridCV' or 'randomCV'.")      
+        if printstatus != 'silent':
+          print("error: hyperparam_tuner currently only supports 'gridCV' or 'randomCV'.")      
+          print()
       
       #now we'll run a fit on the grid search
       #for now won't pass any fit parameters
@@ -22297,7 +22307,6 @@ class AutoMunge:
 
       if printstatus is True:
 
-        #print("")
         print("tuned parameters:")
         print(tuned_params)
         print("")
@@ -22411,7 +22420,9 @@ class AutoMunge:
                                      param_distributions = tune_params, scoring = grid_scoring, \
                                      n_iter = randomCV_n_iter)
       else:
-        print("error: hyperparam_tuner currently only supports 'gridCV' or 'randomCV'.")      
+        if printstatus != 'silent':
+          print("error: hyperparam_tuner currently only supports 'gridCV' or 'randomCV'.")
+          print()
       
       #now we'll run a fit on the grid search
       #for now won't pass any fit parameters
@@ -22423,7 +22434,6 @@ class AutoMunge:
 
       if printstatus is True:
 
-        #print("")
         print("tuned parameters:")
         print(tuned_params)
         print("")
@@ -23390,8 +23400,9 @@ class AutoMunge:
               singlctcolumn = labelcolumn
           #if the label category is custom processdict entry with improperly specced labelctgy just apply this heuristic (remote edge case)
           if singlctcolumn is False:
-            print("label category processdict entry contained a labelctgy not found in the transformdict entry, applying heuristic")
-            print()
+            if postprocess_dict['printstatus'] != 'silent':
+              print("label category processdict entry contained a labelctgy not found in the transformdict entry, applying heuristic")
+              print()
             singlctcolumn = labels[0]
 
         uniquevalues = list(labels_df[singlctcolumn].unique())
@@ -23731,7 +23742,7 @@ class AutoMunge:
       FS_validations.update({'FS_all_valid_entries_result': False})
       
       #printout display progress
-      if printstatus is True:
+      if printstatus != 'silent':
         print("_______________")
         print("No labels_column passed, Feature Importance halted")
         print("")
@@ -23786,7 +23797,7 @@ class AutoMunge:
         FS_validations.update({'FS_all_valid_entries_result': False})
         
         #printout display progress
-        if printstatus is True:
+        if printstatus != 'silent':
           print("_______________")
           print("No labels returned from automunge(.), Feature Importance halted")
           print("")
@@ -23820,7 +23831,7 @@ class AutoMunge:
             break
 
         if len(am_categorylist) == 0:
-          if printstatus is True:
+          if printstatus != 'silent':
             #this is a remote edge case, printout added for troubleshooting support
             print("Label category processdict entry contained a labelctgy entry not found in transformdict entry")
             print("Feature Seclection model training will not run without valid labelgctgy processdict entry")
@@ -23848,7 +23859,7 @@ class AutoMunge:
 
         #first validate that data is all valid numeric
         FS_numeric_data_result, FS_all_valid_entries_result = \
-        self.validate_allvalidnumeric(am_train)
+        self.validate_allvalidnumeric(am_train, printstatus)
   
         FS_validations.update({'FS_numeric_data_result': FS_numeric_data_result})
         FS_validations.update({'FS_all_valid_entries_result': FS_all_valid_entries_result})
@@ -23869,7 +23880,7 @@ class AutoMunge:
           baseaccuracy = False
           
           #printout display progress
-          if printstatus is True:
+          if printstatus != 'silent':
             print("_______________")
             print("No model returned from training, Feature Importance halted")
             print("")
@@ -24323,13 +24334,13 @@ class AutoMunge:
     if len(postprocess_assigninfill_dict['MLinfill']) > 0:
 
       train_numeric_data_result, train_all_valid_entries_result = \
-      self.validate_allvalidnumeric(df_train)
+      self.validate_allvalidnumeric(df_train, printstatus)
 
       infill_validations.update({'MLinfill_train_numeric_data_result': train_numeric_data_result})
       infill_validations.update({'MLinfill_train_all_valid_entries_result': train_all_valid_entries_result})
       
       test_numeric_data_result, test_all_valid_entries_result = \
-      self.validate_allvalidnumeric(df_test)
+      self.validate_allvalidnumeric(df_test, printstatus)
 
       infill_validations.update({'MLinfill_test_numeric_data_result': test_numeric_data_result})
       infill_validations.update({'MLinfill_test_all_valid_entries_result': test_all_valid_entries_result})
@@ -24584,7 +24595,7 @@ class AutoMunge:
                 print("")
 
               infill_validations = \
-              self._check_ML_infill(df_train, column, postprocess_dict, infill_validations)
+              self._check_ML_infill(printstatus, df_train, column, postprocess_dict, infill_validations)
 
               df_train, df_test, postprocess_dict = \
               self._MLinfillfunction(df_train, df_test, column, postprocess_dict, \
@@ -24629,7 +24640,7 @@ class AutoMunge:
     if len(postprocess_assigninfill_dict['MLinfill']) > 0:
       
       test_numeric_data_result, test_all_valid_entries_result = \
-      self.validate_allvalidnumeric(df_test)
+      self.validate_allvalidnumeric(df_test, printstatus)
 
       infill_validations.update({'MLinfill_test_numeric_data_result': test_numeric_data_result})
       infill_validations.update({'MLinfill_test_all_valid_entries_result': test_all_valid_entries_result})
@@ -26049,14 +26060,16 @@ class AutoMunge:
     if isinstance(valpercent, (int, float)) and not isinstance(valpercent, bool):
       if valpercent < 0 or valpercent >= 1:
         valpercent_valresult = True
+        if printstatus != 'silent':
+          print("Error: invalid entry passed for valpercent")
+          print("Acceptable values are numbers in range 0 <= valpercent < 1.")
+          print()
+    else:
+      valpercent_valresult = True
+      if printstatus != 'silent':
         print("Error: invalid entry passed for valpercent")
         print("Acceptable values are numbers in range 0 <= valpercent < 1.")
         print()
-    else:
-      valpercent_valresult = True
-      print("Error: invalid entry passed for valpercent")
-      print("Acceptable values are numbers in range 0 <= valpercent < 1.")
-      print()
       
     miscparameters_results.update({'valpercent_valresult' : valpercent_valresult})
     
@@ -26064,9 +26077,10 @@ class AutoMunge:
     floatprecision_valresult = False
     if floatprecision not in {16, 32, 64}:
       floatprecision_valresult = True
-      print("Error: invalid entry passed for floatprecision parameter.")
-      print("Acceptable values are one of {16, 32, 64}")
-      print()
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for floatprecision parameter.")
+        print("Acceptable values are one of {16, 32, 64}")
+        print()
       
     miscparameters_results.update({'floatprecision_valresult' : floatprecision_valresult})
     
@@ -26074,15 +26088,17 @@ class AutoMunge:
     shuffletrain_valresult = False
     if shuffletrain not in {True, False, 'traintest'}:
       shuffletrain_valresult = True
-      print("Error: invalid entry passed for shuffletrain parameter.")
-      print("Acceptable values are one of {True, False, 'traintest'}")
-      print()
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for shuffletrain parameter.")
+        print("Acceptable values are one of {True, False, 'traintest'}")
+        print()
     elif shuffletrain not in {'traintest'} \
     and not isinstance(shuffletrain, bool):
       shuffletrain_valresult = True
-      print("Error: invalid entry passed for shuffletrain parameter.")
-      print("Acceptable values are one of {True, False, 'traintest'}")
-      print()
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for shuffletrain parameter.")
+        print("Acceptable values are one of {True, False, 'traintest'}")
+        print()
       
     miscparameters_results.update({'shuffletrain_valresult' : shuffletrain_valresult})
     
@@ -26090,14 +26106,16 @@ class AutoMunge:
     TrainLabelFreqLevel_valresult = False
     if TrainLabelFreqLevel not in {True, False, 'test', 'traintest'}:
       TrainLabelFreqLevel_valresult = True
-      print("Error: invalid entry passed for TrainLabelFreqLevel parameter.")
-      print("Acceptable values are one of {True, False, 'test', 'traintest'}")
-      print()
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for TrainLabelFreqLevel parameter.")
+        print("Acceptable values are one of {True, False, 'test', 'traintest'}")
+        print()
     elif TrainLabelFreqLevel not in {'test', 'traintest'} and not isinstance(TrainLabelFreqLevel, bool):
       TrainLabelFreqLevel_valresult = True
-      print("Error: invalid entry passed for TrainLabelFreqLevel parameter.")
-      print("Acceptable values are one of {True, False, 'test', 'traintest'}")
-      print()
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for TrainLabelFreqLevel parameter.")
+        print("Acceptable values are one of {True, False, 'test', 'traintest'}")
+        print()
       
     miscparameters_results.update({'TrainLabelFreqLevel_valresult' : TrainLabelFreqLevel_valresult})
 
@@ -26105,14 +26123,16 @@ class AutoMunge:
     dupl_rows_valresult = False
     if dupl_rows not in {True, False, 'test', 'traintest'}:
       dupl_rows_valresult = True
-      print("Error: invalid entry passed for dupl_rows parameter.")
-      print("Acceptable values are one of {True, False, 'test', 'traintest'}")
-      print()
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for dupl_rows parameter.")
+        print("Acceptable values are one of {True, False, 'test', 'traintest'}")
+        print()
     elif dupl_rows not in {'test', 'traintest'} and not isinstance(dupl_rows, bool):
       dupl_rows_valresult = True
-      print("Error: invalid entry passed for dupl_rows parameter.")
-      print("Acceptable values are one of {True, False, 'test', 'traintest'}")
-      print()
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for dupl_rows parameter.")
+        print("Acceptable values are one of {True, False, 'test', 'traintest'}")
+        print()
       
     miscparameters_results.update({'dupl_rows_valresult' : dupl_rows_valresult})
     
@@ -26120,15 +26140,17 @@ class AutoMunge:
     powertransform_valresult = False
     if powertransform not in {True, False, 'excl', 'exc2', 'infill'}:
       powertransform_valresult = True
-      print("Error: invalid entry passed for powertransform parameter.")
-      print("Acceptable values are one of {True, False, 'excl', 'exc2', 'infill'}")
-      print()
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for powertransform parameter.")
+        print("Acceptable values are one of {True, False, 'excl', 'exc2', 'infill'}")
+        print()
     elif powertransform not in {'excl', 'exc2', 'infill'} \
     and not isinstance(powertransform, bool):
       powertransform_valresult = True
-      print("Error: invalid entry passed for powertransform parameter.")
-      print("Acceptable values are one of {True, False, 'excl', 'exc2', 'infill'}")
-      print()
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for powertransform parameter.")
+        print("Acceptable values are one of {True, False, 'excl', 'exc2', 'infill'}")
+        print()
       
     miscparameters_results.update({'powertransform_valresult' : powertransform_valresult})
     
@@ -26136,9 +26158,10 @@ class AutoMunge:
     binstransform_valresult = False
     if binstransform not in {True, False} or not isinstance(binstransform, bool):
       binstransform_valresult = True
-      print("Error: invalid entry passed for binstransform parameter.")
-      print("Acceptable values are one of {True, False}")
-      print()
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for binstransform parameter.")
+        print("Acceptable values are one of {True, False}")
+        print()
       
     miscparameters_results.update({'binstransform_valresult' : binstransform_valresult})
     
@@ -26146,9 +26169,10 @@ class AutoMunge:
     MLinfill_valresult = False
     if MLinfill not in {True, False} or not isinstance(MLinfill, bool):
       MLinfill_valresult = True
-      print("Error: invalid entry passed for MLinfill parameter.")
-      print("Acceptable values are one of {True, False}")
-      print()
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for MLinfill parameter.")
+        print("Acceptable values are one of {True, False}")
+        print()
       
     miscparameters_results.update({'MLinfill_valresult' : MLinfill_valresult})
     
@@ -26157,14 +26181,16 @@ class AutoMunge:
     if not isinstance(infilliterate, (int)) \
     or isinstance(infilliterate, bool):
       infilliterate_valresult = True
-      print("Error: invalid entry passed for infilliterate parameter.")
-      print("Acceptable values are integers >= 0")
-      print()
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for infilliterate parameter.")
+        print("Acceptable values are integers >= 0")
+        print()
     elif infilliterate < 0:
       infilliterate_valresult = True
-      print("Error: invalid entry passed for infilliterate parameter.")
-      print("Acceptable values are integers >= 0")
-      print()
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for infilliterate parameter.")
+        print("Acceptable values are integers >= 0")
+        print()
       
     miscparameters_results.update({'infilliterate_valresult' : infilliterate_valresult})
     
@@ -26172,19 +26198,22 @@ class AutoMunge:
     randomseed_valresult = False
     if not isinstance(randomseed, (int)):
       randomseed_valresult = True
-      print("Error: invalid entry passed for randomseed parameter.")
-      print("Acceptable values are integers >= 0 or False")
-      print()
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for randomseed parameter.")
+        print("Acceptable values are integers >= 0 or False")
+        print()
     elif randomseed < 0 :
       randomseed_valresult = True
-      print("Error: invalid entry passed for randomseed parameter.")
-      print("Acceptable values are integers >= 0 or False")
-      print()
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for randomseed parameter.")
+        print("Acceptable values are integers >= 0 or False")
+        print()
     elif randomseed is True :
       randomseed_valresult = True
-      print("Error: invalid entry passed for randomseed parameter.")
-      print("Acceptable values are integers >= 0 or False")
-      print()
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for randomseed parameter.")
+        print("Acceptable values are integers >= 0 or False")
+        print()
       
     miscparameters_results.update({'randomseed_valresult' : randomseed_valresult})
     
@@ -26193,14 +26222,16 @@ class AutoMunge:
     if not (isinstance(eval_ratio, (int)) \
     or isinstance(eval_ratio, (float))):
       eval_ratio_valresult = True
-      print("Error: invalid entry passed for eval_ratio parameter.")
-      print("Acceptable values are floats 0-1 or integers >1")
-      print()
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for eval_ratio parameter.")
+        print("Acceptable values are floats 0-1 or integers >1")
+        print()
     elif eval_ratio < 0:
       eval_ratio_valresult = True
-      print("Error: invalid entry passed for eval_ratio parameter.")
-      print("Acceptable values are floats 0-1 or integers >1")
-      print()
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for eval_ratio parameter.")
+        print("Acceptable values are floats 0-1 or integers >1")
+        print()
       
     miscparameters_results.update({'eval_ratio_valresult' : eval_ratio_valresult})
     
@@ -26208,14 +26239,16 @@ class AutoMunge:
     numbercategoryheuristic_valresult = False
     if not isinstance(numbercategoryheuristic, int):
       numbercategoryheuristic_valresult = True
-      print("Error: invalid entry passed for numbercategoryheuristic parameter.")
-      print("Acceptable values are integers >= 1")
-      print()
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for numbercategoryheuristic parameter.")
+        print("Acceptable values are integers >= 1")
+        print()
     elif numbercategoryheuristic < 1:
       numbercategoryheuristic_valresult = True
-      print("Error: invalid entry passed for numbercategoryheuristic parameter.")
-      print("Acceptable values are integers >= 1")
-      print()
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for numbercategoryheuristic parameter.")
+        print("Acceptable values are integers >= 1")
+        print()
 
     miscparameters_results.update({'numbercategoryheuristic_valresult' : numbercategoryheuristic_valresult})
       
@@ -26223,9 +26256,10 @@ class AutoMunge:
     pandasoutput_valresult = False
     if pandasoutput not in {True, False} or not isinstance(pandasoutput, bool):
       pandasoutput_valresult = True
-      print("Error: invalid entry passed for pandasoutput parameter.")
-      print("Acceptable values are one of {True, False}")
-      print()
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for pandasoutput parameter.")
+        print("Acceptable values are one of {True, False}")
+        print()
       
     miscparameters_results.update({'pandasoutput_valresult' : pandasoutput_valresult})
     
@@ -26233,9 +26267,10 @@ class AutoMunge:
     NArw_marker_valresult = False
     if NArw_marker not in {True, False} or not isinstance(NArw_marker, bool):
       NArw_marker_valresult = True
-      print("Error: invalid entry passed for NArw_marker parameter.")
-      print("Acceptable values are one of {True, False}")
-      print()
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for NArw_marker parameter.")
+        print("Acceptable values are one of {True, False}")
+        print()
       
     miscparameters_results.update({'NArw_marker_valresult' : NArw_marker_valresult})
 
@@ -26244,9 +26279,10 @@ class AutoMunge:
     if featureselection not in {True, False, 'pct', 'metric', 'report'} \
     or featureselection in {True, False} and not isinstance(featureselection, bool):
       featureselection_valresult = True
-      print("Error: invalid entry passed for featureselection parameter.")
-      print("Acceptable values are one of {False, True, 'pct', 'metric', 'report'}")
-      print()
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for featureselection parameter.")
+        print("Acceptable values are one of {False, True, 'pct', 'metric', 'report'}")
+        print()
       
     miscparameters_results.update({'featureselection_valresult' : featureselection_valresult})
     
@@ -26254,14 +26290,16 @@ class AutoMunge:
     featurethreshold_valresult = False
     if not isinstance(featurethreshold, float) and featurethreshold != 0:
       featurethreshold_valresult = True
-      print("Error: invalid entry passed for featurethreshold parameter.")
-      print("Acceptable values are floats within range 0.0 <= featurethreshold <= 1.0")
-      print()
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for featurethreshold parameter.")
+        print("Acceptable values are floats within range 0.0 <= featurethreshold <= 1.0")
+        print()
     elif (featurethreshold < 0.0 or featurethreshold > 1.0):
       featurethreshold_valresult = True
-      print("Error: invalid entry passed for featurethreshold parameter.")
-      print("Acceptable values are floats within range 0.0 <= featurethreshold <= 1.0")
-      print()
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for featurethreshold parameter.")
+        print("Acceptable values are floats within range 0.0 <= featurethreshold <= 1.0")
+        print()
       
     miscparameters_results.update({'featurethreshold_valresult' : featurethreshold_valresult})
 
@@ -26269,9 +26307,10 @@ class AutoMunge:
     inplace_valresult = False
     if inplace not in {True, False} or not isinstance(inplace, bool):
       inplace_valresult = True
-      print("Error: invalid entry passed for inplace parameter.")
-      print("Acceptable values are one of {False, True}")
-      print()
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for inplace parameter.")
+        print("Acceptable values are one of {False, True}")
+        print()
       
     miscparameters_results.update({'inplace_valresult' : inplace_valresult})
   
@@ -26279,15 +26318,17 @@ class AutoMunge:
     Binary_valresult = False
     if not isinstance(Binary, list) and Binary not in {True, False, 'retain'}:
       Binary_valresult = True
-      print("Error: invalid entry passed for Binary parameter.")
-      print("Acceptable values are one of {True, False, 'retain', [list]}")
-      print()
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for Binary parameter.")
+        print("Acceptable values are one of {True, False, 'retain', [list]}")
+        print()
     elif not isinstance(Binary, list) \
     and not isinstance(Binary, bool) \
     and Binary not in {'retain'}:
       Binary_valresult = True
-      print("Error: invalid entry passed for Binary parameter.")
-      print("Acceptable values are one of {True, False, 'retain', [list]}")
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for Binary parameter.")
+        print("Acceptable values are one of {True, False, 'retain', [list]}")
       
     miscparameters_results.update({'Binary_valresult' : Binary_valresult})
     
@@ -26303,28 +26344,32 @@ class AutoMunge:
         if isinstance(PCAn_components, int):
           if PCAn_components < 1:
             PCAn_components_valresult = True
-            print("Error: invalid entry passed for PCAn_components")
-            print("Acceptable values are integers > 1, floats between 0-1, False, or None.")
-            print()
+            if printstatus != 'silent':
+              print("Error: invalid entry passed for PCAn_components")
+              print("Acceptable values are integers > 1, floats between 0-1, False, or None.")
+              print()
           
         if isinstance(PCAn_components, float):
           if (PCAn_components > 1.0 or PCAn_components < 0.0):
             PCAn_components_valresult = True
+            if printstatus != 'silent':
+              print("Error: invalid entry passed for PCAn_components")
+              print("Acceptable values are integers > 1, floats between 0-1, False, or None.")
+              print()
+
+        if PCAn_components is True:
+          PCAn_components_valresult = True
+          if printstatus != 'silent':
             print("Error: invalid entry passed for PCAn_components")
             print("Acceptable values are integers > 1, floats between 0-1, False, or None.")
             print()
 
-        if PCAn_components is True:
-          PCAn_components_valresult = True
-          print("Error: invalid entry passed for PCAn_components")
-          print("Acceptable values are integers > 1, floats between 0-1, False, or None.")
-          print()
-
     else:
       PCAn_components_valresult = True
-      print("Error: invalid entry passed for PCAn_components")
-      print("Acceptable values are integers > 1, floats between 0-1, False, or None.")
-      print()
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for PCAn_components")
+        print("Acceptable values are integers > 1, floats between 0-1, False, or None.")
+        print()
       
     miscparameters_results.update({'PCAn_components_valresult' : PCAn_components_valresult})
     
@@ -26332,24 +26377,28 @@ class AutoMunge:
     PCAexcl_valresult = False
     if not isinstance(PCAexcl, list) and PCAexcl not in {False}:
       PCAexcl_valresult = True
-      print("Error: invalid entry passed for PCAexcl parameter.")
-      print("Acceptable values are one of {False, [list]}")
-      print()
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for PCAexcl parameter.")
+        print("Acceptable values are one of {False, [list]}")
+        print()
     elif not isinstance(PCAexcl, list) \
     and not isinstance(PCAexcl, bool):
       PCAexcl_valresult = True
-      print("Error: invalid entry passed for PCAexcl parameter.")
-      print("Acceptable values are one of {False, [list]}")
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for PCAexcl parameter.")
+        print("Acceptable values are one of {False, [list]}")
       
     miscparameters_results.update({'PCAexcl_valresult' : PCAexcl_valresult})
     
     #check printstatus
     printstatus_valresult = False
-    if printstatus not in {True, False} or not isinstance(printstatus, bool):
+    if printstatus not in {True, False, 'silent'} or \
+    (printstatus in {True, False} and not isinstance(printstatus, bool)):
       printstatus_valresult = True
-      print("Error: invalid entry passed for printstatus parameter.")
-      print("Acceptable values are one of {True, False}")
-      print()
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for printstatus parameter.")
+        print("Acceptable values are one of {True, False, 'silent'}")
+        print()
       
     miscparameters_results.update({'printstatus_valresult' : printstatus_valresult})
     
@@ -26357,9 +26406,10 @@ class AutoMunge:
     excl_suffix_valresult = False
     if excl_suffix not in {True, False} or not isinstance(excl_suffix, bool):
       excl_suffix_valresult = True
-      print("Error: invalid entry passed for excl_suffix parameter.")
-      print("Acceptable values are one of {True, False}")
-      print()
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for excl_suffix parameter.")
+        print("Acceptable values are one of {True, False}")
+        print()
       
     miscparameters_results.update({'excl_suffix_valresult' : excl_suffix_valresult})
 
@@ -26369,8 +26419,9 @@ class AutoMunge:
     and not isinstance(trainID_column, str) \
     and not isinstance(trainID_column, list):
       trainID_column_valresult = True
-      print("Error: invalid entry passed for trainID_column parameter.")
-      print("trainID_column allowable values are False, string, or list.")
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for trainID_column parameter.")
+        print("trainID_column allowable values are False, string, or list.")
 
     miscparameters_results.update({'trainID_column_valresult' : trainID_column_valresult})
 
@@ -26381,8 +26432,9 @@ class AutoMunge:
     and not isinstance(testID_column, str) \
     and not isinstance(testID_column, list):
       testID_column_valresult = True
-      print("Error: invalid entry passed for testID_column parameter.")
-      print("testID_column allowable values are boolean, string, or list.")
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for testID_column parameter.")
+        print("testID_column allowable values are boolean, string, or list.")
 
     miscparameters_results.update({'testID_column_valresult' : testID_column_valresult})
 
@@ -26391,8 +26443,9 @@ class AutoMunge:
     if evalcat is not False \
     and type(evalcat) != types.FunctionType:
       evalcat_valresult = True
-      print("Error: invalid entry passed for evalcat parameter.")
-      print("evalcat allowable values are False or as a defined function per READ ME.")
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for evalcat parameter.")
+        print("evalcat allowable values are False or as a defined function per READ ME.")
       
     miscparameters_results.update({'evalcat_valresult' : evalcat_valresult})
     
@@ -26414,9 +26467,10 @@ class AutoMunge:
     pandasoutput_valresult = False
     if pandasoutput not in {True, False} or not isinstance(pandasoutput, bool):
       pandasoutput_valresult = True
-      print("Error: invalid entry passed for pandasoutput parameter.")
-      print("Acceptable values are one of {True, False}")
-      print()
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for pandasoutput parameter.")
+        print("Acceptable values are one of {True, False}")
+        print()
       
     pm_miscparameters_results.update({'pandasoutput_valresult' : pandasoutput_valresult})
     
@@ -26424,9 +26478,10 @@ class AutoMunge:
     printstatus_valresult = False
     if printstatus not in {True, False} or not isinstance(printstatus, bool):
       printstatus_valresult = True
-      print("Error: invalid entry passed for printstatus parameter.")
-      print("Acceptable values are one of {True, False}")
-      print()
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for printstatus parameter.")
+        print("Acceptable values are one of {True, False}")
+        print()
       
     pm_miscparameters_results.update({'printstatus_valresult' : printstatus_valresult})
     
@@ -26434,15 +26489,17 @@ class AutoMunge:
     inversion_valresult = False
     if not isinstance(inversion, list) and inversion not in {False, 'test', 'labels', 'denselabels'}:
       inversion_valresult = True
-      print("Error: invalid entry passed for inversion parameter.")
-      print("Acceptable values are one of {False, 'test', 'labels', 'denselabels', or a list of columns}")
-      print()
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for inversion parameter.")
+        print("Acceptable values are one of {False, 'test', 'labels', 'denselabels', or a list of columns}")
+        print()
     elif not isinstance(inversion, list) and inversion not in {'test', 'labels', 'denselabels'} \
     and not isinstance(inversion, bool):
       inversion_valresult = True
-      print("Error: invalid entry passed for inversion parameter.")
-      print("Acceptable values are one of {False, 'test', 'labels', 'denselabels', or a list of columns}")
-      print()
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for inversion parameter.")
+        print("Acceptable values are one of {False, 'test', 'labels', 'denselabels', or a list of columns}")
+        print()
       
     pm_miscparameters_results.update({'inversion_valresult' : inversion_valresult})
     
@@ -26450,9 +26507,10 @@ class AutoMunge:
     TrainLabelFreqLevel_valresult = False
     if TrainLabelFreqLevel not in {True, False} or not isinstance(TrainLabelFreqLevel, bool):
       TrainLabelFreqLevel_valresult = True
-      print("Error: invalid entry passed for TrainLabelFreqLevel parameter.")
-      print("Acceptable values are one of {True, False}")
-      print()
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for TrainLabelFreqLevel parameter.")
+        print("Acceptable values are one of {True, False}")
+        print()
       
     pm_miscparameters_results.update({'TrainLabelFreqLevel_valresult' : TrainLabelFreqLevel_valresult})
 
@@ -26460,9 +26518,10 @@ class AutoMunge:
     dupl_rows_valresult = False
     if dupl_rows not in {True, False} or not isinstance(dupl_rows, bool):
       dupl_rows_valresult = True
-      print("Error: invalid entry passed for dupl_rows parameter.")
-      print("Acceptable values are one of {True, False}")
-      print()
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for dupl_rows parameter.")
+        print("Acceptable values are one of {True, False}")
+        print()
       
     pm_miscparameters_results.update({'dupl_rows_valresult' : dupl_rows_valresult})
     
@@ -26470,9 +26529,10 @@ class AutoMunge:
     featureeval_valresult = False
     if featureeval not in {True, False} or not isinstance(featureeval, bool):
       featureeval_valresult = True
-      print("Error: invalid entry passed for featureeval parameter.")
-      print("Acceptable values are one of {True, False}")
-      print()
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for featureeval parameter.")
+        print("Acceptable values are one of {True, False}")
+        print()
       
     pm_miscparameters_results.update({'featureeval_valresult' : featureeval_valresult})
     
@@ -26480,15 +26540,17 @@ class AutoMunge:
     driftreport_valresult = False
     if driftreport not in {True, False, 'efficient', 'report_effic', 'report_full'}:
       driftreport_valresult = True
-      print("Error: invalid entry passed for driftreport parameter.")
-      print("Acceptable values are one of {True, False, 'efficient', 'report_effic', 'report_full'}")
-      print()
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for driftreport parameter.")
+        print("Acceptable values are one of {True, False, 'efficient', 'report_effic', 'report_full'}")
+        print()
     elif driftreport not in {'efficient', 'report_effic', 'report_full'} \
     and not isinstance(driftreport, bool):
       driftreport_valresult = True
-      print("Error: invalid entry passed for driftreport parameter.")
-      print("Acceptable values are one of {True, False, 'efficient', 'report_effic', 'report_full'}")
-      print()
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for driftreport parameter.")
+        print("Acceptable values are one of {True, False, 'efficient', 'report_effic', 'report_full'}")
+        print()
       
     pm_miscparameters_results.update({'driftreport_valresult' : driftreport_valresult})
 
@@ -26496,9 +26558,10 @@ class AutoMunge:
     inplace_valresult = False
     if inplace not in {True, False} or not isinstance(inplace, bool):
       inplace_valresult = True
-      print("Error: invalid entry passed for inplace parameter.")
-      print("Acceptable values are one of {False, True}")
-      print()
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for inplace parameter.")
+        print("Acceptable values are one of {False, True}")
+        print()
       
     pm_miscparameters_results.update({'inplace_valresult' : inplace_valresult})
     
@@ -26506,15 +26569,17 @@ class AutoMunge:
     returnedsets_valresult = False
     if returnedsets not in {True, False, 'test_ID', 'test_labels', 'test_ID_labels'}:
       returnedsets_valresult = True
-      print("Error: invalid entry passed for returnedsets parameter.")
-      print("Acceptable values are one of {True, False, 'test_ID', 'test_labels', 'test_ID_labels'}")
-      print()
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for returnedsets parameter.")
+        print("Acceptable values are one of {True, False, 'test_ID', 'test_labels', 'test_ID_labels'}")
+        print()
     elif returnedsets not in {'test_ID', 'test_labels', 'test_ID_labels'} \
     and not isinstance(returnedsets, bool):
       returnedsets_valresult = True
-      print("Error: invalid entry passed for returnedsets parameter.")
-      print("Acceptable values are one of {True, False, 'test_ID', 'test_labels', 'test_ID_labels'}")
-      print()
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for returnedsets parameter.")
+        print("Acceptable values are one of {True, False, 'test_ID', 'test_labels', 'test_ID_labels'}")
+        print()
       
     pm_miscparameters_results.update({'returnedsets_valresult' : returnedsets_valresult})
     
@@ -26522,9 +26587,10 @@ class AutoMunge:
     shuffletrain_valresult = False
     if shuffletrain not in {True, False} or not isinstance(shuffletrain, bool):
       shuffletrain_valresult = True
-      print("Error: invalid entry passed for shuffletrain parameter.")
-      print("Acceptable values are one of {True, False}")
-      print()
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for shuffletrain parameter.")
+        print("Acceptable values are one of {True, False}")
+        print()
       
     pm_miscparameters_results.update({'shuffletrain_valresult' : shuffletrain_valresult})
 
@@ -26532,9 +26598,10 @@ class AutoMunge:
     traindata_valresult = False
     if traindata not in {True, False} or not isinstance(pandasoutput, bool):
       traindata_valresult = True
-      print("Error: invalid entry passed for traindata parameter.")
-      print("Acceptable values are one of {True, False}")
-      print()
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for traindata parameter.")
+        print("Acceptable values are one of {True, False}")
+        print()
       
     pm_miscparameters_results.update({'traindata_valresult' : traindata_valresult})
 
@@ -26545,14 +26612,15 @@ class AutoMunge:
     and not isinstance(testID_column, str) \
     and not isinstance(testID_column, list):
       testID_column_valresult = True
-      print("Error: invalid entry passed for testID_column parameter.")
-      print("testID_column allowable values are boolean, string, or list.")
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for testID_column parameter.")
+        print("testID_column allowable values are boolean, string, or list.")
 
     pm_miscparameters_results.update({'testID_column_valresult' : testID_column_valresult})
     
     return pm_miscparameters_results
 
-  def _check_FSmodel(self, featureselection, FSmodel):
+  def _check_FSmodel(self, featureselection, FSmodel, printstatus):
     """
     If feature importance applied confirms that a model was successfully trained
     """
@@ -26563,12 +26631,13 @@ class AutoMunge:
       if FSmodel is False:
         check_FSmodel_result = True
         
-        print("error: Feature importance model was not successfully trained")
-        print()
+        if printstatus != 'silent':
+          print("error: Feature importance model was not successfully trained")
+          print()
         
     return check_FSmodel_result
 
-  def _check_np_shape(self, df_train, df_test):
+  def _check_np_shape(self, df_train, df_test, printstatus):
     """
     Validates any passed numpy arrays are tabular (1D or 2D)
     """
@@ -26581,18 +26650,20 @@ class AutoMunge:
     if isinstance(checknp, type(df_train)):
       if len(df_train.shape) > 2:
         check_np_shape_train_result = True
-        print("error: numpy array passed to df_train is not tabular (>2D dimensions)")
-        print()
+        if printstatus != 'silent':
+          print("error: numpy array passed to df_train is not tabular (>2D dimensions)")
+          print()
         
     if isinstance(checknp, type(df_test)):
       if len(df_test.shape) > 2:
         check_np_shape_test_result = True
-        print("error: numpy array passed to df_test is not tabular (>2D dimensions)")
-        print()
+        if printstatus != 'silent':
+          print("error: numpy array passed to df_test is not tabular (>2D dimensions)")
+          print()
         
     return check_np_shape_train_result, check_np_shape_test_result
 
-  def _check_ML_infill(self, df_train, column, postprocess_dict, infill_validations = {}):
+  def _check_ML_infill(self, printstatus, df_train, column, postprocess_dict, infill_validations = {}):
     """
     #Perform validations that train set is suitable for MLinfill
     #For example ML infill requires >1 source columns in df_train
@@ -26605,8 +26676,9 @@ class AutoMunge:
     
       if len(columnslist) == len(list(df_train)):
         
-        print("Error: ML infill requires > 1 source features in df_train")
-        print()
+        if postprocess_dict['printstatus'] != 'silent':
+          print("Error: ML infill requires > 1 source features in df_train")
+          print()
         
         infill_validations.update({'MLinfill_validations': True})
           
@@ -26616,7 +26688,7 @@ class AutoMunge:
       
     return infill_validations
 
-  def validate_allvalidnumeric(self, df):
+  def validate_allvalidnumeric(self, df, printstatus):
     """
     #some methods in library, such as ML infilll, PCA, and feature importance, 
     #require all numeric data with all valid entries
@@ -26635,24 +26707,26 @@ class AutoMunge:
       
       numeric_data_result = True
       
-      print("error: data was passed to ML infill, PCA, or feature importance with non-numeric data.")
-      print("Some transforms in library may not convert data to numeric, such as the passthrough transform excl.")
-      print("Alternatives to excl for pass-through with force to numeric and infill are available as exc2 - exc8.")
-      print()
+      if postprocess_dict['printstatus'] != 'silent':
+        print("error: data was passed to ML infill, PCA, or feature importance with non-numeric data.")
+        print("Some transforms in library may not convert data to numeric, such as the passthrough transform excl.")
+        print("Alternatives to excl for pass-through with force to numeric and infill are available as exc2 - exc8.")
+        print()
     
     #then check for all valid entries
     if df.isna().values.sum() > 0:
       
       all_valid_entries_result = True
       
-      print("error: data was passed to ML infill, PCA, or feature importance with missing entries (NaN values).")
-      print("Some transforms in library may not conduct infill, such as the passthrough transform excl.")
-      print("Alternatives to excl for pass-through with force to numeric and infill are available as exc2 - exc8.")
-      print()
+      if postprocess_dict['printstatus'] != 'silent':
+        print("error: data was passed to ML infill, PCA, or feature importance with missing entries (NaN values).")
+        print("Some transforms in library may not conduct infill, such as the passthrough transform excl.")
+        print("Alternatives to excl for pass-through with force to numeric and infill are available as exc2 - exc8.")
+        print()
     
     return numeric_data_result, all_valid_entries_result
 
-  def _check_assigncat(self, assigncat):
+  def _check_assigncat(self, assigncat, printstatus):
     """
     #Here we'll do a quick check for any redundant column assignments in the
     #assigncat, if any found return an error message
@@ -26685,17 +26759,18 @@ class AutoMunge:
 
     if len(assigncat_redundant_dict) > 0:
       result = True
-      print("Error, the following columns assigned to multiple root categories in assigncat:")
-      for assigncatkey3 in sorted(assigncat_redundant_dict):
-        print("")
-        print("Column: ", assigncatkey3)
-        print("Found in following assigncat entries:")
-        print(assigncat_redundant_dict[assigncatkey3])
-        print("")
+      if printstatus != 'silent':
+        print("Error, the following columns assigned to multiple root categories in assigncat:")
+        for assigncatkey3 in sorted(assigncat_redundant_dict):
+          print("")
+          print("Column: ", assigncatkey3)
+          print("Found in following assigncat entries:")
+          print(assigncat_redundant_dict[assigncatkey3])
+          print("")
 
     return result
   
-  def _check_assigncat2(self, assigncat, transform_dict):
+  def _check_assigncat2(self, assigncat, transform_dict, printstatus):
     """
     #Here we'll do a quick check to ensure all of the keys of passed assigncat
     #have corresponding entries in transform_dict, (which may include user
@@ -26718,15 +26793,16 @@ class AutoMunge:
         
         result = True
         
-        print("Error, the following entry to user passed assigncat was not found")
-        print("to have a corresponding entry in transform_dict.")
-        print("")
-        print("assigncat key missing transform_dict entry: ", assigncat_key)
-        print("")
+        if printstatus != 'silent':
+          print("Error, the following entry to user passed assigncat was not found")
+          print("to have a corresponding entry in transform_dict.")
+          print("")
+          print("assigncat key missing transform_dict entry: ", assigncat_key)
+          print("")
 
     return result
   
-  def _check_assigncat3(self, assigncat, process_dict, transform_dict):
+  def _check_assigncat3(self, assigncat, process_dict, transform_dict, printstatus):
     """
     #Here's we'll do a third check on assigncat
     #to ensure that for any listed root categories, 
@@ -26753,18 +26829,19 @@ class AutoMunge:
 
             if familytree_entry not in process_dict:
 
-              print("Error, the following category was found as an entry")
-              print("in a family tree without a corresponding entry ")
-              print("in the process_dict.")
-              print("")
-              print("family tree entry missing process_dict entry: ", familytree_entry)
-              print("this entry was passed in the family tree of root category: ", assigncat_key)
+              if printstatus != 'silent':
+                print("Error, the following category was found as an entry")
+                print("in a family tree without a corresponding entry ")
+                print("in the process_dict.")
+                print("")
+                print("family tree entry missing process_dict entry: ", familytree_entry)
+                print("this entry was passed in the family tree of root category: ", assigncat_key)
 
               result = True
         
     return result
 
-  def _check_assigninfill(self, assigninfill):
+  def _check_assigninfill(self, assigninfill, printstatus):
     """
     #Here we'll do a quick check for any redundant column assignments in the
     #assigninfill, if any found return an error message
@@ -26797,17 +26874,18 @@ class AutoMunge:
 
     if len(assigninfill_redundant_dict) > 0:
       result = True
-      print("Error, the following columns assigned to multiple root categories in assigninfill:")
-      for assigninfill_key3 in sorted(assigninfill_redundant_dict):
-        print("")
-        print("Column: ", assigninfill_key3)
-        print("Found in following assigninfill entries:")
-        print(assigninfill_redundant_dict[assigninfill_key3])
-        print("")
+      if printstatus != 'silent':
+        print("Error, the following columns assigned to multiple root categories in assigninfill:")
+        for assigninfill_key3 in sorted(assigninfill_redundant_dict):
+          print("")
+          print("Column: ", assigninfill_key3)
+          print("Found in following assigninfill entries:")
+          print(assigninfill_redundant_dict[assigninfill_key3])
+          print("")
     
     return result
 
-  def _check_transformdict000(self, transformdict):
+  def _check_transformdict000(self, transformdict, printstatus):
     """
     #Validation of transformdict format
     #ensures that each root category key has values of a dicitonary
@@ -26827,8 +26905,9 @@ class AutoMunge:
         
         result1 = True
         
-        print("Error: transformdict entry for root category ", root)
-        print("was passed without value of a dictionary for primitives.")
+        if printstatus != 'silent':
+          print("Error: transformdict entry for root category ", root)
+          print("was passed without value of a dictionary for primitives.")
         
       else:
         
@@ -26837,12 +26916,13 @@ class AutoMunge:
           
           result2 = True
           
-          print("Error: transformdict entry for root category ", root)
-          print("was passed with invalid primitives.")
+          if printstatus != 'silent':
+            print("Error: transformdict entry for root category ", root)
+            print("was passed with invalid primitives.")
           
     return result1, result2
 
-  def _check_transformdict00(self, transformdict):
+  def _check_transformdict00(self, transformdict, printstatus):
     """
     #Validation of primitive entries format
     #checks that entries are a list of strings
@@ -26867,14 +26947,15 @@ class AutoMunge:
               
               result = True
               
-              print("Error: user passed transformdict for root category ", root)
-              print("Contained an entry to primitive ", primitive)
-              print("that was not a valid data type.")
-              print("Data type should be a string (representing a transformation category).")
+              if printstatus != 'silent':
+                print("Error: user passed transformdict for root category ", root)
+                print("Contained an entry to primitive ", primitive)
+                print("that was not a valid data type.")
+                print("Data type should be a string (representing a transformation category).")
               
     return result, transformdict
 
-  def _check_transformdict0(self, transformdict):
+  def _check_transformdict0(self, transformdict, printstatus):
     """
     #For cases where user passes trasnformdict root category with partial family tree
     #populates the other primitives as empty sets
@@ -26901,12 +26982,13 @@ class AutoMunge:
       else:
         result = True
         
-        print("Error, transformdict entry for root category ", root)
-        print("was passed without any primitives populated.")
+        if printstatus != 'silent':
+          print("Error, transformdict entry for root category ", root)
+          print("was passed without any primitives populated.")
       
     return result, transformdict
 
-  def _check_transformdict(self, transformdict):
+  def _check_transformdict(self, transformdict, printstatus):
     """
     #Here we'll do a quick check for any entries in the user passed
     #transformdict which don't have at least one replacement column specified
@@ -26927,6 +27009,12 @@ class AutoMunge:
         
         transformdict[transformkey]['auntsuncles'].append('excl')
 
+        #(This isn't an error just how we accomodate scenario to support populating data structures.)
+        # if printstatus != 'silent':
+          # print("family tree defined without replacement primitive in upstream primitives")
+          # print("for category ", transformkey)
+          # print("adding an 'excl' trasnform to auntsuncles which is direct passthrough.")
+
         result1 = True
           
       #this ensures 'excl' is final transform in the auntsuncles list if included
@@ -26936,7 +27024,7 @@ class AutoMunge:
 
     return result1, result2, transformdict
   
-  def _check_transformdict2(self, transformdict):
+  def _check_transformdict2(self, transformdict, printstatus):
     """
     #Here we'll do an additional check on transformdict to ensure
     #no redundant specifications in adjacent primitives
@@ -26960,9 +27048,10 @@ class AutoMunge:
               
               result1 = True
               
-              print("error warning: ")
-              print("redundant entries found in the upstream primitives ")
-              print("for user-passed transformdict key: ", transformkey)
+              if printstatus != 'silent':
+                print("error warning: ")
+                print("redundant entries found in the upstream primitives ")
+                print("for user-passed transformdict key: ", transformkey)
               
             else:
           
@@ -26976,9 +27065,10 @@ class AutoMunge:
               
               result2 = True
               
-              print("error warning: ")
-              print("redundant entries found in the downstream primitives ")
-              print("for user-passed transformdict key: ", transformkey)
+              if printstatus != 'silent':
+                print("error warning: ")
+                print("redundant entries found in the downstream primitives ")
+                print("for user-passed transformdict key: ", transformkey)
               
             else:
           
@@ -26989,7 +27079,7 @@ class AutoMunge:
 
     return result1, result2
 
-  def _check_transform_dict_roots(self, transform_dict, process_dict):
+  def _check_transform_dict_roots(self, transform_dict, process_dict, printstatus):
     """
     #validates that transform_dict root categories after consolidation
     #have corresponding entries in process_dict after consolidation
@@ -27003,14 +27093,15 @@ class AutoMunge:
         
         check_transform_dict_roots_result = True
         
-        print("error: a root category was found in transformdict")
-        print("without a corresponding entry in processdict")
-        print("for transformdict root category: ", entry)
-        print()
+        if printstatus != 'silent':
+          print("error: a root category was found in transformdict")
+          print("without a corresponding entry in processdict")
+          print("for transformdict root category: ", entry)
+          print()
         
     return check_transform_dict_roots_result
   
-  def _check_haltingproblem(self, transformdict, transform_dict, max_check_count = 1111):
+  def _check_haltingproblem(self, transformdict, transform_dict, printstatus, max_check_count = 1111):
     """
     #evaluates user passed transformdict entries to check for infinite loops
     #we'll arbitrarily check for a max depth of 1111 offspring to keep things manageable
@@ -27048,8 +27139,9 @@ class AutoMunge:
 
               haltingproblem_result = True
 
-              print("Error, infinite loop detected in transformdict for root category ", root_category)
-              print()
+              if printstatus != 'silent':
+                print("Error, infinite loop detected in transformdict for root category ", root_category)
+                print()
 
               break
 
@@ -27059,7 +27151,7 @@ class AutoMunge:
 
               offspring_result, check_count = \
               self._check_offspring(transform_dict, offspring, root_category, \
-                                   upstream_list, check_count, max_check_count)
+                                   upstream_list, check_count, max_check_count, printstatus)
 #               offspring_result, check_count = \
 #               check_offspring(transform_dict, offspring, root_category, \
 #                               upstream_list, check_count, max_check_count)
@@ -27072,16 +27164,17 @@ class AutoMunge:
 
             else:
 
-              print("Number of offspring generations for root category ", root_category)
-              print("exceeded 1111, infinite loop check halted.")
-              print()
+              if printstatus != 'silent':
+                print("Number of offspring generations for root category ", root_category)
+                print("exceeded 1111, infinite loop check halted.")
+                print()
               
               break
     
     return haltingproblem_result
 
   def _check_offspring(self, transform_dict, root_category, orig_root_category, \
-                      upstream_list, check_count, max_check_count):
+                      upstream_list, check_count, max_check_count, printstatus):
     """
     #support function for check_haltingproblem
     """
@@ -27101,8 +27194,9 @@ class AutoMunge:
 
           offspring_result = True
 
-          print("Error, infinite loop detected in transformdict for root category ", orig_root_category)
-          print()
+          if printstatus != 'silent':
+            print("Error, infinite loop detected in transformdict for root category ", orig_root_category)
+            print()
 
           break
 
@@ -27114,7 +27208,7 @@ class AutoMunge:
 
             offspring_result2, check_count = \
             self._check_offspring(transform_dict, offspring, orig_root_category, \
-                                 upstream_list, check_count, max_check_count)
+                                 upstream_list, check_count, max_check_count, printstatus)
 #             offspring_result2, check_count = \
 #             check_offspring(transform_dict, offspring, orig_root_category, \
 #                             upstream_list2, check_count, max_check_count)
@@ -27127,15 +27221,16 @@ class AutoMunge:
 
           else:
 
-            print("Number of offspring generations for root category ", root_category)
-            print("exceeded 1111, infinite loop check halted.")
-            print()
+            if printstatus != 'silent':
+              print("Number of offspring generations for root category ", root_category)
+              print("exceeded 1111, infinite loop check halted.")
+              print()
             
             break
     
     return offspring_result, check_count
 
-  def _check_assignnan(self, assignnan, transform_dict, df_train_list):
+  def _check_assignnan(self, assignnan, transform_dict, df_train_list, printstatus):
     """
     #validates automunge parameter assignnan
     #which accepts form:
@@ -27161,8 +27256,9 @@ class AutoMunge:
       if entry1 not in {'categories', 'columns', 'global', 'injections'}:
         
         check_assignnan_toplevelentries_result = True
-        print("error: assignnan parameter valid entries for first tier are 'categories', 'columns', 'global', and 'injections'")
-        print()
+        if printstatus != 'silent':
+          print("error: assignnan parameter valid entries for first tier are 'categories', 'columns', 'global', and 'injections'")
+          print()
         
     if 'categories' in assignnan:
       
@@ -27171,8 +27267,9 @@ class AutoMunge:
         if entry2 not in transform_dict:
           
           check_assignnan_categories_result = True
-          print("error: assignnan parameter valid entries under 'categories' must be root categories defined in transform_dict")
-          print()
+          if printstatus != 'silent':
+            print("error: assignnan parameter valid entries under 'categories' must be root categories defined in transform_dict")
+            print()
           
     if 'columns' in assignnan:
       
@@ -27181,8 +27278,9 @@ class AutoMunge:
         if entry2 not in df_train_list:
           
           check_assignnan_columns_result = True
-          print("error: assignnan parameter valid entries under 'columns' must be source columns from passed df_train")
-          print()
+          if printstatus != 'silent':
+            print("error: assignnan parameter valid entries under 'columns' must be source columns from passed df_train")
+            print()
 
     if 'injections' in assignnan:
       
@@ -27191,12 +27289,13 @@ class AutoMunge:
         if entry3 not in df_train_list:
           
           check_assignnan_columns_result = True
-          print("error: assignnan parameter valid entries under 'injections' must be source columns from passed df_train")
-          print()
+          if printstatus != 'silent':
+            print("error: assignnan parameter valid entries under 'injections' must be source columns from passed df_train")
+            print()
 
     return check_assignnan_toplevelentries_result, check_assignnan_categories_result, check_assignnan_columns_result
 
-  def _check_ML_cmnd(self, ML_cmnd):
+  def _check_ML_cmnd(self, ML_cmnd, printstatus):
     """
     #Here we'll do a quick check for any entries in the user passed
     #ML_cmnd and add any missing entries with default values
@@ -27216,7 +27315,7 @@ class AutoMunge:
 
     return result
   
-  def _check_assignparam(self, assignparam, process_dict):
+  def _check_assignparam(self, assignparam, process_dict, printstatus):
     """
     #Here we'll do a quick check to validate the passed assign param.
     
@@ -27236,8 +27335,9 @@ class AutoMunge:
       and key not in process_dict:
         
         result = True
-        print("error, assignparam category key ", key)
-        print("was not found in process_dict")
+        if printstatus != 'silent':
+          print("error, assignparam category key ", key)
+          print("was not found in process_dict")
         
       elif key == 'default_assignparam':
         
@@ -27246,12 +27346,13 @@ class AutoMunge:
           if key2 != '(category)' and key2 not in process_dict:
             
             result = True
-            print("error, assignparam['default_assignparam'] category key ", key2)
-            print("was not found in process_dict")
+            if printstatus != 'silent':
+              print("error, assignparam['default_assignparam'] category key ", key2)
+              print("was not found in process_dict")
     
     return result
   
-  def _check_columnheaders(self, columnheaders_list):
+  def _check_columnheaders(self, columnheaders_list, printstatus):
     """
     #Performs a validation that all of the column headers are unique
     """
@@ -27262,12 +27363,13 @@ class AutoMunge:
       
       result = True
       
-      print("Warning of potential error from duplicate column headers.")
-      print("")
+      if printstatus != 'silent':
+        print("Warning of potential error from duplicate column headers.")
+        print("")
       
     return result
 
-  def _check_processdict(self, processdict):
+  def _check_processdict(self, processdict, printstatus):
     """
     #runs validations on user passed processdict
     #assumes any conversion from functionpointer already taken place
@@ -27281,44 +27383,51 @@ class AutoMunge:
 
     if 'global_assignparam' in processdict:
       check_processdict_result = True
-      print("error: processdict has entry for 'global_assignparam'")
-      print("which is a reserved category string for use in assignparam")
+      if printstatus != 'silent':
+        print("error: processdict has entry for 'global_assignparam'")
+        print("which is a reserved category string for use in assignparam")
 
     if 'default_assignparam' in processdict:
       check_processdict_result = True
-      print("error: processdict has entry for 'default_assignparam'")
-      print("which is a reserved category string for use in assignparam")
+      if printstatus != 'silent':
+        print("error: processdict has entry for 'default_assignparam'")
+        print("which is a reserved category string for use in assignparam")
     
     for entry in processdict:
       
       if 'NArowtype' not in processdict[entry]:
         check_processdict_result = True
-        print("error: processdict missing 'NArowtype' entry for category: ", entry)
-        print()
+        if printstatus != 'silent':
+          print("error: processdict missing 'NArowtype' entry for category: ", entry)
+          print()
       else:
         if processdict[entry]['NArowtype'] not in \
         {'numeric', 'integer', 'justNaN', 'exclude', 'positivenumeric', 'nonnegativenumeric', \
         'nonzeronumeric', 'parsenumeric', 'datetime'}:
           check_processdict_result = True
-          print("error: invalid 'NArowtype' processdict entry for category: ", entry)
-          print()
+          if printstatus != 'silent':
+            print("error: invalid 'NArowtype' processdict entry for category: ", entry)
+            print()
         
       if 'MLinfilltype' not in processdict[entry]:
         check_processdict_result = True
-        print("error: processdict missing 'MLinfilltype' entry for category: ", entry)
-        print()
+        if printstatus != 'silent':
+          print("error: processdict missing 'MLinfilltype' entry for category: ", entry)
+          print()
       else:
         if processdict[entry]['MLinfilltype'] not in \
         {'numeric', 'singlct', 'integer', 'binary', 'multirt', 'concurrent_act', 'concurrent_nmbr', '1010', \
         'exclude', 'boolexclude', 'ordlexclude', 'totalexclude'}:
           check_processdict_result = True
-          print("error: invalid 'MLinfilltype' processdict entry for category: ", entry)
-          print()
+          if printstatus != 'silent':
+            print("error: invalid 'MLinfilltype' processdict entry for category: ", entry)
+            print()
         
       if 'labelctgy' not in processdict[entry]:
         check_processdict_result = True
-        print("error: processdict missing 'labelctgy' entry for category: ", entry)
-        print()
+        if printstatus != 'silent':
+          print("error: processdict missing 'labelctgy' entry for category: ", entry)
+          print()
       # else:
       #   #this isn't a full validation, just checking that labelctgy is a valid entry in processdict
       #   if processdict[entry]['labelctgy'] not in processdict:
@@ -27331,10 +27440,11 @@ class AutoMunge:
       #such as when processdict is for a root category not used as a transformation category
       if ('singleprocess' not in processdict[entry]) and ('dualprocess' not in processdict[entry] or 'postprocess' not in processdict[entry]):
         check_processdict_result = True
-        print("error: processdict entry missing processing function entrys for categery: ", entry)
-        print("requires entries for (both 'dualprocess' and 'postprocess') or (entry for 'singleprocess')")
-        print("(alternately a valid 'functionpointer' entry can be included)")
-        print()
+        if printstatus != 'silent':
+          print("error: processdict entry missing processing function entrys for categery: ", entry)
+          print("requires entries for (both 'dualprocess' and 'postprocess') or (entry for 'singleprocess')")
+          print("(alternately a valid 'functionpointer' entry can be included)")
+          print()
       else:
         pass
         #for now won't validate the transformation function entries
@@ -27342,7 +27452,7 @@ class AutoMunge:
     return check_processdict_result
 
   def _grab_processdict_functions_support(self, targetcategory, pointercategory, processdict, process_dict, \
-                                         i, check_functionpointer_result):
+                                         i, check_functionpointer_result, printstatus):
     """
     #support function for grab_processdict_functions
     #takes as input the targetcategory that has a pointer entry
@@ -27365,9 +27475,10 @@ class AutoMunge:
     #counter i is here to ensure if we're recursively following chains of pointers we don't get caught in loop
     if i > 1111:
       
-      print("error: functionpointer cycled through 1111 entries without finding a stopping point")
-      print("for processdict category entry: ", targetcategory)
-      print("likely infinite loop")
+      if printstatus != 'silent':
+        print("error: functionpointer cycled through 1111 entries without finding a stopping point")
+        print("for processdict category entry: ", targetcategory)
+        print("likely infinite loop")
       
       check_functionpointer_result = True
       
@@ -27419,7 +27530,7 @@ class AutoMunge:
           #follow through recursion
           processdict, i, check_functionpointer_result = \
           self._grab_processdict_functions_support(targetcategory, pointercategory, processdict, process_dict, \
-                                                  i, check_functionpointer_result)
+                                                  i, check_functionpointer_result, printstatus)
             
         else:
           
@@ -27428,9 +27539,10 @@ class AutoMunge:
               ('dualprocess' not in processdict[pointercategory] or 'postprocess' not in processdict[pointercategory]):
 
             check_functionpointer_result = True
-            print("error: processdict entry found without functionpointer or (dualprocess / postprocess) or singleprocess")
-            print("for processdict entry ", pointercategory)
-            print()
+            if printstatus != 'silent':
+              print("error: processdict entry found without functionpointer or (dualprocess / postprocess) or singleprocess")
+              print("for processdict entry ", pointercategory)
+              print()
 
           #so if processing function entries were present, we can grab them and pass to targetcategory
           else:
@@ -27523,13 +27635,14 @@ class AutoMunge:
         
         check_functionpointer_result = True
         
-        print("error: user passed processdict entry for category ", targetcategory)
-        print("contained a functionpointer that did not point to a category with function definitions")
-        print()
+        if printstatus != 'silent':
+          print("error: user passed processdict entry for category ", targetcategory)
+          print("contained a functionpointer that did not point to a category with function definitions")
+          print()
 
     return processdict, i, check_functionpointer_result
   
-  def _grab_processdict_functions(self, processdict, process_dict):
+  def _grab_processdict_functions(self, processdict, process_dict, printstatus):
     """
     #checks for functionpointer entries in user passed processdict
     #when present populates that category with associated functions
@@ -27561,7 +27674,7 @@ class AutoMunge:
         
         processdict, i, check_functionpointer_result = \
         self._grab_processdict_functions_support(targetcategory, pointercategory, processdict, process_dict, \
-                                               i, check_functionpointer_result)
+                                               i, check_functionpointer_result, printstatus)
 
     return processdict, check_functionpointer_result
   
@@ -27800,6 +27913,8 @@ class AutoMunge:
 
   def _apply_LabelSmoothing(self, df, targetcolumn, epsilon, label_categorylist, label_category, categorycomplete_dict, LSfit, LSfitparams_dict):
     """
+    #note that this is now used as a support function for _process_smth and _postprocess_smth
+
     #applies label smoothing based on user passed epsilon 
     
     #if LSfit is False
@@ -27955,6 +28070,8 @@ class AutoMunge:
                 
   def _postapply_LabelSmoothing(self, df, targetcolumn, categorycomplete_dict, LSfitparams_dict):
     """
+    #note that this is now used as a support function for _process_smth and _postprocess_smth
+
     #applies label smoothing based on user passed LSfitparams_dict
     #consiostently to label smoothing from corresponding train data
     
@@ -28101,7 +28218,7 @@ class AutoMunge:
   
     return df, categorycomplete_dict
   
-  def _Binary_convert(self, df_train, df_test, bool_column_list, Binary):
+  def _Binary_convert(self, df_train, df_test, bool_column_list, Binary, postprocess_dict):
     """
     #Binary_convert takes as input a processed dataframe and a list of boolean encoded columns
     #and applies a dimensionality reduction on the boolean set as a binary encodiong
@@ -28113,15 +28230,13 @@ class AutoMunge:
     #on train set (but yes on test set)
     """
     
-    if 'Binary' in df_train.columns:
-      #(this will only happen when a column with header 'Binary' was passed to 'excl')
-      print("error: column header 'Binary' present in set")
-      print("Binary is a reserved column header when applying Binary transform")
-      
-      Binary_present = {'Binary':True}
-    
-    else:
-      Binary_present = {'Binary':False}
+    #this ensures that the 'Binary' support column header added to dataframe isn't already present
+    #(should not be the case since at this point columns have suffix appenders, just here to be consistent)
+    Binary_present = \
+    self._df_check_suffixoverlap(df_train, 
+                                 'Binary', 
+                                 suffixoverlap_results = {}, 
+                                 printstatus = postprocess_dict['printstatus'])
     
     df_train['Binary'] = ''
     df_test['Binary'] = ''
@@ -28137,7 +28252,8 @@ class AutoMunge:
     
     #now we'll apply process_1010 
     df_train, df_test, Binary_column_dict_list = \
-    self._process_1010(df_train, df_test, 'Binary', 'Binary', '1010', {}, {})
+    self._process_1010(df_train, df_test, 'Binary', 'Binary', '1010', \
+                       {'printstatus' : postprocess_dict['printstatus']}, {})
     
     Binary_dict = {'column_dict' : {}}
     
@@ -28351,11 +28467,11 @@ class AutoMunge:
     #including stochastic and range injections
     #as documented further in assignnan_inject function
     if 'injections' in assignnan:
-      df = self._assignnan_inject(df, column, assignnan, postprocess_dict['randomseed'])
+      df = self._assignnan_inject(df, column, assignnan, postprocess_dict['randomseed'], postprocess_dict['printstatus'])
     
     return df
 
-  def _assignnan_inject(self, df, column, assignnan, randomseed):
+  def _assignnan_inject(self, df, column, assignnan, randomseed, printstatus):
     """
     #allows custom range or stochastic nan injections to distinct source columns
     #assignnan now accepts entries as
@@ -28399,10 +28515,11 @@ class AutoMunge:
         if columnkey in df:
           for actionkey in assignnan['injections'][columnkey]:
             if actionkey not in {'inject_ratio', 'range', 'minmax_range', 'entries', 'entry_ratio'}:
-              print("assignnan['injections'] has an invalid action entry")
-              print("for column: ", columnkey)
-              print("and action: ", actionkey)
-              print("accepted form of injetion specifications are documented in read me")
+              if printstatus != 'silent':
+                print("assignnan['injections'] has an invalid action entry")
+                print("for column: ", columnkey)
+                print("and action: ", actionkey)
+                print("accepted form of injetion specifications are documented in read me")
               
             elif actionkey == 'inject_ratio':
               #inject_ratio is uniform randomly injected nan points to ratio of entries
@@ -28911,9 +29028,9 @@ class AutoMunge:
     assignnan = self._assignnan_list_convert(assignnan)
 
     #quick check to ensure each column only assigned once in assigncat and assigninfill
-    check_assigncat_result = self._check_assigncat(assigncat)
-    check_assigninfill_result = self._check_assigninfill(assigninfill)
-    check_ML_cmnd_result = self._check_ML_cmnd(ML_cmnd)
+    check_assigncat_result = self._check_assigncat(assigncat, printstatus)
+    check_assigninfill_result = self._check_assigninfill(assigninfill, printstatus)
+    check_ML_cmnd_result = self._check_ML_cmnd(ML_cmnd, printstatus)
 
     #check the range of parameters 
     #(generally speaking other than passed dictionaries, dataframes, or column identifiers)
@@ -28938,33 +29055,33 @@ class AutoMunge:
 
       #validates format of transformdict
       check_transformdict000_result1, check_transformdict000_result2 = \
-      self._check_transformdict000(transformdict)
+      self._check_transformdict000(transformdict, printstatus)
 
       miscparameters_results.update({'check_transformdict000_result1' : check_transformdict000_result1, \
                                      'check_transformdict000_result2' : check_transformdict000_result2})
 
       #This validates data types of primitive entries, converts string entry to embed in list brackets
       check_transformdict00_result, transformdict = \
-      self._check_transformdict00(transformdict)
+      self._check_transformdict00(transformdict, printstatus)
 
       miscparameters_results.update({'check_transformdict00_result' : check_transformdict00_result})
 
       #If only partial family tree populated this populates other primitives
       check_transformdict0_result, transformdict = \
-      self._check_transformdict0(transformdict)
+      self._check_transformdict0(transformdict, printstatus)
 
       miscparameters_results.update({'check_transformdict0_result' : check_transformdict0_result})
       
       #handling for family trees without replacement primitive entries (add an excl transform)
       check_transformdict_result1, check_transformdict_result2, transformdict = \
-      self._check_transformdict(transformdict)
+      self._check_transformdict(transformdict, printstatus)
 
       miscparameters_results.update({'check_transformdict_result1' : check_transformdict_result1, \
                                      'check_transformdict_result2' : check_transformdict_result2})
       
       #ensure no redundant specifications in adjacent primitives
       check_transformdict2_result1, check_transformdict2_result2 = \
-      self._check_transformdict2(transformdict)
+      self._check_transformdict2(transformdict, printstatus)
       
       miscparameters_results.update({'check_transformdict2_result1' : check_transformdict2_result1, \
                                      'check_transformdict2_result2' : check_transformdict2_result2})
@@ -28974,7 +29091,7 @@ class AutoMunge:
       
     #check for infinite loops in user passed transformdict
     check_haltingproblem_result = \
-    self._check_haltingproblem(transformdict, transform_dict, max_check_count = 111)
+    self._check_haltingproblem(transformdict, transform_dict, printstatus, max_check_count = 111)
     
     miscparameters_results.update({'check_haltingproblem_result' : check_haltingproblem_result})
 
@@ -29000,12 +29117,12 @@ class AutoMunge:
       #have their processing functions assigned by way of a functionpointer entry
       #and if so populate the entry with the associated processing functions
       processdict, check_functionpointer_result = \
-      self._grab_processdict_functions(processdict, process_dict)
+      self._grab_processdict_functions(processdict, process_dict, printstatus)
       miscparameters_results.update({'check_functionpointer_result' : check_functionpointer_result})
       
       #this funcion applies some misc validations on processdict
       check_processdict_result = \
-      self._check_processdict(processdict)
+      self._check_processdict(processdict, printstatus)
       miscparameters_results.update({'check_processdict_result' : check_processdict_result})
 
       #now consolidate user passed entries from processdict and internal library in process_dict
@@ -29017,20 +29134,20 @@ class AutoMunge:
 
     #now that both transform_dict and process_dict are consolidated, validate transformdict roots have processdict entries
     check_transform_dict_roots_result = \
-    self._check_transform_dict_roots(transform_dict, process_dict)
+    self._check_transform_dict_roots(transform_dict, process_dict, printstatus)
     miscparameters_results.update({'check_transform_dict_roots_result' : check_transform_dict_roots_result})
       
     #here we confirm that all of the keys of assigncat have corresponding entries in process_dict
-    check_assigncat_result2 = self._check_assigncat2(assigncat, transform_dict)
+    check_assigncat_result2 = self._check_assigncat2(assigncat, transform_dict, printstatus)
     
     #now double check that any category entries in the assigncat have populated family trees
     #with categories that all have entries in the transform_dict
-    check_assigncat_result3 = self._check_assigncat3(assigncat, process_dict, transform_dict)
+    check_assigncat_result3 = self._check_assigncat3(assigncat, process_dict, transform_dict, printstatus)
     
     miscparameters_results.update({'check_assigncat_result2' : check_assigncat_result2, \
                                    'check_assigncat_result3' : check_assigncat_result3})
 
-    check_assignparam_result = self._check_assignparam(assignparam, process_dict)
+    check_assignparam_result = self._check_assignparam(assignparam, process_dict, printstatus)
     miscparameters_results.update({'check_assignparam_result' : check_assignparam_result})
 
     #initialize autoMLer which is data structure to support ML infill
@@ -29051,7 +29168,8 @@ class AutoMunge:
     if featureselection in {True, 'pct', 'metric', 'report'}:
 
       if labels_column is False:
-        print("featureselection not available without labels_column in training set")
+        if printstatus != 'silent':
+          print("featureselection not available without labels_column in training set")
         
         madethecut = []
         FSmodel = False
@@ -29107,7 +29225,7 @@ class AutoMunge:
     miscparameters_results.update(FS_validations)
 
     #validate that a model was trained
-    check_FSmodel_result = self._check_FSmodel(featureselection, FSmodel)
+    check_FSmodel_result = self._check_FSmodel(featureselection, FSmodel, printstatus)
     miscparameters_results.update({'check_FSmodel_result' : check_FSmodel_result})
 
     #printout display progress
@@ -29123,7 +29241,7 @@ class AutoMunge:
     #first validate numpy data is tabular
     if isinstance(checknp, type(df_train)):
       check_np_shape_train_result, check_np_shape_test_result = \
-      self._check_np_shape(df_train, df_test)
+      self._check_np_shape(df_train, df_test, printstatus)
     else:
       check_np_shape_train_result, check_np_shape_test_result = False, False
     miscparameters_results.update({'check_np_shape_train_result' : check_np_shape_train_result, \
@@ -29161,7 +29279,7 @@ class AutoMunge:
     
     #confirm all unique column headers
     check_columnheaders_result = \
-    self._check_columnheaders(list(df_train))
+    self._check_columnheaders(list(df_train), printstatus)
 
     miscparameters_results.update({'check_columnheaders_result' : check_columnheaders_result})
 
@@ -29170,7 +29288,7 @@ class AutoMunge:
     #validate assignnan has valid root categories and source columns
     #note this takes place before any label column split from df_train
     check_assignnan_toplevelentries_result, check_assignnan_categories_result, check_assignnan_columns_result \
-    = self._check_assignnan(assignnan, transform_dict, list(df_train))
+    = self._check_assignnan(assignnan, transform_dict, list(df_train), printstatus)
   
     miscparameters_results.update({'check_assignnan_toplevelentries_result' : check_assignnan_toplevelentries_result, \
                                    'check_assignnan_categories_result'      : check_assignnan_categories_result, \
@@ -29416,10 +29534,11 @@ class AutoMunge:
     validate_traintest_columnnumbercompare = False
     if df_train.shape[1] != df_test.shape[1]:
       validate_traintest_columnnumbercompare = True
-      print("error, different number of columns in train and test sets")
-      print("(This assessment excludes labels and ID columns.)")
-      print("Note that if label column present in df_train and not df_test")
-      print("it should be designated with labels_column parameter.")
+      if printstatus != 'silent':
+        print("error, different number of columns in train and test sets")
+        print("(This assessment excludes labels and ID columns.)")
+        print("Note that if label column present in df_train and not df_test")
+        print("it should be designated with labels_column parameter.")
       return
     miscparameters_results.update({'validate_traintest_columnnumbercompare' : validate_traintest_columnnumbercompare})
 
@@ -29429,8 +29548,9 @@ class AutoMunge:
     validate_traintest_columnlabelscompare = False
     if columns_train != columns_test:
       validate_traintest_columnlabelscompare = True
-      print("error, different column labels in the train and test set")
-      print("(This assessment excludes labels and ID columns.)")
+      if printstatus != 'silent':
+        print("error, different column labels in the train and test set")
+        print("(This assessment excludes labels and ID columns.)")
       return
     miscparameters_results.update({'validate_traintest_columnlabelscompare' : validate_traintest_columnlabelscompare})
 
@@ -29439,7 +29559,8 @@ class AutoMunge:
     validate_redundantcolumnlabels = False
     if unique_column_labels_count < column_labels_count:
       validate_redundantcolumnlabels = True
-      print("error, redundant column labels found, each column requires unique label")
+      if printstatus != 'silent':
+        print("error, redundant column labels found, each column requires unique label")
       return
     miscparameters_results.update({'validate_redundantcolumnlabels' : validate_redundantcolumnlabels})
 
@@ -29448,8 +29569,9 @@ class AutoMunge:
     validate_traintest_columnorder = False
     if columns_train != columns_test:
       validate_traintest_columnorder = True
-      print("error, different order of column labels in the train and test set")
-      print("(This assessment excludes labels and ID columns.)")
+      if printstatus != 'silent':
+        print("error, different order of column labels in the train and test set")
+        print("(This assessment excludes labels and ID columns.)")
       return
     miscparameters_results.update({'validate_traintest_columnorder' : validate_traintest_columnorder})
 
@@ -29946,13 +30068,13 @@ class AutoMunge:
 
         #run validation to ensure the PCA sets contain all valid numeric entries
         PCA_train_numeric_data_result, PCA_train_all_valid_entries_result = \
-        self.validate_allvalidnumeric(PCAset_train)
+        self.validate_allvalidnumeric(PCAset_train, printstatus)
   
         miscparameters_results.update({'PCA_train_numeric_data_result': PCA_train_numeric_data_result})
         miscparameters_results.update({'PCA_train_all_valid_entries_result': PCA_train_all_valid_entries_result})
       
         PCA_test_numeric_data_result, PCA_test_all_valid_entries_result = \
-        self.validate_allvalidnumeric(PCAset_test)
+        self.validate_allvalidnumeric(PCAset_test, printstatus)
   
         miscparameters_results.update({'PCA_test_numeric_data_result': PCA_test_numeric_data_result})
         miscparameters_results.update({'PCA_test_all_valid_entries_result': PCA_test_all_valid_entries_result})
@@ -29969,7 +30091,7 @@ class AutoMunge:
           print("")
 
         PCA_suffixoverlap_results = \
-        self._df_check_suffixoverlap(df_train, list(PCAset_train), suffixoverlap_results = {})
+        self._df_check_suffixoverlap(df_train, list(PCAset_train), suffixoverlap_results = {}, printstatus = postprocess_dict['printstatus'])
 
         miscparameters_results.update({'PCA_suffixoverlap_results':PCA_suffixoverlap_results})
 
@@ -30084,7 +30206,7 @@ class AutoMunge:
         print()
           
       if len(bool_column_list) > 0:
-        df_train, df_test, Binary_dict = self._Binary_convert(df_train, df_test, bool_column_list, Binary)
+        df_train, df_test, Binary_dict = self._Binary_convert(df_train, df_test, bool_column_list, Binary, postprocess_dict)
 
         returned_Binary_columns = list(Binary_dict['column_dict'])
         returned_Binary_columns.remove('Binary')
@@ -30296,7 +30418,7 @@ class AutoMunge:
     if excl_suffix is False:
       #run a quick suffix overlap validation before changing excl headers
       excl_suffixoverlap_results = \
-      self._df_check_suffixoverlap(df_train, postprocess_dict['excl_columns_without_suffix'], suffixoverlap_results = {})
+      self._df_check_suffixoverlap(df_train, postprocess_dict['excl_columns_without_suffix'], suffixoverlap_results = {}, printstatus = postprocess_dict['printstatus'])
       miscparameters_results.update({'excl_suffixoverlap_results' : excl_suffixoverlap_results})
     else:
       miscparameters_results.update({'excl_suffixoverlap_results' : {}})
@@ -30331,7 +30453,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.30'
+    automungeversion = '6.31'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -37352,7 +37474,7 @@ class AutoMunge:
       baseaccuracy = False
       
       #printout display progress
-      if printstatus is True:
+      if printstatus != 'silent':
         print("_______________")
         print("No labels_column passed, Feature Importance halted")
         print("")
@@ -37420,7 +37542,7 @@ class AutoMunge:
         FS_validations.update({'FS_all_valid_entries_result': False})
         
         #printout display progress
-        if printstatus is True:
+        if printstatus != 'silent':
           print("_______________")
           print("No labels returned from Postmunge, Feature Importance halted")
           print("")
@@ -37454,7 +37576,7 @@ class AutoMunge:
             break
 
         if len(am_categorylist) == 0:
-          if printstatus is True:
+          if printstatus != 'silent':
             #this is a remote edge case, printout added for troubleshooting support
             print("Label category processdict entry contained a labelctgy entry not found in transformdict entry")
             print("Feature Seclection model training will not run without valid labelgctgy processdict entry")
@@ -37482,7 +37604,7 @@ class AutoMunge:
 
         #first validate that data is all valid numeric
         FS_numeric_data_result, FS_all_valid_entries_result = \
-        self.validate_allvalidnumeric(am_train)
+        self.validate_allvalidnumeric(am_train, printstatus)
   
         FS_validations.update({'FS_numeric_data_result': FS_numeric_data_result})
         FS_validations.update({'FS_all_valid_entries_result': FS_all_valid_entries_result})
@@ -37507,7 +37629,7 @@ class AutoMunge:
           FS_validations.update({'FS_all_valid_entries_result': False})
           
           #printout display progress
-          if printstatus is True:
+          if printstatus != 'silent':
             print("_______________")
             print("No model returned from training, Feature Importance halted")
             print("")
@@ -37992,8 +38114,9 @@ class AutoMunge:
     if featureeval is True:
 
       if inversion is not False:
-        print("featureselection not available when performing inversion")
-        print()
+        if printstatus != 'silent':
+          print("featureselection not available when performing inversion")
+          print()
         
         madethecut = postprocess_dict['madethecut']
         FSmodel = False
@@ -38004,8 +38127,9 @@ class AutoMunge:
         FS_validations.update({'FS_all_valid_entries_result': False})
       
       elif postprocess_dict['labels_column'] is False:
-        print("featureselection not available without labels_column in training set")
-        print()
+        if printstatus != 'silent':
+          print("featureselection not available without labels_column in training set")
+          print()
         
         madethecut = postprocess_dict['madethecut']
         FSmodel = False
@@ -38035,7 +38159,7 @@ class AutoMunge:
 
     pm_miscparameters_results.update(FS_validations)
 
-    check_FSmodel_result = self._check_FSmodel(featureeval, FSmodel)
+    check_FSmodel_result = self._check_FSmodel(featureeval, FSmodel, printstatus)
     pm_miscparameters_results.update({'FSmodel_valresult' : check_FSmodel_result})
 
     #initialize postreports_dict
@@ -38203,8 +38327,9 @@ class AutoMunge:
       if labelscolumn is not True:
         if labelscolumn != labels_column:
           validate_labelscolumn_string = True
-          print("error, labelscolumn in test set passed to postmunge must have same column")
-          print("labeling convention, labels column from automunge was: ", labels_column)
+          if printstatus != 'silent':
+            print("error, labelscolumn in test set passed to postmunge must have same column")
+            print("labeling convention, labels column from automunge was: ", labels_column)
 
       df_testlabels = pd.DataFrame(df_test[labels_column])
       del df_test[labels_column]
@@ -38225,37 +38350,38 @@ class AutoMunge:
     if len(set(postprocess_dict['origtraincolumns']) - set(df_test)) > 0 \
     or len(set(df_test) - set(postprocess_dict['origtraincolumns'])) > 0:
       validate_traintest_columnlabelscompare = True
-      print("Error, inconsistent columns between train set passed to automunge(.)")
-      print("and test set passed to postmunge(.)")
-      print()
-      print("__________")
-      print("original columns passed to automunge(.) (exluding any labels_column and/or trainID_column):")
-      print()
-      print(postprocess_dict['origtraincolumns'])
-      print()
-      print("__________")
-      print("current columns passed to postmunge(.) (exluding any labelscolumn and/or testID_column):")
-      print()
-      print(list(df_test))
-      print()
-      if len(set(postprocess_dict['origtraincolumns']) - set(df_test)) > 0:
+      if printstatus != 'silent':
+        print("Error, inconsistent columns between train set passed to automunge(.)")
+        print("and test set passed to postmunge(.)")
+        print()
         print("__________")
-        print("missing following columns in df_test passed to postmunge(.):")
+        print("original columns passed to automunge(.) (exluding any labels_column and/or trainID_column):")
         print()
-        print(list(set(postprocess_dict['origtraincolumns']) - set(df_test)))
+        print(postprocess_dict['origtraincolumns'])
         print()
-        print("If this is a label column requires designation in automunge(.)")
-        print("via the labels_column parameter.")
-        print()
-      if len(set(df_test) - set(postprocess_dict['origtraincolumns'])) > 0:
         print("__________")
-        print("extra columns passed in df_test to postmunge(.) are:")
+        print("current columns passed to postmunge(.) (exluding any labelscolumn and/or testID_column):")
         print()
-        print(list(set(df_test) - set(postprocess_dict['origtraincolumns'])))
+        print(list(df_test))
         print()
-        print("Note that extra columns can be carved out in postmunge(.)")
-        print("with testID_column parameter.")
-        print()
+        if len(set(postprocess_dict['origtraincolumns']) - set(df_test)) > 0:
+          print("__________")
+          print("missing following columns in df_test passed to postmunge(.):")
+          print()
+          print(list(set(postprocess_dict['origtraincolumns']) - set(df_test)))
+          print()
+          print("If this is a label column requires designation in automunge(.)")
+          print("via the labels_column parameter.")
+          print()
+        if len(set(df_test) - set(postprocess_dict['origtraincolumns'])) > 0:
+          print("__________")
+          print("extra columns passed in df_test to postmunge(.) are:")
+          print()
+          print(list(set(df_test) - set(postprocess_dict['origtraincolumns'])))
+          print()
+          print("Note that extra columns can be carved out in postmunge(.)")
+          print("with testID_column parameter.")
+          print()
       
       return
     postreports_dict['pm_miscparameters_results'].update({'validate_traintest_columnlabelscompare' : validate_traintest_columnlabelscompare})
@@ -38266,18 +38392,19 @@ class AutoMunge:
     validate_traintest_columnorder = False
     if columns_train != columns_test:
       validate_traintest_columnorder = True
-      print("error, different order of column labels in the train and test set")
-      print()
-      print("__________")
-      print("original columns passed to automunge(.) (exluding any labels_column and/or trainID_column):")
-      print()
-      print(postprocess_dict['origtraincolumns'])
-      print()
-      print("__________")
-      print("current columns passed to postmunge(.) (exluding any labelscolumn and/or testID_column):")
-      print()
-      print(list(df_test))
-      print()
+      if printstatus != 'silent':
+        print("error, different order of column labels in the train and test set")
+        print()
+        print("__________")
+        print("original columns passed to automunge(.) (exluding any labels_column and/or trainID_column):")
+        print()
+        print(postprocess_dict['origtraincolumns'])
+        print()
+        print("__________")
+        print("current columns passed to postmunge(.) (exluding any labelscolumn and/or testID_column):")
+        print()
+        print(list(df_test))
+        print()
       return
     postreports_dict['pm_miscparameters_results'].update({'validate_traintest_columnorder' : validate_traintest_columnorder})
 
@@ -38427,9 +38554,10 @@ class AutoMunge:
     if labelscolumn is not False:
       if labelscolumn is not True:
         if labelscolumn != labels_column:
-          #note this is redundant with prior check recorded in postreports_dict['pm_miscparameters_results'] as validate_labelscolumn_string
-          print("error, labelscolumn in test set passed to postmunge must have same column")
-          print("labeling convention, labels column from automunge was: ", labels_column)
+          if printstatus != 'silent':
+            #note this is redundant with prior check recorded in postreports_dict['pm_miscparameters_results'] as validate_labelscolumn_string
+            print("error, labelscolumn in test set passed to postmunge must have same column")
+            print("labeling convention, labels column from automunge was: ", labels_column)
 
       #initialize processing dicitonaries (we'll use same as for train set)
       #a future extension may allow custom address for labels
@@ -38552,7 +38680,7 @@ class AutoMunge:
             
         #quick validation that PCA set has all valid numeric entries
         PCA_test_numeric_data_result, PCA_test_all_valid_entries_result = \
-        self.validate_allvalidnumeric(PCAset_test)
+        self.validate_allvalidnumeric(PCAset_test, printstatus)
   
         postreports_dict['pm_miscparameters_results'].update({'PCA_test_numeric_data_result': PCA_test_numeric_data_result})
         postreports_dict['pm_miscparameters_results'].update({'PCA_test_all_valid_entries_result': PCA_test_all_valid_entries_result})
@@ -39113,7 +39241,7 @@ class AutoMunge:
           inverse_categorytree_entry, depth_, info_retention_, transforms_avail_ = \
           self._populate_inverse_family(
             postprocess_dict, inverse_categorytree[category][entry][7], inputcolumn,
-            returned_columns, source_columns
+            returned_columns, source_columns, postprocess_dict['printstatus']
           )
           
           inverse_categorytree[category][entry][4] += depth_
@@ -39142,7 +39270,7 @@ class AutoMunge:
     return inverse_categorytree
   
   def _populate_inverse_family(self, postprocess_dict, inverse_categorytree, column, \
-                              returned_columns, source_columns):
+                              returned_columns, source_columns, printstatus):
     """
     #populates inverse_categorytree entries from seeding of an inputcolumn
     
@@ -39166,8 +39294,9 @@ class AutoMunge:
     #this handles edge case when a transformation category recorded by a transformation function
     #without corresponding entry in processdict
     if category not in postprocess_dict['process_dict']:
-      print('error: transformation category was recorded by a transformation function in column_dict without coresponding entry in process_dict')
-      print('for transformation category: ', category)
+      if printstatus != 'silent':
+        print('error: transformation category was recorded by a transformation function in column_dict without coresponding entry in process_dict')
+        print('for transformation category: ', category)
 
     info_retention = False
     if 'info_retention' in postprocess_dict['process_dict'][category]:
@@ -39205,7 +39334,7 @@ class AutoMunge:
         inverse_categorytree_entry, depth_, info_retention_, transforms_avail_ = \
         self._populate_inverse_family(
           postprocess_dict, inverse_categorytree[category][entry][7], inputcolumn,
-          returned_columns, source_columns
+          returned_columns, source_columns, printstatus
         )
   
         inverse_categorytree[category][entry][4] += depth_
@@ -41430,9 +41559,10 @@ class AutoMunge:
                        pandasoutput):
     
     if inversion == 'test' and postprocess_dict['PCAmodel'] is not None:
-      print("error: full test set inversion not currently supported with PCA.")
-      print("user can pass partial list of columns to inversion parameter instead")
-      print()
+      if printstatus != 'silent':
+        print("error: full test set inversion not currently supported with PCA.")
+        print("user can pass partial list of columns to inversion parameter instead")
+        print()
       inversion = False
 
     if isinstance(inversion, list):
@@ -41456,8 +41586,9 @@ class AutoMunge:
         #partial inversion only available for Binary source columns
         for entry in postprocess_dict['Binary_dict']['column_dict']:
           if entry in inversion:
-            print("please note partial inversion lists only supported for columns not returned from Binary")
-            print("when Binary was not performed with replacement")
+            if printstatus != 'silent':
+              print("please note partial inversion lists only supported for columns not returned from Binary")
+              print("when Binary was not performed with replacement")
             inversion.remove(entry)
       if postprocess_dict['Binary'] == True and inversion == 'test':
         Binary_inversion_marker = True
@@ -41468,12 +41599,14 @@ class AutoMunge:
             inversion.remove(entry)
           inversion += postprocess_dict['Binary_dict']['bool_column_list']
         elif bool(set(postprocess_dict['Binary_dict']['column_dict']) & set(inversion)):
-          print("error: partial inversion lists only supported for columns returned from Binary")
-          print("when entire set of Binary columns are included in the inversion list")
+          if printstatus != 'silent':
+            print("error: partial inversion lists only supported for columns returned from Binary")
+            print("when entire set of Binary columns are included in the inversion list")
 
     if Binary_inversion_marker is True:
 
-      print("Recovering columns from Binary dimensionality reduction.")
+      if printstatus is True:
+        print("Recovering columns from Binary dimensionality reduction.")
 
       df_test = self._meta_inverseprocess_Binary(df_test, postprocess_dict)
 
@@ -41485,9 +41618,10 @@ class AutoMunge:
 
       Binary_finalcolumns_train += postprocess_dict['Binary_dict']['bool_column_list']
 
-      print("Recovered columns:")
-      print(postprocess_dict['Binary_dict']['bool_column_list'])
-      print()
+      if printstatus is True:
+        print("Recovered columns:")
+        print(postprocess_dict['Binary_dict']['bool_column_list'])
+        print()
       
     #this is relevant for when feature importance dimensionality reduction was performed
     if inversion == 'test':
@@ -41507,19 +41641,22 @@ class AutoMunge:
 
       #check number of columns is consistent
       if len(finalcolumns_labels)!= df_test.shape[1]:
-        print("error, different number of returned columns in train and test sets")
+        if printstatus != 'silent':
+          print("error, different number of returned columns in train and test sets")
         return
 
       #check order of column headers are consistent
       columns_test = list(df_test)
       if set(finalcolumns_labels) == set(columns_test):
         if finalcolumns_labels != columns_test:
-          print("error, different order of column labels in the train and test set")
+          if printstatus != 'silent':
+            print("error, different order of column labels in the train and test set")
           return
       #this is for excl edge case again in case we had any updates to finalcolumns_labels above
       elif set(postprocess_dict['finalcolumns_train']) == set(columns_test):
         if postprocess_dict['finalcolumns_train'] != columns_test:
-          print("error, different order of column labels in the train and test set")
+          if printstatus != 'silent':
+            print("error, different order of column labels in the train and test set")
           return
 
       #assign labels to column headers if they weren't passed
@@ -41558,19 +41695,22 @@ class AutoMunge:
 
       #check number of columns is consistent
       if len(finalcolumns_labels)!= df_test.shape[1]:
-        print("error, different number of returned label columns in train and test sets")
+        if printstatus != 'silent':
+          print("error, different number of returned label columns in train and test sets")
         return
 
       #check order of column headers are consistent
       columns_test = list(df_test)
       if set(finalcolumns_labels) == set(columns_test):
         if finalcolumns_labels != columns_test:
-          print("error, different order of column labels in the train and test set")
+          if printstatus != 'silent':
+            print("error, different order of column labels in the train and test set")
           return
       #this is for excl edge case again in case we had any updates to finalcolumns_labels above
       elif set(postprocess_dict['finalcolumns_labels']) == set(columns_test):
         if postprocess_dict['finalcolumns_labels'] != columns_test:
-          print("error, different order of column labels in the train and test set")
+          if printstatus != 'silent':
+            print("error, different order of column labels in the train and test set")
           return
 
       #assign labels to column headers if they weren't passed
@@ -41612,19 +41752,22 @@ class AutoMunge:
 
       #check number of columns is consistent
       if len(finalcolumns_labels)!= df_test.shape[1]:
-        print("error, different number of returned label columns in train and test sets")
+        if printstatus != 'silent':
+          print("error, different number of returned label columns in train and test sets")
         return
 
       #check order of column headers are consistent
       columns_test = list(df_test)
       if set(finalcolumns_labels) == set(columns_test):
         if finalcolumns_labels != columns_test:
-          print("error, different order of column labels in the train and test set")
+          if printstatus != 'silent':
+            print("error, different order of column labels in the train and test set")
           return
       #this is for excl edge case again in case we had any updates to finalcolumns_labels above
       elif set(postprocess_dict['finalcolumns_labels']) == set(columns_test):
         if postprocess_dict['finalcolumns_labels'] != columns_test:
-          print("error, different order of column labels in the train and test set")
+          if printstatus != 'silent':
+            print("error, different order of column labels in the train and test set")
           return
 
       #assign labels to column headers if they weren't passed
@@ -41715,9 +41858,10 @@ class AutoMunge:
       for entry in inversion:
 
         if entry not in source_columns:
-
-          print("error: entry passed to inversion parameter list not matching a source or derived column")
-          print("for entry: ", entry)
+          
+          if printstatus != 'silent':
+            print("error: entry passed to inversion parameter list not matching a source or derived column")
+            print("for entry: ", entry)
 
       df_test, recovered_list, inversion_info_dict = \
       self._df_inversion_meta(df_test, inversion, postprocess_dict, printstatus)
