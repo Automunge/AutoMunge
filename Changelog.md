@@ -3318,3 +3318,15 @@ am.postmunge(postprocess_dict, df_test)
 - result returned in miscparameters_results as PCAexcl_valresult
 - also updated featurethreshold validation test to allow passing integer 0 instead of float 0. if desired
 - finally small updates to postprocess_bxcx, and Binary dimensionality reduction, and inverseprocess_year to accomodate new default suffix convention associated with this update
+
+6.31
+- new 'silent' option for printstatus parameter to both automunge(.) and postmunge(.)
+- new convention is that printstatus can be passed as one of {True, False, 'silent'}
+- where True is the default and returns all printouts
+- False only returns error message printouts
+- and 'silent' turns off all printouts
+- the thought is that there may be preference for a silent option
+- for cases where Automunge incorporated as resource in script workflows outside of context of jupyter notebooks
+- note that results of validations which may generate error message prinouts are generally included in the postprocess_dict['miscparameters_results'] or postreports_dict['pm_miscparameters_results']
+- so validations are available for inspection even when all printouts are silent
+- also updated the suffix overlap detection method for Binary dimensionality reduction to align with rest of library
