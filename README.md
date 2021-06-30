@@ -1523,8 +1523,9 @@ and ID sets. Note that conversion information is available in returned postproce
 privacy reports (in other words, privacy can be circumvented if user has access to the postprocess_dict). 
 Note that when activated consistent convention is applied in postmunge and inversion is supported.
 
-* printstatus: user can pass _True/False_ indicating whether the function will print 
-status of processing during operation. Defaults to True.
+* printstatus: user can pass _True/False/'silent'_ indicating whether the function will print 
+status of processing during operation. Defaults to True for all printouts. When False only error
+message printouts generated. When 'silent' no printouts are generated.
 
 Ok well we'll demonstrate further below how to build custom transformation functions,
 for now you should have sufficient tools to build sets of transformation categories 
@@ -1743,8 +1744,9 @@ to the ID sets, and automunge(.) generates an application specific range
 integer index in ID sets corresponding to the order of rows as they were 
 passed to function). If set to _False_ returns numpy arrays instead of dataframes.
 
-* printstatus: user can pass _True/False_ indicating whether the function 
-will print status of processing during operation. Defaults to True.
+* printstatus: user can pass _True/False/'silent'_ indicating whether the function will print 
+status of processing during operation. Defaults to True for all printouts. When False only error
+message printouts generated. When 'silent' no printouts are generated.
 
 * inplace: defaults to False, when True the df_test passed to postmunge(.)
 is overwritten with the returned test set. This reduces memory overhead.
