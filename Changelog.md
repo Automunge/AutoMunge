@@ -3330,3 +3330,17 @@ am.postmunge(postprocess_dict, df_test)
 - note that results of validations which may generate error message prinouts are generally included in the postprocess_dict['miscparameters_results'] or postreports_dict['pm_miscparameters_results']
 - so validations are available for inspection even when all printouts are silent
 - also updated the suffix overlap detection method for Binary dimensionality reduction to align with rest of library
+
+6.32
+- ok so 6.31's survey of printouts helped me recognize that 6.28's audit of validation results was incomplete
+- (this was because have a few different convention for returned printouts with flag so didn't survey all at the time)
+- so performed an additional audit of validation results printouts
+- and found a few more cases of validation tests missing entries in the returned reports
+- so postprocess_dict['miscparameters_results'] now contains additional entries for {ML_cmnd_hyperparam_tuner_valresult, returned_label_set_for_featureselect_valresult, labelctgy_not_found_in_familytree_valresult, featureselect_trained_model_valresult, assignnan_actions_valresult, labels_column_for_featureselect_valresult, featureselect_automungecall_validationresults}
+- and postreports_dict['pm_miscparameters_results'] now contains additional entries for {labelscolumn_for_postfeatureslect_valresult, returned_label_set_for_postfeatureselect_valresult, labelctgy_not_found_in_familytree_pm_valresult, postfeatureselect_trained_model_valresult, postfeatureselect_with_inversion_valresult, labels_column_for_postfeatureselect_valresult, postfeatureselect_automungecall_validationresults}
+- updated check_haltingproblem validation so that it only runs when there is a user defined transformdict to speed things up under default
+- also new convention: labelctgy is now only an optional entry to user passed processdict 
+- if one is not assigned or accessed from functionpointer then an arbitrary entry is populated from family tree
+- removed a validation check and if statement indentation in support function _featureselect 
+- associated with checking for cases where labels_column passed as False (this was redundant with a check performed prior to calling function)
+- finally found and fixed bug for postmunge inversion in conjunction with Binary dimensionality reduction
