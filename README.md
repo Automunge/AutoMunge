@@ -1387,9 +1387,11 @@ processdict =  {'newt' : {'dualprocess' : am._process_mnmx,
 #              'totalexclude' for complete passthroughs (excl) without infill and excluded 
 #                        from inf conversion and assignnan global option
 
-#labelctgy: should be a string entry of a single transform category as recorded by the associated transformation
-#function. Used to determine a basis of feature selection for cases where labels are returned in multiple configurations.
-#Also used in label frequency levelizer.
+#labelctgy: should be a string entry of a single transformation category as entered in the family tree when the cateogry 
+#of the processdict entry is used as a root category. Used to determine a basis of feature selection for cases where root 
+#category is applied to labels resulting in a set returned in multiple configurations. Also used in label frequency levelizer. 
+#Note that since this is only used for small edge case populating a labelctgy entry is optional. If one is not assigned or 
+#accessed based on functionpointer, an arbitrary entry will be accessed from the family tree.
 
 #Note that NArowtype is associated with a category's use as a root category, such as may be assigned to a column in assigncat
 #MLinfilltype is associated with a category's use as a transformation category entry to family tree primitives associated with a root category
