@@ -23398,12 +23398,6 @@ class AutoMunge:
             if postprocess_dict['process_dict'][postprocess_dict['column_dict'][labelcolumn]['category']]['MLinfilltype'] \
             in {'singlct'}:
               singlctcolumn = labelcolumn
-          #if the label category is custom processdict entry with improperly specced labelctgy just apply this heuristic (remote edge case)
-          if singlctcolumn is False:
-            if postprocess_dict['printstatus'] != 'silent':
-              print("label category processdict entry contained a labelctgy not found in the transformdict entry, applying heuristic")
-              print()
-            singlctcolumn = labels[0]
 
         uniquevalues = list(labels_df[singlctcolumn].unique())
 
@@ -23732,271 +23726,266 @@ class AutoMunge:
     
     FS_validations = {}
 
-    if labels_column is False:
-      
+    #but first real quick we'll just deal with PCA default functionality for FS
+    FSML_cmnd = deepcopy(ML_cmnd)
+    FSML_cmnd['PCA_type'] = 'off'
+
+    FS_assignparam = deepcopy(assignparam)
+
+    totalvalidation = valpercent
+
+    if totalvalidation == 0:
+      totalvalidation = 0.2
+
+    am_train, _1, am_labels, \
+    am_validation1, _2, am_validationlabels1, \
+    _3, _4, _5, \
+    FSpostprocess_dict = \
+    self.automunge(df_train, df_test = False, labels_column = labels_column, trainID_column = trainID_column, \
+                  testID_column = False, valpercent = totalvalidation, \
+                  shuffletrain = True, TrainLabelFreqLevel = False, powertransform = powertransform, \
+                  binstransform = binstransform, MLinfill = False, infilliterate=1, randomseed = randomseed, \
+                  excl_suffix = True, \
+                  numbercategoryheuristic = numbercategoryheuristic, pandasoutput = True, NArw_marker = NArw_marker, \
+                  featureselection = False, \
+                  ML_cmnd = FSML_cmnd, assigncat = assigncat, \
+                  assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
+                                  'adjinfill':[], 'meaninfill':[], 'medianinfill':[]}, \
+                  assignparam = FS_assignparam, \
+                  transformdict = transformdict, processdict = processdict, printstatus=printstatus)
+
+    #record validation results from automunge call internal to featureselect
+    FS_validations.update({'featureselect_automungecall_validationresults' : FSpostprocess_dict['miscparameters_results']})
+
+    #in case these are single column series convert to dataframe
+    am_train = pd.DataFrame(am_train)
+    am_labels = pd.DataFrame(am_labels)
+    am_validation1 = pd.DataFrame(am_validation1)
+    am_validationlabels1 = pd.DataFrame(am_validationlabels1)
+
+    #this is the returned process_dict
+    #(remember "processdict" is what we pass to automunge() call, "process_dict" is what is 
+    #assembled inside automunge, there is a difference)
+    FSprocess_dict = FSpostprocess_dict['process_dict']
+
+    if am_labels.empty is True:
       FSmodel = False
 
       baseaccuracy = False
 
       FS_validations.update({'FS_numeric_data_result': False})
       FS_validations.update({'FS_all_valid_entries_result': False})
+
+      returned_label_set_for_featureselect_valresult = True
+      FS_validations.update({'returned_label_set_for_featureselect_valresult' : returned_label_set_for_featureselect_valresult})
       
       #printout display progress
       if printstatus != 'silent':
         print("_______________")
-        print("No labels_column passed, Feature Importance halted")
+        print("No labels returned from automunge(.), Feature Importance halted")
         print("")
-    
-    elif labels_column is not False:
+  
+    #if am_labels is not an empty set
+    if am_labels.empty is False:
 
-      #but first real quick we'll just deal with PCA default functionality for FS
-      FSML_cmnd = deepcopy(ML_cmnd)
-      FSML_cmnd['PCA_type'] = 'off'
+      #find origcateogry of am_labels from FSpostprocess_dict
+      labelcolumnkey = list(am_labels)[0]
+      origcolumn = FSpostprocess_dict['column_dict'][labelcolumnkey]['origcolumn']
+      origcategory = FSpostprocess_dict['column_dict'][labelcolumnkey]['origcategory']
 
-      FS_assignparam = deepcopy(assignparam)
+      #find labelctgy from process_dict based on this origcategory
+      labelctgy = process_dict[origcategory]['labelctgy']
 
-      totalvalidation = valpercent
+      am_categorylist = []
 
-      if totalvalidation == 0:
-        totalvalidation = 0.2
+      for am_label_column in am_labels.columns:
 
-      am_train, _1, am_labels, \
-      am_validation1, _2, am_validationlabels1, \
-      _3, _4, _5, \
-      FSpostprocess_dict = \
-      self.automunge(df_train, df_test = False, labels_column = labels_column, trainID_column = trainID_column, \
-                    testID_column = False, valpercent = totalvalidation, \
-                    shuffletrain = True, TrainLabelFreqLevel = False, powertransform = powertransform, \
-                    binstransform = binstransform, MLinfill = False, infilliterate=1, randomseed = randomseed, \
-                    excl_suffix = True, \
-                    numbercategoryheuristic = numbercategoryheuristic, pandasoutput = True, NArw_marker = NArw_marker, \
-                    featureselection = False, \
-                    ML_cmnd = FSML_cmnd, assigncat = assigncat, \
-                    assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
-                                   'adjinfill':[], 'meaninfill':[], 'medianinfill':[]}, \
-                    assignparam = FS_assignparam, \
-                    transformdict = transformdict, processdict = processdict, printstatus=printstatus)
+        if FSpostprocess_dict['column_dict'][am_label_column]['category'] == labelctgy:
 
-      #in case these are single column series convert to dataframe
-      am_train = pd.DataFrame(am_train)
-      am_labels = pd.DataFrame(am_labels)
-      am_validation1 = pd.DataFrame(am_validation1)
-      am_validationlabels1 = pd.DataFrame(am_validationlabels1)
+          am_categorylist = FSpostprocess_dict['column_dict'][am_label_column]['categorylist']
+          
+          #we'll follow convention that if target label category MLinfilltype is concurrent
+          #we'll arbitrarily take the first column and use that as target
+          if FSpostprocess_dict['process_dict'][labelctgy]['MLinfilltype'] \
+          in {'concurrent_act', 'concurrent_nmbr'}:
+            
+            am_categorylist = [am_categorylist[0]]
+            
+          break
 
-      #this is the returned process_dict
-      #(remember "processdict" is what we pass to automunge() call, "process_dict" is what is 
-      #assembled inside automunge, there is a difference)
-      FSprocess_dict = FSpostprocess_dict['process_dict']
+      if len(am_categorylist) == 0:
 
-      if am_labels.empty is True:
-        FSmodel = False
+        labelctgy_not_found_in_familytree_valresult = True
+        FS_validations.update({'labelctgy_not_found_in_familytree_valresult' : labelctgy_not_found_in_familytree_valresult})
+
+        if printstatus != 'silent':
+          #this is a remote edge case, printout added for troubleshooting support
+          print("Label category processdict entry contained a labelctgy entry not found in transformdict entry")
+          print("Feature Seclection model training will not run without valid labelgctgy processdict entry")
+          print()
+
+      elif len(am_categorylist) == 1:
+        am_labels = pd.DataFrame(am_labels[am_categorylist[0]])
+        am_validationlabels1 = pd.DataFrame(am_validationlabels1[am_categorylist[0]])
+
+      else:
+        am_labels = am_labels[am_categorylist]
+        am_validationlabels1 = am_validationlabels1[am_categorylist]
+
+      #if there's a bug occuring after this point it might mean the labelctgy wasn't
+      #properly populated in the process_dict for the root category assigned to the labels
+      #again the labelctgy entry to process_dict represents for labels returned in 
+      #multiple configurations the trasnofrmation category whose returned set will be
+      #used to train the feature selection model
+
+      #printout display progress
+      if printstatus is True:
+        print("_______________")
+        print("Training feature importance evaluation model")
+        print("")
+
+      #first validate that data is all valid numeric
+      FS_numeric_data_result, FS_all_valid_entries_result = \
+      self.validate_allvalidnumeric(am_train, printstatus)
+
+      FS_validations.update({'FS_numeric_data_result': FS_numeric_data_result})
+      FS_validations.update({'FS_all_valid_entries_result': FS_all_valid_entries_result})
+
+      #apply function trainFSmodel
+      #FSmodel, baseaccuracy = \
+      FSmodel = \
+      self._trainFSmodel(am_train, am_labels, randomseed, \
+                        FSprocess_dict, FSpostprocess_dict, labelctgy, ML_cmnd, \
+                        printstatus)
+      
+      if FSmodel is False:
+        
+        FScolumn_dict = {}
+        
+        FS_origcolumns = list(FSpostprocess_dict['origcolumn'])
 
         baseaccuracy = False
-
-        FS_validations.update({'FS_numeric_data_result': False})
-        FS_validations.update({'FS_all_valid_entries_result': False})
         
         #printout display progress
         if printstatus != 'silent':
           print("_______________")
-          print("No labels returned from automunge(.), Feature Importance halted")
+          print("No model returned from training, Feature Importance halted")
           print("")
-    
-      #if am_labels is not an empty set
-      if am_labels.empty is False:
+        
+        featureselect_trained_model_valresult = True
+        FS_validations.update({'featureselect_trained_model_valresult' : featureselect_trained_model_valresult})
+      
+      elif FSmodel is not False:
 
-        #find origcateogry of am_labels from FSpostprocess_dict
-        labelcolumnkey = list(am_labels)[0]
-        origcolumn = FSpostprocess_dict['column_dict'][labelcolumnkey]['origcolumn']
-        origcategory = FSpostprocess_dict['column_dict'][labelcolumnkey]['origcategory']
+        #update v2.11 baseaccuracy should be based on validation set
+        baseaccuracy = self._shuffleaccuracy(am_validation1, am_validationlabels1, \
+                                            FSmodel, randomseed, am_categorylist, \
+                                            FSprocess_dict, labelctgy, FSpostprocess_dict)
 
-        #find labelctgy from process_dict based on this origcategory
-        labelctgy = process_dict[origcategory]['labelctgy']
+        if printstatus is True:
+          print("Base Accuracy of feature importance model:")
+          print(baseaccuracy)
+          print()
 
-        am_categorylist = []
+        #get list of columns
+        am_train_columns = list(am_train)
 
-        for am_label_column in am_labels.columns:
+        #initialize dictionary FScolumn_dict = {}
+        FScolumn_dict = {}
+        
+        FS_origcolumns = list(FSpostprocess_dict['origcolumn'])
+        
+        #assemble FScolumn_dict to support the feature evaluation
+        for column in am_train_columns:
 
-          if FSpostprocess_dict['column_dict'][am_label_column]['category'] == labelctgy:
+          #pull categorylist, category, columnslist
+          categorylist = FSpostprocess_dict['column_dict'][column]['categorylist']
+          category = FSpostprocess_dict['column_dict'][column]['category']
+          columnslist = FSpostprocess_dict['column_dict'][column]['columnslist']
+          origcolumn = FSpostprocess_dict['column_dict'][column]['origcolumn']
 
-            am_categorylist = FSpostprocess_dict['column_dict'][am_label_column]['categorylist']
-            
-            #we'll follow convention that if target label category MLinfilltype is concurrent
-            #we'll arbitrarily take the first column and use that as target
-            if FSpostprocess_dict['process_dict'][labelctgy]['MLinfilltype'] \
-            in {'concurrent_act', 'concurrent_nmbr'}:
-              
-              am_categorylist = [am_categorylist[0]]
-              
-            break
-
-        if len(am_categorylist) == 0:
-          if printstatus != 'silent':
-            #this is a remote edge case, printout added for troubleshooting support
-            print("Label category processdict entry contained a labelctgy entry not found in transformdict entry")
-            print("Feature Seclection model training will not run without valid labelgctgy processdict entry")
-            print()
-
-        elif len(am_categorylist) == 1:
-          am_labels = pd.DataFrame(am_labels[am_categorylist[0]])
-          am_validationlabels1 = pd.DataFrame(am_validationlabels1[am_categorylist[0]])
-
-        else:
-          am_labels = am_labels[am_categorylist]
-          am_validationlabels1 = am_validationlabels1[am_categorylist]
-
-        #if there's a bug occuring after this point it might mean the labelctgy wasn't
-        #properly populated in the process_dict for the root category assigned to the labels
-        #again the labelctgy entry to process_dict represents for labels returned in 
-        #multiple configurations the trasnofrmation category whose returned set will be
-        #used to train the feature selection model
+          #create entry to FScolumn_dict
+          FScolumn_dict.update({column : {'categorylist' : categorylist, \
+                                          'category' : category, \
+                                          'columnslist' : columnslist, \
+                                          'origcolumn' : origcolumn, \
+                                          'FScomplete' : False, \
+                                          'shuffleaccuracy' : None, \
+                                          'shuffleaccuracy2' : None, \
+                                          'baseaccuracy' : baseaccuracy, \
+                                          'metric' : None, \
+                                          'metric2' : None}})
+          
+        #this is for assemblemadethecut
+        FSprocess_dict = FSpostprocess_dict['process_dict']
 
         #printout display progress
         if printstatus is True:
           print("_______________")
-          print("Training feature importance evaluation model")
+          print("Evaluating feature importances")
           print("")
 
-        #first validate that data is all valid numeric
-        FS_numeric_data_result, FS_all_valid_entries_result = \
-        self.validate_allvalidnumeric(am_train, printstatus)
-  
-        FS_validations.update({'FS_numeric_data_result': FS_numeric_data_result})
-        FS_validations.update({'FS_all_valid_entries_result': FS_all_valid_entries_result})
+        #perform feature evaluation on each column
+        for column in am_train_columns:
 
-        #apply function trainFSmodel
-        #FSmodel, baseaccuracy = \
-        FSmodel = \
-        self._trainFSmodel(am_train, am_labels, randomseed, \
-                          FSprocess_dict, FSpostprocess_dict, labelctgy, ML_cmnd, \
-                          printstatus)
-        
-        if FSmodel is False:
-          
-          FScolumn_dict = {}
-          
-          FS_origcolumns = list(FSpostprocess_dict['origcolumn'])
+          if FScolumn_dict[column]['FScomplete'] is False:
 
-          baseaccuracy = False
-          
-          #printout display progress
-          if printstatus != 'silent':
-            print("_______________")
-            print("No model returned from training, Feature Importance halted")
-            print("")
-          
-        
-        elif FSmodel is not False:
-
-          #update v2.11 baseaccuracy should be based on validation set
-          baseaccuracy = self._shuffleaccuracy(am_validation1, am_validationlabels1, \
-                                              FSmodel, randomseed, am_categorylist, \
-                                              FSprocess_dict, labelctgy, FSpostprocess_dict)
-
-          if printstatus is True:
-            print("Base Accuracy of feature importance model:")
-            print(baseaccuracy)
-            print()
-
-          #get list of columns
-          am_train_columns = list(am_train)
-
-          #initialize dictionary FScolumn_dict = {}
-          FScolumn_dict = {}
-          
-          FS_origcolumns = list(FSpostprocess_dict['origcolumn'])
-          
-          #assemble FScolumn_dict to support the feature evaluation
-          for column in am_train_columns:
-
-            #pull categorylist, category, columnslist
-            categorylist = FSpostprocess_dict['column_dict'][column]['categorylist']
-            category = FSpostprocess_dict['column_dict'][column]['category']
-            columnslist = FSpostprocess_dict['column_dict'][column]['columnslist']
-            origcolumn = FSpostprocess_dict['column_dict'][column]['origcolumn']
-
-            #create entry to FScolumn_dict
-            FScolumn_dict.update({column : {'categorylist' : categorylist, \
-                                            'category' : category, \
-                                            'columnslist' : columnslist, \
-                                            'origcolumn' : origcolumn, \
-                                            'FScomplete' : False, \
-                                            'shuffleaccuracy' : None, \
-                                            'shuffleaccuracy2' : None, \
-                                            'baseaccuracy' : baseaccuracy, \
-                                            'metric' : None, \
-                                            'metric2' : None}})
-            
-          #this is for assemblemadethecut
-          FSprocess_dict = FSpostprocess_dict['process_dict']
-
-          #printout display progress
-          if printstatus is True:
-            print("_______________")
-            print("Evaluating feature importances")
-            print("")
-
-          #perform feature evaluation on each column
-          for column in am_train_columns:
-
-            if FScolumn_dict[column]['FScomplete'] is False:
-
-              #categorylist = FScolumn_dict[column]['categorylist']
-              #update version 1.80, let's perform FS on columnslist instead of categorylist
-              columnslist = FScolumn_dict[column]['columnslist']
-
-              #create set with columns shuffle from columnslist
-              #shuffleset = self._createFSsets(am_train, column, categorylist, randomseed)
-              #shuffleset = self._createFSsets(am_train, column, columnslist, randomseed)
-              shuffleset = self._createFSsets(am_validation1, column, columnslist, randomseed)
-
-              #determine resulting accuracy after shuffle
-              columnaccuracy = self._shuffleaccuracy(shuffleset, am_validationlabels1, \
-                                                    FSmodel, randomseed, am_categorylist, \
-                                                    FSprocess_dict, labelctgy, FSpostprocess_dict)
-
-              #I think this will clear some memory
-              del shuffleset
-
-              #category accuracy penalty metric
-              metric = baseaccuracy - columnaccuracy
-              #metric2 = baseaccuracy - columnaccuracy2
-
-              #save accuracy to FScolumn_dict and set FScomplete to True
-              #(for each column in the categorylist)
-              #for categorycolumn in FSpostprocess_dict['column_dict'][column]['categorylist']:
-              for categorycolumn in FSpostprocess_dict['column_dict'][column]['columnslist']:
-
-                FScolumn_dict[categorycolumn]['FScomplete'] = True
-                FScolumn_dict[categorycolumn]['shuffleaccuracy'] = columnaccuracy
-                FScolumn_dict[categorycolumn]['metric'] = metric
-                #FScolumn_dict[categorycolumn]['shuffleaccuracy2'] = columnaccuracy2
-                #FScolumn_dict[categorycolumn]['metric2'] = metric2
-
+            #categorylist = FScolumn_dict[column]['categorylist']
+            #update version 1.80, let's perform FS on columnslist instead of categorylist
             columnslist = FScolumn_dict[column]['columnslist']
 
-            #create second set with all but one columns shuffled from columnslist
-            #this will allow us to compare the relative importance between columns
-            #derived from the same parent
-            #shuffleset2 = self._createFSsets2(am_train, column, columnslist, randomseed)
-            shuffleset2 = self._createFSsets2(am_validation1, column, columnslist, randomseed)
+            #create set with columns shuffle from columnslist
+            #shuffleset = self._createFSsets(am_train, column, categorylist, randomseed)
+            #shuffleset = self._createFSsets(am_train, column, columnslist, randomseed)
+            shuffleset = self._createFSsets(am_validation1, column, columnslist, randomseed)
 
             #determine resulting accuracy after shuffle
-            columnaccuracy2 = self._shuffleaccuracy(shuffleset2, am_validationlabels1, \
+            columnaccuracy = self._shuffleaccuracy(shuffleset, am_validationlabels1, \
                                                   FSmodel, randomseed, am_categorylist, \
                                                   FSprocess_dict, labelctgy, FSpostprocess_dict)
 
-            metric2 = baseaccuracy - columnaccuracy2
+            #I think this will clear some memory
+            del shuffleset
 
-            FScolumn_dict[column]['shuffleaccuracy2'] = columnaccuracy2
-            FScolumn_dict[column]['metric2'] = metric2
-          
-          madethecut = self._assemblemadethecut(FScolumn_dict, featurethreshold, \
-                                           featureselection, am_train_columns, FSprocess_dict)
-    
-    #if the only column left in madethecut from origin column is a NArw, delete from the set
-    #(this is going to lean on the column ID string naming conventions)
-    #couldn't get this to work, this functionality a future extension
+            #category accuracy penalty metric
+            metric = baseaccuracy - columnaccuracy
+            #metric2 = baseaccuracy - columnaccuracy2
+
+            #save accuracy to FScolumn_dict and set FScomplete to True
+            #(for each column in the categorylist)
+            #for categorycolumn in FSpostprocess_dict['column_dict'][column]['categorylist']:
+            for categorycolumn in FSpostprocess_dict['column_dict'][column]['columnslist']:
+
+              FScolumn_dict[categorycolumn]['FScomplete'] = True
+              FScolumn_dict[categorycolumn]['shuffleaccuracy'] = columnaccuracy
+              FScolumn_dict[categorycolumn]['metric'] = metric
+              #FScolumn_dict[categorycolumn]['shuffleaccuracy2'] = columnaccuracy2
+              #FScolumn_dict[categorycolumn]['metric2'] = metric2
+
+          columnslist = FScolumn_dict[column]['columnslist']
+
+          #create second set with all but one columns shuffled from columnslist
+          #this will allow us to compare the relative importance between columns
+          #derived from the same parent
+          #shuffleset2 = self._createFSsets2(am_train, column, columnslist, randomseed)
+          shuffleset2 = self._createFSsets2(am_validation1, column, columnslist, randomseed)
+
+          #determine resulting accuracy after shuffle
+          columnaccuracy2 = self._shuffleaccuracy(shuffleset2, am_validationlabels1, \
+                                                FSmodel, randomseed, am_categorylist, \
+                                                FSprocess_dict, labelctgy, FSpostprocess_dict)
+
+          metric2 = baseaccuracy - columnaccuracy2
+
+          FScolumn_dict[column]['shuffleaccuracy2'] = columnaccuracy2
+          FScolumn_dict[column]['metric2'] = metric2
+        
+        madethecut = self._assemblemadethecut(FScolumn_dict, featurethreshold, \
+                                          featureselection, am_train_columns, FSprocess_dict)
+  
+  #if the only column left in madethecut from origin column is a NArw, delete from the set
+  #(this is going to lean on the column ID string naming conventions)
+  #couldn't get this to work, this functionality a future extension
 #     trimfrommtc = []
 #     for traincolumn in list(df_train):
 #       if (traincolumn + '_') not in [checkmtc[:(len(traincolumn)+1)] for checkmtc in madethecut]:
@@ -24009,30 +23998,30 @@ class AutoMunge:
 #             and mtc[-5:] == '_NArw':
 #               trimfrommtc = trimfrommtc + [mtc]
 #     madethecut = list(set(madethecut).difference(set(trimfrommtc)))
-       
-    #apply function madethecut(FScolumn_dict, featurepct)
-    #return madethecut
-    #where featurepct is the percent of features that we intend to keep
-    #(might want to make this a passed argument from automunge)
-    
-        #I think this will clear some memory
-        del am_train, _1, am_labels, am_validation1, _2, \
-        am_validationlabels1, \
-        _3, _4, _5,  \
-        FSpostprocess_dict
+      
+  #apply function madethecut(FScolumn_dict, featurepct)
+  #return madethecut
+  #where featurepct is the percent of features that we intend to keep
+  #(might want to make this a passed argument from automunge)
+  
+      #I think this will clear some memory
+      del am_train, _1, am_labels, am_validation1, _2, \
+      am_validationlabels1, \
+      _3, _4, _5,  \
+      FSpostprocess_dict
 
-        if printstatus is True:
-          print("_______________")
-          print("Feature Importance results:")
+      if printstatus is True:
+        print("_______________")
+        print("Feature Importance results:")
+        print("")
+
+      #to inspect values returned in featureimportance object one could run
+      if printstatus is True:
+        for keys,values in FScolumn_dict.items():
+          print(keys)
+          print('metric = ', values['metric'])
+          print('metric2 = ', values['metric2'])
           print("")
-
-        #to inspect values returned in featureimportance object one could run
-        if printstatus is True:
-          for keys,values in FScolumn_dict.items():
-            print(keys)
-            print('metric = ', values['metric'])
-            print('metric2 = ', values['metric2'])
-            print("")
 
     FS_sorted = {'baseaccuracy' : baseaccuracy, \
                  'metric_key':{}, \
@@ -27295,14 +27284,44 @@ class AutoMunge:
 
     return check_assignnan_toplevelentries_result, check_assignnan_categories_result, check_assignnan_columns_result
 
+
+  def _check_assignnan_injections(self, assignnan, columns_train, printstatus):
+    """
+    checks for valid assignnan actions under injections
+    """
+    
+    assignnan_actions_valresult = False
+    
+    if isinstance(assignnan, dict):
+    
+      if 'injections' in assignnan:
+
+        for columnkey in assignnan['injections']:
+          if columnkey in columns_train:
+            for actionkey in assignnan['injections'][columnkey]:
+              if actionkey not in {'inject_ratio', 'range', 'minmax_range', 'entries', 'entry_ratio'}:
+
+                assignnan_actions_valresult = True
+
+                if printstatus != 'silent':
+                  print("assignnan['injections'] has an invalid action entry")
+                  print("for column: ", columnkey)
+                  print("and action: ", actionkey)
+                  print("accepted form of injection specifications are documented in read me")
+                
+    return assignnan_actions_valresult
+
   def _check_ML_cmnd(self, ML_cmnd, printstatus):
     """
     #Here we'll do a quick check for any entries in the user passed
     #ML_cmnd and add any missing entries with default values
     #a future extension should validate any entries
+
+    #also validates any entries to ML_cmnd['hyperparam_tuner'] are valid
     """
     
     result = False
+    ML_cmnd_hyperparam_tuner_valresult = False
     
     if 'MLinfill_type' not in ML_cmnd:
       ML_cmnd.update({'MLinfill_type':'default'})
@@ -27313,7 +27332,15 @@ class AutoMunge:
     if 'PCA_cmnd' not in ML_cmnd:
       ML_cmnd.update({'PCA_cmnd':{}})
 
-    return result
+    if 'hyperparam_tuner' in ML_cmnd:
+      if ML_cmnd['hyperparam_tuner'] not in {'gridCV', 'randomCV'}:
+        ML_cmnd_hyperparam_tuner_valresult = True
+        if printstatus != 'silent':
+          print("invalid entry passed to ML_cmnd['hyperparam_tuner']")
+          print("acceptable values are one of {'gridCV', 'randomCV'}")
+          print()
+
+    return result, ML_cmnd_hyperparam_tuner_valresult
   
   def _check_assignparam(self, assignparam, process_dict, printstatus):
     """
@@ -27380,15 +27407,19 @@ class AutoMunge:
     """
     
     check_processdict_result = False
+    check_processdict_result2 = False
 
+    #the reason these two assignparam strings are reserved for use as category keys
+    #is because if used tham as categories wouldn't be able to pass assignparam params to them
+    #since assignparam parsing would interpret the categories as assignparam keywords
     if 'global_assignparam' in processdict:
-      check_processdict_result = True
+      check_processdict_result2 = True
       if printstatus != 'silent':
         print("error: processdict has entry for 'global_assignparam'")
         print("which is a reserved category string for use in assignparam")
 
     if 'default_assignparam' in processdict:
-      check_processdict_result = True
+      check_processdict_result2 = True
       if printstatus != 'silent':
         print("error: processdict has entry for 'default_assignparam'")
         print("which is a reserved category string for use in assignparam")
@@ -27423,16 +27454,12 @@ class AutoMunge:
             print("error: invalid 'MLinfilltype' processdict entry for category: ", entry)
             print()
         
-      if 'labelctgy' not in processdict[entry]:
-        check_processdict_result = True
-        if printstatus != 'silent':
-          print("error: processdict missing 'labelctgy' entry for category: ", entry)
-          print()
-      # else:
-      #   #this isn't a full validation, just checking that labelctgy is a valid entry in processdict
-      #   if processdict[entry]['labelctgy'] not in processdict:
-      #     check_processdict_result = True
-      #     print("error: invalid 'labelctgy' processdict entry for category: ", entry)
+      #labelctgy is an optional entry to processdict, if not populated or accessed from functionpointer
+      #it is given an arbitrary assignment in _check_processdict3
+      # if 'labelctgy' not in processdict[entry]:
+      #   check_processdict_result = True
+      #   if printstatus != 'silent':
+      #     print("error: processdict missing 'labelctgy' entry for category: ", entry)
       #     print()
       
       #we'll have convention that at least one entry for processing funtions required
@@ -27449,7 +27476,135 @@ class AutoMunge:
         pass
         #for now won't validate the transformation function entries
       
-    return check_processdict_result
+    return check_processdict_result, check_processdict_result2
+
+  def _check_processdict3(self, processdict, process_dict, transform_dict, printstatus):
+    """
+    The processdict 'labelctgy' entry is only really used on small part of library
+    Which is there to direct feature importance or levelizer to a specific returned set
+    For cases where label set returned in multiple configurations
+
+    Trying to get away from making labelctgy a required entry
+    So convention applied here is that if labelctgy not specified
+    An arbitrary target is accessed from the family trees
+    prioritize to upstream primitive entries without offspring
+    followed by same convention for downstream primitizes if upstring target isn't identified
+    """
+
+    check_processdict3_valresult = False
+    check_processdict3_validlabelctgy_valresult = False
+
+    #intentionally limiting search to user passed processdict entries instead of full process_dict
+    #note this function is applied after processdict and process_dict have already been consolidated
+    #and functionpointers have been applied to populate missing entries
+    for entry in processdict:
+
+      if 'labelctgy' not in process_dict[entry]:
+
+        check_processdict3_valresult = True
+
+        if printstatus != 'silent':
+
+          print("labelctgy processdict entry wasn't provided for entry ", entry)
+          print("selecting arbitrary entry based on family tree")
+
+        familytree = transform_dict[entry]
+
+        if len(familytree['auntsuncles']) > 0:
+          new_labelctgy = familytree['auntsuncles'][0]
+          process_dict[entry]['labelctgy'] = new_labelctgy
+          if printstatus != 'silent':
+            print("labelctgy selected as ", new_labelctgy)
+            print()
+
+        elif len(familytree['cousins']) > 0:
+          new_labelctgy = familytree['cousins'][0]
+          process_dict[entry]['labelctgy'] = new_labelctgy
+          if printstatus != 'silent':
+            print("labelctgy selected as ", new_labelctgy)
+            print()
+
+        elif len(familytree['parents']) > 0:
+          offspringparent = familytree['parents'][0]
+
+          new_labelctgy = \
+          self._check_processdict3_support(transform_dict, offspringparent, printstatus)
+
+          process_dict[entry]['labelctgy'] = new_labelctgy
+          if printstatus != 'silent':
+            print("labelctgy selected as ", new_labelctgy)
+            print()
+
+        elif len(familytree['siblings']) > 0:
+          offspringparent = familytree['siblings'][0]
+
+          new_labelctgy = \
+          self._check_processdict3_support(transform_dict, offspringparent, printstatus)
+
+          process_dict[entry]['labelctgy'] = new_labelctgy
+          if printstatus != 'silent':
+            print("labelctgy selected as ", new_labelctgy)
+            print()
+
+      elif 'labelctgy' in process_dict[entry]:
+
+        if process_dict[entry]['labelctgy'] not in process_dict:
+
+          check_processdict3_validlabelctgy_valresult = True
+
+          if printstatus != 'silent':
+            
+            printsupport = process_dict[entry]['labelctgy']
+            print("labelctgy processdict entry wasn't valid for entry ", entry)
+            print("Was entered as ", printsupport)
+            print("labelctgy needs to be a valid transformation category with entries in process_dict and transform_dict")
+
+    return process_dict, check_processdict3_valresult, check_processdict3_validlabelctgy_valresult
+
+  def _check_processdict3_support(self, transform_dict, offspringparent, printstatus):
+    """
+    Support function for _check_processdict3
+    Used to inspect downstream primitive entries 
+    When a labelctgy wasn't identified in upstream primitives
+    """
+
+    familytree = transform_dict[offspringparent]
+
+    if len(familytree['coworkers']) > 0:
+      new_labelctgy = familytree['coworkers'][0]
+
+      if printstatus != 'silent':
+        print("labelctgy selected as ", new_labelctgy)
+        print()
+
+    elif len(familytree['friends']) > 0:
+      new_labelctgy = familytree['friends'][0]
+
+      if printstatus != 'silent':
+        print("labelctgy selected as ", new_labelctgy)
+        print()
+
+    elif len(familytree['children']) > 0:
+      offspringparent = familytree['children'][0]
+
+      new_labelctgy = \
+      self._check_processdict3_support(transform_dict, offspringparent, printstatus)
+
+      if printstatus != 'silent':
+        print("labelctgy selected as ", new_labelctgy)
+        print()
+
+    elif len(familytree['niecesnephews']) > 0:
+      offspringparent = familytree['niecesnephews'][0]
+
+      new_labelctgy = \
+      self._check_processdict3_support(transform_dict, offspringparent, printstatus)
+
+      if printstatus != 'silent':
+        print("labelctgy selected as ", new_labelctgy)
+        print()
+
+    return new_labelctgy
 
   def _grab_processdict_functions_support(self, targetcategory, pointercategory, processdict, process_dict, \
                                          i, check_functionpointer_result, printstatus):
@@ -28514,14 +28669,8 @@ class AutoMunge:
       if columnkey in assignnan['injections']:
         if columnkey in df:
           for actionkey in assignnan['injections'][columnkey]:
-            if actionkey not in {'inject_ratio', 'range', 'minmax_range', 'entries', 'entry_ratio'}:
-              if printstatus != 'silent':
-                print("assignnan['injections'] has an invalid action entry")
-                print("for column: ", columnkey)
-                print("and action: ", actionkey)
-                print("accepted form of injetion specifications are documented in read me")
               
-            elif actionkey == 'inject_ratio':
+            if actionkey == 'inject_ratio':
               #inject_ratio is uniform randomly injected nan points to ratio of entries
               ratio = assignnan['injections'][columnkey][actionkey]
               index = list(pd.DataFrame(df.index).sample(frac=ratio, replace=False).to_numpy().ravel())
@@ -29030,7 +29179,7 @@ class AutoMunge:
     #quick check to ensure each column only assigned once in assigncat and assigninfill
     check_assigncat_result = self._check_assigncat(assigncat, printstatus)
     check_assigninfill_result = self._check_assigninfill(assigninfill, printstatus)
-    check_ML_cmnd_result = self._check_ML_cmnd(ML_cmnd, printstatus)
+    check_ML_cmnd_result, ML_cmnd_hyperparam_tuner_valresult = self._check_ML_cmnd(ML_cmnd, printstatus)
 
     #check the range of parameters 
     #(generally speaking other than passed dictionaries, dataframes, or column identifiers)
@@ -29044,7 +29193,8 @@ class AutoMunge:
 
     miscparameters_results.update({'check_assigncat_result' : check_assigncat_result, \
                                    'check_assigninfill_result' : check_assigninfill_result, \
-                                   'check_ML_cmnd_result' : check_ML_cmnd_result})
+                                   'check_ML_cmnd_result' : check_ML_cmnd_result, \
+                                   'ML_cmnd_hyperparam_tuner_valresult' : ML_cmnd_hyperparam_tuner_valresult})
     
     #initialize processing dicitonaries
     transform_dict = self._assembletransformdict(binstransform, NArw_marker)
@@ -29089,9 +29239,12 @@ class AutoMunge:
       #now consolidate the transform_dict and transformdict into single dictionary
       transform_dict.update(transformdict)
       
-    #check for infinite loops in user passed transformdict
-    check_haltingproblem_result = \
-    self._check_haltingproblem(transformdict, transform_dict, printstatus, max_check_count = 111)
+    if isinstance(transformdict, dict) and transformdict != {}:
+      #check for infinite loops in consolidated transform_dict
+      check_haltingproblem_result = \
+      self._check_haltingproblem(transformdict, transform_dict, printstatus, max_check_count = 1111)
+    else:
+      check_haltingproblem_result = False
     
     miscparameters_results.update({'check_haltingproblem_result' : check_haltingproblem_result})
 
@@ -29121,9 +29274,10 @@ class AutoMunge:
       miscparameters_results.update({'check_functionpointer_result' : check_functionpointer_result})
       
       #this funcion applies some misc validations on processdict
-      check_processdict_result = \
+      check_processdict_result, check_processdict_result2 = \
       self._check_processdict(processdict, printstatus)
-      miscparameters_results.update({'check_processdict_result' : check_processdict_result})
+      miscparameters_results.update({'check_processdict_result' : check_processdict_result,
+                                     'check_processdict_result2': check_processdict_result2})
 
       #now consolidate user passed entries from processdict and internal library in process_dict
       process_dict.update(processdict)
@@ -29131,6 +29285,15 @@ class AutoMunge:
     else:
       miscparameters_results.update({'check_functionpointer_result' : False})
       miscparameters_results.update({'check_processdict_result' : False})
+
+    #we have convention that if processdict entry did't include a labelctgy or wasn't populated based on functionpointer
+    #we'll grab an arbitrary labelcty entry from family tree
+    #(labelctgy has only a few small uses in library so making an optional processdict entry)
+    process_dict, check_processdict3_valresult, check_processdict3_validlabelctgy_valresult = \
+    self._check_processdict3(processdict, process_dict, transform_dict, printstatus)
+
+    miscparameters_results.update({'check_processdict3_valresult' : check_processdict3_valresult,
+                                   'check_processdict3_validlabelctgy_valresult' : check_processdict3_validlabelctgy_valresult})
 
     #now that both transform_dict and process_dict are consolidated, validate transformdict roots have processdict entries
     check_transform_dict_roots_result = \
@@ -29170,6 +29333,9 @@ class AutoMunge:
       if labels_column is False:
         if printstatus != 'silent':
           print("featureselection not available without labels_column in training set")
+
+        labels_column_for_featureselect_valresult = True
+        miscparameters_results.update({'labels_column_for_featureselect_valresult' : labels_column_for_featureselect_valresult})
         
         madethecut = []
         FSmodel = False
@@ -29289,10 +29455,14 @@ class AutoMunge:
     #note this takes place before any label column split from df_train
     check_assignnan_toplevelentries_result, check_assignnan_categories_result, check_assignnan_columns_result \
     = self._check_assignnan(assignnan, transform_dict, list(df_train), printstatus)
+
+    assignnan_actions_valresult = \
+    self._check_assignnan_injections(assignnan, origcolumns_all, printstatus)
   
     miscparameters_results.update({'check_assignnan_toplevelentries_result' : check_assignnan_toplevelentries_result, \
                                    'check_assignnan_categories_result'      : check_assignnan_categories_result, \
-                                   'check_assignnan_columns_result'         : check_assignnan_columns_result})
+                                   'check_assignnan_columns_result'         : check_assignnan_columns_result, \
+                                   'assignnan_actions_valresult'            : assignnan_actions_valresult})
     
     #we originally had the convention that some preprocessing was done on assignparam here
     #to create assign_param
@@ -30453,7 +30623,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.31'
+    automungeversion = '6.32'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -37468,10 +37638,17 @@ class AutoMunge:
         labelscolumn = postprocess_dict['labels_column']
       
     if labelscolumn is False:
+
+      labelscolumn_for_postfeatureslect_valresult = True
+      FS_validations.update({'labelscolumn_for_postfeatureslect_valresult' : labelscolumn_for_postfeatureslect_valresult})
       
       FSmodel = False
 
       baseaccuracy = False
+
+      FScolumn_dict = {}
+      
+      FS_origcolumns = []
       
       #printout display progress
       if printstatus != 'silent':
@@ -37510,11 +37687,14 @@ class AutoMunge:
       totalvalidation = 0.2
 
       #prepare sets for FS with postmunge
-      am_train, _1, am_labels, _2 = \
+      am_train, _1, am_labels, FSpostreports_dict = \
       self.postmunge(FSpostprocess_dict, df_test, testID_column = testID_column, \
                      labelscolumn = labelscolumn, pandasoutput = pandasoutput, printstatus = printstatus, \
                      TrainLabelFreqLevel = TrainLabelFreqLevel, featureeval = featureeval, \
                      shuffletrain = True)
+
+      #record validation results from postmunge call
+      FS_validations.update({'postfeatureselect_automungecall_validationresults' : FSpostreports_dict['pm_miscparameters_results']})
 
       #in case these are single column series convert to dataframe
       am_train = pd.DataFrame(am_train)
@@ -37526,7 +37706,6 @@ class AutoMunge:
 
       am_labels, am_validationlabels1 = \
       self._df_split(am_labels, totalvalidation, False, randomseed)
-
 
       #this is the returned process_dict
       #(remember "processdict" is what we pass to automunge() call, "process_dict" is what is 
@@ -37546,6 +37725,9 @@ class AutoMunge:
           print("_______________")
           print("No labels returned from Postmunge, Feature Importance halted")
           print("")
+
+        returned_label_set_for_postfeatureselect_valresult = True
+        FS_validations.update({'returned_label_set_for_postfeatureselect_valresult' : returned_label_set_for_postfeatureselect_valresult})
     
       #if am_labels is not an empty set
       if am_labels.empty is False:
@@ -37581,6 +37763,9 @@ class AutoMunge:
             print("Label category processdict entry contained a labelctgy entry not found in transformdict entry")
             print("Feature Seclection model training will not run without valid labelgctgy processdict entry")
             print()
+
+          labelctgy_not_found_in_familytree_pm_valresult = True
+          FS_validations.update({'labelctgy_not_found_in_familytree_pm_valresult' : labelctgy_not_found_in_familytree_pm_valresult})
 
         elif len(am_categorylist) == 1:
           am_labels = pd.DataFrame(am_labels[am_categorylist[0]])
@@ -37633,6 +37818,9 @@ class AutoMunge:
             print("_______________")
             print("No model returned from training, Feature Importance halted")
             print("")
+
+          postfeatureselect_trained_model_valresult = True
+          FS_validations.update({'postfeatureselect_trained_model_valresult' : postfeatureselect_trained_model_valresult})
           
         elif FSmodel is not False:
 
@@ -37769,7 +37957,7 @@ class AutoMunge:
 
         #I think this will clear some memory
 
-          del am_train, _1, am_labels, _2, am_validation1, am_validationlabels1
+          del am_train, _1, am_labels, FSpostreports_dict, am_validation1, am_validationlabels1
 
           if printstatus is True:
             print("_______________")
@@ -38117,6 +38305,9 @@ class AutoMunge:
         if printstatus != 'silent':
           print("featureselection not available when performing inversion")
           print()
+
+        postfeatureselect_with_inversion_valresult = True
+        pm_miscparameters_results.update({'postfeatureselect_with_inversion_valresult' : postfeatureselect_with_inversion_valresult})
         
         madethecut = postprocess_dict['madethecut']
         FSmodel = False
@@ -38131,6 +38322,9 @@ class AutoMunge:
           print("featureselection not available without labels_column in training set")
           print()
         
+        labels_column_for_postfeatureselect_valresult = True
+        pm_miscparameters_results.update({'labels_column_for_postfeatureselect_valresult' : labels_column_for_postfeatureselect_valresult})
+
         madethecut = postprocess_dict['madethecut']
         FSmodel = False
         FScolumn_dict = {}
@@ -38552,12 +38746,6 @@ class AutoMunge:
     #ok now let's check if that labels column is present in the test set
     
     if labelscolumn is not False:
-      if labelscolumn is not True:
-        if labelscolumn != labels_column:
-          if printstatus != 'silent':
-            #note this is redundant with prior check recorded in postreports_dict['pm_miscparameters_results'] as validate_labelscolumn_string
-            print("error, labelscolumn in test set passed to postmunge must have same column")
-            print("labeling convention, labels column from automunge was: ", labels_column)
 
       #initialize processing dicitonaries (we'll use same as for train set)
       #a future extension may allow custom address for labels
@@ -39290,13 +39478,6 @@ class AutoMunge:
       )
     
     depth = 1
-    
-    #this handles edge case when a transformation category recorded by a transformation function
-    #without corresponding entry in processdict
-    if category not in postprocess_dict['process_dict']:
-      if printstatus != 'silent':
-        print('error: transformation category was recorded by a transformation function in column_dict without coresponding entry in process_dict')
-        print('for transformation category: ', category)
 
     info_retention = False
     if 'info_retention' in postprocess_dict['process_dict'][category]:
@@ -41834,7 +42015,11 @@ class AutoMunge:
 
       #this is to handle edge case of excl transforms
       #which after processing have their suffix removed from header
-      finalcolumns_train = postprocess_dict['finalcolumns_train']
+
+      #using pre_dimred_finalcolumns_train to accomodate post Binary inversion application
+      # finalcolumns_train = postprocess_dict['finalcolumns_train']
+      finalcolumns_train = postprocess_dict['pre_dimred_finalcolumns_train']
+      
       source_columns = postprocess_dict['origtraincolumns']
 
       inversion = [str(c)+'_excl' if c in source_columns and c in finalcolumns_train else c for c in inversion]
