@@ -1404,7 +1404,7 @@ processdict =  {'newt' : {'dualprocess' : am._process_mnmx,
                           'info_retention' : False,
                           'NArowtype' : 'numeric',
                           'MLinfilltype' : 'numeric',
-                          'labelctgy' : 'mnmx'}}
+                          'labelctgy' : 'newt'}}
 			  
 #Where 'inverseprocess' is a function to invert the forward pass transformation.
 #And 'info_retention' is boolean to signal whether there will be any information
@@ -1453,7 +1453,7 @@ tree in a corresponding newt transformdict entry.
 processdict =  {'newt' : {'functionpointer' : 'DLmm',
                           'NArowtype' : 'numeric',
                           'MLinfilltype' : 'numeric',
-                          'labelctgy' : 'DLmm'}}
+			  'labelctgy' : 'newt'}}
 			  
 #or an even simpler approach if no overwrites are desired could just be to copy everything
 processdict =  {'newt' : {'functionpointer' : 'DLmm'}}
@@ -1473,7 +1473,7 @@ processdict =  {'newt' : {'functionpointer' : 'mnmx',
                           'inplace_option' : True,
                           'NArowtype' : 'numeric',
                           'MLinfilltype' : 'numeric',
-                          'labelctgy' : 'mnmx'}}
+                          'labelctgy' : 'newt'}}
 ```
 
 As an asterisk for advanced users:
