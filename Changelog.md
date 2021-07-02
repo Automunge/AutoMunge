@@ -3344,3 +3344,21 @@ am.postmunge(postprocess_dict, df_test)
 - removed a validation check and if statement indentation in support function _featureselect 
 - associated with checking for cases where labels_column passed as False (this was redundant with a check performed prior to calling function)
 - finally found and fixed bug for postmunge inversion in conjunction with Binary dimensionality reduction
+
+6.33
+- performed an audit of internal process_dict 'labelctgy' entries
+- where labelctgy again is kind of only used in a few remote scenarios
+- such as when a category is applied as a root category to a label set
+- and has a family tree that returns labels in multiple configurations
+- such that when that label set is a target for feature selection or oversampling
+- the labelctgy entry helps distinguish which of the constituent sets will serve as target
+- so yeah previous convention was that labelctgy was meant to point to the recorded category
+- populated in column_dict by the transformation function returning set to serve as target
+- turns out the 6.30 update where we revised the recorded category convention impacted labelctgy
+- such that any place where the recorded category entry to labelctgy did not match the target treecategory
+- required update to new convention
+- so result is several updates to recorded labelctgy entries
+- also in process identified that process_dict entries for 'time' and 'tmsc'
+- did not have correspoinding transform_dict family trees defined
+- which was kind of intentional since those are only used as support functions in other family trees
+- but to be consistent with convention of rest of library, went ahead an defined some simple family trees
