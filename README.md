@@ -5695,6 +5695,24 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'coworkers'     : [],
                                      'friends'       : []}})
 
+    transform_dict.update({'tmsc' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['tmsc'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+
+    transform_dict.update({'time' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['time'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+
     transform_dict.update({'tmzn' : {'parents'       : [],
                                      'siblings'      : [],
                                      'auntsuncles'   : ['tmzn'],
