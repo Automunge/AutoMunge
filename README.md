@@ -1324,10 +1324,9 @@ to the library is a corresponding processdict entry not required. We'll describe
 processdict =  {'newt' : {'dualprocess' : am._process_mnmx,
                           'singleprocess' : None,
                           'postprocess' : am._postprocess_mnmx,
-                          'recorded_category' : 'mnmx',
                           'NArowtype' : 'numeric',
                           'MLinfilltype' : 'numeric',
-                          'labelctgy' : 'mnmx'}}
+                          'labelctgy' : 'newt'}}
 
 #A user should pass either a pair of processing functions to both 
 #dualprocess and postprocess, or alternatively just a single processing
@@ -1348,11 +1347,6 @@ processdict =  {'newt' : {'dualprocess' : am._process_mnmx,
 #postprocess: for passing a processing function in which normalization 
 #             parameters originally derived from the train set are applied
 #             to seperately process a test set
-
-#recorded_category: the transformation category recorded by the transformation function
-#                   and returned in the column_dict data structure. Note this may be different
-#                   than the transfomration category applied in family tree since a single
-#                   transformation function may be associated with multiple transfomration categories
 
 #NArowtype: can be entries of {'numeric', 'integer', 'justNaN', 'exclude', 
 #                              'positivenumeric', 'nonnegativenumeric', 
