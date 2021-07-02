@@ -1784,6 +1784,24 @@ class AutoMunge:
                                      'coworkers'     : [],
                                      'friends'       : []}})
 
+    transform_dict.update({'tmsc' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['tmsc'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+
+    transform_dict.update({'time' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['time'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+
     transform_dict.update({'tmzn' : {'parents'       : [],
                                      'siblings'      : [],
                                      'auntsuncles'   : ['tmzn'],
@@ -3612,84 +3630,84 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'dxdt'}})
+                                  'labelctgy' : 'dddt'}})
     process_dict.update({'ddd2' : {'dualprocess' : None,
                                   'singleprocess' : self._process_dxdt,
                                   'postprocess' : None,
                                   'inplace_option' : True,
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'dxdt'}})
+                                  'labelctgy' : 'dddt'}})
     process_dict.update({'ddd3' : {'dualprocess' : None,
                                   'singleprocess' : self._process_dxdt,
                                   'postprocess' : None,
                                   'inplace_option' : True,
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'dxdt'}})
+                                  'labelctgy' : 'dddt'}})
     process_dict.update({'ddd4' : {'dualprocess' : None,
                                   'singleprocess' : self._process_dxdt,
                                   'postprocess' : None,
                                   'inplace_option' : True,
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'dxdt'}})
+                                  'labelctgy' : 'dddt'}})
     process_dict.update({'ddd5' : {'dualprocess' : None,
                                   'singleprocess' : self._process_dxdt,
                                   'postprocess' : None,
                                   'inplace_option' : True,
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'dxdt'}})
+                                  'labelctgy' : 'dddt'}})
     process_dict.update({'ddd6' : {'dualprocess' : None,
                                   'singleprocess' : self._process_dxdt,
                                   'postprocess' : None,
                                   'inplace_option' : True,
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'dxdt'}})
+                                  'labelctgy' : 'dddt'}})
     process_dict.update({'dedt' : {'dualprocess' : None,
                                   'singleprocess' : self._process_dxd2,
                                   'postprocess' : None,
                                   'inplace_option' : True,
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'dxd2'}})
+                                  'labelctgy' : 'dedt'}})
     process_dict.update({'ded2' : {'dualprocess' : None,
                                   'singleprocess' : self._process_dxd2,
                                   'postprocess' : None,
                                   'inplace_option' : True,
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'dxd2'}})
+                                  'labelctgy' : 'dedt'}})
     process_dict.update({'ded3' : {'dualprocess' : None,
                                   'singleprocess' : self._process_dxd2,
                                   'postprocess' : None,
                                   'inplace_option' : True,
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'dxd2'}})
+                                  'labelctgy' : 'dedt'}})
     process_dict.update({'ded4' : {'dualprocess' : None,
                                   'singleprocess' : self._process_dxd2,
                                   'postprocess' : None,
                                   'inplace_option' : True,
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'dxd2'}})
+                                  'labelctgy' : 'dedt'}})
     process_dict.update({'ded5' : {'dualprocess' : None,
                                   'singleprocess' : self._process_dxd2,
                                   'postprocess' : None,
                                   'inplace_option' : True,
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'dxd2'}})
+                                  'labelctgy' : 'dedt'}})
     process_dict.update({'ded6' : {'dualprocess' : None,
                                   'singleprocess' : self._process_dxd2,
                                   'postprocess' : None,
                                   'inplace_option' : True,
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'dxd2'}})
+                                  'labelctgy' : 'dedt'}})
     process_dict.update({'shft' : {'dualprocess' : None,
                                   'singleprocess' : self._process_shft,
                                   'postprocess' : None,
@@ -3709,7 +3727,7 @@ class AutoMunge:
                                   'defaultparams' : {'periods' : 2},
                                   'NArowtype' : 'exclude',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'shft'}})
+                                  'labelctgy' : 'shf2'}})
     process_dict.update({'shf3' : {'dualprocess' : None,
                                   'singleprocess' : self._process_shft,
                                   'postprocess' : None,
@@ -3719,7 +3737,7 @@ class AutoMunge:
                                   'defaultparams' : {'periods' : 3},
                                   'NArowtype' : 'exclude',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'shft'}})
+                                  'labelctgy' : 'shf3'}})
     process_dict.update({'shf4' : {'dualprocess' : None,
                                   'singleprocess' : self._process_shft,
                                   'postprocess' : None,
@@ -3785,7 +3803,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'nmbr'}})
+                                  'labelctgy' : 'nbr3'}})
     process_dict.update({'MADn' : {'dualprocess' : self._process_MADn,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_MADn,
@@ -3805,7 +3823,7 @@ class AutoMunge:
                                   'defaultparams' : {'center' : 'mean'},
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'MADn'}})
+                                  'labelctgy' : 'MAD2'}})
     process_dict.update({'MAD3' : {'dualprocess' : self._process_MADn,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_MADn,
@@ -3815,7 +3833,7 @@ class AutoMunge:
                                   'defaultparams' : {'center' : 'max'},
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'MADn'}})
+                                  'labelctgy' : 'MAD3'}})
     process_dict.update({'mnmx' : {'dualprocess' : self._process_mnmx,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_mnmx,
@@ -3870,13 +3888,13 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'mnmx'}})
+                                  'labelctgy' : 'mnm6'}})
     process_dict.update({'mnm7' : {'dualprocess' : None,
                                   'singleprocess' : None,
                                   'postprocess' : None,
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'mnm7'}})
+                                  'labelctgy' : 'mnmx'}})
     process_dict.update({'mxab' : {'dualprocess' : self._process_mxab,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_mxab,
@@ -3959,7 +3977,7 @@ class AutoMunge:
                                   'defaultparams' : {'infillconvention' : 'zerovalue'},
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'binary',
-                                  'labelctgy' : 'bnry'}})
+                                  'labelctgy' : 'bnr2'}})
     process_dict.update({'onht' : {'dualprocess' : self._process_onht,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_onht,
@@ -4008,7 +4026,7 @@ class AutoMunge:
                                   'defaultparams' : {'LSfit' : True},
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
-                                  'labelctgy' : 'smth'}})
+                                  'labelctgy' : 'fsmh'}})
     process_dict.update({'lngt' : {'dualprocess' : None,
                                   'singleprocess' : self._process_lngt,
                                   'postprocess' : None,
@@ -4029,7 +4047,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
-                                  'labelctgy' : 'exclude'}})
+                                  'labelctgy' : 'UPCS'}})
     process_dict.update({'Unht' : {'dualprocess' : None,
                                   'singleprocess' : self._process_UPCS,
                                   'postprocess' : None,
@@ -4074,7 +4092,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
-                                  'labelctgy' : 'ucct'}})
+                                  'labelctgy' : 'ord3'}})
     process_dict.update({'Uord' : {'dualprocess' : None,
                                   'singleprocess' : self._process_UPCS,
                                   'postprocess' : None,
@@ -4175,7 +4193,7 @@ class AutoMunge:
                                   'defaultparams' : {'test_same_as_train' : True},
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'multirt',
-                                  'labelctgy' : 'splt'}})
+                                  'labelctgy' : 'spl8'}})
     process_dict.update({'spl9' : {'dualprocess' : self._process_spl2,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_spl2,
@@ -4245,7 +4263,7 @@ class AutoMunge:
                                                      'test_same_as_train' : False},
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'concurrent_act',
-                                  'labelctgy' : 'splt'}})
+                                  'labelctgy' : 'sp15'}})
     process_dict.update({'sp16' : {'dualprocess' : self._process_splt,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_splt,
@@ -4255,7 +4273,7 @@ class AutoMunge:
                                                      'test_same_as_train' : True},
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'concurrent_act',
-                                  'labelctgy' : 'splt'}})
+                                  'labelctgy' : 'sp16'}})
     process_dict.update({'sp17' : {'dualprocess' : self._process_spl2,
                                    'singleprocess' : None,
                                    'postprocess' : self._postprocess_spl2,
@@ -4292,7 +4310,7 @@ class AutoMunge:
                                   'defaultparams' : {'test_same_as_train' : True},
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : '1010',
-                                  'labelctgy' : 'sp19'}})
+                                  'labelctgy' : 'sp20'}})
     process_dict.update({'sbst' : {'dualprocess' : self._process_sbst,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_sbst,
@@ -4310,7 +4328,7 @@ class AutoMunge:
                                   'defaultparams' : {'test_same_as_train' : True},
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'concurrent_act',
-                                  'labelctgy' : 'sbst'}})
+                                  'labelctgy' : 'sbs2'}})
     process_dict.update({'sbs3' : {'dualprocess' : self._process_sbs3,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_sbs3,
@@ -4328,7 +4346,7 @@ class AutoMunge:
                                   'defaultparams' : {'test_same_as_train' : True},
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : '1010',
-                                  'labelctgy' : 'sbs3'}})
+                                  'labelctgy' : 'sbs4'}})
     process_dict.update({'hash' : {'dualprocess' : self._process_hash,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_hash,
@@ -4344,7 +4362,7 @@ class AutoMunge:
                                                      'excluded_characters' : []},
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'ordlexclude',
-                                  'labelctgy' : 'hash'}})
+                                  'labelctgy' : 'hsh2'}})
     process_dict.update({'hs10' : {'dualprocess' : self._process_hs10,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_hs10,
@@ -4369,7 +4387,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
-                                  'labelctgy' : 'hash'}})
+                                  'labelctgy' : 'hsh2'}})
     process_dict.update({'Uh10' : {'dualprocess' : None,
                                   'singleprocess' : self._process_UPCS,
                                   'postprocess' : None,
@@ -4432,7 +4450,7 @@ class AutoMunge:
                                   'info_retention' : True,
                                   'NArowtype' : 'integer',
                                   'MLinfilltype' : 'exclude',
-                                  'labelctgy' : 'ord3'}})
+                                  'labelctgy' : 'strg'}})
     process_dict.update({'nmrc' : {'dualprocess' : None,
                                   'singleprocess' : self._process_nmrc,
                                   'postprocess' : None,
@@ -4469,7 +4487,7 @@ class AutoMunge:
                                                      'test_same_as_train' : True},
                                   'NArowtype' : 'parsenumeric',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'nmrc'}})
+                                  'labelctgy' : 'nmr4'}})
     process_dict.update({'nmr5' : {'dualprocess' : self._process_nmr4,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_nmr4,
@@ -4499,7 +4517,7 @@ class AutoMunge:
                                                      'test_same_as_train' : False},
                                   'NArowtype' : 'parsenumeric',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'nmrc'}})
+                                  'labelctgy' : 'nmr7'}})
     process_dict.update({'nmr8' : {'dualprocess' : self._process_nmr4,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_nmr4,
@@ -4556,7 +4574,7 @@ class AutoMunge:
                                                      'test_same_as_train' : True},
                                   'NArowtype' : 'parsenumeric',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'nmrc'}})
+                                  'labelctgy' : 'nmc4'}})
     process_dict.update({'nmc5' : {'dualprocess' : self._process_nmr4,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_nmr4,
@@ -4586,7 +4604,7 @@ class AutoMunge:
                                                      'test_same_as_train' : False},
                                   'NArowtype' : 'parsenumeric',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'nmrc'}})
+                                  'labelctgy' : 'nmc7'}})
     process_dict.update({'nmc8' : {'dualprocess' : self._process_nmr4,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_nmr4,
@@ -4615,7 +4633,7 @@ class AutoMunge:
                                   'defaultparams' : {'convention' : 'spaces'},
                                   'NArowtype' : 'parsenumeric',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'nmrc'}})
+                                  'labelctgy' : 'nmEU'}})
     process_dict.update({'nmE2' : {'dualprocess' : None,
                                   'singleprocess' : self._process_nmrc,
                                   'postprocess' : None,
@@ -4643,7 +4661,7 @@ class AutoMunge:
                                                      'test_same_as_train' : True},
                                   'NArowtype' : 'parsenumeric',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'nmrc'}})
+                                  'labelctgy' : 'nmE4'}})
     process_dict.update({'nmE5' : {'dualprocess' : self._process_nmr4,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_nmr4,
@@ -4673,7 +4691,7 @@ class AutoMunge:
                                                      'test_same_as_train' : False},
                                   'NArowtype' : 'parsenumeric',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'nmrc'}})
+                                  'labelctgy' : 'nmE7'}})
     process_dict.update({'nmE8' : {'dualprocess' : self._process_nmr4,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_nmr4,
@@ -4759,7 +4777,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
-                                  'labelctgy' : 'ordl'}})
+                                  'labelctgy' : 'ord5'}})
     process_dict.update({'maxb' : {'dualprocess' : self._process_maxb,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_maxb,
@@ -5023,28 +5041,28 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'exclude',
-                                  'labelctgy' : 'tmsc'}})
+                                  'labelctgy' : 'year'}})
     process_dict.update({'dat4' : {'dualprocess' : None,
                                   'singleprocess' : self._process_tmzn,
                                   'postprocess' : None,
                                   'inplace_option' : True,
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'exclude',
-                                  'labelctgy' : 'tmsc'}})
+                                  'labelctgy' : 'year'}})
     process_dict.update({'dat5' : {'dualprocess' : None,
                                   'singleprocess' : self._process_tmzn,
                                   'postprocess' : None,
                                   'inplace_option' : True,
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'exclude',
-                                  'labelctgy' : 'tmsc'}})
+                                  'labelctgy' : 'year'}})
     process_dict.update({'dat6' : {'dualprocess' : None,
                                   'singleprocess' : self._process_tmzn,
                                   'postprocess' : None,
                                   'inplace_option' : True,
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'exclude',
-                                  'labelctgy' : 'tmsc'}})
+                                  'labelctgy' : 'year'}})
     process_dict.update({'year' : {'dualprocess' : self._process_time,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_time,
@@ -5055,13 +5073,13 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'time'}})
+                                  'labelctgy' : 'year'}})
     process_dict.update({'yea2' : {'dualprocess' : None,
                                   'singleprocess' : None,
                                   'postprocess' : None,
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'time'}})
+                                  'labelctgy' : 'year'}})
     process_dict.update({'yrsn' : {'dualprocess' : self._process_tmsc,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_tmsc,
@@ -5070,7 +5088,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'tmsc'}})
+                                  'labelctgy' : 'yrsn'}})
     process_dict.update({'yrcs' : {'dualprocess' : self._process_tmsc,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_tmsc,
@@ -5079,7 +5097,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'tmsc'}})
+                                  'labelctgy' : 'yrcs'}})
     process_dict.update({'mnth' : {'dualprocess' : self._process_time,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_time,
@@ -5088,37 +5106,37 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'time'}})
+                                  'labelctgy' : 'mnth'}})
     process_dict.update({'mnt2' : {'dualprocess' : None,
                                   'singleprocess' : None,
                                   'postprocess' : None,
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'tmsc'}})
+                                  'labelctgy' : 'mnsn'}})
     process_dict.update({'mnt3' : {'dualprocess' : None,
                                   'singleprocess' : None,
                                   'postprocess' : None,
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'tmsc'}})
+                                  'labelctgy' : 'mnsn'}})
     process_dict.update({'mnt4' : {'dualprocess' : None,
                                   'singleprocess' : None,
                                   'postprocess' : None,
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'tmsc'}})
+                                  'labelctgy' : 'mdsn'}})
     process_dict.update({'mnt5' : {'dualprocess' : None,
                                   'singleprocess' : None,
                                   'postprocess' : None,
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'tmsc'}})
+                                  'labelctgy' : 'mdsn'}})
     process_dict.update({'mnt6' : {'dualprocess' : None,
                                   'singleprocess' : None,
                                   'postprocess' : None,
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'tmsc'}})
+                                  'labelctgy' : 'mdsn'}})
     process_dict.update({'mnsn' : {'dualprocess' : self._process_tmsc,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_tmsc,
@@ -5127,7 +5145,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'tmsc'}})
+                                  'labelctgy' : 'mnsn'}})
     process_dict.update({'mncs' : {'dualprocess' : self._process_tmsc,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_tmsc,
@@ -5136,7 +5154,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'tmsc'}})
+                                  'labelctgy' : 'mncs'}})
     process_dict.update({'mdsn' : {'dualprocess' : self._process_tmsc,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_tmsc,
@@ -5145,7 +5163,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'tmsc'}})
+                                  'labelctgy' : 'mdsn'}})
     process_dict.update({'mdcs' : {'dualprocess' : self._process_tmsc,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_tmsc,
@@ -5154,7 +5172,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'tmsc'}})
+                                  'labelctgy' : 'mdcs'}})
     process_dict.update({'days' : {'dualprocess' : self._process_time,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_time,
@@ -5163,31 +5181,31 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'time'}})
+                                  'labelctgy' : 'days'}})
     process_dict.update({'day2' : {'dualprocess' : None,
                                   'singleprocess' : None,
                                   'postprocess' : None,
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'tmsc'}})
+                                  'labelctgy' : 'dysn'}})
     process_dict.update({'day3' : {'dualprocess' : None,
                                   'singleprocess' : None,
                                   'postprocess' : None,
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'tmsc'}})
+                                  'labelctgy' : 'dysn'}})
     process_dict.update({'day4' : {'dualprocess' : None,
                                   'singleprocess' : None,
                                   'postprocess' : None,
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'tmsc'}})
+                                  'labelctgy' : 'dhms'}})
     process_dict.update({'day5' : {'dualprocess' : None,
                                   'singleprocess' : None,
                                   'postprocess' : None,
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'tmsc'}})
+                                  'labelctgy' : 'dhms'}})
     process_dict.update({'dysn' : {'dualprocess' : self._process_tmsc,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_tmsc,
@@ -5196,7 +5214,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'tmsc'}})
+                                  'labelctgy' : 'dysn'}})
     process_dict.update({'dycs' : {'dualprocess' : self._process_tmsc,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_tmsc,
@@ -5205,7 +5223,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'tmsc'}})
+                                  'labelctgy' : 'dycs'}})
     process_dict.update({'dhms' : {'dualprocess' : self._process_tmsc,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_tmsc,
@@ -5214,7 +5232,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'tmsc'}})
+                                  'labelctgy' : 'dhms'}})
     process_dict.update({'dhmc' : {'dualprocess' : self._process_tmsc,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_tmsc,
@@ -5223,7 +5241,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'tmsc'}})
+                                  'labelctgy' : 'dhmc'}})
     process_dict.update({'hour' : {'dualprocess' : self._process_time,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_time,
@@ -5232,25 +5250,25 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'time'}})
+                                  'labelctgy' : 'hour'}})
     process_dict.update({'hrs2' : {'dualprocess' : None,
                                   'singleprocess' : None,
                                   'postprocess' : None,
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'tmsc'}})
+                                  'labelctgy' : 'hrsn'}})
     process_dict.update({'hrs3' : {'dualprocess' : None,
                                   'singleprocess' : None,
                                   'postprocess' : None,
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'tmsc'}})
+                                  'labelctgy' : 'hrsn'}})
     process_dict.update({'hrs4' : {'dualprocess' : None,
                                   'singleprocess' : None,
                                   'postprocess' : None,
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'tmsc'}})
+                                  'labelctgy' : 'hmss'}})
     process_dict.update({'hrsn' : {'dualprocess' : self._process_tmsc,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_tmsc,
@@ -5259,7 +5277,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'tmsc'}})
+                                  'labelctgy' : 'hrsn'}})
     process_dict.update({'hrcs' : {'dualprocess' : self._process_tmsc,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_tmsc,
@@ -5268,7 +5286,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'tmsc'}})
+                                  'labelctgy' : 'hrcs'}})
     process_dict.update({'hmss' : {'dualprocess' : self._process_tmsc,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_tmsc,
@@ -5277,7 +5295,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'tmsc'}})
+                                  'labelctgy' : 'hmss'}})
     process_dict.update({'hmsc' : {'dualprocess' : self._process_tmsc,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_tmsc,
@@ -5286,7 +5304,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'tmsc'}})
+                                  'labelctgy' : 'hmsc'}})
     process_dict.update({'mint' : {'dualprocess' : self._process_time,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_time,
@@ -5295,25 +5313,25 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'time'}})
+                                  'labelctgy' : 'mint'}})
     process_dict.update({'min2' : {'dualprocess' : None,
                                   'singleprocess' : None,
                                   'postprocess' : None,
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'tmsc'}})
+                                  'labelctgy' : 'misn'}})
     process_dict.update({'min3' : {'dualprocess' : None,
                                   'singleprocess' : None,
                                   'postprocess' : None,
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'tmsc'}})
+                                  'labelctgy' : 'misn'}})
     process_dict.update({'min4' : {'dualprocess' : None,
                                   'singleprocess' : None,
                                   'postprocess' : None,
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'misn'}})
+                                  'labelctgy' : 'mssn'}})
     process_dict.update({'misn' : {'dualprocess' : self._process_tmsc,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_tmsc,
@@ -5322,7 +5340,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'tmsc'}})
+                                  'labelctgy' : 'misn'}})
     process_dict.update({'mics' : {'dualprocess' : self._process_tmsc,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_tmsc,
@@ -5340,7 +5358,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'tmsc'}})
+                                  'labelctgy' : 'mssn'}})
     process_dict.update({'mscs' : {'dualprocess' : self._process_tmsc,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_tmsc,
@@ -5349,7 +5367,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'tmsc'}})
+                                  'labelctgy' : 'mscs'}})
     process_dict.update({'scnd' : {'dualprocess' : self._process_time,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_time,
@@ -5358,13 +5376,13 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'time'}})
+                                  'labelctgy' : 'scnd'}})
     process_dict.update({'scn2' : {'dualprocess' : None,
                                   'singleprocess' : None,
                                   'postprocess' : None,
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'tmsc'}})
+                                  'labelctgy' : 'scsn'}})
     process_dict.update({'scsn' : {'dualprocess' : self._process_tmsc,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_tmsc,
@@ -5373,7 +5391,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'tmsc'}})
+                                  'labelctgy' : 'scsn'}})
     process_dict.update({'sccs' : {'dualprocess' : self._process_tmsc,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_tmsc,
@@ -5382,7 +5400,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'tmsc'}})
+                                  'labelctgy' : 'sccs'}})
     process_dict.update({'bxc2' : {'dualprocess' : self._process_bxcx,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_bxcx,
@@ -5400,13 +5418,13 @@ class AutoMunge:
                                   'postprocess' : self._postprocess_bxcx,
                                   'NArowtype' : 'positivenumeric',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'nmbr'}})
+                                  'labelctgy' : 'nbr2'}})
     process_dict.update({'bxc5' : {'dualprocess' : self._process_bxcx,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_bxcx,
                                   'NArowtype' : 'positivenumeric',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'nmbr'}})
+                                  'labelctgy' : 'nbr2'}})
     process_dict.update({'ntgr' : {'dualprocess' : self._process_ord3,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_ord3,
@@ -5450,7 +5468,7 @@ class AutoMunge:
                                   'defaultparams' : {'negvalues' : True},
                                   'NArowtype' : 'nonzeronumeric',
                                   'MLinfilltype' : 'multirt',
-                                  'labelctgy' : 'pwrs'}})
+                                  'labelctgy' : 'pwr2'}})
     process_dict.update({'log0' : {'dualprocess' : self._process_log0,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_log0,
@@ -5615,7 +5633,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'singlct',
-                                  'labelctgy' : 'ord3'}})
+                                  'labelctgy' : 'ordl'}})
     process_dict.update({'mnts' : {'dualprocess' : None,
                                   'singleprocess' : self._process_mnts,
                                   'postprocess' : None,
@@ -5629,7 +5647,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'singlct',
-                                  'labelctgy' : 'ord3'}})
+                                  'labelctgy' : 'ordl'}})
     process_dict.update({'bins' : {'dualprocess' : self._process_bins,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_bins,
@@ -5646,7 +5664,7 @@ class AutoMunge:
                                   'defaultparams' : {'normalizedinput' : True},
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'multirt',
-                                  'labelctgy' : 'bins'}})
+                                  'labelctgy' : 'bint'}})
     process_dict.update({'bsor' : {'dualprocess' : self._process_bsor,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_bsor,
@@ -5665,7 +5683,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'singlct',
-                                  'labelctgy' : 'bsor'}})
+                                  'labelctgy' : 'btor'}})
     process_dict.update({'bnwd' : {'dualprocess' : self._process_bnwd,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_bnwd,
@@ -5682,7 +5700,7 @@ class AutoMunge:
                                   'defaultparams' : {'width':1000},
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'multirt',
-                                  'labelctgy' : 'bnwd'}})
+                                  'labelctgy' : 'bnwK'}})
     process_dict.update({'bnwM' : {'dualprocess' : self._process_bnwd,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_bnwd,
@@ -5691,7 +5709,7 @@ class AutoMunge:
                                   'defaultparams' : {'width':1000000},
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'multirt',
-                                  'labelctgy' : 'bnwd'}})
+                                  'labelctgy' : 'bnwM'}})
     process_dict.update({'bnwo' : {'dualprocess' : self._process_bnwo,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_bnwo,
@@ -5710,7 +5728,7 @@ class AutoMunge:
                                   'defaultparams' : {'width':1000},
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'singlct',
-                                  'labelctgy' : 'bnwo'}})
+                                  'labelctgy' : 'bnKo'}})
     process_dict.update({'bnMo' : {'dualprocess' : self._process_bnwo,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_bnwo,
@@ -5720,7 +5738,7 @@ class AutoMunge:
                                   'defaultparams' : {'width':1000000},
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'singlct',
-                                  'labelctgy' : 'bnwo'}})
+                                  'labelctgy' : 'bnMo'}})
     process_dict.update({'bnep' : {'dualprocess' : self._process_bnep,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_bnep,
@@ -5737,7 +5755,7 @@ class AutoMunge:
                                   'defaultparams' : {'bincount':7},
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'multirt',
-                                  'labelctgy' : 'bnep'}})
+                                  'labelctgy' : 'bne7'}})
     process_dict.update({'bne9' : {'dualprocess' : self._process_bnep,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_bnep,
@@ -5746,7 +5764,7 @@ class AutoMunge:
                                   'defaultparams' : {'bincount':9},
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'multirt',
-                                  'labelctgy' : 'bnep'}})
+                                  'labelctgy' : 'bne9'}})
     process_dict.update({'bneo' : {'dualprocess' : self._process_bneo,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_bneo,
@@ -5765,7 +5783,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'singlct',
-                                  'labelctgy' : 'bneo'}})
+                                  'labelctgy' : 'bn7o'}})
     process_dict.update({'bn9o' : {'dualprocess' : self._process_bneo,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_bneo,
@@ -5775,7 +5793,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'singlct',
-                                  'labelctgy' : 'bneo'}})
+                                  'labelctgy' : 'bn9o'}})
     process_dict.update({'tlbn' : {'dualprocess' : self._process_tlbn,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_tlbn,
@@ -5802,7 +5820,7 @@ class AutoMunge:
                                   'defaultparams' : {'negvalues' : True},
                                   'NArowtype' : 'nonzeronumeric',
                                   'MLinfilltype' : 'singlct',
-                                  'labelctgy' : 'pwor'}})
+                                  'labelctgy' : 'por2'}})
     process_dict.update({'por3' : {'dualprocess' : self._process_pwor,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_pwor,
@@ -6138,7 +6156,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'nmbr'}})
+                                  'labelctgy' : 'qbt1'}})
     process_dict.update({'mmqb' : {'dualprocess' : self._process_mnmx,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_mnmx,
@@ -6156,7 +6174,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'mnmx'}})
+                                  'labelctgy' : 'qbt3'}})
     process_dict.update({'NArw' : {'dualprocess' : None,
                                   'singleprocess' : self._process_NArw,
                                   'postprocess' : None,
@@ -6168,25 +6186,25 @@ class AutoMunge:
                                   'postprocess' : None,
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'boolexclude',
-                                  'labelctgy' : 'NArw'}})
+                                  'labelctgy' : 'NAr2'}})
     process_dict.update({'NAr3' : {'dualprocess' : None,
                                   'singleprocess' : self._process_NArw,
                                   'postprocess' : None,
                                   'NArowtype' : 'positivenumeric',
                                   'MLinfilltype' : 'boolexclude',
-                                  'labelctgy' : 'NArw'}})
+                                  'labelctgy' : 'NAr3'}})
     process_dict.update({'NAr4' : {'dualprocess' : None,
                                   'singleprocess' : self._process_NArw,
                                   'postprocess' : None,
                                   'NArowtype' : 'nonnegativenumeric',
                                   'MLinfilltype' : 'boolexclude',
-                                  'labelctgy' : 'NArw'}})
+                                  'labelctgy' : 'NAr4'}})
     process_dict.update({'NAr5' : {'dualprocess' : None,
                                   'singleprocess' : self._process_NArw,
                                   'postprocess' : None,
                                   'NArowtype' : 'integer',
                                   'MLinfilltype' : 'boolexclude',
-                                  'labelctgy' : 'NArw'}})
+                                  'labelctgy' : 'NAr5'}})
     process_dict.update({'null' : {'dualprocess' : None,
                                   'singleprocess' : self._process_null,
                                   'postprocess' : None,
@@ -6229,7 +6247,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'exc2'}})
+                                  'labelctgy' : 'exc3'}})
     process_dict.update({'exc4' : {'dualprocess' : self._process_exc2,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_exc2,
@@ -6238,7 +6256,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'exc2'}})
+                                  'labelctgy' : 'exc4'}})
     process_dict.update({'exc5' : {'dualprocess' : self._process_exc5,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_exc5,
@@ -6257,7 +6275,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'exc2'}})
+                                  'labelctgy' : 'exc6'}})
     process_dict.update({'exc7' : {'dualprocess' : self._process_exc5,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_exc5,
@@ -6267,7 +6285,7 @@ class AutoMunge:
                                   'defaultparams' : {'integertype' : 'singlct'},
                                   'NArowtype' : 'integer',
                                   'MLinfilltype' : 'singlct',
-                                  'labelctgy' : 'exc5'}})
+                                  'labelctgy' : 'exc7'}})
     process_dict.update({'exc8' : {'dualprocess' : self._process_exc5,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_exc5,
@@ -6277,7 +6295,7 @@ class AutoMunge:
                                   'defaultparams' : {'integertype' : 'integer'},
                                   'NArowtype' : 'integer',
                                   'MLinfilltype' : 'integer',
-                                  'labelctgy' : 'exc5'}})
+                                  'labelctgy' : 'exc8'}})
     process_dict.update({'exc9' : {'dualprocess' : self._process_exc5,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_exc5,
@@ -6287,7 +6305,7 @@ class AutoMunge:
                                   'defaultparams' : {'integertype' : 'integer'},
                                   'NArowtype' : 'integer',
                                   'MLinfilltype' : 'integer',
-                                  'labelctgy' : 'exc5'}})
+                                  'labelctgy' : 'exc9'}})
     process_dict.update({'shfl' : {'dualprocess' : None,
                                   'singleprocess' : self._process_shfl,
                                   'postprocess' : None,
@@ -6373,7 +6391,7 @@ class AutoMunge:
                                   'info_retention' : True,
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'multirt',
-                                  'labelctgy' : 'text'}})
+                                  'labelctgy' : '1010'}})
     process_dict.update({'lbor' : {'dualprocess' : self._process_ordl,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_ordl,
@@ -6391,7 +6409,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
-                                  'labelctgy' : 'ordl'}})
+                                  'labelctgy' : 'strg'}})
     process_dict.update({'lbte' : {'dualprocess' : self._process_text,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_text,
@@ -6415,7 +6433,7 @@ class AutoMunge:
                                   'info_retention' : True,
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
-                                  'labelctgy' : 'smth'}})
+                                  'labelctgy' : 'lbsm'}})
     process_dict.update({'lbfs' : {'dualprocess' : self._process_smth,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_smth,
@@ -6424,7 +6442,7 @@ class AutoMunge:
                                   'defaultparams' : {'LSfit' : True},
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
-                                  'labelctgy' : 'smth'}})
+                                  'labelctgy' : 'lbfs'}})
     process_dict.update({'lbda' : {'dualprocess' : None,
                                   'singleprocess' : None,
                                   'postprocess' : None,
@@ -6448,7 +6466,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'NArowtype' : 'positivenumeric',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'logn'}})
+                                  'labelctgy' : 'qbt5'}})
     process_dict.update({'qbt5' : {'dualprocess' : None,
                                   'singleprocess' : self._process_qbt1,
                                   'postprocess' : None,
@@ -6460,7 +6478,7 @@ class AutoMunge:
                                                      'sign_bit' : True},
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'exclude',
-                                  'labelctgy' : 'qbt1'}})
+                                  'labelctgy' : 'qbt5'}})
     process_dict.update({'sgn3' : {'dualprocess' : None,
                                   'singleprocess' : self._process_copy,
                                   'postprocess' : None,
@@ -6470,7 +6488,7 @@ class AutoMunge:
                                   'defaultparams' : {'suffix' : ''},
                                   'NArowtype' : 'exclude',
                                   'MLinfilltype' : 'exclude',
-                                  'labelctgy' : 'copy'}})
+                                  'labelctgy' : 'sgn2'}})
     process_dict.update({'sgn4' : {'dualprocess' : None,
                                   'singleprocess' : self._process_copy,
                                   'postprocess' : None,
@@ -6480,7 +6498,7 @@ class AutoMunge:
                                   'defaultparams' : {'suffix' : ''},
                                   'NArowtype' : 'exclude',
                                   'MLinfilltype' : 'exclude',
-                                  'labelctgy' : 'copy'}})
+                                  'labelctgy' : 'sgn2'}})
     process_dict.update({'sgn1' : {'dualprocess' : self._process_mltp,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_mltp,
@@ -6490,7 +6508,7 @@ class AutoMunge:
                                   'defaultparams' : {'multiply' : -1},
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'mltp'}})
+                                  'labelctgy' : 'sgn2'}})
     process_dict.update({'sgn2' : {'dualprocess' : self._process_bkt3,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_bkt3,
@@ -6500,7 +6518,7 @@ class AutoMunge:
                                   'defaultparams' : {'buckets' : [0]},
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'singlct',
-                                  'labelctgy' : 'bkt3'}})
+                                  'labelctgy' : 'sgn2'}})
 
     return process_dict
 
@@ -30623,7 +30641,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.32'
+    automungeversion = '6.33'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
