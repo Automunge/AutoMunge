@@ -1233,19 +1233,23 @@ assignnan =     {'injections' : {'(column)' : {'inject_ratio' : (float),
 #- entry_ratio are partial injection to specific entries to a categoric set per specified float ratio 
 ```
 
-* transformdict: allows a user to pass a custom tree of transformations.
-Note that a user may define their own (traditionally 4 character) string "root"
-identifiers for a series of processing steps using the categories of processing 
-already defined in our library and then assign columns in assigncat, or for 
-custom processing functions this method should be combined with processdict 
-which is only slightly more complex. For example, a user wishing to define a 
-new set of transformations for numerical series 'newt' that combines NArows, 
-min-max, box-cox, z-score, and standard deviation bins could do so by passing a 
-trasnformdict as:
+* transformdict: a dictionary allowing a user to pass a custom tree of transformations or to overwrite
+family trees defined in the transform_dict internal to the library. Defaults to _{}_ (an empty dictionary).
+Note that a user may define their own (traditionally 4 character) string "root categories" 
+by populating a "family tree" of transformation categories associated with that root category,
+which are a way of specifying the type and order of transformation functions to be applied.
+Each category populated in a family tree requires it's own transformdict root category family tree definition
+as well as an entry in the processdict described below for assigning associated transformation functions and data properties.
+Note that the library has an internally defined library of trasnformation categories prepopulated in the
+internal transform_dict which are detailed below in the Library of Transformations section of this document.
+One a root category has been defined, it can be assigned to a recieved column in assigncat.
+For example, a user wishing to define a new set of transformations for a numerical set can define a new root category 'newt' 
+that combines NArw, min-max, box-cox, z-score, and standard deviation bins by passing a 
+transformdict as:
 ```
 transformdict =  {'newt' : {'parents' : ['bxc4'],
                             'siblings': [],
-                            'auntsuncles' : ['mnmx'],
+                            'auntsuncles' : ['mnmx', 'bins'],
                             'cousins' : ['NArw'],
                             'children' : [],
                             'niecesnephews' : [],
@@ -1255,7 +1259,7 @@ transformdict =  {'newt' : {'parents' : ['bxc4'],
 #Where since bxc4 is passed as a parent, this will result in pulling
 #offspring keys from the bxc4 family tree, which has a nbr2 key as children.
 
-#from automunge library:
+#from automunge internal library:
 transform_dict.update({'bxc4' : {'parents' : ['bxcx'],
                                  'siblings': [],
                                  'auntsuncles' : [],
@@ -1270,22 +1274,29 @@ transform_dict.update({'bxc4' : {'parents' : ['bxcx'],
 #incorporate any offspring from the nbr2 tree we could instead assign as children
 #or niecesnephews.
 
+#Having defined this root category 'newt', we can then assign to a column in assigncat
+#(Noting that we still need a corresponding processdict entry unless overwriting an internal transform_dict entry.)
+assigncat = {'newt':['targetcolumn']}
+
 #Note  that optionally primitives without entries can be ommitted,
 #and list brackets can be omitted for single entries to a primitive
 #the following is an equivalent specification to the 'newt' entry above
 transformdict =  {'newt' : {'parents'     : 'bxc4',
-                            'auntsuncles' : 'mnmx',
+                            'auntsuncles' : ['mnmx', 'bins'],
                             'cousins'     : 'NArw'}}
 
 ```
-Basically here 'newt' is the key and when passed to one of the family primitives
-the corresponding process function is applied, and if it is passed to a family
+Basically here 'newt' is the root category key and once defined can be assigned as a root category in assigncat
+to be applied to a column or can also be passed to one of the family primitives associated with itself or some other root category
+to apply the corresponding transformation functions populated in the processdict entry. Once a transformation category is accessed
+based on an entry to a family tree primitive associated with a root category assigned to a column, 
+the corresponding processdict transformation function is applied, and if it was accessed as a family tree
 primitive with downstream offspring then those offspring keys are pulled from
 that key's family tree. For example, here mnmx is passed as an auntsuncles which
 means the mnmx processing function is applied with no downstream offspring. The
 bxc4 key is passed as a parent which means the transform associated with the bxc4 category is applied followed
 by any downstream transforms from the bxc4 key family tree, which we also show.
-Note the family primitives tree of transformations can be summarized as:
+Note the family primitives tree can be summarized as:
 ```
 'parents' :           upstream / first generation / replaces column / with offspring
 'siblings':           upstream / first generation / supplements column / with offspring
@@ -1302,24 +1313,26 @@ Note the family primitives tree of transformations can be summarized as:
 Note that a user should avoid redundant entries across a set of upstream or downstream primitives.
 If a redundant transformation function is desired to a distinct upstream or downstream inputcolumn (such as may be desired 
 to apply same transform but with different parameters), each of the redundant applications needs a distinct transformation category defined in 
-the processdict, as well as a distinct suffix parameter as can be passed in the processdict with defaultparams.
+the processdict (and a distinct suffix appender which is automatic based on the transformation category). 
 Since there is recursion involved a user should be careful of creating infinite loops from passing
 downstream primitive entries with offspring whose own offspring coincide with an earlier generation.
-(The presence of infinite loops is tested for to a max depth of 111 offspring, an arbitrary figure.)
+(The presence of infinite loops is tested for to a max depth of 1111 offspring, an arbitrary figure.)
 
-Note that when we define a new transform such as 'newt' above, we also need 
-to define a corresponding processdict entry for the new category, which we 
-demonstrate here:
+Note that when we define a new root category family tree such as the 'newt' example shown above, we also need 
+to define a corresponding processdict entry for the new category, which we detail next.
 
-* processdict: allows a user to define their own processing functions and transformation category properties 
-corresponding to new transformdict entries. All transformation categories used in transformdict, including
+* processdict: a dictionary allowing a user to pass a custom transformation category properties corresponding
+to new categories defined in transformdict or to overwrite process_dict entries defined internal to the library.
+Defaults to _{}_ (an empty dictionary). The types of properties specified include the associated transformation
+functions, types of data that will be targets for infill, a classification of data types (such as between numeric, integer, categoric, etc),
+and more detailed below. All transformation categories used in transformdict, including
 those used as root categories as well as transformation category entries to family tree primitives associated
 with a root category, require a correpsonding entry in the processdict to define transformation category 
 properties. Only in cases where a transformdict entry is being passed to overwrite an existing category internal 
 to the library is a corresponding processdict entry not required. We'll describe the processdict entries here:
 ```
 #for example, to populate a custom transformation category 'newt' that uses
-#internal defined transformation functions:
+#internally defined transformation functions _process_mnmx and _postprocess_mnmx:
 
 processdict =  {'newt' : {'dualprocess' : am._process_mnmx,
                           'singleprocess' : None,
@@ -1327,18 +1340,21 @@ processdict =  {'newt' : {'dualprocess' : am._process_mnmx,
                           'NArowtype' : 'numeric',
                           'MLinfilltype' : 'numeric',
                           'labelctgy' : 'newt'}}
+			  
+#Note that these processing functions won't be applied when 'newt' is assigned as a root category
+#unless that category is populated as an entry to one of the associated family tree primitives.
 
 #A user should pass either a pair of processing functions to both 
 #dualprocess and postprocess, or alternatively just a single processing
 #function to singleprocess, and pass None to those not used.
-#For now, if just using the category as a root key and not as a family primitive, 
+#For now, if just using the category as a root category and not as a family tree primitive entry, 
 #can simply pass None to all the processing slots. We'll demonstrate their 
 #composition and data structures for custom processing functions later in the
 #section of this document "Custom Processing Functions".
 
 #dualprocess: for passing a processing function in which normalization 
 #             parameters are derived from properties of the training set
-#             and jointly process the train set and if available test set
+#             and jointly process the train set and if available corresponding test set
 
 #singleprocess: for passing a processing function in which no normalization
 #               parameters are needed from the train set to process the
@@ -1346,9 +1362,10 @@ processdict =  {'newt' : {'dualprocess' : am._process_mnmx,
 
 #postprocess: for passing a processing function in which normalization 
 #             parameters originally derived from the train set are applied
-#             to seperately process a test set
+#             to seperately process a corresponding test set
 
-#NArowtype: can be entries of {'numeric', 'integer', 'justNaN', 'exclude', 
+#NArowtype: classifies the type of entries that are targets for infill.
+#           can be entries of {'numeric', 'integer', 'justNaN', 'exclude', 
 #                              'positivenumeric', 'nonnegativenumeric', 
 #                              'nonzeronumeric', 'parsenumeric', 'datetime'}
 # - 'numeric' for source columns with expected numeric entries
@@ -1364,7 +1381,8 @@ processdict =  {'newt' : {'dualprocess' : am._process_mnmx,
 # ** Note that by default any np.inf values are converted to NaN for infill
 # ** Note that by default python None entries are treated as targets for infill
 
-#MLinfilltype: can be entries {'numeric', 'singlct', 'binary', 'multirt', 'concurrent_act', 'concurrent_nmbr', 
+#MLinfilltype: classifies data types of the returned set, as may determine what types of models are trained for ML infill
+#              can be entries {'numeric', 'singlct', 'binary', 'multirt', 'concurrent_act', 'concurrent_nmbr', 
 #                              '1010', 'exclude', 'boolexclude', 'ordlexclude', 'totalexclude'}
 #              'numeric' single columns with numeric entries for regression (signed floats)
 #              'singlct' for single column sets with ordinal entries (nonnegative integer classification)
@@ -1381,14 +1399,14 @@ processdict =  {'newt' : {'dualprocess' : am._process_mnmx,
 #              'totalexclude' for complete passthroughs (excl) without infill and excluded 
 #                        from inf conversion and assignnan global option
 
-#labelctgy: should be a string entry of a single transformation category as entered in the family tree when the cateogry 
+#labelctgy: an optional entry, should be a string entry of a single transformation category as entered in the family tree when the cateogry 
 #of the processdict entry is used as a root category. Used to determine a basis of feature selection for cases where root 
 #category is applied to labels resulting in a set returned in multiple configurations. Also used in label frequency levelizer. 
 #Note that since this is only used for small edge case populating a labelctgy entry is optional. If one is not assigned or 
 #accessed based on functionpointer, an arbitrary entry will be accessed from the family tree.
 
 #Note that NArowtype is associated with a category's use as a root category, such as may be assigned to a column in assigncat
-#MLinfilltype is associated with a category's use as a transformation category entry to family tree primitives associated with a root category
+#MLinfilltype is associated with a category's use as a transformation category entry to some root category's family tree primitives
 #and labelctgy is associated with a category's use as a root category for a label column when conducting feature importance
 ```
 
@@ -1400,16 +1418,15 @@ processdict =  {'newt' : {'dualprocess' : am._process_mnmx,
                           'singleprocess' : None,
                           'postprocess' : am._postprocess_mnmx,
                           'inverseprocess' : am._inverseprocess_mnmx,
-                          'recorded_category' : 'mnmx',
-                          'info_retention' : False,
+                          'info_retention' : True,
                           'NArowtype' : 'numeric',
                           'MLinfilltype' : 'numeric',
                           'labelctgy' : 'newt'}}
 			  
 #Where 'inverseprocess' is a function to invert the forward pass transformation.
-#And 'info_retention' is boolean to signal whether there will be any information
-#loss to recovered data from inversion. For format of inverseprocess functions
-#please refer to the code base.
+#And 'info_retention' is boolean to signal True when there is full information retention
+#in recovered data from inversion. For format of inverseprocess functions
+#please refer to the Custom Transformation Functions section below.
 ```
 
 Optionally, a user can set alternate default parameters to be passed to the associated
@@ -1421,7 +1438,6 @@ processdict =  {'DLmm' : {'dualprocess' : am._process_DPmm,
                           'singleprocess' : None,
                           'postprocess' : am._postprocess_DPmm,
                           'inverseprocess' : am._inverseprocess_UPCS,
-                          'recorded_category' : 'DPmm',
                           'info_retention' : True,
                           'defaultparams' : {'noisedistribution' : 'laplace'},
                           'NArowtype' : 'numeric',
@@ -1452,8 +1468,7 @@ tree in a corresponding newt transformdict entry.
 ```
 processdict =  {'newt' : {'functionpointer' : 'DLmm',
                           'NArowtype' : 'numeric',
-                          'MLinfilltype' : 'numeric',
-                          'labelctgy' : 'newt'}}
+                          'MLinfilltype' : 'numeric'}}
 			  
 #or an even simpler approach if no overwrites are desired could just be to copy everything
 processdict =  {'newt' : {'functionpointer' : 'DLmm'}}
@@ -1475,12 +1490,6 @@ processdict =  {'newt' : {'functionpointer' : 'mnmx',
                           'MLinfilltype' : 'numeric',
                           'labelctgy' : 'newt'}}
 ```
-
-As an asterisk for advanced users:
-Note that when populating a processdict for a transformation category, the
-inversion function should be consistent with the transformation category that
-was populated in the column_dict data structure as part of the forward pass
-transformations in the dualprocess or singleprocess processdict entries.
 
 * evalcat: modularizes the automated evaluation of column properties for assignment 
 of root transformation categories, allowing user to pass custom functions for this 
