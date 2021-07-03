@@ -3362,3 +3362,12 @@ am.postmunge(postprocess_dict, df_test)
 - did not have correspoinding transform_dict family trees defined
 - which was kind of intentional since those are only used as support functions in other family trees
 - but to be consistent with convention of rest of library, went ahead an defined some simple family trees
+
+6.34
+- corrected a parameter validation for ML_cmnd associated with a changed parameter naming convention from a while back
+- (ML_cmnd['MLinfill_type'] was replaced with ML_cmnd['autoML_type'] and default was changed from 'default' to 'randomforest'
+- in the transformdict check for infinite loops found and fixed a scenario where validation result wasn't being reported correctly
+- another fix for Binary inversion associated with partial inversion including Binary columns when Binary passed to automunge(.) as True
+- improved printouts for clarity for not supported edge case for partial inversion including Binary columns when Binary passed to automunge(.) as 'retain'
+- (this edge case not needed since Binary columns will be redundnat with what can be recoved from inversion of rest of set)
+- improved documentation for transformdict and processdict parameters in read me
