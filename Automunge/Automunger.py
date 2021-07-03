@@ -21533,12 +21533,8 @@ class AutoMunge:
     #takes as input user-passed ML_cmnd, returns tune_marker
     #where tune_marker = True indicates sets were passed, else False
     
-    #MLinfill_type refers to type of predcitive algorithm applied,
-    #currently only support for scikit Random Forest via 'default'
-    #intent is to build in additional options
-    
-    #MLinfill_alg refers to the target algorithm for passed parameters
-    #currently supports 'RandomForestRegressor' & 'RandomForestClassifier'
+    #autoML_type refers to type of predictive algorithm applied,
+    #default is scikit Random Forest via 'randomforest'
     """
     
     #initialize tune_marker to default
@@ -21573,12 +21569,11 @@ class AutoMunge:
     
     #returns those two dictionaries tune_params & static_params
     
-    #MLinfill_type refers to type of predcitive algorithm applied,
-    #currently only support for scikit Random Forest via 'default'
-    #intent is to build in additional options
+    #autoML_type refers to type of predictive algorithm applied,
+    #defaults to scikit Random Forest via 'default'
     
-    #MLinfill_alg refers to the target algorithm for passed parameters
-    #currently supports 'RandomForestRegressor' & 'RandomForestClassifier'
+    #MLinfill_cmnd supports passing parameters to target algorithms
+    #e.g. under default supports 'RandomForestRegressor' & 'RandomForestClassifier'
     """
     
     #initialize returned dictionaries
@@ -27171,6 +27166,8 @@ class AutoMunge:
 
             else:
 
+              haltingproblem_result = True
+
               if printstatus != 'silent':
                 print("Number of offspring generations for root category ", root_category)
                 print("exceeded 1111, infinite loop check halted.")
@@ -27227,6 +27224,8 @@ class AutoMunge:
               break
 
           else:
+
+            offspring_result = True
 
             if printstatus != 'silent':
               print("Number of offspring generations for root category ", root_category)
@@ -27302,7 +27301,6 @@ class AutoMunge:
 
     return check_assignnan_toplevelentries_result, check_assignnan_categories_result, check_assignnan_columns_result
 
-
   def _check_assignnan_injections(self, assignnan, columns_train, printstatus):
     """
     checks for valid assignnan actions under injections
@@ -27336,13 +27334,17 @@ class AutoMunge:
     #a future extension should validate any entries
 
     #also validates any entries to ML_cmnd['hyperparam_tuner'] are valid
+
+    #note that current first tier commands accepted in ML_cmnd are:
+    #'autoML_type', 'MLinfill_cmnd', 'hyperparam_tuner', 'randomCV_n_iter', 
+    #'PCA_type', 'PCA_cmnd'
     """
     
     result = False
     ML_cmnd_hyperparam_tuner_valresult = False
     
-    if 'MLinfill_type' not in ML_cmnd:
-      ML_cmnd.update({'MLinfill_type':'default'})
+    if 'autoML_type' not in ML_cmnd:
+      ML_cmnd.update({'autoML_type':'randomforest'})
     if 'MLinfill_cmnd' not in ML_cmnd:
       ML_cmnd.update({'MLinfill_cmnd':{'RandomForestClassifier':{}, 'RandomForestRegressor':{}}})
     if 'PCA_type' not in ML_cmnd:
@@ -29127,7 +29129,7 @@ class AutoMunge:
                 numbercategoryheuristic = 255, pandasoutput = True, NArw_marker = True, \
                 featureselection = False, featurethreshold = 0., inplace = False, \
                 Binary = False, PCAn_components = False, PCAexcl = [], excl_suffix = False, \
-                ML_cmnd = {'MLinfill_type':'default', \
+                ML_cmnd = {'autoML_type':'randomforest', \
                            'MLinfill_cmnd':{'RandomForestClassifier':{}, 'RandomForestRegressor':{}}, \
                            'PCA_type':'default', \
                            'PCA_cmnd':{}}, \
@@ -30641,7 +30643,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.33'
+    automungeversion = '6.34'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -41787,17 +41789,18 @@ class AutoMunge:
           if entry in inversion:
             if printstatus != 'silent':
               print("please note partial inversion lists only supported for columns not returned from Binary")
-              print("when Binary was not performed with replacement")
+              print("when Binary was not performed with replacement (i.e. when Binary passed to automunge as 'retain'")
             inversion.remove(entry)
       if postprocess_dict['Binary'] == True and inversion == 'test':
         Binary_inversion_marker = True
       if postprocess_dict['Binary'] == True and isinstance(inversion, list):
-        if set(list(postprocess_dict['Binary_dict']['column_dict'])).issubset(set(inversion)):
+        if (set(list(postprocess_dict['Binary_dict']['column_dict'])) - {'Binary'}).issubset(set(inversion)):
           Binary_inversion_marker = True
           for entry in postprocess_dict['Binary_dict']['column_dict']:
-            inversion.remove(entry)
+            if entry != 'Binary':
+              inversion.remove(entry)
           inversion += postprocess_dict['Binary_dict']['bool_column_list']
-        elif bool(set(postprocess_dict['Binary_dict']['column_dict']) & set(inversion)):
+        elif bool((set(postprocess_dict['Binary_dict']['column_dict']) - {'Binary'}) & set(inversion)):
           if printstatus != 'silent':
             print("error: partial inversion lists only supported for columns returned from Binary")
             print("when entire set of Binary columns are included in the inversion list")
