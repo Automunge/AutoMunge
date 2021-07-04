@@ -57,7 +57,7 @@ are numerically encoded and suitable for the direct application of machine
 learning algorithms. A user has an option between default feature engineering 
 based on inferred properties of the data with feature transformations such as 
 z-score normalization, binary encoding for categorical sets, hashing for
-high cardinality cateogric sets, time series 
+high cardinality categoric sets, time series 
 agregation to sin and cos transforms (with bins for business hours, weekdays, 
 and holidays), and more (full documentation below); assigning distinct column 
 feature engineering methods using a built-in library of feature engineering 
@@ -248,7 +248,7 @@ transformations which may result in one or more child columns. For numerical dat
 powertransform option is selected distribution properties are evaluated for 
 potential application of z-score normalization, min-max scaling, power law transform 
 via box-cox method, or mean absolute deviation scaling. Otherwise numerical data 
-defaults to z-score, with the binstransform parameter for supplmenting normalized data 
+defaults to z-score, with the binstransform parameter for supplementing normalized data 
 with standard deviation bins for values in range <-2, -2-1, -10, 01, 12, >2 from the
 mean. Further transformation options are detailed below. For time-series
 data the model segregates the data by time-scale (year, month, day, hour, minute, 
@@ -260,7 +260,7 @@ US holidays. For binary categorical data the functions return a single column wi
 encoded sets where categoric entries may be distinguished by zero, one, or more
 simultaneous column activations. Alternatives for one-hot encoding, ordinal encoding, 
 and etc are also available. String parsing methods are available to extract and encode 
-grammatic structure shared between cateogric entries. For all cases the functions may 
+grammatic structure shared between categoric entries. For all cases the functions may 
 generate a supplemental column (NArw) with a boolean integer identifier for cells that were 
 subject to infill due to missing or improperly formatted data when the default NArw_marker 
 parameter is left activated.
@@ -310,7 +310,7 @@ The function also can perform dimensionality reduction of the sets via
 principal component analysis (PCA), where the user can pass a desired number 
 of features and their preference of type and parameters between linear PCA, 
 Sparse PCA, or Kernel PCA - all currently implemented in Scikit-Learn. (We
-recommend cuation in applying PCA with fat tailed distributions.)
+recommend caution in applying PCA toward fat tailed fesature distributions.)
 
 The function also can perform dimensionality reduction of the sets via
 the Binary option which takes the set of columns with boolean {1/0} encodings
@@ -476,7 +476,7 @@ for example columns with boolean integers are cast as int8, ordinal encoded
 columns are given a conditional type based on the size of encoding space as either
 uint8, uint16, or uint32. Continuous sets are cast as float16, float32, or float64
 based on the automunge(.) floatprecision parameter. And direct passthrough columns
-via excl transform retain the recieved data type.
+via excl transform retain the received data type.
 
 * train: a numerically encoded set of data intended to be used to train a
 downstream machine learning model in the framework of a user's choice
@@ -680,9 +680,9 @@ if duplicate rows will be consolidated to single instance in returned sets. (In
 other words, if same row included more than once, it will only be returned once.)
 Defaults to False for not activated. True applies consolidation to train set only,
 'test' applies consolidation to test set only, 'traintest' applies consolidation 
-to both train and test sets seperately. Note this is applied prior to 
+to both train and test sets separately. Note this is applied prior to 
 TrainLabelFreqLevel if elected. As implemented this does not take into account
-duplicate rows in train/test data which have different labels, only one verison
+duplicate rows in train/test data which have different labels, only one version
 of features/label pair is returned.
 
 * TrainLabelFreqLevel: can be passed as _(True/False/'traintest'/'test')_ 
@@ -767,7 +767,7 @@ This defaults to False indicating a random random seed will be applied (sampled 
 * eval_ratio: a 0-1 float or integer for number of rows, defaults to 0.5, serves
 to reduce the overhead of the category evaluation functions under automation by only
 evaluating this sampled ratio of rows instead from the full set. Makes automunge faster.
-To accomodate small data sets, the convention is that eval_ratio is only applied
+To accommodate small data sets, the convention is that eval_ratio is only applied
 when training set has > 2,000 rows.
 
 * numbercategoryheuristic: an integer used as a heuristic. When a 
@@ -796,7 +796,7 @@ Defaults to False, accepts {False, True, 'pct', 'metric', 'report'}.
 If selected automunge will return a summary of feature importance findings in the featureimportance
 returned dictionary. False turns off, True turns on, 'pct' performs the evaluation followed by
 a dimensionality reduction based on the featurethreshold parameter to retain a % of top features. 
-'metric' performs the evaluation followed by a dimensionality reduction to retain features above a metric value based on featurethreshold parameter. 'report' performs the evluation and returns a report with no
+'metric' performs the evaluation followed by a dimensionality reduction to retain features above a metric value based on featurethreshold parameter. 'report' performs the evaluation and returns a report with no
 further processing of data. Feature importance evaluation requires the inclusion of a
 designated label column in the train set. Note that sorted 
 feature importance results are returned in postprocess_dict['FS_sorted'], 
@@ -1063,15 +1063,15 @@ assignparam = {'global_assignparam'  : {'(parameter)': 42},
 
 #example:
 assignparam = {'category1' : {'column1' : {'param1' : 123}, 'column2' : {'param1' : 456}},
-               'cateogry2' : {'column3' : {'param2' : 'abc', 'param3' : 'def'}}}
+               'category2' : {'column3' : {'param2' : 'abc', 'param3' : 'def'}}}
 ```
 
 In other words: The first layer keys are the transformation category for 
 which parameters are intended. The second layer keys are string identifiers 
 for the columns for which the parameters are intended. The third layer keys 
 are the parameters whose values are to be passed. To specify new default
-parameters for a given trasnformation category 'default_assignparam' can
-be applied, or to specificy global parameters for all transfomation functions
+parameters for a given transformation category 'default_assignparam' can
+be applied, or to specificy global parameters for all transformation functions
 'global_assignparam' can be applied. Transforms that do not accept a particular 
 parameter will just ignore the specification.
 
@@ -1089,7 +1089,7 @@ tree definitions for root categories are included below for reference. Generally
 speaking, the transformation category to serve as a target for asisgnparam
 assignment will match the recorded suffix appender of the returned column headers.
 
-As an example, to demonstrate edge case for cases where the trasnformation category does not match
+As an example, to demonstrate edge case for cases where the transformation category does not match
 the transformation function  (based on entries to transformdict and 
 processdict), if we want to pass a parameter to turn off UPCS transform included 
 in or19 family tree and associated with the or19 transformation category for 
@@ -1099,7 +1099,7 @@ and UPCS function is the processdict entry for or19 category entry in the family
 tree primitives associated with the or19 root category, even though 'activate' is 
 an UPCS transformation function parameter. A helpful rule of thumb to help distinguish is that
 the suffix appender recorded in the returned column associated with an applied transformation
-function should match the trasnformation category serviing as target for assignparam assignment, 
+function should match the transformation category serving as target for assignparam assignment, 
 as in this case the UPCS transform records a 'or19' suffix appender. (This clarification 
 intended for advanced users to avoid ambiguity.)
 
@@ -1108,7 +1108,7 @@ assignparam = {'or19' : {'column1' : {'activate' : False}}}
 ```
 Note that column string identifiers may just be the source column string or may 
 include the suffix appenders for downstream columns serving as input to the 
-target trasnformation function, such as may be useful if multiple versions of 
+target transformation function, such as may be useful if multiple versions of 
 the same transformation are applied within the same family tree. If more than 
 one column identifier matches a column in assignparam entry to a transformation 
 category (such as both the source column and the derived column serving as input 
@@ -1121,20 +1121,20 @@ pass a 'default_assignparam' entry as follows (this only overwrites those parame
 that are not otherwise specified in assignparam).
 ```
 assignparam = {'category1' : {'column1' : {'param1' : 123}, 'column2' : {'param1' : 456}},
-               'cateogry2' : {'column3' : {'param2' : 'abc', 'param3' : 'def'}},
+               'category2' : {'column3' : {'param2' : 'abc', 'param3' : 'def'}},
                'default_assignparam' : {'category3' : {'param4' : 789}}}
 ```
 Or to pass the same parameter to all transformations to all columns, can use the 
 'global_assignparam'. The global_assignparam may be useful for instance to turn off 
-inplace trasnformations such as to retain family tree column grouping correspondance 
+inplace transformations such as to retain family tree column grouping correspondence 
 in returned set. Transformations that do not accept a particular parameter will just 
 ignore.
 ```
 assignparam = {'global_assignparam' : {'inplace' : False}}
 ```
-In order of precendence, parameters assigned to distinct category/column configurations 
-take precedence to default_assignparam assigned to categories which take precendence to 
-global_assignparam assigned to all transformations which take precendence to parameters 
+In order of precedence, parameters assigned to distinct category/column configurations 
+take precedence to default_assignparam assigned to categories which take precedence to 
+global_assignparam assigned to all transformations which take precedence to parameters 
 set as defaultparams in processdict definition. 
 
 See the Library of Transformations section below for those transformations that 
@@ -1206,10 +1206,10 @@ assignnan = {'categories' : {'cat1' : ['unknown1']},
 ```
 Where 'cat1' is example of root category, 'col1' is example of source column header, and 'unknown1'/2/3 
 are examples of entries intended for infill corresponding to each. In cases of redundant specification, 
-global takes precendence over columns which takes precedence over categories. Note that lists of terms 
+global takes precedence over columns which takes precedence over categories. Note that lists of terms 
 can also be passed as single values such as string / number for internal conversion to list.
 
-Assignnan also supports stochastic and range based injections, such as to target for infill specific
+assignnan also supports stochastic and range based injections, such as to target for infill specific
 segments of a set's distribution. 'injections' can be passed to assignnan as:
 ```
 assignnan =     {'injections' : {'(column)' : {'inject_ratio' : (float),
@@ -1238,11 +1238,11 @@ family trees defined in the transform_dict internal to the library. Defaults to 
 Note that a user may define their own (traditionally 4 character) string "root categories" 
 by populating a "family tree" of transformation categories associated with that root category,
 which are a way of specifying the type and order of transformation functions to be applied.
-Each category populated in a family tree requires it's own transformdict root category family tree definition
+Each category populated in a family tree requires its own transformdict root category family tree definition
 as well as an entry in the processdict described below for assigning associated transformation functions and data properties.
-Note that the library has an internally defined library of trasnformation categories prepopulated in the
+Note that the library has an internally defined library of transformation categories prepopulated in the
 internal transform_dict which are detailed below in the Library of Transformations section of this document.
-One a root category has been defined, it can be assigned to a recieved column in assigncat.
+Once a root category has been defined, it can be assigned to a received column in assigncat.
 For example, a user wishing to define a new set of transformations for a numerical set can define a new root category 'newt' 
 that combines NArw, min-max, box-cox, z-score, and standard deviation bins by passing a 
 transformdict as:
@@ -1278,7 +1278,7 @@ transform_dict.update({'bxc4' : {'parents' : ['bxcx'],
 #(Noting that we still need a corresponding processdict entry unless overwriting an internal transform_dict entry.)
 assigncat = {'newt':['targetcolumn']}
 
-#Note  that optionally primitives without entries can be ommitted,
+#Note  that optionally primitives without entries can be omitted,
 #and list brackets can be omitted for single entries to a primitive
 #the following is an equivalent specification to the 'newt' entry above
 transformdict =  {'newt' : {'parents'     : 'bxc4',
@@ -1327,7 +1327,7 @@ Defaults to _{}_ (an empty dictionary). The types of properties specified includ
 functions, types of data that will be targets for infill, a classification of data types (such as between numeric, integer, categoric, etc),
 and more detailed below. All transformation categories used in transformdict, including
 those used as root categories as well as transformation category entries to family tree primitives associated
-with a root category, require a correpsonding entry in the processdict to define transformation category 
+with a root category, require a corresponding entry in the processdict to define transformation category 
 properties. Only in cases where a transformdict entry is being passed to overwrite an existing category internal 
 to the library is a corresponding processdict entry not required. We'll describe the processdict entries here:
 ```
@@ -1362,7 +1362,7 @@ processdict =  {'newt' : {'dualprocess' : am._process_mnmx,
 
 #postprocess: for passing a processing function in which normalization 
 #             parameters originally derived from the train set are applied
-#             to seperately process a corresponding test set
+#             to separately process a corresponding test set
 
 #NArowtype: classifies the type of entries that are targets for infill.
 #           can be entries of {'numeric', 'integer', 'justNaN', 'exclude', 
@@ -1394,12 +1394,12 @@ processdict =  {'newt' : {'dualprocess' : am._process_mnmx,
 #                        multiple entries in the same row, different from 1010 in that columns are independent
 #              'concurrent_nmbr' for multicolumn sets with numeric entries (signed floats)
 #              'exclude' for columns which will be excluded from infill, returned data might not be numerically encoded
-#              'boolexclude' boolean set suitable for Binary transform but excluded from all infill (eg NArw entries)
+#              'boolexclude' boolean set suitable for Binary transform but excluded from all infill (e.g. NArw entries)
 #              'ordlexclude' ordinal set exluded from infill
 #              'totalexclude' for complete passthroughs (excl) without infill and excluded 
 #                        from inf conversion and assignnan global option
 
-#labelctgy: an optional entry, should be a string entry of a single transformation category as entered in the family tree when the cateogry 
+#labelctgy: an optional entry, should be a string entry of a single transformation category as entered in the family tree when the category 
 #of the processdict entry is used as a root category. Used to determine a basis of feature selection for cases where root 
 #category is applied to labels resulting in a set returned in multiple configurations. Also used in label frequency levelizer. 
 #Note that since this is only used for small edge case populating a labelctgy entry is optional. If one is not assigned or 
@@ -1430,7 +1430,7 @@ processdict =  {'newt' : {'dualprocess' : am._process_mnmx,
 ```
 
 Optionally, a user can set alternate default parameters to be passed to the associated
-transfomation functions by including the 'defaultparams' key. These updates to default
+transformation functions by including the 'defaultparams' key. These updates to default
 parameters will still be overwritten if user manually specifies parameters in assignparam.
 ```
 #for example
@@ -1593,7 +1593,7 @@ for example columns with boolean integers are cast as int8, ordinal encoded
 columns are given a conditional type based on the size of encoding space as either
 uint8, uint16, or uint32. Continuous sets are cast as float16, float32, or float64
 based on the automunge(.) floatprecision parameter. And direct passthrough columns
-via excl transform retain the recieved data type.
+via excl transform retain the received data type.
 
 * test: the set of features, consistently encoded and normalized as the
 training data, that can be used to generate predictions from a model
@@ -1768,7 +1768,7 @@ other words, if same row included more than once, it will only be returned once.
 Defaults to False for not activated. True applies consolidation to test set. Note 
 this is applied prior to TrainLabelFreqLevel if elected. As implemented this does 
 not take into account duplicate rows in test data which have different labels, 
-only one verison of features/label pair is returned.
+only one version of features/label pair is returned.
 
 * TrainLabelFreqLevel: a boolean identifier _(True/False)_ which indicates
 if the TrainLabelFreqLevel method will be applied to oversample test
@@ -1892,7 +1892,7 @@ of bins indicating number of standard deviations from the mean.
 subject to binarization encoding via '1010'. If the 
 number of unique entries in the column exceeds the parameter 'numbercategoryheuristic'
 (which defaults to 255), the encoding will instead be by hashing.
-- bnry: for categorical data of <=2 unique values excluding infill (eg NaN), the 
+- bnry: for categorical data of <=2 unique values excluding infill (e.g. NaN), the 
 column is encoded to 0/1. Note that numerical sets with <= 2 unique values in train
 set default to bnry.
 - hsh2: for categorical data, if the number of unique entries in the column exceeds 
@@ -1999,9 +1999,9 @@ columns in assigncat by using corresponding alternates of (nmbd/101d/ordd/texd/b
 ### Library of Transformations Subheadings:
 * [Intro](https://github.com/Automunge/AutoMunge/blob/master/README.md#intro)
 * [Label Set Encodings](https://github.com/Automunge/AutoMunge/blob/master/README.md#label-set-encodings)
-* [Numerical Set Normalizations](https://github.com/Automunge/AutoMunge/blob/master/README.md#numerical-set-normalizations)
-* [Numerical Set Transformations](https://github.com/Automunge/AutoMunge/blob/master/README.md#numerical-set-transformations)
-* [Numercial Set Bins and Grainings](https://github.com/Automunge/AutoMunge/blob/master/README.md#numercial-set-bins-and-grainings)
+* [Numeric Set Normalizations](https://github.com/Automunge/AutoMunge/blob/master/README.md#numeric-set-normalizations)
+* [Numeric Set Transformations](https://github.com/Automunge/AutoMunge/blob/master/README.md#numeric-set-transformations)
+* [Numeric Set Bins and Grainings](https://github.com/Automunge/AutoMunge/blob/master/README.md#numeric-set-bins-and-grainings)
 * [Sequential Numerical Set Transformations](https://github.com/Automunge/AutoMunge/blob/master/README.md#sequential-numerical-set-transformations)
 * [Categorical Set Encodings](https://github.com/Automunge/AutoMunge/blob/master/README.md#categorical-set-encodings)
 * [Date-Time Data Normalizations](https://github.com/Automunge/AutoMunge/blob/master/README.md#date-time-data-normalizations)
@@ -2101,7 +2101,7 @@ string by 'strg' (some ML libraries prefer string encoded labels to recognize th
 * lbfs: for categoric encoding with fitted smoothed labels (i.e. fitted label smoothing), further described in fsmh transform below (accepts activation parameter for activation threshold)
 * lbda: for date-time label sets, entries are encoded comparable to 'dat6' described further below
 
-### Numerical Set Normalizations
+### Numeric Set Normalizations
 * nmbr/nbr2/nbr3/nmdx/nmd2/nmd3: z-score normalization<br/>
 (x - mean) / (standard deviation)
   - useful for: normalizing numeric sets of unknown distribution
@@ -2113,7 +2113,7 @@ string by 'strg' (some ML libraries prefer string encoded labels to recognize th
       True means floor/cap based on training set min/max, otherwise passed values serve as floor/cap to scaling, 
       noting that if cap<max then max reset to cap and if floor>min then min reset to floor
       cap and floor based on pre-transform values
-    - 'muilitplier' and 'offset' to apply multiplier and offset to posttransform values, default to 1,0,
+    - 'muilitplier' and 'offset' to apply multiplier and offset to post-transform values, default to 1,0,
       note that multiplier is applied prior to offset
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: mean / std / max / min
@@ -2131,7 +2131,7 @@ My intuition says z-score has some benefits but really up to the user which they
       True means floor/cap based on training set min/max, otherwise passed values serve as floor/cap to scaling, 
       noting that if cap<max then max reset to cap and if floor>min then min reset to floor
       cap and floor based on pre-transform values
-    - 'muilitplier' and 'offset' to apply multiplier and offset to posttransform values, default to 1,0,
+    - 'muilitplier' and 'offset' to apply multiplier and offset to post-transform values, default to 1,0,
       note that multiplier is applied prior to offset
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: minimum / maximum / mean / std
@@ -2186,7 +2186,7 @@ elif max<=0 and min<=0 x=(x-max)/(max-min)
       True means floor/cap based on training set min/max, otherwise passed values serve as floor/cap to scaling, 
       noting that if cap<max then max reset to cap and if floor>min then min reset to floor
       cap and floor based on pre-transform values
-    - 'muilitplier' and 'offset' to apply multiplier and offset to posttransform values, default to 1,0,
+    - 'muilitplier' and 'offset' to apply multiplier and offset to post-transform values, default to 1,0,
       note that multiplier is applied prior to offset
     - 'divisor' to select between default of 'minmax' or 'mad, 'std', where minmax means scaling by divisor of max-min
 	std based on scaling by divisor of standard deviation and mad by median absolute deviation
@@ -2240,11 +2240,12 @@ achieved by performing a logn transform upstream of a nmbr normalization.
   - driftreport postmunge metrics: consistent with both logn and nmbr
   - returned datatype: based on automunge(.) floatprecision parameter (defaults to float32)
   - inversion available: yes with full recovery
-### Numerical Set Transformations
+
+### Numeric Set Transformations
 * bxcx/bxc2/bxc3/bxc4/bxc5: performs Box-Cox power law transformation. Applies infill to 
 values <= 0. Note we currently have a test for overflow in returned results and if found 
 set to 0. Please note that this method makes use of scipy.stats.boxcox. Please refer to
-family trees below for full set of transfomration categories asscoiated with these roots.
+family trees below for full set of transformation categories associated with these roots.
   - useful for: translates power law distributions to closer approximate gaussian
   - default infill: mean (i.e. mean of values > 0)
   - default NArowtype: positivenumeric
@@ -2353,7 +2354,7 @@ family trees below for full set of transfomration categories asscoiated with the
 Q Notation family of transforms return a multicolumn binary encoded set with registers for sign, integers, and fractionals.
 Transforms accept parameters integer_bits / fractional_bits / sign_bit for register sizes, care should be taken for 
 adequate registers to avoid overflow (overflow entries have values replaced with max or min capacity based on register sizes). 
-Default register sizes were selected to accomodate z-score normalized data with +/-6 
+Default register sizes were selected to accommodate z-score normalized data with +/-6 
 standard deviations from mean and approximately 4 significant figures in decimals. For example, with default parameters an input column 'floats' will return columns: ['floats_qbt1_sign', 'floats_qbt1_2^2', 'floats_qbt1_2^1', 'floats_qbt1_2^0', 'floats_qbt1_2^-1', 'floats_qbt1_2^-2', 'floats_qbt1_2^-3', 'floats_qbt1_2^-4', 'floats_qbt1_2^-5', 'floats_qbt1_2^-6', 'floats_qbt1_2^-7', 'floats_qbt1_2^-8', 'floats_qbt1_2^-9', 'floats_qbt1_2^-10', 'floats_qbt1_2^-11', 'floats_qbt1_2^-12'].
 * qbt1: binary encoded signed floats with registers for sign, integers, and fractionals, default overflow at +/- 8.000
   - useful for: feeding normalized floats to quantum circuits
@@ -2417,28 +2418,28 @@ Other Q Notation root categories:
 - mmq3 has upstream min max to qbt3 and min max is retained
 - lgnr logarithmic number representation, registers 1 for sign, 1 for log sign, 4 log integer registers, 3 log fractional registers
 
-### Numercial Set Bins and Grainings
+### Numeric Set Bins and Grainings
 * pwrs: bins groupings by powers of 10 (for values >0)
-  - useful for: featuere engineering for linear models, also for oversampling bins with TrainFreqLevelizer parameter
+  - useful for: feature engineering for linear models, also for oversampling bins with TrainFreqLevelizer parameter
   - default infill: no activation
   - default NArowtype: positivenumeric
   - suffix appender: '\_pwrs_10^#' where # is integer indicating target powers of 10 for column
   - assignparam parameters accepted: 
     - 'negvalues', boolean defaults to False, True bins values <0
-      (recomend using pwr2 instead of this parameter since won't update NArowtype)
+      (recommend using pwr2 instead of this parameter since won't update NArowtype)
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: powerlabelsdict / meanlog / maxlog / 
 	                           <column> + '_ratio' (column specific)
   - returned datatype: int8
   - inversion available: yes with partial recovery
 * pwr2: bins groupings by powers of 10 (comparable to pwrs with negvalues parameter activated for values >0 & <0)
-  - useful for: featuere engineering for linear models, also for oversampling bins with TrainFreqLevelizer parameter
+  - useful for: feature engineering for linear models, also for oversampling bins with TrainFreqLevelizer parameter
   - default infill: no activation
   - default NArowtype: nonzeronumeric
   - suffix appender: '\_pwr2_10^#' or '\_pwr2_-10^#' where # is integer indicating target powers of 10 for column
   - assignparam parameters accepted: 
     - 'negvalues', boolean defaults to True, True bins values <0
-      (recomend using pwrs instead of this parameter since won't update NArowtype)
+      (recommend using pwrs instead of this parameter since won't update NArowtype)
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: powerlabelsdict / labels_train / missing_cols / 
 			           <column> + '_ratio' (column specific)
@@ -2493,8 +2494,8 @@ high variability
 * bins: for numerical sets, outputs a set of columns (defaults to 6) indicating where a
 value fell with respect to number of standard deviations from the mean of the
 set (i.e. integer suffix represent # from mean as <-2:0, -2-1:1, -10:2, 01:3, 12:4, >2:5)
-Note this can be activated to supplment numeric sets with binstransform automunge parameter.
-  - useful for: featuere engineering for linear models, also for oversampling bins with TrainFreqLevelizer parameter
+Note this can be activated to supplement numeric sets with binstransform automunge parameter.
+  - useful for: feature engineering for linear models, also for oversampling bins with TrainFreqLevelizer parameter
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '\_bins\_#' where # is integer identifier of bin
@@ -2519,8 +2520,8 @@ set (i.e. integer encoding represent # from mean as <-2:0, -2-1:1, -10:2, 01:3, 
   - inversion available: yes with partial recovery
 * bnwd/bnwK/bnwM: for numerical set graining to fixed width bins for one-hot encoded bins 
 (columns without activations in train set excluded in train and test data). 
-bins default to width of 1/1000/1000000 eg for bnwd/bnwK/bnwM
-  - useful for: bins for sets with known recurring demarkations
+bins default to width of 1/1000/1000000 e.g. for bnwd/bnwK/bnwM
+  - useful for: bins for sets with known recurring demarcations
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '\_bnwd\_#1\_#2' where #1 is the width and #2 is the bin identifier (# from min)
@@ -2535,7 +2536,7 @@ bins default to width of 1/1000/1000000 eg for bnwd/bnwK/bnwM
   - inversion available: yes with partial recovery
 * bnwo/bnKo/bnMo: for numerical set graining to fixed width bins for ordinal encoded bins 
 (integers without train set activations still included in test set). 
-bins default to width of 1/1000/1000000 eg for bnwd/bnwK/bnwM
+bins default to width of 1/1000/1000000 e.g. for bnwd/bnwK/bnwM
   - useful for: ordinal version of preceding
   - default infill: mean
   - default NArowtype: numeric
@@ -2548,8 +2549,8 @@ bins default to width of 1/1000/1000000 eg for bnwd/bnwK/bnwM
   - returned datatype: conditional based on size of encoding space (uint8 / uint16 / uint32)
   - inversion available: yes with partial recovery
 * bnep/bne7/bne9: for numerical set graining to equal population bins for one-hot encoded bins. 
-bin count defaults to 5/7/9 eg for bnep/bne7/bne9
-  - useful for: bins for sets with unknown demarkations
+bin count defaults to 5/7/9 e.g. for bnep/bne7/bne9
+  - useful for: bins for sets with unknown demarcations
   - default infill: no activation
   - default NArowtype: numeric
   - suffix appender: '\_bnep\_#1' where #1 is the bin identifier (# from min) (or bne7/bne9 instead of bnep)
@@ -2562,7 +2563,7 @@ bin count defaults to 5/7/9 eg for bnep/bne7/bne9
   - returned datatype: int8
   - inversion available: yes with partial recovery
 * bneo/bn7o/bn9o: for numerical set graining to equal population bins for ordinal encoded bins. 
-bin count defaults to 5/7/9 eg for bneo/bn7o/bn9o
+bin count defaults to 5/7/9 e.g. for bneo/bn7o/bn9o
   - useful for: ordinal version of preceding
   - default infill: adjacent cell
   - default NArowtype: numeric
@@ -2575,26 +2576,26 @@ bin count defaults to 5/7/9 eg for bneo/bn7o/bn9o
   - returned datatype: conditional based on size of encoding space (uint8 / uint16 / uint32)
   - inversion available: yes with partial recovery
 * bkt1: for numerical set graining to user specified encoded bins. First and last bins unconstrained.
-  - useful for: bins for sets with known irregular demarkations
+  - useful for: bins for sets with known irregular demarcations
   - default infill: no activation
   - default NArowtype: numeric
   - suffix appender: '\_bkt1\_#1' where #1 is the bin identifier (# from min)
   - assignparam parameters accepted: 
     - 'buckets', a list of numbers, to set bucket boundaries (leave out +/-'inf')
-      defaults to [0,1,2] (arbitrary plug values), can also pass buckets values as percent of range by framing as a set instead of list eg {0,0.25,0.50,1}
+      defaults to [0,1,2] (arbitrary plug values), can also pass buckets values as percent of range by framing as a set instead of list e.g. {0,0.25,0.50,1}
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: binsmean / buckets_bkt1 / bins_cuts / bins_id / textcolumns / 
 					   <column> + '_ratio' (column specific)
   - returned datatype: int8
   - inversion available: yes with partial recovery
 * bkt2: for numerical set graining to user specified encoded bins. First and last bins bounded.
-  - useful for: bins for sets with known irregular demarkations, similar to preceding but first and last bins bounded
+  - useful for: bins for sets with known irregular demarcations, similar to preceding but first and last bins bounded
   - default infill: no activation
   - default NArowtype: numeric
   - suffix appender: '\_bkt2\_#1' where #1 is the bin identifier (# from min)
   - assignparam parameters accepted: 
     - 'buckets', a list of numbers, to set bucket boundaries
-      defaults to [0,1,2] (arbitrary plug values), can also pass buckets values as percent of range by framing as a set instead of list eg {0,0.25,0.50,1}
+      defaults to [0,1,2] (arbitrary plug values), can also pass buckets values as percent of range by framing as a set instead of list e.g. {0,0.25,0.50,1}
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: binsmean / buckets_bkt2 / bins_cuts / bins_id / textcolumns / 
 					   <column> + '_ratio' (column specific)
@@ -2607,7 +2608,7 @@ bin count defaults to 5/7/9 eg for bneo/bn7o/bn9o
   - suffix appender: '_bkt3' in base configuration or based on the family tree category
   - assignparam parameters accepted: 
     - 'buckets', a list of numbers, to set bucket boundaries (leave out +/-'inf')
-      defaults to [0,1,2] (arbitrary plug values), can also pass buckets values as percent of range by framing as a set instead of list eg {0,0.25,0.50,1}
+      defaults to [0,1,2] (arbitrary plug values), can also pass buckets values as percent of range by framing as a set instead of list e.g. {0,0.25,0.50,1}
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: binsmean / buckets / bins_cuts / bins_id / ordl_activations_dict
   - returned datatype: conditional based on size of encoding space (uint8 / uint16 / uint32)
@@ -2619,7 +2620,7 @@ bin count defaults to 5/7/9 eg for bneo/bn7o/bn9o
   - suffix appender: '_bkt4' in base configuration or based on the family tree category
   - assignparam parameters accepted: 
     - 'buckets', a list of numbers, to set bucket boundaries
-      defaults to [0,1,2] (arbitrary plug values), can also pass buckets values as percent of range by framing as a set instead of list eg {0,0.25,0.50,1}
+      defaults to [0,1,2] (arbitrary plug values), can also pass buckets values as percent of range by framing as a set instead of list e.g. {0,0.25,0.50,1}
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: binsmean / buckets / bins_cuts / bins_id / ordl_activations_dict
   - returned datatype: conditional based on size of encoding space (uint8 / uint16 / uint32)
@@ -2645,11 +2646,12 @@ with metric2 results from a feature importance evaluation)
 			           bins_cuts / bincount_tlbn / textcolumns / <column> + '_ratio' (column specific)
   - returned datatype: based on automunge(.) floatprecision parameter (defaults to float32)
   - inversion available: yes
+
 ### Sequential Numerical Set Transformations
 Please note that sequential transforms assume the forward progression of time towards direction of bottom of dataframe.
 Please note that only stdrdinfill (adjinfill) are supported for shft transforms.
 * dxdt/d2dt/d3dt/d4dt/d5dt/d6dt: rate of change (row value minus value in preceding row), high orders 
-return lower orders (eg d2dt returns original set, dxdt, and d2dt), all returned sets include 'retn' 
+return lower orders (e.g. d2dt returns original set, dxdt, and d2dt), all returned sets include 'retn' 
 normalization which scales data with min/max while retaining +/- sign
   - useful for: time series data, also bounding sequential sets
   - default infill: adjacent cells
@@ -2662,7 +2664,7 @@ normalization which scales data with min/max while retaining +/- sign
   - returned datatype: based on automunge(.) floatprecision parameter (defaults to float32)
   - inversion available: no
 * dxd2/d2d2/d3d2/d4d2/d5d2/d6d2: denoised rate of change (average of last two or more rows minus average
-of preceding two or more rows), high orders return lower orders (eg d2d2 returns original set, dxd2, 
+of preceding two or more rows), high orders return lower orders (e.g. d2d2 returns original set, dxd2, 
 and d2d2), all returned sets include 'retn' normalization
   - useful for: time series data, also bounding sequential sets
   - default infill: adjacent cells
@@ -2689,10 +2691,11 @@ not supported for shift transforms, infill only available as adjacent cell
   - assignparam parameters accepted: 
     - 'periods' sets number of time steps offset to evaluate, defaults to 1/2/3
     - 'suffix' sets the suffix appender of returned column
-      as may be useful to disginguish if applying this multiple times
+      as may be useful to distinguish if applying this multiple times
   - driftreport postmunge metrics: positiveratio / negativeratio / zeroratio / minimum / maximum / mean / std
   - returned datatype: based on automunge(.) floatprecision parameter (defaults to float32)
   - inversion available: yes
+
 ### Categorical Set Encodings
 * bnry: converts sets with two values to boolean identifiers. Defaults to assigning
 1 to most common value and 0 to second most common, unless 1 or 0 is already included
@@ -2703,8 +2706,8 @@ to set with >2 entries applies infill to those entries beyond two most common.
   - default NArowtype: justNaN
   - suffix appender: '_bnry' in base configuration or based on the family tree category
   - assignparam parameters accepted:
-    - 'str_convert', boolean defaults as False for distinct encodings between numbers and string equivalents
-      e.g. 2 != '2', when passed as True e.g. 2 == '2'
+    - 'str_convert': boolean defaults as False for distinct encodings between numbers and string equivalents
+      e.g. 2 != '2', or when passed as True e.g. 2 == '2'
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: missing / 1 / 0 / extravalues / oneratio / zeroratio
   - returned datatype: int8
@@ -2715,8 +2718,8 @@ to set with >2 entries applies infill to those entries beyond two most common.
   - default NArowtype: justNaN
   - suffix appender: '_bnr2' in base configuration or based on the family tree category
   - assignparam parameters accepted:
-    - 'str_convert', boolean defaults as False for distinct encodings between numbers and string equivalents
-      e.g. 2 != '2', when passed as True e.g. 2 == '2'
+    - 'str_convert': boolean defaults as False for distinct encodings between numbers and string equivalents
+      e.g. 2 != '2', or when passed as True e.g. 2 == '2'
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: missing / 1 / 0 / extravalues / oneratio / zeroratio
   - returned datatype: int8
@@ -2727,7 +2730,7 @@ to set with >2 entries applies infill to those entries beyond two most common.
   - default infill: all entries zero
   - default NArowtype: justNaN
   - suffix appender: 
-    - '_(category)' where category is the categoric entry target of column activations (i.e. one of the unique values found in recieved column)
+    - '_(category)' where category is the categoric entry target of column activations (i.e. one of the unique values found in received column)
   - assignparam parameters accepted:
   - driftreport postmunge metrics: textlabelsdict_text / <column> + '_ratio' (column specific)
   - returned datatype: int8
@@ -2752,7 +2755,7 @@ to set with >2 entries applies infill to those entries beyond two most common.
   - default NArowtype: justNaN
   - suffix appender: '_ordl' in base configuration or based on the family tree category
   - assignparam parameters accepted:
-    - 'ordered_overide', boolean defaults True, when True instects for Pandas ordered categorical and 
+    - 'ordered_overide', boolean defaults True, when True inspects for Pandas ordered categorical and 
       if found integer encoding order defers to that basis
     - 'str_convert', boolean defaults as False for distinct encodings between numbers and string equivalents
       e.g. 2 != '2', when passed as True e.g. 2 == '2'
@@ -2767,7 +2770,7 @@ occurrence, second basis for common count entries is alphabetical
   - default NArowtype: justNaN
   - suffix appender: '_ord3' in base configuration or based on the family tree category
   - assignparam parameters accepted:
-    - 'ordered_overide', boolean defaults True, when True instects for Pandas ordered categorical and 
+    - 'ordered_overide', boolean defaults True, when True inspects for Pandas ordered categorical and 
       if found integer encoding order defers to that basis
     - 'str_convert', boolean defaults as False for distinct encodings between numbers and string equivalents
       e.g. 2 != '2', when passed as True e.g. 2 == '2'
@@ -2776,7 +2779,7 @@ occurrence, second basis for common count entries is alphabetical
   - returned datatype: conditional based on size of encoding space (uint8 / uint16 / uint32)
   - inversion available: yes with full recovery
 * ord4: derived by an ord3 transform followed by a mnmx transform. Useful as a scaled metric
-(numeric in range 0-1) which ranks any redundant entries by frequency of occurance.
+(numeric in range 0-1) which ranks any redundant entries by frequency of occurrence.
 * lbos: an ord3 encoding followed by downstream conversion to string dtype. This may be useful for
 label sets passed to downstream libraries to ensure they treat labels as target for classification instead
 of regression.
@@ -2813,7 +2816,7 @@ maxb (ordinal), matx (one hot), and ma10 (binary).
 * ucct: converts categorical sets to a normalized float of unique class count,
 for example, a 10 row train set with two instances of 'circle' would replace 'circle' with 0.2
 and comparable to test set independent of test set row count
-  - useful for: supplmenting categoric sets with a proxy for activation frequency
+  - useful for: supplementing categoric sets with a proxy for activation frequency
   - default infill: ratio of infill in train set
   - default NArowtype: justNaN
   - suffix appender: '_ucct' in base configuration or based on the family tree category
@@ -2864,8 +2867,8 @@ Note that hash strips out special characters. Uhsh is available if upstream uppe
 of encoding overlap between entries with this transform. Also note that hash is excluded from ML infill
 vocab_size calculated based on number of unique words found in train set times a multiplier (defaulting to 2), where if that 
 is greater than cap then reverts to cap. The hashing transforms are intended as an alternative to other categoric 
-encodings which doesn't require a conversion dictionary assmebly for consistent processing of subsequent data, as 
-may benefit sets with high cardinatility (i.e. high number of unique entries). The tradeoff is that inversion
+encodings which doesn't require a conversion dictionary assembly for consistent processing of subsequent data, as 
+may benefit sets with high cardinality (i.e. high number of unique entries). The tradeoff is that inversion
 is not supported as there is possibility of redundant encodings for different unique entries.
   - useful for: categoric sets with very high cardinality, default for categoric sets with (nearly) all unique entries
   - default infill: none
@@ -2875,17 +2878,17 @@ is not supported as there is possibility of redundant encodings for different un
     - 'heuristic_multiplier', float defaults to 2
     - 'heuristic_cap', integer defaults to 1024
     - 'vocab_size', integer defaults to False, when assigned overrides heuristic
-    - 'space', defaults to ' ', this is used to extract words by space seperator
-    - 'excluded_characters', defaults to [',', '.', '?', '!', '(', ')'], these characters are stripped prior to enconding
+    - 'space', defaults to ' ', this is used to extract words by space separator
+    - 'excluded_characters', defaults to [',', '.', '?', '!', '(', ')'], these characters are stripped prior to encoding
     - 'salt', arbitrary string, defaults to empty string '', appended to entries to perturb encoding basis for privacy
     - 'hash_alg', defaults to 'hash' for use of native python hash function for speed, 'md5' uses hashlib md5 function instead
     - 'max_column_count', defaults to False, can pass as integer to cap the number of returned columns, in which case when
-      words are extracted the final entrty within cap will contain all remaining word and space characters
+      words are extracted the final column's encodings will be based on all remaining word and space characters inclusive
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: col_count (number of columns), vocab_size
   - returned datatype: conditional based on size of encoding space (uint8 / uint16 / uint32)
   - inversion available: no
-* hsh2: similar to hash but does not partition entries by space seperator, so only returns one column. Note this version doesn't scrub special characters prior to encoding.
+* hsh2: similar to hash but does not partition entries by space separator, so only returns one column. Note this version doesn't scrub special characters prior to encoding.
   - useful for: categoric sets with very high cardinality, default for categoric sets with number of entries exceeding numbercategoryheuristic (defaulting to 255)
   - default infill: none
   - default NArowtype: justNaN
@@ -2894,7 +2897,7 @@ is not supported as there is possibility of redundant encodings for different un
     - 'heuristic_multiplier', float defaults to 2
     - 'heuristic_cap', integer defaults to 1024
     - 'vocab_size', integer defaults to False, when assigned overrides heuristic
-    - 'excluded_characters', a list of strings, defaults to [] (an empty set), these characters are stripped prior to enconding
+    - 'excluded_characters', a list of strings, defaults to [] (an empty set), these characters are stripped prior to encoding
     - 'salt', arbitrary string, defaults to empty string '', appended to entries to perturb encoding basis for privacy
     - 'hash_alg', defaults to 'hash' for use of native python hash function for speed, 'md5' uses hashlib md5 function instead
     - 'suffix': to change suffix appender (leading underscore added internally)
@@ -2910,7 +2913,7 @@ is not supported as there is possibility of redundant encodings for different un
     - 'heuristic_multiplier', float defaults to 2
     - 'heuristic_cap', integer defaults to 1024
     - 'vocab_size', integer defaults to False, when assigned overrides heuristic
-    - 'excluded_characters', a list of strings, defaults to [] (an empty set), these characters are stripped prior to enconding
+    - 'excluded_characters', a list of strings, defaults to [] (an empty set), these characters are stripped prior to encoding
     - 'salt', arbitrary string, defaults to empty string '', appended to entries to perturb encoding basis for privacy
     - 'hash_alg', defaults to 'hash' for use of native python hash function for speed, 'md5' uses hashlib md5 function instead
     - 'suffix': to change suffix appender (leading underscore added internally)
@@ -2918,7 +2921,7 @@ is not supported as there is possibility of redundant encodings for different un
   - returned datatype: int8
   - inversion available: no
 * UPCS: convert string entries to all uppercase characters
-  - useful for: performing upstream of categoric encodings when case configuration is irelevant
+  - useful for: performing upstream of categoric encodings when case configuration is irrelevant
   - default infill: none
   - default NArowtype: justNaN
   - suffix appender: '_UPCS' in base configuration or based on the family tree category
@@ -2950,10 +2953,11 @@ which is most useful. Reference the family trees below for composition details (
   - ntgr set includes: ord4, retn, 1010, ordl
   - ntg2 set includes: ord4, retn, 1010, ordl, pwr2
   - ntg3 set includes: ord4, retn, ordl, por2
+
 ### Date-Time Data Normalizations
 Date time processing transforms are implementations of two master functions: time and tmcs, which accept
 various parameters associated with suffix, time scale, and sin/cos periodicity, etc. They segment time stamps by
-time scale returned in seperate columns. If a particular time scale is not present in training data it is omitted.
+time scale returned in separate columns. If a particular time scale is not present in training data it is omitted.
 * date/dat2: for datetime formatted data, segregates data by time scale to multiple
 columns (year/month/day/hour/minute/second) and then performs z-score normalization
   - useful for: datetime entries of mixed time scales where periodicity is not relevant
@@ -2978,7 +2982,7 @@ columns (year/month/day/hour/minute/second) and then performs z-score normalizat
   - returned datatype: based on automunge(.) floatprecision parameter (defaults to float32)
   - inversion available: pending
 * mnsn/mncs/dysn/dycs/hrsn/hrcs/misn/mics/scsn/sccs: segregated by time scale and 
-dual columns with sin and cos transformations for time scale period (eg 12 months, 24 hrs, 7 days, etc)
+dual columns with sin and cos transformations for time scale period (e.g. 12 months, 24 hrs, 7 days, etc)
   - useful for: datetime entries of single time scale where periodicity is relevant
   - default infill: mean
   - default NArowtype: datetime
@@ -3042,6 +3046,7 @@ number of days in specific months, including account for leap year, with 12 mont
   - driftreport postmunge metrics: meanyear / stdyear / mean_mdsn / mean_mdcs / mean_hmss / mean_hmsc
   - returned datatype: based on automunge(.) floatprecision parameter (defaults to float32)
   - inversion available: pending
+
 ### Date-Time Data Bins
 * wkdy: boolean identifier indicating whether a datetime object is a weekday
   - useful for: supplementing datetime encodings with weekday bins
@@ -3055,7 +3060,7 @@ number of days in specific months, including account for leap year, with 12 mont
   - inversion available: pending
 * wkds/wkdo: encoded weekdays 0-6, 'wkds' for one-hot via 'text', 'wkdo' for ordinal via 'ord3'
   - useful for: ordinal version of preceding wkdy
-  - default infill: 7 (eg eight days a week)
+  - default infill: 7 (e.g. eight days a week)
   - default NArowtype: datetime
   - suffix appender: '_wkds' in base configuration or based on the family tree category
   - assignparam parameters accepted:
@@ -3100,9 +3105,11 @@ holiday
   - driftreport postmunge metrics: activationratio
   - returned datatype: int8
   - inversion available: pending
+
 ### Differential Privacy Noise Injections
 The DP family of transforms are special in that they treat train sets different than test sets, 
-specifically they apply a noise injection to train sets such as may benefit differential privacy.
+specifically they apply a noise injection to train sets such as may benefit differential privacy,
+data augmentation, or also for model perturbation in assembly of ensembles.
 Note that if desired to treat data passed to postmunge as a train set can apply the traindata
 parameter to postmunge. Note that when passing parameters to these functions, the transformation
 category associated with the transformation function may be different than the root category.
@@ -3115,7 +3122,7 @@ on flip_prob parameter.
   - suffix appender: '_DPn3_DPnb'
   - assignparam parameters accepted: 
     - 'noisedistribution' as {'normal', 'laplace'}, defaults to normal
-    - 'flip_prob' for percent of entries recieving noise injection, defaults to 0.03
+    - 'flip_prob' for percent of entries receiving noise injection, defaults to 0.03
     - 'mu' for noise mean, defaults to 0
     - 'sigma' for noise scale, defaults to 0.06
     - 'testnoise' defaults to False, when True noise is injected to test data in both automunge and postmunge by default
@@ -3133,7 +3140,7 @@ remains in range 0-1 (by scaling neg noise when scaled input <0.5 and scaling po
   - suffix appender: '_DPm2_DPmm'
   - assignparam parameters accepted: 
     - 'noisedistribution' as {'normal', 'laplace'}, defaults to normal
-    - 'flip_prob' for percent of entries recieving noise injection, defaults to 0.03
+    - 'flip_prob' for percent of entries receiving noise injection, defaults to 0.03
     - 'mu' for noise mean, defaults to 0
     - 'sigma' for noise scale, defaults to 0.03
     - 'testnoise' defaults to False, when True noise is injected to test data in both automunge and postmunge by default
@@ -3153,8 +3160,8 @@ remains in range 0-1 (by scaling neg noise when scaled and centered input <0.5 a
     - cap / floor defaulting to 'minmax'/0/1/False/False, also
     - 'noisedistribution' as {'normal', 'laplace'}, defaults to normal
     - 'mu' for noise mean, defaults to 0, 
-    - 'sigma' for noise scale, defautls to 0.03
-    - 'flip_prob' for percent of entries recieving noise injection, defaults to 0.03
+    - 'sigma' for noise scale, defaults to 0.03
+    - 'flip_prob' for percent of entries receiving noise injection, defaults to 0.03
     - 'testnoise' defaults to False, when True noise is injected to test data in both automunge and postmunge by default
     - Parameters should be passed to 'DPrt' transformation category from family tree.
     - 'suffix': to change suffix appender (leading underscore added internally)
@@ -3226,6 +3233,7 @@ on number of activations), followed by a 1010 binary encoding
   - driftreport postmunge metrics: flip_prob for DPod, upstream ordinal via ord3 and downstream 1010 for others
   - returned datatype: int8
   - inversion available: yes
+
 ### Misc. Functions
 * null: deletes source column
   - default infill: none
@@ -3242,7 +3250,7 @@ Note that for assignnan designation of infill designations, excl is excluded fro
   - useful for: passthrough sets
   - default infill: none
   - default NArowtype: exclude
-  - suffix appender: None or '_excl' (dependant on automunge(.) excl_suffix parameter)
+  - suffix appender: None or '\_excl' (dependent on automunge(.) excl_suffix parameter)
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: none
   - returned datatype: based on automunge(.) floatprecision parameter (defaults to float32)
@@ -3284,7 +3292,7 @@ parameter activated to designated column
   - useful for: applying automated powertransform evaluation to distinct columns
   - default infill: based on evaluation
   - default NArowtype: based on evaluation
-  - suffix appender: based on evlauation
+  - suffix appender: based on evaluation
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: none
   - returned datatype: based on transformation applied
@@ -3295,7 +3303,7 @@ This also may be useful when defining a family tree where the shortest path isn'
 can add some intermediate copy operations to shortest path until inversion selects the desired path
 (as inversion operates on heuristic of selecting shortest transformation path with full information retention, 
 unless full information retention isn't available then the shortest path without full information retention).
-Does not prepare column for ML on it's own (e.g. returned data will carry forward non-numeric entries and will not conduct infill).
+Does not prepare column for ML on its own (e.g. returned data will carry forward non-numeric entries and will not conduct infill).
   - default infill: exclude
   - default NArowtype: exclude
   - suffix appender: '_copy' in base configuration or based on the family tree category
@@ -3320,7 +3328,7 @@ unless an additional transform is applied downstream.)
 column with missing or improperly formatted values. Note that when NArw
 is assigned in a family tree it bases NArowtype on the root category, 
 when NArw is passed as the root category it bases NArowtype on default.
-  - useful for: supplmenting any transform with marker for missing entries. On by default by NArw_marker parameter
+  - useful for: supplementing any transform with marker for missing entries. On by default by NArw_marker parameter
   - default infill: not applicable
   - default NArowtype: justNaN
   - suffix appender: '_NArw' in base configuration or based on the family tree category
@@ -3373,6 +3381,7 @@ column with missing or improperly formatted values.
   - driftreport postmunge metrics: pct_NArw
   - returned datatype: int8
   - inversion available: no
+
 ### Parsed Categoric Encodings
 Please note I recommend caution on using splt/spl2/spl5/spl6 transforms on categorical
 sets that may include scientific units for instance, as prefixes will not be noted
@@ -3380,9 +3389,9 @@ for overlaps, e.g. this wouldn't distinguish between kilometer and meter for ins
 Note that overlap lengths below 5 characters are ignored unless that value is overridden
 by passing 'minsplit' parameter through assignparam.
 * splt: searches categorical sets for overlaps between string character subsets and returns new boolean column
-for identified overlap categories. Note this treats numeric values as strings eg 1.3 = '1.3'.
+for identified overlap categories. Note this treats numeric values as strings e.g. 1.3 = '1.3'.
 Note that priority is given to overlaps of higher length, and by default overlap go down to 5 character length.
-  - useful for: extracting grammatical strucutre shared between entries
+  - useful for: extracting grammatical structure shared between entries
   - default infill: none
   - default NArowtype: justNaN
   - suffix appender: '\_splt\_##*##' where ##*## is target identified string overlap 
@@ -3394,8 +3403,8 @@ Note that priority is given to overlaps of higher length, and by default overlap
     - 'excluded_characters': a list of strings which are excluded from overlap 
       identification when space_and_punctuation set as False, defaults to
       `[' ', ',', '.', '?', '!', '(', ')']`
-    - 'concurrent_activations': defaults as False, True makes comaprable to sp15, 
-      although recomend using sp15 instead for correct MLinfilltype
+    - 'concurrent_activations': defaults as False, True makes comparable to sp15, 
+      although recommend using sp15 instead for correct MLinfilltype
     - 'suffix': returned column suffix appender, defaults to 'splt'
     - 'int_headers': True/False, defaults as False, when True returned column headers 
       are encoded with integers, such as for privacy preserving of data contents
@@ -3405,7 +3414,7 @@ Note that priority is given to overlaps of higher length, and by default overlap
   - inversion available: yes with partial recovery
 * sp15: similar to splt, but allows concurrent activations for multiple detected overlaps (spelled sp-fifteen)
 Note that this version runs risk of high dimensionality of returned data in comparison to splt.
-  - useful for: extracting grammatical strucutre shared between entries with increased information retention vs splt
+  - useful for: extracting grammatical structure shared between entries with increased information retention vs splt
   - default infill: none
   - default NArowtype: justNaN
   - suffix appender: '\_sp15\_##*##' where ##*## is target identified string overlap 
@@ -3414,8 +3423,8 @@ Note that this version runs risk of high dimensionality of returned data in comp
   - driftreport postmunge metrics: overlap_dict / splt_newcolumns_sp15 / minsplit
   - returned datatype: int8
   - inversion available: yes with partial recovery
-* sp19: comaprable to sp15, but with returned columns aggregated by a binary encoding to reduce dimensionality
-  - useful for: extracting grammatical strucutre shared between entries with decreased dimensionality vs sp15
+* sp19: comparable to sp15, but with returned columns aggregated by a binary encoding to reduce dimensionality
+  - useful for: extracting grammatical structure shared between entries with decreased dimensionality vs sp15
   - default infill: distinct encoding
   - default NArowtype: justNaN
   - suffix appender: '\_sp19\_#' where # is integer associated with the encoding
@@ -3424,7 +3433,7 @@ Note that this version runs risk of high dimensionality of returned data in comp
   - returned datatype: int8
   - inversion available: yes with partial recovery
 * sbst: similar to sp15, but only detects string overlaps shared between full unique entries and subsets of longer character length entries
-  - useful for: exgtracting cases of overlap between full entries and subsets of other entries
+  - useful for: extracting cases of overlap between full entries and subsets of other entries
   - default infill: none
   - default NArowtype: justNaN
   - suffix appender: '\_sbst\_##*##' where ##*## is target identified string overlap 
@@ -3434,12 +3443,12 @@ Note that this version runs risk of high dimensionality of returned data in comp
     - 'minsplit': indicating lowest character length for recognized overlaps, defaults to 1
     - 'concurrent_activations':  True/False, defaults to True, when True
       entries may have activations for multiple simultaneous overlaps
-    - 'test_same_as_train': defaults False, True makes this comaprable to sbs2
+    - 'test_same_as_train': defaults False, True makes this comparable to sbs2
     - 'suffix': returned column suffix appender, defaults to 'sbst'
   - driftreport postmunge metrics: overlap_dict / splt_newcolumns_sbst / minsplit
   - returned datatype: int8
   - inversion available: yes with partial recovery
-* sbs3: comaprable to sbst, but with returned columns aggregated by a binary encoding to reduce dimensionality
+* sbs3: comparable to sbst, but with returned columns aggregated by a binary encoding to reduce dimensionality
   - useful for: binary version of sbst for reduced dimensionality
   - default infill: distinct encoding
   - default NArowtype: justNaN
@@ -3462,9 +3471,9 @@ entries with the abbreviated string overlap
     - 'excluded_characters': a list of strings which are excluded from overlap 
       identification when space_and_punctuation set as False, defaults to
       `[' ', ',', '.', '?', '!', '(', ')']`
-    - 'test_same_as_train': defaults False, True makes this comaprable to spl9
+    - 'test_same_as_train': defaults False, True makes this comparable to spl9
     - 'suffix': returned column suffix appender, defaults to 'spl2'
-    - 'consolidate_nonoverlaps': defaults to False, True makes this comparble to spl5
+    - 'consolidate_nonoverlaps': defaults to False, True makes this comparable to spl5
   - driftreport postmunge metrics: overlap_dict / spl2_newcolumns / spl2_overlap_dict / spl2_test_overlap_dict / 
                                    minsplit
   - returned datatype: str (other categoric encodings can be returned downstream to return numeric)
@@ -3476,7 +3485,7 @@ entries with the abbreviated string overlap
   - default NArowtype: justNaN
   - suffix appender: '_spl5' in base configuration or based on the family tree category
   - assignparam parameters accepted:
-    - comaprable to spl2, consolidate_nonoverlaps as True
+    - comparable to spl2, consolidate_nonoverlaps as True
   - driftreport postmunge metrics: overlap_dict / spl2_newcolumns / spl2_overlap_dict / spl2_test_overlap_dict / 
                                    spl5_zero_dict / minsplit
   - returned datatype: str (other categoric encodings can be returned downstream to return numeric)
@@ -3499,7 +3508,7 @@ within the overlaps
   - default NArowtype: justNaN
   - suffix appender: '_spl7' in base configuration or based on the family tree category
   - assignparam parameters accepted: 
-    - comparble to spl5, minsplit defaults to 2
+    - comparable to spl5, minsplit defaults to 2
   - driftreport postmunge metrics: overlap_dict / srch_newcolumns_srch / search
   - returned datatype: int8
   - inversion available: yes with partial recovery
@@ -3512,7 +3521,7 @@ for identified overlap entries.
   - assignparam parameters accepted: 
     - 'search': a list of strings, defaults as empty set
       (note search parameter list can included embedded lists of terms for 
-      aggregated activations of terms in the sublist)
+      aggregated activations of terms in the sub-list)
     - 'case': bool to indicate case sensitivity of search, defaults True
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: overlap_dict / splt_newcolumns_splt / minsplit
@@ -3526,7 +3535,7 @@ for identified overlap entries.
   - assignparam parameters accepted: 
     - 'search': a list of strings, defaults as empty set
       (note search parameter list can included embedded lists of terms for 
-      aggregated activations of terms in the sublist)
+      aggregated activations of terms in the sub-list)
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: overlap_dict / splt_newcolumns_splt / minsplit
   - returned datatype: int8
@@ -3541,7 +3550,7 @@ for identified overlap entries. (Note for multiple activations encoding priority
   - assignparam parameters accepted: 
     - 'search': a list of strings, defaults as empty set
       (note search parameter list can included embedded lists of terms for 
-      aggregated activations of terms in the sublist)
+      aggregated activations of terms in the sub-list)
     - 'case': bool to indicate case sensitivity of search, defaults True
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: overlap_dict / splt_newcolumns_splt / minsplit
@@ -3611,8 +3620,9 @@ for identified overlap entries. (Note for multiple activations encoding priority
   - driftreport postmunge metrics: overlap_dict / mean / maximum / minimum / unique_list / maxlength
   - returned datatype: comparable
   - inversion available: no
+
 ### Multi-tier Parsed Categoric Encodings
-The following are a few variations of parsed categoric encoding aggregations. We recomend the or19 variant and 
+The following are a few variations of parsed categoric encoding aggregations. We recommend the or19 variant and 
 have written about in paper [Parsed Categoric Encodings with Automunge](https://medium.com/automunge/string-theory-acbd208eb8ca).
 * new processing root categories or11 / or12 / or13 / or14 / or15 / or16 / or17 / or18 / or19 / or20
   - or11 / or13 intended for categorical sets that may include multiple tiers of overlaps 
@@ -4025,7 +4035,7 @@ as postreports_dict['pm_miscparameters_results']. (If the function fails to comp
 ### Root Category Family Tree Definitions
 And here are the family tree definitions for root categories currently built into the internal 
 library. Basically providing this as a reference, not really expecting anyone to read this line 
-by line or anything. (Note that the NArw transformation without quotation marks (eg NArw 
+by line or anything. (Note that the NArw transformation without quotation marks (e.g. NArw 
 vs 'NArw') will not be activated if user passes the automunge(.) parameter as NArw_marker=False.)
 If you want to skip to the next section you can click here: [Custom Transformation Functions](https://github.com/Automunge/AutoMunge#custom-transformation-functions)
 
@@ -7334,10 +7344,10 @@ transformdict = {'mnm8' : {'parents'       : [],
                            'friends'       : []}}
 
 #Note that since this mnm8 requires passing normalization parameters derived
-#from the train set to process the test set, we'll need to create two seperate 
+#from the train set to process the test set, we'll need to create two separate 
 #transformation functions, the first a "dualprocess" function that processes
 #both the train and if available a test set simultaneously, and the second
-#a "postprocess" that only processes the test set on it's own.
+#a "postprocess" that only processes the test set on its own.
 
 #So what's being demonstrated here is that we're passing the functions under
 #dualprocess and postprocess that we'll define below.
@@ -7357,7 +7367,7 @@ processdict = {'mnm8' : {'dualprocess'   : process_mnm8,
 #the processdict to automunge.
 
 #Here we'll define a "dualprocess" function intended to process both a train and
-#test set simultaneously. We'll also need to create a seperate "postprocess"
+#test set simultaneously. We'll also need to create a separate "postprocess"
 #function intended to just process a subsequent test set.
 
 #define the function
@@ -7400,7 +7410,7 @@ def process_mnm8(mdf_train, mdf_test, column, category, treecategory, postproces
   #mdf_train, suffixoverlap_results = \
   #am._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results)
   
-  #or to run validation independant of copy operation could also run
+  #or to run validation independent of copy operation could also run
   #suffixoverlap_results = \
   #am._df_check_suffixoverlap(mdf_train, [suffixcolumn], suffixoverlap_results)
   #(using am. for externally defined functions or self. for internally defined)
@@ -7493,7 +7503,7 @@ def process_mnm8(mdf_train, mdf_test, column, category, treecategory, postproces
                                             'maxminusmin' : maxminusmin,
                                             'suffix' : suffix}}
 						
-  #as an asterisk, please note there are a small number of reserved normalization dicitonary key strings
+  #as an asterisk, please note there are a small number of reserved normalization dictionary key strings
   #documented in code base under _check_normalization_dict function
   #if you accidentally use one of those strings will return a printout in front of infill application
 
