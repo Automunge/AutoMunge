@@ -3371,3 +3371,25 @@ am.postmunge(postprocess_dict, df_test)
 - improved printouts for clarity for not supported edge case for partial inversion including Binary columns when Binary passed to automunge(.) as 'retain'
 - (this edge case not needed since Binary columns will be redundnat with what can be recoved from inversion of rest of set)
 - improved documentation for transformdict and processdict parameters in read me
+
+6.35
+- updated PCAexcl default from False to empty list [] to address an edge case with prior convention
+- new default convention: boolean and ordinal columns are excluded from PCA unless otherwise specified in ML_cmnd
+- new scenarios added to Binary dimensionality reduction as can be specified by the Binary parameter
+- which original implementaiton was to consolidate categoric features into single common binarization
+- either with or without replacement of the consolidated features
+- which in cases of redundancies/correlations between features may result in reducing column count of returned set
+- as well as help to alleviate overfit that may result from highly redundant features
+- new scenarios are to instead of consolidate into a common binarization, will instead consolidate into a common ordinal encoding
+- which may be useful to feed into a entity embedding layer for instance
+- Binary='ordinal' => to replace the consolidated categoric sets with a single column with ordinal encoding (via ord3)
+- Binary='ordinalretain' => to supplement the categoric sets with a single consolidated column with ordinal encoding (via ord3)
+- so Binary already had convention that could pass as a list of column headers to only consolidate a subset instead of all categoric features, with first entry optionally as a boolean False to trigger retain option
+- so added more special data types for first entry when Binary passed as list to accomodate ordinal options
+- so now if Binary passed as list, Binary[0] can be True for 'ordinalretain', Binary[0] can be False for 'retain', Binary[0] can be None for 'ordinal', otherwise when Binary[0] is a string column header Binary is just treated as the default which is 1010 encoding replacing consolidated columns
+- a few cleanups to Binary and Binary inversion implementation in the process
+- finally, a small tweak to default transformation category under automation applied to numeric label sets
+- reverting to a prior convention from the library of treating numeric labels with z-score normalization instead of leaving data unscaled
+- have seen kind of conflicting input on this matter in literature on whether there is ever any benefit to scaling numeric labels
+- did a little more digging and found some valid discussions on stack overflow offering scenarios where scaling labels may be of benefit
+- as well as finding domain experts following the practice such as in implementation of experiments in paper  “Revisiting Deep Learning Models for Tabular Data” by Yury Gorishniy, Ivan Rubachev, Valentin Khrulkov, Artem Babenko
