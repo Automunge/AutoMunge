@@ -833,35 +833,43 @@ as may drastically reduce the column count. This has many benefits such as
 memory bandwidth and energy cost for inference I suspect, however, there 
 may be tradeoffs associated with ability of the model to handle outliers,
 as for any new combination of boolean set in the test data the collection
-will be subject to the infill. Pass _True_ to activate, defaults to _False_. 
-Note that can also be passed as _'retain'_ to retain the boolean columns that 
-served as basis for encoding instead of replacing them. To only convert a 
-portion of the boolean columns, can pass this as a list of column headers, 
-which may include source column headers and/or returned column headers (source 
-headers convert all boolean columns derived from a source column, returned 
-headers allow to only convert a portion, note it is ok to pass non-boolean 
-columns they will be ignored). When passing a list of headers, the default is 
-that the binary transform will replace those target columns. For a retain 
-option user can pass False as first item in list, e.g. for partial set retention, 
-can pass Binary = [False, 'target_column_1', 'target_column_2']. Note that
-when applied a column named 'Binary' is used in derivation, thus this is a 
-reserved column header when applying this transform.
+will be subject to the infill. Defaults to _False_, can be passed as one of
+_{False, True, 'retain', 'ordinal', 'ordinalretain', [list of column headers]}_.
+When False Binary is not performed. When True boolean integer encoded categoric
+features are consolidated into a single common binarization with replacement.
+When 'retain' there is a similar consolidation to a common binarization but the 
+original columns are retained in the returned set. 'ordinal' and 'ordinalretain'
+are comparable to True and 'retain' with the exception that the conolidated 
+set is returned in an ordinal encoding instead of a binarization. A user can also
+pass a list of target column headers if consolidation is only desired on a subset of the categoric
+features. The column headers may be as recieved column headers or returhed column headers
+with suffix appenders included. To allow distinguishing between the other conventions
+such as 'retain', 'ordinal', etc. in conjunction with passing a subset list of column headers,
+a user may optionally include a few special entries as the first item in the list to
+designate. When the first item in the list is the boolean True, the 'ordinalretain' option is 
+applied, when the first item in the list is the boolean False, the 'retain' option is applied,
+when the first item in the list is the value None, the 'ordinal' option is applied.
+Otherwise when the first value in list is just a column header string the base convention
+consistent with Binary=True is applied to the target columns. Note that inversion as can be performed 
+with postmunge(.) is supported in conjunction with Binary.
 
 * PCAn_components: defaults to False for no PCA dimensionality reduction performed.
-A user can pass _an integer_ to define the number of PCA derived features for 
+A user can pass _an integer_ to define the number of PCA returned features for 
 purposes of dimensionality reduction, such integer to be less than the otherwise 
 returned number of sets. Function will default to kernel PCA for all non-negative 
 sets or otherwise Sparse PCA. Also if this value is passed as a _float <1.0_ then 
 linear PCA will be applied such that the returned number of sets are the minimum 
 number that can reproduce that percent of the variance. 
-Note this can also be passed 
-in conjunction with assigned PCA type or parameters in the ML_cmnd object. These methods
-apply PCA with the scikit-learn library.
-As a special convention, if PCAn_components passed as _None_ PCA is not performed unless # features exceeds 0.5 # rows (as a heuristic). 
+Note this can also be passed in conjunction with assigned PCA type or parameters in 
+the ML_cmnd object. Note that by default boolean integer and ordinal encoded returned 
+columns are excluded from PCA, which convention can be updated in ML_cmnd if desired. 
+These methods apply PCA with the scikit-learn library.
+As a special convention, if PCAn_components passed as _None_ PCA is performed when # features exceeds 0.5 # rows (as a heuristic). 
 (The 0.5 value can also be updated in ML_cmnd by passing to ML_cmnd['PCA_cmnd']['col_row_ratio'].)
+Note that inversion as can be performed with postmunge(.) is not currently supported for columns returned from PCA.
 
 * PCAexcl: a _list_ of column headers for columns that are to be excluded from
-any application of PCA, defaults to _False_ for cases where no numeric columns are desired to
+any application of PCA, defaults to _[]_ (an empty list) for cases where no numeric columns are desired to
 be excluded from PCA. Note that column headers can be passed as consistent with the passed df_train
 to exclude from PCA all columns derived from a particular input column or alternatively can be 
 passed with the returned column headers which include the suffix appenders to exclude just those
@@ -981,18 +989,14 @@ argument noted above. A user can also pass parameters to the PCA functions
 through the PCA_cmnd, for example one could pass a kernel type for KernelPCA
 as:
 ```
-ML_cmnd = {'autoML_type':'randomforest',
-           'MLinfill_cmnd':{'RandomForestClassifier':{},
-                            'RandomForestRegressor':{}},
-           'PCA_type':'KernelPCA',
+ML_cmnd = {'PCA_type':'KernelPCA',
            'PCA_cmnd':{'kernel':'sigmoid'}}
            
 ```
-A user can also exclude returned boolean (0/1) columns from any PCA application by passing 
-'PCA_cmnd':{'bool_PCA_excl':True}
-or exclude returned boolean and ordinal columns from PCA application by
-'PCA_cmnd':{'bool_ordl_PCAexcl':True}
-such as could potentially result in memory savings.
+By default, ML_cmnd['PCA_cmnd'] is initalized internal to library with {'bool_ordl_PCAexcl':True},
+which designates that returned ordinal and boolean encoded columns are to be excluded from PCA.
+This convention by be turned off by passing as False, or to only exclude boolean integer but 
+not ordinal encoded columns can pass ML_cmnd['PCA_cmnd'] as {'bool_PCA_excl':True}.
 
 * assigncat:
 
@@ -1395,7 +1399,7 @@ processdict =  {'newt' : {'dualprocess' : am._process_mnmx,
 #              'concurrent_nmbr' for multicolumn sets with numeric entries (signed floats)
 #              'exclude' for columns which will be excluded from infill, returned data might not be numerically encoded
 #              'boolexclude' boolean set suitable for Binary transform but excluded from all infill (e.g. NArw entries)
-#              'ordlexclude' ordinal set exluded from infill
+#              'ordlexclude' ordinal set exluded from infill (note that in some cases in library ordlexclude may return a multi-column set)
 #              'totalexclude' for complete passthroughs (excl) without infill and excluded 
 #                        from inf conversion and assignnan global option
 
@@ -1913,7 +1917,7 @@ For label sets, we use a distinct set of root categories under automation. These
 some cases comparable to those listed above for training data, but differ in that the label 
 sets will not include a returned 'NArw' (infill marker) even when parameter NArw_marker 
 passed as True.
-- lbnm: for numerical data, a label set is treated with an 'exc2' pass-through transform (without normalization).
+- lbnb: for numerical data, a label set is treated with an 'nmbr' z-score normalization.
 - lbor: for categoric data of >2 unique values, a label set is treated with an 'ordl' ordinal encoding (alphabetical order of encodings).
 
 Other label categories are available for assignment in assigncat, described below in the 
