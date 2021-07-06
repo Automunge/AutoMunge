@@ -3393,3 +3393,23 @@ am.postmunge(postprocess_dict, df_test)
 - have seen kind of conflicting input on this matter in literature on whether there is ever any benefit to scaling numeric labels
 - did a little more digging and found some valid discussions on stack overflow offering scenarios where scaling labels may be of benefit
 - as well as finding domain experts following the practice such as in implementation of experiments in paper  “Revisiting Deep Learning Models for Tabular Data” by Yury Gorishniy, Ivan Rubachev, Valentin Khrulkov, Artem Babenko
+
+6.36
+- rewrote bxcx transformation functions to closer align with conventions of rest of library and for clarity of code
+- new transform available as qttf
+- which is built on top of Scikit-Learn sklearn.preprocessing.QuantileTransformer
+- qttf supports inversion, inplace not currently supported
+- qttf defaults to returning a normal output distribution
+- which differs from scikit default of uniform
+- the thought is in general we expect surrounding variables will closer adhere (by degree) to normal vs. uniform
+- and thus this default will better approximate i.i.d. in aggregate
+- alternate category available as qtt2 which defaults to uniform output distribution
+- more info on quantile transform available in scikit documentation
+- currently qttf is the only transform in library built on top of a scikit-learn preprocessing implementation
+- and bxcx is only transform in library built on top of a scipy stats transformation
+- (we also use scikit-learn for predictive models / tuning / PCA and scipy stats for distributions / measurement)
+- the incorporation of a quantile transform option to library was partly inspired by a comment in paper “Revisiting Deep Learning Models for Tabular Data” by Yury Gorishniy, Ivan Rubachev, Valentin Khrulkov, Artem Babenko
+- also a few cleanups to imports for clarity of presentation
+- struck numpy import for format_float_scientific which wasn't used
+- struck some redundant scipy imports for statistics measurement
+- a few other cleanups and clarifications to imports
