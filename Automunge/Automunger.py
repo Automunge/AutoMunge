@@ -14,45 +14,46 @@ import numpy as np
 import pandas as pd
 from copy import deepcopy
 
-#imports for process_time, postprocess_time 
+#imports for automunge
+import random
+import types
+#dt used for time stamp, other datetime methods built on pandas
 import datetime as dt
 
-#imports for process_bxcx 
-from scipy import stats
-
-#imports for process_hldy 
-from pandas.tseries.holiday import USFederalHolidayCalendar
-
-#imports for evalcategory, getNArows
+#imports for _evalcategory, _getNArows
 from collections import Counter
-import datetime as dt
-from scipy.stats import shapiro
-from scipy.stats import skew
+# import datetime as dt
+# from scipy.stats import shapiro
+# from scipy.stats import skew
 
-#imports for predictinfill, predictpostinfill, trainFSmodel
+#imports for _predictinfill, _predictpostinfill, _trainFSmodel, _shuffleaccuracy
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import RandomizedSearchCV
 # from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_squared_log_error
 # from sklearn.metrics import roc_auc_score
 from sklearn.metrics import accuracy_score
 #stats may be used for cases where user elects RandomSearchCV hyperparameter tuning
-# from scipy import stats
-
-#imports for shuffleaccuracy
-# from sklearn.metrics import accuracy_score
-from sklearn.metrics import mean_squared_log_error
+from scipy import stats
 
 #imports for PCA dimensionality reduction
 from sklearn.decomposition import PCA
 from sklearn.decomposition import SparsePCA
 from sklearn.decomposition import KernelPCA
 
-#imports for automunge
-import random
-#import datetime as dt
-import types
+#imports for DP family of transforms e.g. _process_DP** (DP transforms use np.random)
+# import numpy as np
+
+#imports for _process_bxcx 
+# from scipy.stats import boxcox
+
+#imports for _process_qttf
+from sklearn.preprocessing import QuantileTransformer
+
+#imports for process_hldy 
+from pandas.tseries.holiday import USFederalHolidayCalendar
 
 #we also have imports for auto ML options in the support functions with their application
 #(this allows us to include the option without having their library install as a dependancy)
@@ -2247,6 +2248,24 @@ class AutoMunge:
                                      'siblings'      : [],
                                      'auntsuncles'   : ['sccs'],
                                      'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+
+    transform_dict.update({'qttf' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['qttf'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+  
+    transform_dict.update({'qtt2' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['qtt2'],
+                                     'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
                                      'coworkers'     : [],
@@ -4996,6 +5015,26 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : '1010',
                                   'labelctgy' : '1010'}})
+    process_dict.update({'qttf' : {'dualprocess' : self._process_qttf,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_qttf,
+                                  'inverseprocess' : self._inverseprocess_qttf,
+                                  'info_retention' : True,
+                                  'inplace_option' : False,
+                                  'defaultparams' : {'output_distribution' : 'normal'},
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
+                                  'labelctgy' : 'qttf'}})
+    process_dict.update({'qtt2' : {'dualprocess' : self._process_qttf,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_qttf,
+                                  'inverseprocess' : self._inverseprocess_qttf,
+                                  'info_retention' : True,
+                                  'inplace_option' : False,
+                                  'defaultparams' : {'output_distribution' : 'uniform'},
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
+                                  'labelctgy' : 'qtt2'}})
     process_dict.update({'bxcx' : {'dualprocess' : self._process_bxcx,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_bxcx,
@@ -15416,14 +15455,62 @@ class AutoMunge:
     
     return mdf_train, mdf_test, column_dict_list
 
-  def _process_bxcx(self, mdf_train, mdf_test, column, category, \
-                         treecategory, postprocess_dict, params = {}):
-    '''
-    Applies Box-Cox transform to an all-positive numerical set.
-    '''
+  def _process_qttf(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
+    """
+    Applies quantile transform
+    Makes use of sklearn.preprocessing.quantile_transform
+    From Scikit Learn library
+    
+    The thought is that we default to returning output distribution of normal instead of uniform 
+    Because in general we expect surrounding variables will closer adhere (by degree) to normal vs. uniform
+    And thus better approximate i.i.d. in aggregate
+    This will differ from the scikit default of returning output_distribution as uniform
+    
+    default infill will be mean imputation performed after fitting but before applying quantile transform
+    
+    Accepts parameters (defaults) {accepted values}
+    n_quantiles (1000) {integer}
+    output_distribution ('normal') {'normal', 'uniform'} => differs from scikit default of 'uniform'
+    ignore_implicit_zeros (False) {boolean}
+    subsample (1e5) {integer}
+    random_state (automunge randomseed) {integer}
+    
+    suffix (treecategory) {string}
+    
+    copy not supported
+    fit parameters not supported
+    inplace not supported since copying input more than once
+
+    qttf returned as False when fit operation not performed
+    """
     
     suffixoverlap_results = {}
-
+    
+    if 'n_quantiles' in params:
+      n_quantiles = params['n_quantiles']
+    else:
+      n_quantiles = 1000
+      
+    if 'output_distribution' in params:
+      output_distribution = params['output_distribution']
+    else:
+      output_distribution = 'normal'
+      
+    if 'ignore_implicit_zeros' in params:
+      ignore_implicit_zeros = params['ignore_implicit_zeros']
+    else:
+      ignore_implicit_zeros = False
+      
+    if 'subsample' in params:
+      subsample = params['subsample']
+    else:
+      subsample = 1e5
+      
+    if 'random_state' in params:
+      random_state = params['random_state']
+    else:
+      random_state = postprocess_dict['randomseed']
+    
     if 'suffix' in params:
       suffix = params['suffix']
     else:
@@ -15431,135 +15518,77 @@ class AutoMunge:
       
     suffixcolumn = column + '_' + suffix
     
-    #df_train, nmbrcolumns, nmbrnormalization_dict, categorylist = \
-    mdf_train, column_dict_list = \
-    self._process_bxcx_support(mdf_train, column, category, treecategory, 1, bxcx_lmbda = None, \
-                              trnsfrm_mean = None, suffix = suffix)
+    #copy source column into new column
+    mdf_train, suffixoverlap_results = \
+    self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
 
-    #grab the normalization_dict associated with the bxcx category
-    columnkeybxcx = suffixcolumn
-    for column_dict in column_dict_list:
-      if columnkeybxcx in column_dict:
-        bxcxnormalization_dict = column_dict[columnkeybxcx]['normalization_dict'][columnkeybxcx]
-
-    #df_test, nmbrcolumns, _1, _2 = \
-    mdf_test, _1 = \
-    self._process_bxcx_support(mdf_test, column, category, treecategory, 1, bxcx_lmbda = \
-                             bxcxnormalization_dict['bxcx_lmbda'], \
-                             trnsfrm_mean = bxcxnormalization_dict['trnsfrm_mean'], suffix = suffix)
-
-    return mdf_train, mdf_test, column_dict_list
-
-  def _process_bxcx_support(self, df, column, category, treecategory, bxcxerrorcorrect, bxcx_lmbda = None, trnsfrm_mean = None, suffix = 'bxcx'):
-    '''                      
-    #process_bxcx(df, column, bxcx_lmbda = None, trnsfrm_mean = None, trnsfrm_std = None)
-    #function that takes as input a dataframe with numnerical column for purposes
-    #of applying a box-cox transformation. If lmbda = None it will infer a suitable
-    #lambda value by minimizing log likelihood using SciPy's stats boxcox call. If
-    #we pass a mean or std value it will apply the mean for the initial infill and 
-    #use the values to apply postprocess_numerical  function. 
-    #Returns transformed dataframe, a list nmbrcolumns of the associated columns,
-    #and a normalization dictionary nmbrnormalization_dict which we'll use for our
-    #postprocess_dict, and the parameter lmbda that was used
-    #expect this approach works better than our prior numerical address when the 
-    #distribution is less thin tailed
-    '''
+    mdf_test[suffixcolumn] = mdf_test[column].copy()
     
-    suffixoverlap_results = {}
-    
-    bxcxcolumn = column + '_' + suffix
-
-    df, suffixoverlap_results = \
-    self._df_copy_train(df, column, bxcxcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
-
     #convert all values to either numeric or NaN
-    df[bxcxcolumn] = pd.to_numeric(df[bxcxcolumn], errors='coerce')
-    #convert non-positive values to nan
-    df.loc[df[bxcxcolumn] <= 0, (bxcxcolumn)] = np.nan
-
-    #get the mean value to apply to infill
-    if trnsfrm_mean == None:
-      #get mean of training data
-      mean = df[bxcxcolumn].mean()  
-
-    else:
-      mean = trnsfrm_mean
-
-    #edge case
-    if mean != mean or mean <= 0:
-      mean = 0
-      bxcx_lmbda = False
-
-    #replace missing data with training set mean
-    df[bxcxcolumn] = df[bxcxcolumn].fillna(mean)
+    mdf_train[suffixcolumn] = pd.to_numeric(mdf_train[suffixcolumn], errors='coerce')
+    mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
     
-    #edge case to avoid stats.boxcox error
-    if df[bxcxcolumn].nunique() == 1:
-      df[bxcxcolumn] = 0
-      
-      #we'll use convention that if training data is set to 0 then so will all subsequent data
-      bxcx_lmbda = False
-      
+    #grab a few drift stats prior to trasnform
+    input_max = mdf_train[suffixcolumn].max()
+    input_min = mdf_train[suffixcolumn].min()
+    input_stdev = mdf_train[suffixcolumn].std()
+    input_mean = mdf_train[suffixcolumn].mean()
+
+    if input_mean != input_mean:
+      qttf = False
+      mdf_train[suffixcolumn] = 0
+      mdf_test[suffixcolumn] = 0
+    
     else:
+      #initialize quantile transformer
+      qttf = QuantileTransformer(n_quantiles=n_quantiles, 
+                                output_distribution=output_distribution,
+                                ignore_implicit_zeros=ignore_implicit_zeros,
+                                subsample=subsample,
+                                random_state=random_state)
+      
+      #fit trasnformer to train set
+      qttf.fit(pd.DataFrame(mdf_train[suffixcolumn]))
+  
+      #now reset the suffixcolumn since fitting process may replace nan with method value
+      mdf_train[suffixcolumn] = mdf_train[column].copy()
+      mdf_train[suffixcolumn] = pd.to_numeric(mdf_train[suffixcolumn], errors='coerce')
+    
+    #now default imputation with mean
+    mean_impute = input_mean
+    
+    if mean_impute != mean_impute:
+      mean_impute = 0
+      
+    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(mean_impute)
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean_impute)
 
-      #apply box-cox transformation to generate a new column
-      #note the returns are different based on whether we passed a lmbda value
-
-      if bxcx_lmbda == None:
-
-        df[bxcxcolumn], bxcx_lmbda = stats.boxcox(df[bxcxcolumn])
-        df[bxcxcolumn] *= bxcxerrorcorrect
-        
-      elif bxcx_lmbda is False:
-        
-        df[bxcxcolumn] = 0
-
-      else:
-
-        df[bxcxcolumn] = stats.boxcox(df[bxcxcolumn], lmbda = bxcx_lmbda)
-        df[bxcxcolumn] *= bxcxerrorcorrect
-
-    #this is to address an error when bxcx transofrm produces overflow
-    #I'm not sure of cause, showed up in the housing set)
-    bxcxerrorcorrect = 1
-    if max(df[bxcxcolumn]) > (2 ** 31 - 1):
-      bxcxerrorcorrect = 0
-      df[bxcxcolumn] = 0
-      bxcxcolumn = bxcxcolumn
-      if postprocess_dict['printstatus'] != 'silent':
-        print("overflow condition found in boxcox transofrm, column set to 0: ", bxcxcolumn)
-        print()
-
-#     #replace original column
-#     del df[column]
-
-#     df[column] = df[column + '_temp'].copy()
-
-#     del df[column + '_temp']
-
-#     #change data type for memory savings
-#     df[column + '_bxcx'] = df[column + '_bxcx'].astype(np.float32)
+    #apply transform
+    if qttf is not False:
+      mdf_train[suffixcolumn] = qttf.transform(pd.DataFrame(mdf_train[suffixcolumn]))
+      mdf_test[suffixcolumn] = qttf.transform(pd.DataFrame(mdf_test[suffixcolumn]))
 
     #output of a list of the created column names
-    #nmbrcolumns = [column + '_nmbr', column + '_bxcx', column + '_NArw']
-    nmbrcolumns = [bxcxcolumn]
-
-    #create list of columns associated with categorical transform (blank for now)
-    categorylist = []
-
-    #store some values in the nmbr_dict{} for use later in ML infill methods
+    nmbrcolumns = [suffixcolumn]
+    
+    #initilize column_dict_list
     column_dict_list = []
-
+    
     for nc in nmbrcolumns:
 
-      #save a dictionary of the associated column mean and std
-
-      normalization_dict = {nc : {'trnsfrm_mean' : mean, \
-                                  'bxcx_lmbda' : bxcx_lmbda, \
-                                  'bxcxerrorcorrect' : bxcxerrorcorrect, \
-                                  'suffix' : suffix, \
-                                  'mean' : mean}}
-
+      normalization_dict = {nc : {'input_max' : input_max,
+                                  'input_min' : input_min,
+                                  'input_stdev' : input_stdev,
+                                  'input_mean' : input_mean,
+                                  'qttf' : qttf,
+                                  'mean_impute' : mean_impute,
+                                  'n_quantiles' : n_quantiles,
+                                  'output_distribution' : output_distribution,
+                                  'ignore_implicit_zeros' : ignore_implicit_zeros,
+                                  'subsample' : subsample,
+                                  'random_state' : random_state,
+                                  'suffix' : suffix}}
+      
       column_dict = { nc : {'category' : treecategory, \
                            'origcategory' : category, \
                            'normalization_dict' : normalization_dict, \
@@ -15573,9 +15602,140 @@ class AutoMunge:
                            'deletecolumn' : False}}
 
       column_dict_list.append(column_dict.copy())
+      
+    return mdf_train, mdf_test, column_dict_list
 
-    #return df, nmbrcolumns, nmbrnormalization_dict, categorylist
-    return df, column_dict_list
+  def _process_bxcx(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
+    '''
+    Applies Box-Cox transform to an all-positive numerical set.
+    
+    We have a few scenarios where transform won't be applied signaled by setting bxcx_lmbda = False
+    '''
+    
+    suffixoverlap_results = {}
+    
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+    
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = treecategory
+      
+    suffixcolumn = column + '_' + suffix
+    
+    if inplace is not True:
+      
+      #copy source column into new column
+      mdf_train, suffixoverlap_results = \
+      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
+
+      mdf_test[suffixcolumn] = mdf_test[column].copy()
+    
+    else:
+      
+      suffixoverlap_results = \
+      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
+      
+      mdf_train.rename(columns = {column : suffixcolumn}, inplace = True)
+      mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
+    
+    #convert all values to either numeric or NaN
+    mdf_train[suffixcolumn] = pd.to_numeric(mdf_train[suffixcolumn], errors='coerce')
+    mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
+    
+    #convert non-positive values to nan
+    mdf_train.loc[mdf_train[suffixcolumn] <= 0, (suffixcolumn)] = np.nan
+    mdf_test.loc[mdf_test[suffixcolumn] <= 0, (suffixcolumn)] = np.nan
+    
+    #get the mean value to apply to infill
+    mean = mdf_train[suffixcolumn].mean()
+    
+    bxcx_lmbda = None
+    test_bxcx_lmbda = None
+    
+    #edge case
+    if mean != mean or mean <= 0:
+      mean = 0
+      bxcx_lmbda = False
+    
+    #replace missing data with training set mean
+    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(mean)
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
+    
+    #edge case to avoid stats.boxcox error
+    if mdf_train[suffixcolumn].nunique() == 1:
+      #we'll use convention that if training data is set to 0 then so will all subsequent data
+      bxcx_lmbda = False
+      
+    if mdf_test[suffixcolumn].nunique() == 1:
+      test_bxcx_lmbda = False
+      
+    if bxcx_lmbda is not False:
+      
+      mdf_train[suffixcolumn], bxcx_lmbda = stats.boxcox(mdf_train[suffixcolumn])
+      
+      if test_bxcx_lmbda is not False:
+        mdf_test[suffixcolumn] = stats.boxcox(mdf_test[suffixcolumn], lmbda = bxcx_lmbda)
+      else:
+        mdf_test[suffixcolumn] = 0
+      
+    elif bxcx_lmbda is False:
+      
+      mdf_train[suffixcolumn] = 0
+      mdf_test[suffixcolumn] = 0
+      
+    #this is to address an error when bxcx transform produces overflow
+    #I'm not sure of cause, showed up in the housing set)
+    max_train = mdf_train[suffixcolumn].max()
+    max_test = mdf_test[suffixcolumn].max()
+    
+    if max_train > (2 ** 31 - 1):
+      mdf_train[suffixcolumn] = 0
+      if postprocess_dict['printstatus'] != 'silent':
+        print("overflow condition found in boxcox transform to train set, column set to 0: ", suffixcolumn)
+        print()
+      
+    if max_test > (2 ** 31 - 1):
+      mdf_test[suffixcolumn] = 0
+      if postprocess_dict['printstatus'] != 'silent':
+        print("overflow condition found in boxcox transform to test set, column set to 0: ", suffixcolumn)
+        print()
+    
+    #output of a list of the created column names
+    nmbrcolumns = [suffixcolumn]
+    
+    #initilize column_dict_list
+    column_dict_list = []
+    
+    for nc in nmbrcolumns:
+      
+      #test_bxcx_lmbda is False when mdf_test[suffixcolumn].nunique() == 1
+      normalization_dict = {nc : {'mean' : mean, \
+                                  'bxcx_lmbda' : bxcx_lmbda, \
+                                  'test_bxcx_lmbda' : test_bxcx_lmbda, \
+                                  'max_train' : max_train, \
+                                  'max_test' : max_test, \
+                                  'suffix' : suffix, \
+                                  'inplace' : inplace}}
+      
+      column_dict = { nc : {'category' : treecategory, \
+                           'origcategory' : category, \
+                           'normalization_dict' : normalization_dict, \
+                           'origcolumn' : column, \
+                           'inputcolumn' : column, \
+                           'columnslist' : nmbrcolumns, \
+                           'categorylist' : nmbrcolumns, \
+                           'infillmodel' : False, \
+                           'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
+                           'deletecolumn' : False}}
+
+      column_dict_list.append(column_dict.copy())
+      
+    return mdf_train, mdf_test, column_dict_list
 
   def _process_log0(self, mdf_train, mdf_test, column, category, \
                          treecategory, postprocess_dict, params = {}):
@@ -20661,7 +20821,7 @@ class AutoMunge:
         if df[pd.to_numeric(df[column], errors='coerce').notnull()][column].astype(float).nunique() >= 3:
 
           #shapiro tests for normality, we'll use a common threshold p<0.05 to reject the normality hypothesis
-          stat, p = shapiro(df[pd.to_numeric(df[column], errors='coerce').notnull()][column].astype(float))
+          stat, p = stats.shapiro(df[pd.to_numeric(df[column], errors='coerce').notnull()][column].astype(float))
           #a typical threshold to test for normality is >0.05, let's try a lower bar for this application
           if p > 0.025:
             category = 'nmbr'
@@ -20673,7 +20833,7 @@ class AutoMunge:
     #       An exponential distribution has a skewness of 2
     #       A lognormal distribution can have a skewness of any positive value, depending on its parameters
             #skewness = skew(df[column])
-            skewness = skew(df[pd.to_numeric(df[column], errors='coerce').notnull()][column].astype(float))
+            skewness = stats.skew(df[pd.to_numeric(df[column], errors='coerce').notnull()][column].astype(float))
             if skewness < 1.5:
               category = 'mnmx'
             else:
@@ -20795,14 +20955,14 @@ class AutoMunge:
       if driftassess is True:
         
         if df2[column].notnull().nunique() > 2:
-          W, p = shapiro(df2[df2[column].notnull()][column].astype(float))
-          skew_stat = skew(df2[df2[column].notnull()][column].astype(float))
+          W, p = stats.shapiro(df2[df2[column].notnull()][column].astype(float))
+          skew_stat = stats.skew(df2[df2[column].notnull()][column].astype(float))
         else:
           W = np.nan
           p = np.nan
           skew_stat = np.nan
           
-#         W, p = shapiro(df2[df2[column].notnull()][column].astype(float))
+#         W, p = stats.shapiro(df2[df2[column].notnull()][column].astype(float))
 #         skew_stat = skew(df2[df2[column].notnull()][column].astype(float))
         
         drift_dict.update({column : {'max' : df2[column].max(), \
@@ -20839,14 +20999,14 @@ class AutoMunge:
       if driftassess is True:
         
         if df2[column].notnull().nunique() > 2:
-          W, p = shapiro(df2[df2[column].notnull()][column].astype(float))
-          skew_stat = skew(df2[df2[column].notnull()][column].astype(float))
+          W, p = stats.shapiro(df2[df2[column].notnull()][column].astype(float))
+          skew_stat = stats.skew(df2[df2[column].notnull()][column].astype(float))
         else:
           W = np.nan
           p = np.nan
           skew_stat = np.nan
           
-#         W, p = shapiro(df2[df2[column].notnull()][column].astype(float))
+#         W, p = stats.shapiro(df2[df2[column].notnull()][column].astype(float))
 #         skew_stat = skew(df2[df2[column].notnull()][column].astype(float))
         
         drift_dict.update({column : {'max' : df2[column].max(), \
@@ -20886,8 +21046,8 @@ class AutoMunge:
       if driftassess is True:
         
         if df2[column].notnull().nunique() > 2:
-          W, p = shapiro(df2[df2[column].notnull()][column].astype(float))
-          skew_stat = skew(df2[df2[column].notnull()][column].astype(float))
+          W, p = stats.shapiro(df2[df2[column].notnull()][column].astype(float))
+          skew_stat = stats.skew(df2[df2[column].notnull()][column].astype(float))
         else:
           W = np.nan
           p = np.nan
@@ -20931,8 +21091,8 @@ class AutoMunge:
       if driftassess is True:
         
         if df2[column].notnull().nunique() > 2:
-          W, p = shapiro(df2[df2[column].notnull()][column].astype(float))
-          skew_stat = skew(df2[df2[column].notnull()][column].astype(float))
+          W, p = stats.shapiro(df2[df2[column].notnull()][column].astype(float))
+          skew_stat = stats.skew(df2[df2[column].notnull()][column].astype(float))
         else:
           W = np.nan
           p = np.nan
@@ -20976,8 +21136,8 @@ class AutoMunge:
       if driftassess is True:
         
         if df2[column].notnull().nunique() > 2:
-          W, p = shapiro(df2[df2[column].notnull()][column].astype(float))
-          skew_stat = skew(df2[df2[column].notnull()][column].astype(float))
+          W, p = stats.shapiro(df2[df2[column].notnull()][column].astype(float))
+          skew_stat = stats.skew(df2[df2[column].notnull()][column].astype(float))
         else:
           W = np.nan
           p = np.nan
@@ -29205,7 +29365,7 @@ class AutoMunge:
                            'PCA_cmnd':{}}, \
                 assigncat = {'nmbr':[], 'retn':[], 'mnmx':[], 'mean':[], 'MAD3':[], 'lgnm':[], \
                              'bins':[], 'bsor':[], 'pwrs':[], 'pwr2':[], 'por2':[], 'bxcx':[], \
-                             'addd':[], 'sbtr':[], 'mltp':[], 'divd':[], 'mxab':[], \
+                             'addd':[], 'sbtr':[], 'mltp':[], 'divd':[], 'mxab':[], 'qttf':[], \
                              'log0':[], 'log1':[], 'logn':[], 'sqrt':[], 'rais':[], 'absl':[], \
                              'bnwd':[], 'bnwK':[], 'bnwM':[], 'bnwo':[], 'bnKo':[], 'bnMo':[], \
                              'bnep':[], 'bne7':[], 'bne9':[], 'bneo':[], 'bn7o':[], 'bn9o':[], \
@@ -30704,7 +30864,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.35'
+    automungeversion = '6.36'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -34890,24 +35050,12 @@ class AutoMunge:
         del mdf_test[column]
       
     return mdf_test
-  
-  def _postprocess_bxcx(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+
+  def _postprocess_qttf(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
-    Applies box-cox method within postmunge function.
+    Corresponds to _process_qttf
     '''
-  #   #df_train, nmbrcolumns, nmbrnormalization_dict, categorylist = \
-  #   mdf_train, column_dict_list = \
-  #   self._process_bxcx_support(mdf_train, column, category, 1, bxcx_lmbda = None, \
-  #                             trnsfrm_mean = None, trnsfrm_std = None)
-
-  #   #grab the normalization_dict associated with the bxcx category
-  #   columnkeybxcx = column + '_bxcx'
-  #   for column_dict in column_dict_list:
-  #     if columnkeybxcx in column_dict:
-  #       bxcxnormalization_dict = column_dict[columnkeybxcx]['normalization_dict'][columnkey]
-
-    #bxcxkey = columnkey[:-5] + '_bxcx'
-
+    
     #normkey used to retrieve the normalization dictionary 
     normkey = False
     if len(columnkey) > 0:      
@@ -34915,22 +35063,107 @@ class AutoMunge:
           
     #normkey is False when process function returns empty set
     if normkey is not False:
-
-      bxcxnormalization_dict = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]
-      #postprocess_dict['column_dict'][bxcxkey]['normalization_dict'][bxcxkey]
+      
+      mean_impute = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean_impute']
+      qttf = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['qttf']
       suffix = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
       
-      temporigcategoryplug = 'bxcx'
+      suffixcolumn = column + '_' + suffix
+      
+      #copy source column into new column
+      mdf_test[suffixcolumn] = mdf_test[column].copy()
+        
+      #convert all values to either numeric or NaN
+      mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
+      
+      #now default imputation with mean
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean_impute)
+        
+      #apply transform to test set
+      if qttf is not False:
+        mdf_test[suffixcolumn] = qttf.transform(pd.DataFrame(mdf_test[suffixcolumn]))
+      
+    else:
 
-      #df_test, nmbrcolumns, _1, _2 = \
-      mdf_test, _1 = \
-      self._process_bxcx_support(mdf_test, column, temporigcategoryplug, temporigcategoryplug, 1, bxcx_lmbda = \
-                              bxcxnormalization_dict['bxcx_lmbda'], \
-                              trnsfrm_mean = bxcxnormalization_dict['trnsfrm_mean'], \
-                              suffix = suffix)
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
 
+      if inplace is True:
+        del mdf_test[column]
+
+    return mdf_test
+
+  def _postprocess_bxcx(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+    '''
+    Applies box-cox method within postmunge function.
+    '''
+    
+    #normkey used to retrieve the normalization dictionary 
+    normkey = False
+    if len(columnkey) > 0:      
+      normkey = columnkey[0]
+          
+    #normkey is False when process function returns empty set
+    if normkey is not False:
+      
+      mean = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
+      bxcx_lmbda = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bxcx_lmbda']
+      inplace = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
+      suffix = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+      
+      suffixcolumn = column + '_' + suffix
+      
+      if inplace is not True:
+        #copy source column into new column
+        mdf_test[suffixcolumn] = mdf_test[column].copy()
+      else:
+        mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
+        
+      #convert all values to either numeric or NaN
+      mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
+    
+      #convert non-positive values to nan
+      mdf_test.loc[mdf_test[suffixcolumn] <= 0, (suffixcolumn)] = np.nan
+      
+      test_bxcx_lmbda = None
+      
+      #replace missing data with training set mean
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
+      
+      #edge case to avoid stats.boxcox error
+      if mdf_test[suffixcolumn].nunique() == 1:
+        test_bxcx_lmbda = False
+        
+      if bxcx_lmbda is not False:
+
+        if test_bxcx_lmbda is not False:
+          mdf_test[suffixcolumn] = stats.boxcox(mdf_test[suffixcolumn], lmbda = bxcx_lmbda)
+        else:
+          mdf_test[suffixcolumn] = 0
+
+      elif bxcx_lmbda is False:
+
+        mdf_test[suffixcolumn] = 0
+        
+      #this is to address an error when bxcx transform produces overflow
+      #I'm not sure of cause, showed up in the housing set)
+      max_test = mdf_test[suffixcolumn].max()
+      
+      if max_test > (2 ** 31 - 1):
+        mdf_test[suffixcolumn] = 0
+        if postprocess_dict['printstatus'] != 'silent':
+          print("overflow condition found in boxcox transform to test set, column set to 0: ", suffixcolumn)
+          print()
+      
     else:
 
       if 'inplace' in params:
@@ -39976,6 +40209,32 @@ class AutoMunge:
     
     df[inputcolumn] = df[inputcolumn].fillna('zzzinfill')
         
+    return df, inputcolumn
+
+  def _inverseprocess_qttf(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to _process_qttf
+    #assumes any relevant parameters were saved in normalization_dict
+    #does not perform infill, assumes clean data
+    """
+    
+    normkey = categorylist[0]
+    
+    qttf = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['qttf']
+    
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    
+    #convert all values to either numeric or NaN
+    df[inputcolumn] = pd.to_numeric(df[normkey], errors='coerce')
+    
+    #apply inverse_transform
+    if qttf is not False:
+      df[inputcolumn] = qttf.inverse_transform(pd.DataFrame(df[inputcolumn]))
+
+    #to align with inversion convention
+    df[inputcolumn] = df[inputcolumn].fillna('zzzinfill')
+    
     return df, inputcolumn
   
   def _inverseprocess_log0(self, df, categorylist, postprocess_dict):
