@@ -140,7 +140,7 @@ am.automunge(df_train, df_test = False,
                         'PCA_cmnd':{}},
              assigncat = {'nmbr':[], 'retn':[], 'mnmx':[], 'mean':[], 'MAD3':[], 'lgnm':[],
                           'bins':[], 'bsor':[], 'pwrs':[], 'pwr2':[], 'por2':[], 'bxcx':[],
-                          'addd':[], 'sbtr':[], 'mltp':[], 'divd':[],
+                          'addd':[], 'sbtr':[], 'mltp':[], 'divd':[], 'mxab':[], 'qttf':[],
                           'log0':[], 'log1':[], 'logn':[], 'sqrt':[], 'rais':[], 'absl':[],
                           'bnwd':[], 'bnwK':[], 'bnwM':[], 'bnwo':[], 'bnKo':[], 'bnMo':[],
                           'bnep':[], 'bne7':[], 'bne9':[], 'bneo':[], 'bn7o':[], 'bn9o':[],
@@ -366,7 +366,7 @@ am.automunge(df_train, df_test = False,
                         'PCA_cmnd':{}},
              assigncat = {'nmbr':[], 'retn':[], 'mnmx':[], 'mean':[], 'MAD3':[], 'lgnm':[],
                           'bins':[], 'bsor':[], 'pwrs':[], 'pwr2':[], 'por2':[], 'bxcx':[],
-                          'addd':[], 'sbtr':[], 'mltp':[], 'divd':[],
+                          'addd':[], 'sbtr':[], 'mltp':[], 'divd':[], 'mxab':[], 'qttf':[],
                           'log0':[], 'log1':[], 'logn':[], 'sqrt':[], 'rais':[], 'absl':[],
                           'bnwd':[], 'bnwK':[], 'bnwM':[], 'bnwo':[], 'bnKo':[], 'bnMo':[],
                           'bnep':[], 'bne7':[], 'bne9':[], 'bneo':[], 'bn7o':[], 'bn9o':[],
@@ -556,7 +556,7 @@ am.automunge(df_train, df_test = False,
                         'PCA_cmnd':{}},
              assigncat = {'nmbr':[], 'retn':[], 'mnmx':[], 'mean':[], 'MAD3':[], 'lgnm':[],
                           'bins':[], 'bsor':[], 'pwrs':[], 'pwr2':[], 'por2':[], 'bxcx':[],
-                          'addd':[], 'sbtr':[], 'mltp':[], 'divd':[],
+                          'addd':[], 'sbtr':[], 'mltp':[], 'divd':[], 'mxab':[], 'qttf':[],
                           'log0':[], 'log1':[], 'logn':[], 'sqrt':[], 'rais':[], 'absl':[],
                           'bnwd':[], 'bnwK':[], 'bnwM':[], 'bnwo':[], 'bnKo':[], 'bnMo':[],
                           'bnep':[], 'bne7':[], 'bne9':[], 'bneo':[], 'bn7o':[], 'bn9o':[],
@@ -1006,7 +1006,7 @@ not ordinal encoded columns can pass ML_cmnd['PCA_cmnd'] as {'bool_PCA_excl':Tru
 
 assigncat = {'nmbr':[], 'retn':[], 'mnmx':[], 'mean':[], 'MAD3':[], 'lgnm':[],
              'bins':[], 'bsor':[], 'pwrs':[], 'pwr2':[], 'por2':[], 'bxcx':[],
-             'addd':[], 'sbtr':[], 'mltp':[], 'divd':[],
+             'addd':[], 'sbtr':[], 'mltp':[], 'divd':[], 'mxab':[], 'qttf':[],
              'log0':[], 'log1':[], 'logn':[], 'sqrt':[], 'rais':[], 'absl':[],
              'bnwd':[], 'bnwK':[], 'bnwM':[], 'bnwo':[], 'bnKo':[], 'bnMo':[],
              'bnep':[], 'bne7':[], 'bne9':[], 'bneo':[], 'bn7o':[], 'bn9o':[],
@@ -2259,6 +2259,21 @@ family trees below for full set of transformation categories associated with the
   - driftreport postmunge metrics: trnsfrm_mean / bxcx_lmbda / bxcxerrorcorrect / mean
   - returned datatype: based on automunge(.) floatprecision parameter (defaults to float32)
   - inversion available: no
+* qttf/qtt2: performs quantile transformation to transform distribution properties of feature set.
+Please note this method makes use of sklearn.preprocessing.QuantileTransformer from Scikit-Learn.
+qttf converts to a normal output distribution, qtt2 converts to a uniform output distribution.
+  - useful for: translates distributions to closer approximate gaussian (may be applied as alternative to bxcx)
+  - default infill: mean
+  - default NArowtype: numeric
+  - suffix appender: '_qttf' in base configuration or based on the family tree category
+  - assignparam parameters accepted:
+    - 'output_distribution': defualts to 'normal' for qttf, or 'uniform' for qtt2
+    - 'random_state': based on automunge(.) randomseed
+    - other parameters consistent with scikit documentation (n_quantiles, ignore_implicit_zeros, subsample)
+    - note that copy parameter not supported, fit parameters not supported
+  - driftreport postmunge metrics: input_max / input_min / input_stdev / input_mean
+  - returned datatype: based on automunge(.) floatprecision parameter (defaults to float32)
+  - inversion available: yes
 * log0/log1: performs logarithmic transform (base 10). Applies infill to values <= 0.
   - useful for: sets with mixed range of large and small values
   - default infill: meanlog
@@ -3945,6 +3960,8 @@ avoid unintentional duplication.
 - 'qbt3',
 - 'qbt4',
 - 'qbt5',
+- 'qttf',
+- 'qtt2',
 - 'rais',
 - 'retn',
 - 'rtb2',
@@ -6181,6 +6198,24 @@ If you want to skip to the next section you can click here: [Custom Transformati
                                      'siblings'      : [],
                                      'auntsuncles'   : ['sccs'],
                                      'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+
+    transform_dict.update({'qttf' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['qttf'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+  
+    transform_dict.update({'qtt2' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['qtt2'],
+                                     'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
                                      'coworkers'     : [],
